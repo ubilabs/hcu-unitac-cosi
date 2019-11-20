@@ -2,10 +2,9 @@ import GfiOnAddressTemplate from "text-loader!./template.html";
 import GfiOnAddressModel from "./model";
 
 const GfiOnAddressView = Backbone.View.extend({
-    id: "gfi-on-address",
-    className: "top-center",
-    model: new GfiOnAddressModel(),
-    template: _.template(GfiOnAddressTemplate),
+    events: {
+        "click .address": "addressClicked"
+    },
     initialize: function () {
         var lgvContainer = $.find(".lgv-container")[0];
 
@@ -16,14 +15,16 @@ const GfiOnAddressView = Backbone.View.extend({
 
         $(lgvContainer).append(this.$el);
     },
-    events: {
-        "click .address": "addressClicked"
-    },
+    id: "gfi-on-address",
+    className: "top-center",
+    model: new GfiOnAddressModel(),
+    template: _.template(GfiOnAddressTemplate),
     render: function () {
         var attr = this.model.toJSON();
 
         this.$el.html("");
         this.$el.append(this.template(attr));
+        return this;
     },
     close: function () {
         this.$el.html("");

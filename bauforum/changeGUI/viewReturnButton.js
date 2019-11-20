@@ -21,7 +21,7 @@ const ViewReturnButton = Backbone.View.extend({
      */
     render: function () {
         const attr = this.model.toJSON();
-        
+
         $("#table-nav").prepend(this.$el.html(this.template(attr)));
         this.delegateEvents();
         return this;

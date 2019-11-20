@@ -28,7 +28,8 @@ const traficChannel = Backbone.Model.extend({
 
     /**
      * [refreshVerkehrssituation description]
-     * @param  {Backbone.Model} model
+     * @param  {Backbone.Model} model todo
+     * @returns {void}
      */
     refreshVerkehrssituation: function (model) {
         var postmessage = "<wfs:GetFeature xmlns:wfs='https://www.opengis.net/wfs' service='WFS' version='1.1.0' xsi:schemaLocation='https://www.opengis.net/wfs https://schemas.opengis.net/wfs/1.1.0/wfs.xsd' xmlns:xsi='https://www.w3.org/2001/XMLSchema-instance'>" +
@@ -54,10 +55,11 @@ const traficChannel = Backbone.Model.extend({
                 var hits = $("wfs\\:FeatureCollection,FeatureCollection", data),
                     fmNode = $(hits).find("gml\\:featureMember,featureMember"),
                     receivedNode = $(fmNode).find("app\\:received,received")[0],
+                    newEventValue,
                     aktualitaet = receivedNode ? receivedNode.textContent : null;
 
                 if (aktualitaet) {
-                    var newEventValue = "<strong>aktuelle Meldungen der TBZ:</strong></br>Aktualität: " + aktualitaet.trim().replace("T", " ").substring(0, aktualitaet.length - 3) + "</br>";
+                    newEventValue = "<strong>aktuelle Meldungen der TBZ:</strong></br>Aktualität: " + aktualitaet.trim().replace("T", " ").substring(0, aktualitaet.length - 3) + "</br>";
 
                     model.get("layerAttribution").text = newEventValue;
                     Radio.trigger("AttributionsView", "renderAttributions");
@@ -72,6 +74,7 @@ const traficChannel = Backbone.Model.extend({
 
     /**
      * [refreshVerkehrsmeldung description]
+     * @returns {void}
      */
     refreshVerkehrsmeldung: function () {
         // diese Abfrage zeigt im Bedarfsfall eine Meldung
@@ -82,14 +85,17 @@ const traficChannel = Backbone.Model.extend({
             context: this,
             success: function (data) {
                 var wfsReader = new WFS({
-                    featureNS: "https://www.deegree.org/app",
-                    featureType: "vkl_hinweis"
-                });
+                        featureNS: "https://www.deegree.org/app",
+                        featureType: "vkl_hinweis"
+                    }),
+                    datum,
+                    hinweis,
+                    feature;
 
                 try {
-                    var feature = wfsReader.readFeatures(data)[0],
-                        hinweis = feature.get("hinweis"),
-                        datum = feature.get("stand");
+                    feature = wfsReader.readFeatures(data)[0];
+                    hinweis = feature.get("hinweis");
+                    datum = feature.get("stand");
 
                     if (hinweis && datum) {
                         Radio.trigger("Alert", "alert:remove");
@@ -100,7 +106,7 @@ const traficChannel = Backbone.Model.extend({
                     }
                 }
                 catch (err) {
-                    return;
+                    console.error(err);
                 }
             },
             error: function () {

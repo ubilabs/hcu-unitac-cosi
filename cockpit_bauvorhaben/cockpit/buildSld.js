@@ -1,3 +1,9 @@
+/**
+ * todo
+ * @param {String} property Todo
+ * @param {String} literal Todo
+ * @returns {String} Todo
+ */
 export function getPropertyIsLike (property, literal) {
     return `<ogc:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
 <ogc:PropertyName>${property}</ogc:PropertyName>
@@ -5,6 +11,14 @@ export function getPropertyIsLike (property, literal) {
 </ogc:PropertyIsLike>`;
 }
 
+/**
+ * todo
+ * @param {String} layerName Todo
+ * @param {String} orFilter Todo
+ * @param {String} year Todo
+ * @param {String} wohneinheiten Todo
+ * @returns {String} Todo
+ */
 export function getOrFilter (layerName, orFilter, year, wohneinheiten) {
     return `<StyledLayerDescriptor xmlns='https://www.opengis.net/se' xmlns:ogc='https://www.opengis.net/ogc' xmlns:xsi='https://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://www.opengis.net/se https://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd https://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd'>
 <NamedLayer>
@@ -44,6 +58,14 @@ ${orFilter}
 </StyledLayerDescriptor>`;
 }
 
+/**
+ * todo
+ * @param {String} layerName Todo
+ * @param {String} orFilter Todo
+ * @param {String} year Todo
+ * @param {String} wohneinheiten Todo
+ * @returns {String} Todo
+ */
 export function getFilter (layerName, orFilter, year, wohneinheiten) {
     return `<StyledLayerDescriptor xmlns='https://www.opengis.net/se' xmlns:ogc='https://www.opengis.net/ogc' xmlns:xsi='https://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://www.opengis.net/se https://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd https://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd'>
 <NamedLayer>

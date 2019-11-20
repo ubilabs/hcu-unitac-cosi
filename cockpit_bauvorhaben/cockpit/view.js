@@ -226,34 +226,34 @@ const CockpitView = Backbone.View.extend({
         // Baugenehmigungen
         svgBaugenehmigungen.selectAll(".dot").on("mouseover", function (data, index, nodeList) {
             that.tooltipMouseover(data, index, nodeList, select(".graph-tooltip-div-1"));
-        });
+        }, this);
         svgBaugenehmigungen.selectAll(".dot").on("mouseout", function () {
             that.tooltipMouseout(select(".graph-tooltip-div-1"));
-        });
+        }, this);
 
         // Wohneinheiten
         svgWohneinheiten.selectAll(".dot").on("mouseover", function (data, index, nodeList) {
             that.tooltipMouseover(data, index, nodeList, select(".graph-tooltip-div-2"));
-        });
+        }, this);
         svgWohneinheiten.selectAll(".dot").on("mouseout", function () {
             that.tooltipMouseout(select(".graph-tooltip-div-2"));
-        });
+        }, this);
 
         // Wohneinheiten noch nicht im Bau
         svgWohneinheitenNochNichtImBau.selectAll(".dot").on("mouseover", function (data, index, nodeList) {
             that.tooltipMouseover(data, index, nodeList, select(".graph-tooltip-div-3"));
-        });
+        }, this);
         svgWohneinheitenNochNichtImBau.selectAll(".dot").on("mouseout", function () {
             that.tooltipMouseout(select(".graph-tooltip-div-3"));
-        });
+        }, this);
 
         // Wohneinheiten im Bau
         svgWohneinheitenImBau.selectAll(".dot").on("mouseover", function (data, index, nodeList) {
             that.tooltipMouseover(data, index, nodeList, select(".graph-tooltip-div-4"));
-        });
+        }, this);
         svgWohneinheitenImBau.selectAll(".dot").on("mouseout", function () {
             that.tooltipMouseout(select(".graph-tooltip-div-4"));
-        });
+        }, this);
     },
 
     /**
