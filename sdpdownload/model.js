@@ -397,7 +397,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
     },
     /**
      * Sets the WFSRaster
-     * @param {[ol.feature]} value the features of the WFSRaster
+     * @param {ol.feature} value the features of the WFSRaster
      * @returns {void}
      */
     setWfsRaster: function (value) {

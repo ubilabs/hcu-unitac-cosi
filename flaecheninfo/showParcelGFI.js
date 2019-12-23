@@ -3,15 +3,6 @@ const ShowParcelGFI = Backbone.Model.extend({
         "requestedParcelId": false
     },
 
-    /**
-     * @class ShowParcelGFI
-     * @extends Backbone.Model
-     * @memberof Backbone.Model
-     * @constructs
-     * @listens ParcelSearch#RadioTriggerParcelFound
-     * @listens GFI#RadioRequestGetRequestedParcelId
-     * @fires GFI#RadioTriggerLayerAtPosition
-     */
     initialize: function () {
         Radio.on("ParcelSearch", "parcelFound", this.parcelFound, this);
         Radio.channel("GFI").reply({

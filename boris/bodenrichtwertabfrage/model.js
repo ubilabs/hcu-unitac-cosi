@@ -693,7 +693,7 @@ function initializeBrwAbfrageModel () {
 
         /**
          * Gathers information needed to trigger the print module
-         * @return {[type]} [description]
+         * @return {void}
          */
         preparePrint: function () {
             var visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {

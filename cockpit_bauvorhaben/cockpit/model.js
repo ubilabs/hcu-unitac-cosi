@@ -181,10 +181,11 @@ function initializeCockpitModel () {
 
             return filteredTotal;
         },
+
         /**
          * Filters data objects whose "attributeName" is within the "valuesArray"
          * @param {Object[]} data Object Array to be filtered
-         * @param {*[]} valuesArray Array of possible Values
+         * @param {Array} valuesArray Array of possible Values
          * @param {String} attributeName Name of the attribute that has to be filtered
          * @returns {Object[]} - Objects whose "attributeName" matches one value of the "valuesArray"
          */
@@ -217,18 +218,19 @@ function initializeCockpitModel () {
             });
             return intersections;
         },
+
         /**
          * Prepares the data based on the given params so that the graph can be generated.
          * @param {Object[]} data All data.
          * @param {Object} administrativeUnits All Selected administrative unit
          * @param {String[]} administrativeUnits.values All Selected administrative units
          * @param {String} administrativeUnits.attrName Name of attribute for administrative unit
-         * @param {Number []} years Selected years.
+         * @param {number[]} years Selected years.
          * @param {Boolean} isMonthsSelected Flag if months view is checked
          * @param {String} attrName Name of the atttribute to be aggregated
          * @param {Object} condition Condition
          * @param {String} condition.attributeName Attribute name of the condition
-         * @param {*[]} condition.values Attribute values of the condition
+         * @param {Array} condition.values Attribute values of the condition
          * @returns {Object[]} - prepared Data.
          */
         prepareData: function (data, administrativeUnits, years, isMonthsSelected, attrName, condition) {
@@ -364,7 +366,7 @@ function initializeCockpitModel () {
          * @param {Object[]} data Data to be aggregated.
          * @param {Object} condition Condition.
          * @param {String} condition.attributeName Attribute name of the condition.
-         * @param {*[]} condition.values Attribute values of the condition.
+         * @param {Array} condition.values Attribute values of the condition.
          * @param {String} attrName Attribute name to be aggregated.
          * @returns {Object[]} - Array of on aggregated object.
          */
@@ -439,11 +441,12 @@ function initializeCockpitModel () {
 
             return $(element).width();
         },
+
         /**
          * Creates ticks if monthsMode is selected.
          * @param {Object[]} data Prepared data.
          * @param {Boolean} isMonthsSelected Flag if monthsMode is selected.
-         * @returns {undefined/Object[]} - xAxisTicks if "isMonthsSelected". Otherwise undefined.
+         * @returns {undefined|Object[]} - xAxisTicks if "isMonthsSelected". Otherwise undefined.
          */
         createTicks: function (data, isMonthsSelected) {
             let xAxisTicks;
