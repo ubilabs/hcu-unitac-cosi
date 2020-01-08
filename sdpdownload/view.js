@@ -1,6 +1,6 @@
 import SdpDownloadModel from "../sdpdownload/model";
 import SdpDownloadTemplate from "text-loader!./template.html";
-import GraphicalSelectView from "../../modules/snippets/graphicalselect/view";
+import GraphicalSelectView from "../../modules/snippets/graphicalSelect/view";
 import "bootstrap-select";
 import "./style.less";
 

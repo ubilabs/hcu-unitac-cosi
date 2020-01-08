@@ -1,5 +1,5 @@
 import Tool from "../../modules/core/modelList/tool/model";
-import GraphicalSelectModel from "../../modules/snippets/graphicalselect/model";
+import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import {WFS} from "ol/format.js";
 import * as turf from "@turf/turf";
 
