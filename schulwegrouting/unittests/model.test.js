@@ -3,7 +3,7 @@ import Util from "@testUtil";
 import {MultiLineString, Point} from "ol/geom.js";
 const chai = require("chai");
 
-describe("addons/schulwegrouting", function () {
+describe("ADDON: schulwegrouting", function () {
     var model,
         utilModel,
         schoolFeatures,

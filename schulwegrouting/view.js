@@ -6,6 +6,7 @@ import templateRouteDescription from "text-loader!./templateRouteDescription.htm
 import SnippetCheckBoxView from "../../modules/snippets/checkbox/view";
 import "bootstrap-toggle";
 import "bootstrap-select";
+import "./style.less";
 
 const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.prototype */{
     events: {

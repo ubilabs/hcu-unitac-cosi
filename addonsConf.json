@@ -8,5 +8,5 @@
   "sga": "gfionaddress/view.js",
   "verkehrsportal": "addon.js",
   "verkehr-geoportal_fhhnet": "verkehrsfunctions.js",
-  "einwohnerabfrage_hh": "selectView.js"
+  "einwohnerabfrage": "selectView.js"
 }

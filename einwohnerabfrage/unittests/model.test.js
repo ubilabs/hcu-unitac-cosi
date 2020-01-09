@@ -1,8 +1,8 @@
-import Model from "../model.js";
-import Util from "../../../modules/core/util.js";
+import Model from "@addons/einwohnerabfrage/model.js";
+import Util from "@modules/core/util.js";
 import {expect} from "chai";
 
-describe("tools/einwohnerabfrageModel", function () {
+describe("ADDON: einwohnerabfrageModel", function () {
     var model;
 
     before(function () {
