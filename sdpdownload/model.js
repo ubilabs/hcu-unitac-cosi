@@ -5,7 +5,7 @@ import * as turf from "@turf/turf";
 
 const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
 
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         type: "tool",
         parentId: "tools",
         id: "sdpdownload",
@@ -21,8 +21,8 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             {id: "DWG_320", label: "DWG, Lagestatus 320", isSelected: false, desc: "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, Gauß-Krüger-Projektion"},
             {id: "JPG", label: "JPG + JGW, Lagestatus 310 (kurz)", isSelected: false, desc: "Daten im JPG-Format herunterladen, inkl. JGW-Dateien im Lagestatus: ETRS89, UTM-Projektion"}],
         selectedFormat: "NAS", // is preselected
-        compressDataUrl: "https://geofos.fhhnet.stadt.hamburg.de/sdp-daten-download/php_lgv/dateien_zippen.php",
-        compressedFileUrl: "https://geofos.fhhnet.stadt.hamburg.de/sdp-daten-download/php_lgv/datei_herunterladen.php",
+        compressDataId: "compressData",
+        compressedFileId: "compressedFile",
         wfsRasterParams: {
             url: "https://geodienste.hamburg.de/HH_WFS_Uebersicht_Kachelbezeichnungen",
             request: "GetFeature",
@@ -49,8 +49,8 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
  * @property {String} wmsRasterLayerId="4707" id of the Layer utm_dk5_1km (WMS Uebersicht Kachelbezeichnungen)
  * @property {array} formats=[] provided formats of data to download
  * @property {String} selectedFormat="NAS" is the preselected format
- * @property {String} compressDataUrl="https://geofos.fhhnet.stadt.hamburg.de/sdp-daten-download/php_lgv/dateien_zippen.php" todo
- * @property {String} compressedFileUrl="https://geofos.fhhnet.stadt.hamburg.de/sdp-daten-download/php_lgv/datei_herunterladen.php" todo
+ * @property {String} compressDataId="compressData" todo
+ * @property {String} compressedFileId="compressedFile" todo
  * @property {Object} wfsRasterParams= {
         url: "https://geodienste.hamburg.de/HH_WFS_Uebersicht_Kachelbezeichnungen",
         request: "GetFeature",
@@ -321,7 +321,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      * @returns {void}
      */
     doRequest: function (params) {
-        const url = this.get("compressDataUrl");
+        const url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
 
         $.ajax({
             url: Radio.request("Util", "getProxyURL", url),
@@ -343,7 +343,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
                 }
                 else {
                     // download zip-file
-                    window.location.href = this.get("compressedFileUrl") + "?name=" + resp;
+                    window.location.href = Radio.request("RestReader", "getServiceById", this.get("compressedFileId")).get("url") + "?name=" + resp;
                     this.get("graphicalSelectModel").set("selectedAreaGeoJson", undefined);
                 }
             },
