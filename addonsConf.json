@@ -5,7 +5,7 @@
   "einwohnerabfrage": "selectView.js",
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
-  "sga": "gfionaddress/view.js",
+  "gfiOnAddress": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js"
 }
