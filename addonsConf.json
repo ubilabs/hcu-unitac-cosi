@@ -4,8 +4,9 @@
   "cockpit_bauvorhaben": "cockpit/view.js",
   "flaecheninfo": "showParcelGFI.js",
   "sdpdownload": "view.js",
+  "schulwegrouting": "view.js",
   "sga": "gfionaddress/view.js",
   "verkehrsportal": "addon.js",
   "verkehr-geoportal_fhhnet": "verkehrsfunctions.js",
-  "einwohnerabfrage_hh": "selectView.js"
+  "einwohnerabfrage": "selectView.js"
 }

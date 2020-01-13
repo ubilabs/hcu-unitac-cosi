@@ -7,17 +7,17 @@ import SnippetCheckBoxView from "../../modules/snippets/checkbox/view";
 /**
  * @member Template
  * @description Template used to create the population tool
- * @memberof Tools.EinwohnerAbfrage_HH
+ * @memberof Tools.EinwohnerAbfrage
  */
 
 const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
     /**
      * @class SelectView
      * @extends Backbone.View
-     * @memberof Tools.Einwohnerabfrage_hh
+     * @memberof Tools.Einwohnerabfrage
      * @constructs
-     * @listens Tools.Einwohnerabfrage_hh#ChangeIsActive
-     * @listens Tools.Einwohnerabfrage_hh#RenderResult
+     * @listens Tools.Einwohnerabfrage#ChangeIsActive
+     * @listens Tools.Einwohnerabfrage#RenderResult
      * @fires Core#RadioRequestUtilGetPathFromLoader
      */
     initialize: function () {
@@ -42,7 +42,7 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
 
     /**
      * @member Template
-     * @description Template used to create SelectView for Einwohnerabfrage_hh
+     * @description Template used to create SelectView for Einwohnerabfrage
      * @memberof Filter/Source
      * @returns {void}
      */
