@@ -106,8 +106,9 @@ const traficChannel = Backbone.Model.extend({
                     }
                 }
                 catch (err) {
-                    return;
+                    return "";
                 }
+                return "";
             },
             error: function () {
                 Radio.trigger("Alert", "alert", "<strong>Verkehrsmeldungen </strong>der TBZ momentan nicht verfügbar.");
