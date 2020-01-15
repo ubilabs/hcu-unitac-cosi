@@ -47,7 +47,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     /**
      * @class EinwohnerabfrageModel
      * @extends Tool
-     * @memberof Tools.Einwohnerabfrage_hh
+     * @memberof Tools.Einwohnerabfrage
      * @constructs
      * @property {Boolean} deactivateGFI=true flag for deactivate gfi
      * @property {Boolean} renderToWindow=true render to window for tools
@@ -68,11 +68,11 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @property {String} alkisAdressLayerId="9726" layerId for the alkis adresses
      * @property {String} populationReqServiceId="2" serviceid
      * @property {String} id= "Einwohnerabfrage" id of this model
-     * @listens Tools.Einwohnerabfrage_hh#ChangeIsActive
+     * @listens Tools.Einwohnerabfrage#ChangeIsActive
      * @listens CswParser#RadioTriggerCswParserFetchedMetaData
      * @listens Core#RadioTriggerModelListUpdateVisibleInMapList
      * @fires RestReader#RadioRequestRestReaderGetServiceById
-     * @fires Tools.Einwohnerabfrage_hh#RenderResult
+     * @fires Tools.Einwohnerabfrage#RenderResult
      * @fires Alerting#RadioTriggerAlertAlert
      * @fires Core#RadioRequestUtilPunctuate
      * @fires Core#RadioTriggerMapAddInteraction
@@ -219,7 +219,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * Called when the wps modules returns a request
      * @param  {String} response - the response xml of the wps
      * @param  {Number} status - the HTTPStatusCode
-     * @fires Tools.Einwohnerabfrage_hh#RenderResult
+     * @fires Tools.Einwohnerabfrage#RenderResult
      * @returns {void}
      */
     handleResponse: function (response, status) {
@@ -370,7 +370,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     /**
      * Triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
      * @param  {Object} geoJson GeoJSON to get selected area from
-     * @fires Tools.Einwohnerabfrage_hh#RenderResult
+     * @fires Tools.Einwohnerabfrage#RenderResult
      * @fires Core#RadioTriggerWPSRequest
      * @returns {void}
      */
