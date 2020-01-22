@@ -24,7 +24,8 @@ function initializeBrwAbfrageModel () {
             "gfiFeature": null,
             "processFromParametricUrl": false,
             "paramUrlParams": {},
-            "zBauwSelect": ""
+            "zBauwSelect": "",
+            "brwIsActive": false
         };
 
     Object.assign(BRWModel, {
@@ -39,6 +40,7 @@ function initializeBrwAbfrageModel () {
             this.superInitialize();
 
             this.listenTo(this, {
+                "change:isActive": this.registerClickListener,
                 "change:gfiFeature": function () {
                     if (this.get("processFromParametricUrl")) {
                         this.simulateLanduseSelect(this.get("paramUrlParams"));
@@ -52,6 +54,7 @@ function initializeBrwAbfrageModel () {
             this.setModelList(filteredModelList.reverse());
 
             this.registerClickListener(this, this.get("isActive"));
+            this.setBrwIsActive(true);
             this.requestParametricUrl();
         },
 
@@ -141,11 +144,12 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         registerClickListener: function (model, value) {
-            if (value) {
+            if (value && this.get("brwIsActive") === false) {
                 this.setClickListener(Radio.request("Map", "registerListener", "click", this.clickCallback.bind(this)));
             }
             else {
                 Radio.trigger("Map", "unregisterListener", this.get("clickListener"));
+                this.setBrwIsActive(false);
             }
         },
 
@@ -897,6 +901,15 @@ function initializeBrwAbfrageModel () {
         */
         setZBauwSelect: function (value) {
             this.set("zBauwSelect", value);
+        },
+
+        /*
+        * setter for setBrwIsActive
+        * @param {Boolean} contains true or false if its active or not
+        * @returns {void}
+        */
+        setBrwIsActive: function (value) {
+            this.set("brwIsActive", value);
         }
     });
     BRWModel.initialize();
