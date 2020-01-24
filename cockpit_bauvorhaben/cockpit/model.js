@@ -34,7 +34,7 @@ function initializeCockpitModel () {
         initialize: function () {
             this.superInitialize();
             this.url = "https://geoportal-hamburg/lgv-config/cockpit_bauvorhaben.json";
-            this.fetch({async: false});
+            this.fetch({async: false, timeout: 10000});
         },
 
         /**
