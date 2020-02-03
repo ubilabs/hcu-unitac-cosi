@@ -4,7 +4,7 @@ import GraphicalSelectView from "../../modules/snippets/graphicalSelect/view";
 import "bootstrap-select";
 import "./style.less";
 
-const SdpDownloadView = Backbone.View.extend({
+const SdpDownloadView = Backbone.View.extend(/** @lends SdpDownloadView.prototype */{
     events: {
         // This event is fired when the sidebar closes
         "click .close": "closeView",
