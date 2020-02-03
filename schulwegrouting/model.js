@@ -39,7 +39,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     /**
      * @class Schulwegrouting
      * @extends Tool
-     * @memberof Tools.Schulwegrouting
+     * @memberof Addons.Schulwegrouting
      * @constructs
      */
     initialize: function () {

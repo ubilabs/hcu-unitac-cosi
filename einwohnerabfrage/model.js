@@ -25,10 +25,11 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         populationReqServiceId: "2",
         id: "einwohnerabfrage"
     }),
+
     /**
      * @class EinwohnerabfrageModel
      * @extends Tool
-     * @memberof Tools.Einwohnerabfrage
+     * @memberof Addons.Einwohnerabfrage
      * @constructs
      * @property {Boolean} deactivateGFI=true flag for deactivate gfi
      * @property {Boolean} renderToWindow=true render to window for tools
@@ -49,18 +50,18 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @property {String} alkisAdressLayerId="9726" layerId for the alkis adresses
      * @property {String} populationReqServiceId="2" serviceid
      * @property {String} id= "Einwohnerabfrage" id of this model
-     * @listens Tools.Einwohnerabfrage#ChangeIsActive
+     * @listens Einwohnerabfrage#ChangeIsActive
      * @listens CswParser#RadioTriggerCswParserFetchedMetaData
-     * @listens Core#RadioTriggerModelListUpdateVisibleInMapList
+     * @listens Core.ModelList#RadioTriggerModelListUpdateVisibleInMapList
      * @fires RestReader#RadioRequestRestReaderGetServiceById
-     * @fires Tools.Einwohnerabfrage#RenderResult
+     * @fires Addons.Einwohnerabfrage#RenderResult
      * @fires Alerting#RadioTriggerAlertAlert
      * @fires Core#RadioRequestUtilPunctuate
      * @fires Core#RadioTriggerMapAddInteraction
      * @fires Core#RadioTriggerWPSRequest
-     * @fires Core#RadioRequestModelListGetModelByAttributes
-     * @fires Core#RadioTriggerModelListAddModelByAttributes
-     * @fires Core#RadioTriggerModelListSetModelAttributesById
+     * @fires Core.ModelList#RadioRequestModelListGetModelByAttributes
+     * @fires Core.ModelList#RadioTriggerModelListAddModelByAttributes
+     * @fires Core.ModelList#RadioTriggerModelListSetModelAttributesById
      */
     initialize: function () {
         if (Radio.request("Util", "getUiStyle") !== "DEFAULT") {
@@ -172,7 +173,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * Called when the wps modules returns a request
      * @param  {String} response - the response xml of the wps
      * @param  {Number} status - the HTTPStatusCode
-     * @fires Tools.Einwohnerabfrage#RenderResult
+     * @fires Addons.Einwohnerabfrage#RenderResult
      * @returns {void}
      */
     handleResponse: function (response, status) {
@@ -323,7 +324,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     /**
      * Triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
      * @param  {Object} geoJson GeoJSON to get selected area from
-     * @fires Tools.Einwohnerabfrage#RenderResult
+     * @fires Addons.Einwohnerabfrage#RenderResult
      * @fires Core#RadioTriggerWPSRequest
      * @returns {void}
      */

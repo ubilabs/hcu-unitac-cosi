@@ -48,7 +48,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     /**
      * @class SchulwegroutingView
      * @extends Backbone.View
-     * @memberof Tools.Schulwegrouting
+     * @memberof Addons.Schulwegrouting
      * @constructs
      */
     initialize: function () {

@@ -40,7 +40,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
     /**
  * @class SdpDownloadModel
  * @extends Tool
- * @memberof SDPDownload
+ * @memberof Addons.SdpDownload
  * @constructs
  * @property {Boolean} deactivateGFI=true avoid show DK5-Info if user clicks into Map
  * @property {Boolean} isActive=false state of the tool
@@ -48,23 +48,22 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
  * @property {Boolean} renderToWindow=false not show this tool in window
  * @property {String} wmsRasterLayerId="4707" id of the Layer utm_dk5_1km (WMS Uebersicht Kachelbezeichnungen)
  * @property {array} formats=[] provided formats of data to download
- * @property {String} selectedFormat="NAS" is the preselected format
- * @property {String} compressDataId="compressData" todo
- * @property {String} compressedFileId="compressedFile" todo
- * @property {Object} wfsRasterParams= {
-        url: "https://geodienste.hamburg.de/HH_WFS_Uebersicht_Kachelbezeichnungen",
-        request: "GetFeature",
-        service: "WFS",
-        version: "1.1.0",
-        typename: "app:lgv_kachel_dk5_1km_utm"
-    } connection parameters
- * @property {String} overviewDownloadLocation= "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_" location of the files to download
+ * @property {string} selectedFormat="NAS" is the preselected format
+ * @property {string} compressDataId="compressData" todo
+ * @property {string} compressedFileId="compressedFile" todo
+ * @property {Object} wfsRasterParams connection parameters
+ * @property {string} wfsRasterParams.url="https://geodienste.hamburg.de/HH_WFS_Uebersicht_Kachelbezeichnungen" todo
+ * @property {string} wfsRasterParams.request="GetFeature" Request type
+ * @property {string} wfsRasterParams.service="WFS" Service type
+ * @property {string} wfsRasterParams.version="1.1.0" Version from services
+ * @property {string} wfsRasterParams.typename="app:lgv_kachel_dk5_1km_utm" Type in service
+ * @property {string} overviewDownloadLocation= "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_" location of the files to download
  * @property {Object} wfsRaster={} contains wfs raster features after loading them
  * @property {Object} graphicalSelectModel={} model for graphical selection
  * @property {Object} requesting=false state of server request
  * @property {Object} selectedRasterLimit=9 limit og raster images for download
  * @property {Array} rasterNames=[] stores the names of the tiles in the raster
- * @listens SdpDownloadModel#changeIsActive
+ * @listens Addons.SdpDownloadModel#changeIsActive
  * @listens Core#RadioTriggerMapViewChangedOptions
  * @listens Core.ModelList#RadioTriggerModelListToggleDefaultTool
  * @fires Snippets.GraphicalSelect#setStatus
@@ -72,6 +71,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
  * @fires Core.ModelList#RadioTriggerModelListAddModelsByAttributes
  * @fires Core.ModelList#RadioTriggerModelListSetModelAttributesById
  * @fires Snippets.GraphicalSelect#featureToGeoJson
+ * @fires Addons.SdpDownloadModel#render
  */
     initialize: function () {
         this.superInitialize();
@@ -363,7 +363,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
     },
     /**
      * Hides the loader by setting the requesting to false and renders the view.
-     * @fires SdpDownloadModel#render
+     * @fires Addons.SdpDownloadModel#render
      * @returns {void}
      */
     hideLoader: function () {
@@ -372,7 +372,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
     },
     /**
      * Shows the loader by setting the requesting to true and renders the view.
-     * @fires SdpDownloadModel#render
+     * @fires Addons.SdpDownloadModel#render
      * @returns {void}
      */
     showLoader: function () {
