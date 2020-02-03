@@ -1,0 +1,4 @@
+/**
+ * @namespace Schulwegrouting
+ * @memberof Addons
+ */

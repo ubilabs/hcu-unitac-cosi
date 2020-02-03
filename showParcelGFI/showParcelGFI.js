@@ -1,8 +1,16 @@
-const ShowParcelGFI = Backbone.Model.extend({
+const ShowParcelGFI = Backbone.Model.extend(/** @lends ShowParcelGFI.prototype */{
     defaults: {
         "requestedParcelId": false
     },
 
+    /**
+     * @class ShowParcelGFI
+     * @extends Backbone.Model
+     * @memberof Addons.ShowParcelGFI
+     * @listens Tools.ParcelSearch#RadioRequestParcelSearchParcelFound
+     * @listens Tools.GFI#RadioRequestGFIGetRequestedParcelId
+     * @constructs
+     */
     initialize: function () {
         Radio.on("ParcelSearch", "parcelFound", this.parcelFound, this);
         Radio.channel("GFI").reply({
@@ -13,8 +21,8 @@ const ShowParcelGFI = Backbone.Model.extend({
     },
 
     /**
-     * Initiiert die Darstellung des Flurstücke-GFI an der gefundenen Flurstücksposition
-     * @param   {object} attributes gefundenes Objekt
+     * Initiates the display of the parcel GFI at the parcel position found.
+     * @param   {object} attributes found object
      * @fires GFI#RadioTriggerLayerAtPosition
      * @returns {void}
      */
@@ -24,7 +32,7 @@ const ShowParcelGFI = Backbone.Model.extend({
     },
 
     /**
-     * Setter for requested parcel Id
+     * Setter for requested parcel Id.
      * @param {String} value requested parcel id
      * @returns {void}
      */
