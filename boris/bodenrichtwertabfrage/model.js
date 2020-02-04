@@ -639,7 +639,7 @@ function initializeBrwAbfrageModel () {
             if (sw && typeof sw === "string") {
                 sw = this.jsonParse(sw);
             }
-            else if (sw && typeof sw === "object") {
+            else if (sw && typeof sw === "object" && sw.normschichtwert_wohnen) {
                 sw.normschichtwert_wohnen = sw.normschichtwert_wohnen.replace(".", "").replace(",", ".");
             }
 
