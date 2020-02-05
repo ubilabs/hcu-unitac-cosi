@@ -1,6 +1,6 @@
 import ResultTemplate from "text-loader!./resultTemplate.html";
 
-const ResultView = Backbone.View.extend({
+const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
     /**
      * @class ContactView
      * @extends Backbone.View
