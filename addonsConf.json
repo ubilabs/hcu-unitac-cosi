@@ -2,6 +2,7 @@
   "bauforum": "changeGUI/loader.js",
   "boris": "bodenrichtwertabfrage/view.js",
   "cockpit_bauvorhaben": "cockpit/view.js",
+  "cosi": "modules/loader.js",
   "einwohnerabfrage": "selectView.js",
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
