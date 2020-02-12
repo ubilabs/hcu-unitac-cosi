@@ -68,9 +68,25 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @property {String} alkisAdressLayerId="9726" layerId for the alkis adresses
      * @property {String} populationReqServiceId="2" serviceid
      * @property {String} id= "Einwohnerabfrage" id of this model
+     * @property {String} confidentialityHint="", filled with "Unter Berücksichtigung der Geheimhaltung wurde folgender Wert berechnet"- translated
+     * @property {String} confidentialityHintSmallValues="Aus Datenschutzgründen werden kleine Fallzahlen unter 3 verändert.", filled with ""- translated
+     * @property {String} populationFHH="", filled with "Einwohnerzahl in Hamburg"- translated
+     * @property {String} populationMRH="", filled with "Einwohnerzahl in der Metropolregion ohne Hamburg"- translated
+     * @property {String} areaSize="", filled with "Größe der abgefragten Fläche"- translated
+     * @property {String} hint="", filled with "Hinweis"- translated
+     * @property {String} dataSourceFHHKey="", filled with "Datenquelle Hamburg"- translated
+     * @property {String} dataSourceFHHValue="", filled with "Einwohner mit Hauptwohnsitz, Melderegister"- translated
+     * @property {String} dataSourceFHHLinktext="", filled with "Quelle FHH"- translated
+     * @property {String} dataSourceMRHKey="", filled with "Datenquelle Metropolregion ohne Hamburg"- translated
+     * @property {String} dataSourceMRHValue="", filled with "Bevölkerung insgesamt im 100 Meter-Gitter, Zensus 2011. Stand der Zensus-Daten 09.05.2011."- translated
+     * @property {String} dataSourceMRHLinktext="", filled with "Quelle MRH"- translated
+     * @property {String} info="", filled with "Die Abfrage der Einwohnerzahl ist sowohl für die Freie Hansestadt Hamburg als auch für die Metropolregion Hamburg möglich."- translated
+     * @property {String} showRasterLayer="", filled with "Raster Layer anzeigen (ab 1: 100.000)"- translated
+     * @property {String} showAlkisAdresses="", filled with "ALKIS Adressen anzeigen (ab 1: 20.000)"- translated
      * @listens Tools.Einwohnerabfrage#ChangeIsActive
      * @listens CswParser#RadioTriggerCswParserFetchedMetaData
      * @listens Core#RadioTriggerModelListUpdateVisibleInMapList
+     * @listens i18next#RadioTriggerLanguageChanged
      * @fires RestReader#RadioRequestRestReaderGetServiceById
      * @fires Tools.Einwohnerabfrage#RenderResult
      * @fires Alerting#RadioTriggerAlertAlert
@@ -135,7 +151,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     },
     /**
      * change language - sets default values for the language
-     * @param {String} lng the language changed to
      * @returns {Void}  -
      */
     changeLang: function () {
