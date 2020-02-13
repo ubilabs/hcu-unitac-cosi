@@ -124,19 +124,19 @@
  * @example  Radio.request("SelectDistrict", "getDistrictLayer");
  */
 
- /**
+/**
  * @event Tools.SelectDistrict#RadioTriggerSelectDistrictRevertBboxGeometry
  * @description sets bbox back to selected districts
  * @example  Radio.trigger("SelectDistrict", "revertBboxGeometry");
  */
 
- /**
+/**
  * @event Tools.SelectDistrict#RadioTriggerSelectDistrictGetScope
  * @description returns current scope
  * @example  Radio.request("SelectDistrict", "getScope");
  */
 
- /**
+/**
  * @event Tools.SelectDistrict#RadioTriggerZoomToDistrict
  * @description sets viewport to selected districts
  * @param {string} districtName names of selected districts
@@ -144,14 +144,14 @@
  * @example  Radio.request("SelectDistrict", "zoomToDistrict");
  */
 
- /**
+/**
   * @event Tools.SelectDistrict#RadioRequestSetSelectedDistrictsToFeatures
   * @description sets features as selected districts
   * @param {array} features features to be set as selectedDistricts
   * @example Radio.request("SelectDistrict", "setSelectedDistrictsToFeatures", features);
   */
 
- /**
+/**
  * @event Tools.SelectDistrict#RadioRequestSelectDistrictGetSelectedDistricts
  * @description gets selected districts
  * @example Radio.request("SelectDistrict", "getSelectedDistricts");

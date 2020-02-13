@@ -54,19 +54,19 @@
  * @description detail information and parameters of filter layer
  */
 
- /**
+/**
  * @namespace Tolerance
  * @memberof Tools.CompareDistricts.LayerFilter
  * @description upper and lower tolerance of a layer filter
  */
 
- /**
+/**
  * @namespace SelectDistrict
  * @memberof Tools
  * @description select areas to work with (for better performance)
  */
 
- /**
+/**
  * @namespace CalculateRatio
  * @memberof Tools
  * @description todo
@@ -83,24 +83,24 @@
  * @description Constructs the infoScreen on the 2nd screen and manages communication with the main screen
  */
 
- /**
+/**
  * @namespace FeaturesLoader
  * @description load features of different layers and store them as a central bank
  */
 
 
- /**
+/**
  * @namespace OpenRouteService
  * @description OpenRouteService functions. (https://openrouteservice.org/)
  */
 
- /**
+/**
  * @namespace Dashboard
  * @memberof Tools
  * @description information dashboard
  */
 
- /**
+/**
  * @namespace SaveSelection
  * @memberof Tools
  * @description saves session selection as URL

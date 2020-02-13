@@ -166,7 +166,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
             totalRatio;
 
         if (selectedDistricts.length > 0) {
-            _.each(selectedDistricts, (district) => {
+            selectedDistricts.forEach((district) => {
                 // get the facilities and demographics for each district
                 facilities = this.getFacilitiesInDistrict(district);
                 demographics = this.getTargetDemographicsInDistrict(district, selector);

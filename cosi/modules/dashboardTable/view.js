@@ -242,57 +242,57 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         // Create Bar Chart
         $(contextActions).find("li#barChart #input-year button").on("click", function () {
             this.model.createBarChart($(contextActions).find("li#barChart #input-year input").val());
-        }.bind(this));
+        }.bind(this), this);
 
         // Create unscaled Line Chart
         $(contextActions).find("li#lineChart #unscaled").on("click", function () {
             this.model.createLineChart([row.find("th.prop").attr("id")], row.find("th.prop").text());
-        }.bind(this));
+        }.bind(this), this);
 
         // Create scaled Line Chart
         $(contextActions).find("li#lineChart #scaled").on("click", function () {
             this.model.createLineChart([row.find("th.prop").attr("id")], row.find("th.prop").text(), true);
-        }.bind(this));
+        }.bind(this), this);
 
         // Create Timeline
         $(contextActions).find("li#timeline").on("click", function () {
             Radio.trigger("Dashboard", "destroyWidgetById", "time-slider");
             Radio.trigger("TimeSlider", "create", row.find("th.prop").text());
-        });
+        }, this);
 
         // Delete Selection
         $(contextActions).find("li#delete-selection").on("click", function () {
             this.model.deleteAttrsForRatio();
-        }.bind(this));
+        }.bind(this), this);
 
         // Create new ratio data
         // Add numerator
         $(contextActions).find("li#numerator").on("click", function () {
             this.model.addAttrForRatio(row.find("th.prop").attr("id"), 0);
-        }.bind(this));
+        }.bind(this), this);
 
         // Add denominator
         $(contextActions).find("li#denominator").on("click", function () {
             this.model.addAttrForRatio(row.find("th.prop").attr("id"), 1);
-        }.bind(this));
+        }.bind(this), this);
 
         // Create unscaled Correlation
         $(contextActions).find("li#correlation #unscaled").on("click", function () {
             this.model.createCorrelation(false);
             this.model.deleteAttrsForRatio();
-        }.bind(this));
+        }.bind(this), this);
 
         // Create scaled Correlation
         $(contextActions).find("li#correlation #scaled").on("click", function () {
             this.model.createCorrelation(true);
             this.model.deleteAttrsForRatio();
-        }.bind(this));
+        }.bind(this), this);
 
         // Create new Data Row
         $(contextActions).find("li#ratio").on("click", function () {
             this.model.createRatio();
             this.model.deleteAttrsForRatio();
-        }.bind(this));
+        }.bind(this), this);
 
         Radio.trigger("ContextMenu", "setActions", contextActions, row.find("th.prop").text(), "glyphicon-stats");
 
