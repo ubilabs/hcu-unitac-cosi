@@ -45,9 +45,10 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
      * @returns {void}
      */
     createTextLabels: function (results) {
-        var features = Radio.request("SelectDistrict", "getSelectedDistricts"),
+        const features = Radio.request("SelectDistrict", "getSelectedDistricts"),
             values = [],
             selector = Radio.request("SelectDistrict", "getSelector");
+        let colorScale = {};
 
         Radio.trigger("ColorCodeMap", "reset");
 
@@ -55,7 +56,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
             values.push(results[district].coverage);
         }
 
-        const colorScale = Radio.request("ColorScale", "getColorScaleByValues", values);
+        colorScale = Radio.request("ColorScale", "getColorScaleByValues", values);
 
         _.each(features, (feature) => {
             feature.setStyle(new Style({

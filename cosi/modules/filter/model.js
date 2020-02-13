@@ -62,7 +62,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @constructs
      */
     initialize: function () {
-        var channel = Radio.channel("Filter");
+        const channel = Radio.channel("Filter");
 
         this.superInitialize();
         this.listenTo(channel, {
@@ -73,7 +73,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
                 return this.get("isInitialLoad");
             },
             "getFilterName": function (layerId) {
-                var predefinedQuery = this.get("predefinedQueries").filter(function (query) {
+                const predefinedQuery = this.get("predefinedQueries").filter(function (query) {
                     return query.layerId === layerId;
                 });
 
@@ -103,9 +103,10 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         this.listenTo(Radio.channel("VectorLayer"), {
             "featuresLoaded": function (layerId) {
                 // to-do erstmal prüfen ob layerId überhaupt relevant
-                var predefinedQueries = this.get("predefinedQueries"),
-                    queryCollection = this.get("queryCollection"),
-                    filterModels;
+                const predefinedQueries = this.get("predefinedQueries"),
+                    queryCollection = this.get("queryCollection");
+
+                let filterModels;
 
                 if (!this.isModelInQueryCollection(layerId, queryCollection)) {
                     filterModels = predefinedQueries.filter(function (query) {
@@ -149,7 +150,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @returns {void}
      */
     activateDefaultQuery: function () {
-        var defaultQuery = this.get("queryCollection").findWhere({isDefault: true});
+        const defaultQuery = this.get("queryCollection").findWhere({isDefault: true});
 
         if (!_.isUndefined(defaultQuery)) {
             defaultQuery.setIsActive(true);
@@ -213,7 +214,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      */
     updateMap: function () {
         // if at least one query is selected zoomToFilteredFeatures, otherwise showAllFeatures
-        var allFeatureIds;
+        let allFeatureIds;
 
         if (_.contains(this.get("queryCollection").pluck("isSelected"), true)) {
             allFeatureIds = this.groupFeatureIdsByLayer(this.get("queryCollection"));
@@ -238,8 +239,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @returns {void}
      */
     updateGFI: function (featureIds, layerId) {
-        var getVisibleTheme = Radio.request("GFI", "getVisibleTheme"),
-            featureId;
+        const getVisibleTheme = Radio.request("GFI", "getVisibleTheme");
+        let featureId;
 
         if (getVisibleTheme && getVisibleTheme.get("id") === layerId) {
             featureId = getVisibleTheme.get("feature").getId();
@@ -256,10 +257,10 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {void}
      */
     updateFilterObject: function () {
-        var filterObjects = [];
+        const filterObjects = [];
 
         this.get("queryCollection").forEach(function (query) {
-            var ruleList = [];
+            const ruleList = [];
 
             query.get("snippetCollection").forEach(function (snippet) {
                 // searchInMapExtent is ignored
@@ -281,13 +282,13 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {Object} Map object mapping layers to featuresids
      */
     groupFeatureIdsByLayer: function (queries) {
-        var allFeatureIds = [],
-            featureIds;
+        const allFeatureIds = [];
+        let featureIds;
 
         if (!_.isUndefined(queries)) {
 
             _.each(queries.groupBy("layerId"), function (group, layerId) {
-                var isEveryQueryActive = _.every(group, function (model) {
+                const isEveryQueryActive = _.every(group, function (model) {
                     return !model.get("isActive");
                 });
 
@@ -313,7 +314,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {String[]} unique list of all feature ids
      */
     collectFilteredIds: function (queryGroup) {
-        var featureIdList = [];
+        const featureIdList = [];
 
         _.each(queryGroup, function (query) {
             if (query.get("isActive") === true) {
@@ -332,8 +333,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {void}
      */
     createQueries: function (queries) {
-        var queryObjects = Radio.request("ParametricURL", "getFilter"),
-            queryObject,
+        const queryObjects = Radio.request("ParametricURL", "getFilter");
+        let queryObject,
             oneQuery;
 
         _.each(queries, function (query) {
@@ -352,8 +353,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {void}
      */
     createQuery: function (model) {
-        var layer = Radio.request("ModelList", "getModelByAttributes", {id: model.layerId}),
-            query;
+        const layer = Radio.request("ModelList", "getModelByAttributes", {id: model.layerId});
+        let query;
 
         if (!_.isUndefined(layer) && layer.has("layer")) {
             query = this.getQueryByTyp(layer.get("typ"), model);
@@ -386,7 +387,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {void}
      */
     getQueryByTyp: function (layerTyp, model) {
-        var query = null;
+        let query = null;
 
         if (layerTyp === "WFS" || layerTyp === "GROUP") {
             query = new WfsQueryModel(model);
@@ -422,8 +423,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {void}
      */
     collapseOpenSnippet: function () {
-        var selectedQuery = this.get("queryCollection").findWhere({isSelected: true}),
-            snippetCollection,
+        const selectedQuery = this.get("queryCollection").findWhere({isSelected: true});
+        let snippetCollection,
             openSnippet;
 
         if (!_.isUndefined(selectedQuery)) {
@@ -442,7 +443,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @returns {Boolean} returns true or false
      */
     isModelInQueryCollection: function (layerId, queryCollection) {
-        var searchQuery = queryCollection.findWhere({layerId: layerId.toString()});
+        const searchQuery = queryCollection.findWhere({layerId: layerId.toString()});
 
         return !_.isUndefined(searchQuery);
     },

@@ -32,7 +32,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
         this.addIsActiveCheckbox();
         this.listenTo(this.get("snippetCollection"), {
             "valuesChanged": function () {
-                var options;
+                let options;
 
                 this.setIsActive(true);
                 this.get("btnIsActive").setIsSelected(true);
@@ -58,7 +58,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     },
 
     isSearchInMapExtentActive: function () {
-        var model = this.get("snippetCollection").findWhere({type: "searchInMapExtent"});
+        const model = this.get("snippetCollection").findWhere({type: "searchInMapExtent"});
 
         if (!_.isUndefined(model) && model.getIsSelected() === true) {
             this.runFilter();
@@ -66,7 +66,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     },
 
     checkLayerVisibility: function () {
-        var model = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
+        const model = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
 
         if (!_.isUndefined(model)) {
             this.setIsLayerVisible(model.get("isVisibleInMap"));
@@ -81,7 +81,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
 
             this.listenTo(this.get("btnIsActive"), {
                 "valuesChanged": function () {
-                    var checkboxModel = this.get("btnIsActive"),
+                    const checkboxModel = this.get("btnIsActive"),
                         isActive = this.get("btnIsActive").getIsSelected();
 
                     checkboxModel.renderView();
@@ -103,7 +103,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     },
 
     addSnippet: function (featureAttribute) {
-        var snippetAttribute = featureAttribute,
+        const snippetAttribute = featureAttribute,
             isSelected = false;
 
         snippetAttribute.values = Radio.request("Util", "sort", snippetAttribute.values);
@@ -148,8 +148,8 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {void}
      */
     createSnippets: function (featureAttributes) {
-        var featureAttributesMap = this.trimAttributes(featureAttributes),
-            options;
+        const featureAttributesMap = this.trimAttributes(featureAttributes);
+        let options;
 
         featureAttributesMap = this.mapDisplayNames(featureAttributesMap);
         featureAttributesMap = this.collectSelectableOptions(this.get("features"), [], featureAttributesMap);
@@ -176,11 +176,11 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {object} featureAttributesMap - gefiltertes Mapobject
      */
     trimAttributes: function (featureAttributesMap) {
-        var trimmedFeatureAttributesMap = [],
-            featureAttribute;
+        const trimmedFeatureAttributesMap = [];
+        let featureAttribute;
 
         _.each(this.get("attributeWhiteList"), function (attr) {
-            var attrObj = this.createAttrObject(attr);
+            const attrObj = this.createAttrObject(attr);
 
             featureAttribute = _.findWhere(featureAttributesMap, {name: attrObj.name});
             if (featureAttribute !== undefined) {
@@ -193,7 +193,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     },
 
     createAttrObject: function (attr) {
-        var attrObj = {};
+        const attrObj = {};
 
         if (_.isString(attr)) {
             attrObj.name = attr;
@@ -210,7 +210,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {object} featureAttributesMap - gefiltertes Mapobject
      */
     mapDisplayNames: function (featureAttributesMap) {
-        var displayNames = getDisplayNamesOfFeatureAttributes(this.get("layerId"));
+        const displayNames = getDisplayNamesOfFeatureAttributes(this.get("layerId"));
 
         _.each(featureAttributesMap, function (featureAttribute) {
             if (_.isObject(displayNames) === true && _.has(displayNames, featureAttribute.name) === true) {
@@ -231,7 +231,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {object} featureAttributesMap
      */
     mapRules: function (featureAttributesMap, rules) {
-        var attrMap;
+        let attrMap;
 
         _.each(rules, function (rule) {
             attrMap = _.findWhere(featureAttributesMap, {name: rule.attrName});
@@ -264,7 +264,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
         this.set("isDefault", value);
     },
     selectThis: function () {
-        var options;
+        let options;
 
         if (!this.get("isSelected")) {
             // die Query-Collection hört im Filter-Model auf diesen Trigger

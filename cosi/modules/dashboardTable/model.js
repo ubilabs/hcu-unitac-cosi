@@ -45,7 +45,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
 
     initialize: function () {
-        var channel = Radio.channel("Dashboard");
+        const channel = Radio.channel("Dashboard");
 
         this.superInitialize();
 
@@ -118,8 +118,9 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     updateTable: function (features) {
         const table = features.reduce((newTable, feature) => {
-            var properties = feature.getProperties(),
+            const properties = feature.getProperties(),
                 selector = properties.verwaltungseinheit || this.get("sortKey");
+            let distCol = 0;
 
             // dirty fix for data inconsistencies
             if (selector === "stadtteile") {
@@ -129,7 +130,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                 selector = "bezirk";
             }
 
-            const distCol = newTable.findIndex(col => col[selector] === properties[selector] && col.verwaltungseinheit === properties.verwaltungseinheit);
+            distCol = newTable.findIndex(col => col[selector] === properties[selector] && col.verwaltungseinheit === properties.verwaltungseinheit);
 
             if (distCol !== -1) {
                 newTable[distCol] = {...newTable[distCol], ...Radio.request("Timeline", "createTimelineTable", [properties])[0]};
@@ -373,7 +374,8 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                 }, {})
             },
             groups = values.reduce((res, val) => {
-                var match = res.find(el => el.group === val.group);
+                const match = res.find(el => el.group === val.group);
+                let newGroup = {};
 
                 if (match) {
                     match.values[val.value] = {};
@@ -382,7 +384,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                     });
                     return res;
                 }
-                const newGroup = {
+                newGroup = {
                     group: val.group,
                     values: {
                         [val.value]: {}
@@ -506,11 +508,11 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {void}
      */
     createBarChart (year) {
-        var svgParent = document.createElement("div");
+        const svgParent = document.createElement("div"),
+            data = this.getBarChartData(this.get("selectedAttrsForCharts"), year);
 
         svgParent.className = "svg-container";
 
-        const data = this.getBarChartData(this.get("selectedAttrsForCharts"), year);
 
         if (Object.keys(data[0]).length <= 1) {
             return Radio.trigger("Alert", "alert", `Für das Jahr ${year} sind leider keine Werte zu ${this.get("selectedAttrsForCharts").join(", ")} verfügbar.`);
@@ -581,56 +583,57 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {void}
      */
     createLineChart (props, title, dynamicAxisStart = false) {
-        var svgParent = document.createElement("div");
+        const svgParent = document.createElement("div"),
+            data = this.getLineChartData(props);
 
         svgParent.className = "svg-container";
 
-        const data = this.getLineChartData(props),
-            graph = Radio.request("GraphV2", "createGraph", {
-                graphType: "Linegraph",
-                graphTitle: title,
-                selector: svgParent,
-                scaleTypeX: "ordinal",
-                scaleTypeY: "linear",
-                data: data.data,
-                attrToShowArray: data.xAttrs,
-                xAttr: "year",
-                xAxisLabel: {
-                    offset: 5,
-                    textAnchor: "middle",
-                    fill: "#000",
-                    fontSize: 10,
-                    label: "Jahr"
-                },
-                yAxisLabel: {
-                    offset: -5,
-                    textAnchor: "middle",
-                    fill: "#000",
-                    fontSize: 10,
-                    label: props[0]
-                },
-                margin: {
-                    left: 40,
-                    top: 25,
-                    right: 20,
-                    bottom: 40
-                },
-                width: $(window).width() * 0.4,
-                height: $(window).height() * 0.4,
-                svgClass: "dashboard-graph-svg",
-                selectorTooltip: ".dashboard-tooltip",
-                hasLineLabel: true,
-                hasContextMenu: true,
-                dynamicAxisStart: dynamicAxisStart,
-                attribution: {
-                    x: 0,
-                    y: $(window).height() * 0.4,
-                    lineHeight: 10,
-                    fontSize: "7px",
-                    anchor: "start",
-                    text: ["Datum: " + new Date().toLocaleDateString("de-DE"), "Quelle: Cockpit für Städtische Infrastruktur (CoSI)"]
-                }
-            });
+        // eslint-disable-next-line one-var
+        const graph = Radio.request("GraphV2", "createGraph", {
+            graphType: "Linegraph",
+            graphTitle: title,
+            selector: svgParent,
+            scaleTypeX: "ordinal",
+            scaleTypeY: "linear",
+            data: data.data,
+            attrToShowArray: data.xAttrs,
+            xAttr: "year",
+            xAxisLabel: {
+                offset: 5,
+                textAnchor: "middle",
+                fill: "#000",
+                fontSize: 10,
+                label: "Jahr"
+            },
+            yAxisLabel: {
+                offset: -5,
+                textAnchor: "middle",
+                fill: "#000",
+                fontSize: 10,
+                label: props[0]
+            },
+            margin: {
+                left: 40,
+                top: 25,
+                right: 20,
+                bottom: 40
+            },
+            width: $(window).width() * 0.4,
+            height: $(window).height() * 0.4,
+            svgClass: "dashboard-graph-svg",
+            selectorTooltip: ".dashboard-tooltip",
+            hasLineLabel: true,
+            hasContextMenu: true,
+            dynamicAxisStart: dynamicAxisStart,
+            attribution: {
+                x: 0,
+                y: $(window).height() * 0.4,
+                lineHeight: 10,
+                fontSize: "7px",
+                anchor: "start",
+                text: ["Datum: " + new Date().toLocaleDateString("de-DE"), "Quelle: Cockpit für Städtische Infrastruktur (CoSI)"]
+            }
+        });
 
         return Radio.trigger("Dashboard", "append", graph, "#dashboard-containers", {
             id: title,
@@ -649,58 +652,59 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {void}
      */
     createCorrelation (dynamicAxisStart = true) {
-        var svgParent = document.createElement("div");
+        const svgParent = document.createElement("div"),
+            attrsToShow = this.getAttrsForRatio(),
+            data = this.getCorrelationChartData(this.getAttrsForRatio());
 
         svgParent.className = "svg-container";
 
-        const attrsToShow = this.getAttrsForRatio(),
-            data = this.getCorrelationChartData(this.getAttrsForRatio()),
-            graph = Radio.request("GraphV2", "createGraph", {
-                graphType: "ScatterPlot",
-                graphTitle: `Korrelation: ${attrsToShow[0]} (y) : ${attrsToShow[1]} (x)`,
-                selector: svgParent,
-                scaleTypeX: "linear",
-                scaleTypeY: "linear",
-                dynamicAxisStart: dynamicAxisStart,
-                data: data,
-                refAttr: this.get("sortKey"),
-                attrToShowArray: [attrsToShow[0]],
-                xAttr: attrsToShow[1],
-                xAxisLabel: {
-                    offset: 5,
-                    textAnchor: "middle",
-                    fill: "#000",
-                    fontSize: 10,
-                    label: attrsToShow[1]
-                },
-                yAxisLabel: {
-                    offset: -5,
-                    textAnchor: "middle",
-                    fill: "#000",
-                    fontSize: 10,
-                    label: attrsToShow[0]
-                },
-                margin: {
-                    left: 40,
-                    top: 25,
-                    right: 20,
-                    bottom: 40
-                },
-                width: $(window).width() * 0.4,
-                height: $(window).height() * 0.4,
-                dotSize: 3,
-                svgClass: "dashboard-graph-svg",
-                selectorTooltip: ".dashboard-tooltip",
-                hasContextMenu: true,
-                attribution: {
-                    x: 0,
-                    y: $(window).height() * 0.4,
-                    lineHeight: 10,
-                    fontSize: "7px",
-                    anchor: "start",
-                    text: ["Datum: " + new Date().toLocaleDateString("de-DE"), "Quelle: Cockpit für Städtische Infrastruktur (CoSI)"]
-                }
-            });
+        // eslint-disable-next-line one-var
+        const graph = Radio.request("GraphV2", "createGraph", {
+            graphType: "ScatterPlot",
+            graphTitle: `Korrelation: ${attrsToShow[0]} (y) : ${attrsToShow[1]} (x)`,
+            selector: svgParent,
+            scaleTypeX: "linear",
+            scaleTypeY: "linear",
+            dynamicAxisStart: dynamicAxisStart,
+            data: data,
+            refAttr: this.get("sortKey"),
+            attrToShowArray: [attrsToShow[0]],
+            xAttr: attrsToShow[1],
+            xAxisLabel: {
+                offset: 5,
+                textAnchor: "middle",
+                fill: "#000",
+                fontSize: 10,
+                label: attrsToShow[1]
+            },
+            yAxisLabel: {
+                offset: -5,
+                textAnchor: "middle",
+                fill: "#000",
+                fontSize: 10,
+                label: attrsToShow[0]
+            },
+            margin: {
+                left: 40,
+                top: 25,
+                right: 20,
+                bottom: 40
+            },
+            width: $(window).width() * 0.4,
+            height: $(window).height() * 0.4,
+            dotSize: 3,
+            svgClass: "dashboard-graph-svg",
+            selectorTooltip: ".dashboard-tooltip",
+            hasContextMenu: true,
+            attribution: {
+                x: 0,
+                y: $(window).height() * 0.4,
+                lineHeight: 10,
+                fontSize: "7px",
+                anchor: "start",
+                text: ["Datum: " + new Date().toLocaleDateString("de-DE"), "Quelle: Cockpit für Städtische Infrastruktur (CoSI)"]
+            }
+        });
 
         Radio.trigger("Dashboard", "append", graph, "#dashboard-containers", {
             name: `Korrelation: ${attrsToShow[0]} (y) : ${attrsToShow[1]} (x)`,

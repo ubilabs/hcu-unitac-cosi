@@ -34,7 +34,7 @@ const AdjustParameterView = Backbone.View.extend(/** @lends AdjustParameterView.
      * @returns {Backbone.View} returns this
      */
     render: function () {
-        var attrs = this.model.toJSON();
+        const attrs = this.model.toJSON();
 
         attrs.isMS = window.detectMS();
 

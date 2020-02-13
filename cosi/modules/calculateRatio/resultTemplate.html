@@ -18,7 +18,7 @@ else { %>
                 <th scope="col" title="Das einfache Verhältnis zwischen Einrichtungen (Zahl oder Parameter) und (kombinierter) Zielgruppe im Gebiet"><%= modifier[0] %> / Bezugsgröße</th>
                 <th scope="col" title="Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen Kapazität und (kombinierter) Zielgruppe im Gebiet">Unter- / Überversorgung (%)</th>
             </tr>
-            <% for (var district in results) { %>
+            <% for (const district in results) { %>
                 <tr>
                     <th scope="row"><%= district %></th>
                     <td><%= results[district].facilities.toLocaleString('de-DE') %></td>

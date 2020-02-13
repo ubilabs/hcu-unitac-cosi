@@ -23,7 +23,7 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @returns {void}
      */
     buildQueryDatastructureByType: function (layerObject) {
-        var url = Radio.request("Util", "getProxyURL", layerObject.url),
+        const url = Radio.request("Util", "getProxyURL", layerObject.url),
             featureType = layerObject.featureType,
             version = layerObject.version,
             featureAttributesMap = [];
@@ -55,11 +55,11 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @return {object} - Mapobject containing names and types
      */
     parseResponse: function (response) {
-        var selector = "element",
-            responseString,
-            searchForNamespaceResult,
-            elements,
+        const selector = "element",
             featureAttributesMap = [];
+        let responseString,
+            searchForNamespaceResult = "",
+            elements = "";
 
         // Serialize xml-object. Skipped if a xml-string was provided.
         if (!_.isString(response)) {
@@ -79,8 +79,8 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
 
         _.each(elements, function (element) {
 
-            var type = $(element).attr("type"),
-                typeWithoutNamespace,
+            const type = $(element).attr("type");
+            let typeWithoutNamespace,
                 simpleTypeIndex,
                 restriction;
 

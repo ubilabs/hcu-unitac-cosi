@@ -245,7 +245,7 @@ const DashboardWidgetView = Backbone.View.extend(/** @lends DashboardWidgetView 
 
             const widgets = document.querySelectorAll(".dashboard-widget"),
                 newOrder = Array.from(widgets).sort((a, b) => {
-                    var aPos = a === this.el ? [evt.clientX, evt.clientY] : [$(a).offset().left, $(a).offset().top],
+                    const aPos = a === this.el ? [evt.clientX, evt.clientY] : [$(a).offset().left, $(a).offset().top],
                         bPos = b === this.el ? [evt.clientX, evt.clientY] : [$(b).offset().left, $(b).offset().top];
 
                     if (aPos[1] < bPos[1]) {

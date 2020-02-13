@@ -63,7 +63,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
      * @returns {Backbone.View} returns this
      */
     render: async function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         if (!Radio.request("InfoScreen", "getIsWindowOpen") || Radio.request("InfoScreen", "getIsInfoScreen")) {
             if (!Radio.request("Dashboard", "getWidgetById", "dashboard") && Radio.request("Dashboard", "dashboardOpen")) {
@@ -120,7 +120,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
      * @returns {$} JQuery-Selection
      */
     updateRatioSelection () {
-        var selectionText = this.$el.find("span#row-selection");
+        const selectionText = this.$el.find("span#row-selection");
 
         if (this.model.getAttrsForRatio().length === 0) {
             this.contextActionsEl.find("li#selection span.selected").empty();

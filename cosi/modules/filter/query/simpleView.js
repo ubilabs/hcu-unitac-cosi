@@ -35,7 +35,7 @@ const QuerySimpleView = Backbone.View.extend(/** @lends QuerySimpleView.prototyp
      * @returns {void}
      */
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html(this.template(attr));
         return this;

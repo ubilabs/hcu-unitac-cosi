@@ -14,7 +14,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @constructs
      */
     initializeFunction: function () {
-        var modelList = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
+        const modelList = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
 
         this.superInitialize();
         this.prepareQuery();
@@ -32,7 +32,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {ol.Feature[]} openlayers Features
      */
     prepareQuery: function () {
-        var layerId = this.get("layerId"),
+        const layerId = this.get("layerId"),
             features = this.getFeaturesByLayerId(layerId);
 
         if (features.length > 0) {
@@ -50,7 +50,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
         this.buildQueryDatastructure();
     },
     collectAllFeatureIds: function (features) {
-        var featureIds = [];
+        const featureIds = [];
 
         _.each(features, function (feature) {
             featureIds.push(feature.getId());
@@ -64,13 +64,13 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     listenToFeaturesLoaded: function () {
         this.listenTo(Radio.channel("VectorLayer"), {
             "featuresLoaded": function (layerId, features) {
-                var urlFilterRules;
+                let urlFilterRules;
 
                 if (layerId === this.get("layerId")) {
                     if (this.get("snippetCollection").length > 0 && this.get("isAutoRefreshing") && !this.get("isInitialLoad")) {
 
                         urlFilterRules = Radio.request("ParametricURL", "getFilter").filter(function (urlFilters) {
-                            var name = Radio.request("Filter", "getFilterName", layerId);
+                            const name = Radio.request("Filter", "getFilterName", layerId);
 
                             return urlFilters.name === name;
                         }, this);
@@ -98,9 +98,9 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {Object} - olFeatures
      */
     getFeaturesByLayerId: function (layerId) {
-        var model = Radio.request("ModelList", "getModelByAttributes", {id: layerId}),
-            features = [],
-            layerSource;
+        const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId}),
+            features = [];
+        let layerSource;
 
         if (!_.isUndefined(model)) {
             layerSource = model.get("layerSource");
@@ -118,7 +118,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @returns {object} layerSource
      */
     retrieveLayerSource: function (layerSource, layerId) {
-        var layer,
+        let layer,
             groupLayerSource = layerSource;
 
         if (_.isArray(layerSource)) {
@@ -132,7 +132,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     },
 
     buildQueryDatastructure: function () {
-        var layerObject = getLayerWhere({id: this.get("layerId")});
+        const layerObject = getLayerWhere({id: this.get("layerId")});
 
         if (this.get("searchInMapExtent") === true) {
             this.addSearchInMapExtentSnippet();
@@ -148,7 +148,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {object} - Mapobject containing names and types
      */
     parseResponse: function (response) {
-        var elements = $("element", response),
+        const elements = $("element", response),
             featureAttributesMap = [];
 
         _.each(elements, function (element) {
@@ -164,7 +164,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {string[]} [description]
      */
     getValuesFromFeature: function (feature, attrName) {
-        var values = this.parseValuesFromString(feature, attrName);
+        const values = this.parseValuesFromString(feature, attrName);
 
         return _.unique(values);
     },
@@ -176,7 +176,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {string[]} array of string[] || number[]
      */
     parseValuesFromString: function (feature, attributeName) {
-        var values = [],
+        const values = [],
             attributeValue = feature.get(attributeName),
             attributeValues = [];
 
@@ -207,7 +207,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
         return value !== null && !_.isUndefined(value);
     },
     trimValue: function (value) {
-        var trimmedValue = value;
+        const trimmedValue = value;
 
         if (_.isString(value)) {
             trimmedValue = value.trim();
@@ -220,7 +220,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @returns {ol.feature[]} features that passed the predefined rules
      */
     runPredefinedRules: function () {
-        var features = this.get("features"),
+        const features = this.get("features"),
             newFeatures = [];
 
         if (!_.isUndefined(this.get("predefinedRules")) && this.get("predefinedRules").length > 0) {
@@ -245,7 +245,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {void}
      */
     runFilter: function () {
-        var features = this.runPredefinedRules(),
+        const features = this.runPredefinedRules(),
             selectedAttributes = [],
             featureIds = [];
 
@@ -257,7 +257,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
 
         if (selectedAttributes.length > 0) {
             _.each(features, function (feature) {
-                var isMatch = this.isFilterMatch(feature, selectedAttributes);
+                const isMatch = this.isFilterMatch(feature, selectedAttributes);
 
                 if (isMatch) {
                     featureIds.push(feature.getId());
@@ -277,9 +277,9 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     },
 
     sendFeaturesToRemote: function () {
-        var model = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")}),
-            features = [],
-            feature;
+        const model = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")}),
+            features = [];
+        let feature;
 
         _.each(this.get("featureIds"), function (id) {
             feature = model.get("layerSource").getFeatureById(id);
@@ -297,14 +297,14 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {object[]}                    array of attributes and their values that are still selectable
      */
     collectSelectableOptions: function (features, selectedAttributes, allAttributes) {
-        var selectableOptions = [],
+        const selectableOptions = [],
             selectableValues = [];
 
         _.each(allAttributes, function (attribute) {
             selectableValues = {name: attribute.name, displayName: attribute.displayName, type: attribute.type, values: [], matchingMode: attribute.matchingMode};
 
             _.each(features, function (feature) {
-                var isMatch = this.isFilterMatch(feature, selectedAttributes.filter(function (attr) {
+                const isMatch = this.isFilterMatch(feature, selectedAttributes.filter(function (attr) {
                     return attr.attrName !== attribute.name;
                 }));
 
@@ -326,11 +326,11 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @returns {void}
      */
     updateSnippets: function (features, selectedAttributes) {
-        var snippets = this.get("snippetCollection"),
+        const snippets = this.get("snippetCollection"),
             selectableOptions = this.collectSelectableOptions(features, selectedAttributes, this.get("featureAttributesMap"));
 
         _.each(snippets.where({"snippetType": "dropdown"}), function (snippet) {
-            var attribute;
+            let attribute = "";
 
             snippet.resetValues();
             attribute = _.find(selectableOptions, {name: snippet.get("name")});
@@ -344,13 +344,13 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {Boolean}               true if feature has attribute that contains value
      */
     isValueMatch: function (feature, attribute) {
-        var featureMap = _.findWhere(this.get("featureAttributesMap"), {name: attribute.attrName});
+        const featureMap = _.findWhere(this.get("featureAttributesMap"), {name: attribute.attrName});
 
         attribute.matchingMode = featureMap.matchingMode;
         return attribute.matchingMode === "OR" ? this.isORMatch(feature, attribute) : this.isANDMatch(feature, attribute);
     },
     isORMatch: function (feature, attribute) {
-        var isMatch = false;
+        const isMatch = false;
 
         isMatch = _.find(attribute.values, function (value) {
             return this.containsValue(feature, attribute, value);
@@ -376,9 +376,9 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {boolean} flag if value is in range
      */
     isNumberInRange: function (feature, attributeName, values) {
-        var valueList = _.extend([], values),
-            featureValue = feature.get(attributeName),
-            isNumberInRange;
+        const valueList = _.extend([], values),
+            featureValue = feature.get(attributeName);
+        let isNumberInRange = "";
 
         valueList.push(featureValue);
         valueList = _.sortBy(valueList);
@@ -388,7 +388,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     },
 
     isFeatureInExtent: function (feature) {
-        var mapExtent = Radio.request("MapView", "getCurrentExtent");
+        const mapExtent = Radio.request("MapView", "getCurrentExtent");
 
         return intersects(mapExtent, feature.getGeometry().getExtent());
     },
@@ -400,7 +400,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {Boolean}            [description]
      */
     isFilterMatch: function (feature, filterAttr) {
-        var isMatch = false;
+        const isMatch = false;
 
         isMatch = _.every(filterAttr, function (attribute) {
             if (feature.get(attribute.attrName) === null) {

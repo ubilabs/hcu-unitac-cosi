@@ -76,7 +76,7 @@ const DashboardView = Backbone.View.extend(/** @lends DashboardView.prototype */
      * @returns {Backbone.View} returns this
      */
     render: async function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html(this.template(attr));
         // Export Button für das Dashboard wieder hinzufügen, sobald eine Lösung gefunden wurde

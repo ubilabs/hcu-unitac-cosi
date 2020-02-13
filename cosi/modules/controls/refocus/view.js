@@ -12,7 +12,7 @@ const RefocusView = Backbone.View.extend(/** @lends RefocusView.prototype */{
      * @constructs
      */
     initialize: function () {
-        var channel = Radio.channel("Map");
+        const channel = Radio.channel("Map");
 
         this.render();
         this.mapChange(Radio.request("Map", "getMapMode"));

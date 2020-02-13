@@ -67,7 +67,7 @@ const DashboardWidgetHandler = Backbone.Model.extend(/** @lends DashboardWidgetH
      * @returns {void}
      */
     append (child, parent = ".info-screen-children", opts, cullButtons = false) {
-        var _child = child;
+        let _child = child;
         const _opts = opts ? this.assignId(opts) : this.assignId({});
 
         // send Widget to InfoScreen if infoScreenOpen

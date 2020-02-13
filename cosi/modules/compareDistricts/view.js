@@ -93,9 +93,8 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      * @return {CompareDistrictsView} returns this
      */
     render: function () {
-        var attr;
+        const attr = this.model.toJSON();
 
-        attr = this.model.toJSON();
         this.setElement(document.getElementsByClassName("win-body")[0]);
         this.$el.html(this.template(attr));
         this.delegateEvents();
@@ -222,7 +221,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      */
     removeOneFromLayerFilterList: function (model) {
         const layerId = model.get("layerInfo").layerId;
-        var newList = JSON.parse(this.model.get("layerFilterList"));
+        let newList = JSON.parse(this.model.get("layerFilterList"));
 
         newList = newList.filter((item) => {
             return item.layerId !== layerId;
@@ -371,9 +370,9 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      * @returns {Array} filter results
      */
     filterOne: function (layerFilter) {
-        var filterResults = [],
-            intersection = [];
-        const layerId = layerFilter.layerId,
+        const filterResults = [],
+            intersection = [],
+            layerId = layerFilter.layerId,
             featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
                 id: layerId
             }),
