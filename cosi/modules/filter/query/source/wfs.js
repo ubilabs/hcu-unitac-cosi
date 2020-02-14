@@ -77,7 +77,7 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
 
         elements = $(selector, response);
 
-        elements.forEach(function (element) {
+        _.each(elements, function (element) {
 
             const type = $(element).attr("type");
             let typeWithoutNamespace,
