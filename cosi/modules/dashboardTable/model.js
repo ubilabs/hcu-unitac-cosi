@@ -118,9 +118,9 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     updateTable: function (features) {
         const table = features.reduce((newTable, feature) => {
-            const properties = feature.getProperties(),
-                selector = properties.verwaltungseinheit || this.get("sortKey");
-            let distCol = 0;
+            const properties = feature.getProperties();
+            let selector = properties.verwaltungseinheit || this.get("sortKey"),
+                distCol = 0;
 
             // dirty fix for data inconsistencies
             if (selector === "stadtteile") {
@@ -254,7 +254,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     calculateTotalAndMean: function (table) {
         if (table) {
-            const properties = _.allKeys(table[0]);
+            const properties = Object.keys(table[0]);
 
             table.push(
                 {
@@ -266,7 +266,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                     notes: "Berechnung aus Auswahl"
                 }
             );
-            _.each(properties, (prop) => {
+            properties.forEach((prop) => {
                 if (prop !== this.get("sortKey")) {
 
                     // Check whether values in row are numbers or Arrays of numbers
@@ -274,7 +274,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                         let total = 0;
 
                         // Add values for all columns
-                        _.each(table, (col) => {
+                        table.forEach((col) => {
                             // dirty fix for data inconsistencies
                             const selector = col.verwaltungseinheit === "stadtteile" ? "stadtteil" : col.verwaltungseinheit || this.get("sortKey");
 
@@ -300,7 +300,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                             avgArr = [];
 
                         // Create Matrix from timeline values
-                        _.each(table, (col) => {
+                        table.forEach((col) => {
                             // dirty fix for data inconsistencies
                             const selector = col.verwaltungseinheit === "stadtteile" ? "stadtteil" : col.verwaltungseinheit || this.get("sortKey");
 
@@ -826,7 +826,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
         const selector = this.get("sortKey");
         let extent;
 
-        _.each(Radio.request("SelectDistrict", "getSelectedDistricts"), (feature) => {
+        Radio.request("SelectDistrict", "getSelectedDistricts").forEach((feature) => {
             if (feature.getProperties()[selector] === district) {
                 extent = feature.getGeometry().getExtent();
             }

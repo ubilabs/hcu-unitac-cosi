@@ -32,7 +32,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
         this.$el.html(this.template(attr));
         this.$el.find("#export-button").append(this.exportButtonView.render().el);
 
-        if (_.allKeys(results).length > 0) {
+        if (Object.keys(results).length > 0) {
             this.createTextLabels(results);
         }
 
@@ -58,7 +58,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
 
         colorScale = Radio.request("ColorScale", "getColorScaleByValues", values);
 
-        _.each(features, (feature) => {
+        features.forEach((feature) => {
             feature.setStyle(new Style({
                 fill: new Fill({
                     color: colorScale.scale(results[feature.getProperties()[selector]].coverage).replace("rgb", "rgba").replace(")", ", 0.8)")

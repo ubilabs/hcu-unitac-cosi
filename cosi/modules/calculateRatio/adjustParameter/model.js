@@ -62,7 +62,7 @@ const AdjustParameterModel = SnippetModel.extend(/** @lends AdjustParameterModel
                     delete propObj[prop];
                 }
             }
-            properties = _.allKeys(propObj);
+            properties = Object.keys(propObj);
         }
 
         return {

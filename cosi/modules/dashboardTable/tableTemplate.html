@@ -15,7 +15,7 @@
                         <% } else { %>
                                 <th></th>
                         <% } %>
-                        <% for (const dist in _.values(group.values)[0]) { %>
+                        <% for (let dist in Object.values(group.values)[0]) { %>
                                 <th scope="col"
                                         style="text-align:right;"
                                         class="district <%= filteredTableView[0].values.Anmerkungen[dist] === 'Referenzgebiet' ? 'reference' : '' %>"
@@ -31,8 +31,8 @@
                 </tr>
         </thead>
         <tbody id="<%= group.group.replace(/\s/g, '') %>" class="<%= group.group === 'Berechnungen' || group.group === 'Gebietsinformation' ? 'open' : '' %>">
-        <% for (const val in group.values) { %>
-                <% if (Array.isArray(_.values(group.values[val])[0])) { %>
+        <% for (let val in group.values) { %>
+                <% if (Array.isArray(Object.values(group.values[val])[0])) { %>
                         <tr class="row has-context">
                                 <th class="prop" scope="row" title="<%= val %> - Für Aktionen rechtsklicken" id="<%= val %>">
                                         <span class="select-row"><input type="checkbox" style="pointer-events: none;" title="Mehrere Spalten für gruppierte Balkendiagramme auswählen."></span>
@@ -41,12 +41,12 @@
                                 </th>
                                 <td class="years timeline-table">
                                         <ul class="list-group list-group-flush">
-                                                <% group.values[val][_.allKeys(group.values[val])[0]].forEach(function (val) { %>
+                                                <% group.values[val][Object.keys(group.values[val])[0]].forEach(function (val) { %>
                                                         <li class="list-group-item nowrap"><small><%= val[0] %></small></li>
                                                 <% }) %>
                                         </ul>
                                 </td>
-                                <% for (const dist in group.values[val]) { %>
+                                <% for (let dist in group.values[val]) { %>
                                 <td class="timeline-table">
                                         <ul class="list-group list-group-flush">
                                         <% group.values[val][dist].forEach(function (val) { %>
@@ -63,7 +63,7 @@
                         <tr class="row">
                                 <th class="prop" scope="row" title="<%= val %>" id="<%= val %>"><span class="prop-name"><%= val %></span></th>
                                 <td></td>
-                                <% for (const dist in group.values[val]) { %>
+                                <% for (let dist in group.values[val]) { %>
                                         <td>
                                                 <span><%= group.values[val][dist] %></span>
                                         </td>

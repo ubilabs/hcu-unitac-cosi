@@ -112,7 +112,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
                     filterModels = predefinedQueries.filter(function (query) {
                         return query.layerId === layerId;
                     });
-                    _.each(filterModels, function (filterModel) {
+                    filterModels.forEach(function (filterModel) {
                         this.createQuery(filterModel);
                     }, this);
                 }
@@ -152,7 +152,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
     activateDefaultQuery: function () {
         const defaultQuery = this.get("queryCollection").findWhere({isDefault: true});
 
-        if (!_.isUndefined(defaultQuery)) {
+        if (defaultQuery !== undefined) {
             defaultQuery.setIsActive(true);
             defaultQuery.setIsSelected(true);
         }
@@ -164,7 +164,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @returns {void}
      */
     resetAllQueries: function () {
-        _.each(this.get("queryCollection").models, function (model) {
+        this.get("queryCollection").models.forEach(function (model) {
             model.deselectAllValueModels();
         }, this);
     },
@@ -174,7 +174,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @returns {void}
      */
     deselectAllModels: function () {
-        _.each(this.get("queryCollection").models, function (model) {
+        this.get("queryCollection").models.forEach(function (model) {
             model.setIsSelected(false);
         }, this);
     },
@@ -184,7 +184,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @returns {void}
      */
     deactivateAllModels: function () {
-        _.each(this.get("queryCollection").models, function (model) {
+        this.get("queryCollection").models.forEach(function (model) {
             model.setIsActive(false);
         }, this);
     },
@@ -196,8 +196,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      */
     deactivateOtherModels: function (selectedModel) {
         if (!this.get("allowMultipleQueriesPerLayer")) {
-            _.each(this.get("queryCollection").models, function (model) {
-                if (!_.isUndefined(model) &&
+            this.get("queryCollection").models.forEach(function (model) {
+                if (model !== undefined &&
                     selectedModel.cid !== model.cid &&
                     selectedModel.get("layerId") === model.get("layerId")) {
                     model.setIsActive(false);
@@ -219,12 +219,12 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         if (_.contains(this.get("queryCollection").pluck("isSelected"), true)) {
             allFeatureIds = this.groupFeatureIdsByLayer(this.get("queryCollection"));
 
-            _.each(allFeatureIds, function (layerFeatures) {
+            allFeatureIds.forEach(function (layerFeatures) {
                 Radio.trigger("ModelList", "showFeaturesById", layerFeatures.layer, layerFeatures.ids);
             });
         }
         else {
-            _.each(this.get("queryCollection").groupBy("layerId"), function (group, layerId) {
+            this.get("queryCollection").groupBy("layerId").forEach(function (group, layerId) {
                 Radio.trigger("ModelList", "showAllFeatures", layerId);
             });
         }
@@ -285,14 +285,13 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         const allFeatureIds = [];
         let featureIds;
 
-        if (!_.isUndefined(queries)) {
-
-            _.each(queries.groupBy("layerId"), function (group, layerId) {
-                const isEveryQueryActive = _.every(group, function (model) {
+        if (queries !== undefined) {
+            for (const layerId in queries.groupBy("layerId")) {
+                const isEveryQueryActive = queries.groupBy("layerId")[layerId].every(function (model) {
                     return !model.get("isActive");
                 });
 
-                featureIds = this.collectFilteredIds(group);
+                featureIds = this.collectFilteredIds(queries.groupBy("layerId")[layerId]);
 
                 if (isEveryQueryActive) {
                     Radio.trigger("ModelList", "showAllFeatures", layerId);
@@ -303,7 +302,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
                         ids: featureIds
                     });
                 }
-            }, this);
+            }
         }
         return allFeatureIds;
     },
@@ -316,14 +315,14 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
     collectFilteredIds: function (queryGroup) {
         const featureIdList = [];
 
-        _.each(queryGroup, function (query) {
+        queryGroup.forEach(function (query) {
             if (query.get("isActive") === true) {
-                _.each(query.get("featureIds"), function (featureId) {
+                query.get("featureIds").forEach(function (featureId) {
                     featureIdList.push(featureId);
                 });
             }
         });
-        return _.unique(featureIdList);
+        return [...new Set(featureIdList)];
     },
 
     /**
@@ -337,9 +336,9 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         let queryObject,
             oneQuery;
 
-        _.each(queries, function (query) {
+        queries.forEach(function (query) {
             oneQuery = query;
-            if (!_.isUndefined(queryObjects)) {
+            if (queryObjects !== undefined) {
                 queryObject = _.findWhere(queryObjects, {name: oneQuery.name});
                 oneQuery = _.extend(oneQuery, queryObject);
             }
@@ -356,19 +355,19 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         const layer = Radio.request("ModelList", "getModelByAttributes", {id: model.layerId});
         let query;
 
-        if (!_.isUndefined(layer) && layer.has("layer")) {
+        if (layer !== undefined && layer.has("layer")) {
             query = this.getQueryByTyp(layer.get("typ"), model);
-            if (!_.isNull(query)) {
-                if (!_.isUndefined(this.get("allowMultipleQueriesPerLayer"))) {
+            if (query !== null) {
+                if (this.get("allowMultipleQueriesPerLayer") !== undefined) {
                     _.extend(query.set("activateOnSelection", !this.get("allowMultipleQueriesPerLayer")));
                 }
-                if (!_.isUndefined(this.get("liveZoomToFeatures"))) {
+                if (this.get("liveZoomToFeatures") !== undefined) {
                     query.set("liveZoomToFeatures", this.get("liveZoomToFeatures"));
                 }
-                if (!_.isUndefined(this.get("sendToRemote"))) {
+                if (this.get("sendToRemote") !== undefined) {
                     query.set("sendToRemote", this.get("sendToRemote"));
                 }
-                if (!_.isUndefined(this.get("minScale"))) {
+                if (this.get("minScale") !== undefined) {
                     query.set("minScale", this.get("minScale"));
                 }
                 if (query.get("isSelected")) {
@@ -427,10 +426,10 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         let snippetCollection,
             openSnippet;
 
-        if (!_.isUndefined(selectedQuery)) {
+        if (selectedQuery !== undefined) {
             snippetCollection = selectedQuery.get("snippetCollection");
             openSnippet = snippetCollection.findWhere({isOpen: true});
-            if (!_.isUndefined(openSnippet)) {
+            if (openSnippet !== undefined) {
                 openSnippet.setIsOpen(false);
             }
         }
@@ -445,7 +444,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
     isModelInQueryCollection: function (layerId, queryCollection) {
         const searchQuery = queryCollection.findWhere({layerId: layerId.toString()});
 
-        return !_.isUndefined(searchQuery);
+        return searchQuery !== undefined;
     },
 
     /**

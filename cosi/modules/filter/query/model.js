@@ -60,7 +60,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     isSearchInMapExtentActive: function () {
         const model = this.get("snippetCollection").findWhere({type: "searchInMapExtent"});
 
-        if (!_.isUndefined(model) && model.getIsSelected() === true) {
+        if (model !== undefined && model.getIsSelected() === true) {
             this.runFilter();
         }
     },
@@ -68,7 +68,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     checkLayerVisibility: function () {
         const model = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
 
-        if (!_.isUndefined(model)) {
+        if (model !== undefined) {
             this.setIsLayerVisible(model.get("isVisibleInMap"));
         }
     },
@@ -97,13 +97,13 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {void}
      */
     addSnippets: function (featureAttributesMap) {
-        _.each(featureAttributesMap, function (featureAttribute) {
+        featureAttributesMap.forEach(function (featureAttribute) {
             this.addSnippet(featureAttribute);
         }, this);
     },
 
     addSnippet: function (featureAttribute) {
-        const snippetAttribute = featureAttribute,
+        let snippetAttribute = featureAttribute,
             isSelected = false;
 
         snippetAttribute.values = Radio.request("Util", "sort", snippetAttribute.values);
@@ -112,7 +112,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
             this.get("snippetCollection").add(new SnippetDropdownModel(snippetAttribute));
         }
         else if (snippetAttribute.type === "boolean") {
-            if (_.has(snippetAttribute, "preselectedValues")) {
+            if (snippetAttribute.hasOwnProperty("preselectedValues")) {
                 isSelected = snippetAttribute.preselectedValues[0];
             }
             snippetAttribute = _.extend(snippetAttribute, {"snippetType": "checkbox", "label": snippetAttribute.displayName, "isSelected": isSelected});
@@ -148,8 +148,8 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {void}
      */
     createSnippets: function (featureAttributes) {
-        const featureAttributesMap = this.trimAttributes(featureAttributes);
-        let options;
+        let featureAttributesMap = this.trimAttributes(featureAttributes),
+            options;
 
         featureAttributesMap = this.mapDisplayNames(featureAttributesMap);
         featureAttributesMap = this.collectSelectableOptions(this.get("features"), [], featureAttributesMap);
@@ -179,7 +179,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
         const trimmedFeatureAttributesMap = [];
         let featureAttribute;
 
-        _.each(this.get("attributeWhiteList"), function (attr) {
+        this.get("attributeWhiteList").forEach(function (attr) {
             const attrObj = this.createAttrObject(attr);
 
             featureAttribute = _.findWhere(featureAttributesMap, {name: attrObj.name});
@@ -193,13 +193,13 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     },
 
     createAttrObject: function (attr) {
-        const attrObj = {};
+        let attrObj = {};
 
-        if (_.isString(attr)) {
+        if (typeof attr === "string") {
             attrObj.name = attr;
             attrObj.matchingMode = "OR";
         }
-        else if (_.has(attr, "name") && _.has(attr, "matchingMode")) {
+        else if (attr.hasOwnProperty("name") && attr.hasOwnProperty("matchingMode")) {
             attrObj = attr;
         }
         return attrObj;
@@ -212,8 +212,8 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     mapDisplayNames: function (featureAttributesMap) {
         const displayNames = getDisplayNamesOfFeatureAttributes(this.get("layerId"));
 
-        _.each(featureAttributesMap, function (featureAttribute) {
-            if (_.isObject(displayNames) === true && _.has(displayNames, featureAttribute.name) === true) {
+        featureAttributesMap.forEach(function (featureAttribute) {
+            if (_.isObject(displayNames) === true && displayNames.hasOwnProperty(featureAttribute.name) === true) {
                 featureAttribute.displayName = displayNames[featureAttribute.name];
             }
             else {
@@ -233,13 +233,15 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
     mapRules: function (featureAttributesMap, rules) {
         let attrMap;
 
-        _.each(rules, function (rule) {
-            attrMap = _.findWhere(featureAttributesMap, {name: rule.attrName});
+        if (rules !== undefined) {
+            rules.forEach(function (rule) {
+                attrMap = _.findWhere(featureAttributesMap, {name: rule.attrName});
 
-            if (attrMap) {
-                attrMap.preselectedValues = rule.values;
-            }
-        });
+                if (attrMap) {
+                    attrMap.preselectedValues = rule.values;
+                }
+            });
+        }
 
         return featureAttributesMap;
     },
@@ -250,7 +252,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
      * @return {void}
      */
     deselectAllValueModels: function () {
-        _.each(this.get("snippetCollection").models, function (snippet) {
+        this.get("snippetCollection").models.forEach(function (snippet) {
             snippet.deselectValueModels();
         }, this);
     },

@@ -1,4 +1,4 @@
-<% _.each(layerFilterList, function (layerFilter) { %>
+<% layerFilterList.forEach(function (layerFilter) { %>
     <p><strong><%= layerFilter.get("layerInfo").layerText.value %></strong></p>
         <table class="table">
             <tr>
@@ -8,7 +8,7 @@
                 <th scope="col">+</th>
             </tr>
             <% filters = JSON.parse(layerFilter.get("filter")); %>
-            <% _.each( Object.keys(filters), function (key) { %>
+            <% Object.keys(filters).forEach(function (key) { %>
             <tr>
                 <td><%= key %></td>
                 <td><%= layerFilter.get("districtInfo").filter(function(item){ return item.key === key; })[0].value %></td>

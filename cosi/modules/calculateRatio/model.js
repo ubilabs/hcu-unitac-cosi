@@ -292,13 +292,13 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
 
         if (typeof this.getNumerators() !== "undefined") {
             if (this.getNumerators().length > 0) {
-                _.each(this.getNumerators(), (num) => {
+                this.getNumerators().forEach((num) => {
                     const layer = this.get("facilityLayerList").find((facilityLayer) => {
                             return facilityLayer.get("name") === num;
                         }),
                         features = layer.get("layerSource").getFeatures().filter(f => typeof f.style_ === "object" || f.style_ === null);
 
-                    _.each(features, (feature) => {
+                    features.forEach((feature) => {
                         const geometry = feature.getGeometry(),
                             coordinate = geometry.getType() === "Point" ? geometry.getCoordinates() : Extent.getCenter(geometry.getExtent()); // Remove later for more reliable fallback
 

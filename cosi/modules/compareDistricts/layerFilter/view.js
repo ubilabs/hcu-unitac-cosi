@@ -54,7 +54,7 @@ const LayerFilterView = Backbone.View.extend(/** @lends LayerFilterView.prototyp
     renderToleranceViews: function () {
         const filterData = JSON.parse(this.model.get("filter"));
 
-        _.each(Object.keys(filterData), filterKey => {
+        Object.keys(filterData).forEach(filterKey => {
             const newToleranceModel = new ToleranceModel({
                     key: filterKey,
                     lowerTolerance: parseInt(filterData[filterKey][0], 10),
@@ -109,7 +109,7 @@ const LayerFilterView = Backbone.View.extend(/** @lends LayerFilterView.prototyp
             newInfo = _.map(this.model.get("districtInfo"), _.clone);
 
         e.preventDefault();
-        _.each(newInfo, item => {
+        newInfo.forEach(item => {
             if (item.key === key) {
                 item.value = parseInt(e.target.value, 10);
             }
