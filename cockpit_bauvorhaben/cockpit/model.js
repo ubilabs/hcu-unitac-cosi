@@ -33,8 +33,8 @@ function initializeCockpitModel () {
          */
         initialize: function () {
             this.superInitialize();
-            this.url = "https://geoportal-hamburg/lgv-config/cockpit_bauvorhaben.json";
-            this.fetch({async: false, timeout: 10000});
+            this.url = "https://geofos.fhhnet.stadt.hamburg.de/lgv-config/cockpit_bauvorhaben.json";
+            this.fetch({async: false});
         },
 
         /**

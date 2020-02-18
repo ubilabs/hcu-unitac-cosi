@@ -14,10 +14,10 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
     /**
      * @class SelectView
      * @extends Backbone.View
-     * @memberof Tools.Einwohnerabfrage
+     * @memberof Addons.Einwohnerabfrage
      * @constructs
-     * @listens Tools.Einwohnerabfrage#ChangeIsActive
-     * @listens Tools.Einwohnerabfrage#RenderResult
+     * @listens Addons.Einwohnerabfrage#ChangeIsActive
+     * @listens Addons.Einwohnerabfrage#RenderResult
      * @fires Core#RadioRequestUtilGetPathFromLoader
      */
     initialize: function () {
@@ -50,7 +50,6 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
     /**
      * @member Template
      * @description Template used to create SelectView for Einwohnerabfrage
-     * @memberof Filter/Source
      * @returns {void}
      */
     template: _.template(Template),

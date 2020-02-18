@@ -20,7 +20,7 @@ const SdpDownloadView = Backbone.View.extend(/** @lends SdpDownloadView.prototyp
     /**
      * @class SdpDownloadView
      * @extends Backbone.View
-     * @memberof SDPDownload
+     * @memberof Addons.SdpDownload
      * @constructs
      * @fires Core.ModelList#RadioTriggerModelListToggleDefaultTool
      * @description Setting listener and create a view for graphical selection and render. Is responsible for toggling the sidebar.
