@@ -273,7 +273,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
 
         let domString = "<p>";
 
-        _.each(comparableDistricts, district => {
+        comparableDistricts.forEach(district => {
             domString += `<span class="name-tag district-name">${district} </span>`;
         });
         domString += "</p>";
@@ -308,7 +308,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             const newList = JSON.parse(this.model.get("layerFilterList")),
                 layerId = model.get("layerInfo").layerId;
 
-            _.each(newList, layerFilter => {
+            newList.forEach(layerFilter => {
                 if (layerFilter.layerId === layerId) {
                     layerFilter.filter = model.get("filter");
                     layerFilter.districtInfo = model.get("districtInfo");
@@ -334,7 +334,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             let intersection = [],
                 comparableFeatures = [];
 
-            _.each(layerFilterList, layerFilter => {
+            layerFilterList.forEach(layerFilter => {
                 resultNames.push(this.filterOne(layerFilter).map(feature => feature.getProperties()[selector]));
                 results.push(this.filterOne(layerFilter));
             }, this);
@@ -378,7 +378,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             }),
             filterCollection = JSON.parse(layerFilter.filter);
 
-        _.each(Object.keys(filterCollection), filterKey => {
+        Object.keys(filterCollection).forEach(filterKey => {
             const tolerance = [parseFloat(filterCollection[filterKey][0]), parseFloat(filterCollection[filterKey][1])],
                 refValue = layerFilter.districtInfo.filter(item => item.key === filterKey)[0].value,
                 selectedFeatures = featureCollection.filter(feature => {
@@ -445,7 +445,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             cloneCollection = [];
 
         this.clearMapLayer();
-        _.each(districtFeatures, (feature) => {
+        districtFeatures.forEach((feature) => {
             const featureClone = feature.clone();
 
             featureClone.setStyle(this.model.get("selectedStyle"));

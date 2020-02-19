@@ -51,7 +51,7 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
             }),
             districtInfo = [],
             field = Radio.request("Timeline", "getLatestFieldFromCollection", featureCollection),
-            values = featureCollection.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !_.isNaN(value)),
+            values = featureCollection.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
             max = parseInt(Math.max(...values), 10),
             min = parseInt(Math.min(...values), 10);
         let refValue = 0,
