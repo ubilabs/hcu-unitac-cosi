@@ -24,10 +24,17 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
         this.model = new EinwohnerabfrageModel();
         this.listenTo(this.model, {
             // ändert sich der Fensterstatus wird neu gezeichnet
-            "change:isActive": function (value) {
-                this.render(this.model, value);
-            },
+            "change:isActive": this.render,
             "renderResult": this.renderResult
+        });
+        this.listenTo(Radio.channel("i18next"), {
+            "languageChanged": () => {
+                if (this.model.get("isActive") === true) {
+                    this.render(this.model, true);
+                    // reset selection by box, circle or polygon
+                    this.model.changeGraphicalSelectStatus(true);
+                }
+            }
         });
         this.snippetDropdownView = new GraphicalSelectView({model: this.model.get("snippetDropdownModel")});
         this.checkBoxRaster = new SnippetCheckBoxView({model: this.model.get("checkBoxRaster")});
@@ -55,9 +62,13 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
      * @returns {this} this view
      */
     render: function (model, value) {
-        const attr = this.model.toJSON();
+        const attr = this.model.toJSON(),
+            prefixSelect = "additional:modules.tools.populationRequest.select.";
 
         if (value) {
+            attr.info = i18next.t(prefixSelect + "info");
+            this.checkBoxAddress.model.set("label", i18next.t(prefixSelect + "showAlkisAdresses"));
+            this.checkBoxRaster.model.set("label", i18next.t(prefixSelect + "showRasterLayer"));
             this.setElement(document.getElementsByClassName("win-body")[0]);
             this.$el.html(this.template(attr));
             this.$el.find(".dropdown").append(this.snippetDropdownView.render().el);
