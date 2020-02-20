@@ -477,7 +477,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     addModelsByAttributesToModelList: function (layerId) {
-        if (!Radio.request("ModelList", "getModelsByAttributes", {id: layerId})) {
+        if (Radio.request("ModelList", "getModelsByAttributes", {id: layerId}).length === 0) {
             Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
         }
     },
@@ -492,7 +492,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     checkIsModelLoaded: function (layerId, snippetCheckboxModel) {
-        if (!Radio.request("ModelList", "getModelsByAttributes", {id: layerId})) {
+        if (Radio.request("ModelList", "getModelsByAttributes", {id: layerId}).length === 0) {
             Radio.trigger("Alert", "alert", "Der Layer mit der ID: " + layerId + " konnte nicht geladen werden, da dieser im Portal nicht zur Verfügung steht!");
             snippetCheckboxModel.setIsSelected(false);
         }
