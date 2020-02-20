@@ -27,6 +27,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         alkisAdressLayerId: "9726",
         populationReqServiceId: "2",
         id: "einwohnerabfrage",
+        idCounter: 0,
         // translations
         confidentialityHint: "",
         confidentialityHintSmallValues: "",
@@ -69,6 +70,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @property {String} alkisAdressLayerId="9726" layerId for the alkis adresses
      * @property {String} populationReqServiceId="2" serviceid
      * @property {String} id= "Einwohnerabfrage" id of this model
+     * @property {Number} idCounter=0 counter for unique ids
      * @property {String} confidentialityHint="", filled with "Unter Berücksichtigung der Geheimhaltung wurde folgender Wert berechnet"- translated
      * @property {String} confidentialityHintSmallValues="Aus Datenschutzgründen werden kleine Fallzahlen unter 3 verändert.", filled with ""- translated
      * @property {String} populationFHH="", filled with "Einwohnerzahl in Hamburg"- translated
@@ -201,7 +203,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {Boolean} true, if id is contained in list
      */
     isOwnMetaRequest: function (uniqueIdList, uniqueId) {
-        return _.contains(uniqueIdList, uniqueId);
+        return uniqueIdList.indexOf(uniqueId) > -1;
     },
     /**
      * Removes the id from the list.
@@ -210,7 +212,11 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     removeUniqueIdFromList: function (uniqueIdList, uniqueId) {
-        this.setUniqueIdList(_.without(uniqueIdList, uniqueId));
+        const filtered = uniqueIdList.filter(function (value) {
+            return value !== uniqueId;
+        });
+
+        this.setUniqueIdList(filtered);
     },
     /**
      * If attr equals "fhhDate" the parsed date is set to model
@@ -242,7 +248,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     handleResponse: function (response, status) {
-        var parsedData;
+        let parsedData = null;
 
         this.setRequesting(false);
         parsedData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.einwohner;
@@ -278,7 +284,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     handleSuccess: function (response) {
-        var obj;
+        let obj = null;
 
         try {
             obj = JSON.parse(response.ergebnis);
@@ -300,8 +306,8 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     prepareDataForRendering: function (response) {
-        _.each(response, function (value, key, list) {
-            var stringVal = "";
+        Object.entries(response).forEach(function ([key, value], index, list) {
+            let stringVal = "";
 
             if (!isNaN(value)) {
                 if (key === "suchflaeche") {
@@ -327,7 +333,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {String} unit
      */
     chooseUnitAndPunctuate: function (value, maxDecimals) {
-        var newValue;
+        let newValue = null;
 
         if (value < 250000) {
             return Radio.request("Util", "punctuate", value.toFixed(maxDecimals)) + " m²";
@@ -363,7 +369,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     handleCswRequests: function () {
-        var metaIds = [
+        const metaIds = [
             {
                 metaId: this.get("fhhId"),
                 attr: "fhhDate"
@@ -371,8 +377,8 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         ];
 
         if (this.get("isActive")) {
-            _.each(metaIds, function (metaIdObj) {
-                var uniqueId = _.uniqueId(),
+            metaIds.forEach(function (metaIdObj) {
+                const uniqueId = this.uniqueId(),
                     cswObj = {};
 
                 this.get("uniqueIdList").push(uniqueId);
@@ -385,6 +391,18 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
 
             this.off("change:isActive", this.handleCswRequests);
         }
+    },
+    /**
+     * Returns a unique id, starts with the given prefix
+     * @param {string} prefix prefix for the id
+     * @returns {string} a unique id
+     */
+    uniqueId: function (prefix) {
+        let counter = this.get("idCounter");
+        const id = ++counter;
+
+        this.setIdCounter(id);
+        return prefix ? prefix + id : id;
     },
     /**
      * Triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
@@ -411,8 +429,8 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     checksSnippetCheckboxLayerIsLoaded: function (layerId, snippetCheckboxModel) {
-        var model = Radio.request("ModelList", "getModelByAttributes", {id: layerId}),
-            isVisibleInMap = !_.isUndefined(model) ? model.get("isVisibleInMap") : false;
+        const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId}),
+            isVisibleInMap = model !== undefined ? model.get("isVisibleInMap") : false;
 
         if (isVisibleInMap) {
             snippetCheckboxModel.setIsSelected(true);
@@ -428,7 +446,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     toggleRasterLayer: function (value) {
-        var layerId = this.get("rasterLayerId");
+        const layerId = this.get("rasterLayerId");
 
         this.addModelsByAttributesToModelList(layerId);
         if (value) {
@@ -443,7 +461,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     toggleAlkisAddressLayer: function (value) {
-        var layerId = this.get("alkisAdressLayerId");
+        const layerId = this.get("alkisAdressLayerId");
 
         this.addModelsByAttributesToModelList(layerId);
         if (value) {
@@ -459,7 +477,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     addModelsByAttributesToModelList: function (layerId) {
-        if (_.isEmpty(Radio.request("ModelList", "getModelsByAttributes", {id: layerId}))) {
+        if (!Radio.request("ModelList", "getModelsByAttributes", {id: layerId})) {
             Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
         }
     },
@@ -474,7 +492,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     checkIsModelLoaded: function (layerId, snippetCheckboxModel) {
-        if (_.isEmpty(Radio.request("ModelList", "getModelsByAttributes", {id: layerId}))) {
+        if (!Radio.request("ModelList", "getModelsByAttributes", {id: layerId})) {
             Radio.trigger("Alert", "alert", "Der Layer mit der ID: " + layerId + " konnte nicht geladen werden, da dieser im Portal nicht zur Verfügung steht!");
             snippetCheckboxModel.setIsSelected(false);
         }
@@ -492,6 +510,14 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             isSelected: value,
             isVisibleInMap: value
         });
+    },
+    /**
+    * Sets the idCounter.
+    * @param {string} value counter
+    * @returns {void}
+    */
+    setIdCounter: function (value) {
+        this.set("idCounter", value);
     },
     /**
      * setter for style

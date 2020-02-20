@@ -3,7 +3,7 @@ import Util from "@modules/core/util.js";
 import {expect} from "chai";
 
 describe("ADDON: einwohnerabfrageModel", function () {
-    var model;
+    let model = null;
 
     before(function () {
         model = new Model();
