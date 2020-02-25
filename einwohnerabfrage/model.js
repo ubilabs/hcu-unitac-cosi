@@ -203,7 +203,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {Boolean} true, if id is contained in list
      */
     isOwnMetaRequest: function (uniqueIdList, uniqueId) {
-        return uniqueIdList.indexOf(uniqueId) > -1;
+        return uniqueIdList ? uniqueIdList.indexOf(uniqueId) > -1 : false;
     },
     /**
      * Removes the id from the list.
@@ -212,11 +212,16 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {void}
      */
     removeUniqueIdFromList: function (uniqueIdList, uniqueId) {
-        const filtered = uniqueIdList.filter(function (value) {
-            return value !== uniqueId;
-        });
+        if (!uniqueIdList) {
+            this.setUniqueIdList([]);
+        }
+        else {
+            const filtered = uniqueIdList.filter(function (value) {
+                return value !== uniqueId;
+            });
 
-        this.setUniqueIdList(filtered);
+            this.setUniqueIdList(filtered);
+        }
     },
     /**
      * If attr equals "fhhDate" the parsed date is set to model
