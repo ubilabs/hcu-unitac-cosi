@@ -6,7 +6,7 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
         layerOptions: [], // all select options (vector layers in the map) e.g. [{layerName:"",layerId:""},...]
         selectedLayer: null, // selected option e.g. {layerName:"",layerId:""}
         urls: {
-            "statgebiet": "https://geodienste.hamburg.de/HH_WFS_Statistische_Gebiete_Test",
+            "statgebiet": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
             "stadtteile": "https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_stadtteile"
         },
         dropDownModel: {},
@@ -20,7 +20,7 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
      * @constructs
      * @property {Array} layerOptions list of layer filter options
      * @property {string} selectedDistrict="Leeren" selected districtname
-     * @property {object} urls={"statgebiet": "https://geodienste.hamburg.de/HH_WFS_Statistische_Gebiete_Test", "stadtteile": ""} mapping of district scopes and urls
+     * @property {object} urls={"statgebiet": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete", "stadtteile": ""} mapping of district scopes and urls
      * @property {object} dropDownModel dropdown menu model
      * @property {String} dropDownDisplayName="Auswahl statistische Daten"
      * @fires FeaturesLoader#RadioRequestFeaturesLoaderGetAllValuesByScope

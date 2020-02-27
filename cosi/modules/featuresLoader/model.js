@@ -13,7 +13,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             statistischeGebiete: {
                 attribute: "statistischeGebiete",
                 selector: "statgebiet",
-                url: "https://geodienste.hamburg.de/HH_WFS_Statistische_Gebiete_Test",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
                 referenceAttributes: ["stadtteile"]
             },
             stadtteile: {
@@ -107,7 +107,9 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             text: "Datensätze werden geladen",
             kategorie: "alert-info"
         });
-
+console.info(getLayerList().filter(function (layer) {
+    return layer.url === serviceUrl;
+}));
         const layerList = getLayerList().filter(function (layer) {
                 return layer.url === serviceUrl;
             }),
