@@ -40,7 +40,7 @@ const InfoScreenModel = Backbone.Model.extend(/** @lends InfoScreenModel.prototy
 
         this.get("channel").on({
             "triggerRemote": this.triggerRemote
-        });
+        }, this);
     },
 
     /**

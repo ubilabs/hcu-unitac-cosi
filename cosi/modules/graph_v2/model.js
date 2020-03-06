@@ -61,7 +61,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         if (graphConfig.hasContextMenu) {
             svg.on("pointerup", function () {
                 this.appendContextMenu(svg.select("svg").node(), graphConfig);
-            }.bind(this));
+            }, this);
         }
 
         return svg;
@@ -487,6 +487,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @param {String} color optional color for the dots
      * @returns {void}
      */
+    /* eslint-disable max-params */
     appendLinePointsToSvg: function (svg, data, scaleX, scaleY, scaleTypeX, xAttr, yAttrToShow, tooltipDiv, dotSize, className = null, color = "rgb(8, 88, 158)") {
         var dat = data.filter(function (obj) {
                 return obj[yAttrToShow] !== "-";
@@ -626,7 +627,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             else {
                 this.download(url, `CoSI_Diagramm_${title}.svg`);
             }
-        }.bind(this));
+        }, this);
 
         // Download PNG
         $(contextActions).find("li#downloadPng").on("click", async function () {
@@ -639,7 +640,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             else {
                 this.download(png.url, `CoSI_Diagramm_${title}.png`);
             }
-        }.bind(this));
+        }, this);
 
         Radio.trigger("ContextMenu", "setActions", contextActions, title, "glyphicon-stats");
     },

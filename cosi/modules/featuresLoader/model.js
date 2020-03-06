@@ -107,9 +107,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             text: "Datensätze werden geladen",
             kategorie: "alert-info"
         });
-console.info(getLayerList().filter(function (layer) {
-    return layer.url === serviceUrl;
-}));
+
         const layerList = getLayerList().filter(function (layer) {
                 return layer.url === serviceUrl;
             }),
