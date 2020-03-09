@@ -266,7 +266,7 @@ function initializeCockpitModel () {
             preparedData = this.mergeMonthsToYears(preparedData, isMonthsSelected, years, administrativeUnits, attrName);
             preparedData = this.mergeByAttribute(preparedData, "date", attrName, administrativeUnits.attrName);
             preparedData = this.addNullValues(preparedData, adminUnitsValues);
-            preparedData = Radio.request("Util", "sort", preparedData, "date");
+            preparedData = Radio.request("Util", "sort", "date", preparedData);
             return preparedData;
         },
         /**
