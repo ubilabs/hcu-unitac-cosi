@@ -310,10 +310,10 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      * @returns {void}
      */
     requestCompressRasterOverviewData: function (state) {
-        const temp = this.get("overviewDownloadLocation") + state + ".dwg";
+        const temp = this.get("overviewDownloadLocation") + state + ".dwg",
+            url = Radio.request("RestReader", "getServiceById", this.get("compressedFileId")).get("url");
 
-        window.location.href = this.get("compressedFileUrl") + "?no_delete=1&mt=dwg&name=" + temp;
-
+        window.location.href = url + "?no_delete=1&mt=dwg&name=" + temp;
     },
     /**
      * Requests the WFS and loads the data down.
