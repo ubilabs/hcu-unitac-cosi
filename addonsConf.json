@@ -4,9 +4,9 @@
   "cockpit_bauvorhaben": "cockpit/view.js",
   "cosi": "modules/loader.js",
   "einwohnerabfrage": "selectView.js",
+  "gfiOnAddress": "view.js",
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
-  "gfiOnAddress": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js"
 }
