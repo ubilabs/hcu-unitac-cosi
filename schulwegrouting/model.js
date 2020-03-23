@@ -11,7 +11,7 @@ import {setGazetteerUrl} from "masterportalAPI";
 const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
     defaults: Object.assign({}, Tool.prototype.defaults, {
-        id: "Schulwegrouting",
+        id: "schulwegrouting",
         name: "Schulweg",
         layerId: "8712",
         // ol-features of all schools

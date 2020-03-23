@@ -78,7 +78,7 @@ const FilterView = Backbone.View.extend(/** @lends FilterView.prototype */{
         }
         else {
             Radio.trigger("Sidebar", "append", this.el);
-            Radio.trigger("Sidebar", "toggle", true, this.model.get("uiWidth"));
+            Radio.trigger("Sidebar", "toggle");
         }
         this.renderSimpleViews();
         this.delegateEvents();
