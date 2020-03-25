@@ -25,7 +25,7 @@ function initializeBrwAbfrageModel () {
             "processFromParametricUrl": false,
             "paramUrlParams": {},
             "zBauwSelect": "",
-            "brwIsActive": false
+            "isActive": true
         };
 
     Object.assign(BRWModel, {
@@ -40,7 +40,6 @@ function initializeBrwAbfrageModel () {
             this.superInitialize();
 
             this.listenTo(this, {
-                "change:isActive": this.registerClickListener,
                 "change:gfiFeature": function () {
                     if (this.get("processFromParametricUrl")) {
                         this.simulateLanduseSelect(this.get("paramUrlParams"));
@@ -52,9 +51,7 @@ function initializeBrwAbfrageModel () {
             });
             this.setIsViewMobile(Radio.request("Util", "isViewMobile"));
             this.setModelList(filteredModelList.reverse());
-
-            this.registerClickListener(this, this.get("isActive"));
-            this.setBrwIsActive(true);
+            Radio.request("Map", "registerListener", "click", this.clickCallback.bind(this));
             this.requestParametricUrl();
         },
 
@@ -138,22 +135,6 @@ function initializeBrwAbfrageModel () {
         },
 
         /**
-         * registers a callback function on a click in the map or not
-         * @param {Backbone.Model} model - this
-         * @param {boolean} value - isActive
-         * @returns {void}
-         */
-        registerClickListener: function (model, value) {
-            if (value && this.get("brwIsActive") === false) {
-                this.setClickListener(Radio.request("Map", "registerListener", "click", this.clickCallback.bind(this)));
-            }
-            else {
-                Radio.trigger("Map", "unregisterListener", this.get("clickListener"));
-                this.setBrwIsActive(false);
-            }
-        },
-
-        /**
          * blocks user input when busy
          * @param {boolean} status boolean for status
          * @returns {void}
@@ -179,6 +160,10 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         clickCallback: function (evt, processFromParametricUrl, center) {
+            if (!this.get("isActive")) {
+                return;
+            }
+
             const xhttp = new XMLHttpRequest(),
                 selectedModel = this.get("modelList").find(model => model.get("isSelected") === true),
                 layerSource = selectedModel.get("layer").getSource();
@@ -901,15 +886,6 @@ function initializeBrwAbfrageModel () {
         */
         setZBauwSelect: function (value) {
             this.set("zBauwSelect", value);
-        },
-
-        /*
-        * setter for setBrwIsActive
-        * @param {Boolean} contains true or false if its active or not
-        * @returns {void}
-        */
-        setBrwIsActive: function (value) {
-            this.set("brwIsActive", value);
         }
     });
     BRWModel.initialize();
