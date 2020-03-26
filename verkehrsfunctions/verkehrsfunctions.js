@@ -1,4 +1,5 @@
 import {WFS} from "ol/format.js";
+import moment from "moment";
 
 const traficChannel = Backbone.Model.extend({
     defaults: {
@@ -9,7 +10,7 @@ const traficChannel = Backbone.Model.extend({
      * Lese Layer mit URL und starte refreshVerkehrsmeldungen, wobei layerid der gleichen URL entsprechen muss.
      */
     initialize: function () {
-        var proxyURLVerkehrssituation = Radio.request("Util", "getProxyURL", "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata"),
+        const proxyURLVerkehrssituation = Radio.request("Util", "getProxyURL", "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata"),
             proxyURLVerkehrsmeldung = Radio.request("Util", "getProxyURL", "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata"),
             channel = Radio.channel("Verkehrsfunctions"),
             verkehrslagelayer = Radio.request("ModelList", "getModelByAttributes", {id: "947"});
@@ -24,6 +25,118 @@ const traficChannel = Backbone.Model.extend({
             this.refreshVerkehrssituation(verkehrslagelayer);
         }
         this.refreshVerkehrsmeldung();
+
+        this.listenTo(Radio.channel("GFI"), {
+            "changeFeature": this.updateMouseHoverAttribute
+        });
+    },
+
+    /**
+     * Setting the attributes in feature for mouseHover
+     * @param {ol/feature} feature - current feature from sensor layer
+     * @return {Void} -
+     */
+    updateMouseHoverAttribute: function (feature) {
+        const dataStreamNames = feature.get("dataStreamName"),
+            dataStreamValues = feature.get("dataStreamValue");
+
+        let phenomenonTime = "",
+            phenomenonTimeRange = "invalid date",
+            absTrafficCount = "No data",
+            propTrafficCount = "No data";
+
+        if (feature.get("Datastreams") && Array.isArray(feature.get("Datastreams") && feature.get("Datastreams").length)
+            && feature.get("Datastreams")[0].Observations && Array.isArray(feature.get("Datastreams")[0].Observations)
+            && feature.get("Datastreams")[0].Observations.length && feature.get("Datastreams")[0].Observations[0].phenomenonTime) {
+            phenomenonTime = feature.get("Datastreams")[0].Observations[0].phenomenonTime;
+        }
+
+        if (phenomenonTime && phenomenonTime.split("/").length === 2) {
+            const startTime = phenomenonTime.split("/")[0],
+                endTime = phenomenonTime.split("/")[1];
+
+            // paser to get the final time range in right format
+            phenomenonTimeRange = this.getPhenomenonTimeRange(startTime, endTime);
+        }
+
+        if (dataStreamNames && dataStreamValues) {
+            absTrafficCount = this.getAbsTrafficCount(dataStreamNames, dataStreamValues);
+            propTrafficCount = this.getPropTrafficCount(dataStreamNames, dataStreamValues);
+        }
+
+        if (propTrafficCount === "") {
+            // Only the absolute traffic count is needed
+            absTrafficCount = "Anzahl: " + absTrafficCount;
+        }
+        else {
+            // put the absolute traffic count and proportion in right format
+            absTrafficCount = "KFZ abs.: " + absTrafficCount;
+            propTrafficCount = "<span class='title'>SV-Anteil in %: " + propTrafficCount + "</span>";
+        }
+
+        feature.set("absTrafficCount", absTrafficCount);
+        feature.set("propTrafficCount", propTrafficCount);
+        feature.set("phenomenonTimeRange", phenomenonTimeRange);
+    },
+
+    /**
+     * Getting the absolute traffic count
+     * @param {String} dataStreamNames - dataStream Name(s) of the current feature
+     * @param {String} dataStreamValues - dataStream Value(s) of the current feature
+     * @return {String} the absolute count
+     */
+    getAbsTrafficCount: function (dataStreamNames, dataStreamValues) {
+        let value = "";
+
+        dataStreamNames.split(" | ").forEach(function (dataStreamName, i) {
+            if (dataStreamName === "Anzahl") {
+                value = dataStreamValues.split(" | ")[i];
+            }
+        });
+
+        return value;
+    },
+
+    /**
+     * Getting the proportional traffic count
+     * @param {String} dataStreamNames - dataStream Name(s) of the current feature
+     * @param {String} dataStreamValues - dataStream Value(s) of the current feature
+     * @return {String} the absolute count
+     */
+    getPropTrafficCount: function (dataStreamNames, dataStreamValues) {
+        let value = "";
+
+        dataStreamNames.split(" | ").forEach(function (dataStreamName, i) {
+            if (dataStreamName === "Prozent") {
+                value = dataStreamValues.split(" | ")[i];
+            }
+        });
+
+        return value;
+    },
+
+    /**
+     * parsing the right date format
+     * @param  {String} startTime - starting time of measuring a phenomenon
+     * @param  {String} endTime - ending time of measuring a phenomenon
+     * @return {String} time phenomenonTime converted with UTC
+     */
+    getPhenomenonTimeRange: function (startTime, endTime) {
+        const startDay = moment(startTime).format("DD.MM.YYYY"),
+            endDay = moment(endTime).format("DD.MM.YYYY");
+
+        let time = "";
+
+        if (startDay !== endDay) {
+            time = moment(startTime).format("DD.MM.YYYY, HH:mm") +
+                " Uhr - " + moment(endTime).format("DD.MM.YYYY, HH:mm") + " Uhr";
+        }
+        else {
+            time = moment(startTime).format("DD.MM.YYYY, HH:mm") +
+                " Uhr - " + moment(endTime).format("HH:mm") + " Uhr";
+        }
+
+        return time;
     },
 
     /**
