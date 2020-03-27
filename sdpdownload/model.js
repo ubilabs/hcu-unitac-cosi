@@ -350,7 +350,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             complete: function () {
                 this.hideLoader();
             },
-            timeout: 6000,
+            timeout: 15000,
             error: function () {
                 this.resetView();
                 this.changeGraphicalSelectStatus(false);
