@@ -428,7 +428,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         }).then(hits => {
             const hitsWithoutStreets = this.removeStreetsFromAddressList(hits),
                 preparedList = this.prepareAddressList(hitsWithoutStreets),
-                sortedPreparedList = Radio.request("Util", "sort", preparedList, "houseNumber", "houseNumberSupplement");
+                sortedPreparedList = Radio.request("Util", "sort", "", preparedList, "houseNumber", "houseNumberSupplement");
 
             this.setAddressList(sortedPreparedList);
             this.setAddressListFiltered(this.filterAddressList(this.get("addressList"), this.get("searchRegExp")));
