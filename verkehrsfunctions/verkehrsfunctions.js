@@ -45,7 +45,7 @@ const traficChannel = Backbone.Model.extend({
             absTrafficCount = "No data",
             propTrafficCount = "No data";
 
-        if (feature.get("Datastreams") && Array.isArray(feature.get("Datastreams") && feature.get("Datastreams").length)
+        if (feature.get("Datastreams") && Array.isArray(feature.get("Datastreams")) && feature.get("Datastreams").length
             && feature.get("Datastreams")[0].Observations && Array.isArray(feature.get("Datastreams")[0].Observations)
             && feature.get("Datastreams")[0].Observations.length && feature.get("Datastreams")[0].Observations[0].phenomenonTime) {
             phenomenonTime = feature.get("Datastreams")[0].Observations[0].phenomenonTime;
@@ -66,17 +66,30 @@ const traficChannel = Backbone.Model.extend({
 
         if (propTrafficCount === "") {
             // Only the absolute traffic count is needed
-            absTrafficCount = "Anzahl: " + absTrafficCount;
+            absTrafficCount = "Anzahl: " + this.addThousandPoints(absTrafficCount);
         }
         else {
             // put the absolute traffic count and proportion in right format
-            absTrafficCount = "KFZ abs.: " + absTrafficCount;
+            absTrafficCount = "KFZ abs.: " + this.addThousandPoints(absTrafficCount);
             propTrafficCount = "<span class='title'>SV-Anteil in %: " + propTrafficCount + "</span>";
         }
 
         feature.set("absTrafficCount", absTrafficCount);
         feature.set("propTrafficCount", propTrafficCount);
         feature.set("phenomenonTimeRange", phenomenonTimeRange);
+    },
+
+    /**
+     * adds thousands points into a absolute number
+     * @param {Integer} value the absolute number as integer
+     * @returns {String}  the same number but with thousands points or "No data" if an invalid value was given
+     */
+    addThousandPoints: function (value) {
+        if (typeof value !== "number" && typeof value !== "string") {
+            return "No data";
+        }
+
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
 
     /**
