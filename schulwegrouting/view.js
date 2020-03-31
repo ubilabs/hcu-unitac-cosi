@@ -17,7 +17,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
             evt.stopPropagation();
         },
         "click li.address": function (evt) {
-            var address = evt.target.textContent;
+            const address = evt.target.textContent;
 
             this.setAddressSearchValue(evt, false);
             this.model.selectStartAddress(address, this.model.get("addressListFiltered"));
@@ -37,7 +37,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         "click .print-route": "printRoute",
         "click .description button": "toggleRouteDesc",
         "click #regional-school": function () {
-            if (!_.isEmpty(this.model.get("regionalSchool"))) {
+            if (this.model.get("regionalSchool")) {
                 this.updateSelectedSchool(this.model.get("regionalSchool").get("schul_id"));
                 this.model.selectSchool(this.model.get("schoolList"), this.model.get("regionalSchool").get("schul_id"));
                 this.model.prepareRequest(this.model.get("startAddress"));
@@ -96,7 +96,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     templateRouteDescription: _.template(templateRouteDescription),
 
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html(this.template(attr));
         this.renderRouteResult(this.model, this.model.get("routeResult"));
@@ -125,20 +125,21 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     setPresetValues: function () {
-        var schoolID = _.isEmpty(this.model.get("selectedSchool")) ? undefined : this.model.get("selectedSchool").get("schul_id");
+        const schoolID = Object.keys(this.model.get("selectedSchool")).length === 0 ? undefined : this.model.get("selectedSchool").get("schul_id");
 
         this.setStartAddress();
-        if (!_.isUndefined(schoolID)) {
+        if (schoolID !== undefined) {
             this.updateSelectedSchool(schoolID);
         }
     },
 
     setStartAddress: function () {
-        var startAddress = this.model.get("startAddress"),
-            startStreet = "";
+        const startAddress = this.model.get("startAddress");
+        let startStreet = "";
 
-        if (!_.isEmpty(startAddress)) {
-            startStreet = startAddress.street + " " + startAddress.number + startAddress.affix;
+        if (Object.keys(startAddress).length !== 0) {
+            startStreet = startAddress.name;
+
             this.$el.find(".address-search").attr("value", startStreet);
         }
     },
@@ -162,7 +163,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     renderRouteResult: function (model, value) {
-        var attr = model.toJSON();
+        const attr = model.toJSON();
 
         if (Object.keys(value).length !== 0) {
             this.$el.find(".result").html(this.templateRouteResult(attr));
@@ -170,7 +171,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     renderRouteDescription: function (model, value) {
-        var attr = model.toJSON();
+        const attr = model.toJSON();
 
         if (value.length > 0) {
             this.$el.find(".description").html(this.templateRouteDescription(attr));
@@ -191,8 +192,8 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
      * @returns {void}
      */
     searchAddress: function (evt) {
-        var evtValue = evt.target.value,
-            targetList;
+        const evtValue = evt.target.value;
+        let targetList;
 
         if (evtValue.length > 2) {
             this.model.searchAddress(evtValue);
@@ -212,7 +213,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     setAddressSearchValue: function (evt, searchHouseNumber) {
-        var address = evt.target.textContent;
+        const address = evt.target.textContent;
 
         this.$el.find(".address-search").val(address);
         if (searchHouseNumber) {
@@ -230,7 +231,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     selectSchool: function (evt) {
-        var schoolname = evt.target.value;
+        const schoolname = evt.target.value;
 
         this.model.selectSchool(this.model.get("schoolList"), schoolname);
         this.model.prepareRequest(this.model.get("startAddress"));
@@ -245,7 +246,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     toggleRouteDesc: function (evt) {
-        var oldText = evt.target.innerHTML,
+        const oldText = evt.target.innerHTML,
             newText = oldText === "Routenbeschreibung einblenden" ? "Routenbeschreibung ausblenden" : "Routenbeschreibung einblenden";
 
         evt.target.innerHTML = newText;
