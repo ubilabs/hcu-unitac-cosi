@@ -196,6 +196,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         let targetList;
 
         if (evtValue.length > 2) {
+            this.model.setStreetNameList([]);
             this.model.searchAddress(evtValue);
         }
         else {
