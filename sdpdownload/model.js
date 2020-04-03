@@ -321,10 +321,13 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      * @returns {void}
      */
     doRequest: function (params) {
-        const url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
+        let url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
 
+        if (window.location.hostname === "localhost") {
+            url = Radio.request("Util", "getProxyURL", url);
+        }
         $.ajax({
-            url: Radio.request("Util", "getProxyURL", url),
+            url: url,
             data: encodeURI(params),
             context: this,
             type: "POST",
