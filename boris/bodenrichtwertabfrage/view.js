@@ -58,7 +58,7 @@ const BrwAbfrageView = Backbone.View.extend({
         const attr = this.model.toJSON();
 
         Radio.trigger("Alert", "alert:remove");
-        //must be removed, else IE 11 does not render the template
+        // must be removed, else IE 11 does not render the template
         this.$el.remove();
         this.$el.html(this.template(attr));
         this.renderLayerlist(attr);
