@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <% if (streetNameList.length > 1) { %>
-    <% streetNameList.slice(0, 6).forEach(function (streetName) { %>
+    <% streetNameList.every(function (streetName, index) { %>
         <li class="list-group-item street"><%= streetName %></li>
+        <% return index !== 5; %>
     <% }); %>
 <% }
 else { %>
-    <% addressListFiltered.slice(0, 6).forEach(function (address) { %>
-        <li class="list-group-item address"><%= address.name %></li>
+    <% addressListFiltered.every(function (address, index) { %>
+        <li class="list-group-item address"><%= address.street + " " + address.number + (address.affix.indexOf("haus") !== -1 ? " " : "") + address.affix %></li>
+        <% return index !== 5; %>
     <% }); %>
 <% } %>

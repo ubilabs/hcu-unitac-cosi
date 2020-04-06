@@ -5,8 +5,6 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import {MultiLineString, Point} from "ol/geom.js";
 import {WKT} from "ol/format.js";
 import Feature from "ol/Feature.js";
-import {search} from "masterportalAPI";
-import {setGazetteerUrl} from "masterportalAPI";
 
 const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
@@ -32,8 +30,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         checkBoxHVV: undefined,
         renderToSidebar: true,
         renderToWindow: false,
-        glyphicon: "glyphicon-filter",
-        serviceId: "88"
+        glyphicon: "glyphicon-filter"
     }),
 
     /**
@@ -43,14 +40,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @constructs
      */
     initialize: function () {
-        const channel = Radio.channel("Schulwegrouting"),
-            gazService = Radio.request("RestReader", "getServiceById", this.get("serviceId"));
+        const channel = Radio.channel("Schulwegrouting");
 
         this.superInitialize();
-
-        if (gazService) {
-            setGazetteerUrl(gazService.get("url"));
-        }
 
         this.setCheckBoxHVV(new SnippetCheckboxModel({
             isSelected: false,
@@ -77,6 +69,17 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                     }
                 }
             }
+        });
+
+        this.listenTo(Radio.channel("Gaz"), {
+            "streetNames": function (streetNameList) {
+                this.startSearch(streetNameList, this.get("addressList"));
+            },
+            "houseNumbers": function (houseNumberList) {
+                this.setAddressList(this.prepareAddressList(houseNumberList, this.get("streetNameList")));
+                this.setAddressListFiltered(this.filterAddressList(this.get("addressList"), this.get("searchRegExp")));
+            },
+            "getAdress": this.parseRegionalSchool
         });
 
         this.listenTo(this.get("checkBoxHVV"), {
@@ -139,7 +142,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                 "attributes": {
                     "title": "Schulwegrouting",
                     "length": route.kuerzesteStrecke + "m",
-                    "address": address.name,
+                    "address": address.street + " " + address.number + address.affix,
                     "school": school.get("schulname") + ", " + route.SchuleingangTyp + " (" + route.SchuleingangAdresse + ")",
                     "map": {
                         "dpi": 96,
@@ -223,22 +226,25 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     findRegionalSchool: function (address) {
-        if (address !== "") {
-            search(address, {
-                map: Radio.request("Map", "getMap"),
-                searchAddress: true
-            }).then(hits => this.parseRegionalSchool(hits));
+        const gazAddress = {};
+
+        if (address.length !== 0) {
+            gazAddress.streetname = address.street;
+            gazAddress.housenumber = address.number;
+            gazAddress.affix = address.affix;
+            Radio.trigger("Gaz", "adressSearch", gazAddress);
         }
     },
 
-    parseRegionalSchool: function (addresses) {
-        let school,
-            primarySchoolId,
+    parseRegionalSchool: function (xml) {
+        var schoolId,
+            school,
+            primarySchool = $(xml).find("gages\\:grundschulnr,grundschulnr"),
             schoolWithAdress;
 
-        if (addresses.length > 0) {
-            primarySchoolId = addresses[0].properties.grundschulnr + "-0";
-            school = this.filterSchoolById(this.get("schoolList"), primarySchoolId);
+        if (primarySchool.length > 0) {
+            schoolId = primarySchool[0].textContent + "-0";
+            school = this.filterSchoolById(this.get("schoolList"), schoolId);
             this.setRegionalSchool(school);
             schoolWithAdress = school.get("schulname") + ", " + school.get("adresse_strasse_hausnr");
             this.setSchoolWithAdress(schoolWithAdress);
@@ -278,19 +284,14 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      */
     prepareRequest: function (address) {
         const schoolID = !_.isEmpty(this.get("selectedSchool")) ? this.get("selectedSchool").get("schul_id") : "";
-        let requestObj = {},
-            addressHouseNumberComplete,
-            addressStreet;
+        let requestObj = {};
 
         if (Object.keys(address).length !== 0 && schoolID.length > 0) {
-            addressHouseNumberComplete = address.properties.hausnummerkomplett ? address.properties.hausnummerkomplett : "";
-            addressStreet = address.name.substring(0, address.name.length - addressHouseNumberComplete.length - 1);
-
             Radio.trigger("GFI", "setIsVisible", false);
             requestObj = this.setObjectAttribute(requestObj, "Schul-ID", "string", schoolID);
-            requestObj = this.setObjectAttribute(requestObj, "SchuelerStrasse", "string", addressStreet);
-            requestObj = this.setObjectAttribute(requestObj, "SchuelerHausnr", "integer", parseInt(address.houseNumber, 10));
-            requestObj = this.setObjectAttribute(requestObj, "SchuelerZusatz", "string", address.houseNumberSupplement);
+            requestObj = this.setObjectAttribute(requestObj, "SchuelerStrasse", "string", address.street);
+            requestObj = this.setObjectAttribute(requestObj, "SchuelerHausnr", "integer", parseInt(address.number, 10));
+            requestObj = this.setObjectAttribute(requestObj, "SchuelerZusatz", "string", address.affix);
             requestObj = this.setObjectAttribute(requestObj, "RouteAusgeben", "boolean", 1);
 
             this.sendRequest(requestObj);
@@ -299,7 +300,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
     /**
      * Starts a WPS to determine a way to school.
-     * @param {Object} requestObj contains parameters to determine the way to school
+     * @param {Object} requestObj - contains parameters to determine the way to school
      * @fires Core#RadioTriggerWPSRequest
      * @returns {void}
      */
@@ -349,7 +350,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {ol.feature} -
      */
     filterSchoolById: function (schoolList, schoolId) {
-        return schoolList.find(school => school.get("schul_id") === schoolId);
+        return _.find(schoolList, function (school) {
+            return school.get("schul_id") === schoolId;
+        });
     },
 
     /**
@@ -364,7 +367,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         if (streetNameList.length === 1) {
             this.setStreetNameList(streetNameList);
             if (addressList.length === 0) {
-                this.searchHouseNumbers(streetNameList[0]);
+                Radio.trigger("Gaz", "findHouseNumbers", streetNameList[0]);
             }
             else {
                 this.setAddressListFiltered(this.filterAddressList(addressList, this.get("searchRegExp")));
@@ -389,52 +392,25 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     /**
      * Searches for street names in the gazetter via the Masterportal API.
      * The search is only executed if the string does not end with a blank.
-     * @param {String} searchAddress String to be searched for in gazetter.
+     * @param {*} value - todo
      * @fires Core#RadioRequestMapGetMap
      * @returns {void}
      */
-    searchAddress: function (searchAddress) {
-        const addressList = this.get("addressList");
-
-        if (!(/[ \f\t\v]$/).test(searchAddress)) {
-            search(searchAddress, {
-                map: Radio.request("Map", "getMap"),
-                searchStreets: true
-            }).then(hits => {
-                const hitNames = hits.map(hit => hit.name);
-
-                this.startSearch(hitNames.sort(), addressList);
-            });
-        }
-        else {
-            this.startSearch([], addressList);
-        }
-
-        this.setSearchRegExp(searchAddress);
+    searchAddress: function (value) {
+        Radio.trigger("Gaz", "findStreets", value);
+        this.setSearchRegExp(value);
     },
 
     /**
      * Searches for house numbers for a given street name in the gazetter via the Masterportal API.
-     * @param {String} searchAddress String to be searched for in gazetter.
+     * @param {*} value - todo
      * @fires Core#RadioRequestMapGetMap
      * @fires Core#RadioRequestUtilSort
      * @returns {void}
      */
-    searchHouseNumbers: function (searchAddress) {
-        search(searchAddress, {
-            map: Radio.request("Map", "getMap"),
-            searchStreets: true,
-            searchHouseNumbers: true
-        }).then(hits => {
-            const hitsWithoutStreets = this.removeStreetsFromAddressList(hits),
-                preparedList = this.prepareAddressList(hitsWithoutStreets),
-                sortedPreparedList = Radio.request("Util", "sort", "", preparedList, "houseNumber", "houseNumberSupplement");
-
-            this.setAddressList(sortedPreparedList);
-            this.setAddressListFiltered(this.filterAddressList(this.get("addressList"), this.get("searchRegExp")));
-        });
-
-        this.setSearchRegExp(searchAddress);
+    searchHouseNumbers: function (value) {
+        Radio.trigger("Gaz", "findHouseNumbers", value);
+        this.setSearchRegExp(value);
     },
 
     /**
@@ -445,33 +421,22 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     selectStartAddress: function (searchString, addressListFiltered) {
-        const startAddress = addressListFiltered.find(address => address.name === searchString);
+        const startAddress = _.find(addressListFiltered, function (address) {
+            return address.joinAddress === searchString.replace(/ /g, "");
+        });
 
         this.setStartAddress(startAddress);
         this.setGeometryByFeatureId("startPoint", this.get("layer").getSource(), startAddress.geometry);
     },
 
-    /**
-     * Filters streets from the address list.
-     * @param {Object[]} addressList - list of addresses
-     * @returns {Object[]} addressList without streets
-     */
-    removeStreetsFromAddressList: function (addressList) {
-        return addressList.filter(address => address.type !== "street");
-    },
+    prepareAddressList: function (addressList, streetNameList) {
+        addressList.forEach(function (address) {
+            const coords = address.position.split(" ");
 
-    /**
-     * Extends the addresses by house number and house number supplement
-     * and overwrites the geometry with an ol.point.
-     * @param {Object[]} addressList - list of addresses
-     * @returns {Object[]} extended addressList
-     */
-    prepareAddressList: function (addressList) {
-        addressList.forEach(address => {
-            address.geometry = new Point([parseInt(address.geometry.coordinates[0], 10), parseInt(address.geometry.coordinates[1], 10)]);
-            address.houseNumber = address.properties.hausnummer ? address.properties.hausnummer._ : "";
-            address.houseNumberSupplement = address.properties.hausnummernzusatz ? address.properties.hausnummernzusatz._ : "";
-        });
+            address.geometry = new Point([parseInt(coords[0], 10), parseInt(coords[1], 10)]);
+            address.street = streetNameList[0];
+            address.joinAddress = address.street.replace(/ /g, "") + address.number + address.affix.replace(/ /g, "");
+        }, this);
 
         return addressList;
     },
@@ -483,7 +448,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {object[]} filtered list of addresses
      */
     filterAddressList: function (addressList, searchRegExp) {
-        return addressList.filter(address => address.name.search(searchRegExp) !== -1);
+        return addressList.filter(function (address) {
+            return address.joinAddress.search(searchRegExp) !== -1;
+        }, this);
     },
 
     /**
@@ -627,7 +594,8 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     setSearchRegExp: function (value) {
-        this.set("searchRegExp", new RegExp(value.replace(/ /g, " "), "i"));
+        // this.set("searchRegExp", new RegExp(value.replace(/ /g, " "), "i"));
+        this.set("searchRegExp", new RegExp(value.replace(/ /g, ""), "i"));
     },
 
     setAddressListFiltered: function (value) {

@@ -21,7 +21,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
 
             this.setAddressSearchValue(evt, false);
             this.model.selectStartAddress(address, this.model.get("addressListFiltered"));
-            this.model.findRegionalSchool(address);
+            this.model.findRegionalSchool(this.model.get("startAddress"));
             this.model.prepareRequest(this.model.get("startAddress"));
         },
         "click .address-search": function (evt) {
