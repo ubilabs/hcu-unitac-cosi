@@ -81,7 +81,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
      * @return {ReachabilityInAreaView} returns this
      */
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.setElement(document.getElementsByClassName("win-body")[0]);
         this.$el.html(this.template(attr));
@@ -303,7 +303,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
      */
     transformFeatures: function (features, crs, mapCrs) {
         _.each(features, function (feature) {
-            var geometry = feature.getGeometry();
+            const geometry = feature.getGeometry();
 
             if (geometry) {
                 geometry.transform(crs, mapCrs);

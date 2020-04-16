@@ -124,14 +124,14 @@ const BrwAbfrageView = Backbone.View.extend({
     },
 
     handleBauwChange: function () {
-        var text = document.getElementById("zBauwSelect").options[document.getElementById("zBauwSelect").selectedIndex].value;
+        const text = document.getElementById("zBauwSelect").options[document.getElementById("zBauwSelect").selectedIndex].value;
 
         this.model.updateSelectedBrwFeature("zBauweise", text);
         this.model.sendWpsConvertRequest();
     },
 
     handleStrassenLageChange: function () {
-        var text = document.getElementById("zStrassenLageSelect").options[document.getElementById("zStrassenLageSelect").selectedIndex].text;
+        const text = document.getElementById("zStrassenLageSelect").options[document.getElementById("zStrassenLageSelect").selectedIndex].text;
 
         this.model.updateSelectedBrwFeature("zStrassenLage", text);
         this.model.sendWpsConvertRequest();
@@ -166,7 +166,7 @@ const BrwAbfrageView = Backbone.View.extend({
      * @returns {void}
      */
     handleSelectBRWYear: function (evt) {
-        var selectedLayername = evt.target.value;
+        const selectedLayername = evt.target.value;
 
         this.model.switchLayer(selectedLayername);
         if (this.model.get("isViewMobile")) {
@@ -189,7 +189,7 @@ const BrwAbfrageView = Backbone.View.extend({
      * @returns {void}
      */
     handleHelpButton: function (evt) {
-        var helper = this.$el.find(evt.target).parent().next().next();
+        const helper = this.$el.find(evt.target).parent().next().next();
 
         if (helper.hasClass("help")) {
             helper.slideToggle();

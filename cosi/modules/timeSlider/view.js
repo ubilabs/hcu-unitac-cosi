@@ -22,7 +22,7 @@ const TimeSliderView = Backbone.View.extend({
     id: "time-series",
     template: _.template(Template),
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html(this.template(attr));
         this.delegateEvents();

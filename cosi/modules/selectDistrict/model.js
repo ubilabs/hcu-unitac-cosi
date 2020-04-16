@@ -473,7 +473,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
      * @returns {string[]} names - a list of the names of the selected districts
      */
     getSelectedDistrictNames: function (districts) {
-        var names = [];
+        const names = [];
 
         districts.forEach(function (district) {
             if (district.get("statgebiet")) {

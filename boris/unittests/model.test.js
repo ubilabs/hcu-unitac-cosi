@@ -5,7 +5,7 @@ import initializeBrwAbfrageModel from "@addons/boris/bodenrichtwertabfrage/model
 import Feature from "ol/Feature";
 
 describe("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
-    var tool,
+    let tool,
         model;
 
     before(function () {

@@ -234,10 +234,11 @@ function initializeCockpitModel () {
          * @returns {Object[]} - prepared Data.
          */
         prepareData: function (data, administrativeUnits, years, isMonthsSelected, attrName, condition) {
-            var adminUnitsValues = administrativeUnits.values,
+            const adminUnitsValues = administrativeUnits.values,
                 adminUnitsAttrName = administrativeUnits.attrName,
-                preparedData = [],
                 months_short = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+            let preparedData = [];
 
             adminUnitsValues.forEach(function (adminUnit) {
                 years.forEach(function (year) {

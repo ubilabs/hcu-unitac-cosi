@@ -158,7 +158,7 @@ const traficChannel = Backbone.Model.extend({
      * @returns {void}
      */
     refreshVerkehrssituation: function (model) {
-        var postmessage = "<wfs:GetFeature xmlns:wfs='https://www.opengis.net/wfs' service='WFS' version='1.1.0' xsi:schemaLocation='https://www.opengis.net/wfs https://schemas.opengis.net/wfs/1.1.0/wfs.xsd' xmlns:xsi='https://www.w3.org/2001/XMLSchema-instance'>" +
+        const postmessage = "<wfs:GetFeature xmlns:wfs='https://www.opengis.net/wfs' service='WFS' version='1.1.0' xsi:schemaLocation='https://www.opengis.net/wfs https://schemas.opengis.net/wfs/1.1.0/wfs.xsd' xmlns:xsi='https://www.w3.org/2001/XMLSchema-instance'>" +
             "<wfs:Query typeName='feature:bab_vkl' srsName='epsg:25832'>" +
                 "<ogc:Filter xmlns:ogc='https://www.opengis.net/ogc'>" +
                     "<ogc:PropertyIsLessThan>" +
@@ -178,11 +178,12 @@ const traficChannel = Backbone.Model.extend({
                 "Content-Type": "application/xml; charset=UTF-8"
             },
             success: function (data) {
-                var hits = $("wfs\\:FeatureCollection,FeatureCollection", data),
+                const hits = $("wfs\\:FeatureCollection,FeatureCollection", data),
                     fmNode = $(hits).find("gml\\:featureMember,featureMember"),
                     receivedNode = $(fmNode).find("app\\:received,received")[0],
-                    aktualitaet = receivedNode ? receivedNode.textContent : null,
-                    newEventValue;
+                    aktualitaet = receivedNode ? receivedNode.textContent : null;
+
+                let newEventValue;
 
                 if (aktualitaet) {
                     newEventValue = "<strong>aktuelle Meldungen der TBZ:</strong></br>Aktualität: " + aktualitaet.trim().replace("T", " ").substring(0, aktualitaet.length - 3) + "</br>";

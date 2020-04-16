@@ -4,7 +4,7 @@ import ModelList from "@modules/core/modelList/list.js";
 import SdpDownloadModel from "@addons/sdpdownload/model.js";
 
 describe("ADDON: sdpdownload", function () {
-    var tool,
+    let tool,
         model;
 
     before(function () {

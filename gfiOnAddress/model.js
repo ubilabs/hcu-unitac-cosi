@@ -33,32 +33,31 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         }
     },
     streetHit: function (data) {
-        var streetname = this.get("streetName"),
-            houseNumbers = [];
+        const streetname = this.get("streetName");
 
-        houseNumbers = this.prepareHouseNumbers(streetname, data);
+        let houseNumbers = this.prepareHouseNumbers(streetname, data);
+
         houseNumbers = this.sortHouseNumbers(houseNumbers);
         this.setHouseNumbers(houseNumbers);
         this.trigger("render");
     },
 
     sortHouseNumbers: function (houseNumbers) {
-        var sortedHouseNumbers;
-
         // sort last property first in _.chain()
         // https://stackoverflow.com/questions/16426774/underscore-sortby-based-on-multiple-attributes
-        sortedHouseNumbers = _.chain(houseNumbers).sortBy(function (houseNumber) {
+        const sortedHouseNumbers = _.chain(houseNumbers).sortBy(function (houseNumber) {
             return houseNumber.affix;
         }).sortBy(function (houseNumber) {
             return parseInt(houseNumber.nr, 10);
         }).value();
+
         return sortedHouseNumbers;
     },
     prepareHouseNumbers: function (streetName, houseNumbers) {
-        var houseNumbersArray = [];
+        const houseNumbersArray = [];
 
         _.each(houseNumbers, function (houseNumber) {
-            var nr = houseNumber.adress.housenumber,
+            const nr = houseNumber.adress.housenumber,
                 affix = _.isUndefined(houseNumber.adress.affix) === true ? undefined : houseNumber.adress.affix;
 
             houseNumbersArray.push({
@@ -69,7 +68,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         return houseNumbersArray;
     },
     addressClicked: function (streetname, housenumber, affix) {
-        var addressObj = {streetname: streetname,
+        const addressObj = {streetname: streetname,
             housenumber: housenumber.trim(),
             affix: affix};
 
@@ -80,11 +79,11 @@ const gfiOnAddressSearch = Backbone.Model.extend({
      * Verarbeiten der GAGES-Informationen und öffnen des GFI
      */
     adressHit: function (data) {
-        var gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
+        const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
             attributes = {},
-            i,
-            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
-            adressString;
+            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" ");
+
+        let i, adressString;
 
         for (i = 0; i < coordinates.length; i++) {
             coordinates[i] = parseFloat(coordinates[i]);

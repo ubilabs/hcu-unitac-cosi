@@ -85,7 +85,7 @@ function initializeBrwAbfrageModel () {
         },
 
         simulateLanduseSelect: function (paramUrlParams) {
-            var gfiFeature = this.get("gfiFeature"),
+            const gfiFeature = this.get("gfiFeature"),
                 landuseList = gfiFeature.get("nutzungsart"),
                 landuseByBrwId = this.findLanduseByBrwId(landuseList, paramUrlParams.brwId);
 
@@ -438,7 +438,7 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         handleConvertResponse: function (response, status) {
-            var complexData,
+            let complexData,
                 executeResponse;
 
             if (status === 200) {
@@ -475,7 +475,7 @@ function initializeBrwAbfrageModel () {
          * @returns {string}                Object für POST-Request
          */
         getConvertObject: function (brw) {
-            var requestObj = {},
+            let requestObj = {},
                 richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", "."); // unpunctuate Wert für WPS
 
             if (richtwert.match(/,/) && richtwert.match(/\./)) {
@@ -564,7 +564,7 @@ function initializeBrwAbfrageModel () {
          * @returns {object}        ergänztes Objekt
          */
         setObjectAttribute: function (object, attrName, value, dataType) {
-            var dataObj = {
+            const dataObj = {
                 dataType: dataType,
                 value: value
             };
@@ -612,14 +612,15 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         setSelectedBrwFeature: function (feature) {
-            var brw = this.extendFeatureAttributes(feature, this.getActiveLayerNameAsStichtag(this.get("modelList")));
+            const brw = this.extendFeatureAttributes(feature, this.getActiveLayerNameAsStichtag(this.get("modelList")));
 
             this.set("selectedBrwFeature", brw);
         },
 
         extendFeatureAttributes: function (feature, stichtag) {
-            var sw = feature.get("schichtwert") ? feature.get("schichtwert") : null,
-                isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+            const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+
+            let sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
 
             if (sw && typeof sw === "string") {
                 sw = this.jsonParse(sw);
@@ -685,7 +686,7 @@ function initializeBrwAbfrageModel () {
          * @return {void}
          */
         preparePrint: function () {
-            var visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
+            const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                     return layer.getVisible() === true;
                 }),
                 scale = Radio.request("MapView", "getOptions").scale,
@@ -743,8 +744,9 @@ function initializeBrwAbfrageModel () {
                             "scale": scale
                         }
                     }
-                },
-                buildSpec = new BuildSpecModel(attr);
+                };
+
+            let buildSpec = new BuildSpecModel(attr);
 
             buildSpec.buildLayers(visibleLayerList);
             buildSpec = buildSpec.toJSON();
@@ -838,7 +840,7 @@ function initializeBrwAbfrageModel () {
         * @returns {void}
         */
         updateSelectedBrwFeature: function (key, value) {
-            var feature = this.get("selectedBrwFeature"),
+            const feature = this.get("selectedBrwFeature"),
                 isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
             if (key === "convertedBrw") {

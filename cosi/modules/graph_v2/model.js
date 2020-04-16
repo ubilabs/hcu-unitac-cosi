@@ -22,7 +22,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @listens Tools.Graph#RadioRequestGraphGetGraphParams
      */
     initialize: function () {
-        var channel = Radio.channel("GraphV2");
+        const channel = Radio.channel("GraphV2");
 
         channel.on({
             "createGraph": this.createGraph
@@ -46,7 +46,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     createGraph: function (graphConfig) {
-        var svg = select(graphConfig.selector);
+        const svg = select(graphConfig.selector);
 
         if (graphConfig.graphType === "Linegraph") {
             this.createLineGraph(graphConfig);
@@ -74,7 +74,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @return {number}  - maxData
      */
     createMaxValue: function (data, attrToShowArray) {
-        var maxValue = 0;
+        let maxValue = 0;
 
         if (data !== undefined && attrToShowArray !== undefined) {
             data.forEach(function (obj) {
@@ -90,7 +90,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     },
 
     createMinValue: function (data, attrToShowArray) {
-        var minValue = null;
+        let minValue = null;
 
         if (data !== undefined && attrToShowArray !== undefined) {
             data.forEach(function (obj) {
@@ -120,7 +120,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @return {object} - Object with attribute "minValue" and "maxValue".
      */
     createValues: function (data, attrToShowArray, dynamicAxisStart = false, axisTicks, yAxisMaxValue) {
-        var valueObj = {};
+        const valueObj = {};
 
         if (!_.isUndefined(axisTicks) && _.has(axisTicks, "start") && _.has(axisTicks, "end")) {
             valueObj.minValue = axisTicks.start;
@@ -155,8 +155,8 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - scaleX
      */
     createScaleX: function (data, width, scaletype, attr, dynamicAxisStart = false, xAxisTicks) {
-        var rangeArray = [0, width],
-            scale,
+        const rangeArray = [0, width];
+        let scale,
             valueObj;
 
         if (scaletype === "ordinal") {
@@ -183,8 +183,8 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - scaleY
      */
     createScaleY: function (data, height, scaletype, attrToShowArray, dynamicAxisStart = false, yAxisTicks, yAxisMaxValue) {
-        var rangeArray = [height, 0],
-            scale,
+        const rangeArray = [height, 0];
+        let scale,
             valueObj;
 
         if (scaletype === "ordinal") {
@@ -209,7 +209,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - ordinalScale
      */
     createOrdinalScale: function (data, rangeArray, attrArray) {
-        var values = [];
+        let values = [];
 
         _.each(data, function (d) {
             _.each(attrArray, function (attr) {
@@ -243,8 +243,8 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - axisBottom
      */
     createAxisBottom: function (scale, xAxisTicks) {
-        var unit = !_.has(xAxisTicks, "unit") ? "" : " " + xAxisTicks.unit,
-            d3Object;
+        const unit = !_.has(xAxisTicks, "unit") ? "" : " " + xAxisTicks.unit;
+        let d3Object;
 
         if (xAxisTicks === undefined) {
             d3Object = axisBottom(scale);
@@ -274,7 +274,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - axisLeft
      */
     createAxisLeft: function (scale, yAxisTicks) {
-        var d3Object;
+        let d3Object;
 
         if (_.isUndefined(yAxisTicks) && !_.has(yAxisTicks, "ticks")) {
             d3Object = axisLeft(scale)
@@ -328,14 +328,14 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendDataToSvg: function (svg, data, className, d3line, tooltipDiv = null, attrName = null, color = "rgb(8, 88, 158)") {
-        var dataToAdd = data.filter(function (obj) {
+        const dataToAdd = data.filter(function (obj) {
             return obj.yAttrToShow !== "-";
         });
 
         svg.append("g")
             .attr("class", "graph-data")
             .attr("transform", function () {
-                var y;
+                let y;
 
                 if (svg.select(".graph-legend").size() > 0) {
                     y = svg.select(".graph-legend").node().getBBox().height;
@@ -390,13 +390,13 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendXAxisToSvg: function (svg, xAxis, xAxisLabel, width) {
-        var textOffset = _.isUndefined(xAxisLabel.offset) ? 0 : xAxisLabel.offset,
+        const textOffset = _.isUndefined(xAxisLabel.offset) ? 0 : xAxisLabel.offset,
             textAnchor = _.isUndefined(xAxisLabel.textAnchor) ? "middle" : xAxisLabel.textAnchor,
             fill = _.isUndefined(xAxisLabel.fill) ? "#000" : xAxisLabel.fill,
             fontSize = _.isUndefined(xAxisLabel.fontSize) ? 10 : xAxisLabel.fontSize,
             label = _.isUndefined(xAxisLabel.label) ? null : [xAxisLabel.label],
-            rotate = _.isUndefined(xAxisLabel.rotate) ? null : xAxisLabel.rotate,
-            xAxisDraw = xAxis;
+            rotate = _.isUndefined(xAxisLabel.rotate) ? null : xAxisLabel.rotate;
+        let xAxisDraw = xAxis;
 
         xAxisDraw = svg.select(".graph-data").selectAll("yAxisDraw")
             .data([1]) // setze ein Dummy-Array mit Länge 1 damit genau einmal die Achse appended wird
@@ -404,7 +404,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             .append("g")
             .attr("transform", function () {
                 // gibt den Hochwert des untersten Ticks zurück
-                var tick = svg.select(".yAxisDraw .tick").attr("transform"),
+                const tick = svg.select(".yAxisDraw .tick").attr("transform"),
                     transform = tick.substring(tick.indexOf("(") + 1, tick.indexOf(")")).split(/\s|,/); // blank oder Komma
 
                 return "translate(0," + transform[1] + ")";
@@ -442,12 +442,12 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendYAxisToSvg: function (svg, yAxis, yAxisLabel, height) {
-        var textOffset = _.isUndefined(yAxisLabel.offset) ? 0 : yAxisLabel.offset,
+        const textOffset = _.isUndefined(yAxisLabel.offset) ? 0 : yAxisLabel.offset,
             textAnchor = _.isUndefined(yAxisLabel.textAnchor) ? "middle" : yAxisLabel.textAnchor,
             fill = _.isUndefined(yAxisLabel.fill) ? "#000" : yAxisLabel.fill,
             fontSize = _.isUndefined(yAxisLabel.fontSize) ? 10 : yAxisLabel.fontSize,
-            label = _.isUndefined(yAxisLabel.label) ? null : [yAxisLabel.label].flat(),
-            yAxisDraw = yAxis;
+            label = _.isUndefined(yAxisLabel.label) ? null : [yAxisLabel.label].flat();
+        let yAxisDraw = yAxis;
 
         yAxisDraw = svg.select(".graph-data").selectAll("yAxisDraw")
             .data([1]) // setze ein Dummy-Array mit Länge 1 damit genau einmal die Achse appended wird
@@ -489,10 +489,10 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      */
     /* eslint-disable max-params */
     appendLinePointsToSvg: function (svg, data, scaleX, scaleY, scaleTypeX, xAttr, yAttrToShow, tooltipDiv, dotSize, className = null, color = "rgb(8, 88, 158)") {
-        var dat = data.filter(function (obj) {
-                return obj[yAttrToShow] !== "-";
-            }),
-            yAttributeToShow;
+        const dat = data.filter(function (obj) {
+            return obj[yAttrToShow] !== "-";
+        });
+        let yAttributeToShow;
 
         svg.append("g").attr("class", " graph-points").selectAll("points")
             .data(dat)
@@ -708,7 +708,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     download (url, filename) {
-        var link = document.createElement("a");
+        const link = document.createElement("a");
 
         if (link.download !== undefined) { // feature detection
             // Browsers that support HTML5 download attribute
@@ -732,7 +732,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendLegend: function (svg, legendData) {
-        var legend = svg.append("g")
+        const legend = svg.append("g")
             .attr("class", "graph-legend")
             .style("height", "200 px")
             .selectAll("g")
@@ -826,7 +826,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     createLineGraph: function (graphConfig) {
-        var isMobile = Radio.request("Util", "isViewMobile"),
+        const isMobile = Radio.request("Util", "isViewMobile"),
             selector = graphConfig.selector,
             scaleTypeX = graphConfig.scaleTypeX,
             scaleTypeY = graphConfig.scaleTypeY,
@@ -853,9 +853,9 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             tooltipDiv = select(graphConfig.selectorTooltip),
             offset = 10,
             dotSize = graphConfig.dotSize || 5,
-            valueLine,
             hasLineLabel = graphConfig.hasLineLabel,
             attribution = graphConfig.attribution || {};
+        let valueLine;
 
         if (_.has(graphConfig, "legendData")) {
             this.appendLegend(svg, graphConfig.legendData);
@@ -927,7 +927,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     createBarGraph: function (graphConfig) {
-        var selector = graphConfig.selector,
+        const selector = graphConfig.selector,
             scaleTypeX = graphConfig.scaleTypeX,
             scaleTypeY = graphConfig.scaleTypeY,
             data = graphConfig.data,
@@ -983,7 +983,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         svg.append("g")
             .attr("class", "graph-data")
             .attr("transform", function () {
-                var legendHeight;
+                let legendHeight;
 
                 if (svg.select(".graph-legend").size() > 0) {
                     legendHeight = svg.select(".graph-legend").node().getBBox().height;
@@ -1102,7 +1102,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     createScatterPlot: function (graphConfig) {
-        var isMobile = Radio.request("Util", "isViewMobile"),
+        const isMobile = Radio.request("Util", "isViewMobile"),
             selector = graphConfig.selector,
             scaleTypeX = graphConfig.scaleTypeX,
             scaleTypeY = graphConfig.scaleTypeY,
@@ -1174,19 +1174,21 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {object} the values object
      */
     evaluateData: function (data, xAttr, yAttr) {
-        var dat = data.filter(function (obj) {
+        const dat = data.filter(function (obj) {
                 return obj[yAttr] !== "-" && obj[xAttr] !== "-";
             }),
             xArr = dat.map(d => d[xAttr]),
             yArr = dat.map(d => d[yAttr]),
             xMean = d3.mean(xArr),
-            yMean = d3.mean(yArr),
-            xr = 0,
+            yMean = d3.mean(yArr);
+        let xr = 0,
             yr = 0,
             term1 = 0,
             term2 = 0,
-            a, b,
-            covariance, pearson;
+            a = 0,
+            b = 0,
+            covariance = "",
+            pearson = "";
 
         // calculate coefficients
         for (let i = 0; i < dat.length; i++) {
@@ -1244,7 +1246,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         svg.append("g")
             .attr("class", "graph-regression")
             .attr("transform", function () {
-                var y;
+                let y;
 
                 if (svg.select(".graph-legend").size() > 0) {
                     y = svg.select(".graph-legend").node().getBBox().height;
@@ -1300,7 +1302,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         svg.append("g")
             .attr("class", "graph-data")
             .attr("transform", function () {
-                var y;
+                let y;
 
                 if (svg.select(".graph-legend").size() > 0) {
                     y = svg.select(".graph-legend").node().getBBox().height;
@@ -1327,12 +1329,12 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendDataToScatterPlot: function (svg, data, scaleX, scaleY, xAttr, refAttr, yAttr, tooltipDiv, dotSize) {
-        var refValues = data.reduce((res, val) => {
+        const refValues = data.reduce((res, val) => {
                 return res.includes(val[refAttr]) ? res : [...res, val[refAttr]];
             }, []),
             refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", refValues.length + 1),
-            refColors = _.object(refValues.map((val, i) => [val, refColorScale.legend.colors[i]])),
-            yAttributeToShow,
+            refColors = _.object(refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
+        let yAttributeToShow,
             xAttributeToShow,
             tooltipElement;
 

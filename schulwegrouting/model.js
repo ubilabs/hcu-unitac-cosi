@@ -129,7 +129,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     printRouteMapFish: function () {
-        var visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
+        const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                 return layer.getVisible() === true;
             }),
             address = this.get("startAddress"),
@@ -157,8 +157,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                         }
                     }]
                 }
-            },
-            buildSpec = new BuildSpecModel(attr);
+            };
+
+        let buildSpec = new BuildSpecModel(attr);
 
         buildSpec.buildLayers(visibleLayerList);
         buildSpec = buildSpec.toJSON();
@@ -167,7 +168,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     prepareRouteDesc: function (routeDesc) {
-        var data = [];
+        const data = [];
 
         _.each(routeDesc, function (route, index) {
             data.push([String(index + 1), route.anweisung]);
@@ -176,7 +177,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     handleResponse: function (response, status) {
-        var parsedData;
+        let parsedData;
 
         this.toggleLoader(false);
         if (status === 200) {
@@ -207,8 +208,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     handleSuccess: function (response) {
-        var routeGeometry = this.parseRoute(response.route.edge),
-            routeDescription = response.routenbeschreibung.part;
+        const routeGeometry = this.parseRoute(response.route.edge);
+
+        let routeDescription = response.routenbeschreibung.part;
 
         this.setGeometryByFeatureId("route", this.get("layer").getSource(), routeGeometry);
         response.kuerzesteStrecke = Radio.request("Util", "punctuate", response.kuerzesteStrecke);
@@ -237,9 +239,10 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     parseRegionalSchool: function (xml) {
-        var schoolId,
+        const primarySchool = $(xml).find("gages\\:grundschulnr,grundschulnr");
+
+        let schoolId,
             school,
-            primarySchool = $(xml).find("gages\\:grundschulnr,grundschulnr"),
             schoolWithAdress;
 
         if (primarySchool.length > 0) {
@@ -262,7 +265,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {ol.geom.MultiLineString} multiLineString - the route geometry
      */
     parseRoute: function (routeParts) {
-        var wktParser = new WKT(),
+        const wktParser = new WKT(),
             multiLineString = new MultiLineString({});
 
         if (_.isArray(routeParts)) {
@@ -319,7 +322,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     setObjectAttribute: function (object, attrName, dataType, value) {
-        var dataObj = {
+        const dataObj = {
             dataType: dataType,
             value: value
         };
@@ -362,7 +365,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @return {void}
      */
     startSearch: function (streetNameList, addressList) {
-        var filteredAddressList;
+        let filteredAddressList;
 
         if (streetNameList.length === 1) {
             this.setStreetNameList(streetNameList);
@@ -460,7 +463,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     selectSchool: function (schoolList, schoolId) {
-        var school = this.filterSchoolById(schoolList, schoolId);
+        const school = this.filterSchoolById(schoolList, schoolId);
 
         this.setSelectedSchool(school);
         this.setGeometryByFeatureId("endPoint", this.get("layer").getSource(), school.getGeometry());
@@ -473,7 +476,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      */
     addRouteFeatures: function (source) {
         ["startPoint", "endPoint", "route"].forEach(function (id) {
-            var feature = new Feature();
+            const feature = new Feature();
 
             feature.setId(id);
             feature.set("styleId", id);
@@ -538,7 +541,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     resetRoute: function () {
-        var features = this.get("layer").getSource().getFeatures();
+        const features = this.get("layer").getSource().getFeatures();
 
         this.setStartAddress({});
         this.setSelectedSchool({});
@@ -559,12 +562,12 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {array} targetList
      */
     filterStreets: function (evtValue) {
-        var streetNameList = this.get("streetNameList"),
+        const streetNameList = this.get("streetNameList"),
             targetStreet = evtValue.split(" ")[0],
             targetList = [];
 
         _.each(streetNameList, function (street) {
-            var streetNameParts = _.contains(street, " ") ? street.split(" ") : [street],
+            const streetNameParts = _.contains(street, " ") ? street.split(" ") : [street],
                 resultStreets = streetNameParts.filter(function (part) {
                     return part.toLowerCase() === targetStreet.toLowerCase();
                 }, this);

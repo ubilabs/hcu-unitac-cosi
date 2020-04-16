@@ -21,7 +21,7 @@ const QueryValuesView = Backbone.View.extend(/** @lends QueryValuesView.prototyp
         title: "Auswahl löschen"
     },
     render: function () {
-        var html = "",
+        let html = "",
             val;
 
         if (this.model.get("type") === "boolean") {

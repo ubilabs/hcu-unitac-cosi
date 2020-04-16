@@ -6,7 +6,7 @@ const GfiOnAddressView = Backbone.View.extend({
         "click .address": "addressClicked"
     },
     initialize: function () {
-        var lgvContainer = $.find(".lgv-container")[0];
+        const lgvContainer = $.find(".lgv-container")[0];
 
         this.listenTo(this.model, {
             "render": this.render,
@@ -20,7 +20,7 @@ const GfiOnAddressView = Backbone.View.extend({
     model: new GfiOnAddressModel(),
     template: _.template(GfiOnAddressTemplate),
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html("");
         this.$el.append(this.template(attr));
@@ -30,7 +30,7 @@ const GfiOnAddressView = Backbone.View.extend({
         this.$el.html("");
     },
     addressClicked: function (evt) {
-        var street = $(evt.currentTarget).attr("street"),
+        const street = $(evt.currentTarget).attr("street"),
             hsnr = $(evt.currentTarget).attr("hsnr"),
             affix = $(evt.currentTarget).attr("affix");
 

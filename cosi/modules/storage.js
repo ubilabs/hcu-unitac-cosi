@@ -14,7 +14,7 @@ export function setupStorage () {
  * @returns {void}
  */
 export function storageListener (models) {
-    var _models = models.length ? models : [models];
+    const _models = models.length ? models : [models];
 
     _models.forEach(model => {
         if (model instanceof Backbone.Model) {
@@ -36,7 +36,7 @@ export function storageListener (models) {
  * @returns {void}
  */
 export function updateFromStorage (models) {
-    var _models = models.length ? models : [models];
+    const _models = models.length ? models : [models];
 
     _models.forEach(model => {
         for (const key in model.defaults) {
