@@ -108,22 +108,22 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
 
         snippetAttribute.values = Radio.request("Util", "sort", snippetAttribute.values);
         if (snippetAttribute.type === "string" || snippetAttribute.type === "text") {
-            snippetAttribute = _.extend(snippetAttribute, {"snippetType": "dropdown"});
+            snippetAttribute = Object.assign(snippetAttribute, {"snippetType": "dropdown"});
             this.get("snippetCollection").add(new SnippetDropdownModel(snippetAttribute));
         }
         else if (snippetAttribute.type === "boolean") {
             if (snippetAttribute.hasOwnProperty("preselectedValues")) {
                 isSelected = snippetAttribute.preselectedValues[0];
             }
-            snippetAttribute = _.extend(snippetAttribute, {"snippetType": "checkbox", "label": snippetAttribute.displayName, "isSelected": isSelected});
+            snippetAttribute = Object.assign(snippetAttribute, {"snippetType": "checkbox", "label": snippetAttribute.displayName, "isSelected": isSelected});
             this.get("snippetCollection").add(new SnippetCheckboxModel(snippetAttribute));
         }
         else if (snippetAttribute.type === "integer" || snippetAttribute.type === "decimal") {
-            snippetAttribute = _.extend(snippetAttribute, {"snippetType": "slider"});
+            snippetAttribute = Object.assign(snippetAttribute, {"snippetType": "slider"});
             this.get("snippetCollection").add(new SnippetSliderModel(snippetAttribute));
         }
         else if (snippetAttribute.type === "checkbox-classic") {
-            snippetAttribute = _.extend(snippetAttribute, {"snippetType": snippetAttribute.type});
+            snippetAttribute = Object.assign(snippetAttribute, {"snippetType": snippetAttribute.type});
             snippetAttribute.type = "string";
             snippetAttribute.layerId = this.get("layerId");
             snippetAttribute.isInitialLoad = this.get("isInitialLoad");
@@ -182,7 +182,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
         this.get("attributeWhiteList").forEach(function (attr) {
             const attrObj = this.createAttrObject(attr);
 
-            featureAttribute = _.findWhere(featureAttributesMap, {name: attrObj.name});
+            featureAttribute = featureAttributesMap.find({name: attrObj.name});
             if (featureAttribute !== undefined) {
                 featureAttribute.matchingMode = attrObj.matchingMode;
                 trimmedFeatureAttributesMap.push(featureAttribute);
@@ -213,7 +213,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
         const displayNames = getDisplayNamesOfFeatureAttributes(this.get("layerId"));
 
         featureAttributesMap.forEach(function (featureAttribute) {
-            if (_.isObject(displayNames) === true && displayNames.hasOwnProperty(featureAttribute.name) === true) {
+            if (displayNames && (typeof displayNames === "object" || typeof displayNames === "function") && displayNames.hasOwnProperty(featureAttribute.name) === true) {
                 featureAttribute.displayName = displayNames[featureAttribute.name];
             }
             else {
@@ -235,7 +235,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
 
         if (rules !== undefined) {
             rules.forEach(function (rule) {
-                attrMap = _.findWhere(featureAttributesMap, {name: rule.attrName});
+                attrMap = featureAttributesMap.find({name: rule.attrName});
 
                 if (attrMap) {
                     attrMap.preselectedValues = rule.values;

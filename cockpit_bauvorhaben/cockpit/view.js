@@ -103,17 +103,21 @@ const CockpitView = Backbone.View.extend({
      */
     renderLegend: function () {
         const districts = this.model.get("filterObject").districts,
-            suburbs = this.model.get("filterObject").suburbs;
-        let administrativeUnits = suburbs.length > 0 ? suburbs : districts;
+            suburbs = this.model.get("filterObject").suburbs,
+            administrativeUnits = suburbs.length > 0 ? suburbs : districts,
+            checkSort = administrativeUnits.filter(function (value) {
+                return value !== districts;
+            });
+        let administrativeFinalUnits = administrativeUnits;
 
         // sort districts
-        if (_.without(administrativeUnits, districts) === []) {
-            administrativeUnits = this.model.rearrangeArray(administrativeUnits, true, this.model.get("sortedDistricts"));
+        if (checkSort === []) {
+            administrativeFinalUnits = this.model.rearrangeArray(administrativeFinalUnits, true, this.model.get("sortedDistricts"));
         }
         // set "Hamburg gesamt" and "Nicht georeferenziert" to back
-        administrativeUnits = this.model.rearrangeArray(administrativeUnits, false, this.model.get("sortToBackValues"));
+        administrativeFinalUnits = this.model.rearrangeArray(administrativeFinalUnits, false, this.model.get("sortToBackValues"));
 
-        this.$el.find(".legend").html(this.templateLegend({administrativeUnits: administrativeUnits}));
+        this.$el.find(".legend").html(this.templateLegend({administrativeUnits: administrativeFinalUnits}));
     },
     /**
      * inits the dropdown list
@@ -163,7 +167,9 @@ const CockpitView = Backbone.View.extend({
             return value;
         });
 
-        selectedValues = _.without(selectedValues, undefined);
+        selectedValues = selectedValues.filter(function (value) {
+            return value !== undefined;
+        });
         this.model.setFilterObjectByKey(key, selectedValues);
         if (key === "years") {
             this.disableMonthCheckboxByYearsLength(selectedValues);

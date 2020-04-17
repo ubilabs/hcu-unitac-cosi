@@ -8,7 +8,7 @@ import * as Polygon from "ol/geom/Polygon";
 import GeoJSON from "ol/format/GeoJSON";
 
 const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         id: "selectDistrict",
         selectedDistricts: [],
         districtLayer: [], // e.g.  {name:  "Statistische Gebiete", selector: "statgebiet", layerIds:[]}
@@ -313,7 +313,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
     },
 
     resetSelectedDistricts: function () {
-        _.each(this.get("selectedDistricts"), function (feature) {
+        this.get("selectedDistricts").forEach(feature => {
             feature.unset("styleId");
             feature.setStyle(this.get("defaultStyle"));
         }, this);
@@ -361,7 +361,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         return this.get("activeScope");
     },
     toggleScopeLayers: function () {
-        _.each(this.get("districtLayerNames"), (layerName) => {
+        this.get("districtLayerNames").forEach(layerName => {
             const layer = Radio.request("ModelList", "getModelByAttributes", {"name": layerName});
 
             if (layerName !== "Stadtteile") {
@@ -395,7 +395,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
                 .map(layer => layer.get("name"))
                 .filter(layerName => districtLayerNames.includes(layerName));
 
-        if (_.isEqual(districtLayerNames.sort(), districtLayersLoaded.sort())) {
+        if (this.isEquivalent(districtLayerNames.sort(), districtLayersLoaded.sort())) {
             this.setIsActive(true);
             this.set("isReady", true);
 
@@ -416,7 +416,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
             districts = layerSource.getFeatures();
         }
 
-        _.each(districts, (feature) => {
+        districts.forEach((feature) => {
             if (feature.getProperties()[this.getSelector()] === districtName) {
                 extent = feature.getGeometry().getExtent();
             }
@@ -508,7 +508,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         }
     },
     setBboxGeometry: function (bboxGeometry) {
-        const layerlist = _.union(Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}), Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+        const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
 
         Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, bboxGeometry);
     },
@@ -531,7 +531,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
 
         this.resetSelectedDistricts();
         this.set("selectedDistricts", features);
-        _.each(features, feature => {
+        features.forEach(feature => {
             feature.set("styleId", feature.getId());
             feature.setStyle(that.get("selectedStyle"));
         });
@@ -539,6 +539,38 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         this.set("bboxGeometry", bboxGeometry);
         this.setBboxGeometry(bboxGeometry);
         this.get("channel").trigger("selectionChanged", bboxGeometry.getExtent().toString(), this.get("activeScope"), this.getSelectedDistrictNames(features));
+    },
+
+    /**
+     * Check if two objects are same
+     * @param {Object} a the first object
+     * @param {Object} b the second object
+     * @returns {Boolean} true or false
+     */
+    isEquivalent: function isEquivalent (a, b) {
+    // Create arrays of property names
+        const aProps = Object.getOwnPropertyNames(a),
+            bProps = Object.getOwnPropertyNames(b);
+
+        // If number of properties is different,
+        // objects are not equivalent
+        if (aProps.length !== bProps.length) {
+            return false;
+        }
+
+        for (let i = 0; i < aProps.length; i++) {
+            const propName = aProps[i];
+
+            // If values of same property are not equal,
+            // objects are not equivalent
+            if (a[propName] !== b[propName]) {
+                return false;
+            }
+        }
+
+        // If we made it this far, objects
+        // are considered equivalent
+        return true;
     }
 });
 

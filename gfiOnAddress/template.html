@@ -4,8 +4,8 @@
         <span aria-hidden="true">&times;</span>
     </button>
     <p>Bitte wählen Sie eine Hausnummer:</p>
-    <% _.each(houseNumbers, function (houseNumber) { %>
-        <%if (_.isUndefined(houseNumber.affix) === true ){ %>
+    <% houseNumbers.forEach(function (houseNumber) { %>
+        <%if (houseNumber.affix === undefined ){ %>
             <a class="address" street="<%= streetName %>" hsnr="<%= houseNumber.nr %>"><%= houseNumber.nr%></a>
         <% } else { %>
             <a class="address" street="<%= streetName %>" hsnr="<%= houseNumber.nr %>" affix="<%= houseNumber.affix %>"><%= houseNumber.nr + " " + houseNumber.affix %></a>

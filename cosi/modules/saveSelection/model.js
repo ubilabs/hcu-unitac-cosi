@@ -1,7 +1,7 @@
 import SaveSelectionModel from "../../../../modules/tools/saveSelection/model";
 
 const SaveSelectionCosiModel = SaveSelectionModel.extend(/** @lends SaveSelectionCosiModel.prototype */{
-    defaults: _.extend({}, SaveSelectionModel.prototype.defaults, {
+    defaults: Object.assign({}, SaveSelectionModel.prototype.defaults, {
         id: "saveSelectionCosi",
         name: "Sitzung speichern",
         selectedDistrictIds: [],

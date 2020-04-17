@@ -168,7 +168,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
         if (!newFilter) {
             this.selectFilterReminder();
         }
-        else if (_.contains(IdList, newFilter.layerId)) {
+        else if (IdList.includes(newFilter.layerId)) {
             this.duplicateFilterReminder();
         }
         else {
@@ -340,8 +340,12 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             }, this);
             comparableFeatures = results[0];
             if (results.length > 1) {
-                intersection = _.intersection(...resultNames);
-                comparableFeatures = results[0].filter(feature => _.contains(intersection, feature.getProperties()[selector]));
+                intersection = resultNames.reduce(function (a, b) {
+                    return a.filter(function (val) {
+                        return b.includes(val);
+                    });
+                });
+                comparableFeatures = results[0].filter(feature => intersection.includes(feature.getProperties()[selector]));
                 this.model.set("comparableFeaturesNames", intersection);
                 this.renderCompareResults(intersection);
                 this.renderParams();
@@ -391,7 +395,11 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             filterResults.push(selectedFeatures);
         }, this);
         if (filterResults.length > 1) {
-            intersection = _.intersection(...filterResults);
+            intersection = filterResults.reduce(function (a, b) {
+                return a.filter(function (val) {
+                    return b.includes(val);
+                });
+            });
             return intersection;
         }
         return filterResults[0];
@@ -530,7 +538,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             districtLayer = Radio.request("ModelList", "getModelByAttributes", {"name": scope}),
             selector = Radio.request("SelectDistrict", "getDistrictLayer").filter(item => item.name === scope)[0].selector,
             featureCollection = districtLayer.get("layer").getSource().getFeatures(),
-            selectedFeatures = featureCollection.filter(feature => _.contains(this.model.get("comparableFeaturesNames"), feature.getProperties()[selector]));
+            selectedFeatures = featureCollection.filter(feature => this.model.get("comparableFeaturesNames").includes(feature.getProperties()[selector]));
 
         if (this.model.get("refDistrict")) {
             selectedFeatures.push(this.model.get("refDistrict"));

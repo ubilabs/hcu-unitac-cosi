@@ -122,7 +122,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createValues: function (data, attrToShowArray, dynamicAxisStart = false, axisTicks, yAxisMaxValue) {
         const valueObj = {};
 
-        if (!_.isUndefined(axisTicks) && _.has(axisTicks, "start") && _.has(axisTicks, "end")) {
+        if (axisTicks && axisTicks.hasOwnProperty("start") && axisTicks.hasOwnProperty("end")) {
             valueObj.minValue = axisTicks.start;
             valueObj.maxValue = axisTicks.end;
         }
@@ -211,12 +211,12 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createOrdinalScale: function (data, rangeArray, attrArray) {
         let values = [];
 
-        _.each(data, function (d) {
-            _.each(attrArray, function (attr) {
+        data.forEach(function (d) {
+            attrArray.forEach(function (attr) {
                 values.push(d[attr]);
             });
         });
-        values = _.uniq(values);
+        values = [...new Set(values)];
         return scaleBand()
             .range(rangeArray)
             .domain(values);
@@ -243,20 +243,20 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - axisBottom
      */
     createAxisBottom: function (scale, xAxisTicks) {
-        const unit = !_.has(xAxisTicks, "unit") ? "" : " " + xAxisTicks.unit;
+        const unit = !xAxisTicks.hasOwnProperty("unit") ? "" : " " + xAxisTicks.unit;
         let d3Object;
 
         if (xAxisTicks === undefined) {
             d3Object = axisBottom(scale);
         }
-        else if (_.has(xAxisTicks, "values") && !_.has(xAxisTicks, "factor")) {
+        else if (xAxisTicks.hasOwnProperty("values") && !xAxisTicks.hasOwnProperty("factor")) {
             d3Object = axisBottom(scale)
                 .tickValues(xAxisTicks.values)
                 .tickFormat(function (d) {
                     return d + unit;
                 });
         }
-        else if (_.has(xAxisTicks, "values") && _.has(xAxisTicks, "factor")) {
+        else if (xAxisTicks.hasOwnProperty("values") && xAxisTicks.hasOwnProperty("factor")) {
             d3Object = axisBottom(scale)
                 .ticks(xAxisTicks.values, xAxisTicks.factor)
                 .tickFormat(function (d) {
@@ -276,7 +276,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createAxisLeft: function (scale, yAxisTicks) {
         let d3Object;
 
-        if (_.isUndefined(yAxisTicks) && !_.has(yAxisTicks, "ticks")) {
+        if (yAxisTicks === undefined && !yAxisTicks.hasOwnProperty("ticks")) {
             d3Object = axisLeft(scale)
                 .tickFormat(function (d) {
                     if (d % 1 === 0) {
@@ -390,12 +390,12 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendXAxisToSvg: function (svg, xAxis, xAxisLabel, width) {
-        const textOffset = _.isUndefined(xAxisLabel.offset) ? 0 : xAxisLabel.offset,
-            textAnchor = _.isUndefined(xAxisLabel.textAnchor) ? "middle" : xAxisLabel.textAnchor,
-            fill = _.isUndefined(xAxisLabel.fill) ? "#000" : xAxisLabel.fill,
-            fontSize = _.isUndefined(xAxisLabel.fontSize) ? 10 : xAxisLabel.fontSize,
-            label = _.isUndefined(xAxisLabel.label) ? null : [xAxisLabel.label],
-            rotate = _.isUndefined(xAxisLabel.rotate) ? null : xAxisLabel.rotate;
+        const textOffset = xAxisLabel.offset === undefined ? 0 : xAxisLabel.offset,
+            textAnchor = xAxisLabel.textAnchor === undefined ? "middle" : xAxisLabel.textAnchor,
+            fill = xAxisLabel.fill === undefined ? "#000" : xAxisLabel.fill,
+            fontSize = xAxisLabel.fontSize === undefined ? 10 : xAxisLabel.fontSize,
+            label = xAxisLabel.label === undefined ? null : [xAxisLabel.label],
+            rotate = xAxisLabel.rotate === undefined ? null : xAxisLabel.rotate;
         let xAxisDraw = xAxis;
 
         xAxisDraw = svg.select(".graph-data").selectAll("yAxisDraw")
@@ -442,11 +442,11 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     appendYAxisToSvg: function (svg, yAxis, yAxisLabel, height) {
-        const textOffset = _.isUndefined(yAxisLabel.offset) ? 0 : yAxisLabel.offset,
-            textAnchor = _.isUndefined(yAxisLabel.textAnchor) ? "middle" : yAxisLabel.textAnchor,
-            fill = _.isUndefined(yAxisLabel.fill) ? "#000" : yAxisLabel.fill,
-            fontSize = _.isUndefined(yAxisLabel.fontSize) ? 10 : yAxisLabel.fontSize,
-            label = _.isUndefined(yAxisLabel.label) ? null : [yAxisLabel.label].flat();
+        const textOffset = yAxisLabel.offset === undefined ? 0 : yAxisLabel.offset,
+            textAnchor = yAxisLabel.textAnchor === undefined ? "middle" : yAxisLabel.textAnchor,
+            fill = yAxisLabel.fill === undefined ? "#000" : yAxisLabel.fill,
+            fontSize = yAxisLabel.fontSize === undefined ? 10 : yAxisLabel.fontSize,
+            label = yAxisLabel.label === undefined ? null : [yAxisLabel.label].flat();
         let yAxisDraw = yAxis;
 
         yAxisDraw = svg.select(".graph-data").selectAll("yAxisDraw")
@@ -560,7 +560,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     appendLineLabel (svg, data, scaleX, scaleY, scaleTypeX, xAttr) {
         const dataToShow = data[data.length - 1],
             xAttrValue = dataToShow[xAttr],
-            dataArray = _.pairs(dataToShow)
+            dataArray = Object.entries(dataToShow)
                 .filter(d => d[0] !== xAttr)
                 .map(d => {
                     return {
@@ -857,10 +857,10 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             attribution = graphConfig.attribution || {};
         let valueLine;
 
-        if (_.has(graphConfig, "legendData")) {
+        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
             this.appendLegend(svg, graphConfig.legendData);
         }
-        _.each(attrToShowArray, function (yAttrToShow, i) {
+        attrToShowArray.forEach(function (yAttrToShow, i) {
             if (typeof yAttrToShow === "object") {
                 valueLine = this.createValueLine(scaleX, scaleY, xAttr, yAttrToShow.attrName, scaleTypeX);
                 this.appendDataToSvg(svg, data, yAttrToShow.attrClass, valueLine, tooltipDiv, yAttrToShow.attrName, yAttrToShow.attrColor);
@@ -951,7 +951,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             tooltipDiv = select(graphConfig.selectorTooltip),
             attribution = graphConfig.attribution || {};
 
-        if (_.has(graphConfig, "legendData")) {
+        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         this.drawBars(svg, data, scaleX, scaleY, height, selector, barWidth, xAttr, attrToShowArray, tooltipDiv);
@@ -1131,10 +1131,10 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             dotSize = graphConfig.dotSize || 5,
             attribution = graphConfig.attribution || {};
 
-        if (_.has(graphConfig, "legendData")) {
+        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
             this.appendLegend(svg, graphConfig.legendData);
         }
-        _.each(attrToShowArray, function (yAttrToShow) {
+        attrToShowArray.forEach(function (yAttrToShow) {
             const attrData = this.evaluateData(data, xAttr, yAttrToShow),
                 regressionLine = this.createRegressionLine(xAttr, scaleX, scaleY);
 
@@ -1333,7 +1333,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
                 return res.includes(val[refAttr]) ? res : [...res, val[refAttr]];
             }, []),
             refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", refValues.length + 1),
-            refColors = _.object(refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
+            refColors = this.toObject(refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
         let yAttributeToShow,
             xAttributeToShow,
             tooltipElement;
@@ -1457,6 +1457,26 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      */
     setGraphParams: function (value) {
         this.set("graphParams", value);
+    },
+
+    /**
+     * Converts lists into objects
+     * @param {Array} list to be converted
+     * @param {Array} values the corresponding values of parallel array
+     * @returns {Object} result
+     */
+    toObject: function (list, values) {
+        const result = {};
+
+        for (let i = 0, length = list.length; i < length; i++) {
+            if (values) {
+                result[list[i]] = values[i];
+            }
+            else {
+                result[list[i][0]] = list[i][1];
+            }
+        }
+        return result;
     }
 });
 

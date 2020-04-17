@@ -2,7 +2,7 @@ import Tool from "../../../../modules/core/modelList/tool/model";
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 
 const SelectModel = Tool.extend(/** @lends SelectModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         dropDownModel: {},
         modes: ["Erreichbarkeit ab einem Referenzpunkt", "Erreichbarkeit im Gebiet"]
     }),

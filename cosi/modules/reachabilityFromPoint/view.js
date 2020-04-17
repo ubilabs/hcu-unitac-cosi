@@ -202,7 +202,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
                     let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
 
                     newFeatures = this.transformFeatures(newFeatures, "EPSG:4326", "EPSG:25832");
-                    _.each(newFeatures, feature => {
+                    newFeatures.forEach(feature => {
                         feature.set("featureType", this.model.get("featureType"));
                     });
                     this.model.set("rawGeoJson", Radio.request("GraphicalSelect", "featureToGeoJson", newFeatures[0]));
@@ -241,7 +241,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
      * @returns {void}
      */
     setIsochroneAsBbox: function () {
-        const layerlist = _.union(Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}), Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
+        const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).contact(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
             polygonGeometry = this.model.get("isochroneFeatures")[this.model.get("steps") - 1].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
@@ -372,7 +372,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
      * @returns {void}
      */
     transformFeatures: function (features, crs, mapCrs) {
-        _.each(features, function (feature) {
+        features.forEach(function (feature) {
             const geometry = feature.getGeometry();
 
             if (geometry) {
@@ -427,7 +427,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
 
         if (visibleLayerModels.length > 0) {
             Radio.trigger("Alert", "alert:remove");
-            _.each(visibleLayerModels, layerModel => {
+            visibleLayerModels.forEach(layerModel => {
                 const features = layerModel.get("layer").getSource().getFeatures();
                 let idSelector;
 
@@ -553,10 +553,10 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
             features.push(feature);
         });
         //  check "featureType" for the isochrone layer
-        if (_.contains(features.map(feature => feature.getProperties().featureType), this.model.get("featureType"))) {
+        if (features.map(feature => feature.getProperties().featureType).includes(this.model.get("featureType"))) {
             const modelList = Radio.request("ModelList", "getModelsByAttributes", {isActive: true});
 
-            _.each(modelList, model => {
+            modelList.forEach(model => {
                 if (model.get("isActive")) {
                     model.set("isActive", false);
                 }

@@ -43,11 +43,10 @@ const gfiOnAddressSearch = Backbone.Model.extend({
     },
 
     sortHouseNumbers: function (houseNumbers) {
-        // sort last property first in _.chain()
         // https://stackoverflow.com/questions/16426774/underscore-sortby-based-on-multiple-attributes
-        const sortedHouseNumbers = _.chain(houseNumbers).sortBy(function (houseNumber) {
+        const sortedHouseNumbers = houseNumbers.sort(function (houseNumber) {
             return houseNumber.affix;
-        }).sortBy(function (houseNumber) {
+        }).sort(function (houseNumber) {
             return parseInt(houseNumber.nr, 10);
         }).value();
 
@@ -56,9 +55,9 @@ const gfiOnAddressSearch = Backbone.Model.extend({
     prepareHouseNumbers: function (streetName, houseNumbers) {
         const houseNumbersArray = [];
 
-        _.each(houseNumbers, function (houseNumber) {
+        houseNumbers.forEach(function (houseNumber) {
             const nr = houseNumber.adress.housenumber,
-                affix = _.isUndefined(houseNumber.adress.affix) === true ? undefined : houseNumber.adress.affix;
+                affix = houseNumber.adress.affix === undefined ? undefined : houseNumber.adress.affix;
 
             houseNumbersArray.push({
                 nr: nr,
@@ -81,7 +80,8 @@ const gfiOnAddressSearch = Backbone.Model.extend({
     adressHit: function (data) {
         const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
             attributes = {},
-            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" ");
+            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
+            that = this;
 
         let i,
             adressString;
@@ -93,7 +93,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         $(gages).find("*").filter(function () {
             return this.nodeName.indexOf("dog") !== -1 || this.nodeName.indexOf("gages") !== -1;
         }).each(function () {
-            _.extend(attributes, _.object([this.nodeName.split(":")[1]], [this.textContent]));
+            Object.assign(attributes, that.toObject([this.nodeName.split(":")[1]], [this.textContent]));
         });
 
         // Syntaktischer Aufbau der Adressbezeichnung
@@ -139,6 +139,27 @@ const gfiOnAddressSearch = Backbone.Model.extend({
             gfiTheme: "sgvonline",
             coordinates: coordinates});
     },
+
+    /**
+     * Converts lists into objects
+     * @param {Array} list to be converted
+     * @param {Array} values the corresponding values of parallel array
+     * @returns {Object} result
+     */
+    toObject: function (list, values) {
+        const result = {};
+
+        for (let i = 0, length = list.length; i < length; i++) {
+            if (values) {
+                result[list[i]] = values[i];
+            }
+            else {
+                result[list[i][0]] = list[i][1];
+            }
+        }
+        return result;
+    },
+
     // setter for streetName
     setStreetName: function (value) {
         this.set("streetName", value);

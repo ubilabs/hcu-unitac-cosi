@@ -3,7 +3,7 @@ import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 
 const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         coordinate: [],
         pathType: "",
         rangeType: "",
@@ -32,7 +32,7 @@ const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointM
     */
     initialize: function () {
         this.superInitialize();
-        const layerList = _.union(Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}), Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
+        const layerList = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
             layerNames = layerList.map(layer => layer.featureType.trim());
 
         this.setDropDownModel(layerNames);

@@ -3,7 +3,7 @@ import GeoJsonQueryModel from "./query/source/geojson";
 import Tool from "../../../../modules/core/modelList/tool/model";
 
 const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         isGeneric: false,
         isInitOpen: false,
         isVisible: false,
@@ -216,7 +216,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         // if at least one query is selected zoomToFilteredFeatures, otherwise showAllFeatures
         let allFeatureIds;
 
-        if (_.contains(this.get("queryCollection").pluck("isSelected"), true)) {
+        if (this.get("queryCollection").pluck("isSelected").includes(true)) {
             allFeatureIds = this.groupFeatureIdsByLayer(this.get("queryCollection"));
 
             allFeatureIds.forEach(function (layerFeatures) {
@@ -245,7 +245,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         if (getVisibleTheme && getVisibleTheme.get("id") === layerId) {
             featureId = getVisibleTheme.get("feature").getId();
 
-            if (!_.contains(featureIds, featureId)) {
+            if (!featureIds.includes(featureId)) {
                 Radio.trigger("GFI", "setIsVisible", false);
             }
         }
@@ -263,9 +263,11 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
             const ruleList = [];
 
             query.get("snippetCollection").forEach(function (snippet) {
+                const getValues = snippet.getSelectedValues();
+
                 // searchInMapExtent is ignored
-                if (snippet.getSelectedValues().values.length > 0 && snippet.get("type") !== "searchInMapExtent") {
-                    ruleList.push(_.omit(snippet.getSelectedValues(), "type"));
+                if (getValues.values.length > 0 && snippet.get("type") !== "searchInMapExtent") {
+                    ruleList.push(Radio.request("Util", "omit", snippet.getSelectedValues(), "type"));
                 }
             });
             filterObjects.push({name: query.get("name"), isSelected: query.get("isSelected"), rules: ruleList});
@@ -339,8 +341,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         queries.forEach(function (query) {
             oneQuery = query;
             if (queryObjects !== undefined) {
-                queryObject = _.findWhere(queryObjects, {name: oneQuery.name});
-                oneQuery = _.extend(oneQuery, queryObject);
+                queryObject = queryObjects.find({name: oneQuery.name});
+                oneQuery = Object.assign(oneQuery, queryObject);
             }
             this.createQuery(oneQuery);
         }, this);
@@ -359,7 +361,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
             query = this.getQueryByTyp(layer.get("typ"), model);
             if (query !== null) {
                 if (this.get("allowMultipleQueriesPerLayer") !== undefined) {
-                    _.extend(query.set("activateOnSelection", !this.get("allowMultipleQueriesPerLayer")));
+                    Object.assign(query.set("activateOnSelection", !this.get("allowMultipleQueriesPerLayer")));
                 }
                 if (this.get("liveZoomToFeatures") !== undefined) {
                     query.set("liveZoomToFeatures", this.get("liveZoomToFeatures"));
