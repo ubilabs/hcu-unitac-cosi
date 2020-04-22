@@ -4,9 +4,7 @@ import ModelList from "@modules/core/modelList/list.js";
 import initializeCockpitModel from "@addons/cockpit_bauvorhaben/cockpit/model.js";
 
 describe("ADDON: Cockpit-Bauvorhaben", function () {
-    var tool,
-        model,
-        data = [
+    const data = [
             {district: "Altona", year: 2000, building_project_count: 10, month_short: "01"},
             {district: "Altona", year: 2000, building_project_count: 11, month_short: "02"},
             {district: "Altona", year: 2000, building_project_count: 12, month_short: "03"},
@@ -24,7 +22,10 @@ describe("ADDON: Cockpit-Bauvorhaben", function () {
             {district: "Hamburg-Mitte", year: 2002, building_project_count: 130, month_short: "01"},
             {district: "Eimsbüttel", year: 2002, building_project_count: 140, month_short: "01"},
             {district: "Harburg", year: 2002, building_project_count: 150, month_short: "01"}
-        ];
+    ];
+
+    let tool,
+        model;
 
     before(function () {
         tool = new Tool({id: "cockpit", type: "tool"});

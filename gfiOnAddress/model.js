@@ -83,7 +83,8 @@ const gfiOnAddressSearch = Backbone.Model.extend({
             attributes = {},
             coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" ");
 
-        let i, adressString;
+        let i,
+            adressString;
 
         for (i = 0; i < coordinates.length; i++) {
             coordinates[i] = parseFloat(coordinates[i]);

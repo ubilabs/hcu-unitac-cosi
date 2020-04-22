@@ -19,9 +19,7 @@ const GeoJsonQueryModel = SourceModel.extend(/** @lends GeoJsonQueryModel.protot
     buildQueryDatastructureByType: function () {
         const features = this.get("features"),
             snippetType = this.get("snippetType"),
-            featureAttributesMap = [];
-
-        featureAttributesMap = this.createFeatureAttributesMap(features, snippetType);
+            featureAttributesMap = this.createFeatureAttributesMap(features, snippetType);
 
         this.createSnippets(featureAttributesMap);
     },

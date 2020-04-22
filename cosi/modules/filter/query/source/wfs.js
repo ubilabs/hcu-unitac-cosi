@@ -55,9 +55,9 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @return {object} - Mapobject containing names and types
      */
     parseResponse: function (response) {
-        const selector = "element",
-            featureAttributesMap = [];
-        let responseString,
+        const featureAttributesMap = [];
+        let selector = "element",
+            responseString,
             searchForNamespaceResult = "",
             elements = "";
 
@@ -78,9 +78,8 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
         elements = $(selector, response);
 
         _.each(elements, function (element) {
-
-            const type = $(element).attr("type");
-            let typeWithoutNamespace,
+            let type = $(element).attr("type"),
+                typeWithoutNamespace,
                 simpleTypeIndex,
                 restriction;
 

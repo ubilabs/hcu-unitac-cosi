@@ -371,12 +371,12 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      */
     filterOne: function (layerFilter) {
         const filterResults = [],
-            intersection = [],
             layerId = layerFilter.layerId,
             featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
                 id: layerId
             }),
             filterCollection = JSON.parse(layerFilter.filter);
+        let intersection = [];
 
         Object.keys(filterCollection).forEach(filterKey => {
             const tolerance = [parseFloat(filterCollection[filterKey][0]), parseFloat(filterCollection[filterKey][1])],
