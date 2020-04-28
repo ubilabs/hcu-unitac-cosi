@@ -395,7 +395,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
                 .map(layer => layer.get("name"))
                 .filter(layerName => districtLayerNames.includes(layerName));
 
-        if (this.isEquivalent(districtLayerNames.sort(), districtLayersLoaded.sort())) {
+        if (Radio.request("Util", "isEqual", districtLayerNames.sort(), districtLayersLoaded.sort())) {
             this.setIsActive(true);
             this.set("isReady", true);
 
@@ -539,38 +539,6 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         this.set("bboxGeometry", bboxGeometry);
         this.setBboxGeometry(bboxGeometry);
         this.get("channel").trigger("selectionChanged", bboxGeometry.getExtent().toString(), this.get("activeScope"), this.getSelectedDistrictNames(features));
-    },
-
-    /**
-     * Check if two objects are same
-     * @param {Object} a the first object
-     * @param {Object} b the second object
-     * @returns {Boolean} true or false
-     */
-    isEquivalent: function isEquivalent (a, b) {
-    // Create arrays of property names
-        const aProps = Object.getOwnPropertyNames(a),
-            bProps = Object.getOwnPropertyNames(b);
-
-        // If number of properties is different,
-        // objects are not equivalent
-        if (aProps.length !== bProps.length) {
-            return false;
-        }
-
-        for (let i = 0; i < aProps.length; i++) {
-            const propName = aProps[i];
-
-            // If values of same property are not equal,
-            // objects are not equivalent
-            if (a[propName] !== b[propName]) {
-                return false;
-            }
-        }
-
-        // If we made it this far, objects
-        // are considered equivalent
-        return true;
     }
 });
 

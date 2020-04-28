@@ -790,7 +790,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
 
                     for (const prop in district) {
                         if (props.includes(prop)) {
-                            districtDataToGraph = {...districtDataToGraph, ...this.toObject(district[prop])};
+                            districtDataToGraph = {...districtDataToGraph, ...Radio.request("Util", "toObject", district[prop])};
                         }
                         else if (prop === this.get("sortKey")) {
                             districtDataToGraph[prop] = district[prop];
@@ -801,7 +801,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                     }
 
                     return districtDataToGraph;
-                }).bind(this),
+                }),
             districts = data.map(col => col[this.get("sortKey")]).filter(name => name !== "Gesamt"),
             years = Object.keys(data[0]).filter(key => key !== this.get("sortKey")),
             map = years.map(year => {
@@ -854,11 +854,11 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                     const obj = group.values[prop],
                         arr = Object.entries(obj);
 
-                    group.values[prop] = this.toObject(arr.swap(i, j));
+                    group.values[prop] = Radio.request("Util", "toObject", arr.swap(i, j));
                 }
 
                 return group;
-            }).bind(this));
+            }));
 
             this.set("unsortedTable", rawData.swap(i, j));
 
@@ -941,26 +941,6 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
     deleteAttrsForRatio () {
         this.set("ratioAttrs", []);
         this.trigger("ratioValuesUpdated");
-    },
-
-    /**
-     * Converts lists into objects
-     * @param {Array} list to be converted
-     * @param {Array} values the corresponding values of parallel array
-     * @returns {Object} result
-     */
-    toObject: function (list, values) {
-        const result = {};
-
-        for (let i = 0, length = list.length; i < length; i++) {
-            if (values) {
-                result[list[i]] = values[i];
-            }
-            else {
-                result[list[i][0]] = list[i][1];
-            }
-        }
-        return result;
     }
 });
 

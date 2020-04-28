@@ -291,7 +291,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     prepareRequest: function (address) {
-        const schoolID = this.get("selectedSchool") && !this.isEmpty(this.get("selectedSchool")) ? this.get("selectedSchool").get("schul_id") : "";
+        const schoolID = !Radio.request("Util", "isEmpty", this.get("selectedSchool")) ? this.get("selectedSchool").get("schul_id") : "";
         let requestObj = {};
 
         if (Object.keys(address).length !== 0 && schoolID.length > 0) {
@@ -304,15 +304,6 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
             this.sendRequest(requestObj);
         }
-    },
-
-    /**
-     * Checks if value is an empty object or collection.
-     * @param {Object} obj the object to be checked
-     * @returns {boolean} true or false
-     */
-    isEmpty: function (obj) {
-        return [Object, Array].includes((obj || {}).constructor) && !Object.entries(obj || {}).length;
     },
 
     /**

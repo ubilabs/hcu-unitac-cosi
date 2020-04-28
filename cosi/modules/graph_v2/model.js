@@ -1333,7 +1333,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
                 return res.includes(val[refAttr]) ? res : [...res, val[refAttr]];
             }, []),
             refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", refValues.length + 1),
-            refColors = this.toObject(refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
+            refColors = Radio.request("Util", "toObject", refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
         let yAttributeToShow,
             xAttributeToShow,
             tooltipElement;
@@ -1457,26 +1457,6 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      */
     setGraphParams: function (value) {
         this.set("graphParams", value);
-    },
-
-    /**
-     * Converts lists into objects
-     * @param {Array} list to be converted
-     * @param {Array} values the corresponding values of parallel array
-     * @returns {Object} result
-     */
-    toObject: function (list, values) {
-        const result = {};
-
-        for (let i = 0, length = list.length; i < length; i++) {
-            if (values) {
-                result[list[i]] = values[i];
-            }
-            else {
-                result[list[i][0]] = list[i][1];
-            }
-        }
-        return result;
     }
 });
 

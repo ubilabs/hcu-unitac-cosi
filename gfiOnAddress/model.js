@@ -80,8 +80,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
     adressHit: function (data) {
         const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
             attributes = {},
-            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
-            that = this;
+            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" ");
 
         let i,
             adressString;
@@ -93,7 +92,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         $(gages).find("*").filter(function () {
             return this.nodeName.indexOf("dog") !== -1 || this.nodeName.indexOf("gages") !== -1;
         }).each(function () {
-            Object.assign(attributes, that.toObject([this.nodeName.split(":")[1]], [this.textContent]));
+            Object.assign(attributes, Radio.request("Util", "toObject", [this.nodeName.split(":")[1]], [this.textContent]));
         });
 
         // Syntaktischer Aufbau der Adressbezeichnung
@@ -138,26 +137,6 @@ const gfiOnAddressSearch = Backbone.Model.extend({
             }),
             gfiTheme: "sgvonline",
             coordinates: coordinates});
-    },
-
-    /**
-     * Converts lists into objects
-     * @param {Array} list to be converted
-     * @param {Array} values the corresponding values of parallel array
-     * @returns {Object} result
-     */
-    toObject: function (list, values) {
-        const result = {};
-
-        for (let i = 0, length = list.length; i < length; i++) {
-            if (values) {
-                result[list[i]] = values[i];
-            }
-            else {
-                result[list[i][0]] = list[i][1];
-            }
-        }
-        return result;
     },
 
     // setter for streetName
