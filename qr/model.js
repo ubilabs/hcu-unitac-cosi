@@ -10,7 +10,8 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
         placementClickInteraction: null,
         lastClickEvent: null,
         urlSchema: "",
-        id: "qr"
+        id: "qr",
+        text: "Tippen Sie in die Karte um einen QR-Code zum Erzeugen eines Beitrags zu erzeugen."
     }),
 
     /**

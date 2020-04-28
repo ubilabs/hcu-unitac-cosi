@@ -55,7 +55,7 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
     render (model, isActive) {
 
         if (isActive) {
-            this.renderSurface(model);
+            this.renderSurface();
             this.model.addQRPlacementInteraction();
         }
         else {
