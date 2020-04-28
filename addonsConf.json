@@ -70,5 +70,6 @@
   "verkehrsstaerken": {
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
-  }
+  },
+  "qr": "view.js"
 }

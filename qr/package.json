@@ -1,0 +1,9 @@
+{
+  "name": "qr",
+  "version": "1.0.0",
+  "description": "A tool to generate QR-Codes pinned to a location on the map",
+  "dependencies": {
+    "ol-popup": "^4.0.0",
+    "qrcode": "^1.4.4"
+  }
+}
