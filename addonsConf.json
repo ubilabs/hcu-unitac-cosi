@@ -5,6 +5,7 @@
   "cosi": "modules/loader.js",
   "einwohnerabfrage": "selectView.js",
   "gfiOnAddress": "view.js",
+  "oktagonKartenportal": "oktagonLoader.js",
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
