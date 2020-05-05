@@ -19,15 +19,6 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
 
         this.model = new QRModel(defaultModel.attributes);
 
-        this.listenTo(Radio.channel("i18next"), {
-            "languageChanged": () => {
-                if (this.model.get("isActive") === true) {
-                    this.render(this.model, true);
-                    // reset selection by box, circle or polygon
-                    this.model.changeGraphicalSelectStatus(true);
-                }
-            }
-        });
         this.listenTo(this.model, {
             "change:isActive": this.render,
             "change:lastClickEvent": this.renderQRPopup
