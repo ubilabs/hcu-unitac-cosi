@@ -84,8 +84,8 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
      */
     generateQRCodeDataURL (coordinates) {
         const lat = coordinates[0],
-            lang = coordinates[1],
-            url = this.get("urlSchema").replace("{{LAT}}", lat).replace("{{LANG}}", lang);
+            lon = coordinates[1],
+            url = this.get("urlSchema").replace("{{LAT}}", lat).replace("{{LON}}", lon);
 
         return QRCode.toDataURL(url);
     }
