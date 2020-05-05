@@ -13,6 +13,9 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
      * @memberOf Addons.QR
      * @constructs
      * @description Renders the tool windows an qr code popups
+     *
+     * @fires Core.ModelList#getModelByAttributes
+     *
      */
     initialize () {
         const defaultModel = Radio.request("ModelList", "getModelByAttributes", {id: "qr"});
@@ -60,6 +63,8 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
      * @param {QRModel} model The current model
      * @param {object} clickEvent The latest click event with the coordinates of the click on the map
      *
+     * @fires Map#addOverlay
+     *
      * @return {void}
      */
     renderQRPopup (model, clickEvent) {
@@ -93,6 +98,9 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
 
     /**
      * Removes the qr code popup and the interaction layer
+     *
+     * @fires Map#removeOverlay
+     *
      * @return {void}
      */
     removeSurface () {

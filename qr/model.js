@@ -11,7 +11,7 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
         lastClickEvent: null,
         urlSchema: "",
         id: "qr",
-        text: "Tippen Sie in die Karte um einen QR-Code zum Erzeugen eines Beitrags zu erzeugen."
+        text: "Tippen Sie in die Karte um einen QR-Code passend zur ausgewählten Position zu erzeugen."
     }),
 
     /**
@@ -42,6 +42,9 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
 
     /**
      * Creates a new click interaction listener and adds it to the map and model
+     *
+     * @fires Map#addInteraction
+     *
      * @return {void}
      */
     addQRPlacementInteraction () {
@@ -55,6 +58,9 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
 
     /**
      * Removes the map interaction listener
+     *
+     * @fires Map#removeInteraction
+     *
      * @return {void}
      */
     removeQRPlacementInteraction () {
