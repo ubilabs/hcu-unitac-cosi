@@ -167,10 +167,11 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         Radio.trigger("Print", "createPrintJob", "schulwegrouting", encodeURIComponent(JSON.stringify(buildSpec)), "pdf");
     },
 
-    prepareRouteDesc: function (routeDesc) {
-        const data = [];
+    prepareRouteDesc: function (routeDesc = []) {
+        const data = [],
+            routeDescription = Array.isArray(routeDesc) ? routeDesc : [];
 
-        routeDesc.forEach(function (route, index) {
+        routeDescription.forEach((route, index) => {
             data.push([String(index + 1), route.anweisung]);
         });
         return data;
@@ -291,7 +292,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     prepareRequest: function (address) {
-        const schoolID = !Radio.request("Util", "isEmpty", this.get("selectedSchool")) ? this.get("selectedSchool").get("schul_id") : "";
+        const schoolID = Object.keys(this.get("selectedSchool")).length > 0 ? this.get("selectedSchool").get("schul_id") : "";
         let requestObj = {};
 
         if (Object.keys(address).length !== 0 && schoolID.length > 0) {
@@ -346,8 +347,11 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @return {ol.feature[]} sorted schools features by name
      */
     sortSchoolsByName: function (features) {
-        return features.sort(function (feature) {
-            return feature.get("schulname");
+        return features.sort(function (featureA, featureB) {
+            const schulnameA = featureA.get("schulname").toUpperCase(),
+                schulnameB = featureB.get("schulname").toUpperCase();
+
+            return schulnameA < schulnameB ? -1 : 1;
         });
     },
 
@@ -358,7 +362,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {ol.feature} -
      */
     filterSchoolById: function (schoolList, schoolId) {
-        return schoolList.find(function (school) {
+        return schoolList.find(school => {
             return school.get("schul_id") === schoolId;
         });
     },
