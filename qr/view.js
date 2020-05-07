@@ -1,6 +1,7 @@
+import Overlay from "ol/Overlay";
+
 import QRToolTemplate from "text-loader!./template.html";
-import QRPopupTemplate from "text-loader!./createPopupTemplate.html";
-import Popup from "ol-popup";
+import QRPopupTemplate from "text-loader!./popupTemplate.html";
 import QRModel from "./model";
 import "./style.less";
 
@@ -63,27 +64,43 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
      * @param {QRModel} model The current model
      * @param {object} clickEvent The latest click event with the coordinates of the click on the map
      *
-     * @fires Map#addOverlay
      *
      * @return {void}
      */
     renderQRPopup (model, clickEvent) {
         let popup = this.model.getQRPopup();
 
-        if (popup === null) {
-            popup = new Popup();
-        }
-        this.model.setQRPopup(popup);
-        Radio.trigger("Map", "addOverlay", popup);
         const qrDataUrlPromise = this.model.generateQRCodeDataURL(clickEvent.coordinate);
 
         qrDataUrlPromise.then((qrDataUrl) => {
-            const popupElement = this.qrPopupTemplate({
+
+            const element = document.createElement("div");
+
+            element.innerHTML = this.qrPopupTemplate({
                 qrDataUrl
             });
+            element.className = "ol-popup";
+            element.firstElementChild.addEventListener("click", this.hidePopup.bind(this));
 
-            popup.show(clickEvent.coordinate, popupElement);
+
+            if (popup === null) {
+                const options = {
+                    element: element,
+                    autoPan: false,
+                    position: clickEvent.coordinate
+                };
+
+                popup = new Overlay(options);
+            }
+            else {
+                popup.setElement(element);
+                popup.setPosition(clickEvent.coordinate);
+            }
+            popup.getElement().style.display = "block";
+
+            this.model.setQRPopup(popup);
         });
+
     },
 
     /**
@@ -99,18 +116,20 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
     /**
      * Removes the qr code popup and the interaction layer
      *
-     * @fires Map#removeOverlay
-     *
      * @return {void}
      */
     removeSurface () {
-        const popup = this.model.getQRPopup();
-
-        if (popup && popup.isOpened()) {
-            Radio.trigger("Map", "removeOverlay", popup);
-        }
-
+        this.model.removeQRPopup();
         this.model.removeQRPlacementInteraction();
+    },
+
+    /**
+     * Hides the popup temporally, but doesn't remove the overlay.
+     *
+     * @return {void}
+     */
+    hidePopup () {
+        this.model.getQRPopup().getElement().style.display = "none";
     }
 });
 

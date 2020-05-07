@@ -69,11 +69,28 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
     },
 
     /**
+     * Set the popup on the model and add it as overlay to the map
      * @param {Popup} value The popup instance
+     *
+     * @fires Map#addOverlay
+     *
      * @return {void}
      */
     setQRPopup (value) {
         this.set("qrPopup", value);
+        Radio.trigger("Map", "addOverlay", value);
+    },
+
+    /**
+     * Remove the overlay from the map.
+     *
+     * @fires Map#removeOverlay
+     *
+     * @return {void}
+     */
+    removeQRPopup () {
+        Radio.trigger("Map", "removeOverlay", this.getQRPopup());
+        this.set("qrPopup", null);
     },
 
     /**
