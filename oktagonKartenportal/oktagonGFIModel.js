@@ -2,6 +2,7 @@ import {fetch as fetchPolyfill} from "whatwg-fetch";
 
 const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends OktagonGetFeatureInformationModel.prototype */{
     defaults: {
+        returnURL: "",
         submitURL: "",
         layerId: "183",
         submitObject: {},
@@ -27,7 +28,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * @constructs
      */
     initialize: function () {
-        this.setSubmitURL(Radio.request("OktagonURLParameter", "getRueckURL"));
+        this.setReturnURL(Radio.request("OktagonURLParameter", "getRueckURL"));
     },
     /**
      * Gets the layerModel,
@@ -105,8 +106,14 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     * @returns {String} returns the submit url
      */
     createSubmitURL: function (submitObject) {
-        let submitURL = this.get("submitURL") + "?";
+        let submitURL = this.get("returnURL");
 
+        if (submitURL.includes("?")) {
+            submitURL += "&";
+        }
+        else {
+            submitURL += "?";
+        }
         Object.keys(submitObject).forEach((prop, index) => {
             if (index > 0) {
                 submitURL += "&";
@@ -128,6 +135,14 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
         submitObject.KoordinateY = Radio.request("Util", "punctuate", coordinate[1]).replace(/\./g, "");
 
         this.setSubmitObject(submitObject);
+    },
+    /**
+     * Setter for returnURL
+     * @param {*} value - todo
+     * @returns {void}
+     */
+    setReturnURL: function (value) {
+        this.set("returnURL", value);
     },
     /**
      * Setter for submitURL
