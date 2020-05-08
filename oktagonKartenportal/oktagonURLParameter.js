@@ -19,10 +19,11 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      * @constructs
      */
     initialize: function () {
-        const query = location.search.substr(1).toUpperCase(),
-            result = {},
+        const result = {},
             channel = Radio.channel("OktagonURLParameter"),
             adress = {};
+        let query = location.search.substr(1).toUpperCase(),
+            rueckURLParameter = "";
 
         channel.reply({
             "getRueckURL": function () {
@@ -33,15 +34,16 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         this.listenTo(Radio.channel("Gaz"), {
             "getAdress": this.triggerZoomToAdress
         });
-
+        rueckURLParameter = query.slice(query.indexOf("RUECKURL"));
+        query = query.slice(0, query.indexOf("&RUECKURL"));
         query.split("&").forEach(function (keyValue) {
             const item = keyValue.split("=");
 
             result[item[0]] = decodeURIComponent(item[1]);
         });
-        if (result.hasOwnProperty("RUECKURL")) {
-            this.setRueckURL(this.getParameterValue(result, "RUECKURL"));
-            this.get("rueckURL");
+
+        if (rueckURLParameter.length > 0) {
+            this.setRueckURL(rueckURLParameter.slice(rueckURLParameter.indexOf("=") + 1));
         }
         if (result.hasOwnProperty("BEZIRK")) {
             const districtFromUrl = this.getParameterValue(result, "BEZIRK");
@@ -80,14 +82,6 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
                     kategorie: "alert-warning"
                 });
             }
-        }
-        else {
-            Radio.trigger("Alert", "alert", {
-                text: "<strong>Der Parametrisierte Aufruf des Portals ist leider schief gelaufen!</strong>"
-                + "<br>"
-                + "<small>Es wurden keine der erforderlichen Parameter übergeben.</small>",
-                kategorie: "alert-warning"
-            });
         }
     },
     /**
