@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import OktagonGFIModel from "@addons/oktagonKartenportal/oktagonGFIModel.js";
 
-describe("ADDON: oktagonKartenportal oktagonURLParameter", function () {
+describe("ADDON: oktagonKartenportal oktagonGFIModel", function () {
     let model;
 
     before(function () {
@@ -22,7 +22,7 @@ describe("ADDON: oktagonKartenportal oktagonURLParameter", function () {
                 KoordinateY: "5933496,393307779"
             };
 
-            model.setSubmitURL("HTTPS://GEOPORTAL-HAMBURG.DE");
+            model.setReturnURL("HTTPS://GEOPORTAL-HAMBURG.DE");
             expect(model.createSubmitURL(submitObject)).to.equal("HTTPS://GEOPORTAL-HAMBURG.DE?Baublock=123456&Flurstuecksnummer=1234&Gemarkungsname=Testgemarkung&Gemarkungsnummer=0123&KoordinateX=567774,7569432978&KoordinateY=5933496,393307779");
         });
     });

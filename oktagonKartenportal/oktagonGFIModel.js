@@ -108,7 +108,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     createSubmitURL: function (submitObject) {
         let submitURL = this.get("returnURL");
 
-        if (submitURL.includes("?")) {
+        if (submitURL && submitURL.includes("?")) {
             submitURL += "&";
         }
         else {
