@@ -22,7 +22,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         const result = {},
             channel = Radio.channel("OktagonURLParameter"),
             adress = {};
-        let query = location.search.substr(1).toUpperCase(),
+        let query = location.search.substr(1),
             rueckURLParameter = "";
 
         channel.reply({
@@ -34,7 +34,8 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         this.listenTo(Radio.channel("Gaz"), {
             "getAdress": this.triggerZoomToAdress
         });
-        rueckURLParameter = query.slice(query.indexOf("RUECKURL"));
+        rueckURLParameter = query.slice(query.indexOf("rueckurl"));
+        query = query.toUpperCase();
         query = query.slice(0, query.indexOf("&RUECKURL"));
         query.split("&").forEach(function (keyValue) {
             const item = keyValue.split("=");
