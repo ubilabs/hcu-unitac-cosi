@@ -1,6 +1,6 @@
 import {Pointer} from "ol/interaction";
 import QRCode from "qrcode";
-
+import {transform} from "masterportalAPI/src/crs";
 import Tool from "../../modules/core/modelList/tool/model";
 
 
@@ -11,7 +11,8 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
         lastClickEvent: null,
         urlSchema: "",
         id: "qr",
-        text: "Tippen Sie in die Karte um einen QR-Code passend zur ausgewählten Position zu erzeugen."
+        text: "Tippen Sie in die Karte um einen QR-Code passend zur ausgewählten Position zu erzeugen.",
+        projection: "EPSG:25832"
     }),
 
     /**
@@ -102,15 +103,27 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
 
     /**
      * Generates an qr code for the given coordinates with the configured url schema
-     * @param {Array}coordinates An array with to entries for lat and lang coords
+     * @param {Array} coordinates An array with to entries for lat and lang coords
      * @return {Promise<string>} A promise resolving with the data url as string
      */
     generateQRCodeDataURL (coordinates) {
-        const lat = coordinates[0],
-            lon = coordinates[1],
+        const transformedCoords = this.transformCoords(coordinates),
+            lat = transformedCoords[0],
+            lon = transformedCoords[1],
             url = this.get("urlSchema").replace("{{LAT}}", lat).replace("{{LON}}", lon);
 
         return QRCode.toDataURL(url);
+    },
+
+    /**
+     * Transform the coordinates to the specified target projection
+     *
+     * @param {number[]} coordinates The coordinates to transform
+     *
+     * @return {number[]} The transformed coordinates
+     */
+    transformCoords (coordinates) {
+        return transform("EPSG:25832", this.get("projection"), coordinates);
     }
 });
 
