@@ -5,7 +5,7 @@ import Tool from "../../modules/core/modelList/tool/model";
 
 
 const QRModel = Tool.extend(/** @lends QRModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         qrPopup: null,
         placementClickInteraction: null,
         lastClickEvent: null,
@@ -103,13 +103,13 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
 
     /**
      * Generates an qr code for the given coordinates with the configured url schema
-     * @param {Array} coordinates An array with to entries for lat and lang coords
+     * @param {Array} coordinates An array with two entries for longitude and latitude coordinates in EPSG:25832
      * @return {Promise<string>} A promise resolving with the data url as string
      */
     generateQRCodeDataURL (coordinates) {
         const transformedCoords = this.transformCoords(coordinates),
-            lat = transformedCoords[0],
-            lon = transformedCoords[1],
+            lat = transformedCoords[1],
+            lon = transformedCoords[0],
             url = this.get("urlSchema").replace("{{LAT}}", lat).replace("{{LON}}", lon);
 
         return QRCode.toDataURL(url);
