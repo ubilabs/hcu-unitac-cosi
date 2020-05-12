@@ -70,7 +70,7 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
 
     /**
      * Set the popup on the model and add it as overlay to the map
-     * @param {Popup} value The popup instance
+     * @param {Overlay} value The popup instance
      *
      * @fires Map#addOverlay
      *
@@ -94,7 +94,7 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
     },
 
     /**
-     * @return {Popup} The popup instance
+     * @return {Overlay} The popup instance
      */
     getQRPopup () {
         return this.get("qrPopup");
