@@ -24,6 +24,7 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
         Radio.request("Map", "registerListener", "click", this.onMapClick.bind(this));
 
         this.render();
+        Radio.trigger("Sidebar", "append", this.el);
         this.listenTo(this.model, {
             "change:submitURL": this.render
         });
@@ -41,7 +42,6 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
         const attr = this.model.toJSON();
 
         this.$el.html(this.template(attr));
-        Radio.trigger("Sidebar", "append", this.el);
         this.delegateEvents();
         return this;
     },
