@@ -34,9 +34,11 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         this.listenTo(Radio.channel("Gaz"), {
             "getAdress": this.triggerZoomToAdress
         });
-        rueckURLParameter = query.slice(query.indexOf("rueckurl"));
+        if (query.indexOf("rueckurl") > 0) {
+            rueckURLParameter = query.slice(query.indexOf("rueckurl"));
+            query = query.slice(0, query.indexOf("&rueckurl"));
+        }
         query = query.toUpperCase();
-        query = query.slice(0, query.indexOf("&RUECKURL"));
         query.split("&").forEach(function (keyValue) {
             const item = keyValue.split("=");
 
