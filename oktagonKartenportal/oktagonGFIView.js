@@ -43,7 +43,7 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
 
         this.$el.html(this.template(attr));
         if (this.model.get("returnURL") === "") {
-            this.$el.find("#oktagonSubmitButton").addClass("disabled");
+            this.$("#oktagonSubmitButton").prop("disabled", true);
         }
         this.delegateEvents();
         return this;
