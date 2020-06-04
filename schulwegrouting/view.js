@@ -103,13 +103,13 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         this.renderRouteDescription(this.model, this.model.get("routeDescription"));
         this.updateRegionalSchool(this.model.get("schoolWithAdress"));
         this.togglePrintEnabled(this.model.get("printRoute"));
-
         this.initSelectpicker();
         this.setPresetValues();
         this.$el.find(".routing-checkbox").append(this.checkBoxHVV.render().$el);
         Radio.trigger("Sidebar", "append", this.el);
         Radio.trigger("Sidebar", "toggle", true);
         this.delegateEvents();
+
         return this;
     },
 
@@ -140,7 +140,9 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         if (Object.keys(startAddress).length !== 0) {
             startStreet = startAddress.name;
 
-            this.$el.find(".address-search").attr("value", startStreet);
+            if (startStreet !== undefined) {
+                this.$el.find(".address-search").attr("value", startStreet);
+            }
         }
     },
 
@@ -196,7 +198,6 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         let targetList;
 
         if (evtValue.length > 2) {
-            this.model.setStreetNameList([]);
             this.model.searchAddress(evtValue);
         }
         else {
@@ -228,6 +229,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
 
     closeView: function () {
         this.model.setIsActive(false);
+        this.$el.find(".result").empty();
         Radio.trigger("ModelList", "toggleDefaultTool");
     },
 
@@ -239,6 +241,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     updateSelectedSchool: function (schoolId) {
+        this.model.setSelectedSchool(schoolId);
         this.$el.find(".selectpicker").selectpicker("val", schoolId);
     },
 
@@ -258,12 +261,17 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         this.updateSelectedSchool("");
         this.updateRegionalSchool("");
         this.$el.find(".address-search").val("");
+        this.resetRouteResult();
     },
 
     resetRouteResult: function () {
         this.$el.find(".route-result").html("");
         this.$el.find(".result").html("");
         this.$el.find(".description").html("");
+
+        this.model.setRouteResult({});
+        this.model.setRouteDescription([]);
+        this.model.setSchoolWithAdress("");
     },
 
     /**
