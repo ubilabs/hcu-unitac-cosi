@@ -480,7 +480,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
                 names.push(district.get("statgebiet"));
             }
             else {
-                names.push(district.get("stadtteil"));
+                names.push(district.get("stadtteil_name"));
             }
         });
         return names;
