@@ -57,7 +57,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     requestALKISWMS: function (layerModel, coordinate) {
         const resolution = Radio.request("MapView", "getOptions").resolution,
             projection = Radio.request("MapView", "getProjection"),
-            url = layerModel.get("layerSource").getGetFeatureInfoUrl(coordinate, resolution, projection, {INFO_FORMAT: "text/xml", STYLES: ""});
+            url = layerModel.get("layerSource").getFeatureInfoUrl(coordinate, resolution, projection, {INFO_FORMAT: "text/xml", STYLES: ""});
 
         fetchPolyfill(url)
             .then(response => response.text())
