@@ -123,7 +123,7 @@ const traficChannel = Backbone.Model.extend({
             if (dataStreamName === "Prozent") {
                 value = dataStreamValues.split(" | ")[i];
                 if (value !== "No data") {
-                    value = Math.round(parseFloat(value, 10) * 100);
+                    value = Math.round(parseFloat(value) * 100);
                 }
             }
         });
