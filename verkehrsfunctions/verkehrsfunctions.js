@@ -114,7 +114,7 @@ const traficChannel = Backbone.Model.extend({
      * Getting the proportional traffic count
      * @param {String} dataStreamNames - dataStream Name(s) of the current feature
      * @param {String} dataStreamValues - dataStream Value(s) of the current feature
-     * @return {String} the absolute count
+     * @return {Number|String} the proportional count or empty string
      */
     getPropTrafficCount: function (dataStreamNames, dataStreamValues) {
         let value = "";
@@ -122,6 +122,9 @@ const traficChannel = Backbone.Model.extend({
         dataStreamNames.split(" | ").forEach(function (dataStreamName, i) {
             if (dataStreamName === "Prozent") {
                 value = dataStreamValues.split(" | ")[i];
+                if (value !== "No data") {
+                    value = Math.round(parseFloat(value, 10) * 100);
+                }
             }
         });
 

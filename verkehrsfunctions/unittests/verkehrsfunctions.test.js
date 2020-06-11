@@ -10,7 +10,11 @@ describe("ADDON: Verkehrsfunctions", function () {
 
     describe("addThousandPoints", function () {
         it("should parse string with a 'No data'", function () {
-            expect(model.addThousandPoints("test")).to.equal("No data");
+            expect(model.addThousandPoints({})).to.equal("No data");
+        });
+
+        it("should parse string with a point as thousand division", function () {
+            expect(model.addThousandPoints("10020")).to.equal("10.020");
         });
 
         it("should parse number with a point as thousand division", function () {
@@ -55,7 +59,7 @@ describe("ADDON: Verkehrsfunctions", function () {
             const dataStreamNames = "Anzahl | Prozent",
                 dataStreamValues = "219 | 0.29";
 
-            expect(model.getPropTrafficCount(dataStreamNames, dataStreamValues)).to.equal("0.29");
+            expect(model.getPropTrafficCount(dataStreamNames, dataStreamValues)).to.equal(29);
         });
     });
 });
