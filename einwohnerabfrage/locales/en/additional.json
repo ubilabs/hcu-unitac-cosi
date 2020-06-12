@@ -17,11 +17,11 @@
                     "hint": "Hint",
                     "dataSourceFHHKey": "Data source Hamburg",
                     "dataSourceFHHValue": "Inhabitants with main residence, population register",
-                    "dataSourceFHHLinktext": "Source FHH",
+                    "dataSourceFHHLinktext": "more infromation",
                     "sourceAreaOutside": "Parts of the search area lie outside the boundaries of the Hamburg metropolitan region and were not taken into account for the calculation of the number of inhabitants.",
                     "dataSourceMRHKey": "Data source Metropolitan region without Hamburg",
-                    "dataSourceMRHValue": "Total population in 100 metre grid, census 2011. Status of census data 09.05.2011.",
-                    "dataSourceMRHLinktext": "Source MRH"
+                    "dataSourceMRHValue": "Total population in 100 metre grid.",
+                    "dataSourceMRHLinktext": "more infromation"
                 }
             }
         }
