@@ -17,11 +17,11 @@
                     "hint": "Hinweis",
                     "dataSourceFHHKey": "Datenquelle Hamburg",
                     "dataSourceFHHValue": "Einwohner mit Hauptwohnsitz, Melderegister",
-                    "dataSourceFHHLinktext": "Quelle FHH",
+                    "dataSourceFHHLinktext": "Weitere Informationen",
                     "sourceAreaOutside": "Teile des Suchgebiets liegen außerhalb der Grenzen der Metropolregion Hamburg und wurden für die Ermittlung der Einwohnerzahl nicht berücksichtigt.",
                     "dataSourceMRHKey": "Datenquelle Metropolregion ohne Hamburg",
-                    "dataSourceMRHValue": "Bevölkerung insgesamt im 100 Meter-Gitter, Zensus 2011. Stand der Zensus-Daten 09.05.2011.",
-                    "dataSourceMRHLinktext": "Quelle MRH"
+                    "dataSourceMRHValue": "Bevölkerung insgesamt im 100 Meter-Gitter.",
+                    "dataSourceMRHLinktext": "Weitere Informationen"
                 }
             }
         }
