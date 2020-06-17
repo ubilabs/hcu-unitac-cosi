@@ -25,7 +25,9 @@ function initializeBrwAbfrageModel () {
             "processFromParametricUrl": false,
             "paramUrlParams": {},
             "zBauwSelect": "",
-            "isActive": true
+            "isActive": true,
+            "stripesLayer": false,
+            "infoText": "Bis 2020 wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten."
         };
 
     Object.assign(BRWModel, {
@@ -101,6 +103,53 @@ function initializeBrwAbfrageModel () {
             return foundLanduse.nutzungsart;
         },
         /**
+         * Shows or hides the old view of brw = stripes.
+         * @param {boolean} value show or hide
+         * @returns {void} 
+         */
+        toggleStripesLayer: function (value) {
+            const modelList = this.get("modelList"),
+                selectedModel = modelList.find(model => model.get("isSelected") === true),
+                year = this.getYear(selectedModel.get("layers")),
+                modelName = this.createModelName(year);
+            this.set("stripesLayer", value);
+            //todo inka testen!!
+            if(value) {
+                // console.log('show stripes for ', year);
+
+                //show dedicated stripes model, from the same year
+                this.selectLayerModelByName(modelName, modelList);
+            }
+            else {
+                // console.log('hide stripes for ', year);
+
+                const model = modelList.find(model => model.get("name") === modelName);
+                model.set("isVisibleInMap", false);
+                model.set("isSelected", false);
+            }
+        },
+        /**
+         * Returns the name of the model.
+         * @param {string} year the to inspect
+         * @returns {string} the name
+         */
+        createModelName(year){
+            if(parseInt(year, 10) > 2009 || parseInt(year, 10) === 1994) {
+                return "31.12."+year+"-stripes";
+            }
+            return "01.01."+year+"-stripes";
+        },
+        /**
+         * Returns the year in layers like "lgv_brw_zonen_2018,lgv_brw_zonen_brw_grdstk_2018".
+         * @param {string} layer the string to inspect
+         * @returns {string} the year
+         */
+        getYear(layer){
+            const splitted = layer.split("_"),
+                year = splitted[splitted.length -1];
+            return year;
+        },
+        /**
          * Aktionen zum Wechseln eines Layers.
          * @param   {string} selectedLayername Name des zu aktivierenden Layers
          * @returns {void}
@@ -174,12 +223,12 @@ function initializeBrwAbfrageModel () {
             if (processFromParametricUrl) {
                 map = Radio.request("Map", "getMap");
                 mapView = map.getView();
-                url = layerSource.getGetFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
+                url = layerSource.getFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
             }
             else {
                 map = evt.map;
                 mapView = map.getView();
-                url = layerSource.getGetFeatureInfoUrl(evt.coordinate, mapView.getResolution(), mapView.getProjection());
+                url = layerSource.getFeatureInfoUrl(evt.coordinate, mapView.getResolution(), mapView.getProjection());
                 this.setBackdrop(true);
             }
             xhttp.open("GET", url, true);
@@ -284,7 +333,7 @@ function initializeBrwAbfrageModel () {
         sendGetFeatureRequest: function (richtwertNummer, year) {
             const typeName = parseInt(year, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
                 xhttp = new XMLHttpRequest();
-
+                
             xhttp.open("POST", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte", true);
             xhttp.onload = event => {
                 this.handleGetFeatureResponse(event.target.responseText, event.target.status, year);
@@ -888,6 +937,15 @@ function initializeBrwAbfrageModel () {
         */
         setZBauwSelect: function (value) {
             this.set("zBauwSelect", value);
+        },
+        /*
+        * setter for stripesLayer
+        * @param {String} value stripesLayer shown
+        * @returns {void}
+        */
+       setStripesLayer: function (value) {
+            this.set("stripesLayer", value);
+            
         }
     });
     BRWModel.initialize();

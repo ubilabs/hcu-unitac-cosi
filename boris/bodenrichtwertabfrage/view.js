@@ -31,7 +31,9 @@ const BrwAbfrageView = Backbone.View.extend({
                 kategorie: "alert-success"
             });
         },
-        "click .glyphicon-question-sign": "handleHelpButton"
+        "click .glyphicon-question-sign": "handleHelpButton",
+        "click #showStripes": "toggleStripesLayer",
+        "click .info-icon": "toggleInfoText",
     },
     initialize: function () {
         this.model = initializeBrwAbfrageModel();
@@ -67,6 +69,32 @@ const BrwAbfrageView = Backbone.View.extend({
         this.delegateEvents();
 
         return this;
+    },
+
+    /**
+     * Toggles the attribute "stripesLayer" in model and shows or hides the stripes for the selected year.
+     *  @returns {void}
+     */
+    toggleStripesLayer: function(){
+        this.model.toggleStripesLayer(!this.model.get("stripesLayer"));
+    },
+    /**
+     * toggle the info text
+     * @returns {void}
+     */
+    toggleInfoText: function () {
+        const isInfoTextVisible = this.$el.find(".info-text").is(":visible");
+
+        if (!isInfoTextVisible) {
+            this.$el.find(".info-icon").css("opacity", "1");
+            this.$el.find(".form-check").css("margin-bottom", "0");
+            this.$el.find(".info-text").show();
+        }
+        else {
+            this.$el.find(".info-icon").css("opacity", "0.4");
+            this.$el.find(".form-check").css("margin-bottom", "15px");
+            this.$el.find(".info-text").hide();
+        }
     },
 
     /**
