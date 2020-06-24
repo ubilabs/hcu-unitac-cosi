@@ -2,15 +2,30 @@
     <label for="brwLayerSelect">Die Bodenrichtwertabfrage erfolgt für das Jahr:</label>
     <select id="brwLayerSelect" class="font-arial form-control">
 		<% modelList.forEach(function (model) { %>
-	        <% if (model.get("isSelected") === true) { %>
-	            <option selected><%= model.get("name") %></option>
-	        <% }
-	        else { %>
-	            <option><%= model.get("name") %> </option>
-	        <% } %>
-	    <% }); %>
+	        <% if (model.get("name").indexOf("stripes") === -1) {
+				if (model.get("isSelected") === true) { %>
+					<option selected><%= model.get("name") %></option>
+				<% }
+				else { %>
+					<option><%= model.get("name") %> </option>
+				<% } %>
+	    <% }}); %>
 	</select>
 </div>
+<% if(areaLayerSelected === true) {%>
+	<div id="showStripes" class="form-check">
+		<div>
+			<input type="checkbox" class="form-check-input" id="showStripesInput" <% if (stripesLayer) {print('checked');} %>>
+			<label class="form-check-label" for="showStripesInput">Blockrandstreifen darstellen</label>
+		</div>
+		<% if (infoText !== undefined) { %>
+			<div class="info-icon">
+				<span class="glyphicon glyphicon-info-sign"></span>
+			</div>
+		<% } %>
+	</div>
+	<div class="col-xs-12 info-text"><%= infoText %></div>
+<% } %>
 <% if (!isViewMobile && !gfiFeature) { %>
     <label>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</label>
 <% } %>

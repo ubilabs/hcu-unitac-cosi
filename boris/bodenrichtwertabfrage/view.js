@@ -33,7 +33,7 @@ const BrwAbfrageView = Backbone.View.extend({
         },
         "click .glyphicon-question-sign": "handleHelpButton",
         "click #showStripes": "toggleStripesLayer",
-        "click .info-icon": "toggleInfoText",
+        "click .info-icon": "toggleInfoText"
     },
     initialize: function () {
         this.model = initializeBrwAbfrageModel();
@@ -75,7 +75,7 @@ const BrwAbfrageView = Backbone.View.extend({
      * Toggles the attribute "stripesLayer" in model and shows or hides the stripes for the selected year.
      *  @returns {void}
      */
-    toggleStripesLayer: function(){
+    toggleStripesLayer: function () {
         this.model.toggleStripesLayer(!this.model.get("stripesLayer"));
     },
     /**
