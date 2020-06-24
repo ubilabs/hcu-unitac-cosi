@@ -419,6 +419,8 @@ function initializeBrwAbfrageModel () {
             xhttp.onload = event => {
                 const feature = new WFS().readFeature(event.target.responseText);
 
+                // remove point geometry from feature = green marked brw
+                feature.unset("geom_brw_grdstk");
                 // set polygon geometry as feature's geometry
                 feature.setGeometryName(geometryName);
                 Radio.trigger("Highlightfeature", "highlightPolygon", feature);
