@@ -25,7 +25,10 @@ function initializeBrwAbfrageModel () {
             "processFromParametricUrl": false,
             "paramUrlParams": {},
             "zBauwSelect": "",
-            "isActive": true
+            "isActive": true,
+            "stripesLayer": false,
+            "areaLayerSelected": true,
+            "infoText": "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten."
         };
 
     Object.assign(BRWModel, {
@@ -85,7 +88,7 @@ function initializeBrwAbfrageModel () {
         },
 
         simulateLanduseSelect: function (paramUrlParams) {
-            var gfiFeature = this.get("gfiFeature"),
+            const gfiFeature = this.get("gfiFeature"),
                 landuseList = gfiFeature.get("nutzungsart"),
                 landuseByBrwId = this.findLanduseByBrwId(landuseList, paramUrlParams.brwId);
 
@@ -101,13 +104,70 @@ function initializeBrwAbfrageModel () {
             return foundLanduse.nutzungsart;
         },
         /**
+         * Shows or hides the old view of brw = stripes.
+         * @param {boolean} value show or hide
+         * @returns {void}
+         */
+        toggleStripesLayer: function (value) {
+            const modelList = this.get("modelList"),
+                selectedModel = modelList.find(model => model.get("isSelected") === true),
+                year = this.getYear(selectedModel.get("layers")),
+                modelName = this.createModelName(year, "-stripes");
+
+            this.setShowStripesLayer(value);
+            if (value) {
+                // show dedicated stripes model, from the same year
+                this.selectLayerModelByName(modelName, modelList);
+            }
+            else {
+                const model = modelList.find(aModel => aModel.get("name") === modelName);
+
+                if (model) {
+                    model.set("isVisibleInMap", false);
+                    model.set("isSelected", false);
+                }
+            }
+        },
+        /**
+         * Returns the name of the model.
+         * @param {string} year the to inspect
+         * @param {string} appendix to append to model name
+         * @returns {string} the name
+         */
+        createModelName (year, appendix) {
+            if (parseInt(year, 10) > 2009 || parseInt(year, 10) === 1994) {
+                return "31.12." + year + appendix;
+            }
+            return "01.01." + year + appendix;
+        },
+        /**
+         * Returns the year in layers like "lgv_brw_zonen_2018,lgv_brw_zonen_brw_grdstk_2018".
+         * @param {string} layer the string to inspect
+         * @returns {string} the year
+         */
+        getYear (layer) {
+            const splitted = layer.split("_"),
+                year = splitted[splitted.length - 1];
+
+            return year;
+        },
+        /**
          * Aktionen zum Wechseln eines Layers.
          * @param   {string} selectedLayername Name des zu aktivierenden Layers
          * @returns {void}
          */
         switchLayer: function (selectedLayername) {
+            let layerModel = null;
+
             this.unselectLayerModel(this.get("modelList"));
-            this.selectLayerModelByName(selectedLayername, this.get("modelList"));
+            layerModel = this.selectLayerModelByName(selectedLayername, this.get("modelList"));
+            if (layerModel.attributes.layers.indexOf("flaeche") > -1) {
+                this.setAreaLayerSelected(true);
+            }
+            else {
+                this.setAreaLayerSelected(false);
+                this.toggleStripesLayer(false);
+            }
         },
         /**
          * Sets the name of the active layer as stichtag name
@@ -338,17 +398,31 @@ function initializeBrwAbfrageModel () {
          */
         sendGetFeatureRequestById: function (featureId, year) {
             const xhttp = new XMLHttpRequest(),
-                typeName = parseInt(year, 10) > 2008 ? "lgv_brw_zonen_" + year : "lgv_brw_lagetypisch_alle",
-                urlParams = "typeName=" + typeName + "&featureID=" + featureId;
+                yearInt = parseInt(year, 10);
+            let typeName,
+                urlParams = null,
+                geometryName = "geom_zone";
+
+            if (featureId.indexOf("FLAECHE") > -1) {
+                typeName = "app:v_brw_zonen_geom_flaeche_" + year;
+                geometryName = "geom_zone_flaeche";
+            }
+            else if (yearInt <= 2008) {
+                typeName = "lgv_brw_lagetypisch_alle";
+            }
+            else {
+                typeName = "lgv_brw_zonen_" + year;
+            }
+            urlParams = "typeName=" + typeName + "&featureID=" + featureId;
 
             xhttp.open("GET", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
             xhttp.onload = event => {
                 const feature = new WFS().readFeature(event.target.responseText);
 
-                // remove point geometry from feature
+                // remove point geometry from feature = green marked brw
                 feature.unset("geom_brw_grdstk");
                 // set polygon geometry as feature's geometry
-                feature.setGeometryName("geom_zone");
+                feature.setGeometryName(geometryName);
                 Radio.trigger("Highlightfeature", "highlightPolygon", feature);
             };
             xhttp.onerror = event => {
@@ -407,6 +481,7 @@ function initializeBrwAbfrageModel () {
 
             layerModel.set("isVisibleInMap", true);
             layerModel.set("isSelected", true);
+            return layerModel;
         },
 
         /**
@@ -438,7 +513,7 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         handleConvertResponse: function (response, status) {
-            var complexData,
+            let complexData,
                 executeResponse;
 
             if (status === 200) {
@@ -475,7 +550,7 @@ function initializeBrwAbfrageModel () {
          * @returns {string}                Object für POST-Request
          */
         getConvertObject: function (brw) {
-            var requestObj = {},
+            let requestObj = {},
                 richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", "."); // unpunctuate Wert für WPS
 
             if (richtwert.match(/,/) && richtwert.match(/\./)) {
@@ -564,7 +639,7 @@ function initializeBrwAbfrageModel () {
          * @returns {object}        ergänztes Objekt
          */
         setObjectAttribute: function (object, attrName, value, dataType) {
-            var dataObj = {
+            const dataObj = {
                 dataType: dataType,
                 value: value
             };
@@ -612,14 +687,15 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         setSelectedBrwFeature: function (feature) {
-            var brw = this.extendFeatureAttributes(feature, this.getActiveLayerNameAsStichtag(this.get("modelList")));
+            const brw = this.extendFeatureAttributes(feature, this.getActiveLayerNameAsStichtag(this.get("modelList")));
 
             this.set("selectedBrwFeature", brw);
         },
 
         extendFeatureAttributes: function (feature, stichtag) {
-            var sw = feature.get("schichtwert") ? feature.get("schichtwert") : null,
-                isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+            const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+
+            let sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
 
             if (sw && typeof sw === "string") {
                 sw = this.jsonParse(sw);
@@ -685,7 +761,7 @@ function initializeBrwAbfrageModel () {
          * @return {void}
          */
         preparePrint: function () {
-            var visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
+            const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                     return layer.getVisible() === true;
                 }),
                 scale = Radio.request("MapView", "getOptions").scale,
@@ -743,12 +819,13 @@ function initializeBrwAbfrageModel () {
                             "scale": scale
                         }
                     }
-                },
-                buildSpec = new BuildSpecModel(attr);
+                };
+
+            let buildSpec = new BuildSpecModel(attr);
 
             buildSpec.buildLayers(visibleLayerList);
             buildSpec = buildSpec.toJSON();
-            buildSpec = _.omit(buildSpec, "uniqueIdList");
+            buildSpec = Radio.request("Util", "omit", buildSpec, ["uniqueIdList"]);
             Radio.trigger("Print", "createPrintJob", "boris", encodeURIComponent(JSON.stringify(buildSpec)), "pdf");
         },
 
@@ -838,7 +915,7 @@ function initializeBrwAbfrageModel () {
         * @returns {void}
         */
         updateSelectedBrwFeature: function (key, value) {
-            var feature = this.get("selectedBrwFeature"),
+            const feature = this.get("selectedBrwFeature"),
                 isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
             if (key === "convertedBrw") {
@@ -886,6 +963,22 @@ function initializeBrwAbfrageModel () {
         */
         setZBauwSelect: function (value) {
             this.set("zBauwSelect", value);
+        },
+        /*
+        * setter for stripesLayer
+        * @param {boolean} value true, if stripesLayer is shown additional to area layer
+        * @returns {void}
+        */
+        setShowStripesLayer: function (value) {
+            this.set("stripesLayer", value);
+        },
+        /*
+        * setter for areaLayerSelected
+        * @param {boolean} value true, if areaLayer is selected
+        * @returns {void}
+        */
+        setAreaLayerSelected: function (value) {
+            this.set("areaLayerSelected", value);
         }
     });
     BRWModel.initialize();

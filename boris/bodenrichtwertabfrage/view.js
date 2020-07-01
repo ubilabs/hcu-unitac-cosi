@@ -31,7 +31,9 @@ const BrwAbfrageView = Backbone.View.extend({
                 kategorie: "alert-success"
             });
         },
-        "click .glyphicon-question-sign": "handleHelpButton"
+        "click .glyphicon-question-sign": "handleHelpButton",
+        "click #showStripesInput": "toggleStripesLayer",
+        "click .info-icon": "toggleInfoText"
     },
     initialize: function () {
         this.model = initializeBrwAbfrageModel();
@@ -70,6 +72,34 @@ const BrwAbfrageView = Backbone.View.extend({
     },
 
     /**
+     * Toggles the attribute "stripesLayer" in model and shows or hides the stripes for the selected year.
+     *  @returns {void}
+     */
+    toggleStripesLayer: function () {
+        console.log('toggleStripesLayer');
+        
+        this.model.toggleStripesLayer(!this.model.get("stripesLayer"));
+    },
+    /**
+     * toggle the info text
+     * @returns {void}
+     */
+    toggleInfoText: function () {
+        const isInfoTextVisible = this.$el.find(".info-text").is(":visible");
+
+        if (!isInfoTextVisible) {
+            this.$el.find(".info-icon").css("opacity", "1");
+            this.$el.find(".form-check").css("margin-bottom", "0");
+            this.$el.find(".info-text").show();
+        }
+        else {
+            this.$el.find(".info-icon").css("opacity", "0.4");
+            this.$el.find(".form-check").css("margin-bottom", "15px");
+            this.$el.find(".info-text").hide();
+        }
+    },
+
+    /**
      * Zeichnet die Layerlist unterschiedlich für mobil/desktop
      * @param   {object} attr Modelattribute
      * @returns {void}
@@ -91,7 +121,7 @@ const BrwAbfrageView = Backbone.View.extend({
      */
     renderLanduse: function () {
         const attr = this.model.toJSON();
-
+        
         if (this.model.has("gfiFeature")) {
             this.$el.find(".brw-container").append(this.templateLanduseSelect(attr));
         }
@@ -124,14 +154,14 @@ const BrwAbfrageView = Backbone.View.extend({
     },
 
     handleBauwChange: function () {
-        var text = document.getElementById("zBauwSelect").options[document.getElementById("zBauwSelect").selectedIndex].value;
+        const text = document.getElementById("zBauwSelect").options[document.getElementById("zBauwSelect").selectedIndex].value;
 
         this.model.updateSelectedBrwFeature("zBauweise", text);
         this.model.sendWpsConvertRequest();
     },
 
     handleStrassenLageChange: function () {
-        var text = document.getElementById("zStrassenLageSelect").options[document.getElementById("zStrassenLageSelect").selectedIndex].text;
+        const text = document.getElementById("zStrassenLageSelect").options[document.getElementById("zStrassenLageSelect").selectedIndex].text;
 
         this.model.updateSelectedBrwFeature("zStrassenLage", text);
         this.model.sendWpsConvertRequest();
@@ -166,7 +196,7 @@ const BrwAbfrageView = Backbone.View.extend({
      * @returns {void}
      */
     handleSelectBRWYear: function (evt) {
-        var selectedLayername = evt.target.value;
+        const selectedLayername = evt.target.value;
 
         this.model.switchLayer(selectedLayername);
         if (this.model.get("isViewMobile")) {
@@ -189,7 +219,7 @@ const BrwAbfrageView = Backbone.View.extend({
      * @returns {void}
      */
     handleHelpButton: function (evt) {
-        var helper = this.$el.find(evt.target).parent().next().next();
+        const helper = this.$el.find(evt.target).parent().next().next();
 
         if (helper.hasClass("help")) {
             helper.slideToggle();
