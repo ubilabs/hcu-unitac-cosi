@@ -32,7 +32,7 @@ const BrwAbfrageView = Backbone.View.extend({
             });
         },
         "click .glyphicon-question-sign": "handleHelpButton",
-        "click #showStripes": "toggleStripesLayer",
+        "click #showStripesInput": "toggleStripesLayer",
         "click .info-icon": "toggleInfoText"
     },
     initialize: function () {
