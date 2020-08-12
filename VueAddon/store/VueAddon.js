@@ -5,7 +5,7 @@ import state from "./stateVueAddon";
 
 export default {
     namespaced: true,
-    state,
+    state: {...state},
     mutations,
     actions,
     getters
