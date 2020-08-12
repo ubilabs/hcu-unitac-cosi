@@ -76,8 +76,6 @@ const BrwAbfrageView = Backbone.View.extend({
      *  @returns {void}
      */
     toggleStripesLayer: function () {
-        console.log('toggleStripesLayer');
-        
         this.model.toggleStripesLayer(!this.model.get("stripesLayer"));
     },
     /**
@@ -121,7 +119,7 @@ const BrwAbfrageView = Backbone.View.extend({
      */
     renderLanduse: function () {
         const attr = this.model.toJSON();
-        
+
         if (this.model.has("gfiFeature")) {
             this.$el.find(".brw-container").append(this.templateLanduseSelect(attr));
         }
