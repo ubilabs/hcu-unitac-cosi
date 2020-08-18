@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import Verkehrsfunctions from "@addons/verkehrsfunctions/verkehrsfunctions.js";
+import * as moment from "moment";
 
 describe("ADDON: Verkehrsfunctions", function () {
     let model;
@@ -25,9 +26,11 @@ describe("ADDON: Verkehrsfunctions", function () {
     describe("getPhenomenonTimeRange", function () {
         it("should parse the right time format", function () {
             const startTime = "2020-03-26T18:45:01.000Z",
-                endTime = "2020-03-26T19:00:00.000Z";
+                endTime = "2020-03-26T19:00:00.000Z",
+                expectedStart = moment(startTime).format("DD.MM.YYYY, HH:mm"),
+                expectedEnd = moment(endTime).format("HH:mm");
 
-            expect(model.getPhenomenonTimeRange(startTime, endTime)).to.equal("26.03.2020, 19:45 Uhr - 20:00 Uhr");
+            expect(model.getPhenomenonTimeRange(startTime, endTime)).to.equal(expectedStart + " Uhr - " + expectedEnd + " Uhr");
         });
     });
 
