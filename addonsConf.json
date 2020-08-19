@@ -9,5 +9,6 @@
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
-  "verkehrsfunctions": "verkehrsfunctions.js"
+  "verkehrsfunctions": "verkehrsfunctions.js",
+  "VueAddon": "VueAddon.js"
 }

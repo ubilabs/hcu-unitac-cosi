@@ -14,16 +14,16 @@ export default {
     },
     created () {
         this.$on("close", this.close);
+
+        if (this.isActive) {
+            this.setActive(true);
+        }
     },
     /**
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
     mounted () {
-        this.initialize();
-        if (this.isActive) {
-            this.setActive(true);
-        }
         this.activateByUrlParam();
         this.applyTranslationKey(this.name);
     },

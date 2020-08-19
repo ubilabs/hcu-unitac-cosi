@@ -1,14 +1,12 @@
-import GenericTool from "../../../src/modules/tools/indexTools";
-import composeModules from "../../../src/app-store/utils/composeModules";
 import getters from "./gettersVueAddon";
 import mutations from "./mutationsVueAddon";
 import actions from "./actionsVueAddon";
 import state from "./stateVueAddon";
 
-export default composeModules([GenericTool, {
+export default {
     namespaced: true,
-    state,
+    state: {...state},
     mutations,
     actions,
     getters
-}]);
+};
