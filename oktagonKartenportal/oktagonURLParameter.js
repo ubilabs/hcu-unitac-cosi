@@ -31,7 +31,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         }, this);
 
         this.listenTo(Radio.channel("Gaz"), {
-            "getAdress": this.triggerZoomToAdress,
+            "getAdress": this.triggerZoomToAddress,
             "getStreetsWithoutHouseNumber": this.triggerZoomToStreet
         });
         if (query.indexOf("rueckurl") > 0) {
@@ -66,7 +66,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
             }
         }
         else if (result.hasOwnProperty("STRASSE")) {
-            const address = this.createadress(result);
+            const address = this.createAddress(result);
 
             this.setAddress(address);
             Radio.trigger("Gaz", address.searchType, address);
@@ -78,7 +78,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      * @param {Object} result - The url parameters.
      * @returns {object} The address parameters
      */
-    createadress: function (result) {
+    createAddress: function (result) {
         const address = {
             streetname: this.getParameterValue(result, "STRASSE"),
             searchType: "streetsWithoutHouseNumberSearch"
@@ -115,12 +115,12 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         return districtNameToZoom;
     },
     /**
-     * Zomms the map to the adress.
+     * Zomms the map to the address.
      * @param {Object} data xml object.
      * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @returns {void}
      */
-    triggerZoomToAdress: function (data) {
+    triggerZoomToAddress: function (data) {
         if ($("gages\\:Hauskoordinaten,Hauskoordinaten", data).length > 0) {
             const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
                 posList = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
