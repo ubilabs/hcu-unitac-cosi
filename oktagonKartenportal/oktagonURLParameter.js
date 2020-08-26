@@ -20,8 +20,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      */
     initialize: function () {
         const result = {},
-            channel = Radio.channel("OktagonURLParameter"),
-            adress = {};
+            channel = Radio.channel("OktagonURLParameter");
         let query = location.search.substr(1),
             rueckURLParameter = "";
 
@@ -32,7 +31,8 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         }, this);
 
         this.listenTo(Radio.channel("Gaz"), {
-            "getAdress": this.triggerZoomToAdress
+            "getAdress": this.triggerZoomToAdress,
+            "getStreetsWithoutHouseNumber": this.triggerZoomToStreet
         });
         if (query.indexOf("rueckurl") > 0) {
             rueckURLParameter = query.slice(query.indexOf("rueckurl"));
@@ -66,27 +66,36 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
             }
         }
         else if (result.hasOwnProperty("STRASSE")) {
-            adress.streetname = this.getParameterValue(result, "STRASSE");
+            const address = this.createadress(result);
 
-            if (result.hasOwnProperty("HAUSNUMMER")) {
-                adress.housenumber = this.getParameterValue(result, "HAUSNUMMER");
-            }
-            if (result.hasOwnProperty("ZUSATZ")) {
-                adress.affix = this.getParameterValue(result, "ZUSATZ");
-            }
-            if (adress.streetname && adress.housenumber) {
-                Radio.trigger("Gaz", "adressSearch", adress);
-            }
-            else {
-                Radio.trigger("Alert", "alert", {
-                    text: "<strong>Der Parametrisierte Aufruf des Portals ist leider schief gelaufen!</strong>"
-                    + "<br>"
-                    + "<small>Der Parameter Strasse=" + adress.streetname + " oder Hausnummer=" + adress.housenumber + "ist nicht angegeben.</small>",
-                    kategorie: "alert-warning"
-                });
-            }
+            this.setAddress(address);
+            Radio.trigger("Gaz", address.searchType, address);
         }
     },
+
+    /**
+     * Assembles the address from the URL parameters with searchType.
+     * @param {Object} result - The url parameters.
+     * @returns {object} The address parameters
+     */
+    createadress: function (result) {
+        const address = {
+            streetname: this.getParameterValue(result, "STRASSE"),
+            searchType: "streetsWithoutHouseNumberSearch"
+        };
+
+        if (result.hasOwnProperty("HAUSNUMMER")) {
+            address.housenumber = this.getParameterValue(result, "HAUSNUMMER");
+            address.searchType = "adressSearch";
+
+            if (result.hasOwnProperty("ZUSATZ")) {
+                address.affix = this.getParameterValue(result, "ZUSATZ");
+            }
+        }
+
+        return address;
+    },
+
     /**
      * Handels the Bezirk URL parameter
      * @param {String} districtFromUrl contains the "Bezirk" URL String.
@@ -106,20 +115,63 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         return districtNameToZoom;
     },
     /**
-     * Zomms the map to the adress
+     * Zomms the map to the adress.
      * @param {Object} data xml object.
      * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @returns {void}
      */
     triggerZoomToAdress: function (data) {
-        const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
-            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" ");
-        let coordinatesArray = [];
+        if ($("gages\\:Hauskoordinaten,Hauskoordinaten", data).length > 0) {
+            const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
+                posList = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
+                coordinates = this.parseCoordinatesToFloat(posList);
 
-        coordinatesArray = this.parseCoordinatesToFloat(coordinates);
-
-        Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinatesArray});
+            Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinates});
+        }
+        else {
+            this.alertWrongInputParameters();
+        }
     },
+
+    /**
+     * Zomms the map to the extent of the street.
+     * @param {Object} data xml object.
+     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
+     * @returns {void}
+     */
+    triggerZoomToStreet: function (data) {
+        if ($("dog\\:Strassen,Strassen", data).length > 0) {
+            const streetElement = $("dog\\:Strassen,Strassen", data).toArray().find(member => {
+                    const foundStreetnames = $("dog\\:strassenname, strassenname", member)[0].textContent.toLowerCase(),
+                        inputStreetnames = this.get("address").streetname.toLowerCase();
+
+                    return foundStreetnames === inputStreetnames;
+                }),
+                position = $("iso19112\\:position_strassenachse, position_strassenachse", streetElement)[0],
+                point = $("gml\\:Point, Point", position)[0],
+                pos = $("gml\\:pos, pos", point)[0].textContent.split(" "),
+                coordinates = this.parseCoordinatesToFloat(pos);
+
+            Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinates});
+        }
+        else {
+            this.alertWrongInputParameters();
+        }
+    },
+
+    /**
+     * Trigger an alert for wrong input Parameters.
+     * @returns {void}
+     */
+    alertWrongInputParameters: function () {
+        Radio.trigger("Alert", "alert", {
+            text: "<strong>Der Parametrisierte Aufruf des Portals ist leider schief gelaufen!</strong>"
+                + "<br>"
+                + "<small>Es konnte keine Adresse gefunden werde. Bitte prüfen Sie die Eingabeparmeter.</small>",
+            kategorie: "alert-warning"
+        });
+    },
+
     /**
      * Returns the parameter value
      * @param {Object} result xml object.
@@ -153,6 +205,15 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      */
     setRueckURL: function (value) {
         this.set("rueckURL", value);
+    },
+
+    /**
+     * Setter for address.
+     * @param {obejct} value - The address parameters.
+     * @returns {void}
+     */
+    setAddress: function (value) {
+        this.set("address", value);
     }
 });
 
