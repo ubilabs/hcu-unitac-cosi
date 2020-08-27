@@ -19,13 +19,13 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             stadtteile: {
                 attribute: "stadtteile",
                 selector: "stadtteil",
-                url: "https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_stadtteile",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
                 referenceAttributes: ["bezirke"]
             },
             bezirke: {
                 attribute: "bezirke",
                 selector: "bezirk",
-                url: "https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_bezirke",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke",
                 referenceAttributes: []
             }
         }
@@ -36,7 +36,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
      * @memberof FeaturesLoader
      * @constructs
      * @property {String} statistischeGebieteUrl="https://geodienste.hamburg.de/HH_WFS_Statistische_Gebiete_Test" WFS url of statistischeGebiete datasets
-     * @property {String} stadtteileUrl="https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_stadtteile" WFS url of stadtteile datasets
+     * @property {String} stadtteileUrl="https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile" WFS url of stadtteile datasets
      * @property {object} featureList store for already queried features indexed by attribute value e.g {15634: [Feature,Feature,Feature,...] , 15987: [Feature,Feature,Feature,...],...}
      * @property {object} attrMapping maps the relevant strings (url, selector) to each attribute name
      * @fires Core#RadioTriggerUtilHideLoader
