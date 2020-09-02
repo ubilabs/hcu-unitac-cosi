@@ -10,11 +10,7 @@ const {
     glyphicon,
     renderToWindow,
     resizableWindow,
-    isActive,
     isVisibleInMenu,
-    isRoot,
-    parentId,
-    type,
     deactivateGFI} = getters;
 
 describe("gettersVueAddon", function () {
@@ -38,20 +34,8 @@ describe("gettersVueAddon", function () {
         it("returns the resizableWindow default value from state", function () {
             expect(resizableWindow(stateVueAddon)).to.be.true;
         });
-        it("returns the isActive default value from state", function () {
-            expect(isActive(stateVueAddon)).to.be.false;
-        });
         it("returns the isVisibleInMenu default value from state", function () {
             expect(isVisibleInMenu(stateVueAddon)).to.be.true;
-        });
-        it("returns the isRoot default value from state", function () {
-            expect(isRoot(stateVueAddon)).to.be.false;
-        });
-        it("returns the parentId default value from state", function () {
-            expect(parentId(stateVueAddon)).to.equals("tool");
-        });
-        it("returns the type default value from state", function () {
-            expect(type(stateVueAddon)).to.equals("tool");
         });
         it("returns the deactivateGFI default value from state", function () {
             expect(deactivateGFI(stateVueAddon)).to.be.true;
