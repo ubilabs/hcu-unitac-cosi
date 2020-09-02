@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../src/modules/tools/Tool.vue";
-import {mapGetters, mapActions, mapMutations} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersVueAddon";
 import mutations from "../store/mutationsVueAddon";
 
@@ -14,24 +14,15 @@ export default {
     },
     created () {
         this.$on("close", this.close);
-
-        if (this.isActive) {
-            this.setActive(true);
-        }
     },
     /**
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
     mounted () {
-        this.activateByUrlParam();
         this.applyTranslationKey(this.name);
     },
     methods: {
-        ...mapActions("Tools/VueAddon", [
-            "activateByUrlParam",
-            "initialize"
-        ]),
         ...mapMutations("Tools/VueAddon", Object.keys(mutations)),
 
         /**
