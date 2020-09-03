@@ -42,7 +42,7 @@ describe("VueAddon.vue", () => {
                 configJson: mockConfigJson
             }
         });
-        store.dispatch("Tools/VueAddon/setActive", true);
+        store.commit("Tools/VueAddon/setActive", true);
     });
 
     it("renders the VueAddon", () => {
@@ -54,7 +54,7 @@ describe("VueAddon.vue", () => {
     it("do not render the VueAddons if not active", () => {
         let wrapper = null;
 
-        store.dispatch("Tools/VueAddon/setActive", false);
+        store.commit("Tools/VueAddon/setActive", false);
         wrapper = shallowMount(VueAddonComponent, {store, localVue});
 
         expect(wrapper.find("#vue-addon").exists()).to.be.false;
