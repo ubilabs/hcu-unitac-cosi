@@ -81,6 +81,9 @@ const traficChannel = Backbone.Model.extend({
         else {
             // put the absolute traffic count and proportion in right format
             absTrafficCount = this.get("carsHeaderSuffix") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            if (propTrafficCount === "no data") {
+                propTrafficCount = "0";
+            }
             propTrafficCount = "<span class='title'>" + this.get("trucksHeaderSuffix") + ": " + propTrafficCount + "</span>";
         }
 
@@ -177,7 +180,7 @@ const traficChannel = Backbone.Model.extend({
             des = "(Hauptrichtung)";
         }
         else if (dataDirection === "2") {
-            des = "(Nebenrichtung)";
+            des = "(Gegenrichtung)";
         }
         else {
             return des;
