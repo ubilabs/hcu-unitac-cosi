@@ -4,7 +4,10 @@ import moment from "moment";
 const traficChannel = Backbone.Model.extend({
     defaults: {
         proxyURLVerkehrssituation: "",
-        proxyURLVerkehrsmeldung: ""
+        proxyURLVerkehrsmeldung: "",
+        number: i18next.t("common:modules.tools.gfi.themes.trafficCount.number"),
+        carsHeaderSuffix: i18next.t("common:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix"),
+        trucksHeaderSuffix: i18next.t("common:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix")
     },
     /*
      * Lese Layer mit URL und starte refreshVerkehrsmeldungen, wobei layerid der gleichen URL entsprechen muss.
@@ -38,12 +41,14 @@ const traficChannel = Backbone.Model.extend({
      */
     updateMouseHoverAttribute: function (feature) {
         const dataStreamNames = feature.get("dataStreamName"),
-            dataStreamValues = feature.get("dataStreamValue");
+            dataStreamValues = feature.get("dataStreamValue"),
+            dataDirection = feature.get("richtung");
 
         let phenomenonTime = "",
             phenomenonTimeRange = "invalid date",
-            absTrafficCount = "No data",
-            propTrafficCount = "No data";
+            absTrafficCount = "",
+            propTrafficCount = "",
+            direction = "";
 
         if (feature.get("Datastreams") && Array.isArray(feature.get("Datastreams")) && feature.get("Datastreams").length
             && feature.get("Datastreams")[0].Observations && Array.isArray(feature.get("Datastreams")[0].Observations)
@@ -64,14 +69,22 @@ const traficChannel = Backbone.Model.extend({
             propTrafficCount = this.getPropTrafficCount(dataStreamNames, dataStreamValues);
         }
 
+        if (typeof dataDirection === "string" && dataDirection !== "") {
+            // paser to get the description of the direction
+            direction = this.getDirection(dataDirection);
+        }
+
         if (propTrafficCount === "") {
             // Only the absolute traffic count is needed
-            absTrafficCount = "Anzahl: " + this.addThousandPoints(absTrafficCount);
+            absTrafficCount = this.get("number") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
         }
         else {
             // put the absolute traffic count and proportion in right format
-            absTrafficCount = "KFZ abs.: " + this.addThousandPoints(absTrafficCount);
-            propTrafficCount = "<span class='title'>SV-Anteil in %: " + propTrafficCount + "</span>";
+            absTrafficCount = this.get("carsHeaderSuffix") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            if (propTrafficCount === "no data") {
+                propTrafficCount = "0";
+            }
+            propTrafficCount = "<span class='title'>" + this.get("trucksHeaderSuffix") + ": " + propTrafficCount + "</span>";
         }
 
         feature.set("absTrafficCount", absTrafficCount);
@@ -82,7 +95,7 @@ const traficChannel = Backbone.Model.extend({
     /**
      * adds thousands points into a absolute number
      * @param {Integer} value the absolute number as integer
-     * @returns {String}  the same number but with thousands points or "No data" if an invalid value was given
+     * @returns {String} the same number but with thousands points or "No data" if an invalid value was given
      */
     addThousandPoints: function (value) {
         if (typeof value !== "number" && typeof value !== "string") {
@@ -153,6 +166,27 @@ const traficChannel = Backbone.Model.extend({
         }
 
         return time;
+    },
+
+    /**
+     * Getting the description of the direction
+     * @param {String} dataDirection - the text from sensor thing direction 0 or 1 or else
+     * @return {Number|String} the proportional count or empty string
+     */
+    getDirection: function (dataDirection) {
+        let des = "";
+
+        if (dataDirection === "1") {
+            des = "(Hauptrichtung)";
+        }
+        else if (dataDirection === "2") {
+            des = "(Gegenrichtung)";
+        }
+        else {
+            return des;
+        }
+
+        return des;
     },
 
     /**
