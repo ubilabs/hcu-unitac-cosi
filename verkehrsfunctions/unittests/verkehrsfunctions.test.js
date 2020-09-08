@@ -65,18 +65,4 @@ describe("ADDON: Verkehrsfunctions", function () {
             expect(model.getPropTrafficCount(dataStreamNames, dataStreamValues)).to.equal(29);
         });
     });
-
-    describe("getDirection", function () {
-        it("should return text 'Hauptrichtung'", function () {
-            expect(model.getDirection("1")).to.equal("(Hauptrichtung)");
-        });
-
-        it("should return text 'Gegenrichtung'", function () {
-            expect(model.getDirection("2")).to.equal("(Gegenrichtung)");
-        });
-
-        it("should return a empty text", function () {
-            expect(model.getDirection("")).to.equal("");
-        });
-    });
 });

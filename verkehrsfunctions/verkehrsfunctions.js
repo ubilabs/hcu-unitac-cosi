@@ -69,9 +69,8 @@ const traficChannel = Backbone.Model.extend({
             propTrafficCount = this.getPropTrafficCount(dataStreamNames, dataStreamValues);
         }
 
-        if (typeof dataDirection === "string" && dataDirection !== "") {
-            // paser to get the description of the direction
-            direction = this.getDirection(dataDirection);
+        if (typeof dataDirection === "string") {
+            direction = "(" + dataDirection + ")";
         }
 
         if (propTrafficCount === "") {
@@ -166,27 +165,6 @@ const traficChannel = Backbone.Model.extend({
         }
 
         return time;
-    },
-
-    /**
-     * Getting the description of the direction
-     * @param {String} dataDirection - the text from sensor thing direction 0 or 1 or else
-     * @return {Number|String} the proportional count or empty string
-     */
-    getDirection: function (dataDirection) {
-        let des = "";
-
-        if (dataDirection === "1") {
-            des = "(Hauptrichtung)";
-        }
-        else if (dataDirection === "2") {
-            des = "(Gegenrichtung)";
-        }
-        else {
-            return des;
-        }
-
-        return des;
     },
 
     /**
