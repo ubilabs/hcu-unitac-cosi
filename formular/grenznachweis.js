@@ -82,7 +82,6 @@ const GrenznachweisModel = Tool.extend(/** @lends GrenznachweisModel.prototype *
      * @fires Map#RadioTriggerMapRemoveInteraction
      */
     initialize: function () {
-        console.log("model");
         // lese WPS-Url aus JSON ein
         const wpsService = Radio.request("RestReader", "getServiceById", Config.wpsID),
             wpsURL = wpsService && wpsService && wpsService.get("url") ? wpsService.get("url") : null,
