@@ -19,15 +19,20 @@ const gfiOnAddressSearch = Backbone.Model.extend({
             "getStreets": this.streetHit
         }, this);
     },
-    /*
-     * Wird eine Adresse ausgewählt (über findeStrasse), müssen Detailinforationen abgerufen werden.
+
+    /**
+     * If an address is selected (via findeStrasse), detailed information must be retrieved.
+     * @param {string} address - The addresse that was klicked.
+     * @fires Searchbar#RadioTriggerSearchbarStreetSearch
+     * @fires Searchbar#RadioTriggerSearchbarAdressSearch
+     * @returns {void}
      */
     searchbarhit: function (address) {
-        if (address && address.type === "Straße") {
+        if (address?.type === "Straße") {
             this.setStreetName(address.name);
             Radio.trigger("Gaz", "streetsSearch", address);
         }
-        else if (address && address.type === "Adresse") {
+        else if (address?.type === "Adresse") {
             Radio.trigger("Gaz", "adressSearch", address.adress);
             this.trigger("close");
         }
@@ -42,16 +47,16 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         this.trigger("render");
     },
 
+    /**
+     * Sorts housenumbers.
+     * @param {object[]} houseNumbers - The housenumbers from gazetter.
+     * @fires Core#RadioRequestUtilIsSort
+     * @returns {object[]} The sorted housenumbers
+     */
     sortHouseNumbers: function (houseNumbers) {
-        // https://stackoverflow.com/questions/16426774/underscore-sortby-based-on-multiple-attributes
-        const sortedHouseNumbers = houseNumbers.sort(function (houseNumber) {
-            return houseNumber.affix;
-        }).sort(function (houseNumber) {
-            return parseInt(houseNumber.nr, 10);
-        }).value();
-
-        return sortedHouseNumbers;
+        return Radio.request("Util", "sort", "", houseNumbers, "number", "affix");
     },
+
     prepareHouseNumbers: function (streetName, houseNumbers) {
         const houseNumbersArray = [];
 

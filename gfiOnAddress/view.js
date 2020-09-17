@@ -6,14 +6,14 @@ const GfiOnAddressView = Backbone.View.extend({
         "click .address": "addressClicked"
     },
     initialize: function () {
-        const lgvContainer = $.find(".lgv-container")[0];
+        const masterportalContainer = $.find(".masterportal-container")[0];
 
         this.listenTo(this.model, {
             "render": this.render,
             "close": this.close
         }, this);
 
-        $(lgvContainer).append(this.$el);
+        $(masterportalContainer).append(this.$el);
     },
     id: "gfi-on-address",
     className: "top-center",
