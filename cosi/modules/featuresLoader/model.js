@@ -107,7 +107,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             text: "Datensätze werden geladen",
             kategorie: "alert-info"
         });
-
+console.info(serviceUrl);
         const layerList = getLayerList().filter(function (layer) {
                 return layer.url === serviceUrl;
             }),
@@ -177,7 +177,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
                     // passing an undefined bbox if the scope is "bezirke", loading the entire city for all above levels
                     return this.loadDistricts(referenceAttributes[0] === "bezirke" ? undefined : bbox, url, referenceAttributes[0], referenceDistricts, referenceAttributes.splice(1), districtNameList);
                 }
-
+                console.info("kann das sein");
                 Radio.trigger("Util", "hideLoader");
                 Radio.trigger("Alert", "alert:remove");
 
@@ -237,7 +237,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
         let url = `${layer.url}?` +
             "service=WFS&" +
             "request=Getfeature&" +
-            `version=${layer.version}&` +
+            "version=1.1.0&" +
             `typename=de.hh.up:${layer.featureType}&` +
             "namespace=xmlns(de.hh.up=https://registry.gdi-de.org/id/de.hh.up)";
 
