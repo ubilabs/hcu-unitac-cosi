@@ -707,27 +707,27 @@ function initializeBrwAbfrageModel () {
 
             if (sw) {
                 if (sw.normschichtwert_wohnen) {
-                    sw.normschichtwert_wohnenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_wohnen, 10) * 1.95583).toFixed(1)) : "";
-                    sw.normschichtwert_wohnen = thousandsSeparator(sw.normschichtwert_wohnen);
+                    sw.normschichtwert_wohnenDM = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(sw.normschichtwert_wohnen, 10) * 1.95583).toFixed(1)) : "";
+                    sw.normschichtwert_wohnen = Radio.request("Util", "thousandsSeparator", sw.normschichtwert_wohnen);
                 }
                 if (sw.normschichtwert_buero) {
-                    sw.normschichtwert_bueroDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_buero, 10) * 1.95583).toFixed(1)) : "";
-                    sw.normschichtwert_buero = thousandsSeparator(sw.normschichtwert_buero);
+                    sw.normschichtwert_bueroDM = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(sw.normschichtwert_buero, 10) * 1.95583).toFixed(1)) : "";
+                    sw.normschichtwert_buero = Radio.request("Util", "thousandsSeparator", sw.normschichtwert_buero);
                 }
                 if (sw.normschichtwert_laden) {
-                    sw.normschichtwert_ladenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_laden, 10) * 1.95583).toFixed(1)) : "";
-                    sw.normschichtwert_laden = thousandsSeparator(sw.normschichtwert_laden);
+                    sw.normschichtwert_ladenDM = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(sw.normschichtwert_laden, 10) * 1.95583).toFixed(1)) : "";
+                    sw.normschichtwert_laden = Radio.request("Util", "thousandsSeparator", sw.normschichtwert_laden);
                 }
                 if (sw.schichtwerte) {
                     sw.schichtwerte.forEach(function (gfs) {
-                        gfs.schichtwertDM = isDMTime ? thousandsSeparator((parseFloat(gfs.schichtwert, 10) * 1.95583).toFixed(1)) : "";
-                        gfs.schichtwert = thousandsSeparator(gfs.schichtwert);
+                        gfs.schichtwertDM = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(gfs.schichtwert, 10) * 1.95583).toFixed(1)) : "";
+                        gfs.schichtwert = Radio.request("Util", "thousandsSeparator", gfs.schichtwert);
                     });
                 }
             }
             feature.setProperties({
-                "richtwert_dm": isDMTime ? thousandsSeparator(parseFloat(feature.get("richtwert_dm"), 10).toFixed(1)) : "",
-                "richtwert_euro": thousandsSeparator(feature.get("richtwert_euro")),
+                "richtwert_dm": isDMTime ? Radio.request("Util", "thousandsSeparator", parseFloat(feature.get("richtwert_dm"), 10).toFixed(1)) : "",
+                "richtwert_euro": Radio.request("Util", "thousandsSeparator", feature.get("richtwert_euro")),
                 "schichtwert": sw,
                 "stichtag": stichtag,
                 "convertedBrw": "", // umgerechneter Bodenrichtwert

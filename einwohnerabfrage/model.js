@@ -1,7 +1,6 @@
 import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
-import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -150,11 +149,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             }
         });
 
-        const service = Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId"));
-
-        if (service !== undefined) {
-            this.setMetaDataLink(service.get("url"));
-        }
+        this.setMetaDataLink(Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId")).get("url"));
 
         this.listenTo(Radio.channel("i18next"), {
             "languageChanged": this.changeLang
@@ -326,7 +321,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                     stringVal = this.chooseUnitAndThousandsSeparator(value);
                 }
                 else {
-                    stringVal = thousandsSeparator(value);
+                    stringVal = Radio.request("Util", "thousandsSeparator", value);
                 }
                 preparedData[key] = stringVal;
             }
