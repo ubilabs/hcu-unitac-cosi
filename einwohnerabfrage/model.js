@@ -96,7 +96,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @fires RestReader#RadioRequestRestReaderGetServiceById
      * @fires Addons.Einwohnerabfrage#RenderResult
      * @fires Alerting#RadioTriggerAlertAlert
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @fires Core#RadioTriggerMapAddInteraction
      * @fires Core#RadioTriggerWPSRequest
      * @fires Core.ModelList#RadioRequestModelListGetModelByAttributes
@@ -307,7 +307,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     /**
      * Iterates ofer response properties
      * @param  {Object} response - the parsed response from wps
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @returns {void}
      */
     prepareDataForRendering: function (response) {
@@ -316,10 +316,10 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
 
             if (!isNaN(value)) {
                 if (key === "suchflaeche") {
-                    stringVal = this.chooseUnitAndPunctuate(value);
+                    stringVal = this.chooseUnitAndThousandsSeparator(value);
                 }
                 else {
-                    stringVal = Radio.request("Util", "punctuate", value);
+                    stringVal = Radio.request("Util", "thousandsSeparator", value);
                 }
                 list[key] = stringVal;
             }
@@ -331,26 +331,25 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     },
 
     /**
-     * Chooses unit based on value, calls punctuate and converts to unit and appends unit
+     * Chooses unit based on value, calls thousandsSeparator and converts to unit and appends unit
      * @param  {Number} value - to inspect
      * @param  {Number} maxDecimals - decimals are cut after maxlength chars
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @returns {String} unit
      */
-    chooseUnitAndPunctuate: function (value, maxDecimals) {
+    chooseUnitAndThousandsSeparator: function (value, maxDecimals) {
         let newValue = null;
 
         if (value < 250000) {
-            return Radio.request("Util", "punctuate", value.toFixed(maxDecimals)) + " m²";
+            return Radio.request("Util", "thousandsSeparator", value.toFixed(maxDecimals)) + " m²";
         }
         if (value < 10000000) {
             newValue = value / 10000.0;
-
-            return Radio.request("Util", "punctuate", newValue.toFixed(maxDecimals)) + " ha";
+            return Radio.request("Util", "thousandsSeparator", newValue.toFixed(maxDecimals)) + " ha";
         }
         newValue = value / 1000000.0;
 
-        return Radio.request("Util", "punctuate", newValue.toFixed(maxDecimals)) + " km²";
+        return Radio.request("Util", "thousandsSeparator", newValue.toFixed(maxDecimals)) + " km²";
     },
 
 

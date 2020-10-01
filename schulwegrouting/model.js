@@ -219,7 +219,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         let routeDescription = response.routenbeschreibung.part;
 
         this.setGeometryByFeatureId("route", this.get("layer").getSource(), routeGeometry);
-        response.kuerzesteStrecke = Radio.request("Util", "punctuate", response.kuerzesteStrecke);
+        response.kuerzesteStrecke = Radio.request("Util", "thousandsSeparator", response.kuerzesteStrecke);
         this.setRouteResult(response);
         if (!Array.isArray(routeDescription)) {
             routeDescription = [routeDescription];

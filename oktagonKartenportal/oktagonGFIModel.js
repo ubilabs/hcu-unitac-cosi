@@ -131,8 +131,8 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     addCoordinatesToSubmitObject: function (coordinate) {
         const submitObject = this.get("submitObject");
 
-        submitObject.KoordinateX = Radio.request("Util", "punctuate", coordinate[0]).replace(/\./g, "");
-        submitObject.KoordinateY = Radio.request("Util", "punctuate", coordinate[1]).replace(/\./g, "");
+        submitObject.KoordinateX = Radio.request("Util", "thousandsSeparator", coordinate[0]).replace(/\./g, "");
+        submitObject.KoordinateY = Radio.request("Util", "thousandsSeparator", coordinate[1]).replace(/\./g, "");
 
         this.setSubmitObject(submitObject);
     },
