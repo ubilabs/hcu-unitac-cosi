@@ -1,3 +1,5 @@
+import "./RadioBridge.js";
+
 const ShowParcelGFI = Backbone.Model.extend(/** @lends ShowParcelGFI.prototype */{
     defaults: {
         "requestedParcelId": false
