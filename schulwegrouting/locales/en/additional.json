@@ -1,0 +1,14 @@
+{
+    "modules": {
+        "tools": {
+            "routingToSchool": {
+                "title": "Routing to school",
+                "startingAddress": "Start address",
+                "regionalPrimarySchool": "Regional primary school: ",
+                "selectSchool": "Select school",
+                "printRoute": "Print route",
+                "deleteRoute": "Delete route"
+            }
+        }
+    } 
+}

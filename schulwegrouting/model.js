@@ -30,7 +30,13 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         checkBoxHVV: undefined,
         renderToSidebar: true,
         renderToWindow: false,
-        glyphicon: "glyphicon-filter"
+        glyphicon: "glyphicon-filter",
+        // translations
+        startingAddress: "",
+        regionalPrimarySchool: "",
+        selectSchool: "",
+        printRoute: "",
+        deleteRoute: ""
     }),
 
     /**
@@ -40,6 +46,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @constructs
      */
     initialize: function () {
+        this.changeLang(i18next.language);
         const channel = Radio.channel("Schulwegrouting");
 
         this.superInitialize();
@@ -102,6 +109,26 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                     this.setSchoolList(this.sortSchoolsByName(features));
                 }
             }
+        });
+
+        this.listenTo(Radio.channel("i18next"), {
+            "languageChanged": this.changeLang
+        });
+    },
+
+    /**
+     * change language - sets default values for the language
+     * @param {String} lng - new language to be set
+     * @returns {Void} -
+     */
+    changeLang: function (lng) {
+        this.set({
+            "startingAddress": i18next.t("additional:modules.tools.routingToSchool.startingAddress"),
+            "regionalPrimarySchool": i18next.t("additional:modules.tools.routingToSchool.regionalPrimarySchool"),
+            "selectSchool": i18next.t("additional:modules.tools.routingToSchool.selectSchool"),
+            "printRoute": i18next.t("additional:modules.tools.routingToSchool.printRoute"),
+            "deleteRoute": i18next.t("additional:modules.tools.routingToSchool.deleteRoute"),
+            "currentLng": lng
         });
     },
 
