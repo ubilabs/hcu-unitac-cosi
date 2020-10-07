@@ -36,7 +36,12 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         regionalPrimarySchool: "",
         selectSchool: "",
         printRoute: "",
-        deleteRoute: ""
+        deleteRoute: "",
+        showRouteDescription: "",
+        hideRouteDescription: "",
+        totalLength: "",
+        from: "",
+        to: ""
     }),
 
     /**
@@ -115,7 +120,6 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
             "languageChanged": this.changeLang
         });
     },
-
     /**
      * change language - sets default values for the language
      * @param {String} lng - new language to be set
@@ -128,6 +132,11 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
             "selectSchool": i18next.t("additional:modules.tools.routingToSchool.selectSchool"),
             "printRoute": i18next.t("additional:modules.tools.routingToSchool.printRoute"),
             "deleteRoute": i18next.t("additional:modules.tools.routingToSchool.deleteRoute"),
+            "showRouteDescription": i18next.t("additional:modules.tools.routingToSchool.showRouteDescription"),
+            "hideRouteDescription": i18next.t("additional:modules.tools.routingToSchool.hideRouteDescription"),
+            "totalLength": i18next.t("additional:modules.tools.routingToSchool.totalLength"),
+            "from": i18next.t("additional:modules.tools.routingToSchool.from"),
+            "to": i18next.t("additional:modules.tools.routingToSchool.to"),
             "currentLng": lng
         });
     },

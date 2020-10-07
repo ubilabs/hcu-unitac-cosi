@@ -252,7 +252,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
 
     toggleRouteDesc: function (evt) {
         const oldText = evt.target.innerHTML,
-            newText = oldText === "Routenbeschreibung einblenden" ? "Routenbeschreibung ausblenden" : "Routenbeschreibung einblenden";
+            newText = oldText === this.model.get("showRouteDescription") ? this.model.get("hideRouteDescription") : this.model.get("showRouteDescription");
 
         evt.target.innerHTML = newText;
     },
