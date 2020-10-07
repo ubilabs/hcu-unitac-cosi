@@ -149,7 +149,11 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             }
         });
 
-        this.setMetaDataLink(Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId")).get("url"));
+        const service = Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId"));
+
+        if (service !== undefined) {
+            this.setMetaDataLink(service.get("url"));
+        }
 
         this.listenTo(Radio.channel("i18next"), {
             "languageChanged": this.changeLang
