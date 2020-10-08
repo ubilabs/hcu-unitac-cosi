@@ -76,7 +76,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
                     Radio.trigger("Sidebar", "toggle", false);
                 }
             },
-            "change:currentLng": this.render,
+            "change:currentLng": this.rerender,
             "updateRegionalSchool": this.updateRegionalSchool,
             "updateSelectedSchool": this.updateSelectedSchool,
             "resetRouteResult": this.resetRouteResult,
@@ -112,6 +112,27 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         this.delegateEvents();
 
         return this;
+    },
+    /**
+     * Rerender method that keeps state except for language.
+     * To be used on changeLang.
+     * @returns {void}
+     */
+    rerender: function () {
+        const attr = this.model.toJSON(),
+            startAddress = this.model.get("startAddress");
+
+        if (Object.keys(startAddress).length === 0) {
+            document.getElementsByClassName("address-search")[0].placeholder = attr.startingAddress;
+            document.getElementsByClassName("filter-option")[0].innerHTML = attr.selectSchool;
+        }
+        document.getElementsByClassName("tool-name")[0].innerHTML = attr.name;
+        document.getElementsByClassName("regionalPrimarySchool")[0].innerHTML = attr.regionalPrimarySchool;
+        document.getElementsByClassName("print-route")[0].innerHTML = attr.printRoute;
+        document.getElementsByClassName("delete-route")[0].innerHTML = attr.deleteRoute;
+
+        this.renderRouteResult(this.model, this.model.get("routeResult"));
+        this.renderRouteDescription(this.model, this.model.get("routeDescription"));
     },
 
     togglePrintEnabled: function (value) {
