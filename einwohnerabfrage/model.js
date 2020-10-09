@@ -1,6 +1,7 @@
 import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -323,7 +324,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                     stringVal = this.chooseUnitAndThousandsSeparator(value);
                 }
                 else {
-                    stringVal = Radio.request("Util", "thousandsSeparator", value);
+                    stringVal = thousandsSeparator(value);
                 }
                 list[key] = stringVal;
             }
@@ -345,15 +346,15 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         let newValue = null;
 
         if (value < 250000) {
-            return Radio.request("Util", "thousandsSeparator", value.toFixed(maxDecimals)) + " m²";
+            return thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
         }
         if (value < 10000000) {
             newValue = value / 10000.0;
-            return Radio.request("Util", "thousandsSeparator", newValue.toFixed(maxDecimals)) + " ha";
+            return thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
         }
         newValue = value / 1000000.0;
 
-        return Radio.request("Util", "thousandsSeparator", newValue.toFixed(maxDecimals)) + " km²";
+        return thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
     },
 
 
