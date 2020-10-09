@@ -76,7 +76,11 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
                     Radio.trigger("Sidebar", "toggle", false);
                 }
             },
-            "change:currentLng": this.rerender,
+            "change:currentLng": function () {
+                if (this.model.get("isActive")) {
+                    this.rerender();
+                }
+            },
             "updateRegionalSchool": this.updateRegionalSchool,
             "updateSelectedSchool": this.updateSelectedSchool,
             "resetRouteResult": this.resetRouteResult,
