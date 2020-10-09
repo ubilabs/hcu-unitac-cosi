@@ -13,6 +13,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         id: "schulwegrouting",
         name: "Schulweg",
         layerId: "8712",
+        wpsId: "1001",
         // ol-features of all schools
         schoolList: [],
         // the regional school in charge
@@ -352,7 +353,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      */
     sendRequest: function (requestObj) {
         this.toggleLoader(true);
-        Radio.trigger("WPS", "request", "1001", "schulwegrouting_wps.fmw", requestObj, this.handleResponse.bind(this), 50000);
+        Radio.trigger("WPS", "request", this.get("wpsId"), "schulwegrouting_wps.fmw", requestObj, this.handleResponse.bind(this), 50000);
     },
 
     toggleLoader: function (show) {
