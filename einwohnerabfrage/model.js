@@ -1,6 +1,7 @@
 import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -325,7 +326,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                     stringVal = this.chooseUnitAndThousandsSeparator(value);
                 }
                 else {
-                    stringVal = Radio.request("Util", "thousandsSeparator", value);
+                    stringVal = thousandsSeparator(value);
                 }
                 preparedData[key] = stringVal;
             }
