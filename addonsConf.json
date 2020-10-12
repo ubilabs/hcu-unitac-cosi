@@ -11,5 +11,7 @@
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
-  "VueAddon": "VueAddon.js"
+  "VueAddon": {
+    "vue": true
+  }
 }
