@@ -1,5 +1,5 @@
 import VueAddonComponent from "./components/VueAddon.vue";
-import VueAddonStore from "./store/VueAddon";
+import VueAddonStore from "./store/index";
 import deLocale from "./locales/de/additional.json";
 import enLocale from "./locales/en/additional.json";
 
