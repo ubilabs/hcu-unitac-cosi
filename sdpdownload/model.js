@@ -118,9 +118,9 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         this.setGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
 
         this.listenTo(Radio.channel("i18next"), {
-                "languageChanged": this.changeLang
-            });
-            this.changeLang();
+            "languageChanged": this.changeLang
+        });
+        this.changeLang();
     },
     /**
     * change language - sets default values for the language
@@ -128,17 +128,17 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
     * @returns {Void} -
     */
     changeLang: function (lng) {
-    this.set({
-        "selectFormat": i18next.t("additional:modules.tools.sdpdownload.selectFormat"),
-        "howToChooseTiles": i18next.t("additional:modules.tools.sdpdownload.howToChooseTiles"),
-        "downloadDataPackage": i18next.t("additional:modules.tools.sdpdownload.downloadDataPackage"),
-        "specialDownloads": i18next.t("additional:modules.tools.sdpdownload.specialDownloads"),
-        "neuwerkDataPackage": i18next.t("additional:modules.tools.sdpdownload.neuwerkDataPackage"),
-        "scharhörnDataPackage": i18next.t("additional:modules.tools.sdpdownload.scharhörnDataPackage"),
-        "tileOverview310": i18next.t("additional:modules.tools.sdpdownload.tileOverview310"),
-        "tileOverview320": i18next.t("additional:modules.tools.sdpdownload.tileOverview320"),
-        "currentLng": lng
-    });
+        this.set({
+            "selectFormat": i18next.t("additional:modules.tools.sdpdownload.selectFormat"),
+            "howToChooseTiles": i18next.t("additional:modules.tools.sdpdownload.howToChooseTiles"),
+            "downloadDataPackage": i18next.t("additional:modules.tools.sdpdownload.downloadDataPackage"),
+            "specialDownloads": i18next.t("additional:modules.tools.sdpdownload.specialDownloads"),
+            "neuwerkDataPackage": i18next.t("additional:modules.tools.sdpdownload.neuwerkDataPackage"),
+            "scharhörnDataPackage": i18next.t("additional:modules.tools.sdpdownload.scharhörnDataPackage"),
+            "tileOverview310": i18next.t("additional:modules.tools.sdpdownload.tileOverview310"),
+            "tileOverview320": i18next.t("additional:modules.tools.sdpdownload.tileOverview320"),
+            "currentLng": lng
+        });
     },
     /**
      * Sets the state at GraphicalSelect - handles (de-)activation of this Tool
