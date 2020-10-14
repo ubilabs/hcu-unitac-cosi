@@ -13,5 +13,8 @@
   "verkehrsfunctions": "verkehrsfunctions.js",
   "VueAddon": {
     "vue": true
+  },
+  "gfiThemes/trinkwasser": {
+    "vue": true
   }
 }
