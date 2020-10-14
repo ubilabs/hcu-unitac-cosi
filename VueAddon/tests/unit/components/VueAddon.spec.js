@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import VueAddonComponent from "../../../components/VueAddon.vue";
-import VueAddon from "../../../store/VueAddon";
+import VueAddon from "../../../store/index";
 import {expect} from "chai";
 
 const localVue = createLocalVue();
