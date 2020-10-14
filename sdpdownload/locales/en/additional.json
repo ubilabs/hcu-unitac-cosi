@@ -1,0 +1,17 @@
+{
+    "modules": {
+        "tools": {
+            "sdpdownload": {
+                "title": "sdpdownload",
+                "selectFormat": "Select the format",
+                "howToChooseTiles": "How would you like to choose the tiles?",
+                "downloadDataPackage": "Download data package",
+                "specialDownloads": "Special downloads",
+                "neuwerkDataPackage": "Neuwerk data package - please select the format above",
+                "scharhörnDataPackage": "Scharhörn data package - please select the format above",
+                "tileOverview310": "UTM tile overviews LS310",
+                "tileOverview320": "UTM tile overviews LS320"
+            }
+        }
+    } 
+}

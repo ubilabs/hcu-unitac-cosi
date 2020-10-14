@@ -1,0 +1,17 @@
+{
+    "modules": {
+        "tools": {
+            "sdpdownload": {
+                "title": "sdpdownload",
+                "selectFormat": "Wählen Sie das Format aus",
+                "howToChooseTiles": "Wie möchten Sie die Kacheln auswählen?",
+                "downloadDataPackage": "Datenpaket herunterladen",
+                "specialDownloads": "Spezielle Downloads",
+                "neuwerkDataPackage": "Datenpaket von Neuwerk - Format bitte oben auswählen",
+                "scharhörnDataPackage": "Datenpaket von Scharhörn - Format bitte oben auswählen",
+                "tileOverview310": "UTM-Kachel Übersichten LS310",
+                "tileOverview320": "UTM-Kachel Übersichten LS320"
+            }
+        }
+    } 
+}

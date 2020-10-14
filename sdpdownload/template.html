@@ -6,7 +6,7 @@
 </div>
 <div class="content">
     <div class="form-group col-xs-12 first">
-        <span>Wählen Sie das Format aus</span>
+        <span><%= selectFormat %></span>
     </div>
     <div class="form-group col-xs-12">
         <div class="input-group bootstrap-select" style="width: 100%">
@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="form-group col-xs-12">
-        <span>Wie möchten Sie die Kacheln auswählen?</span>
+        <span><%= howToChooseTiles %></span>
     </div>
     <div class="form-group col-xs-12">
         <div class="input-group bootstrap-select" style="width: 100%">
@@ -27,30 +27,30 @@
     </div>
     <div class="form-group col-md-12 col-xs-12 limiter">
         <button type="button" class="btn btn-default btn-sm btn-block sdp-download center-block">
-            Datenpaket herunterladen
+            <%= downloadDataPackage %>
         </button>
     </div>
     <div class="form-group col-xs-12">
-        <span>Spezielle Downloads</span>
+        <span><%= specialDownloads %></span>
     </div>
     <div class="form-group col-md-12 col-xs-12">
         <button type="button" class="btn btn-default btn-sm btn-block sdp-neuwerk-download center-block">
-            Datenpaket von Neuwerk - Format bitte oben auswählen
+            <%= neuwerkDataPackage %>
         </button>
     </div>
     <div class="form-group col-md-12 col-xs-12">
         <button type="button" class="btn btn-default btn-sm btn-block sdp-download-scharhoern center-block">
-            Datenpaket von Scharhörn - Format bitte oben auswählen
+            <%= scharhörnDataPackage %>
         </button>
     </div>
     <div class="form-group col-md-12 col-xs-12">
         <button type="button" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-310 center-block">
-            UTM-Kachel Übersichten LS310
+            <%= tileOverview310 %>
         </button>
     </div>
     <div class="form-group col-md-12 col-xs-12">
         <button type="button" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-320 center-block">
-            UTM-Kachel Übersichten LS320
+            <%= tileOverview320 %>
         </button>
     </div>
     <% if (requesting) { %>
