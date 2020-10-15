@@ -9,7 +9,7 @@ const localVue = createLocalVue();
 mock.$themeAddons = [];
 
 localVue.use(Vuex);
-describe("trinkwasser/components/Trinkwasser.vue", () => {
+describe("addons/trinkwasser/components/Trinkwasser.vue", () => {
     let wrapper;
 
     beforeEach(() => {
