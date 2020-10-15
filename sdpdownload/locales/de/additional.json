@@ -18,7 +18,12 @@
                 "dwg320Label": "DWG, Lagestatus 320",
                 "dwg320Description": "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, Gauß-Krüger-Projektion",
                 "jpgLabel": "JPG + JGW, Lagestatus 310 (kurz)",
-                "jpgDescription": "Daten im JPG-Format herunterladen, inkl. JGW-Dateien im Lagestatus: ETRS89, UTM-Projektion"
+                "jpgDescription": "Daten im JPG-Format herunterladen, inkl. JGW-Dateien im Lagestatus: ETRS89, UTM-Projektion",
+                "pleaseSelectTiles": "Bitte wählen Sie Kacheln aus!",
+                "tooManyTilesSelected": "Die von Ihnen getroffene Auswahl beinhaltet {{tilesCount}} Kacheln. Sie dürfen maximal {{maxTiles}} Kacheln aufeinmal herunterladen. Bitte reduzieren Sie Ihre Auswahl!",
+                "failedToDownload": "Die Daten konnten leider nicht heruntergeladen werden!",
+                "details": "Details:",
+                "serviceNotResponding": "Ein benötigter Dienst antwortet nicht."
             }
         }
     } 

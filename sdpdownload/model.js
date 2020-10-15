@@ -45,7 +45,8 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         neuwerkDataPackage: "",
         scharhörnDataPackage: "",
         tileOverview310: "",
-        tileOverview320: ""
+        tileOverview320: "",
+        pleaseSelectTiles: ""
     }),
     /**
  * @class SdpDownloadModel
@@ -154,6 +155,10 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             "scharhörnDataPackage": i18next.t("additional:modules.tools.sdpdownload.scharhörnDataPackage"),
             "tileOverview310": i18next.t("additional:modules.tools.sdpdownload.tileOverview310"),
             "tileOverview320": i18next.t("additional:modules.tools.sdpdownload.tileOverview320"),
+            "pleaseSelectTiles": i18next.t("additional:modules.tools.sdpdownload.pleaseSelectTiles"),
+            "failedToDownload": i18next.t("additional:modules.tools.sdpdownload.failedToDownload"),
+            "details": i18next.t("additional:modules.tools.sdpdownload.details"),
+            "serviceNotResponding": i18next.t("additional:modules.tools.sdpdownload.serviceNotResponding"),
             "currentLng": lng
         });
     },
@@ -327,7 +332,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
 
         if (selectedRasterNames.length > this.get("selectedRasterLimit")) {
             Radio.trigger("Alert", "alert", {
-                text: "Die von Ihnen getroffene Auswahl beinhaltet " + selectedRasterNames.length + " Kacheln.\nSie dürfen maximal " + this.get("selectedRasterLimit") + " Kacheln aufeinmal herunterladen.\n\nBitte reduzieren Sie Ihre Auswahl!",
+                text: i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: this.get("selectedRasterLimit")}),
                 kategorie: "alert-warning"
             });
             this.setRequesting(false);
@@ -336,7 +341,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         }
         else if (selectedRasterNames.length === 0) {
             Radio.trigger("Alert", "alert", {
-                text: "<strong>Bitte wählen Sie Kacheln aus!</strong>",
+                text: "<strong>" + this.get("pleaseSelectTiles") + "</strong>",
                 kategorie: "alert-info"
             });
             return false;
@@ -389,7 +394,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
                 this.changeGraphicalSelectStatus(true);
                 if (resp.indexOf("Fehler") > -1) {
                     Radio.trigger("Alert", "alert", {
-                        text: "<strong>Die Daten konnten leider nicht heruntergeladen werden!</strong> <br> <small>Details: " + resp + "</small>",
+                        text: "<strong>" + this.get("failedToDownload") + "</strong> <br> <small>" + this.get("details") + " " + resp + "</small>",
                         kategorie: "alert-warning"
                     });
 
@@ -408,7 +413,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
                 this.resetView();
                 this.changeGraphicalSelectStatus(false);
                 Radio.trigger("Alert", "alert", {
-                    text: "<strong>Die Daten konnten leider nicht heruntergeladen werden!</strong> <br> <small>Details: Ein benötigter Dienst antwortet nicht.</small>",
+                    text: "<strong>" + this.get("failedToDownload") + "</strong> <br> <small>" + this.get("details") + " " + this.get("serviceNotResponding") + "</small>",
                     kategorie: "alert-warning"
                 });
             }

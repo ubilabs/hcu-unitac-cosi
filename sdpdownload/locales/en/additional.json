@@ -18,7 +18,12 @@
                 "dwg320Label": "DWG, location status 320",
                 "dwg320Description": "Download data in DWG format, location status: ETRS89, Gauß-Krüger projection",
                 "jpgLabel": "JPG + JGW, situation status 310 (short)",
-                "jpgDescription": "Download data in JPG format, including JGW files in the lcoation status: ETRS89, UTM projection"
+                "jpgDescription": "Download data in JPG format, including JGW files in the lcoation status: ETRS89, UTM projection",
+                "pleaseSelectTiles": "Please select tiles!",
+                "tooManyTilesSelected": "The selection you made contains {{tilesCount}} tiles. You can download a maximum of  {{maxTiles}} tiles at a time. Please reduce your selection!",
+                "failedToDownload": "Unfortunately the data could not be downloaded!",
+                "details": "Details:",
+                "serviceNotResponding": "A required service is not responding."
             }
         }
     } 
