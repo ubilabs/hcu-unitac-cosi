@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <p>
-Die Gesamtlänge beträgt <span><%= routeResult.kuerzesteStrecke %>m</span>
+<%= totalLength %> <span><%= routeResult.kuerzesteStrecke %>m</span>
 </p>
 <br>
 <p>
-<small>von:</small>
+<small><%= from %></small>
 </p>
 <p>
     <span><%= startAddress.street + " " + startAddress.number + startAddress.affix %></span>
 </p>
 <br>
 <p>
-    <small>nach:</small>
+    <small><%= to %></small>
 </p>
 <p>
     <span><%= selectedSchool.get("schulname") %>, <%= routeResult.SchuleingangTyp %> (<%= selectedSchool.get("adresse_strasse_hausnr")%>)</span>
