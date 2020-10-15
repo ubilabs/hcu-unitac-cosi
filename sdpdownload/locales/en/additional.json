@@ -2,7 +2,6 @@
     "modules": {
         "tools": {
             "sdpdownload": {
-                "title": "sdpdownload",
                 "selectFormat": "Select the format",
                 "howToChooseTiles": "How would you like to choose the tiles?",
                 "downloadDataPackage": "Download data package",

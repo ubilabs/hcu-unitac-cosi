@@ -37,7 +37,6 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         selectedRasterLimit: 9,
         rasterNames: [],
         // translations:
-        title: "",
         selectFormat: "",
         howToChooseTiles: "",
         downloadDataPackage: "",
@@ -46,7 +45,10 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         scharhörnDataPackage: "",
         tileOverview310: "",
         tileOverview320: "",
-        pleaseSelectTiles: ""
+        pleaseSelectTiles: "",
+        failedToDownload: "",
+        details: "",
+        serviceNotResponding: ""
     }),
     /**
  * @class SdpDownloadModel
@@ -74,6 +76,18 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
  * @property {Object} requesting=false state of server request
  * @property {Object} selectedRasterLimit=9 limit og raster images for download
  * @property {Array} rasterNames=[] stores the names of the tiles in the raster
+ * @property {String} selectFormat: "" contains the translated text
+ * @property {String} howToChooseTiles: "" contains the translated text
+ * @property {String} downloadDataPackage: "" contains the translated text
+ * @property {String} specialDownloads: "" contains the translated text
+ * @property {String} neuwerkDataPackage: "" contains the translated text
+ * @property {String} scharhörnDataPackage: "" contains the translated text
+ * @property {String} tileOverview310: "" contains the translated text
+ * @property {String} tileOverview320: "" contains the translated text
+ * @property {String} pleaseSelectTiles: "" contains the translated text
+ * @property {String} failedToDownload: "" contains the translated text
+ * @property {String} details: "" contains the translated text
+ * @property {String} serviceNotResponding: "" contains the translated text
  * @listens Addons.SdpDownloadModel#changeIsActive
  * @listens Core#RadioTriggerMapViewChangedOptions
  * @listens Core.ModelList#RadioTriggerModelListToggleDefaultTool

@@ -2,7 +2,6 @@
     "modules": {
         "tools": {
             "sdpdownload": {
-                "title": "sdpdownload",
                 "selectFormat": "Wählen Sie das Format aus",
                 "howToChooseTiles": "Wie möchten Sie die Kacheln auswählen?",
                 "downloadDataPackage": "Datenpaket herunterladen",
