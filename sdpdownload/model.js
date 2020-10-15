@@ -16,10 +16,10 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         renderToWindow: false,
         wmsRasterLayerId: "4707",
         formats: [
-            {id: "NAS", label: "NAS", isSelected: true, desc: "Daten im NAS-Format herunterladen"},
-            {id: "DWG_310", label: "DWG, Lagestatus 310 (kurz)", isSelected: false, desc: "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, UTM-Projektion"},
-            {id: "DWG_320", label: "DWG, Lagestatus 320", isSelected: false, desc: "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, Gauß-Krüger-Projektion"},
-            {id: "JPG", label: "JPG + JGW, Lagestatus 310 (kurz)", isSelected: false, desc: "Daten im JPG-Format herunterladen, inkl. JGW-Dateien im Lagestatus: ETRS89, UTM-Projektion"}],
+            {id: "NAS", label: "", isSelected: true, desc: ""},
+            {id: "DWG_310", label: "", isSelected: false, desc: ""},
+            {id: "DWG_320", label: "", isSelected: false, desc: ""},
+            {id: "JPG", label: "", isSelected: false, desc: ""}],
         selectedFormat: "NAS", // is preselected
         compressDataId: "compressData",
         compressedFileId: "compressedFile",
@@ -128,6 +128,23 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
     * @returns {Void} -
     */
     changeLang: function (lng) {
+        const nasDefaults = this.get("formats")[0],
+            dwg310Defaults = this.get("formats")[1],
+            dwg320Defaults = this.get("formats")[2],
+            jpgDefaults = this.get("formats")[3];
+
+        nasDefaults.label = i18next.t("additional:modules.tools.sdpdownload.nasLabel");
+        nasDefaults.desc = i18next.t("additional:modules.tools.sdpdownload.nasDescription");
+
+        dwg310Defaults.label = i18next.t("additional:modules.tools.sdpdownload.dwg310Label");
+        dwg310Defaults.desc = i18next.t("additional:modules.tools.sdpdownload.dwg310Description");
+
+        dwg320Defaults.label = i18next.t("additional:modules.tools.sdpdownload.dwg320Label");
+        dwg320Defaults.desc = i18next.t("additional:modules.tools.sdpdownload.dwg320Description");
+
+        jpgDefaults.label = i18next.t("additional:modules.tools.sdpdownload.jpgLabel");
+        jpgDefaults.desc = i18next.t("additional:modules.tools.sdpdownload.jpgDescription");
+        
         this.set({
             "selectFormat": i18next.t("additional:modules.tools.sdpdownload.selectFormat"),
             "howToChooseTiles": i18next.t("additional:modules.tools.sdpdownload.howToChooseTiles"),

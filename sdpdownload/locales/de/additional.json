@@ -10,7 +10,15 @@
                 "neuwerkDataPackage": "Datenpaket von Neuwerk - Format bitte oben auswählen",
                 "scharhörnDataPackage": "Datenpaket von Scharhörn - Format bitte oben auswählen",
                 "tileOverview310": "UTM-Kachel Übersichten LS310",
-                "tileOverview320": "UTM-Kachel Übersichten LS320"
+                "tileOverview320": "UTM-Kachel Übersichten LS320",
+                "nasLabel": "NAS",
+                "nasDescription": "Daten im NAS-Format herunterladen",
+                "dwg310Label": "DWG, Lagestatus 310 (kurz)",
+                "dwg310Description": "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, UTM-Projektion",
+                "dwg320Label": "DWG, Lagestatus 320",
+                "dwg320Description": "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, Gauß-Krüger-Projektion",
+                "jpgLabel": "JPG + JGW, Lagestatus 310 (kurz)",
+                "jpgDescription": "Daten im JPG-Format herunterladen, inkl. JGW-Dateien im Lagestatus: ETRS89, UTM-Projektion"
             }
         }
     } 
