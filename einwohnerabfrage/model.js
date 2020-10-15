@@ -1,6 +1,7 @@
 import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -96,7 +97,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @fires RestReader#RadioRequestRestReaderGetServiceById
      * @fires Addons.Einwohnerabfrage#RenderResult
      * @fires Alerting#RadioTriggerAlertAlert
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @fires Core#RadioTriggerMapAddInteraction
      * @fires Core#RadioTriggerWPSRequest
      * @fires Core.ModelList#RadioRequestModelListGetModelByAttributes
@@ -149,7 +150,11 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             }
         });
 
-        this.setMetaDataLink(Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId")).get("url"));
+        const service = Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId"));
+
+        if (service !== undefined) {
+            this.setMetaDataLink(service.get("url"));
+        }
 
         this.listenTo(Radio.channel("i18next"), {
             "languageChanged": this.changeLang
@@ -307,7 +312,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     /**
      * Iterates ofer response properties
      * @param  {Object} response - the parsed response from wps
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @returns {void}
      */
     prepareDataForRendering: function (response) {
@@ -316,10 +321,10 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
 
             if (!isNaN(value)) {
                 if (key === "suchflaeche") {
-                    stringVal = this.chooseUnitAndPunctuate(value);
+                    stringVal = this.chooseUnitAndThousandsSeparator(value);
                 }
                 else {
-                    stringVal = Radio.request("Util", "punctuate", value);
+                    stringVal = thousandsSeparator(value);
                 }
                 list[key] = stringVal;
             }
@@ -331,26 +336,25 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     },
 
     /**
-     * Chooses unit based on value, calls punctuate and converts to unit and appends unit
+     * Chooses unit based on value, calls thousandsSeparator and converts to unit and appends unit
      * @param  {Number} value - to inspect
      * @param  {Number} maxDecimals - decimals are cut after maxlength chars
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @returns {String} unit
      */
-    chooseUnitAndPunctuate: function (value, maxDecimals) {
+    chooseUnitAndThousandsSeparator: function (value, maxDecimals) {
         let newValue = null;
 
         if (value < 250000) {
-            return Radio.request("Util", "punctuate", value.toFixed(maxDecimals)) + " m²";
+            return thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
         }
         if (value < 10000000) {
             newValue = value / 10000.0;
-
-            return Radio.request("Util", "punctuate", newValue.toFixed(maxDecimals)) + " ha";
+            return thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
         }
         newValue = value / 1000000.0;
 
-        return Radio.request("Util", "punctuate", newValue.toFixed(maxDecimals)) + " km²";
+        return thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
     },
 
 

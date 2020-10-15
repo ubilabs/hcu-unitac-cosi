@@ -5,6 +5,7 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import {MultiLineString, Point} from "ol/geom.js";
 import {WKT} from "ol/format.js";
 import Feature from "ol/Feature.js";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
@@ -255,7 +256,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         let routeDescription = response.routenbeschreibung.part;
 
         this.setGeometryByFeatureId("route", this.get("layer").getSource(), routeGeometry);
-        response.kuerzesteStrecke = Radio.request("Util", "punctuate", response.kuerzesteStrecke);
+        response.kuerzesteStrecke = thousandsSeparator(response.kuerzesteStrecke);
         this.setRouteResult(response);
         if (!Array.isArray(routeDescription)) {
             routeDescription = [routeDescription];
