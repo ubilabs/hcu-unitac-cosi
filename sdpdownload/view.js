@@ -43,7 +43,7 @@ const SdpDownloadView = Backbone.View.extend(/** @lends SdpDownloadView.prototyp
             },
             "change:currentLng": function () {
                 if (this.model.get("isActive")) {
-                    this.render();
+                    this.render(this.model);
                 }
             }
         });
