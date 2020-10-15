@@ -12,11 +12,9 @@
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "VueAddon": {
-    "vue": true,
     "tool":true
   },
   "trinkwasser": {
-    "vue": true,
     "gfiTheme": true
   }
 }
