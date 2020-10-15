@@ -9,7 +9,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 config.mocks.$t = key => key;
 
-describe("VueAddon.vue", () => {
+describe("addons/VueAddon/components/VueAddon.vue", () => {
     const mockConfigJson = {
         Portalconfig: {
             menu: {

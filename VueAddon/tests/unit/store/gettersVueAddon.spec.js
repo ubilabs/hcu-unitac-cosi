@@ -13,7 +13,7 @@ const {
     isVisibleInMenu,
     deactivateGFI} = getters;
 
-describe("gettersVueAddon", function () {
+describe("addons/VueAddon/store/gettersVueAddon", function () {
     it("returns the active from state", function () {
         expect(active(stateVueAddon)).to.be.false;
     });
