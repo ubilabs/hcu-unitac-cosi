@@ -14,6 +14,30 @@
   "VueAddon": {
     "type": "tool"
   },
+  "activeCityMaps": {
+    "type": "gfiTheme"
+  },
+  "bildungsatlas": {
+    "type": "gfiTheme"
+  },
+  "dataTable": {
+    "type": "gfiTheme"
+  },
+  "dipas": {
+    "type": "gfiTheme"
+  },
+  "flaecheninfo": {
+    "type": "gfiTheme"
+  },
+  "schulinfo": {
+    "type": "gfiTheme"
+  },
+  "solaratlas": {
+    "type": "gfiTheme"
+  },
+  "trafficCount": {
+    "type": "gfiTheme"
+  },
   "trinkwasser": {
     "type": "gfiTheme"
   }
