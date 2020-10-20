@@ -159,7 +159,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
 
         jpgDefaults.label = i18next.t("additional:modules.tools.sdpdownload.jpgLabel");
         jpgDefaults.desc = i18next.t("additional:modules.tools.sdpdownload.jpgDescription");
-        
+
         this.set({
             "selectFormat": i18next.t("additional:modules.tools.sdpdownload.selectFormat"),
             "howToChooseTiles": i18next.t("additional:modules.tools.sdpdownload.howToChooseTiles"),
