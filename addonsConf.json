@@ -19,6 +19,9 @@
   },
   "bildungsatlas": {
     "type": "gfiTheme"
+  }, 
+  "continuousCountingBike": {
+    "type": "gfiTheme"
   },
   "dataTable": {
     "type": "gfiTheme"
