@@ -58,14 +58,14 @@ export function getYearData (data) {
 
     return {
         data: newData,
-        xLabel: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.yearScheduleInYear", {year: year}),
+        xLabel: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.yearScheduleInYear", {year: year}),
         yLabel: {
-            label: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.amountBikesPerWeek"),
+            label: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.amountBikesPerWeek"),
             offset: 60
         },
         graphArray: graphArray,
         xAxisTicks: {
-            unit: "Kw",
+            unit: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.cw"),
             values: createxAxisTickValues(data, 5)
         },
         legendArray: legendArray

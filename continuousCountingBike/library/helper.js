@@ -65,21 +65,21 @@ export function createxAxisTickValues (data = [], xThinning) {
 export function getLegendAttributes (inspectData) {
     const legendData = [{
         class: "dot",
-        text: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.bikesSummedUp"),
+        text: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.bikesSummedUp"),
         style: "circle"
     }];
 
     if (inspectData && inspectData.r_in !== null) {
         legendData.push({
             key: "r_in",
-            value: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.bikesIntoTown")
+            value: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.bikesIntoTown")
         });
     }
 
     if (inspectData && inspectData.r_out !== null) {
         legendData.push({
             key: "r_out",
-            value: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.bikesOutOfTown")
+            value: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.bikesOutOfTown")
         });
     }
 

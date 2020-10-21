@@ -54,9 +54,9 @@ export function getWeekData (data) {
 
     return {
         data: newData,
-        xLabel: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.weekScheduleFromToDate", {startDate: startDate, endDate: endDate}),
+        xLabel: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.weekScheduleFromToDate", {startDate: startDate, endDate: endDate}),
         yLabel: {
-            label: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.amountBikesPerDay"),
+            label: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.amountBikesPerDay"),
             offset: 60
         },
         graphArray: graphArray,

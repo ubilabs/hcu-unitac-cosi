@@ -41,10 +41,10 @@ describe("src/modules/tools/gfi/components/themes/continuousCountingBike/compone
 
         expect(wrapper.findAll("ul").at(0).exists()).to.be.true;
         expect(wrapper.findAll("li").length).to.equal(4);
-        expect(wrapper.findAll("li").at(0).text()).to.equal("modules.tools.gfi.themes.continuousCountingBike.info");
-        expect(wrapper.findAll("li").at(1).text()).to.equal("modules.tools.gfi.themes.continuousCountingBike.lastDay");
-        expect(wrapper.findAll("li").at(2).text()).to.equal("modules.tools.gfi.themes.continuousCountingBike.lastSevenDays");
-        expect(wrapper.findAll("li").at(3).text()).to.equal("modules.tools.gfi.themes.continuousCountingBike.year");
+        expect(wrapper.findAll("li").at(0).text()).to.equal("additional:modules.tools.gfi.themes.continuousCountingBike.info");
+        expect(wrapper.findAll("li").at(1).text()).to.equal("additional:modules.tools.gfi.themes.continuousCountingBike.lastDay");
+        expect(wrapper.findAll("li").at(2).text()).to.equal("additional:modules.tools.gfi.themes.continuousCountingBike.lastSevenDays");
+        expect(wrapper.findAll("li").at(3).text()).to.equal("additional:modules.tools.gfi.themes.continuousCountingBike.year");
         expect(wrapper.find(".tab-content").exists()).to.be.true;
         expect(wrapper.find("#info").exists()).to.be.true;
         expect(wrapper.find("#lastDay").exists()).to.be.true;

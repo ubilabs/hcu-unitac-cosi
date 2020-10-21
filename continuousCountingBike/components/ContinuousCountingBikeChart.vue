@@ -26,7 +26,7 @@ export default {
          * via radio trigger, the graphConfig object is transferred to the graph module
          * @param  {String} activeTab contains the value of the active tab
          * @fires Tools.Graph#event:RadioTriggerGraphCreateGraph
-         * @return {void}
+         * @returns {void}
          */
         createD3Document () {
             const dataset = this.properties,
@@ -71,7 +71,7 @@ export default {
             <label
                 class="form-check-label"
                 for="chartCheck"
-            >{{ $t("modules.tools.gfi.themes.continuousCountingBike.diagram") }}</label>
+            >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.diagram") }}</label>
         </div>
         <div
             id="chart"
@@ -94,7 +94,7 @@ export default {
             <label
                 class="form-check-label"
                 for="tableCheck"
-            >{{ $t("modules.tools.gfi.themes.continuousCountingBike.chart") }}</label>
+            >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.chart") }}</label>
         </div>
         <div
             v-if="tableVisible && properties.data"
@@ -103,7 +103,7 @@ export default {
             <table class="table table-hover">
                 <thead>
                     <th class="text-align-center">
-                        {{ $t("modules.tools.gfi.themes.continuousCountingBike.name") }}
+                        {{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.name") }}
                     </th>
                     <th
                         v-for="(day, index) in properties.data"

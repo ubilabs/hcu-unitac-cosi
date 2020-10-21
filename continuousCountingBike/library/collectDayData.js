@@ -54,9 +54,9 @@ export function getDayData (data) {
 
     return {
         data: newData,
-        xLabel: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.dayScheduleAtDate", {date: date}),
+        xLabel: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.dayScheduleAtDate", {date: date}),
         yLabel: {
-            label: i18next.t("common:modules.tools.gfi.themes.continuousCountingBike.amountBikesPerHour"),
+            label: i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.amountBikesPerHour"),
             offset: 60
         },
         graphArray: graphArray,

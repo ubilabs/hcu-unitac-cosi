@@ -23,10 +23,10 @@ export default {
                         <td class="subHeader">
                         </td>
                         <td>
-                            {{ $t("modules.tools.gfi.themes.continuousCountingBike.timeframe") }}
+                            {{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.timeframe") }}
                         </td>
                         <td>
-                            {{ $t("modules.tools.gfi.themes.continuousCountingBike.bikes") }}
+                            {{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.bikes") }}
                         </td>
                     </tr>
                     <tr

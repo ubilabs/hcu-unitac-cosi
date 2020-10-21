@@ -69,7 +69,7 @@ export default {
         /**
          * set the current tab id after clicking.
          * @param {Object[]} evt the target of current click event
-         * @returns {Void} -
+         * @returns {void}
          */
         setActiveTab (evt) {
             if (evt && evt.target && evt.target.hash) {
@@ -86,7 +86,7 @@ export default {
         },
         /**
          * Setting the gfi content max width the same as graph
-         * @returns {Void} -
+         * @returns {void}
          */
         setContentStyle () {
             if (document.getElementsByClassName("gfi-content").length) {
@@ -106,7 +106,7 @@ export default {
         <div class="panel bikeLevelHeader  text-align-center">
             <strong>{{ feature.getMappedProperties().Name }}</strong>
             <br>
-            <small>{{ $t("modules.tools.gfi.themes.continuousCountingBike.kind", {kind: feature.getMappedProperties().Typ}) }}</small>
+            <small>{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.kind", {kind: feature.getMappedProperties().Typ}) }}</small>
         </div>
         <ul
             class="nav nav-pills"
@@ -119,7 +119,7 @@ export default {
                 <a
                     href="#info"
                     @click="setActiveTab"
-                >{{ $t("modules.tools.gfi.themes.continuousCountingBike.info") }}</a>
+                >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.info") }}</a>
             </li>
             <li
                 v-if="dayData"
@@ -129,7 +129,7 @@ export default {
                 <a
                     href="#lastDay"
                     @click="setActiveTab"
-                >{{ $t("modules.tools.gfi.themes.continuousCountingBike.lastDay") }}</a>
+                >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.lastDay") }}</a>
             </li>
             <li
                 v-if="weekData"
@@ -139,7 +139,7 @@ export default {
                 <a
                     href="#lastSevenDays"
                     @click="setActiveTab"
-                >{{ $t("modules.tools.gfi.themes.continuousCountingBike.lastSevenDays") }}</a>
+                >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.lastSevenDays") }}</a>
             </li>
             <li
                 v-if="yearData"
@@ -149,7 +149,7 @@ export default {
                 <a
                     href="#year"
                     @click="setActiveTab"
-                >{{ $t("modules.tools.gfi.themes.continuousCountingBike.year") }}</a>
+                >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.year") }}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -195,7 +195,7 @@ export default {
                 type="button"
                 @click="onClick"
             >
-                <span class="glyphicon glyphicon-download"></span>{{ $t("modules.tools.gfi.themes.continuousCountingBike.download") }}
+                <span class="glyphicon glyphicon-download"></span>{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.download") }}
             </button>
         </div>
     </div>

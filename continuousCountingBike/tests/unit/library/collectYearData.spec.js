@@ -24,7 +24,7 @@ describe("src/modules/tools/gfi/components/themes/continuousCountingBike/library
                 xLabel: "modules.tools.gfi.themes.continuousCountingBike.yearScheduleInYear",
                 graphArray: "",
                 xAxisTicks: {
-                    unit: "Kw",
+                    unit: "modules.tools.gfi.themes.continuousCountingBike.cw",
                     values: []
                 },
                 legendArray: ""
@@ -36,7 +36,7 @@ describe("src/modules/tools/gfi/components/themes/continuousCountingBike/library
                 xLabel: "modules.tools.gfi.themes.continuousCountingBike.yearScheduleInYear",
                 graphArray: "",
                 xAxisTicks: {
-                    unit: "Kw",
+                    unit: "modules.tools.gfi.themes.continuousCountingBike.cw",
                     values: []
                 },
                 legendArray: ""
