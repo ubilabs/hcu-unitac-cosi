@@ -19,7 +19,6 @@ export default {
     },
     data: () => {
         return {
-            currentRouteLayer: false,
             currentRouteLayerName: "tempRouteLayerReisezeiten",
             routeChosen: "0",
             currentXmlResponse: false,
@@ -32,13 +31,8 @@ export default {
         ...mapGetters("Tools/Gfi", Object.keys(getters)),
         ...mapGetters("Map", {
             map: "map",
-            layerList: "layerList",
-            gfiFeatures: "gfiFeatures",
-            layers: "layers"
+            layerList: "layerList"
         }),
-        isVisible: function () {
-            return this.gfiFeatures !== null && this.active;
-        },
         routenLayerConfig: function () {
             return getLayerWhere({id: "2713"});
         },
@@ -196,14 +190,12 @@ export default {
                 </div>
             </div>
         </div>
-        <!--
         <div
             v-if="availableDestinations.length === 0"
             id="loading-animation-container"
         >
             <div class="loading-animation"><div></div><div></div></div>
         </div>
-        -->
     </div>
 </template>
 
@@ -277,7 +269,6 @@ export default {
             }
         }
     }
-    /*
     #loading-animation-container{
         width:327px;
         padding-top: 15px;
@@ -315,6 +306,5 @@ export default {
             opacity: 0;
         }
     }
-    */
 }
 </style>
