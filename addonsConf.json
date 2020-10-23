@@ -43,5 +43,8 @@
   },
   "trinkwasser": {
     "type": "gfiTheme"
+  },
+  "gfiThemeReisezeiten": {
+    "type": "gfiTheme"
   }
 }
