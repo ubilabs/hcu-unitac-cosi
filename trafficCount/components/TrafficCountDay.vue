@@ -36,17 +36,17 @@ export default {
 
             // props for diagram
             setTooltipValue: (tooltipItem) => {
-                return moment(tooltipItem.label, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("common:modules.tools.gfi.themes.trafficCount.clockLabel") + " " + thousandsSeparator(tooltipItem.value);
+                return moment(tooltipItem.label, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel") + " " + thousandsSeparator(tooltipItem.value);
             },
             xAxisTicks: 12,
             yAxisTicks: 8,
             renderLabelXAxis: (datetime) => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("common:modules.tools.gfi.themes.trafficCount.clockLabel");
+                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: this.$t("common:modules.tools.gfi.themes.trafficCount.yAxisTextDay"),
+            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay"),
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
             },
@@ -54,7 +54,7 @@ export default {
             // props for table
             tableTitle: "Datum",
             setColTitle: datetime => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("common:modules.tools.gfi.themes.trafficCount.clockLabel");
+                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
             setRowTitle: (meansOfTransports, datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");

@@ -39,11 +39,11 @@ export default {
     },
     computed: {
         indication: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.notice");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.notice");
         },
 
         lastupdateLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.lastupdateLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.lastupdateLabel");
         },
 
         tableClass: function () {

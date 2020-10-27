@@ -42,49 +42,49 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         infoLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.infoLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.infoLabel");
         },
 
         dayLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.dayLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.dayLabel");
         },
 
         weekLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.weekLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.weekLabel");
         },
 
         yearLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.yearLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.yearLabel");
         },
 
         typeAssoc: function () {
             return {
-                AnzFahrzeuge: this.$t("common:modules.tools.gfi.themes.trafficCount.infraredsensor"),
-                Anzahl_Fahrraeder: this.$t("common:modules.tools.gfi.themes.trafficCount.countingstation")
+                AnzFahrzeuge: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor"),
+                Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.countingstation")
             };
         },
 
         meansOfTransportAssoc: function () {
             return {
-                AnzFahrzeuge: this.$t("common:modules.tools.gfi.themes.trafficCount.carLabel"),
-                Anzahl_Fahrraeder: this.$t("common:modules.tools.gfi.themes.trafficCount.bicycleLabel")
+                AnzFahrzeuge: this.$t("additional:modules.tools.gfi.themes.trafficCount.carLabel"),
+                Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.bicycleLabel")
             };
         },
 
         idLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.idLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.idLabel");
         },
 
         typeLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.typeLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.typeLabel");
         },
 
         meansOfTransportLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.meansOfTransportLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.meansOfTransportLabel");
         },
 
         directionLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.directionLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.directionLabel");
         }
     },
     watch: {

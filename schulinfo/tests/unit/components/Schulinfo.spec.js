@@ -92,7 +92,7 @@ describe("addons/schulinfo/components/Schulinfo.vue", () => {
         expect(result[1].attributes).to.deep.equal([
             {
                 attributeName: attrToShow.kantine_vorh,
-                attributeValue: ["modules.tools.gfi.themes.schulinfo.yes"]
+                attributeValue: ["additional:modules.tools.gfi.themes.schulinfo.yes"]
             }]
         );
     });
@@ -118,7 +118,7 @@ describe("addons/schulinfo/components/Schulinfo.vue", () => {
         expect(wrapper.findAll("tr").length).equals(1);
         expect(wrapper.findAll("td").length).equals(2);
         expect(wrapper.findAll("td").wrappers[0].text()).equals("");
-        expect(wrapper.findAll("td").wrappers[1].text()).equals("modules.tools.gfi.themes.schulinfo.yes");
+        expect(wrapper.findAll("td").wrappers[1].text()).equals("additional:modules.tools.gfi.themes.schulinfo.yes");
     });
 
     it("should set the selected category to true and all other to false", () => {
@@ -138,7 +138,7 @@ describe("addons/schulinfo/components/Schulinfo.vue", () => {
     });
 
     it("should render the table for the first topic", () => {
-        const resultValues = ["Exampleweg", "99999 Neverland", "example Bezirk", "example@schulmail.com", "+49 40 123456789", "https://example.de", "modules.tools.gfi.themes.schulinfo.yes"],
+        const resultValues = ["Exampleweg", "99999 Neverland", "example Bezirk", "example@schulmail.com", "+49 40 123456789", "https://example.de", "additional:modules.tools.gfi.themes.schulinfo.yes"],
             tdText = wrapper.findAll("td").wrappers.map(td => td.text());
 
         expect(wrapper.vm.selectedPropertyAttributes.length).equals(7);

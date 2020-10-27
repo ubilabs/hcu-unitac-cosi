@@ -45,7 +45,7 @@ export default {
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: i18next.t("common:modules.tools.gfi.themes.trafficCount.yAxisTextWeek"),
+            descriptionYAxis: i18next.t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextWeek"),
             renderLabelLegend: (datetime) => {
                 const weeknumber = moment(datetime, "YYYY-MM-DD HH:mm:ss").week(),
                     year = moment(datetime, "YYYY-MM-DD HH:mm:ss").format("YYYY");
@@ -54,7 +54,7 @@ export default {
             },
 
             // props for table
-            tableTitle: i18next.t("common:modules.tools.gfi.themes.trafficCount.weekLabel"),
+            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.weekLabel"),
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd");
             },
@@ -78,7 +78,7 @@ export default {
     },
     computed: {
         calendarweek: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.calendarweek");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek");
         }
     },
     mounted () {

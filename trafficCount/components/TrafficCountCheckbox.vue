@@ -14,11 +14,11 @@ export default {
     },
     computed: {
         diagramLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.diagramLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.diagramLabel");
         },
 
         tableLabel: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.tableLabel");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.tableLabel");
         },
 
         checkboxLabel: function () {

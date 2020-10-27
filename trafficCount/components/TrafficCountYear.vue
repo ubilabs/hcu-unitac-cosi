@@ -39,27 +39,27 @@ export default {
                 // add 3 days to match thursdays
                 const objMoment = moment(tooltipItem.label, "YYYY-MM-DD HH:mm:ss").add(3, "days");
 
-                return this.$t("common:modules.tools.gfi.themes.trafficCount.calendarweek") + " " + objMoment.format("WW") + " / " + objMoment.format("YYYY") + ": " + thousandsSeparator(tooltipItem.value);
+                return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + " " + objMoment.format("WW") + " / " + objMoment.format("YYYY") + ": " + thousandsSeparator(tooltipItem.value);
             },
             yAxisTicks: 8,
             renderLabelXAxis: (datetime) => {
                 // add 3 days to match thursdays
                 const objMoment = moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days");
 
-                return this.$t("common:modules.tools.gfi.themes.trafficCount.calendarweek") + objMoment.format("WW");
+                return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + objMoment.format("WW");
             },
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: this.$t("common:modules.tools.gfi.themes.trafficCount.yAxisTextYear"),
+            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextYear"),
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("YYYY");
             },
 
             // props for table
-            tableTitle: this.$t("common:modules.tools.gfi.themes.trafficCount.yearLabel"),
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.yearLabel"),
             setColTitle: datetime => {
-                return this.$t("common:modules.tools.gfi.themes.trafficCount.calendarweek") + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
+                return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
             },
             setRowTitle: (meansOfTransports, datetime) => {
                 // datetime is the monday of the week - so we have to add 3 days to get the thursday of the week

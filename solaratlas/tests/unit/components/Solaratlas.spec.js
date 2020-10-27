@@ -44,11 +44,11 @@ describe("addons/solaratlas/components/Solaratlas.vue", () => {
     });
 
     it("should render the html strong tag with text solarPotential", () => {
-        expect(wrapper.find("strong").text()).to.equals("modules.tools.gfi.themes.solaratlas.solarPotential");
+        expect(wrapper.find("strong").text()).to.equals("additional:modules.tools.gfi.themes.solaratlas.solarPotential");
     });
 
     it("should render the html p tag with text buildingSuitable for parameter area_pv_m2 > 0", () => {
-        expect(wrapper.find("p").text()).to.equals("modules.tools.gfi.themes.solaratlas.buildingSuitable");
+        expect(wrapper.find("p").text()).to.equals("additional:modules.tools.gfi.themes.solaratlas.buildingSuitable");
     });
 
     it("should render the html p tag with text buildingUnsuitable for parameter area_pv_m2 === 0.0", () => {
@@ -83,7 +83,7 @@ describe("addons/solaratlas/components/Solaratlas.vue", () => {
         expect(wrapper.find("h6").exists()).to.be.true;
         expect(wrapper.find("strong").exists()).to.be.true;
         expect(wrapper.find("p").exists()).to.be.true;
-        expect(wrapper.find("p").text()).to.equals("modules.tools.gfi.themes.solaratlas.buildingUnsuitable");
+        expect(wrapper.find("p").text()).to.equals("additional:modules.tools.gfi.themes.solaratlas.buildingUnsuitable");
     });
 
 });

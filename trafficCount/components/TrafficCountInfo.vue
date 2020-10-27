@@ -38,43 +38,43 @@ export default {
     },
     computed: {
         period: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.period");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.period");
         },
 
         number: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.number");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.number");
         },
 
         totalSince: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.totalSince");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.totalSince");
         },
 
         sinceBeginningOfTheYear: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.sinceBeginningOfTheYear");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.sinceBeginningOfTheYear");
         },
 
         overThePastYear: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.overThePastYear");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.overThePastYear");
         },
 
         onThePreviousDay: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.onThePreviousDay");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.onThePreviousDay");
         },
 
         highestDay: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.highestDay");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.highestDay");
         },
 
         highestWeek: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.highestWeek");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.highestWeek");
         },
 
         highestMonth: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.highestMonth");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.highestMonth");
         },
 
         calendarweek: function () {
-            return this.$t("common:modules.tools.gfi.themes.trafficCount.calendarweek");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek");
         }
     },
     watch: {
