@@ -12,10 +12,10 @@ export default {
 
 <template>
     <div>
-        <h6><strong>{{ $t("modules.tools.gfi.themes.solaratlas.solarPotential", {ardfull: feature.getMappedProperties().adrfull}) }}</strong></h6>
+        <h6><strong>{{ $t("additional:modules.tools.gfi.themes.solaratlas.solarPotential", {ardfull: feature.getMappedProperties().adrfull}) }}</strong></h6>
         <p
             v-if="feature.getMappedProperties().area_pv_m2 > 0"
-            v-html="$t('modules.tools.gfi.themes.solaratlas.buildingSuitable', {
+            v-html="$t('additional:modules.tools.gfi.themes.solaratlas.buildingSuitable', {
                 area_pv_m2: parseFloat(feature.getMappedProperties().area_pv_m2),
                 ic_mean: parseFloat(feature.getMappedProperties().ic_mean),
                 area_ek4_p: parseFloat(feature.getMappedProperties().area_ek4_p),
@@ -33,7 +33,7 @@ export default {
         </p>
         <p
             v-else
-            v-html="$t('modules.tools.gfi.themes.solaratlas.buildingUnsuitable', {
+            v-html="$t('additional:modules.tools.gfi.themes.solaratlas.buildingUnsuitable', {
                 area_st_2a: parseFloat(feature.getMappedProperties().area_st_2a),
                 area_st_1a: parseFloat(feature.getMappedProperties().area_st_1a),
                 p_st_mwh_a: parseFloat(feature.getMappedProperties().p_st_mwh_a)

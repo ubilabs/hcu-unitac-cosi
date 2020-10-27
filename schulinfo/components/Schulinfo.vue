@@ -113,10 +113,10 @@ export default {
                 return attributeValue.split("|");
             }
             if (attributeValue === "true" || attributeValue === "ja") {
-                return [this.$t("modules.tools.gfi.themes.schulinfo.yes")];
+                return [this.$t("additional:modules.tools.gfi.themes.schulinfo.yes")];
             }
             if (attributeValue === "false" || attributeValue === "nein") {
-                return [this.$t("modules.tools.gfi.themes.schulinfo.no")];
+                return [this.$t("additional:modules.tools.gfi.themes.schulinfo.no")];
             }
             return [attributeValue];
         },
@@ -180,7 +180,7 @@ export default {
                     <span
                         v-if="componentExists('schulwegrouting')"
                         class="glyphicon glyphicon-map-marker"
-                        :title="$t('modules.tools.gfi.themes.schulinfo.schoolAsDestination')"
+                        :title="$t('additional:modules.tools.gfi.themes.schulinfo.schoolAsDestination')"
                         @click="changeToSchoolrouting"
                     ></span>
                 </div>

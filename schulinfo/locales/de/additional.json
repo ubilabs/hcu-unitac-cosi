@@ -1,0 +1,15 @@
+{
+    "modules": {
+        "tools": {
+            "gfi": {
+                "themes":{
+                    "schulinfo": {
+                        "schoolAsDestination": "Schule als Ziel übernehmen",
+                        "no": "Nein",
+                        "yes": "Ja"
+                      }
+                }
+            }
+        }
+    }
+}
