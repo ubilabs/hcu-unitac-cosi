@@ -1,25 +1,25 @@
 <script>
-import { createLegendData, createYAxisLabel } from "../library/helpers";
+import {createLegendData, createYAxisLabel} from "../library/helpers";
 export default {
     name: "VerkehrsstaerkenDiagram",
     components: {},
     props: {
         dataset: {
             type: Array,
-            required: true,
-        },
+            required: true
+        }
     },
-    data() {
+    data () {
         return {
-            category: "DTV",
+            category: "DTV"
         };
     },
     watch: {
-        dataset() {
+        dataset () {
             this.init();
-        },
+        }
     },
-    mounted() {
+    mounted () {
         this.init();
     },
     methods: {
@@ -27,11 +27,11 @@ export default {
          * Initalizes the first diagram of kind "DTV"
          * @returns {void}
          */
-        init() {
+        init () {
             const evt = {
                 currentTarget: {
-                    id: this.category,
-                },
+                    id: this.category
+                }
             };
 
             this.changeKategory(evt);
@@ -42,10 +42,10 @@ export default {
          * @returns {void}
          * @fires Tools.Graph#RadioTriggerGraphCreateGraph
          */
-        createD3Document(category) {
+        createD3Document (category) {
             const tabContentHeight = document.getElementById(
-                    "verkehrsstaerken-tab-content"
-                )?.clientHeight,
+                "verkehrsstaerken-tab-content"
+            )?.clientHeight,
                 legendData = createLegendData(category),
                 graphConfig = {
                     legendData: legendData,
@@ -54,14 +54,14 @@ export default {
                     selector: ".graph",
                     width: 800,
                     height: (tabContentHeight ? tabContentHeight : 250) - 60,
-                    margin: { top: 20, right: 20, bottom: 75, left: 70 },
+                    margin: {top: 20, right: 20, bottom: 75, left: 70},
                     svgClass: "graph-svg",
                     selectorTooltip: ".graph-tooltip-div",
                     scaleTypeX: "ordinal",
                     scaleTypeY: "linear",
                     yAxisTicks: {
                         ticks: 7,
-                        factor: ",f",
+                        factor: ",f"
                     },
                     data: this.dataset,
                     xAttr: "year",
@@ -69,13 +69,13 @@ export default {
                         label: this.$t(
                             "additional:modules.tools.gfi.themes.verkehrsstaerken.year"
                         ),
-                        translate: 6,
+                        translate: 6
                     },
                     yAxisLabel: {
                         label: createYAxisLabel(category),
-                        offset: 60,
+                        offset: 60
                     },
-                    attrToShowArray: [category],
+                    attrToShowArray: [category]
                 };
 
             Radio.trigger("Graph", "createGraph", graphConfig);
@@ -85,7 +85,7 @@ export default {
          * @param {Event} evt Click event
          * @returns {void}
          */
-        changeKategory(evt) {
+        changeKategory (evt) {
             const graphEls = document.getElementsByClassName("graph"),
                 btnGroupEl = document.getElementById(
                     "verkehrsstaerken-btn-group"
@@ -104,7 +104,8 @@ export default {
             btns.forEach((btn) => {
                 if (btn.id !== evt.currentTarget.id) {
                     btn.className = btn.className.replace("active", "");
-                } else {
+                }
+                else {
                     btn.className += " active";
                 }
             });
@@ -116,7 +117,7 @@ export default {
          * @param {String} category the category, e.g. "DTV"
          * @returns {String}  the key of the given category in dataset
          */
-        getKeyByCategoryFromDataset(category) {
+        getKeyByCategoryFromDataset (category) {
             switch (category) {
                 case "DTV": {
                     return "DTV";
@@ -131,13 +132,17 @@ export default {
                     return "";
                 }
             }
-        },
-    },
+        }
+    }
 };
 </script>
 
 <template>
-    <div v-if="dataset" id="verkehrsstaerken-diagram" class="tab-pane fade">
+    <div
+        v-if="dataset"
+        id="verkehrsstaerken-diagram"
+        class="tab-pane fade"
+    >
         <div
             id="verkehrsstaerken-btn-group"
             class="btn-group btn-group-sm"
@@ -177,7 +182,10 @@ export default {
                 }}
             </button>
         </div>
-        <div :id="'d3-div-' + category" class="graph">
+        <div
+            :id="'d3-div-' + category"
+            class="graph"
+        >
             <div class="graph-tooltip-div"></div>
         </div>
     </div>

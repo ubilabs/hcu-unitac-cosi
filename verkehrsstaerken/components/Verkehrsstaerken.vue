@@ -78,7 +78,6 @@ export default {
             this.years = [...new Set(parsedYears)];
             this.rowNames = [...new Set(newRowNames)];
             this.dataset = combineYearsData(dataPerYear, this.years);
-            console.log('initialized verkehrstaerken');
         },
 
 
