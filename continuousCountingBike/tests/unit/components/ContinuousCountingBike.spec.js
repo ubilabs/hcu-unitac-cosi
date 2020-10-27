@@ -29,6 +29,9 @@ describe("src/modules/tools/gfi/components/themes/continuousCountingBike/compone
                     getMappedProperties: () => mappedProps
                 }
             },
+            computed: {
+                currentLocale: () => "de"
+            },
             localVue
         });
     });
