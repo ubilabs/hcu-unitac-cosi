@@ -1,4 +1,5 @@
 <script>
+import {mapGetters} from "vuex";
 import {omit} from "../../../src/utils/objectHelpers";
 import ContinuousCountingBikeInfo from "./ContinuousCountingBikeInfo.vue";
 import ContinuousCountingBikeChart from "./ContinuousCountingBikeChart.vue";
@@ -30,16 +31,41 @@ export default {
             downloadLink: ""
         };
     },
+    computed: {
+        ...mapGetters("Language", ["currentLocale"])
+    },
+    watch: {
+        // When the gfi window switched with arrow, the connection will be refreshed
+        feature: {
+            handler () {
+                this.init();
+            },
+            immediate: true
+        },
+        // language is switched
+        currentLocale: function (newVal) {
+            this.init(newVal);
+        }
+    },
     mounted () {
-        this.filterProperties();
-        this.setContentStyle();
+        this.init();
     },
     methods: {
         /**
+         * Filters Properties and sets style.
+         * @param {String} language current language
+         * @returns {void}
+         */
+        init (language) {
+            this.filterProperties(language ? language : this.currentLocale);
+            this.setContentStyle();
+        },
+        /**
          * Parses the mapped properties of gfi into several variables for the graphics and for the info tab.
+         * @param {String} language current language
          * @return {void}
          */
-        filterProperties () {
+        filterProperties (language) {
             const all = this.feature.getMappedProperties(),
                 infoProps = omit(all, ["Tageslinie", "Wochenlinie", "Jahrgangslinie", "Name", "Typ", "Download"]),
                 dayProps = all.hasOwnProperty("Tageslinie") ? all.Tageslinie : null,
@@ -56,6 +82,10 @@ export default {
             this.dayData.Name = all.Name;
             this.weekData.Name = all.Name;
             this.yearData.Name = all.Name;
+
+            this.dayData.language = language;
+            this.weekData.language = language;
+            this.yearData.language = language;
 
         },
         /**
@@ -203,6 +233,7 @@ export default {
 
 <style lang="less" scoped>
 .continuousCountingBike {
+     overflow: hidden;
     .bikeLevelHeader{
         margin-bottom: 0;
         margin-top: 5px;

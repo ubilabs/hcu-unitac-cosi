@@ -16,11 +16,27 @@ export default {
     },
     data: () => ({tableVisible: true, chartVisible: true}),
     watch: {
-        properties () {
+        properties (newVal, oldVal) {
+            if (newVal.language && oldVal.language !== newVal.language) {
+                this.removeChart();
+            }
             this.createD3Document();
         }
     },
     methods: {
+        /**
+         * Removes the current chart from DOM
+         * @returns {void}
+         */
+        removeChart () {
+            const graphEl = document.getElementById("graph-" + this.type),
+                graphElChilds = graphEl ? graphEl.children : [];
+
+            if (graphElChilds.length > 1) {
+                // remove the graph-svg
+                graphElChilds[1].remove();
+            }
+        },
         /**
          * createD3Document creates an object for the graph model to create the graphic
          * via radio trigger, the graphConfig object is transferred to the graph module
@@ -33,7 +49,7 @@ export default {
                 graphConfig = {
                     graphType: "Linegraph",
                     selector: "#graph-" + this.type,
-                    width: 700,
+                    width: 800,
                     height: 250,
                     margin: {top: 20, right: 20, bottom: 50, left: 70},
                     svgClass: "graph-svg",
@@ -53,6 +69,18 @@ export default {
                 };
 
             Radio.trigger("Graph", "createGraph", graphConfig);
+        },
+
+        /**
+         * If type id "year" append unit calendarweek to val.
+         * @param {String} val value of the table cell
+         * @returns {String} value to display
+         */
+        getTimeStampValue (val) {
+            if (this.type === "year") {
+                return val + " " + i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.cw");
+            }
+            return val;
         }
 
     }
@@ -110,7 +138,7 @@ export default {
                         :key="`header-${index}`"
                         class="text-align-center"
                     >
-                        {{ day.timestamp }}
+                        {{ getTimeStampValue(day.timestamp) }}
                     </th>
                 </thead>
                 <tbody>
@@ -133,13 +161,17 @@ export default {
 </template>
 
 <style lang="less" scoped>
-.hidden{
-    display: none;
-}
-  #table-data-container {
+    .hidden{
+        display: none;
+    }
+    #table-data-container {
         margin:6px 15px 0 12px;
+        overflow-x: auto;
+        border:1px solid;
         table {
             margin: 0;
+            padding: 5px 5px 5px 5px;
+            white-space: nowrap;
             td, th {
                 padding: 6px;
             }
@@ -148,7 +180,7 @@ export default {
     .data {
         white-space: nowrap;
     }
- .tab-content {
+    .tab-content {
         padding: 5px 5px 5px 5px;
     }
     .graph {
