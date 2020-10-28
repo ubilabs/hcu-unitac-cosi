@@ -5,9 +5,9 @@ const traficChannel = Backbone.Model.extend({
     defaults: {
         proxyURLVerkehrssituation: "",
         proxyURLVerkehrsmeldung: "",
-        number: i18next.t("common:modules.tools.gfi.themes.trafficCount.number"),
-        carsHeaderSuffix: i18next.t("common:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix"),
-        trucksHeaderSuffix: i18next.t("common:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix")
+        number: i18next.t("additional:modules.tools.verkehrsfunctions.number"),
+        carsHeaderSuffix: i18next.t("additional:modules.tools.verkehrsfunctions.carsHeaderSuffix"),
+        trucksHeaderSuffix: i18next.t("additional:modules.toolsverkehrsfunctions.trucksHeaderSuffix")
     },
     /*
      * Lese Layer mit URL und starte refreshVerkehrsmeldungen, wobei layerid der gleichen URL entsprechen muss.

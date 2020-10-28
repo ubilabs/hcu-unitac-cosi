@@ -1,1 +1,11 @@
-{}
+{
+    "modules": {
+        "tools": {
+            "verkehrsfunctions": {
+                "number": "Anzahl",
+                "carsHeaderSuffix": "KFZ abs.",
+                "trucksHeaderSuffix": "SV-Anteil in %"
+            }
+        }
+    }
+}
