@@ -20,7 +20,7 @@ export default {
     data () {
         return {
             activeTab: "table",
-            downloadLink: "http://daten-hamburg.de/transport_verkehr/verkehrsstaerken/DTV_DTVw_Download.xlsx",
+            downloadLink: "https://daten-hamburg.de/transport_verkehr/verkehrsstaerken/DTV_DTVw_Download.xlsx",
             years: [],
             rowNames: [],
             dataset: []

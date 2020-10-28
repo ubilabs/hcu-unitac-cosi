@@ -1,11 +1,11 @@
 
 /**
-     * Removes the year from the end of the rowName.
-     * After that if the last character is a " " or a "_", this also gets removed
-     * @param {String} rowName Name of Row from gfiContent
-     * @param {String/Number} year Year
-     * @returns {String} - New row name withour the year at the end
-     */
+ * Removes the year from the end of the rowName.
+ * After that if the last character is a " " or a "_", this also gets removed
+ * @param {String} rowName Name of Row from gfiContent
+ * @param {String/Number} year Year
+ * @returns {String} New row name withour the year at the end
+ */
 export function createNewRowName (rowName, year) {
     const yearAsString = String(year),
         index = rowName.indexOf(yearAsString) - 1,
@@ -25,11 +25,11 @@ export function createNewRowName (rowName, year) {
 
 
 /**
-     * Prepares the Dataset and sets it directly in the model
-     * @param {Object[]} dataPerYear Array of objects containing the data by year.
-     * @param {Number[]} years Array of available years
-     * @returns {void}
-     */
+ * Prepares the Dataset and sets it directly in the model
+ * @param {Object[]} dataPerYear Array of objects containing the data by year.
+ * @param {Number[]} years Array of available years
+ * @returns {void}
+ */
 export function combineYearsData (dataPerYear, years) {
     const dataset = [];
 
@@ -48,16 +48,16 @@ export function combineYearsData (dataPerYear, years) {
 }
 
 /**
-    * Parses the data and prepares them for creating the table or the graph.
-    * Creates new attributes in data objects.
-    * Tries to parse data to float.
-    * @param {Object[]} dataArray contains the data to visualize
-    * @returns {Object[]} the parsed data.
-    */
-function parseData (dataArray) {
-    const parsedDataArray = [];
+ * Parses the data and prepares them for creating the table or the graph.
+ * Creates new attributes in data objects.
+ * Tries to parse data to float.
+ * @param {Object[]} data contains the data to visualize
+ * @returns {Object[]} the parsed data.
+ */
+function parseData (data) {
+    const parsedData = [];
 
-    dataArray.forEach(dataObj => {
+    data.forEach(dataObj => {
         const parsedDataObj = {
             class: "dot",
             style: "circle"
@@ -66,34 +66,34 @@ function parseData (dataArray) {
         Object.entries(dataObj).forEach(obj => {
             const dataVal = obj[1],
                 dataAttr = obj[0],
-                parseDataVal = parseDataValue(dataVal),
-                parseFloatVal = parseFloat(parseDataVal);
+                parsedDataVal = parsedDataValue(dataVal),
+                parsedFloatVal = parseFloat(parsedDataVal);
 
             if (dataAttr === "Baustelleneinfluss") {
                 parsedDataObj.class = "dot_visible";
                 parsedDataObj.style = "rect";
             }
-            if (isNaN(parseFloatVal)) {
-                parsedDataObj[dataAttr] = parseDataVal;
+            if (isNaN(parsedFloatVal)) {
+                parsedDataObj[dataAttr] = parsedDataVal;
             }
             else {
-                parsedDataObj[dataAttr] = parseFloatVal;
+                parsedDataObj[dataAttr] = parsedFloatVal;
             }
 
         });
-        parsedDataArray.push(parsedDataObj);
+        parsedData.push(parsedDataObj);
     });
 
-    return parsedDataArray;
+    return parsedData;
 }
 
 /**
-     * Maps the string "*" to "Ja".
-     * If not, returnes the original value.
-     * @param {String} value Input string.
-     * @returns {String} - The mapped string.
-     */
-function parseDataValue (value) {
+ * Maps the string "*" to "Ja".
+ * If not, returnes the original value.
+ * @param {String} value Input string.
+ * @returns {String} The mapped string.
+ */
+function parsedDataValue (value) {
     if (value === "*") {
         return "Ja";
     }
@@ -101,10 +101,10 @@ function parseDataValue (value) {
 }
 
 /**
-         * Creates the definitions for the diagrams legend
-         * @param   {String} value category of the inspection, e.g. "DTV"
-         * @returns {Object[]} Definitions for diagram legend
-         */
+ * Creates the definitions for the diagrams legend
+ * @param   {String} value category of the inspection, e.g. "DTV"
+ * @returns {Object[]} Definitions for diagram legend
+ */
 export function createLegendData (value) {
     const attr = [];
 
@@ -140,10 +140,10 @@ export function createLegendData (value) {
 }
 
 /**
-         * Mapping of the the y-axis name
-         * @param   {String} value  category of the inspection, e.g. "DTV"
-         * @returns {String} Mapped y-axis name
-         */
+ * Mapping of the the y-axis name
+ * @param   {String} value  category of the inspection, e.g. "DTV"
+ * @returns {String} Mapped y-axis name
+ */
 export function createYAxisLabel (value) {
     if (value === "DTV") {
         return i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDay");
