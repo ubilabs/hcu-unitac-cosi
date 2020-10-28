@@ -59,25 +59,29 @@ export default {
         this.removeCurrentyDisplayedRoute();
     },
     mounted () {
-        axios.post(this.urlToGetDestinations, this.xmlRequestBody1, {headers: {"Content-Type": "text/xml"}}).then(response => {
-            const parsedResponse = new DOMParser().parseFromString(response.data, "text/xml"),
-                nodes = parsedResponse.getElementsByTagName("app:reisezeit_routen");
-
-            this.availableDestinations = [];
-            nodes.forEach(singleNode => {
-                const splitValue = singleNode.getElementsByTagName("app:anzeige")[0].innerHTML.split(/\s*,\s*/);
-
-                this.availableDestinations.push({
-                    caption: singleNode.getElementsByTagName("app:ziel_ort")[0].innerHTML.replace("Sued", "Süd"),
-                    duration: splitValue[0],
-                    distance: splitValue[1],
-                    id: singleNode.getElementsByTagName("app:id")[0].innerHTML
-                });
-            });
-        });
+        this.parseRequestedDestinations();
     },
     methods: {
         ...mapMutations("Map", ["setLayerList"]),
+        parseRequestedDestinations: function () {
+            axios.post(this.urlToGetDestinations, this.xmlRequestBody1, {headers: {"Content-Type": "text/xml"}}).then(response => {
+
+                const parsedResponse = new DOMParser().parseFromString(response.data, "text/xml"),
+                    nodes = parsedResponse.getElementsByTagName("app:reisezeit_routen");
+
+                this.availableDestinations = [];
+                nodes.forEach(singleNode => {
+                    const splitValue = singleNode.getElementsByTagName("app:anzeige")[0].innerHTML.split(/\s*,\s*/);
+
+                    this.availableDestinations.push({
+                        caption: singleNode.getElementsByTagName("app:ziel_ort")[0].innerHTML.replace("Sued", "Süd"),
+                        duration: splitValue[0],
+                        distance: splitValue[1],
+                        id: singleNode.getElementsByTagName("app:id")[0].innerHTML
+                    });
+                });
+            });
+        },
         removeCurrentyDisplayedRoute: function () {
             const layersToRemove = this.layerList.filter(singleLayer => singleLayer.values_.id === this.currentRouteLayerName);
 
@@ -194,7 +198,12 @@ export default {
             v-if="availableDestinations.length === 0"
             id="loading-animation-container"
         >
-            <div class="loading-animation"><div></div><div></div></div>
+            <div class="loading-animation">
+                <div>
+                </div>
+                <div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
