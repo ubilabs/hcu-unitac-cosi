@@ -65,7 +65,8 @@ export default {
                     },
                     yAxisLabel: dataset.yLabel,
                     attrToShowArray: dataset.graphArray,
-                    legendData: dataset.legendArray
+                    legendData: dataset.legendArray,
+                    legendHeight: dataset.legendArray.length * 15
                 };
 
             Radio.trigger("Graph", "createGraph", graphConfig);
