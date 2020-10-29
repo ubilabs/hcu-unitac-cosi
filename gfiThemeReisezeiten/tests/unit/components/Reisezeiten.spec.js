@@ -89,7 +89,7 @@ describe("/src/modules/tools/gfi/components/themes/gfiThemeReisezeiten/component
             namespaces: true
         });
 
-    sinon.stub(ReisezeitenTheme, "mounted");
+    
     beforeEach(() => {
         wrapper = shallowMount(ReisezeitenTheme, {
             store,
@@ -99,10 +99,12 @@ describe("/src/modules/tools/gfi/components/themes/gfiThemeReisezeiten/component
                     getMappedProperties: sinon.stub
                 }
             },
-            parseRequestedDestinations: sinon.stub,
-            removeCurrentyDisplayedRoute: sinon.stub,
-            createTempLayer: sinon.stub,
-            chooseRoute: sinon.stub,
+            methods: {
+                parseRequestedDestinations: sinon.stub,
+                removeCurrentyDisplayedRoute: sinon.stub,
+                createTempLayer: sinon.stub,
+                chooseRoute: sinon.stub
+            },
             data: () => {
                 return {
                     currentRouteLayerName: "tempRouteLayerReisezeiten",
@@ -111,6 +113,8 @@ describe("/src/modules/tools/gfi/components/themes/gfiThemeReisezeiten/component
             }
         });
     });
+
+    sinon.stub(ReisezeitenTheme, "mounted");
 
     it("It should exist a container for the possible routes", () => {
         expect(wrapper.find("#reisezeiten-container").exists()).to.be.true;
