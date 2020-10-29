@@ -2,6 +2,7 @@ import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
+import "./RadioBridge.js";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -126,7 +127,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             }
         });
         this.listenTo(Radio.channel("CswParser"), {
-            "fetchedMetaData": this.fetchedMetaData
+            "fetchedMetaDataForEinwohnerabfrage": this.fetchedMetaData
         });
         this.listenTo(this.get("checkBoxRaster"), {
             "valuesChanged": this.toggleRasterLayer
@@ -401,7 +402,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                 cswObj.keyList = ["date"];
                 cswObj.uniqueId = uniqueId;
                 cswObj.attr = metaIdObj.attr;
-                Radio.trigger("CswParser", "getMetaData", cswObj);
+                Radio.trigger("CswParser", "getMetaDataForEinwohnerabfrage", cswObj);
             }, this);
 
             this.off("change:isActive", this.handleCswRequests);
