@@ -89,7 +89,6 @@ describe("/src/modules/tools/gfi/components/themes/gfiThemeReisezeiten/component
             namespaces: true
         });
 
-    
     beforeEach(() => {
         wrapper = shallowMount(ReisezeitenTheme, {
             store,
