@@ -390,7 +390,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      * @returns {void}
      */
     doRequest: function (params) {
-        let url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
+        const url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
 
         $.ajax({
             url: url,
