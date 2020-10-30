@@ -1,7 +1,6 @@
 <script>
 export default {
     name: "ContinuousCountingBikeChart",
-    components: {},
     props: {
         properties: {
             type: Object,
