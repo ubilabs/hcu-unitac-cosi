@@ -98,9 +98,15 @@ export default {
             margin: 0;
             td,
             th {
-                padding: 6px;
                 text-align: center;
+                padding: 8px;
             }
+              th:first-child{
+                 text-align: left;
+             }
+             td:first-child{
+                 text-align: left;
+             }
         }
 }
 </style>

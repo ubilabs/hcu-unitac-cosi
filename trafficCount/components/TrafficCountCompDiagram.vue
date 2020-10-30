@@ -121,9 +121,6 @@ export default {
         }
     },
     mounted () {
-        // Setting the gfi content max width the same as graph
-        this.setContentStyle();
-
         this.chartData = this.createDataForDiagram(this.apiData, this.colors, this.renderLabelLegend);
         this.ctx = this.$el.getElementsByTagName("canvas")[0].getContext("2d");
 
@@ -336,16 +333,6 @@ export default {
                     }
                 }
             };
-        },
-
-        /**
-         * Setting the gfi content max width the same as graph
-         * @returns {Void} -
-         */
-        setContentStyle: function () {
-            if (document.getElementsByClassName("gfi-content").length) {
-                document.getElementsByClassName("gfi-content")[0].style.maxWidth = "580px";
-            }
         }
     }
 };
@@ -361,7 +348,7 @@ export default {
     div.graph {
         width: 580px;
         min-height: 285px;
-        padding-bottom: 5px;
+        padding-bottom: 15px;
     }
 
     @media (max-width: 580px) {

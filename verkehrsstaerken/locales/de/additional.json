@@ -5,8 +5,8 @@
                 "themes":{
                     "verkehrsstaerken": {
                         "kind": "Art: {{kind}}",
-                        "table": "Tabelle",
-                        "diagram": "Diagramm",
+                        "table": "Info",
+                        "diagram": "Diagramme",
                         "download": "Download",
                         "DTV": "DTV",
                         "DTVw": "DTVw",

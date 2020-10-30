@@ -348,15 +348,16 @@ export default {
 @import "~variables";
 
 .indication {
-    min-width: 456px;
     font-size: 10px;
     position: absolute;
     left: 0px;
-    margin-left: 5px;
 }
 .download-container {
     float: left;
-    padding: 26px 0 10px 7px;
+    padding-top: 25px;
+     @media (max-width: 600px) {
+          padding-top: 35px;
+     }
 }
 table {
     margin-bottom: 0;
@@ -368,7 +369,7 @@ table {
         width: 50%;
         float: right;
         margin-top: 25px;
-        @media (max-width: 580px) {
+        @media (max-width: 600px) {
             min-width: inherit;
         }
         tbody {

@@ -327,7 +327,10 @@ export default {
         id="infos"
         class="infos tab-pane fade in active"
     >
-        <div class="padded">
+        <div
+            id="trafficcount-info-table"
+            class="padded"
+        >
             <table class="table table-hover table-striped">
                 <tbody>
                     <tr colspan="3">
@@ -345,16 +348,10 @@ export default {
                         <td class="bold">
                             {{ totalSince }}
                         </td>
-                        <td
-                            id="totalDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ totalDesc }}
                         </td>
-                        <td
-                            id="totalValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ totalValue }}
                         </td>
                     </tr>
@@ -362,16 +359,10 @@ export default {
                         <td class="bold">
                             {{ sinceBeginningOfTheYear }}
                         </td>
-                        <td
-                            id="thisYearDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ thisYearDesc }}
                         </td>
-                        <td
-                            id="thisYearValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ thisYearValue }}
                         </td>
                     </tr>
@@ -379,16 +370,10 @@ export default {
                         <td class="bold">
                             {{ overThePastYear }}
                         </td>
-                        <td
-                            id="lastYearDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ lastYearDesc }}
                         </td>
-                        <td
-                            id="lastYearValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ lastYearValue }}
                         </td>
                     </tr>
@@ -396,16 +381,10 @@ export default {
                         <td class="bold">
                             {{ onThePreviousDay }}
                         </td>
-                        <td
-                            id="lastDayDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ lastDayDesc }}
                         </td>
-                        <td
-                            id="lastDayValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ lastDayValue }}
                         </td>
                     </tr>
@@ -413,16 +392,10 @@ export default {
                         <td class="bold">
                             {{ highestDay }}
                         </td>
-                        <td
-                            id="highestWorkloadDayDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ highestWorkloadDayDesc }}
                         </td>
-                        <td
-                            id="highestWorkloadDayValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ highestWorkloadDayValue }}
                         </td>
                     </tr>
@@ -430,16 +403,10 @@ export default {
                         <td class="bold">
                             {{ highestWeek }}
                         </td>
-                        <td
-                            id="highestWorkloadWeekDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ highestWorkloadWeekDesc }}
                         </td>
-                        <td
-                            id="highestWorkloadWeekValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ highestWorkloadWeekValue }}
                         </td>
                     </tr>
@@ -447,16 +414,10 @@ export default {
                         <td class="bold">
                             {{ highestMonth }}
                         </td>
-                        <td
-                            id="highestWorkloadMonthDesc"
-                            class="text-right"
-                        >
+                        <td>
                             {{ highestWorkloadMonthDesc }}
                         </td>
-                        <td
-                            id="highestWorkloadMonthValue"
-                            class="text-right"
-                        >
+                        <td>
                             {{ highestWorkloadMonthValue }}
                         </td>
                     </tr>
@@ -467,7 +428,17 @@ export default {
 </template>
 
 <style lang="less" scoped>
-    table {
-        margin-bottom: 0;
-    }
+    #trafficcount-info-table {
+        margin: 6px 0 0 0;
+        table {
+            margin: 0;
+            td,
+            th {
+                text-align: center;
+            }
+             td:first-child{
+                 text-align: left;
+             }
+        }
+}
 </style>

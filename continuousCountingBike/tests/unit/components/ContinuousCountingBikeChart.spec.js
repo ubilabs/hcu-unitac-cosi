@@ -97,19 +97,19 @@ describe("src/modules/tools/gfi/components/themes/continuousCountingBike/compone
         expect(wrapper.find(".table").exists()).to.be.true;
         expect(wrapper.findAll("td").length).to.equal(amount);
     });
-    it("hide/show chart", async () => {
+    it("hide/show diagram", async () => {
         const wrapper = createWrapper("year");
 
-        expect(wrapper.find("#chart").attributes().class).not.to.contain("hidden");
+        expect(wrapper.find("#continuousCountingBikeDiagram").attributes().class).not.to.contain("hidden");
 
         wrapper.find("#chartCheck").trigger("click");
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.find("#chart").attributes().class).to.contain("hidden");
+        expect(wrapper.find("#continuousCountingBikeDiagram").attributes().class).to.contain("hidden");
         wrapper.find("#chartCheck").trigger("click");
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.find("#chart").attributes().class).not.to.contain("hidden");
+        expect(wrapper.find("#continuousCountingBikeDiagram").attributes().class).not.to.contain("hidden");
     });
 
     it("hide/show table", async () => {

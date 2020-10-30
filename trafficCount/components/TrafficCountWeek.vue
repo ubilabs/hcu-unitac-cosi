@@ -252,5 +252,7 @@ export default {
 </template>
 
 <style scoped>
-
+#weekDateInputButton{
+    padding: 6px 12px 5px 12px
+}
 </style>

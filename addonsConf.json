@@ -32,6 +32,9 @@
   "flaecheninfo": {
     "type": "gfiTheme"
   },
+  "gfiThemeReisezeiten": {
+    "type": "gfiTheme"
+  },
   "schulinfo": {
     "type": "gfiTheme"
   },
@@ -44,7 +47,7 @@
   "trinkwasser": {
     "type": "gfiTheme"
   },
-  "gfiThemeReisezeiten": {
+  "verkehrsstaerken": {
     "type": "gfiTheme"
   }
 }

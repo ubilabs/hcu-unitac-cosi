@@ -232,5 +232,8 @@ export default {
 </template>
 
 <style scoped>
+#dayDateInputButton{
+    padding: 6px 12px 5px 12px
+}
 
 </style>

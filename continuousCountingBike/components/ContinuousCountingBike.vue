@@ -218,7 +218,7 @@ export default {
         </div>
         <div
             v-if="!isActiveTab('info')"
-            class="continuousCountingBike tab-pane downloadButton fade in active"
+            class="tab-pane downloadButton fade in active"
         >
             <button
                 class="btn btn-primary csv-download"
@@ -234,6 +234,19 @@ export default {
 <style lang="less" scoped>
 .continuousCountingBike {
      overflow: hidden;
+     width: 880px;
+     height: 570px;
+       @media (max-width: 600px) {
+          width: inherit;
+            height: inherit;
+            padding-left: 10px;
+            padding-right: 10px;
+        div.graph {
+            width: inherit;
+            height: inherit;
+        }
+       }
+
     .bikeLevelHeader{
         margin-bottom: 0;
         margin-top: 5px;
@@ -246,6 +259,10 @@ export default {
     }
     .glyphicon {
         padding-right: 5px;
+    }
+    .downloadButton{
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 }
 </style>

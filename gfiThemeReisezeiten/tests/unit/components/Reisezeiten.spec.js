@@ -7,8 +7,7 @@ import ReisezeitenTheme from "../../../components/Reisezeiten.vue";
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
-
-describe("/src/modules/tools/gfi/components/themes/gfiThemeReisezeiten/components/Reisezeiten.vue", () => {
+describe("addons/gfiThemeReisezeiten/components/Reisezeiten.vue", () => {
     let wrapper;
 
     const loadedRoutes = [
@@ -109,6 +108,9 @@ describe("/src/modules/tools/gfi/components/themes/gfiThemeReisezeiten/component
                     currentRouteLayerName: "tempRouteLayerReisezeiten",
                     availableDestinations: loadedRoutes
                 };
+            },
+            computed: {
+                urlToGetDestinations: sinon.stub
             }
         });
     });

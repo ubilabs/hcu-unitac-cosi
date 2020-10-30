@@ -152,7 +152,8 @@ export default {
 <style lang="less" scoped>
     div.table {
         margin-top: 5px;
-        margin-bottom: 0px;
+        margin-bottom: 20px;
+        overflow: auto;
         tbody > tr > td {
             min-width: 50px;
         }

@@ -83,10 +83,4 @@ export default {
 </template>
 
 <style lang="less" scoped>
-    .form-check {
-        width: 580px;
-    }
-    input.form-check-input {
-        margin-left: 8px;
-    }
 </style>

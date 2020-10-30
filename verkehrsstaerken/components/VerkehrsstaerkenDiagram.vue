@@ -196,6 +196,9 @@ export default {
     button {
         outline: none;
     }
+    .btn-group{
+        padding: 8px;
+    }
     .data {
         white-space: nowrap;
         padding-left: 0px;

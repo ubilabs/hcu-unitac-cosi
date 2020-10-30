@@ -1,9 +1,7 @@
 <script>
-
 export default {
     name: "ContinuousCountingBikeChart",
-    components: {
-    },
+    components: {},
     props: {
         properties: {
             type: Object,
@@ -79,11 +77,16 @@ export default {
          */
         getTimeStampValue (val) {
             if (this.type === "year") {
-                return val + " " + i18next.t("additional:modules.tools.gfi.themes.continuousCountingBike.cw");
+                return (
+                    val +
+                    " " +
+                    i18next.t(
+                        "additional:modules.tools.gfi.themes.continuousCountingBike.cw"
+                    )
+                );
             }
             return val;
         }
-
     }
 };
 </script>
@@ -96,15 +99,19 @@ export default {
                 v-model="chartVisible"
                 type="checkbox"
                 class="chartCheckbox form-check-input"
-            >
+            />
             <label
                 class="form-check-label"
                 for="chartCheck"
-            >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.diagram") }}</label>
+            >{{
+                $t(
+                    "additional:modules.tools.gfi.themes.continuousCountingBike.diagram"
+                )
+            }}</label>
         </div>
         <div
-            id="chart"
-            :class="{hidden: !chartVisible}"
+            id="continuousCountingBikeDiagram"
+            :class="{ hidden: !chartVisible }"
         >
             <div
                 :id="`graph-${type}`"
@@ -119,20 +126,28 @@ export default {
                 v-model="tableVisible"
                 type="checkbox"
                 class="tableCheckbox form-check-input"
-            >
+            />
             <label
                 class="form-check-label"
                 for="tableCheck"
-            >{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.chart") }}</label>
+            >{{
+                $t(
+                    "additional:modules.tools.gfi.themes.continuousCountingBike.chart"
+                )
+            }}</label>
         </div>
         <div
             v-if="tableVisible && properties.data"
-            id="table-data-container"
+            class="table-data-container"
         >
             <table class="table table-hover">
                 <thead>
                     <th class="text-align-center">
-                        {{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.name") }}
+                        {{
+                            $t(
+                                "additional:modules.tools.gfi.themes.continuousCountingBike.name"
+                            )
+                        }}
                     </th>
                     <th
                         v-for="(day, index) in properties.data"
@@ -161,19 +176,20 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
-    .hidden{
+<style lang="less">
+.continuousCountingBike {
+    .hidden {
         display: none;
     }
-    #table-data-container {
-        margin:6px 15px 0 12px;
+    .table-data-container {
         overflow-x: auto;
-        border:1px solid;
+        border: 1px solid;
         table {
             margin: 0;
             padding: 5px 5px 5px 5px;
             white-space: nowrap;
-            td, th {
+            td,
+            th {
                 padding: 6px;
             }
         }
@@ -184,42 +200,44 @@ export default {
     .tab-content {
         padding: 5px 5px 5px 5px;
     }
-    .graph {
-        width: 880px;
-        min-height: 285px;
-        padding-bottom: 5px;
+    #continuousCountingBikeDiagram {
+        overflow-x: auto;
+        .graph {
+            padding-bottom: 5px;
+        }
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 2px;
+        }
+        .dot {
+            cursor: pointer;
+            stroke: none;
+            fill: steelblue;
+        }
+        .dot_visible {
+            cursor: pointer;
+            stroke: none;
+            fill: red;
+        }
+        .dot_invisible {
+            display: none;
+        }
+        .domain {
+            fill: none;
+            stroke: #000;
+        }
+        .graph-tooltip-div {
+            transform: translateX(-50%);
+            -moz-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            display: inline-block;
+            position: absolute;
+            color: black;
+            padding: 2px;
+            border: 2px solid white;
+            text-align: center;
+        }
     }
-     .line {
-        fill: none;
-        stroke: steelblue;
-        stroke-width: 2px;
-    }
-    .dot {
-        cursor: pointer;
-        stroke: none;
-        fill: steelblue;
-    }
-    .dot_visible {
-        cursor: pointer;
-        stroke: none;
-        fill: red;
-    }
-    .dot_invisible {
-        display: none;
-    }
-    .domain {
-        fill: none;
-        stroke: #000;
-    }
-    .graph-tooltip-div {
-        transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        display: inline-block;
-        position: absolute;
-        color: black;
-        padding: 2px;
-        border: 2px solid white;
-        text-align: center;
-    }
+}
 </style>

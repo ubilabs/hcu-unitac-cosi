@@ -278,11 +278,11 @@ export default {
 
 <template>
     <div class="trafficCount-gfi">
-        <div class="header">
-            {{ idLabel }} <span id="title">{{ title }}</span><br>
-            {{ typeLabel }} <span id="type">{{ type }}</span><br>
-            {{ meansOfTransportLabel }} <span id="meansOfTransport">{{ meansOfTransport }}</span><br>
-            {{ directionLabel }} <span id="direction">{{ direction }}</span>
+        <div class="panel header text-align-center">
+            <span class="title bold">{{ idLabel }} {{ title }}</span><br>
+            {{ typeLabel }} <span class="type">{{ type }}</span><br>
+            {{ meansOfTransportLabel }} <span class="meansOfTransport">{{ meansOfTransport }}</span><br>
+            {{ $t("additional:modules.tools.gfi.themes.trafficCount.directionLabel") }} <span class="direction">{{ direction }}</span>
         </div>
         <div>
             <ul
@@ -363,16 +363,27 @@ export default {
 </template>
 
 <style lang="less" scoped>
+.trafficCount-gfi{
+        width: 600px;
+        height: 645px;
+        @media (max-width: 600px) {
+          width: inherit;
+            height: inherit;
+            padding-left: 10px;
+            padding-right: 10px;
+        div.graph {
+            width: inherit;
+            height: inherit;
+        }
+    }
     .header {
         min-width: 280px;
         max-width: 320px;
-        margin: 0 auto;
+        margin: 0 auto 20px auto;
         padding: 0 60px;
     }
     .footer {
         position: relative;
     }
-    .tab-content {
-        padding: 5px;
-    }
+}
 </style>
