@@ -298,7 +298,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
 
         try {
             obj = JSON.parse(response.ergebnis);
-            this.prepareDataForRendering(obj);
+            obj = this.prepareDataForRendering(obj);
             this.setData(obj);
             this.setDataReceived(true);
         }
@@ -313,10 +313,12 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * Iterates ofer response properties
      * @param  {Object} response - the parsed response from wps
      * @fires Core#RadioRequestUtilThousandsSeparator
-     * @returns {void}
+     * @returns {Object} the prepared data
      */
     prepareDataForRendering: function (response) {
-        Object.entries(response).forEach(function ([key, value], index, list) {
+        const ret = {};
+
+        Object.entries(response).forEach(function ([key, value]) {
             let stringVal = "";
 
             if (!isNaN(value)) {
@@ -326,13 +328,14 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                 else {
                     stringVal = thousandsSeparator(value);
                 }
-                list[key] = stringVal;
+                ret[key] = stringVal;
             }
             else {
-                list[key] = value;
+                ret[key] = value;
             }
 
         }, this);
+        return ret;
     },
 
     /**
@@ -343,18 +346,22 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {String} unit
      */
     chooseUnitAndThousandsSeparator: function (value, maxDecimals) {
-        let newValue = null;
+        let newValue = null,
+            ret = null;
 
         if (value < 250000) {
-            return thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
+            ret = thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
         }
         if (value < 10000000) {
             newValue = value / 10000.0;
-            return thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
+            ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
         }
-        newValue = value / 1000000.0;
+        else {
+            newValue = value / 1000000.0;
 
-        return thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
+            ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
+        }
+        return ret;
     },
 
 
