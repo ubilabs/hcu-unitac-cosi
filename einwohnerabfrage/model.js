@@ -316,7 +316,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @returns {Object} the prepared data
      */
     prepareDataForRendering: function (response) {
-        const ret = {};
+        const preparedData = {};
 
         Object.entries(response).forEach(function ([key, value]) {
             let stringVal = "";
@@ -328,14 +328,14 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                 else {
                     stringVal = thousandsSeparator(value);
                 }
-                ret[key] = stringVal;
+                preparedData[key] = stringVal;
             }
             else {
-                ret[key] = value;
+                preparedData[key] = value;
             }
 
         }, this);
-        return ret;
+        return preparedData;
     },
 
     /**
