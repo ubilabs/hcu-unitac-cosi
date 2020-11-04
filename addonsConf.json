@@ -15,39 +15,51 @@
     "type": "tool"
   },
   "activeCityMaps": {
+    "path":"gfiThemes/activeCityMaps",
     "type": "gfiTheme"
   },
   "bildungsatlas": {
+    "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
   }, 
   "continuousCountingBike": {
+    "path":"gfiThemes/continuousCountingBike",
     "type": "gfiTheme"
   },
   "dataTable": {
+    "path":"gfiThemes/dataTable",
     "type": "gfiTheme"
   },
   "dipas": {
+    "path":"gfiThemes/dipas",
     "type": "gfiTheme"
   },
   "flaecheninfo": {
+    "path":"gfiThemes/flaecheninfo",
     "type": "gfiTheme"
   },
   "gfiThemeReisezeiten": {
+    "path":"gfiThemes/gfiThemeReisezeiten",
     "type": "gfiTheme"
   },
   "schulinfo": {
+    "path":"gfiThemes/schulinfo",
     "type": "gfiTheme"
   },
   "solaratlas": {
+    "path":"gfiThemes/solaratlas",
     "type": "gfiTheme"
   },
   "trafficCount": {
+    "path":"gfiThemes/trafficCount",
     "type": "gfiTheme"
   },
   "trinkwasser": {
+    "path":"gfiThemes/trinkwasser",
     "type": "gfiTheme"
   },
   "verkehrsstaerken": {
+    "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   }
 }
