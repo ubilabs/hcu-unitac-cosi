@@ -233,7 +233,6 @@ export default {
         color: black;
         padding: 2px;
         border: 2px solid white;
-        text-align: center;
     }
 }
 </style>

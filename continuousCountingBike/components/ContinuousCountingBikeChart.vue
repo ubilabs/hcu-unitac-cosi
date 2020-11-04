@@ -50,7 +50,7 @@ export default {
                     height: 250,
                     margin: {top: 20, right: 20, bottom: 50, left: 70},
                     svgClass: "graph-svg",
-                    selectorTooltip: ".graph-tooltip-div",
+                    selectorTooltip: "#graph-" + this.type + " .graph-tooltip-div",
                     scaleTypeX: "ordinal",
                     scaleTypeY: "linear",
                     data: dataset.data,
@@ -91,7 +91,9 @@ export default {
 </script>
 
 <template>
-    <div v-if="properties">
+    <div
+        v-if="properties"
+    >
         <div>
             <input
                 id="chartCheck"
@@ -109,8 +111,8 @@ export default {
             }}</label>
         </div>
         <div
-            id="continuousCountingBikeDiagram"
-            :class="{ hidden: !chartVisible }"
+            :id="`continuousCountingBikeDiagram-${type}`"
+            :class="{ hidden: !chartVisible, continuousCountingBikeDiagram: true}"
         >
             <div
                 :id="`graph-${type}`"
@@ -177,9 +179,6 @@ export default {
 
 <style lang="less">
 .continuousCountingBike {
-    .hidden {
-        display: none;
-    }
     .table-data-container {
         overflow-x: auto;
         border: 1px solid;
@@ -193,16 +192,10 @@ export default {
             }
         }
     }
-    .data {
-        white-space: nowrap;
-    }
-    .tab-content {
-        padding: 5px 5px 5px 5px;
-    }
-    #continuousCountingBikeDiagram {
-        overflow-x: auto;
+    .continuousCountingBikeDiagram {
         .graph {
             padding-bottom: 5px;
+            position: relative;
         }
         .line {
             fill: none;
@@ -235,7 +228,6 @@ export default {
             color: black;
             padding: 2px;
             border: 2px solid white;
-            text-align: center;
         }
     }
 }
