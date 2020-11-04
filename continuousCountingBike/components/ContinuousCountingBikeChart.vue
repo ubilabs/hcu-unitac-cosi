@@ -93,6 +93,7 @@ export default {
 <template>
     <div
         v-if="properties"
+        class="tab-pane fade"
     >
         <div>
             <input
