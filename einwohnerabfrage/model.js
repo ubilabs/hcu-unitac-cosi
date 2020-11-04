@@ -352,13 +352,12 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         if (value < 250000) {
             ret = thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
         }
-        if (value < 10000000) {
+        else if (value < 10000000) {
             newValue = value / 10000.0;
             ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
         }
         else {
             newValue = value / 1000000.0;
-
             ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
         }
         return ret;
