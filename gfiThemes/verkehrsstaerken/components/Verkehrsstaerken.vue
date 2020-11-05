@@ -131,7 +131,7 @@ export default {
 
 <template>
     <div class="verkehrsstaerken">
-        <div class="panel header text-align-center">
+        <div class="panel header">
             <strong>{{ feature.getMappedProperties().Zählstelle +": "+feature.getMappedProperties().Bezeichnung }}</strong>
             <br />
             <small>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.kind", {kind: feature.getMappedProperties().Art}) }}</small>
@@ -199,6 +199,10 @@ export default {
 <style lang="less" scoped>
 .verkehrsstaerken {
     box-sizing: border-box;
+    padding: 5px 20px 5px 20px;
+    .header{
+        text-align: center;
+    }
     .nav-pills {
         padding: 6px;
     }

@@ -133,7 +133,7 @@ export default {
 
 <template>
     <div class="continuousCountingBike">
-        <div class="panel bikeLevelHeader  text-align-center">
+        <div class="panel bikeLevelHeader">
             <strong>{{ feature.getMappedProperties().Name }}</strong>
             <br>
             <small>{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.kind", {kind: feature.getMappedProperties().Typ}) }}</small>
@@ -236,6 +236,7 @@ export default {
      overflow: hidden;
      width: 880px;
      height: 570px;
+     padding: 5px 20px 5px 20px;
        @media (max-width: 600px) {
           width: inherit;
             height: inherit;
@@ -250,6 +251,7 @@ export default {
     .bikeLevelHeader{
         margin-bottom: 0;
         margin-top: 5px;
+        text-align: center;
     }
      .tab-content {
         padding: 0px 5px 5px 5px;

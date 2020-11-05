@@ -116,7 +116,7 @@ export default {
 
 <template>
     <div class="table">
-        <table class="table-responsive table-striped text-align-center table-condensed table-bordered text-nowrap">
+        <table class="table-responsive table-striped table-condensed table-bordered text-nowrap">
             <thead>
                 <tr>
                     <th class="th-first-col">
@@ -154,6 +154,7 @@ export default {
         margin-top: 5px;
         margin-bottom: 20px;
         overflow: auto;
+        text-align: center;
         tbody > tr > td {
             min-width: 50px;
         }

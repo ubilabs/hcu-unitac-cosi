@@ -19,7 +19,10 @@ export default {
             </div>
             <table class="table table-striped">
                 <tbody>
-                    <tr colspan="3">
+                    <tr
+                        colspan="3"
+                        class="bold"
+                    >
                         <td class="subHeader">
                         </td>
                         <td>
@@ -38,19 +41,16 @@ export default {
                         </td>
                         <td
                             v-if="(Array.isArray(value.attrValue))"
-                            class="infoGFIContent"
                         >
                             {{ value.attrValue[0] }}
                         </td>
                         <td
                             v-if="(Array.isArray(value.attrValue))"
-                            class="infoGFIContent"
                         >
                             {{ value.attrValue[1] }}
                         </td>
                         <td
                             v-else
-                            class="infoGFIContent"
                         >
                             {{ value.attrValue }}
                         </td>
@@ -66,9 +66,6 @@ export default {
     overflow: hidden;
     .subHeader{
         font-family: 'MasterPortalFont Bold','Arial Narrow',Arial,sans-serif;
-    }
-    .infoGFIContent {
-        text-align: right;
     }
      #table-data-container {
         margin:6px 15px 0 12px;

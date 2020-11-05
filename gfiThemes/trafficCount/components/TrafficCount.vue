@@ -278,7 +278,7 @@ export default {
 
 <template>
     <div class="trafficCount-gfi">
-        <div class="panel header text-align-center">
+        <div class="panel header">
             <span class="title bold">{{ idLabel }} {{ title }}</span><br>
             {{ typeLabel }} <span class="type">{{ type }}</span><br>
             {{ meansOfTransportLabel }} <span class="meansOfTransport">{{ meansOfTransport }}</span><br>
@@ -366,6 +366,7 @@ export default {
 .trafficCount-gfi{
         width: 600px;
         height: 645px;
+        padding: 5px 20px 5px 20px;
         @media (max-width: 600px) {
           width: inherit;
             height: inherit;
@@ -381,6 +382,7 @@ export default {
         max-width: 320px;
         margin: 0 auto 20px auto;
         padding: 0 60px;
+        text-align: center;
     }
     .footer {
         position: relative;

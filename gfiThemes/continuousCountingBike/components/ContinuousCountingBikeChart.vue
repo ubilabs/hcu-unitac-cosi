@@ -193,6 +193,9 @@ export default {
             }
         }
     }
+    .text-align-center{
+        text-align: center;
+    }
     .continuousCountingBikeDiagram {
         .graph {
             padding-bottom: 5px;
