@@ -1,5 +1,5 @@
 <script>
-import beautifyWfsKey from "../../../../src/utils/beautifyWfsKey.js";
+import beautifyKey from "../../../../src/utils/beautifyKey.js";
 import {isWebLink} from "../../../../src/utils/urlHelper.js";
 
 export default {
@@ -11,7 +11,7 @@ export default {
         }
     },
     methods: {
-        beautifyWfsKey,
+        beautifyKey,
         isWebLink,
         /**
          * Checks if the string includes a pipe
@@ -33,7 +33,7 @@ export default {
                 :key="key"
             >
                 <td class="bold">
-                    {{ beautifyWfsKey(key) }}
+                    {{ beautifyKey(key) }}
                 </td>
                 <td v-if="isWebLink(value)">
                     <a
