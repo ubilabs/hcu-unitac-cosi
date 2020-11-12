@@ -1,5 +1,4 @@
 /**
- * @todo: Diese Mousehover-Funktion ist zunächst ein Workaround. Ein späteres Refactoring ist geplant.
  * returns a mouseover content
  * @param {Object} attr the attributes to be inserted in the html content
  * @returns {Object[]}  a list of object{getTheme, getTitle, getAttributesToShow, getProperties, getGfiUrl} or an emtpy array

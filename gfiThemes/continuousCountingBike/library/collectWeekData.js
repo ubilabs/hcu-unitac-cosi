@@ -4,18 +4,17 @@ import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import {getDataAttributes, getLegendAttributes, createxAxisTickValues} from "./helper.js";
 
 /**
-         * splitLastSevenDaysDataset creates a json for the graphic module with the lastSevenDaysLine data.
-         * @param  {String} lastSevenDaysLine contains the lastSevenDays data of gfi content
-         * @fires Util#event:RadioRequestUtilPunctuate
-         * @return {Array} tempArr array with prepared objects of the data
-         */
+ * splitLastSevenDaysDataset creates a json for the graphic module with the lastSevenDaysLine data.
+ * @param  {String} lastSevenDaysLine contains the lastSevenDays data of gfi content
+ * @fires Util#event:RadioRequestUtilPunctuate
+ * @return {Array} tempArr array with prepared objects of the data
+ */
 export function splitWeekData (lastSevenDaysLine) {
     const dataSplit = lastSevenDaysLine ? lastSevenDaysLine.split("|") : [],
         tempArr = [];
 
     dataSplit.forEach(data => {
         const splitted = data.split(","),
-            // weeknumber = splitted[0],
             day = splitted[1].split(".")[0],
             month = splitted[1].split(".")[1] - 1,
             year = splitted[1].split(".")[2],
@@ -37,10 +36,10 @@ export function splitWeekData (lastSevenDaysLine) {
     return tempArr.sort((valueA, valueB) => valueA.timestamp - valueB.timestamp);
 }
 /**
-         * prepareLastSevenDaysDataset creates an object for the lastSevenDaysDataset
-         * @param {Array} data array of objects from lastSevenDaysLineData
-         * @returns {Object} charts data
-         */
+ * prepareLastSevenDaysDataset creates an object for the lastSevenDaysDataset
+ * @param {Array} data array of objects from lastSevenDaysLineData
+ * @returns {Object} charts data
+ */
 export function getWeekData (data) {
     const useData = data && data[0],
         startDate = useData ? moment(data[0].timestamp).format("DD.MM.YYYY") : "",

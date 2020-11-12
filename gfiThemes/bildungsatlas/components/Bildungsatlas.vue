@@ -68,7 +68,6 @@ export default {
                 return "*g.F.";
             }
 
-            // the Number(Number(...).toFixed(...)) is the quickest way to remove zeros at the end of the toFixed string
             return thousandsSeparator(Number(Number(value).toFixed(fixedTo))) + (relative ? "%" : "");
         },
         /**

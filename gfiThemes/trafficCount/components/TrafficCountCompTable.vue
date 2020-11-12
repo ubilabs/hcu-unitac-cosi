@@ -100,7 +100,6 @@ export default {
 
             apiDataRef.forEach(dataObj => {
                 for (key in dataObj) {
-                    // dataObjFlat
                     result.push({
                         key,
                         dataset: dataObj[key]
