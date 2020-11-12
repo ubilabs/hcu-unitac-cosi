@@ -8,9 +8,16 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("addons/dipas/components/Dipas.vue", () => {
+    const iconPath = "https://geoportal-hamburg.de/lgv-beteiligung/icons/einzelmarker_dunkel.png",
+        theme = {
+            "name": "dipas",
+            "params": {
+                "gfiIconPath": iconPath
+
+            }
+        };
     let wrapper,
-        valueStyle = [],
-        iconPath = "http://geoportal-hamburg.de/lgv-beteiligung/icons/einzelmarker_dunkel.png";
+        valueStyle = [];
 
     /**
      * Creates the wrapper
@@ -27,9 +34,8 @@ describe("addons/dipas/components/Dipas.vue", () => {
             localVue,
             propsData: {
                 feature: {
-                    getTheme: () => "Dipas",
+                    getTheme: () => theme,
                     getTitle: () => "Dipas Title",
-                    getIconPath: () => iconPath,
                     getMappedProperties () {
                         return {
                             "Kategorie": "Value Kategorie",
@@ -80,11 +86,11 @@ describe("addons/dipas/components/Dipas.vue", () => {
                     "imageScale": "0.5"
                 }
             ];
-            iconPath = "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png";
+            const icon = "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png",
 
-            const ret = wrapper.vm.fetchIconPathDeprecated(valueStyle);
+                ret = wrapper.vm.fetchIconPathDeprecated(valueStyle);
 
-            expect(ret).to.equal(iconPath);
+            expect(ret).to.equal(icon);
         });
     });
 
@@ -110,11 +116,11 @@ describe("addons/dipas/components/Dipas.vue", () => {
                     "imageName": "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png"
                 }
             }];
-            iconPath = "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png";
+            const icon = "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png",
 
-            const ret = wrapper.vm.fetchIconPath(valueStyle);
+                ret = wrapper.vm.fetchIconPath(valueStyle);
 
-            expect(ret).to.equal(iconPath);
+            expect(ret).to.equal(icon);
         });
     });
 
@@ -129,6 +135,8 @@ describe("addons/dipas/components/Dipas.vue", () => {
         });
 
         it("should show the parsed name with path", function () {
+            const icon = "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png";
+
             createWrapper(true, false);
             valueStyle = [{
                 "conditions": {
@@ -139,15 +147,12 @@ describe("addons/dipas/components/Dipas.vue", () => {
                 "style": {
                     "styleFieldValue": "Wohnen",
                     "color": "#E20613",
-                    "imageName": "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png",
+                    "imageName": icon,
                     "imageScale": "0.5"
                 }
             }];
-            iconPath = "https://geoportal-hamburg.de/lgv-beteiligung/icons/40px-wohnen.png";
 
-            const ret = wrapper.vm.calculateIconPath(valueStyle);
-
-            expect(ret).to.equal(iconPath);
+            expect(wrapper.vm.calculateIconPath(valueStyle)).to.equal(iconPath);
         });
     });
 });

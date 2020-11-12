@@ -25,7 +25,7 @@ export default {
         calculateIconPath (value) {
             const styleModel = Radio.request("StyleList", "returnModelById", "beteiligungsfeatures");
             let valueStyle,
-                ret = this.feature.getIconPath();
+                iconPath = this.feature.getTheme()?.params?.gfiIconPath;
 
             if (styleModel) {
                 if (!this.useVectorStyleBeta && styleModel.has("styleFieldValues")) {
@@ -33,16 +33,16 @@ export default {
                     valueStyle = styleModel.get("styleFieldValues").filter(function (styleFieldValue) {
                         return styleFieldValue.styleFieldValue === value;
                     });
-                    ret = this.fetchIconPathDeprecated(valueStyle);
+                    iconPath = this.fetchIconPathDeprecated(valueStyle);
                 }
                 else if (this.useVectorStyleBeta && styleModel.has("rules") && styleModel.get("rules").length > 0) {
                     valueStyle = styleModel.get("rules").filter(function (rule) {
                         return rule.conditions.properties.Thema === value;
                     });
-                    ret = this.fetchIconPath(valueStyle);
+                    iconPath = this.fetchIconPath(valueStyle);
                 }
             }
-            return ret;
+            return iconPath;
         },
         /**
          * @deprecated with new vectorStyle module. Should be removed with version 3.0.
@@ -51,7 +51,7 @@ export default {
          * @returns {String} the path of the icons
          */
         fetchIconPathDeprecated (valueStyle) {
-            let finalIconPath = this.feature.getIconPath();
+            let finalIconPath = this.feature.getTheme()?.params?.gfiIconPath;
 
             if (valueStyle && valueStyle.length > 0 && ("imageName" in valueStyle[0])) {
                 finalIconPath = valueStyle[0].imageName;
@@ -65,7 +65,7 @@ export default {
          * @returns {String} the path of the icons
          */
         fetchIconPath (valueStyle) {
-            let finalIconPath = this.feature.getIconPath();
+            let finalIconPath = this.feature.getTheme()?.params?.gfiIconPath;
 
             if (valueStyle && valueStyle.length > 0 && ("imageName" in valueStyle[0].style)) {
                 finalIconPath = valueStyle[0].style.imageName;
