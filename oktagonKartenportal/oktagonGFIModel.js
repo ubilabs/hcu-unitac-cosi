@@ -1,5 +1,7 @@
 import {fetch as fetchPolyfill} from "whatwg-fetch";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
+import {extractEventCoordinates} from "../../src/utils/extractEventCoordinates";
+import store from "../../src/app-store";
 
 const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends OktagonGetFeatureInformationModel.prototype */{
     defaults: {
@@ -22,7 +24,6 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * @property {String} name="Hausnummernvergabe" Name of the sidebar
      * @fires OktagonURLParameter#RadioRequestOktagonURLParameterGetRueckURL
      * @fires ModelList#RadioRequestModelListGetModelByAttributes
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @fires MapView#RadioRequestMapViewGetOptions
      * @fires Core#RadioRequestMapViewGetProjection
      * @fires Alerting#RadioTriggerAlertAlert
@@ -36,13 +37,14 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * Zooms to the clicked coordinates
      * @param  {Array} coordinate contains the clicked map coordinates
      * @fires ModelList#RadioRequestModelListGetModelByAttributes
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
-    * @returns {void}
+     * @returns {void}
      */
     onMapClick: function (coordinate) {
-        const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
+        const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")}),
+            coord = extractEventCoordinates(coordinate);
 
-        Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinate});
+        Radio.trigger("MapView", "setCenter", coord, this.get("zoomLevel"));
+        store.dispatch("MapMarker/placingPointMarker", coord);
         this.addCoordinatesToSubmitObject(coordinate);
         this.requestALKISWMS(layerModel, coordinate);
     },

@@ -31,6 +31,21 @@ describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
                     report = true;
                 }
             },
+            store: new Vuex.Store({
+                namespaced: true,
+                modules: {
+                    MapMarker: {
+                        namespaced: true,
+                        actions: {
+                            removePolygonMarker: sinon.stub(),
+                            placingPolygonMarker: sinon.stub()
+                        },
+                        getters: {
+                            zoomLevel: sinon.stub()
+                        }
+                    }
+                }
+            }),
             localVue
         });
     });

@@ -1,7 +1,7 @@
 import BuildSpecModel from "../../../modules/tools/print_/buildSpec.js";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
-
+import store from "../../../src/app-store";
 
 /**
  *todo
@@ -283,7 +283,7 @@ function initializeBrwAbfrageModel () {
                     // lagetypisch
                     else {
                         this.setBrwFeatures([feature]);
-                        Radio.trigger("MapMarker", "showMarker", coordinate);
+                        store.dispatch("MapMarker/placingPointMarker", coordinate);
                         Radio.trigger("MapView", "setCenter", coordinate);
                         this.handleNewFeature(feature);
                     }
@@ -446,7 +446,7 @@ function initializeBrwAbfrageModel () {
                     this.setGfiFeature(null);
                     this.setBrwFeatures([]);
                     this.set("selectedBrwFeature", {});
-                    Radio.trigger("MapMarker", "hideMarker");
+                    store.dispatch("MapMarker/removePointMarker");
                     Radio.request("Map", "createLayerIfNotExists", "highlightLayer").getSource().clear();
                 }
                 else {

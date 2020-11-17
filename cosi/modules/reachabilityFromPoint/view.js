@@ -8,6 +8,7 @@ import GeoJSON from "ol/format/GeoJSON";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import InfoTemplate from "text-loader!./info.html";
 import ReachabilityResultView from "./resultView";
+import store from "../../../../src/app-store";
 
 const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFromPointView.prototype */{
     events: {
@@ -48,8 +49,6 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
      * @fires Core#RadioTriggerMapGetOverlayById
      * @fires Searchbar#RadioTriggerSearchbarHit
      * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictRevertBboxGeometry
-     * @fires MapMarker#RadioTriggerMapMarkerHideMarker
-     * @fires MapMarker#RadioTriggerMapMarkerShowMarker
      * @fires Core.ConfigLoader#RadioRequestParserGetItemsByAttributes
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
      * @fires BboxSettor#RadioTriggerSetBboxGeometryToLayer
@@ -81,7 +80,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
                         this.clearInput();
                     }
                     if (!this.model.get("setBySearch")) {
-                        Radio.trigger("MapMarker", "hideMarker");
+                        store.dispatch("MapMarker/removePointMarker");
                     }
                 }
             },
@@ -293,7 +292,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
     setCoordinateFromClick: function (evt) {
         const coordinate = Proj.transform(evt.coordinate, "EPSG:25832", "EPSG:4326");
 
-        Radio.trigger("MapMarker", "showMarker", evt.coordinate);
+        store.dispatch("MapMarker/placingPointMarker", evt.coordinate);
         this.model.set("coordinate", coordinate);
         this.model.set("setBySearch", false);
     },

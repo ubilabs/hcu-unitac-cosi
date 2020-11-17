@@ -1,6 +1,7 @@
 <script>
-import {mapGetters} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 import {omit} from "../../../../src/utils/objectHelpers";
+import {extractEventCoordinates} from "../../../../src/utils/extractEventCoordinates";
 
 export default {
     name: "Flaecheninfo",
@@ -16,9 +17,8 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Map", {
-            gfiFeatures: "gfiFeatures"
-        })
+        ...mapGetters("Map", ["gfiFeatures"]),
+        ...mapGetters("MapMarker", ["markerPolygon"])
     },
     watch: {
         feature () {
@@ -30,6 +30,8 @@ export default {
         this.filterPropsAndHighlightRing();
     },
     methods: {
+        ...mapActions("MapMarker", ["removePolygonMarker", "placingPolygonMarker"]),
+
         /**
          * Filters the features properties and highlights the border of the parcel.
          * @returns {void}
@@ -71,14 +73,14 @@ export default {
         /**
          * Highlights the borders of the parcel.
          * @param {string} coordinates of the parcels border
-         * @fires MapMarker:zoomTo
          * @returns {void}
          */
         highlightRing (coordinates) {
-            Radio.trigger("MapMarker", "zoomTo", {
-                coordinate: coordinates,
-                type: "flaecheninfo"
-            });
+            const coord = extractEventCoordinates(coordinates);
+
+            this.removePolygonMarker();
+            this.placingPolygonMarker({wktcontent: coord, geometryType: "POLYGON"});
+            Radio.trigger("Map", "zoomToExtent", this.markerPolygon.getSource().getExtent(), {maxZoom: 7});
         },
         /**
          * Create a jasper report of the selected parcel.

@@ -1,6 +1,7 @@
 import WfsQueryModel from "./query/source/wfs";
 import GeoJsonQueryModel from "./query/source/geojson";
 import Tool from "../../../../modules/core/modelList/tool/model";
+import store from "../../../../src/app-store";
 
 const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -58,7 +59,6 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @fires Core.ModelList#RadioTriggerModelListShowAllFeatures
      * @fires GFI#RadioTriggerGFISetIsVisible
      * @fires GFI#RadioRequestGFIGetVisibleTheme
-     * @fires MapMarker#RadioTriggerMapMarkerHideMarker
      * @constructs
      */
     initialize: function () {
@@ -411,12 +411,11 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
     /**
      * sets isActive
      * @fires GFI#RadioTriggerGFISetIsVisible
-     * @fires MapMarker#RadioTriggerMapMarkerHideMarker
      * @return {void}
      */
     closeGFI: function () {
         Radio.trigger("GFI", "setIsVisible", false);
-        Radio.trigger("MapMarker", "hideMarker");
+        store.dispatch("MapMarker/removePointMarker");
     },
 
     /**

@@ -1,4 +1,6 @@
 import ParametricURL from "../../modules/core/parametricURL";
+import {extractEventCoordinates} from "../../src/utils/extractEventCoordinates";
+import store from "../../src/app-store";
 
 const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.prototype */{
     defaults: {
@@ -14,7 +16,6 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      * @listens Gaz#RadioRequestGazGetAdress
      * @fires Alerting#RadioTriggerAlertAlert
      * @fires Gaz#RadioTriggerGazAdressSearch
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @fires Util#RadioTriggerUtilPick
      * @constructs
      */
@@ -115,18 +116,19 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         return districtNameToZoom;
     },
     /**
-     * Zomms the map to the address.
+     * Zooms the map to the address.
      * @param {Object} data xml object.
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @returns {void}
      */
     triggerZoomToAddress: function (data) {
         if ($("gages\\:Hauskoordinaten,Hauskoordinaten", data).length > 0) {
             const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
                 posList = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
-                coordinates = this.parseCoordinatesToFloat(posList);
+                coordinates = this.parseCoordinatesToFloat(posList),
+                coord = extractEventCoordinates(coordinates);
 
-            Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinates});
+            Radio.trigger("MapView", "setCenter", coord, this.get("zoomLevel"));
+            store.dispatch("MapMarker/placingPointMarker", coord);
         }
         else {
             this.alertWrongInputParameters();
@@ -134,9 +136,8 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
     },
 
     /**
-     * Zomms the map to the extent of the street.
+     * Zooms the map to the extent of the street.
      * @param {Object} data xml object.
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @returns {void}
      */
     triggerZoomToStreet: function (data) {
@@ -150,9 +151,11 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
                 position = $("iso19112\\:position_strassenachse, position_strassenachse", streetElement)[0],
                 point = $("gml\\:Point, Point", position)[0],
                 pos = $("gml\\:pos, pos", point)[0].textContent.split(" "),
-                coordinates = this.parseCoordinatesToFloat(pos);
+                coordinates = this.parseCoordinatesToFloat(pos),
+                coord = extractEventCoordinates(coordinates);
 
-            Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinates});
+            Radio.trigger("MapView", "setCenter", coord, this.get("zoomLevel"));
+            store.dispatch("MapMarker/placingPointMarker", coord);
         }
         else {
             this.alertWrongInputParameters();
@@ -185,7 +188,6 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
     /**
      * Parses the coordinates to float
      * @param {Array} coordinates contains the coordinates.
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @returns {Array} array with coordinates
      */
     parseCoordinatesToFloat: function (coordinates) {
