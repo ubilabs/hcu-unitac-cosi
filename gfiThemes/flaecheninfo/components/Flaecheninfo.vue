@@ -81,7 +81,7 @@ export default {
             this.placingPolygonMarker({wktcontent: coord, geometryType: "POLYGON"});
 
             if (this.markerPolygon?.getSource().getFeatures().length > 0) {
-                Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent() || null, {maxZoom: 7});
+                Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent(), {maxZoom: 7});
             }
         },
         /**
