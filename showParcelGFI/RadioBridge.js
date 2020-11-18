@@ -21,7 +21,7 @@ Radio.channel("GFI").on({
             },
             url = foundLayer.getSource().getFeatureInfoUrl(coordinate, resolution, projection, gfiParams),
             gfiAsNewWindow = foundLayer.get("gfiAsNewWindow"),
-            feature = await getWmsFeaturesByMimeType(mimeType, url, {layerName, layerId}, gfiTheme, null, gfiAttributes, gfiAsNewWindow);
+            feature = await getWmsFeaturesByMimeType(mimeType, url, {layerName, layerId}, gfiTheme, gfiAttributes, gfiAsNewWindow);
 
         store.commit("Tools/Gfi/setActive", true);
         store.commit("Map/setClickCoord", [coordinate[0], coordinate[1]]);
