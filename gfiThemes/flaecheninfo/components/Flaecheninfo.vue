@@ -41,7 +41,6 @@ export default {
             let propsMapped = this.feature.getMappedProperties(),
                 ring = "";
 
-
             // Sometimes parcel service returns multiple results as center points parcels may be inside another
             // parcel. Because this, results are filtered this way.
             if (requestedParcelId !== false && typeof this.gfiFeatures.filter === "function") {
@@ -80,7 +79,7 @@ export default {
 
             this.removePolygonMarker();
             this.placingPolygonMarker({wktcontent: coord, geometryType: "POLYGON"});
-            Radio.trigger("Map", "zoomToExtent", this.markerPolygon.getSource().getExtent(), {maxZoom: 7});
+            Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent(), {maxZoom: 7});
         },
         /**
          * Create a jasper report of the selected parcel.
