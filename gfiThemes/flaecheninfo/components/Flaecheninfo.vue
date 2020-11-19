@@ -79,7 +79,10 @@ export default {
 
             this.removePolygonMarker();
             this.placingPolygonMarker({wktcontent: coord, geometryType: "POLYGON"});
-            Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent(), {maxZoom: 7});
+
+            if (this.markerPolygon?.getSource().getFeatures().length > 0) {
+                Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent() || null, {maxZoom: 7});
+            }
         },
         /**
          * Create a jasper report of the selected parcel.
