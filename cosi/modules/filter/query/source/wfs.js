@@ -7,7 +7,6 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @extends SourceModel
      * @memberof Tools.Filter.Query.Source
      * @constructs
-     * @fires Util#getProxyURL
      */
     initialize: function () {
         this.initializeFunction();
@@ -23,7 +22,7 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @returns {void}
      */
     buildQueryDatastructureByType: function (layerObject) {
-        const url = Radio.request("Util", "getProxyURL", layerObject.url),
+        const url = layerObject.url,
             featureType = layerObject.featureType,
             version = layerObject.version;
         let featureAttributesMap = [];

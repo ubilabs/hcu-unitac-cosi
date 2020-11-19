@@ -45,7 +45,8 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         dataSourceMRHLinktext: "",
         info: "",
         showRasterLayer: "",
-        showAlkisAdresses: ""
+        showAlkisAdresses: "",
+        useProxy: false
     }),
 
     /**
@@ -402,7 +403,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                 cswObj.keyList = ["date"];
                 cswObj.uniqueId = uniqueId;
                 cswObj.attr = metaIdObj.attr;
-                Radio.trigger("CswParser", "getMetaDataForEinwohnerabfrage", cswObj);
+                Radio.trigger("CswParser", "getMetaDataForEinwohnerabfrage", cswObj, this.get("useProxy"));
             }, this);
 
             this.off("change:isActive", this.handleCswRequests);

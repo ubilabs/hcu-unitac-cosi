@@ -13,8 +13,8 @@ const traficChannel = Backbone.Model.extend({
      * Lese Layer mit URL und starte refreshVerkehrsmeldungen, wobei layerid der gleichen URL entsprechen muss.
      */
     initialize: function () {
-        const proxyURLVerkehrssituation = Radio.request("Util", "getProxyURL", "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata"),
-            proxyURLVerkehrsmeldung = Radio.request("Util", "getProxyURL", "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata"),
+        const proxyURLVerkehrssituation = "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata",
+            proxyURLVerkehrsmeldung = "https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata",
             channel = Radio.channel("Verkehrsfunctions"),
             verkehrslagelayer = Radio.request("ModelList", "getModelByAttributes", {id: "947"});
 

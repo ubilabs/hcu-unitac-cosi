@@ -39,7 +39,7 @@ export default {
             return getLayerWhere({id: "2715"});
         },
         urlToGetDestinations: function () {
-            return Radio.request("Util", "getProxyURL", this.routenLayerConfig.url);
+            return this.routenLayerConfig.url;
         },
         selectedStartLocation: function () {
             if (this.feature.getMappedProperties() !== undefined && typeof this.feature.getMappedProperties().Standort === "string") {

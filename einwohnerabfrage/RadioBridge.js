@@ -1,4 +1,5 @@
 import {getRecordById} from "../../src/api/csw/getRecordById.js";
+import getProxyUrl from "../../src/utils/getProxyUrl";
 
 Radio.channel("CswParser").on({
     "getMetaDataForEinwohnerabfrage": async function (cswObj) {
@@ -8,9 +9,16 @@ Radio.channel("CswParser").on({
             const cswId = Config.cswId || "3",
                 cswService = Radio.request("RestReader", "getServiceById", cswId);
 
-            cswObj.cswUrl = Radio.request("Util", "getProxyURL", cswService.get("url"));
+            cswObj.cswUrl = cswService.get("url");
         }
-        const metadata = await getRecordById(Radio.request("Util", "getProxyURL", cswObj.cswUrl), cswObj.metaId);
+
+        /**
+         * @deprecated in the next major-release!
+         * useProxy
+         * getProxyUrl()
+         */
+        cswObj.cswUrl = this.get("useProxy") ? getProxyUrl(cswObj.cswUrl) : cswObj.cswUrl;
+        const metadata = await getRecordById(cswObj.cswUrl, cswObj.metaId);
 
         cswObj.parsedData = {};
         if (typeof metadata.getRevisionDate() !== "undefined") {

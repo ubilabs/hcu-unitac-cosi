@@ -118,7 +118,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
 
         propertyListPromise.then(propertyList => {
             layerList.forEach(function (layer) {
-                const getFeatureUrl = Radio.request("Util", "getProxyURL", this.getUrl(layer, bbox, propertyList));
+                const getFeatureUrl = this.getUrl(layer, bbox, propertyList);
 
                 featurePromiseList.push(window.fetch(getFeatureUrl)
                     .then(response => {
@@ -292,7 +292,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             return featureList[valueOfLayer];
         }
 
-        xhr.open("GET", Radio.request("Util", "getProxyURL", this.getUrl(layer, undefined, undefined)), false);
+        xhr.open("GET", this.getUrl(layer, undefined, undefined), false);
         xhr.onload = function (event) {
             const wfsReader = new WFS({
                 featureNS: layer.featureNS

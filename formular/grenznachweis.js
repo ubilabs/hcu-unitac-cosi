@@ -85,7 +85,7 @@ const GrenznachweisModel = Tool.extend(/** @lends GrenznachweisModel.prototype *
         // lese WPS-Url aus JSON ein
         const wpsService = Radio.request("RestReader", "getServiceById", Config.wpsID),
             wpsURL = wpsService && wpsService && wpsService.get("url") ? wpsService.get("url") : null,
-            newURL = wpsURL ? Radio.request("Util", "getProxyURL", wpsURL) : null;
+            newURL = wpsURL ? wpsURL : null;
 
         this.superInitialize();
         if (newURL) {

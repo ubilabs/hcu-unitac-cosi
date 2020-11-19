@@ -238,7 +238,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             data = "service=" + params.service + "&version=" + params.version + "&request=" + params.request + "&TypeName=" + params.typename;
 
         $.ajax({
-            url: Radio.request("Util", "getProxyURL", params.url),
+            url: params.url,
             data: encodeURI(data),
             contentType: "text/xml",
             type: "GET",
