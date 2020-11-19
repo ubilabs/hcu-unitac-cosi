@@ -4,7 +4,8 @@ import store from "../../src/app-store";
 
 const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.prototype */{
     defaults: {
-        rueckURL: ""
+        rueckURL: "",
+        zoomLevel: 9
     },
     /**
      * @class OktagonURLParameter
@@ -12,6 +13,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      * @extends ParametricURL
      * @memberOf Addons.OktagonKartenportal
      * @property {String} rueckURL Parameter for the submit url.
+     * @property {String} zoomLevel Parameter for the zoomlevel.
      * @listens ParametricURL#RadioRequestOktagonURLParameterGetRueckURL
      * @listens Gaz#RadioRequestGazGetAdress
      * @fires Alerting#RadioTriggerAlertAlert

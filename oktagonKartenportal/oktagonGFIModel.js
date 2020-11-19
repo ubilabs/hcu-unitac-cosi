@@ -7,7 +7,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     defaults: {
         returnURL: "",
         submitURL: "",
-        layerId: "183",
+        layerIds: ["186", "19110"],
         submitObject: {},
         glyphicon: "glyphicon-info-sign",
         name: "Hausnummernvergabe"
@@ -18,7 +18,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * @extends Backbone.Model
      * @memberOf Addons.OktagonKartenportal
      * @property {String} submitURL Contains the submit url
-     * @property {String} layerId="183" Layerid for the GetFeatureInfo request
+     * @property {String} layerIds=["186", "19110"] Array with Layerids for the GetFeatureInfo request
      * @property {Object} submitObject Object for the submit parameter
      * @property {String} glyphicon="glyphicon-info-sign" Icon for the sidebar header
      * @property {String} name="Hausnummernvergabe" Name of the sidebar
@@ -40,13 +40,16 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * @returns {void}
      */
     onMapClick: function (coordinate) {
-        const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")}),
-            coord = extractEventCoordinates(coordinate);
+        const coord = extractEventCoordinates(coordinate);
 
         Radio.trigger("MapView", "setCenter", coord, this.get("zoomLevel"));
         store.dispatch("MapMarker/placingPointMarker", coord);
+        this.get("layerIds").forEach(layerId => {
+            const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+            this.requestALKISWMS(layerModel, coordinate);
+        });
         this.addCoordinatesToSubmitObject(coordinate);
-        this.requestALKISWMS(layerModel, coordinate);
     },
     /**
      * Requests the ALKIS WMS and starts to parse the xml response
@@ -83,12 +86,12 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     * @returns {void}
      */
     parseXML: function (xml) {
-        const xmlElements = Array.from(xml.getElementsByTagName("FIELDS")),
+        const xmlElements = Array.from(xml.getElementsByTagName("FIELDS")).length > 0 ? Array.from(xml.getElementsByTagName("FIELDS")) : Array.from(xml.getElementsByTagName("app:baubloecke")),
             submitObject = this.get("submitObject");
 
         xmlElements.forEach(xmlElement => {
-            if (xmlElement.getAttribute("Baublock")) {
-                submitObject.Baublock = xmlElement.getAttribute("Baublock");
+            if (xmlElement.getElementsByTagName("app:baublockbezeichnung").length > 0) {
+                submitObject.Baublock = xmlElement.getElementsByTagName("app:baublockbezeichnung")[0].textContent;
             }
             if (xmlElement.getAttribute("Gemarkungsname")) {
                 submitObject.Gemarkungsname = xmlElement.getAttribute("Gemarkungsname");
