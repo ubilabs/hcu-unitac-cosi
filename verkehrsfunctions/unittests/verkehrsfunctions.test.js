@@ -35,34 +35,30 @@ describe("ADDON: Verkehrsfunctions", function () {
     });
 
     describe("getAbsTrafficCount", function () {
-        it("should return a empty value", function () {
-            const dataStreamNames = "test | test",
-                dataStreamValues = "219 | 0.29";
+        it("should return text with 'No data'", function () {
+            const dataStreamValue = null;
 
-            expect(model.getAbsTrafficCount(dataStreamNames, dataStreamValues)).to.equal("");
+            expect(model.getAbsTrafficCount(dataStreamValue)).to.equal("No data");
         });
 
         it("should parse the right the absolute count", function () {
-            const dataStreamNames = "Anzahl | Prozent",
-                dataStreamValues = "219 | 0.29";
+            const dataStreamValue = "219";
 
-            expect(model.getAbsTrafficCount(dataStreamNames, dataStreamValues)).to.equal("219");
+            expect(model.getAbsTrafficCount(dataStreamValue)).to.equal("219");
         });
     });
 
     describe("getPropTrafficCount", function () {
-        it("should return a empty value", function () {
-            const dataStreamNames = "test | test",
-                dataStreamValues = "219 | 0.29";
+        it("should return text with 'No data'", function () {
+            const dataStreamValue = null;
 
-            expect(model.getPropTrafficCount(dataStreamNames, dataStreamValues)).to.equal("");
+            expect(model.getPropTrafficCount(dataStreamValue)).to.equal("No data");
         });
 
         it("should parse the right the proportional count", function () {
-            const dataStreamNames = "Anzahl | Prozent",
-                dataStreamValues = "219 | 0.29";
+            const dataStreamValue = "0.29";
 
-            expect(model.getPropTrafficCount(dataStreamNames, dataStreamValues)).to.equal(29);
+            expect(model.getPropTrafficCount(dataStreamValue)).to.equal(29);
         });
     });
 });

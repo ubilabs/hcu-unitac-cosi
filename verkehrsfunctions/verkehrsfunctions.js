@@ -40,8 +40,7 @@ const traficChannel = Backbone.Model.extend({
      * @return {Void} -
      */
     updateMouseHoverAttribute: function (feature) {
-        const dataStreamNames = feature.get("dataStreamName"),
-            dataStreamValues = feature.get("dataStreamValue"),
+        const dataStreamValue = feature.get("dataStreamValue"),
             dataDirection = feature.get("richtung");
 
         let phenomenonTime = "",
@@ -64,9 +63,9 @@ const traficChannel = Backbone.Model.extend({
             phenomenonTimeRange = this.getPhenomenonTimeRange(startTime, endTime);
         }
 
-        if (dataStreamNames && dataStreamValues) {
-            absTrafficCount = this.getAbsTrafficCount(dataStreamNames, dataStreamValues);
-            propTrafficCount = this.getPropTrafficCount(dataStreamNames, dataStreamValues);
+        if (dataStreamValue) {
+            absTrafficCount = this.getAbsTrafficCount(dataStreamValue);
+            propTrafficCount = this.getPropTrafficCount(dataStreamValue);
         }
 
         if (typeof dataDirection === "string") {
@@ -106,39 +105,30 @@ const traficChannel = Backbone.Model.extend({
 
     /**
      * Getting the absolute traffic count
-     * @param {String} dataStreamNames - dataStream Name(s) of the current feature
-     * @param {String} dataStreamValues - dataStream Value(s) of the current feature
-     * @return {String} the absolute count
+     * @param {String} dataStreamValue - dataStream Value(s) of the current feature
+     * @return {String} the absolute count or "No data"
      */
-    getAbsTrafficCount: function (dataStreamNames, dataStreamValues) {
-        let value = "";
+    getAbsTrafficCount: function (dataStreamValue) {
+        let value = "No data";
 
-        dataStreamNames.split(" | ").forEach(function (dataStreamName, i) {
-            if (dataStreamName === "Anzahl") {
-                value = dataStreamValues.split(" | ")[i];
-            }
-        });
+        if (dataStreamValue !== undefined && dataStreamValue !== null) {
+            value = dataStreamValue;
+        }
 
         return value;
     },
 
     /**
      * Getting the proportional traffic count
-     * @param {String} dataStreamNames - dataStream Name(s) of the current feature
-     * @param {String} dataStreamValues - dataStream Value(s) of the current feature
-     * @return {Number|String} the proportional count or empty string
+     * @param {String} dataStreamValue - dataStream Value(s) of the current feature
+     * @return {Number|String} the proportional count or "No data"
      */
-    getPropTrafficCount: function (dataStreamNames, dataStreamValues) {
-        let value = "";
+    getPropTrafficCount: function (dataStreamValue) {
+        let value = "No data";
 
-        dataStreamNames.split(" | ").forEach(function (dataStreamName, i) {
-            if (dataStreamName === "Prozent") {
-                value = dataStreamValues.split(" | ")[i];
-                if (value !== "No data") {
-                    value = Math.round(parseFloat(value) * 100);
-                }
-            }
-        });
+        if (dataStreamValue !== undefined && dataStreamValue !== null && dataStreamValue !== "No data") {
+            value = Math.round(parseFloat(dataStreamValue) * 100);
+        }
 
         return value;
     },
