@@ -1,5 +1,5 @@
 import store from "../../src/app-store";
-import {getWmsFeaturesByMimeType} from "../../src/modules/map/store/actions/getWmsFeaturesByMimeType";
+import {getWmsFeaturesByMimeType} from "../../src/api/gfi/getWmsFeaturesByMimeType";
 
 Radio.channel("GFI").on({
     "layerAtPosition": async function (layerId, coordinate) {
