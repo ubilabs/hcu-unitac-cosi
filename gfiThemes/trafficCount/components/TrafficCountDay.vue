@@ -83,7 +83,7 @@ export default {
                     startDate: startDate.toDate(),
                     endDate: moment().toDate(),
                     type: "datepicker",
-                    inputs: $("#dayDateInput"),
+                    inputs: $(document.getElementById("dayDateInput")),
                     todayHighlight: false,
                     language: i18next.language
                 });

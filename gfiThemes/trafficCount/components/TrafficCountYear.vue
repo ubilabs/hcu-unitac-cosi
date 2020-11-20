@@ -97,7 +97,7 @@ export default {
                     type: "datepicker",
                     minViewMode: "years",
                     maxViewMode: "years",
-                    inputs: $("#yearDateInput"),
+                    inputs: $(document.getElementById("yearDateInput")),
                     format: "yyyy",
                     language: i18next.language
                 });

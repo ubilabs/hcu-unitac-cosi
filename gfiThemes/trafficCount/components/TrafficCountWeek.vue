@@ -97,7 +97,7 @@ export default {
                     endDate: moment().toDate(),
                     type: "datepicker",
                     selectWeek: true,
-                    inputs: $("#weekDateInput"),
+                    inputs: $(document.getElementById("weekDateInput")),
                     calendarWeeks: true,
                     format: {
                         toDisplay: function (date) {
