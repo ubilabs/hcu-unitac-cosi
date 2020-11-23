@@ -7,7 +7,7 @@ import ReisezeitenTheme from "../../../components/Reisezeiten.vue";
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
-describe("addons/gfiThemeReisezeiten/components/Reisezeiten.vue", () => {
+describe("addons/reisezeiten/components/Reisezeiten.vue", () => {
     let wrapper;
 
     const loadedRoutes = [

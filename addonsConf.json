@@ -21,7 +21,7 @@
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
-  }, 
+  },
   "continuousCountingBike": {
     "path":"gfiThemes/continuousCountingBike",
     "type": "gfiTheme"
@@ -38,8 +38,8 @@
     "path":"gfiThemes/flaecheninfo",
     "type": "gfiTheme"
   },
-  "gfiThemeReisezeiten": {
-    "path":"gfiThemes/gfiThemeReisezeiten",
+  "reisezeiten": {
+    "path":"gfiThemes/reisezeiten",
     "type": "gfiTheme"
   },
   "schulinfo": {
