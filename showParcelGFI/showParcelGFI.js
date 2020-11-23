@@ -30,7 +30,7 @@ const ShowParcelGFI = Backbone.Model.extend(/** @lends ShowParcelGFI.prototype *
      */
     parcelFound: function (attributes) {
         this.setRequestedParcelId(attributes.flurstuecksnummer);
-        Radio.trigger("GFI", "layerAtPosition", "2619", attributes.coordinate);
+        Radio.trigger("GFI", "layerAtPosition", "2619", attributes);
     },
 
     /**
