@@ -17,9 +17,11 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                     getProperties () {
                         return {};
                     },
-                    getGfiFormat () {
+                    getTheme () {
                         return {
-                            gfiSubTheme: "gfiSubTheme"
+                            params: {
+                                subTheme: "subTheme"
+                            }
                         };
                     }
                 }
@@ -81,8 +83,8 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
     });
 
     describe("created", () => {
-        it("should set the internal value of gfiSubTheme to the value found in the feature", () => {
-            expect(wrapper.vm.gfiSubTheme).to.equal("gfiSubTheme");
+        it("should set the internal value of subTheme to the value found in the feature", () => {
+            expect(wrapper.vm.subTheme).to.equal("subTheme");
         });
     });
     describe("nav-pills", () => {
@@ -121,9 +123,11 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getProperties () {
                             return {};
                         },
-                        getGfiFormat () {
+                        getTheme () {
                             return {
-                                gfiSubTheme: "BildungsatlasBalkendiagramm"
+                                params: {
+                                    subTheme: "BildungsatlasBalkendiagramm"
+                                }
                             };
                         }
                     }
@@ -140,9 +144,11 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getProperties () {
                             return {};
                         },
-                        getGfiFormat () {
+                        getTheme () {
                             return {
-                                gfiSubTheme: "BildungsatlasSchulentlassene"
+                                params: {
+                                    subTheme: "BildungsatlasSchulentlassene"
+                                }
                             };
                         }
                     }
@@ -159,9 +165,11 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getProperties () {
                             return {};
                         },
-                        getGfiFormat () {
+                        getTheme () {
                             return {
-                                gfiSubTheme: "BildungsatlasSchulenWohnort"
+                                params: {
+                                    subTheme: "BildungsatlasSchulenWohnort"
+                                }
                             };
                         }
                     }
@@ -178,9 +186,11 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getProperties () {
                             return {};
                         },
-                        getGfiFormat () {
+                        getTheme () {
                             return {
-                                gfiSubTheme: "BildungsatlasStandorte"
+                                params: {
+                                    subTheme: "BildungsatlasStandorte"
+                                }
                             };
                         }
                     }
@@ -197,9 +207,11 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getProperties () {
                             return {};
                         },
-                        getGfiFormat () {
+                        getTheme () {
                             return {
-                                gfiSubTheme: "BildungsatlasSchulenEinzugsgebiete"
+                                params: {
+                                    subTheme: "BildungsatlasSchulenEinzugsgebiete"
+                                }
                             };
                         }
                     }

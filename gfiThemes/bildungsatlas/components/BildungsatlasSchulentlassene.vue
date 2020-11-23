@@ -308,12 +308,16 @@ export default {
          * @returns {Void}  -
          */
         refreshGfi (feature) {
-            const gfiFormat = feature.getGfiFormat() || {},
-                format = gfiFormat.gfiBildungsatlasFormat || {},
-                properties = feature.getProperties() || {};
+            const gfiTheme = feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                format = gfiParams?.gfiBildungsatlasFormat,
+                properties = feature?.getProperties();
 
+            if (typeof properties !== "object" || typeof format !== "object") {
+                return;
+            }
             // ("Abi" or "oHS")
-            this.themeType = format.themeType;
+            this.themeType = format?.themeType;
 
             // table
             this.tableData = this.createDataForTable(format.themeType, format.layerType, properties);

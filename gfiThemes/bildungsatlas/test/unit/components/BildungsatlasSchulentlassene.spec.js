@@ -14,12 +14,14 @@ describe("addons/bildungsatlas/components/BildungsatlasSchulentlassene.vue", () 
         wrapper = shallowMount(BildungsatlasSchulentlassene, {
             propsData: {
                 feature: {
-                    getGfiFormat () {
+                    getTheme () {
                         return {
-                            gfiSubTheme: "BildungsatlasSchulentlassene",
-                            gfiBildungsatlasFormat: {
-                                layerType: "stadtteil",
-                                themeType: "Abi"
+                            params: {
+                                subTheme: "BildungsatlasSchulentlassene",
+                                gfiBildungsatlasFormat: {
+                                    layerType: "stadtteil",
+                                    themeType: "Abi"
+                                }
                             }
                         };
                     },

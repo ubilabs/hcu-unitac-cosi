@@ -56,11 +56,13 @@ describe("addons/bildungsatlas/components/BildungsatlasStandorte.vue", () => {
                             styling: "default"
                         };
                     },
-                    getGfiFormat () {
+                    getTheme () {
                         return {
-                            gfiSubTheme: "BildungsatlasStandorte",
-                            gfiBildungsatlasFormat: {
-                                themeType: "5"
+                            params: {
+                                subTheme: "BildungsatlasStandorte",
+                                gfiBildungsatlasFormat: {
+                                    themeType: "5"
+                                }
                             }
                         };
                     }

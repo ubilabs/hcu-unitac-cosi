@@ -66,7 +66,7 @@ export default {
                 return this.feature.getTheme();
             }
 
-            return "";
+            return {};
         },
 
         // The id of current layer

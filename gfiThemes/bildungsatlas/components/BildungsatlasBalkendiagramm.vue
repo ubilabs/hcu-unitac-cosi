@@ -157,13 +157,17 @@ export default {
          * @returns {Void}  -
          */
         refreshGfi (feature) {
-            const gfiFormat = feature.getGfiFormat() || {},
-                format = gfiFormat.gfiBildungsatlasFormat || {},
-                properties = feature.getProperties() || {},
+            const gfiTheme = feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                format = gfiParams?.gfiBildungsatlasFormat,
+                properties = feature?.getProperties(),
                 subThemeTitleRaw = this.getSubThemeTitle(properties),
                 lastKeyOfYeardata = this.getLastKeyOfYeardata(properties);
 
-            this.description = gfiFormat.gfiBildungsatlasDescription;
+            if (typeof properties !== "object" || typeof format !== "object") {
+                return;
+            }
+            this.description = gfiParams.gfiBildungsatlasDescription;
 
             this.themeType = format.themeType;
             this.layerType = format.layerType;

@@ -69,11 +69,15 @@ export default {
          * @returns {Void}  -
          */
         refreshGfi (feature) {
-            const gfiFormat = feature.getGfiFormat() || {},
-                format = gfiFormat.gfiBildungsatlasFormat || {},
-                properties = feature.getProperties() || {};
+            const gfiTheme = feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                format = gfiParams?.gfiBildungsatlasFormat,
+                properties = feature.getProperties();
 
-            this.themeType = format.themeType;
+            if (typeof properties !== "object" || typeof format !== "object") {
+                return;
+            }
+            this.themeType = format?.themeType;
 
             this.schoolName = properties.C_S_Name;
             this.schoolStreet = properties.C_S_Str + " " + properties.C_S_HNr;

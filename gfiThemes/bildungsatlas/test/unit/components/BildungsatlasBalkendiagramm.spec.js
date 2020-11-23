@@ -17,9 +17,11 @@ describe("addons/bildungsatlas/components/BildungsatlasBalkendiagramm.vue", () =
                     getProperties () {
                         return {};
                     },
-                    getGfiFormat () {
+                    getTheme () {
                         return {
-                            gfiSubTheme: "gfiSubTheme"
+                            params: {
+                                subTheme: "subTheme"
+                            }
                         };
                     }
                 },

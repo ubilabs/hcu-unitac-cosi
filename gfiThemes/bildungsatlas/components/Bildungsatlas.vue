@@ -24,13 +24,14 @@ export default {
     data () {
         return {
             activeTab: "data",
-            gfiSubTheme: ""
+            subTheme: ""
         };
     },
     created () {
-        const gfiFormat = this.feature.getGfiFormat() || {};
+        const gfiTheme = this.feature?.getTheme(),
+            gfiParams = gfiTheme?.params;
 
-        this.gfiSubTheme = gfiFormat.gfiSubTheme;
+        this.subTheme = typeof gfiParams === "object" && gfiParams.hasOwnProperty("subTheme") ? gfiParams.subTheme : "";
     },
     methods: {
         /**
@@ -108,8 +109,8 @@ export default {
         </ul>
         <div class="tab-content">
             <component
-                :is="gfiSubTheme"
-                v-if="componentExists(gfiSubTheme)"
+                :is="subTheme"
+                v-if="componentExists(subTheme)"
                 :feature="feature"
                 :isActiveTab="isActiveTab"
                 :getValueForBildungsatlas="getValueForBildungsatlas"

@@ -23,7 +23,7 @@ export default {
     data () {
         return {
             /**
-             * the theme type according to config.json -> gfiFormat.gfiBildungsatlasFormat.themeType (should equal school levels: primary, secondary)
+             * the theme type according to config.json -> gfiTheme.params.gfiBildungsatlasFormat.themeType (should equal school levels: primary, secondary)
              * @type {String}
              */
             themeType: "",
@@ -81,13 +81,15 @@ export default {
             return {};
         },
 
-        // The gfi format of current layer
-        getGfiFormat () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getGfiFormat")) {
-                return this.feature.getGfiFormat();
+        // The gfi params of the current layer
+        getGfiParams () {
+            if (!this.feature || typeof this.feature !== "object") {
+                return {};
             }
+            const gfiTheme = this.feature?.getTheme(),
+                gfiParams = gfiTheme?.params;
 
-            return {};
+            return typeof gfiParams === "object" ? gfiParams : {};
         },
 
         // The id of current layer
@@ -122,7 +124,7 @@ export default {
          * When feature is changed, the event will be triggered
          * @param {Object} newVal - the new feature
          * @param {Object} oldVal - the old feature
-         * @returns {Void} -
+         * @returns {void}
          */
         feature: function (newVal, oldVal) {
             if (oldVal) {
@@ -141,18 +143,13 @@ export default {
         /**
          * initialize the content
          * @param   {Boolean} isVisible is gfi visible
-         * @returns {Void}  -
+         * @returns {void}
          */
         create () {
-            const layerStatisticAreas = this.getLayerStatisticAreas();
+            const layerStatisticAreas = this.getLayerStatisticAreas(),
+                gfiBildungsatlasFormat = this.getGfiParams?.gfiBildungsatlasFormat;
 
-            let gfiBildungsatlasFormat = {};
-
-            if (this.getGfiFormat.hasOwnProperty("gfiBildungsatlasFormat")) {
-                gfiBildungsatlasFormat = this.getGfiFormat.gfiBildungsatlasFormat;
-            }
-
-            if (gfiBildungsatlasFormat.hasOwnProperty("themeType")) {
+            if (typeof gfiBildungsatlasFormat === "object" && gfiBildungsatlasFormat.hasOwnProperty("themeType")) {
                 this.setGFIProperties(this.getProperties, gfiBildungsatlasFormat.themeType);
             }
 
@@ -172,8 +169,8 @@ export default {
          * @pre default values (as defined in model.defaults) are in place
          * @post default values themeType, numberOfStudentsInDistrict, StatGeb_Nr and ST_Name are set accordingly to the given arguments
          * @param   {Object} allProperties the properties of this model as simple object that may include {C32_SuS, C12_SuS, StatGeb_Nr, ST_Name}
-         * @param   {String} themeType the type of this theme as defined in config.json -> gfiFormat.gfiBildungsatlasFormat.themeType
-         * @returns {Void}  -
+         * @param   {String} themeType the type of this theme as defined in config.json -> gfiTheme.params.gfiBildungsatlasFormat.themeType
+         * @returns {void}
          */
         setGFIProperties (allProperties, themeType) {
             const schoolLevels = this.schoolLevels;
@@ -203,7 +200,7 @@ export default {
         /**
          * shows the features of the area layer, hides school layers
          * @param {?Object} feature - the feature to be reset
-         * @returns {Void}  -
+         * @returns {void}
          */
         reset (feature) {
             const layerStatisticAreas = this.getLayerStatisticAreas(feature),
@@ -332,7 +329,7 @@ export default {
          * Hide all features in all given layers except all features with given id
          * @param {ol/layer/Layer} layer the Layer filtered by gfiTheme
          * @param {String[]} featureIds Array of feature Id to keep
-         * @returns {Void}  -
+         * @returns {void}
          */
         showFeaturesByIds (layer, featureIds) {
             if (layer && layer.get("isSelected")) {
@@ -368,7 +365,7 @@ export default {
         /**
          * Show all features in all given layers
          * @param {ol/layer/Layer} layer Layer to show
-         * @returns {Void}  -
+         * @returns {void}
          */
         showAllFeatures (layer) {
             if (layer && layer.get("isSelected")) {
@@ -378,7 +375,7 @@ export default {
 
         /**
          * activates selected features of the school layer and adds html data for mouse hovering
-         * @returns {Void}  -
+         * @returns {void}
          */
         showSchoolLayer: function () {
             const StatGeb_Nr = this.StatGeb_Nr,
@@ -405,7 +402,7 @@ export default {
          * @param {String} schoolLevelTitle schoolLevelTitle the school level as defined in defaults.schoolLevelTitle
          * @param {String} StatGeb_Nr StatGeb_Nr the urban area number based on the customers content (equals StatGeb_Nr)
          * @param {Number} numberOfStudentsInDistrict numberOfStudentsInDistrict total number of students in the selected district
-         * @returns {Void}  -
+         * @returns {void}
          */
         addHtmlMouseHoverCode: function (schools, schoolLevelTitle, StatGeb_Nr, numberOfStudentsInDistrict) {
             let attr;

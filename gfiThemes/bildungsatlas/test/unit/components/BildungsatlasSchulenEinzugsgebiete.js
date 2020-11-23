@@ -32,9 +32,11 @@ describe("addons/components/BildungsatlasSchulenEinzugsgebiete.vue", () => {
                             "styling": "grundschule"
                         };
                     },
-                    getGfiFormat () {
+                    getTheme () {
                         return {
-                            gfiSubTheme: "BildungsatlasSchoolCatchmentArea"
+                            params: {
+                                subTheme: "BildungsatlasSchoolCatchmentArea"
+                            }
                         };
                     }
                 },
