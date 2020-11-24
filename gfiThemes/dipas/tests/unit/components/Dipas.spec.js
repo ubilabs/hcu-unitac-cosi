@@ -36,6 +36,7 @@ describe("addons/dipas/components/Dipas.vue", () => {
                 feature: {
                     getTheme: () => theme,
                     getTitle: () => "Dipas Title",
+                    getMimeType: () => "text/xml",
                     getMappedProperties () {
                         return {
                             "Kategorie": "Value Kategorie",

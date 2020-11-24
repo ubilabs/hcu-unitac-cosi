@@ -18,7 +18,7 @@ export default {
                 rows: []
             };
 
-            this.feature.getProperties().forEach(singleFeature => {
+            this.feature.getFeatures().forEach(singleFeature => {
 
                 const mappedProps = singleFeature.getMappedProperties();
 

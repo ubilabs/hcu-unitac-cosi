@@ -19,6 +19,7 @@ describe("addons/trinkwasser/components/Trinkwasser.vue", () => {
                 feature: {
                     getTheme: () => "Trinkwasser",
                     getTitle: () => "Trinkwasser",
+                    getMimeType: () => "text/xml",
                     getMappedProperties () {
                         return {
                             "Entnahmedatum": "Value Entnahmedatum",

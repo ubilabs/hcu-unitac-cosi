@@ -16,7 +16,8 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
             getAttributesToShow: () => {
                 return {};
             },
-            getProperties: () => {
+            getMimeType: () => "text/xml",
+            getFeatures: () => {
                 return [{
                     getMappedProperties: () => {
                         return {

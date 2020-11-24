@@ -11,17 +11,12 @@ Radio.channel("GFI").on({
             foundLayer = layerList.find(function (layer) {
                 return layer.get("id") === layerId;
             }),
-            mimeType = foundLayer.get("infoFormat"),
-            layerName = foundLayer.get("name"),
-            gfiTheme = foundLayer.get("gfiTheme") || "default",
-            gfiAttributes = foundLayer.get("gfiAttributes"),
             gfiParams = {
-                INFO_FORMAT: mimeType,
+                INFO_FORMAT: foundLayer.get("infoFormat"),
                 FEATURE_COUNT: foundLayer.get("featureCount")
             },
             url = foundLayer.getSource().getFeatureInfoUrl(coordinate, resolution, projection, gfiParams),
-            gfiAsNewWindow = foundLayer.get("gfiAsNewWindow"),
-            feature = await getWmsFeaturesByMimeType(mimeType, url, {layerName, layerId}, gfiTheme, gfiAttributes, gfiAsNewWindow);
+            feature = await getWmsFeaturesByMimeType(foundLayer, url);
 
         store.commit("Tools/Gfi/setActive", true);
         store.commit("Map/setClickCoord", [coordinate[0], coordinate[1]]);
