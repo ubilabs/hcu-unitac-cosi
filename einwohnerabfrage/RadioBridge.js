@@ -2,7 +2,7 @@ import {getRecordById} from "../../src/api/csw/getRecordById.js";
 import getProxyUrl from "../../src/utils/getProxyUrl";
 
 Radio.channel("CswParser").on({
-    "getMetaDataForEinwohnerabfrage": async function (cswObj) {
+    "getMetaDataForEinwohnerabfrage": async function (cswObj, useProxy) {
         cswObj.parsedData = {};
 
         if (cswObj.cswUrl === null || typeof cswObj.cswUrl === "undefined") {
@@ -17,19 +17,21 @@ Radio.channel("CswParser").on({
          * useProxy
          * getProxyUrl()
          */
-        cswObj.cswUrl = this.get("useProxy") ? getProxyUrl(cswObj.cswUrl) : cswObj.cswUrl;
+        cswObj.cswUrl = useProxy ? getProxyUrl(cswObj.cswUrl) : cswObj.cswUrl;
         const metadata = await getRecordById(cswObj.cswUrl, cswObj.metaId);
 
-        cswObj.parsedData = {};
-        if (typeof metadata.getRevisionDate() !== "undefined") {
-            cswObj.parsedData.date = metadata.getRevisionDate();
+        if (metadata) {
+            cswObj.parsedData = {};
+            if (typeof metadata.getRevisionDate() !== "undefined") {
+                cswObj.parsedData.date = metadata.getRevisionDate();
+            }
+            else if (typeof metadata.getPublicationDate() !== "undefined") {
+                cswObj.parsedData.date = metadata.getPublicationDate();
+            }
+            else if (typeof metadata.getCreationDate() !== "undefined") {
+                cswObj.parsedData.date = metadata.getCreationDate();
+            }
         }
-        else if (typeof metadata.getPublicationDate() !== "undefined") {
-            cswObj.parsedData.date = metadata.getPublicationDate();
-        }
-        else if (typeof metadata.getCreationDate() !== "undefined") {
-            cswObj.parsedData.date = metadata.getCreationDate();
-        }
-        Radio.trigger("CswParser", "fetchedMetaDataForEinwohnerabfrage", cswObj, metadata);
+        Radio.trigger("CswParser", "fetchedMetaDataForEinwohnerabfrage", cswObj);
     }
 });
