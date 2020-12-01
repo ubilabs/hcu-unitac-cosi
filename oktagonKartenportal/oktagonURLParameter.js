@@ -58,7 +58,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
             districtNameToZoom = this.hasBezirk(districtFromUrl);
             if (districtNameToZoom === "") {
                 Radio.trigger("Alert", "alert", {
-                    text: "<strong>Der Parametrisierte Aufruf des Portals ist leider schief gelaufen!</strong>"
+                    text: "<strong>Der Parametrisierte Aufruf des Portals ist leider fehlgeschlagen!</strong>"
                     + "<br>"
                     + "<small>Der Parameter BEZIRK=" + districtFromUrl + " existiert nicht.</small>",
                     kategorie: "alert-warning"
@@ -170,7 +170,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
      */
     alertWrongInputParameters: function () {
         Radio.trigger("Alert", "alert", {
-            text: "<strong>Der Parametrisierte Aufruf des Portals ist leider schief gelaufen!</strong>"
+            text: "<strong>Der Parametrisierte Aufruf des Portals ist leider fehlgeschlagen!</strong>"
                 + "<br>"
                 + "<small>Es konnte keine Adresse gefunden werde. Bitte prüfen Sie die Eingabeparmeter.</small>",
             kategorie: "alert-warning"
