@@ -1,0 +1,10 @@
+{
+    "modules": {
+        "tools": {
+            "TacticalMark": {
+                "title": "Taktische Zeichen",
+                "content": "Taktische Zeichen"
+            }
+        }
+    }
+}
