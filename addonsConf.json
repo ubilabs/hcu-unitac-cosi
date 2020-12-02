@@ -11,6 +11,9 @@
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
+  "GeoAnalyze": {
+    "type": "tool"
+  },
   "VueAddon": {
     "type": "tool"
   },
