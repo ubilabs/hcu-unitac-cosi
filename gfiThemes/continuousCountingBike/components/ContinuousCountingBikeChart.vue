@@ -200,6 +200,7 @@ export default {
         .graph {
             padding-bottom: 5px;
             position: relative;
+            overflow: scroll;
         }
         .line {
             fill: none;
