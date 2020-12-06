@@ -17,6 +17,9 @@
   "VueAddon": {
     "type": "tool"
   },
+  "FileImportAddon": {
+    "type": "tool"
+  },
   "activeCityMaps": {
     "path":"gfiThemes/activeCityMaps",
     "type": "gfiTheme"
