@@ -46,23 +46,23 @@ export default {
         </dl>
         <hr>
         <dl class="dl-horizontal">
-            <dt>Summer der Schulen:</dt>
+            <dt>Summe der Schulen:</dt>
             <dd>{{ schools_sum }}</dd>
-            <dt>Summer der Schüler:</dt>
+            <dt>Summe der Schüler:</dt>
             <dd>{{ students_sum }}</dd>
         </dl>
         <hr>
         <dl class="dl-horizontal">
-            <dt>Summer der Kitas:</dt>
+            <dt>Summe der Kitas:</dt>
             <dd>{{ sum_kita }}</dd>
-            <dt>Summer der Kinder:</dt>
+            <dt>Summe der Kinder:</dt>
             <dd>{{ sum_children }}</dd>
         </dl>
         <hr>
         <dl class="dl-horizontal">
-            <dt>Summer der Krankenhäuser:</dt>
+            <dt>Summe der Krankenhäuser:</dt>
             <dd>{{ sum_hospitals }}</dd>
-            <dt>Summer der Planbettern:</dt>
+            <dt>Summe der Planbettern:</dt>
             <dd>{{ sum_hospitals_beds }}</dd>
         </dl>
     </div>

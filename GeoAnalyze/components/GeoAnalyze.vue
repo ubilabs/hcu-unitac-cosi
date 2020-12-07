@@ -29,7 +29,7 @@ export default {
             selectedOption: "draw",
             options: {
                 "draw": "Rechteck aufziehen",
-                "select": "Fläche auswählen",
+                "select": "Geometrie wählen",
                 "click": "Gebäude auswerten"
             }
         };
@@ -117,8 +117,23 @@ export default {
         },
 
         /**
+         * Returns whether the feature should be selected.
+         * @param {module:ol/Feature} feature - The selected feature.
+         * @returns {boolean} - Returns true if the feature may be selected or false otherwise.
+         */
+        filterForSelect (feature) {
+            const geomTypes = ["Polygon", "MultiPolygon", "Circle"],
+                isIncluded = geomTypes.includes(feature.getGeometry().getType());
+
+            if (!isIncluded) {
+                this.addSingleAlert({content: "Es können nur Flächen und Kreise ausgwählt werden"});
+            }
+            return isIncluded;
+        },
+
+        /**
          * Gets the raw data of the given geometry or the corresponding excel file.
-         * Encodes the geometry to a GeoJSON geometry and calls the API an sets the response or opens the excel.
+         * Encodes the geometry to a GeoJSON geometry, calls the API and sets the response or opens the excel.
          * @param {module:ol/geom/SimpleGeometry} geometry - The given geometry. Point or Polygon.
          * @param {boolean} [getExcel=false] - Checks if the excel file is fetched of the given geometry.
          * @returns {void}
@@ -158,7 +173,7 @@ export default {
         /**
          * Registers listener for draw interaction events.
          * On "drawstart" all features are removed from the source of the given layer.
-         * On "drawend" the geometry of the feature is sent to the api.
+         * On "drawend" the geometry of the feature is send to the api.
          * On "change:active" all features are removed from the source of the given layer.
          * @param {module:ol/interaction/Draw} draw - Interaction for drawing feature geometries.
          * @param {module:ol/layer/Vector} layer - Layer for vector data.
@@ -182,8 +197,12 @@ export default {
          */
         registerSelectListener (select) {
             select.on("select", (evt) => {
-                this.geometry = fromCircle(evt.selected[0].getGeometry());
+                if (evt.selected.length === 0) {
+                    return;
+                }
+                const featureGeometry = evt.selected[0].getGeometry();
 
+                this.geometry = featureGeometry.getType() === "Circle" ? fromCircle(featureGeometry) : featureGeometry;
                 this.getAnalyzeData(this.geometry);
             });
             select.on("change:active", (evt) => evt.target.getFeatures().clear());
@@ -207,7 +226,6 @@ export default {
          * @returns {void}
          */
         reset () {
-            console.info("+++++++++++++++++++++++++++++ks");
             this.removeLayerFromMap(this.layer);
             if (this.selectedOption !== "click") {
                 this.deactivateInteraction(this.selectedOption);
@@ -227,6 +245,7 @@ export default {
         },
 
         /**
+         * Sets all needed non reactive data.
          * @returns {void}
          */
         setNonReactiveData () {
@@ -243,16 +262,11 @@ export default {
                 type: "Circle",
                 geometryFunction: createBox()
             });
-            // this.deactivateInteraction("draw");
             this.registerDrawListener(this.draw, this.layer, this.geojsonFormat);
 
             // for drawn features on the map
             this.select = new Select({
-                filter: function (feature) {
-                    const geomTypes = ["Polygon", "MultiPolygon", "Circle"];
-
-                    return geomTypes.includes(feature.getGeometry().getType());
-                }
+                filter: this.filterForSelect
             });
             this.deactivateInteraction("select");
             this.registerSelectListener(this.select, this.geojsonFormat);

@@ -9,23 +9,43 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
         spyGetData;
 
     // eslint-disable-next-line func-style
-    const factory = function (values = {}, isActive = false) {
-        return shallowMount(GeoAnalyze, {
-            data () {
-                return {
-                    ...values
-                };
-            },
-            computed: {
-                clickCoord: () => [],
-                name: () => "Hallo",
-                renderToWindow: () => true,
-                resizableWindow: () => false,
-                deactivateGFI: () => true,
-                active: () => isActive,
-                glyphicon: () => "glyphicon-map"
-            }
-        });
+    // const factory = function (values = {}, isActive = false) {
+    //     return shallowMount(GeoAnalyze, {
+    //         data () {
+    //             return {
+    //                 ...values
+    //             };
+    //         },
+    //         computed: {
+    //             clickCoord: () => [],
+    //             name: () => "Hallo",
+    //             renderToWindow: () => true,
+    //             resizableWindow: () => false,
+    //             deactivateGFI: () => true,
+    //             active: () => isActive,
+    //             glyphicon: () => "glyphicon-map"
+    //         }
+    //     });
+    // };
+    const factory = {
+        getShallowMount: (values = {}, isActive = false) => {
+            return shallowMount(GeoAnalyze, {
+                data () {
+                    return {
+                        ...values
+                    };
+                },
+                computed: {
+                    clickCoord: () => [],
+                    name: () => "Hallo",
+                    renderToWindow: () => true,
+                    resizableWindow: () => false,
+                    deactivateGFI: () => true,
+                    active: () => isActive,
+                    glyphicon: () => "glyphicon-map"
+                }
+            });
+        }
     };
 
     before(() => {
@@ -34,38 +54,38 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should exist", () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         expect(wrapper.exists()).to.be.true;
     });
 
     it("should find Tool component", () => {
-        const wrapper = factory(),
+        const wrapper = factory.getShallowMount(),
             toolWrapper = wrapper.findComponent({name: "Tool"});
 
         expect(toolWrapper.exists()).to.be.true;
     });
 
     it("should not render if active is false", () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         expect(wrapper.find("form").exists()).to.be.false;
     });
 
     it("should render if active is true", () => {
-        const wrapper = factory({}, true);
+        const wrapper = factory.getShallowMount({}, true);
 
         expect(wrapper.find("form").exists()).to.be.true;
     });
 
     it("should activate the draw interaction initially", () => {
-        const wrapper = factory({}, true);
+        const wrapper = factory.getShallowMount({}, true);
 
         expect(wrapper.vm.draw.getActive()).to.be.true;
     });
 
     it("should call toggleInteraction if data 'selectedOption' is changed", async () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         await wrapper.setData({
             selectedOption: "select"
@@ -74,7 +94,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should activate select interaction if data 'selectedOption' is set to 'select'", async () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         await wrapper.setData({
             selectedOption: "select"
@@ -83,7 +103,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should deactivate draw interaction if data 'selectedOption' is set to 'select'", async () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         await wrapper.setData({
             selectedOption: "select"
@@ -92,7 +112,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should set currentResultComponent to 'GeoAnalyzeResultGeometry' if data 'selectedOption' is set to 'select'", async () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         await wrapper.setData({
             selectedOption: "select"
@@ -101,7 +121,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should set currentResultComponent to 'GeoAnalyzeResultGeometry' if data 'selectedOption' is set to 'click'", async () => {
-        const wrapper = factory();
+        const wrapper = factory.getShallowMount();
 
         await wrapper.setData({
             selectedOption: "click"
@@ -110,7 +130,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should find child component GeoAnalyzeResultGeometry", () => {
-        const wrapper = factory({
+        const wrapper = factory.getShallowMount({
             result: {
                 test: "Test"
             }
@@ -120,7 +140,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should find child component GeoAnalyzeResultBuilding", () => {
-        const wrapper = factory({
+        const wrapper = factory.getShallowMount({
             result: ["Test"],
             selectedOption: "click"
         }, true);
@@ -129,7 +149,7 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     });
 
     it("should call getAnalyzeData if button is clicked", async () => {
-        const wrapper = factory({
+        const wrapper = factory.getShallowMount({
                 result: {
                     test: "Test"
                 }
