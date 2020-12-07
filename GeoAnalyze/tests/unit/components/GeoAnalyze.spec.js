@@ -8,25 +8,6 @@ describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     let spyToggleInteraction,
         spyGetData;
 
-    // eslint-disable-next-line func-style
-    // const factory = function (values = {}, isActive = false) {
-    //     return shallowMount(GeoAnalyze, {
-    //         data () {
-    //             return {
-    //                 ...values
-    //             };
-    //         },
-    //         computed: {
-    //             clickCoord: () => [],
-    //             name: () => "Hallo",
-    //             renderToWindow: () => true,
-    //             resizableWindow: () => false,
-    //             deactivateGFI: () => true,
-    //             active: () => isActive,
-    //             glyphicon: () => "glyphicon-map"
-    //         }
-    //     });
-    // };
     const factory = {
         getShallowMount: (values = {}, isActive = false) => {
             return shallowMount(GeoAnalyze, {
