@@ -2,6 +2,7 @@
 import {mapGetters, mapActions} from "vuex";
 import {omit} from "../../../../src/utils/objectHelpers";
 import {extractEventCoordinates} from "../../../../src/utils/extractEventCoordinates";
+import {getWKTGeom} from "../../../../src/utils/getWKTGeom";
 
 export default {
     name: "Flaecheninfo",
@@ -78,7 +79,7 @@ export default {
             const coord = extractEventCoordinates(coordinates);
 
             this.removePolygonMarker();
-            this.placingPolygonMarker({wktcontent: coord, geometryType: "POLYGON"});
+            this.placingPolygonMarker(getWKTGeom(coord, "POLYGON"));
 
             if (this.markerPolygon?.getSource().getFeatures().length > 0) {
                 Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent(), {maxZoom: 7});

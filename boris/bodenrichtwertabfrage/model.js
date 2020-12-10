@@ -424,7 +424,7 @@ function initializeBrwAbfrageModel () {
                 feature.unset("geom_brw_grdstk");
                 // set polygon geometry as feature's geometry
                 feature.setGeometryName(geometryName);
-                Radio.trigger("Highlightfeature", "highlightPolygon", feature);
+                store.dispatch("Map/highlightFeature", {type: "highlightPolygon", feature: feature});
             };
             xhttp.onerror = event => {
                 Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + event.target.status);
@@ -447,7 +447,6 @@ function initializeBrwAbfrageModel () {
                     this.setBrwFeatures([]);
                     this.set("selectedBrwFeature", {});
                     store.dispatch("MapMarker/removePointMarker");
-                    Radio.request("Map", "createLayerIfNotExists", "highlightLayer").getSource().clear();
                 }
                 else {
                     this.handleNewFeature(brwFeature);
