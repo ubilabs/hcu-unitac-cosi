@@ -94,6 +94,7 @@ export default {
 
     importKML: ({state, dispatch}, datasrc) => {
         const
+            checkSameLayer = datasrc.checkSameLayer,
             layerName = datasrc.layerName,
             layerId = "imported" + uniqueId("_"),
             format = getFormat(datasrc.filename, state.selectedFiletype, state.supportedFiletypes, supportedFormats);
@@ -101,6 +102,16 @@ export default {
             featureError = false,
             alertingMessage,
             features;
+
+        if (Array.isArray(checkSameLayer) && checkSameLayer.length) {
+            alertingMessage = {
+                category: i18next.t("common:modules.alerting.categories.error"),
+                content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.sameName", {filename: datasrc.filename.split(".")[0]})
+            };
+
+            dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
+            return;
+        }
 
         if (format instanceof KML) {
             datasrc.raw = removeBadTags(datasrc.raw);

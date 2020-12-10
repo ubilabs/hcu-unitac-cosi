@@ -18,7 +18,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/FileImportAddon", Object.keys(getters)),
-        ...mapGetters("Map", ["layerIds", "layers"]),
+        ...mapGetters("Map", ["layerIds", "layers", "layerList"]),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -71,9 +71,12 @@ export default {
                 const reader = new FileReader();
 
                 reader.onload = f => {
-                    const layerName = this.getLayerName(file.name);
+                    const layerName = this.getLayerName(file.name),
+                        checkSameLayer = this.layerList.filter(layer => {
+                            return layer.get("name") === layerName;
+                        });
 
-                    this.importKML({raw: f.target.result, layerName: layerName, filename: file.name});
+                    this.importKML({raw: f.target.result, checkSameLayer: checkSameLayer, layerName: layerName, filename: file.name});
                 };
 
                 reader.readAsText(file);
