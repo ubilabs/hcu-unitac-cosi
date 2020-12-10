@@ -614,7 +614,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      */
     setMetaDataLink: function (value) {
         this.set("metaDataLink", value);
-    },
+    }
 });
 
 export default EinwohnerabfrageModel;
