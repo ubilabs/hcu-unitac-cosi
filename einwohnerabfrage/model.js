@@ -2,6 +2,7 @@ import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
+import LoaderOverlay from "../../src/utils/loaderOverlay";
 import "./RadioBridge.js";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
@@ -16,7 +17,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         nameTranslationKey: "additional:modules.tools.populationRequest.title",
         data: {},
         dataReceived: false,
-        requesting: false,
         style: "DEFAULT",
         snippetDropdownModel: {},
         metaDataLink: undefined,
@@ -60,7 +60,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @property {*} checkBoxRaster=undefined checkbox snippet for zensus raster layer
      * @property {Object} data={} data of the wps request
      * @property {Boolean} dataReceived=false true | false, depending on the request
-     * @property {Boolean} requesting=false  true | false, depending on the request
      * @property {String} style = "default" - style for MasterPortal ("table" - for table View)
      * @property {Object} snippetDropdownModel={} the model of the graphical selection
      * @property {String} metaDataLink=undefined link to meta data
@@ -249,7 +248,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     reset: function () {
         this.setData({});
         this.setDataReceived(false);
-        this.setRequesting(false);
+        LoaderOverlay.hide();
     },
 
     /**
@@ -262,7 +261,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     handleResponse: function (response, status) {
         let parsedData = null;
 
-        this.setRequesting(false);
+        LoaderOverlay.hide();
         parsedData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.einwohner;
 
         if (status === 200) {
@@ -430,7 +429,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      */
     makeRequest: function (geoJson) {
         this.setDataReceived(false);
-        this.setRequesting(true);
+        LoaderOverlay.show();
         this.trigger("renderResult");
 
         Radio.trigger("WPS", "request", "1001", "einwohner_ermitteln.fmw", {
@@ -582,15 +581,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     },
 
     /**
-     * Sets the requesting
-     * @param {Boolean} value true, if requesting
-     * @returns {void}
-     */
-    setRequesting: function (value) {
-        this.set("requesting", value);
-    },
-
-    /**
      * Sets the GraphicalSelectModel
      * @param {GraphicalSelectModel} value the model of the graphical selectbox
      * @returns {void}
@@ -625,15 +615,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     setMetaDataLink: function (value) {
         this.set("metaDataLink", value);
     },
-
-    /**
-     * Sets the loaderPath
-     * @param {String} value path to the loader gif
-     * @returns {void}
-     */
-    setLoaderPath: function (value) {
-        this.set("loaderPath", value);
-    }
 });
 
 export default EinwohnerabfrageModel;

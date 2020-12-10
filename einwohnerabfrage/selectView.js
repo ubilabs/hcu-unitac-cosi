@@ -18,7 +18,6 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
      * @constructs
      * @listens Addons.Einwohnerabfrage#ChangeIsActive
      * @listens Addons.Einwohnerabfrage#RenderResult
-     * @fires Core#RadioRequestUtilGetPathFromLoader
      */
     initialize: function () {
         const attributes = Radio.request("ModelList", "getModelByAttributes", {id: "einwohnerabfrage"})?.attributes;
@@ -44,8 +43,6 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
         if (this.model.get("isActive") === true) {
             this.render(this.model, true);
         }
-
-        this.model.setLoaderPath(Radio.request("Util", "getPathFromLoader"));
     },
     id: "einwohnerabfrage-tool",
 

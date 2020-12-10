@@ -2,6 +2,7 @@ import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import {WFS} from "ol/format.js";
 import * as turf from "@turf/turf";
+import LoaderOverlay from "../../src/utils/loaderOverlay";
 
 const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
 
@@ -33,7 +34,6 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         overviewDownloadLocation: "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_",
         wfsRaster: {},
         graphicalSelectModel: {},
-        requesting: false,
         selectedRasterLimit: 9,
         rasterNames: [],
         // translations:
@@ -73,7 +73,6 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
  * @property {string} overviewDownloadLocation= "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_" location of the files to download
  * @property {Object} wfsRaster={} contains wfs raster features after loading them
  * @property {Object} graphicalSelectModel={} model for graphical selection
- * @property {Object} requesting=false state of server request
  * @property {Object} selectedRasterLimit=9 limit og raster images for download
  * @property {Array} rasterNames=[] stores the names of the tiles in the raster
  * @property {String} selectFormat: "" contains the translated text
@@ -349,7 +348,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
                 text: i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: this.get("selectedRasterLimit")}),
                 kategorie: "alert-warning"
             });
-            this.setRequesting(false);
+            LoaderOverlay.hide();
             this.trigger("render");
             return false;
         }
@@ -398,7 +397,8 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             context: this,
             type: "POST",
             beforeSend: function () {
-                this.showLoader();
+                LoaderOverlay.show(15000);
+                this.trigger("render");
             },
             success: function (resp) {
                 this.resetView();
@@ -417,7 +417,8 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
                 }
             },
             complete: function () {
-                this.hideLoader();
+                LoaderOverlay.hide();
+                this.trigger("render");
             },
             timeout: 15000,
             error: function () {
@@ -430,37 +431,6 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             }
         });
     },
-    /**
-     * Hides the loader by setting the requesting to false and renders the view.
-     * @fires Addons.SdpDownloadModel#render
-     * @returns {void}
-     */
-    hideLoader: function () {
-        this.set("requesting", false);
-        this.trigger("render");
-    },
-    /**
-     * Shows the loader by setting the requesting to true and renders the view.
-     * @fires Addons.SdpDownloadModel#render
-     * @returns {void}
-     */
-    showLoader: function () {
-        this.set("requesting", true);
-        this.trigger("render");
-    },
-    /**
-     * Sets the requesting
-     * @param {Boolean} value true or false
-     * @returns {void}
-     */
-    setRequesting: function (value) {
-        this.set("requesting", value);
-    },
-    /**
-     * Sets the selected format
-     * @param {String} value SdpDownloadModel#defaults#formats
-     * @returns {void}
-     */
     setSelectedFormat: function (value) {
         this.set("selectedFormat", value);
     },
@@ -479,14 +449,6 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      */
     setGraphicalSelectModel: function (value) {
         this.set("graphicalSelectModel", value);
-    },
-    /**
-     * Sets the loaderPath
-     * @param {String} value path to the loader gif
-     * @returns {void}
-     */
-    setLoaderPath: function (value) {
-        this.set("loaderPath", value);
     },
     /**
      * Sets the value to models property isSelected
