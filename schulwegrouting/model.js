@@ -183,7 +183,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                     "address": address.street + " " + address.number + address.affix,
                     "school": school.get("schulname") + ", " + route.SchuleingangTyp + " (" + route.SchuleingangAdresse + ")",
                     "map": {
-                        "dpi": 96,
+                        "dpi": 200,
                         "projection": Radio.request("MapView", "getProjection").getCode(),
                         "center": Radio.request("MapView", "getCenter"),
                         "scale": Radio.request("MapView", "getOptions").scale
@@ -201,8 +201,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
         buildSpec.buildLayers(visibleLayerList);
         buildSpec = buildSpec.toJSON();
-        buildSpec = Radio.request("Util", "omit", buildSpec, "uniqueIdList");
-        Radio.trigger("Print", "createPrintJob", "schulwegrouting", encodeURIComponent(JSON.stringify(buildSpec)), "pdf");
+        buildSpec = Radio.request("Util", "omit", buildSpec, ["uniqueIdList"]);
+
+        Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "schulwegrouting", "pdf");
     },
 
     prepareRouteDesc: function (routeDesc = []) {

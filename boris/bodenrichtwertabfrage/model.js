@@ -826,7 +826,7 @@ function initializeBrwAbfrageModel () {
             buildSpec.buildLayers(visibleLayerList);
             buildSpec = buildSpec.toJSON();
             buildSpec = Radio.request("Util", "omit", buildSpec, ["uniqueIdList"]);
-            Radio.trigger("Print", "createPrintJob", "boris", encodeURIComponent(JSON.stringify(buildSpec)), "pdf");
+            Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "boris", "pdf");
         },
 
         /**
