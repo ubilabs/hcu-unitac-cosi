@@ -37,7 +37,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         startingAddress: "",
         regionalPrimarySchool: "",
         selectSchool: "",
-        printRoute: "",
+        printRouteName: "",
         deleteRoute: "",
         showRouteDescription: "",
         hideRouteDescription: "",
@@ -132,7 +132,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
             "startingAddress": i18next.t("additional:modules.tools.routingToSchool.startingAddress"),
             "regionalPrimarySchool": i18next.t("additional:modules.tools.routingToSchool.regionalPrimarySchool"),
             "selectSchool": i18next.t("additional:modules.tools.routingToSchool.selectSchool"),
-            "printRoute": i18next.t("additional:modules.tools.routingToSchool.printRoute"),
+            "printRouteName": i18next.t("additional:modules.tools.routingToSchool.printRouteName"),
             "deleteRoute": i18next.t("additional:modules.tools.routingToSchool.deleteRoute"),
             "showRouteDescription": i18next.t("additional:modules.tools.routingToSchool.showRouteDescription"),
             "hideRouteDescription": i18next.t("additional:modules.tools.routingToSchool.hideRouteDescription"),
@@ -330,7 +330,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     prepareRequest: function (address) {
-        const schoolID = Object.keys(this.get("selectedSchool")).length > 0 ? this.get("selectedSchool").get("schul_id") : "";
+        const schoolID = Object.keys(this.get("selectedSchool")).length > 0 ? this.get("selectedSchool")?.get("schul_id") : "";
         let requestObj = {};
 
         if (Object.keys(address).length !== 0 && schoolID.length > 0) {

@@ -6,7 +6,7 @@
                 "startingAddress": "Start address",
                 "regionalPrimarySchool": "Regional primary school: ",
                 "selectSchool": "Select school",
-                "printRoute": "Print route",
+                "printRouteName": "Print route",
                 "deleteRoute": "Delete route",
                 "showRouteDescription": "Show route description",
                 "hideRouteDescription": "Hide route description",
@@ -15,5 +15,5 @@
                 "to": "to:"
             }
         }
-    } 
+    }
 }

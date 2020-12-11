@@ -4,15 +4,11 @@
     <span class="tool-name"><%= name %></span>
     <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
+
 <div class="content">
     <div class="form-group col-xs-12 test">
         <div class="input-group" style="width: 100%">
             <input type="search" autocomplete="false" class="form-control address-search" placeholder="<%= startingAddress %>">
-            <!-- <div class="input-group-btn">
-                <button type="button" class="btn btn-default" title="mein Standort">
-                    <span class="glyphicon glyphicon-map-marker"></span>
-                </button>
-            </div> -->
         </div>
         <div class="row">
             <ul class="list-group hit-list col-xs-12">
@@ -32,7 +28,7 @@
     <div class="routing-checkbox"></div>
     <div class="form-group col-md-12 col-xs-12">
         <button type="button" class="btn btn-default btn-sm print-route pull-left" disabled>
-            <%= printRoute %>
+            <%= printRouteName %>
         </button>
         <button type="button" class="btn btn-default btn-sm delete-route pull-right">
             <%= deleteRoute %>

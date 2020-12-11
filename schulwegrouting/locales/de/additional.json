@@ -6,7 +6,7 @@
                 "startingAddress": "Startadresse",
                 "regionalPrimarySchool": "Regional zuständige Schule: ",
                 "selectSchool": "Schule auswählen",
-                "printRoute": "Route drucken",
+                "printRouteName": "Route drucken",
                 "deleteRoute": "Route löschen",
                 "showRouteDescription": "Routenbeschreibung einblenden",
                 "hideRouteDescription": "Routenbeschreibung ausblenden",
@@ -15,5 +15,5 @@
                 "to": "nach:"
             }
         }
-    } 
+    }
 }
