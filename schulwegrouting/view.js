@@ -38,7 +38,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         "click .description button": "toggleRouteDesc",
         "click #regional-school": function () {
             if (this.model.get("regionalSchool")) {
-                this.updateSelectedSchool(this.model.get("regionalSchool").get("schul_id"));
+                this.updateSelectedSchool(this.model.get("regionalSchool"));
                 this.model.selectSchool(this.model.get("schoolList"), this.model.get("regionalSchool").get("schul_id"));
                 this.model.prepareRequest(this.model.get("startAddress"));
             }
@@ -151,11 +151,11 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     setPresetValues: function () {
-        const schoolID = Object.keys(this.model.get("selectedSchool")).length === 0 ? undefined : this.model.get("selectedSchool").get("schul_id");
+        const school = Object.keys(this.model.get("selectedSchool")).length === 0 ? undefined : this.model.get("selectedSchool");
 
         this.setStartAddress();
-        if (schoolID !== undefined) {
-            this.updateSelectedSchool(schoolID);
+        if (school !== undefined) {
+            this.updateSelectedSchool(school);
         }
     },
 
@@ -228,7 +228,6 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         }
         else {
             this.model.setAddressListFiltered([]);
-            this.model.setStartAddress({});
         }
 
         // necessary to find the correct house numbers for more results
@@ -266,9 +265,9 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         this.model.prepareRequest(this.model.get("startAddress"));
     },
 
-    updateSelectedSchool: function (schoolId) {
-        this.model.setSelectedSchool(schoolId);
-        this.$el.find(".selectpicker").selectpicker("val", schoolId);
+    updateSelectedSchool: function (school) {
+        this.model.setSelectedSchool(school);
+        this.$el.find(".selectpicker").selectpicker("val", school.get("schul_id"));
     },
 
     updateRegionalSchool: function (value) {
