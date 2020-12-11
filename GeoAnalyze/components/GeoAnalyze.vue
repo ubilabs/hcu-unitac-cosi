@@ -5,7 +5,6 @@ import getters from "../store/gettersGeoAnalyze";
 import mutations from "../store/mutationsGeoAnalyze";
 import Dropdown from "../../../src/share-components/dropdowns/DropdownSimple.vue";
 import {Draw, Select} from "ol/interaction";
-import {createBox} from "ol/interaction/Draw";
 import VectorLayer from "ol/layer/Vector.js";
 import VectorSource from "ol/source/Vector.js";
 import GeoJSON from "ol/format/GeoJSON";
