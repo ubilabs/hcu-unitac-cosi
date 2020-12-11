@@ -28,7 +28,7 @@ export default {
             result: {},
             selectedOption: "draw",
             options: {
-                "draw": "Rechteck aufziehen",
+                "draw": "Polygon zeichnen",
                 "select": "Geometrie wählen",
                 "click": "Gebäude auswerten"
             }
@@ -259,8 +259,7 @@ export default {
             // createBox() and type: 'Circle' return a box instead of a circle geometry
             this.draw = new Draw({
                 source: this.layer.getSource(),
-                type: "Circle",
-                geometryFunction: createBox()
+                type: "Polygon"
             });
             this.registerDrawListener(this.draw, this.layer, this.geojsonFormat);
 
