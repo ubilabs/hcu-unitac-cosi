@@ -120,7 +120,7 @@ export default {
          */
         setContentStyle () {
             if (document.getElementsByClassName("gfi-content").length) {
-                document.getElementsByClassName("gfi-content")[0].style.maxWidth = "80vH";
+                document.getElementsByClassName("gfi-content")[0].style.maxWidth = "880px";
             }
         },
         onClick (evt) {
@@ -234,20 +234,27 @@ export default {
 <style lang="less" scoped>
 .continuousCountingBike {
      overflow: auto;
-     width: 70vH;
-     height: 60vH;
+
      padding: 5px 20px 5px 20px;
-       @media (max-width: 600px) {
-          width: inherit;
-            height: inherit;
+        @media (max-width: 767px) {
+            width: inherit;
+            height: 80vh;
             padding-left: 10px;
             padding-right: 10px;
-        div.graph {
-            width: inherit;
-            height: inherit;
-        }
-       }
 
+            div.graph {
+                width: inherit;
+                height: inherit;
+            }
+        }
+        @media (min-width: 768px) {
+            width: 80vw;
+            height: 60vh;
+        }
+        @media (min-width: 1024px) {
+            width: 50vw;
+            height: 60vh;
+        }
     .bikeLevelHeader{
         margin-bottom: 0;
         margin-top: 5px;

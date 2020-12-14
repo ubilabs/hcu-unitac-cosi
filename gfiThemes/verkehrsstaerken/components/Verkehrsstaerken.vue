@@ -46,6 +46,9 @@ export default {
             }
         }
     },
+    mounted () {
+        this.setContentStyle();
+    },
     methods: {
         /**
          * Parses the mapped properties of gfi into several variables for the graphics and for the info tab.
@@ -198,11 +201,29 @@ export default {
 
 <style lang="less" scoped>
 .verkehrsstaerken {
-    overflow: auto;
-    width: 80vH;
-    height: 50vH;
+    overflow-x: auto;
+
     box-sizing: border-box;
     padding: 5px 20px 5px 20px;
+    @media (max-width: 767px) {
+        width: inherit;
+        height: inherit;
+        padding-left: 10px;
+        padding-right: 10px;
+
+        div.graph {
+            width: inherit;
+            height: inherit;
+        }
+    }
+    @media (min-width: 768px) {
+        width: 80vw;
+        height: 50vh;
+    }
+    @media (min-width: 1024px) {
+        width: 50vw;
+        height: 50vh;
+    }
     .header{
         text-align: center;
     }
