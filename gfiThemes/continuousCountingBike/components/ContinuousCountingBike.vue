@@ -120,7 +120,7 @@ export default {
          */
         setContentStyle () {
             if (document.getElementsByClassName("gfi-content").length) {
-                document.getElementsByClassName("gfi-content")[0].style.maxWidth = "880px";
+                document.getElementsByClassName("gfi-content")[0].style.maxWidth = "80vH";
             }
         },
         onClick (evt) {
@@ -233,9 +233,9 @@ export default {
 
 <style lang="less" scoped>
 .continuousCountingBike {
-     overflow: hidden;
-     width: 880px;
-     height: 570px;
+     overflow: auto;
+     width: 70vH;
+     height: 60vH;
      padding: 5px 20px 5px 20px;
        @media (max-width: 600px) {
           width: inherit;

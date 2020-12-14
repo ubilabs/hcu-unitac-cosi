@@ -198,6 +198,9 @@ export default {
 
 <style lang="less" scoped>
 .verkehrsstaerken {
+    overflow: auto;
+    width: 80vH;
+    height: 50vH;
     box-sizing: border-box;
     padding: 5px 20px 5px 20px;
     .header{
