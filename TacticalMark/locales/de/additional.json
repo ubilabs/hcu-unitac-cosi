@@ -3,7 +3,11 @@
         "tools": {
             "TacticalMark": {
                 "title": "Taktische Zeichen",
-                "content": "Taktische Zeichen"
+                "damageImage": "Schadensbilder",
+                "resources": "Resourcen",
+                "damageAccount": "Damage Account",
+                "damageAccounts": "Damage Accounts",
+                "iconSetting": "Icon setzen"
             }
         }
     }

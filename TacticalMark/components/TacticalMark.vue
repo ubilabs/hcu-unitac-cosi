@@ -14,17 +14,11 @@ export default {
     },
     data () {
         return {
-            mapElement: document.getElementById("map"),
-            options: [
-                {name: "Schadensbilder", id: "dmg"},
-                {name: "Resourcen", id: "rsc"},
-                {name: "Damage Accounts", id: "dma"}
-            ]
+            mapElement: document.getElementById("map")
         };
     },
     computed: {
         ...mapGetters("Tools/TacticalMark", Object.keys(getters)),
-
         /**
          * Checks if the layer is visible.
          * @returns {boolean} Returns true if the layer is visible, otherwise false.
@@ -39,6 +33,30 @@ export default {
          */
         hasFeatures () {
             return this.layer.getSource().getFeatures().length > 0;
+        },
+
+        // Title for selectbox
+        title: function () {
+            return this.$t("additional:modules.tools.TacticalMark.title");
+        },
+
+        // Text for icon setting button
+        iconSetting: function () {
+            return this.$t("additional:modules.tools.TacticalMark.iconSetting");
+        },
+
+        // Options for the first selectbox
+        options: function () {
+            return [
+                {name: this.$t("additional:modules.tools.TacticalMark.damageImage"), id: "dmg"},
+                {name: this.$t("additional:modules.tools.TacticalMark.resources"), id: "rsc"},
+                {name: this.$t("additional:modules.tools.TacticalMark.damageAccounts"), id: "dma"}
+            ];
+        },
+
+        // Text for damage account
+        damageAccount: function () {
+            return this.$t("additional:modules.tools.TacticalMark.damageAccount");
         }
     },
     watch: {
@@ -281,7 +299,7 @@ export default {
                             type="checkbox"
                             :checked="isLayerVisible"
                             @change="setVisibility(layer, $event.target.checked)"
-                        > Taktische Zeichen
+                        > {{ title }}
                     </label>
                 </div>
                 <select
@@ -1905,7 +1923,7 @@ export default {
                 <div id="dma">
                     <div class="tm-container">
                         <div class="tm-item">
-                            <label for="dma_number">Damage Account (0-99):</label>
+                            <label for="dma_number">{{ damageAccount }} (0-99):</label>
                             <input
                                 id="dma_number"
                                 ref="dma_number"
@@ -1923,7 +1941,7 @@ export default {
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
-                                        Icon setzen
+                                        {{ iconSetting }}
                                     </span>
                                 </div>
                             </div>
@@ -1935,7 +1953,7 @@ export default {
     </Tool>
 </template>
 
-<style>
+<style lang="less" scoped>
     input[type="checkbox"] {
         margin-top: 0;
     }
@@ -1977,5 +1995,8 @@ export default {
     }
     #dma {
         display: none;
+    }
+    .checkbox {
+        margin-top: 0;
     }
 </style>
