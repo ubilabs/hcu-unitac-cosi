@@ -146,7 +146,7 @@ export default {
          */
         changeToSchoolrouting: function () {
             Radio.trigger("ModelList", "setModelAttributesById", "schulwegrouting", {isActive: true});
-            Radio.trigger("Schulwegrouting", "selectSchool", this.feature.getProperties().schul_id);
+            Radio.trigger("Schulwegrouting", "selectSchool", this.feature.getOlFeature());
             this.$parent.close();
         }
     }

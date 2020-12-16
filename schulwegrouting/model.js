@@ -64,9 +64,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         }));
 
         this.listenTo(channel, {
-            "selectSchool": function (schoolId) {
-                this.trigger("updateSelectedSchool", schoolId);
-                this.selectSchool(this.get("schoolList"), schoolId);
+            "selectSchool": function (school) {
+                this.selectSchool(this.get("schoolList"), school.get("schul_id"));
+                this.trigger("updateSelectedSchool", school);
                 this.prepareRequest(this.get("startAddress"));
             }
         }, this);

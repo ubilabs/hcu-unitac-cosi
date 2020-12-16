@@ -38,7 +38,8 @@ describe("addons/schulinfo/components/Schulinfo.vue", () => {
                     getId: () => "feature1",
                     getLayerId: () => "1234",
                     getProperties: () => properties,
-                    getAttributesToShow: () => sinon.stub()
+                    getAttributesToShow: () => sinon.stub(),
+                    getOlFeature: () => sinon.stub()
                 }
             },
             localVue,
@@ -74,7 +75,8 @@ describe("addons/schulinfo/components/Schulinfo.vue", () => {
             feature = {
                 getLayerId: () =>sinon.stub(),
                 getProperties: () => prop,
-                getAttributesToShow: () => attrToShow
+                getAttributesToShow: () => attrToShow,
+                getOlFeature: () => sinon.stub()
             },
             result = wrapper.vm.assignFeatureProperties(feature);
 
