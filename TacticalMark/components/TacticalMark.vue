@@ -23,7 +23,23 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/TacticalMark", Object.keys(getters))
+        ...mapGetters("Tools/TacticalMark", Object.keys(getters)),
+
+        /**
+         * Checks if the layer is visible.
+         * @returns {boolean} Returns true if the layer is visible, otherwise false.
+         */
+        isLayerVisible () {
+            return this.layer.getVisible();
+        },
+
+        /**
+         * Checks if the layer has features.
+         * @returns {boolean} Returns true if the layer has features, otherwise false.
+         */
+        hasFeatures () {
+            return this.layer.getSource().getFeatures().length > 0;
+        }
     },
     watch: {
         /**
@@ -44,10 +60,9 @@ export default {
     created () {
         this.$on("close", this.close);
         this.interaction = null;
-        this.layer = null;
         this.iconPath = "/addons/tacticalMark/img/";
         this.selectedIcon = "";
-        this.layer = Radio.request("Map", "createLayerIfNotExists", "import_draw_layer");
+        this.layer = Radio.request("Map", "createLayerIfNotExists", "import_tactical_layer");
     },
     /**
      * Put initialize here if mounting occurs after config parsing
@@ -148,7 +163,10 @@ export default {
                 });
 
                 this.interaction.on("drawend", (evt) => {
-                    evt.feature.setStyle(style);
+                    evt.feature.setStyle(function () {
+                        return style;
+                    });
+                    this.layer.setVisible(true);
                 });
 
                 this.addInteractionToMap(this.interaction);
@@ -225,6 +243,16 @@ export default {
             this.mapElement.style.cursor = "";
             this.mapElement.onmousedown = undefined;
             this.mapElement.onmouseup = undefined;
+        },
+
+        /**
+         * Sets the visibility of the layer.
+         * @param {module:ol/layer/Vector} layer - The layer to be set.
+         * @param {Boolean} value - True for visible and false for not.
+         * @returns {void}
+         */
+        setVisibility (layer, value) {
+            layer.setVisible(value);
         }
     }
 };
@@ -244,6 +272,18 @@ export default {
                 v-if="active"
                 id="tacticalMark"
             >
+                <div
+                    v-if="hasFeatures"
+                    class="checkbox"
+                >
+                    <label>
+                        <input
+                            type="checkbox"
+                            :checked="isLayerVisible"
+                            @change="setVisibility(layer, $event.target.checked)"
+                        > Taktische Zeichen
+                    </label>
+                </div>
                 <select
                     class="form-control input-sm"
                     @change="selectIconCat($event);"
@@ -1896,6 +1936,9 @@ export default {
 </template>
 
 <style>
+    input[type="checkbox"] {
+        margin-top: 0;
+    }
     .tm-container {
         display: grid;
         grid-template-columns: auto auto auto;
@@ -1917,8 +1960,6 @@ export default {
         text-align: center;
         border: 1px solid #cdcdcd;
         width: 206px;
-    }
-    .tm-btn-txt {
     }
     .tm-btn:hover {
         background-color: #FFFFFF;
