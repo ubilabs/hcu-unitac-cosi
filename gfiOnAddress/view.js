@@ -6,21 +6,21 @@ const GfiOnAddressView = Backbone.View.extend({
         "click .address": "addressClicked"
     },
     initialize: function () {
-        var lgvContainer = $.find(".lgv-container")[0];
+        const masterportalContainer = $.find(".masterportal-container")[0];
 
         this.listenTo(this.model, {
             "render": this.render,
             "close": this.close
         }, this);
 
-        $(lgvContainer).append(this.$el);
+        $(masterportalContainer).append(this.$el);
     },
     id: "gfi-on-address",
     className: "top-center",
     model: new GfiOnAddressModel(),
     template: _.template(GfiOnAddressTemplate),
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html("");
         this.$el.append(this.template(attr));
@@ -30,7 +30,7 @@ const GfiOnAddressView = Backbone.View.extend({
         this.$el.html("");
     },
     addressClicked: function (evt) {
-        var street = $(evt.currentTarget).attr("street"),
+        const street = $(evt.currentTarget).attr("street"),
             hsnr = $(evt.currentTarget).attr("hsnr"),
             affix = $(evt.currentTarget).attr("affix");
 

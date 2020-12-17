@@ -88,7 +88,7 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
             featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
                 id: layerId
             }),
-            newDistrictInfo = _.map(this.get("districtInfo"), _.clone);
+            newDistrictInfo = this.get("districtInfo").map({...this.get("districtInfo")});
         let refValue = 0;
 
         if (Radio.request("DistrictSelector", "getSelectedDistrict") !== "Leeren") {

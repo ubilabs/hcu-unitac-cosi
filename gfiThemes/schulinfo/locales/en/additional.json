@@ -1,0 +1,15 @@
+{
+    "modules": {
+        "tools": {
+            "gfi": {
+                "themes": {
+                    "schulinfo": {
+                        "schoolAsDestination": "Assign school as a destination",
+                        "no": "No",
+                        "yes": "Yes"
+                      }
+                }
+            }
+        }
+    }
+}

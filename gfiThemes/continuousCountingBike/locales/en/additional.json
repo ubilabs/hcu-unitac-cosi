@@ -1,0 +1,33 @@
+{
+    "modules": {
+        "tools": {
+            "gfi": {
+                "themes": {
+                    "continuousCountingBike": {
+                        "kind": "Kind: {{kind}}",
+                        "info": "Info",
+                        "lastDay": "last day",
+                        "lastSevenDays": "last 7 days",
+                        "year": "Year",
+                        "timeframe": "Period",
+                        "bikes": "Bicycles",
+                        "bikesSummedUp": "Total bicycles",
+                        "bikesOutOfTown": "Bicycles out of town",
+                        "bikesIntoTown": "Bicycles into town",
+                        "amountBikesPerHour": "Number of bicycles/hour",
+                        "amountBikesPerDay": "Number of bicycles/day",
+                        "amountBikesPerWeek": "Number of bicycles/week",
+                        "dayScheduleAtDate": "Course of the day on {{date}}",
+                        "weekScheduleFromToDate": "Week from {{startDate}} to {{endDate}}",
+                        "yearScheduleInYear": "CW per year {{year}}",
+                        "chart": "Table",
+                        "diagram": "Diagram",
+                        "name": "Name",
+                        "download": "Download",
+                        "cw": "CW"
+                    }
+                }
+            }
+        }
+    }
+}

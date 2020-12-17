@@ -24,6 +24,7 @@ Einwohnerabfrage für Hamburg und die MRH (Metropolregion Hamburg).
 |glyphicon|nein|String||CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|false|
 |onlyDesktop|nein|Boolean|false|Flag ob das Werkzeug nur im Desktop Modus sichtbar sein soll.|false|
 |populationReqServiceId|ja|String|"2"|In rest-services.[...].js konfigurierte Service-ID|false|
+|useProxy|nein|Boolean|false|Deprecated im nächsten Major-Release, da von der GDI-DE empfohlen wird einen CORS-Header einzurichten. Gibt an, ob die URL des Dienstes über einen Proxy angefragt werden soll, dabei werden die Punkte in der URL durch Unterstriche ersetzt.|false|
 
 **Beispiel Einwohnerabfrage**
 ```

@@ -118,7 +118,9 @@ function initializeCockpitModel () {
             }
         },
         calculateSum: function (data, administrativeUnits) {
-            let values = _.without(administrativeUnits.values, "Hamburg gesamt"),
+            let values = administrativeUnits.values.filter(function (value) {
+                    return value !== "Hamburg gesamt";
+                }),
                 sum = 0;
 
             if (values.length === 0) {
@@ -234,10 +236,11 @@ function initializeCockpitModel () {
          * @returns {Object[]} - prepared Data.
          */
         prepareData: function (data, administrativeUnits, years, isMonthsSelected, attrName, condition) {
-            var adminUnitsValues = administrativeUnits.values,
+            const adminUnitsValues = administrativeUnits.values,
                 adminUnitsAttrName = administrativeUnits.attrName,
-                preparedData = [],
                 months_short = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+            let preparedData = [];
 
             adminUnitsValues.forEach(function (adminUnit) {
                 years.forEach(function (year) {
@@ -472,7 +475,9 @@ function initializeCockpitModel () {
          * @returns {void}
          */
         filterYears: function (data) {
-            const t = _.pluck(data, "year");
+            const t = data.map(function (x) {
+                return x.year;
+            });
 
             this.setYears([...new Set(t)].sort(function (a, b) {
                 return b - a;
@@ -485,7 +490,9 @@ function initializeCockpitModel () {
          * @returns {void}
          */
         filterDistricts: function (data) {
-            const t = _.pluck(data, "district");
+            const t = data.map(function (x) {
+                return x.district;
+            });
             let set = [...new Set(t)];
 
             set = this.rearrangeArray(set, true, this.get("sortedDistricts"));
@@ -499,7 +506,9 @@ function initializeCockpitModel () {
          * @returns {void}
          */
         filterSuburbs: function (data) {
-            const t = _.pluck(data, "suburb");
+            const t = data.map(function (x) {
+                return x.suburb;
+            });
             let set = [...new Set(t)].sort();
 
             set = this.rearrangeArray(set, false, this.get("sortToBackValues"));
@@ -518,16 +527,19 @@ function initializeCockpitModel () {
 
             newOrder.forEach(function (value) {
                 if (oldArrayTemp.indexOf(value) !== -1) {
-                    oldArrayTemp = _.without(oldArrayTemp, value);
+                    oldArrayTemp = oldArrayTemp.filter(function (val) {
+                        return val !== value;
+                    });
                     rearrangedArray.push(value);
                 }
 
             });
+
             if (setToFront) {
-                rearrangedArray = _.union(rearrangedArray, oldArrayTemp);
+                rearrangedArray = rearrangedArray.concat(oldArrayTemp);
             }
             else {
-                rearrangedArray = _.union(oldArrayTemp, rearrangedArray);
+                rearrangedArray = oldArrayTemp.concat(rearrangedArray);
             }
 
             return rearrangedArray;

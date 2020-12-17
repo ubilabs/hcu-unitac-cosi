@@ -81,7 +81,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
      * @return {ReachabilityInAreaView} returns this
      */
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.setElement(document.getElementsByClassName("win-body")[0]);
         this.$el.html(this.template(attr));
@@ -165,7 +165,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                 coordinatesList.push(arrayItem);
             }
             // each group of 5 coordinates
-            _.each(coordinatesList, coordinates => {
+            coordinatesList.forEach(coordinates => {
                 promiseList.push(Radio.request("OpenRoute", "requestIsochrones", pathType, coordinates, rangeType, [range, range * 0.67, range * 0.33])
                     .then(res => {
                         // reverse JSON object sequence to render the isochrones in the correct order
@@ -199,7 +199,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                     }
                     layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
                     layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
-                    _.each(layerUnionFeatures, feature => {
+                    layerUnionFeatures.forEach(feature => {
                         feature.set("featureType", this.model.get("featureType"));
                     });
                     this.styleFeatures(layerUnionFeatures);
@@ -302,8 +302,8 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
      * @returns {void}
      */
     transformFeatures: function (features, crs, mapCrs) {
-        _.each(features, function (feature) {
-            var geometry = feature.getGeometry();
+        features.forEach(function (feature) {
+            const geometry = feature.getGeometry();
 
             if (geometry) {
                 geometry.transform(crs, mapCrs);
@@ -398,10 +398,10 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
             features.push(feature);
         });
         //  check "featureType" for the isochrone layer
-        if (_.contains(features.map(feature => feature.getProperties().featureType), this.model.get("featureType"))) {
+        if (features.map(feature => feature.getProperties().featureType).includes(this.model.get("featureType"))) {
             const modelList = Radio.request("ModelList", "getModelsByAttributes", {isActive: true});
 
-            _.each(modelList, model => {
+            modelList.forEach(model => {
                 if (model.get("isActive")) {
                     model.set("isActive", false);
                 }

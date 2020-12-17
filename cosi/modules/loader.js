@@ -19,6 +19,7 @@ import {storageListener, updateFromStorage, setupStorage} from "./storage";
 import CompareDistrictsView from "./compareDistricts/view";
 import RefocusView from "./controls/refocus/view";
 import FilterView from "./filter/view";
+import store from "../../../src/app-store";
 
 import "../cosi.style.less";
 
@@ -28,7 +29,8 @@ import "../cosi.style.less";
  * @todo refine / refactor CoSI custom structure -> possibly migrate away from Backbone.js, integrate CoSI through and more adaptable frontend within the Masterportal
  */
 function initializeCosi () {
-    var infoScreenOpen = JSON.parse(window.localStorage.getItem("infoScreenOpen"));
+    const infoScreenOpen = JSON.parse(window.localStorage.getItem("infoScreenOpen"));
+    let dashboard = {};
 
     addPolyfills();
 
@@ -38,7 +40,7 @@ function initializeCosi () {
         // ..
     }
 
-    const dashboard = new DashboardView({model: general.dashboard});
+    dashboard = new DashboardView({model: general.dashboard});
 
     new DashboardTableView({model: general.dashboardTable});
     new ContextMenuView();
@@ -160,7 +162,7 @@ function addZoomToCoordListener (querySelector) {
             Radio.trigger("InfoScreen", "triggerRemote", "MapMarker", "setCenter", [coord]);
         }
         else {
-            Radio.trigger("MapMarker", "showMarker", coord);
+            store.dispatch("MapMarker/placingPointMarker", coord);
             Radio.trigger("MapView", "setCenter", coord);
         }
     });

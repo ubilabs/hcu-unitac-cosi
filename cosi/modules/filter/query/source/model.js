@@ -226,7 +226,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
         if (this.get("predefinedRules") !== undefined && this.get("predefinedRules").length > 0) {
             features.forEach(function (feature) {
                 this.get("predefinedRules").forEach(function (rule) {
-                    if (_.contains(rule.values, feature.get(rule.attrName))) {
+                    if (rule.values.includes(feature.get(rule.attrName))) {
                         newFeatures.push(feature);
                     }
                 });
@@ -279,12 +279,16 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     sendFeaturesToRemote: function () {
         const model = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")}),
             features = [];
-        let feature;
+        let feature,
+            featureProperty;
 
         this.get("featureIds").forEach(function (id) {
             feature = model.get("layerSource").getFeatureById(id);
+            featureProperty = feature.getProperties();
             feature.set("extent", feature.getGeometry().getExtent());
-            features.push(_.omit(feature.getProperties(), ["geometry", "geometry_EPSG_25832", "geometry_EPSG_4326"]));
+            features.push(Radio.request("Util", "omit", feature.getProperties(), ["geometry", "geometry_EPSG_25832", "geometry_EPSG_4326"]));
+
+            features.push(featureProperty);
         });
 
         Radio.trigger("RemoteInterface", "postMessage", {"features": JSON.stringify(features), "layerId": model.get("id"), "layerName": model.get("name")});
@@ -312,7 +316,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
                     selectableValues.values.push(this.parseValuesFromString(feature, attribute.name));
                 }
             }, this);
-            selectableValues.values = [...new Set(_.flatten(selectableValues.values))];
+            selectableValues.values = [...new Set(selectableValues.values.reduce((a, b) => a.concat(b), []))];
 
             selectableOptions.push(selectableValues);
         }, this);
@@ -333,7 +337,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
             let attribute = "";
 
             snippet.resetValues();
-            attribute = _.find(selectableOptions, {name: snippet.get("name")});
+            attribute = selectableOptions.find({name: snippet.get("name")});
             snippet.updateSelectableValues(attribute.values);
         });
     },
@@ -344,7 +348,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {Boolean}               true if feature has attribute that contains value
      */
     isValueMatch: function (feature, attribute) {
-        const featureMap = _.findWhere(this.get("featureAttributesMap"), {name: attribute.attrName});
+        const featureMap = this.get("featureAttributesMap").find({name: attribute.attrName});
 
         attribute.matchingMode = featureMap.matchingMode;
         return attribute.matchingMode === "OR" ? this.isORMatch(feature, attribute) : this.isANDMatch(feature, attribute);
@@ -378,10 +382,10 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     isNumberInRange: function (feature, attributeName, values) {
         const featureValue = feature.get(attributeName);
         let isNumberInRange = "",
-            valueList = _.extend([], values);
+            valueList = Object.assign([], values);
 
         valueList.push(featureValue);
-        valueList = _.sortBy(valueList);
+        valueList = valueList.sortBy(valueList);
         isNumberInRange = valueList[1] === featureValue;
 
         return isNumberInRange;

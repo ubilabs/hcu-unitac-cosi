@@ -1,3 +1,7 @@
 addons.md
 __example__addonsConf.json
 exampleAddon
+sdpDownload/node_modules/*
+cosi/node_modules/*
+
+.vscode

@@ -134,7 +134,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         features.forEach(function (feature) {
             // find the equivalent district feature -> to do for stadtteile
             const foundFeature = districtFeatures.find(function (districtFeature) {
-                return feature.get(selector) === districtFeature.get(selector);
+                return feature.get(selector) === districtFeature.get("stadtteil_name") || feature.get(selector) === districtFeature.get("statgebiet");
             });
 
             foundFeature.setStyle(new Style({

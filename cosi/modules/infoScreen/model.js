@@ -82,7 +82,7 @@ const InfoScreenModel = Backbone.Model.extend(/** @lends InfoScreenModel.prototy
      * @returns {void}
      */
     triggerRemote (channel, event, args) {
-        const msg = _.isObject(channel) ? channel : {
+        const msg = channel && (typeof channel === "object" || typeof channel === "function") ? channel : {
             channel,
             event,
             args

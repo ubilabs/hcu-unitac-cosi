@@ -1,6 +1,6 @@
 <div class="form-group <% if (!isViewMobile) {print ('form-group-sm')} %>">
     <label for="brwLayerSelect">Die Bodenrichtwertabfrage erfolgt für das Jahr:</label>
-    <select id="brwLayerSelect" class="form-control">
+    <select id="brwLayerSelect" class="font-arial form-control">
 		<% modelList.forEach(function (model) { %>
 	        <% if (model.get("name").indexOf("stripes") === -1) {
 				if (model.get("isSelected") === true) { %>

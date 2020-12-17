@@ -1,0 +1,11 @@
+{
+    "modules": {
+        "tools": {
+            "verkehrsfunctions": {
+                "number": "Number",
+                "carsHeaderSuffix": "The count of cars",
+                "trucksHeaderSuffix": "Trucks proportion in %"
+            }
+        }
+    }
+}

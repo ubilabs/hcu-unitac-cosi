@@ -19,47 +19,50 @@ const gfiOnAddressSearch = Backbone.Model.extend({
             "getStreets": this.streetHit
         }, this);
     },
-    /*
-     * Wird eine Adresse ausgewählt (über findeStrasse), müssen Detailinforationen abgerufen werden.
+
+    /**
+     * If an address is selected (via findeStrasse), detailed information must be retrieved.
+     * @param {string} address - The addresse that was klicked.
+     * @fires Searchbar#RadioTriggerSearchbarStreetSearch
+     * @fires Searchbar#RadioTriggerSearchbarAdressSearch
+     * @returns {void}
      */
     searchbarhit: function (address) {
-        if (address && address.type === "Straße") {
+        if (address?.type === "Straße") {
             this.setStreetName(address.name);
             Radio.trigger("Gaz", "streetsSearch", address);
         }
-        else if (address && address.type === "Adresse") {
+        else if (address?.type === "Adresse") {
             Radio.trigger("Gaz", "adressSearch", address.adress);
             this.trigger("close");
         }
     },
     streetHit: function (data) {
-        var streetname = this.get("streetName"),
-            houseNumbers = [];
+        const streetname = this.get("streetName");
 
-        houseNumbers = this.prepareHouseNumbers(streetname, data);
+        let houseNumbers = this.prepareHouseNumbers(streetname, data);
+
         houseNumbers = this.sortHouseNumbers(houseNumbers);
         this.setHouseNumbers(houseNumbers);
         this.trigger("render");
     },
 
+    /**
+     * Sorts housenumbers.
+     * @param {object[]} houseNumbers - The housenumbers from gazetter.
+     * @fires Core#RadioRequestUtilIsSort
+     * @returns {object[]} The sorted housenumbers
+     */
     sortHouseNumbers: function (houseNumbers) {
-        var sortedHouseNumbers;
-
-        // sort last property first in _.chain()
-        // https://stackoverflow.com/questions/16426774/underscore-sortby-based-on-multiple-attributes
-        sortedHouseNumbers = _.chain(houseNumbers).sortBy(function (houseNumber) {
-            return houseNumber.affix;
-        }).sortBy(function (houseNumber) {
-            return parseInt(houseNumber.nr, 10);
-        }).value();
-        return sortedHouseNumbers;
+        return Radio.request("Util", "sort", "", houseNumbers, "number", "affix");
     },
-    prepareHouseNumbers: function (streetName, houseNumbers) {
-        var houseNumbersArray = [];
 
-        _.each(houseNumbers, function (houseNumber) {
-            var nr = houseNumber.adress.housenumber,
-                affix = _.isUndefined(houseNumber.adress.affix) === true ? undefined : houseNumber.adress.affix;
+    prepareHouseNumbers: function (streetName, houseNumbers) {
+        const houseNumbersArray = [];
+
+        houseNumbers.forEach(function (houseNumber) {
+            const nr = houseNumber.adress.housenumber,
+                affix = houseNumber.adress.affix === undefined ? undefined : houseNumber.adress.affix;
 
             houseNumbersArray.push({
                 nr: nr,
@@ -69,7 +72,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         return houseNumbersArray;
     },
     addressClicked: function (streetname, housenumber, affix) {
-        var addressObj = {streetname: streetname,
+        const addressObj = {streetname: streetname,
             housenumber: housenumber.trim(),
             affix: affix};
 
@@ -80,10 +83,11 @@ const gfiOnAddressSearch = Backbone.Model.extend({
      * Verarbeiten der GAGES-Informationen und öffnen des GFI
      */
     adressHit: function (data) {
-        var gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
+        const gages = $("gages\\:Hauskoordinaten,Hauskoordinaten", data)[0],
             attributes = {},
-            i,
-            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" "),
+            coordinates = $(gages).find("gml\\:pos, pos")[0].textContent.split(" ");
+
+        let i,
             adressString;
 
         for (i = 0; i < coordinates.length; i++) {
@@ -93,7 +97,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
         $(gages).find("*").filter(function () {
             return this.nodeName.indexOf("dog") !== -1 || this.nodeName.indexOf("gages") !== -1;
         }).each(function () {
-            _.extend(attributes, _.object([this.nodeName.split(":")[1]], [this.textContent]));
+            Object.assign(attributes, Radio.request("Util", "toObject", [this.nodeName.split(":")[1]], [this.textContent]));
         });
 
         // Syntaktischer Aufbau der Adressbezeichnung
@@ -139,6 +143,7 @@ const gfiOnAddressSearch = Backbone.Model.extend({
             gfiTheme: "sgvonline",
             coordinates: coordinates});
     },
+
     // setter for streetName
     setStreetName: function (value) {
         this.set("streetName", value);

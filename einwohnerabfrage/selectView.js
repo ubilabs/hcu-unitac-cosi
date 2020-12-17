@@ -18,10 +18,11 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
      * @constructs
      * @listens Addons.Einwohnerabfrage#ChangeIsActive
      * @listens Addons.Einwohnerabfrage#RenderResult
-     * @fires Core#RadioRequestUtilGetPathFromLoader
      */
     initialize: function () {
-        this.model = new EinwohnerabfrageModel();
+        const attributes = Radio.request("ModelList", "getModelByAttributes", {id: "einwohnerabfrage"})?.attributes;
+
+        this.model = new EinwohnerabfrageModel(attributes);
         this.listenTo(this.model, {
             // ändert sich der Fensterstatus wird neu gezeichnet
             "change:isActive": this.render,
@@ -42,8 +43,6 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
         if (this.model.get("isActive") === true) {
             this.render(this.model, true);
         }
-
-        this.model.setLoaderPath(Radio.request("Util", "getPathFromLoader"));
     },
     id: "einwohnerabfrage-tool",
 

@@ -19,13 +19,13 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             stadtteile: {
                 attribute: "stadtteile",
                 selector: "stadtteil",
-                url: "https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_stadtteile",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
                 referenceAttributes: ["bezirke"]
             },
             bezirke: {
                 attribute: "bezirke",
                 selector: "bezirk",
-                url: "https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_bezirke",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke",
                 referenceAttributes: []
             }
         }
@@ -36,7 +36,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
      * @memberof FeaturesLoader
      * @constructs
      * @property {String} statistischeGebieteUrl="https://geodienste.hamburg.de/HH_WFS_Statistische_Gebiete_Test" WFS url of statistischeGebiete datasets
-     * @property {String} stadtteileUrl="https://geodienste.hamburg.de/Test_HH_WFS_hamburg_statistik_stadtteile" WFS url of stadtteile datasets
+     * @property {String} stadtteileUrl="https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile" WFS url of stadtteile datasets
      * @property {object} featureList store for already queried features indexed by attribute value e.g {15634: [Feature,Feature,Feature,...] , 15987: [Feature,Feature,Feature,...],...}
      * @property {object} attrMapping maps the relevant strings (url, selector) to each attribute name
      * @fires Core#RadioTriggerUtilHideLoader
@@ -107,7 +107,6 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             text: "Datensätze werden geladen",
             kategorie: "alert-info"
         });
-
         const layerList = getLayerList().filter(function (layer) {
                 return layer.url === serviceUrl;
             }),
@@ -119,7 +118,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
 
         propertyListPromise.then(propertyList => {
             layerList.forEach(function (layer) {
-                const getFeatureUrl = Radio.request("Util", "getProxyURL", this.getUrl(layer, bbox, propertyList));
+                const getFeatureUrl = this.getUrl(layer, bbox, propertyList);
 
                 featurePromiseList.push(window.fetch(getFeatureUrl)
                     .then(response => {
@@ -177,7 +176,6 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
                     // passing an undefined bbox if the scope is "bezirke", loading the entire city for all above levels
                     return this.loadDistricts(referenceAttributes[0] === "bezirke" ? undefined : bbox, url, referenceAttributes[0], referenceDistricts, referenceAttributes.splice(1), districtNameList);
                 }
-
                 Radio.trigger("Util", "hideLoader");
                 Radio.trigger("Alert", "alert:remove");
 
@@ -237,7 +235,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
         let url = `${layer.url}?` +
             "service=WFS&" +
             "request=Getfeature&" +
-            `version=${layer.version}&` +
+            "version=1.1.0&" +
             `typename=de.hh.up:${layer.featureType}&` +
             "namespace=xmlns(de.hh.up=https://registry.gdi-de.org/id/de.hh.up)";
 
@@ -294,7 +292,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             return featureList[valueOfLayer];
         }
 
-        xhr.open("GET", Radio.request("Util", "getProxyURL", this.getUrl(layer, undefined, undefined)), false);
+        xhr.open("GET", this.getUrl(layer, undefined, undefined), false);
         xhr.onload = function (event) {
             const wfsReader = new WFS({
                 featureNS: layer.featureNS

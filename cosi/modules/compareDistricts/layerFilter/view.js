@@ -106,7 +106,7 @@ const LayerFilterView = Backbone.View.extend(/** @lends LayerFilterView.prototyp
     updateRefInputValue: function (e) {
         const key = $(e.currentTarget).attr("id"),
             // deep copying districtInfo array
-            newInfo = _.map(this.model.get("districtInfo"), _.clone);
+            newInfo = this.model.get("districtInfo").map({...this.get("districtInfo")});
 
         e.preventDefault();
         newInfo.forEach(item => {

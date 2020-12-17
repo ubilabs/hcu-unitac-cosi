@@ -4,10 +4,62 @@
   "cockpit_bauvorhaben": "cockpit/view.js",
   "cosi": "modules/loader.js",
   "einwohnerabfrage": "selectView.js",
+  "formular": "view.js",
   "gfiOnAddress": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
-  "verkehrsfunctions": "verkehrsfunctions.js"
+  "verkehrsfunctions": "verkehrsfunctions.js",
+  "VueAddon": {
+    "type": "tool"
+  },
+  "activeCityMaps": {
+    "path":"gfiThemes/activeCityMaps",
+    "type": "gfiTheme"
+  },
+  "bildungsatlas": {
+    "path":"gfiThemes/bildungsatlas",
+    "type": "gfiTheme"
+  },
+  "continuousCountingBike": {
+    "path":"gfiThemes/continuousCountingBike",
+    "type": "gfiTheme"
+  },
+  "dataTable": {
+    "path":"gfiThemes/dataTable",
+    "type": "gfiTheme"
+  },
+  "dipas": {
+    "path":"gfiThemes/dipas",
+    "type": "gfiTheme"
+  },
+  "flaecheninfo": {
+    "path":"gfiThemes/flaecheninfo",
+    "type": "gfiTheme"
+  },
+  "reisezeiten": {
+    "path":"gfiThemes/reisezeiten",
+    "type": "gfiTheme"
+  },
+  "schulinfo": {
+    "path":"gfiThemes/schulinfo",
+    "type": "gfiTheme"
+  },
+  "solaratlas": {
+    "path":"gfiThemes/solaratlas",
+    "type": "gfiTheme"
+  },
+  "trafficCount": {
+    "path":"gfiThemes/trafficCount",
+    "type": "gfiTheme"
+  },
+  "trinkwasser": {
+    "path":"gfiThemes/trinkwasser",
+    "type": "gfiTheme"
+  },
+  "verkehrsstaerken": {
+    "path":"gfiThemes/verkehrsstaerken",
+    "type": "gfiTheme"
+  }
 }

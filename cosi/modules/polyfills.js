@@ -7,10 +7,10 @@ export function addPolyfills () {
         /* eslint-disable consistent-this */
         Object.defineProperty(HTMLCanvasElement.prototype, "toBlob", {
             value: function (callback, type, quality) {
-                var canvas = this;
+                const canvas = this;
 
                 setTimeout(function () {
-                    var binStr = atob(canvas.toDataURL(type, quality).split(",")[1]),
+                    const binStr = atob(canvas.toDataURL(type, quality).split(",")[1]),
                         len = binStr.length,
                         arr = new Uint8Array(len);
 
@@ -41,7 +41,7 @@ export function addPolyfills () {
     // todo - swap not neighboring values
     Object.defineProperty(Array.prototype, "swap", {
         value: function (i, j) {
-            var itemLow = this[i],
+            const itemLow = this[i],
                 itemHigh = this[j],
                 arrLow = i > 0 ? this.slice(0, i) : [],
                 arrHigh = j < this.length - 1 ? this.slice(j + 1) : [];
@@ -63,7 +63,7 @@ export function addPolyfills () {
     * @returns {number | boolean} version of IE or false, if browser is not Internet Explorer
     */
     window.detectMS = function () {
-        var ua = window.navigator.userAgent,
+        const ua = window.navigator.userAgent,
             msie = ua.indexOf("MSIE "),
             trident = ua.indexOf("Trident/"),
             edge = ua.indexOf("Edge/");
@@ -92,8 +92,8 @@ export function addPolyfills () {
      * @returns {string} the browser name
      */
     window.identifyBrowser = function () {
-        var browser,
-            userAg = navigator.userAgent;
+        const userAg = navigator.userAgent;
+        let browser;
 
         if (userAg.indexOf("Firefox") > -1) {
             browser = "firefox";

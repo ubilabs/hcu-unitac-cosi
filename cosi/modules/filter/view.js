@@ -70,7 +70,7 @@ const FilterView = Backbone.View.extend(/** @lends FilterView.prototype */{
      * @return {FilterView} returns this
      */
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.$el.html(this.template(attr));
         if (this.model.get("uiStyle") === "TABLE") {
@@ -91,10 +91,10 @@ const FilterView = Backbone.View.extend(/** @lends FilterView.prototype */{
      * @returns {void}
      */
     renderDetailView: function () {
-        var selectedModel = this.model.get("queryCollection").findWhere({isSelected: true}),
-            view;
+        const selectedModel = this.model.get("queryCollection").findWhere({isSelected: true});
+        let view;
 
-        if (!_.isUndefined(selectedModel)) {
+        if (selectedModel) {
             view = new QueryDetailView({model: selectedModel});
 
             this.model.setDetailView(view);
@@ -110,7 +110,7 @@ const FilterView = Backbone.View.extend(/** @lends FilterView.prototype */{
      */
     renderResultView: function (featureIds, layerId) {
         const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: layerId}),
-            features = layerModel.get("layer").getSource().getFeatures().filter(f => _.contains(featureIds, f.getId())),
+            features = layerModel.get("layer").getSource().getFeatures().filter(f => featureIds.includes(f.getId())),
             resultModel = new ResultModel();
         let selector1, selector2;
 
@@ -163,11 +163,11 @@ const FilterView = Backbone.View.extend(/** @lends FilterView.prototype */{
      * @returns {void}
      */
     renderSimpleViews: function () {
-        var view,
-            queryCollectionModels = this.model.get("queryCollection").models;
+        const queryCollectionModels = this.model.get("queryCollection").models;
+        let view;
 
         if (queryCollectionModels.length > 1) {
-            _.each(queryCollectionModels, function (query) {
+            queryCollectionModels.forEach(function (query) {
                 view = new QuerySimpleView({model: query});
                 this.$el.find(".simple-views-container").append(view.render().$el);
             }, this);

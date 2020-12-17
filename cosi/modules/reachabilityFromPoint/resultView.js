@@ -1,4 +1,5 @@
 import resultTemplate from "text-loader!./resultTemplate.html";
+import store from "../../../../src/app-store";
 
 const ReachabilityResultView = Backbone.View.extend(/** @lends ReachabilityResultView.prototype */{
     /**
@@ -6,8 +7,6 @@ const ReachabilityResultView = Backbone.View.extend(/** @lends ReachabilityResul
      * @extends Backbone.View
      * @memberof Tools.Reachability.ReachabilityFromPoint
      * @constructs
-     * @fires MapMarker#RadioTriggerMapMarkerHideMarker
-     * @fires MapMarker#RadioTriggerMapMarkerShowMarker
      * @fires Core#RadioTriggerMapViewSetCenter
      * @fires Dashboard#RadioTriggerDashboardAppend
      */
@@ -35,14 +34,13 @@ const ReachabilityResultView = Backbone.View.extend(/** @lends ReachabilityResul
     /**
      * sets viewport center to the isochrone
      * @param {object} evt - click event
-     * @fires MapMarker#RadioTriggerMapMarkerShowMarker
      * @fires Core#RadioTriggerMapViewSetCenter
      * @return {void}
      */
     zoomToOrigin: function (evt) {
         const coord = [parseFloat(evt.target.value.split(",")[0].trim()), parseFloat(evt.target.value.split(",")[1].trim())];
 
-        Radio.trigger("MapMarker", "showMarker", coord);
+        store.dispatch("MapMarker/placingPointMarker", coord);
         Radio.trigger("MapView", "setCenter", coord);
     },
 

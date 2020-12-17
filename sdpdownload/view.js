@@ -40,11 +40,15 @@ const SdpDownloadView = Backbone.View.extend(/** @lends SdpDownloadView.prototyp
             "render": function () {
                 this.$el.remove();
                 this.render(this.model);
+            },
+            "change:currentLng": function () {
+                if (this.model.get("isActive")) {
+                    this.render(this.model);
+                }
             }
         });
         if (this.model) {
             this.graphicalSelectView = new GraphicalSelectView({model: this.model.get("graphicalSelectModel")});
-            this.model.setLoaderPath(Radio.request("Util", "getPathFromLoader"));
         }
         if (this.model && this.model.get("isActive") === true) {
             this.render(this.model);

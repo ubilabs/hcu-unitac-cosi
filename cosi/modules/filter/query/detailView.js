@@ -22,7 +22,6 @@ const QueryDetailView = Backbone.View.extend(/** @lends QueryDetailView.prototyp
      * @listens Tools.Filter.Query#changeIsSelected
      * @listens Tools.Filter.Query#changeFeatureIds
      * @listens Tools.Filter.Query#changeIsLayerVisible
-     * @fires Core#RadioRequestUtilGetPathFromLoader
      * @fires Core#RadioRequestUtilIsViewMobile
      * @fires Tools.Filter.Query#valuesChanged
      * @fires Tools.Filter.Query#SnippetCollectionHideAllInfoText
@@ -49,7 +48,6 @@ const QueryDetailView = Backbone.View.extend(/** @lends QueryDetailView.prototyp
 
     /**
      * render the query detail view
-     * @fires Core#RadioRequestUtilGetPathFromLoader
      * @returns {*} todo
      */
     render: function () {

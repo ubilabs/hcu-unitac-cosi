@@ -34,7 +34,7 @@ const InfoScreenView = Backbone.View.extend(/** @lends InfoScreenView.prototype 
      * @returns {Backbone.View} returns this
      */
     render () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.setElement(document.getElementById("info-screen"));
         this.$el.html(this.template(attr));

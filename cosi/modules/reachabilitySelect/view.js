@@ -25,7 +25,7 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
      * @return {SelectView} returns this
      */
     render: function () {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         this.setElement(document.getElementsByClassName("win-body")[0]);
         this.$el.html(this.template(attr));

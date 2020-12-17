@@ -4,7 +4,7 @@ import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 
 const ReachabilityInAreaModel = Tool.extend(/** @lends ReachabilityInAreaModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         coordinates: [],
         pathType: "",
         rangeType: "",
@@ -71,7 +71,7 @@ const ReachabilityInAreaModel = Tool.extend(/** @lends ReachabilityInAreaModel.p
                 let coordinates = [];
                 const features = selectedLayerModel.get("layer").getSource().getFeatures().filter(f => typeof f.style_ === "object" || f.style_ === null);
 
-                _.each(features, (feature) => {
+                features.forEach((feature) => {
                     const geometry = feature.getGeometry();
 
                     if (geometry.getType() === "Point") {

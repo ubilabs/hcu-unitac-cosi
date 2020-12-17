@@ -1,10 +1,13 @@
 import {fetch as fetchPolyfill} from "whatwg-fetch";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
+import {extractEventCoordinates} from "../../src/utils/extractEventCoordinates";
+import store from "../../src/app-store";
 
 const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends OktagonGetFeatureInformationModel.prototype */{
     defaults: {
         returnURL: "",
         submitURL: "",
-        layerId: "183",
+        layerIds: ["186", "19110"],
         submitObject: {},
         glyphicon: "glyphicon-info-sign",
         name: "Hausnummernvergabe"
@@ -15,13 +18,12 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * @extends Backbone.Model
      * @memberOf Addons.OktagonKartenportal
      * @property {String} submitURL Contains the submit url
-     * @property {String} layerId="183" Layerid for the GetFeatureInfo request
+     * @property {String} layerIds=["186", "19110"] Array with Layerids for the GetFeatureInfo request
      * @property {Object} submitObject Object for the submit parameter
      * @property {String} glyphicon="glyphicon-info-sign" Icon for the sidebar header
      * @property {String} name="Hausnummernvergabe" Name of the sidebar
      * @fires OktagonURLParameter#RadioRequestOktagonURLParameterGetRueckURL
      * @fires ModelList#RadioRequestModelListGetModelByAttributes
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
      * @fires MapView#RadioRequestMapViewGetOptions
      * @fires Core#RadioRequestMapViewGetProjection
      * @fires Alerting#RadioTriggerAlertAlert
@@ -35,15 +37,19 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * Zooms to the clicked coordinates
      * @param  {Array} coordinate contains the clicked map coordinates
      * @fires ModelList#RadioRequestModelListGetModelByAttributes
-     * @fires MapMarker#RadioTriggerMapMarkerZoomTo
-    * @returns {void}
+     * @returns {void}
      */
     onMapClick: function (coordinate) {
-        const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: this.get("layerId")});
+        const coord = extractEventCoordinates(coordinate);
 
-        Radio.trigger("MapMarker", "zoomTo", {type: "SearchByCoord", coordinate: coordinate});
+        Radio.trigger("MapView", "setCenter", coord, this.get("zoomLevel"));
+        store.dispatch("MapMarker/placingPointMarker", coord);
+        this.get("layerIds").forEach(layerId => {
+            const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+            this.requestALKISWMS(layerModel, coordinate);
+        });
         this.addCoordinatesToSubmitObject(coordinate);
-        this.requestALKISWMS(layerModel, coordinate);
     },
     /**
      * Requests the ALKIS WMS and starts to parse the xml response
@@ -57,7 +63,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     requestALKISWMS: function (layerModel, coordinate) {
         const resolution = Radio.request("MapView", "getOptions").resolution,
             projection = Radio.request("MapView", "getProjection"),
-            url = layerModel.get("layerSource").getGetFeatureInfoUrl(coordinate, resolution, projection, {INFO_FORMAT: "text/xml", STYLES: ""});
+            url = layerModel.get("layerSource").getFeatureInfoUrl(coordinate, resolution, projection, {INFO_FORMAT: "text/xml", STYLES: ""});
 
         fetchPolyfill(url)
             .then(response => response.text())
@@ -80,12 +86,12 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     * @returns {void}
      */
     parseXML: function (xml) {
-        const xmlElements = Array.from(xml.getElementsByTagName("FIELDS")),
+        const xmlElements = Array.from(xml.getElementsByTagName("FIELDS")).length > 0 ? Array.from(xml.getElementsByTagName("FIELDS")) : Array.from(xml.getElementsByTagName("app:baubloecke")),
             submitObject = this.get("submitObject");
 
         xmlElements.forEach(xmlElement => {
-            if (xmlElement.getAttribute("Baublock")) {
-                submitObject.Baublock = xmlElement.getAttribute("Baublock");
+            if (xmlElement.getElementsByTagName("app:baublockbezeichnung").length > 0) {
+                submitObject.Baublock = xmlElement.getElementsByTagName("app:baublockbezeichnung")[0].textContent;
             }
             if (xmlElement.getAttribute("Gemarkungsname")) {
                 submitObject.Gemarkungsname = xmlElement.getAttribute("Gemarkungsname");
@@ -131,8 +137,8 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
     addCoordinatesToSubmitObject: function (coordinate) {
         const submitObject = this.get("submitObject");
 
-        submitObject.KoordinateX = Radio.request("Util", "punctuate", coordinate[0]).replace(/\./g, "");
-        submitObject.KoordinateY = Radio.request("Util", "punctuate", coordinate[1]).replace(/\./g, "");
+        submitObject.KoordinateX = thousandsSeparator(coordinate[0]).replace(/\./g, "");
+        submitObject.KoordinateY = thousandsSeparator(coordinate[1]).replace(/\./g, "");
 
         this.setSubmitObject(submitObject);
     },

@@ -1,7 +1,7 @@
 import Tool from "../../../../../modules/core/modelList/tool/model";
 
 const InfoScreenHandler = Tool.extend(/** @lends InfoScreenHandler.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         id: "infoScreen",
         name: "Zweites Fenster öffnen",
         windowOpts: {},
@@ -74,7 +74,7 @@ const InfoScreenHandler = Tool.extend(/** @lends InfoScreenHandler.prototype */{
      * @returns {void}
      */
     triggerRemote (channel, event, args) {
-        const msg = _.isObject(channel) ? channel : {
+        const msg = channel && (typeof channel === "object" || typeof channel === "function") ? channel : {
             channel,
             event,
             args

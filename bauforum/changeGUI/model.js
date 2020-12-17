@@ -17,7 +17,7 @@ const BauforumGUIModeler = Backbone.Model.extend(/** @lends BauforumGUIModeler.p
             console.error("Missing or invalid parameter for MAGISTRALE. Aborting bauforum.");
             return;
         }
-        this.setMainStreet(_.values(magistrale)[0]);
+        this.setMainStreet(Object.values(magistrale)[0]);
         this.setOverviewURL(overviewURL);
         this.triggerMapView(this.get("mainStreet"));
     },
@@ -39,9 +39,8 @@ const BauforumGUIModeler = Backbone.Model.extend(/** @lends BauforumGUIModeler.p
         const parameters = Radio.request("ParametricURL", "getResult"),
             knownMainStreets = Radio.request("Parser", "getPortalConfig").bauforumHackathon;
 
-
-        if (_.has(parameters, "MAGISTRALE") && _.has(knownMainStreets, parameters.MAGISTRALE)) {
-            return _.pick(knownMainStreets, parameters.MAGISTRALE);
+        if (parameters && parameters.hasOwnProperty("MAGISTRALE") && knownMainStreets && knownMainStreets.hasOwnProperty(parameters.MAGISTRALE)) {
+            return Radio.request("Util", "pick", knownMainStreets, parameters.MAGISTRALE);
         }
 
         return null;

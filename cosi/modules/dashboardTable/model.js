@@ -5,7 +5,7 @@ import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import TimelineModel from "../timeline/model";
 
 const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype */ {
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         tableView: [],
         filteredTableView: [],
         unsortedTable: [],
@@ -790,7 +790,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
 
                     for (const prop in district) {
                         if (props.includes(prop)) {
-                            districtDataToGraph = {...districtDataToGraph, ..._.object(district[prop])};
+                            districtDataToGraph = {...districtDataToGraph, ...Radio.request("Util", "toObject", district[prop])};
                         }
                         else if (prop === this.get("sortKey")) {
                             districtDataToGraph[prop] = district[prop];
@@ -852,9 +852,9 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             this.set("tableView", data.map(group => {
                 for (const prop in group.values) {
                     const obj = group.values[prop],
-                        arr = _.pairs(obj);
+                        arr = Object.entries(obj);
 
-                    group.values[prop] = _.object(arr.swap(i, j));
+                    group.values[prop] = Radio.request("Util", "toObject", arr.swap(i, j));
                 }
 
                 return group;

@@ -4,15 +4,11 @@
     <span class="tool-name"><%= name %></span>
     <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
+
 <div class="content">
     <div class="form-group col-xs-12 test">
         <div class="input-group" style="width: 100%">
-            <input type="search" autocomplete="false" class="form-control address-search" placeholder="Startadresse">
-            <!-- <div class="input-group-btn">
-                <button type="button" class="btn btn-default" title="mein Standort">
-                    <span class="glyphicon glyphicon-map-marker"></span>
-                </button>
-            </div> -->
+            <input type="search" autocomplete="false" class="form-control address-search" placeholder="<%= startingAddress %>">
         </div>
         <div class="row">
             <ul class="list-group hit-list col-xs-12">
@@ -20,10 +16,10 @@
         </div>
     </div>
     <div class="form-group col-xs-12">
-        <span>Regional zuständige Grundschule: <a id="regional-school"></a></span>
+        <span><span class="regionalPrimarySchool"><%= regionalPrimarySchool %></span><a id="regional-school"></a></span>
     </div>
     <div class="form-group col-xs-12">
-        <select class="selectpicker" title="Schule auswählen" data-live-search="true">
+        <select class="selectpicker" title="<%= selectSchool %>" data-live-search="true">
             <% schoolList.forEach(function (school) { %>
                 <option value="<%= school.get("schul_id") %>"><%= school.get("schulname") + ", " + school.get("adresse_strasse_hausnr")%></option>
             <% }); %>
@@ -32,10 +28,10 @@
     <div class="routing-checkbox"></div>
     <div class="form-group col-md-12 col-xs-12">
         <button type="button" class="btn btn-default btn-sm print-route pull-left" disabled>
-            Route drucken
+            <%= printRouteName %>
         </button>
         <button type="button" class="btn btn-default btn-sm delete-route pull-right">
-            Route löschen
+            <%= deleteRoute %>
         </button>
     </div>
     <div class="route-container">

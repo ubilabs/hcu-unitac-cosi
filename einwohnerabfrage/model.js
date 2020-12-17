@@ -1,9 +1,12 @@
 import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
+import LoaderOverlay from "../../src/utils/loaderOverlay";
+import "./RadioBridge.js";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         type: "tool",
         parentId: "tools",
         deactivateGFI: true,
@@ -14,7 +17,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         nameTranslationKey: "additional:modules.tools.populationRequest.title",
         data: {},
         dataReceived: false,
-        requesting: false,
         style: "DEFAULT",
         snippetDropdownModel: {},
         metaDataLink: undefined,
@@ -43,7 +45,8 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         dataSourceMRHLinktext: "",
         info: "",
         showRasterLayer: "",
-        showAlkisAdresses: ""
+        showAlkisAdresses: "",
+        useProxy: false
     }),
 
     /**
@@ -57,7 +60,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @property {*} checkBoxRaster=undefined checkbox snippet for zensus raster layer
      * @property {Object} data={} data of the wps request
      * @property {Boolean} dataReceived=false true | false, depending on the request
-     * @property {Boolean} requesting=false  true | false, depending on the request
      * @property {String} style = "default" - style for MasterPortal ("table" - for table View)
      * @property {Object} snippetDropdownModel={} the model of the graphical selection
      * @property {String} metaDataLink=undefined link to meta data
@@ -96,7 +98,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      * @fires RestReader#RadioRequestRestReaderGetServiceById
      * @fires Addons.Einwohnerabfrage#RenderResult
      * @fires Alerting#RadioTriggerAlertAlert
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @fires Core#RadioTriggerMapAddInteraction
      * @fires Core#RadioTriggerWPSRequest
      * @fires Core.ModelList#RadioRequestModelListGetModelByAttributes
@@ -125,7 +127,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             }
         });
         this.listenTo(Radio.channel("CswParser"), {
-            "fetchedMetaData": this.fetchedMetaData
+            "fetchedMetaDataForEinwohnerabfrage": this.fetchedMetaData
         });
         this.listenTo(this.get("checkBoxRaster"), {
             "valuesChanged": this.toggleRasterLayer
@@ -149,7 +151,11 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
             }
         });
 
-        this.setMetaDataLink(Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId")).get("url"));
+        const service = Radio.request("RestReader", "getServiceById", this.get("populationReqServiceId"));
+
+        if (service !== undefined) {
+            this.setMetaDataLink(service.get("url"));
+        }
 
         this.listenTo(Radio.channel("i18next"), {
             "languageChanged": this.changeLang
@@ -242,7 +248,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     reset: function () {
         this.setData({});
         this.setDataReceived(false);
-        this.setRequesting(false);
+        LoaderOverlay.hide();
     },
 
     /**
@@ -255,7 +261,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     handleResponse: function (response, status) {
         let parsedData = null;
 
-        this.setRequesting(false);
+        LoaderOverlay.hide();
         parsedData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.einwohner;
 
         if (status === 200) {
@@ -293,7 +299,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
 
         try {
             obj = JSON.parse(response.ergebnis);
-            this.prepareDataForRendering(obj);
+            obj = this.prepareDataForRendering(obj);
             this.setData(obj);
             this.setDataReceived(true);
         }
@@ -307,50 +313,55 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     /**
      * Iterates ofer response properties
      * @param  {Object} response - the parsed response from wps
-     * @fires Core#RadioRequestUtilPunctuate
-     * @returns {void}
+     * @fires Core#RadioRequestUtilThousandsSeparator
+     * @returns {Object} the prepared data
      */
     prepareDataForRendering: function (response) {
-        Object.entries(response).forEach(function ([key, value], index, list) {
+        const preparedData = {};
+
+        Object.entries(response).forEach(function ([key, value]) {
             let stringVal = "";
 
             if (!isNaN(value)) {
                 if (key === "suchflaeche") {
-                    stringVal = this.chooseUnitAndPunctuate(value);
+                    stringVal = this.chooseUnitAndThousandsSeparator(value);
                 }
                 else {
-                    stringVal = Radio.request("Util", "punctuate", value);
+                    stringVal = thousandsSeparator(value);
                 }
-                list[key] = stringVal;
+                preparedData[key] = stringVal;
             }
             else {
-                list[key] = value;
+                preparedData[key] = value;
             }
 
         }, this);
+        return preparedData;
     },
 
     /**
-     * Chooses unit based on value, calls punctuate and converts to unit and appends unit
+     * Chooses unit based on value, calls thousandsSeparator and converts to unit and appends unit
      * @param  {Number} value - to inspect
      * @param  {Number} maxDecimals - decimals are cut after maxlength chars
-     * @fires Core#RadioRequestUtilPunctuate
+     * @fires Core#RadioRequestUtilThousandsSeparator
      * @returns {String} unit
      */
-    chooseUnitAndPunctuate: function (value, maxDecimals) {
-        let newValue = null;
+    chooseUnitAndThousandsSeparator: function (value, maxDecimals) {
+        let newValue = null,
+            ret = null;
 
         if (value < 250000) {
-            return Radio.request("Util", "punctuate", value.toFixed(maxDecimals)) + " m²";
+            ret = thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
         }
-        if (value < 10000000) {
+        else if (value < 10000000) {
             newValue = value / 10000.0;
-
-            return Radio.request("Util", "punctuate", newValue.toFixed(maxDecimals)) + " ha";
+            ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
         }
-        newValue = value / 1000000.0;
-
-        return Radio.request("Util", "punctuate", newValue.toFixed(maxDecimals)) + " km²";
+        else {
+            newValue = value / 1000000.0;
+            ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
+        }
+        return ret;
     },
 
 
@@ -391,7 +402,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
                 cswObj.keyList = ["date"];
                 cswObj.uniqueId = uniqueId;
                 cswObj.attr = metaIdObj.attr;
-                Radio.trigger("CswParser", "getMetaData", cswObj);
+                Radio.trigger("CswParser", "getMetaDataForEinwohnerabfrage", cswObj, this.get("useProxy"));
             }, this);
 
             this.off("change:isActive", this.handleCswRequests);
@@ -418,7 +429,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      */
     makeRequest: function (geoJson) {
         this.setDataReceived(false);
-        this.setRequesting(true);
+        LoaderOverlay.show();
         this.trigger("renderResult");
 
         Radio.trigger("WPS", "request", "1001", "einwohner_ermitteln.fmw", {
@@ -570,15 +581,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
     },
 
     /**
-     * Sets the requesting
-     * @param {Boolean} value true, if requesting
-     * @returns {void}
-     */
-    setRequesting: function (value) {
-        this.set("requesting", value);
-    },
-
-    /**
      * Sets the GraphicalSelectModel
      * @param {GraphicalSelectModel} value the model of the graphical selectbox
      * @returns {void}
@@ -612,15 +614,6 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
      */
     setMetaDataLink: function (value) {
         this.set("metaDataLink", value);
-    },
-
-    /**
-     * Sets the loaderPath
-     * @param {String} value path to the loader gif
-     * @returns {void}
-     */
-    setLoaderPath: function (value) {
-        this.set("loaderPath", value);
     }
 });
 

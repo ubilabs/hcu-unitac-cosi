@@ -5,6 +5,7 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import {MultiLineString, Point} from "ol/geom.js";
 import {WKT} from "ol/format.js";
 import Feature from "ol/Feature.js";
+import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
@@ -12,6 +13,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         id: "schulwegrouting",
         name: "Schulweg",
         layerId: "8712",
+        wpsId: "1001",
         // ol-features of all schools
         schoolList: [],
         // the regional school in charge
@@ -30,7 +32,18 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         checkBoxHVV: undefined,
         renderToSidebar: true,
         renderToWindow: false,
-        glyphicon: "glyphicon-filter"
+        glyphicon: "glyphicon-filter",
+        // translations
+        startingAddress: "",
+        regionalPrimarySchool: "",
+        selectSchool: "",
+        printRouteName: "",
+        deleteRoute: "",
+        showRouteDescription: "",
+        hideRouteDescription: "",
+        totalLength: "",
+        from: "",
+        to: ""
     }),
 
     /**
@@ -40,6 +53,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @constructs
      */
     initialize: function () {
+        this.changeLang(i18next.language);
         const channel = Radio.channel("Schulwegrouting");
 
         this.superInitialize();
@@ -50,9 +64,9 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         }));
 
         this.listenTo(channel, {
-            "selectSchool": function (schoolId) {
-                this.trigger("updateSelectedSchool", schoolId);
-                this.selectSchool(this.get("schoolList"), schoolId);
+            "selectSchool": function (school) {
+                this.selectSchool(this.get("schoolList"), school.get("schul_id"));
+                this.trigger("updateSelectedSchool", school);
                 this.prepareRequest(this.get("startAddress"));
             }
         }, this);
@@ -88,7 +102,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
 
         this.listenTo(this, {
             "change:isActive": function (model, value) {
-                if (value && _.isUndefined(this.get("layer"))) {
+                if (value && this.get("layer") === undefined) {
                     this.setLayer(Radio.request("Map", "createLayerIfNotExists", "school_route_layer"));
                     this.addRouteFeatures(this.get("layer").getSource());
                     this.get("layer").setStyle(this.routeStyle);
@@ -102,6 +116,30 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                     this.setSchoolList(this.sortSchoolsByName(features));
                 }
             }
+        });
+
+        this.listenTo(Radio.channel("i18next"), {
+            "languageChanged": this.changeLang
+        });
+    },
+    /**
+     * change language - sets default values for the language
+     * @param {String} lng - new language to be set
+     * @returns {Void} -
+     */
+    changeLang: function (lng) {
+        this.set({
+            "startingAddress": i18next.t("additional:modules.tools.routingToSchool.startingAddress"),
+            "regionalPrimarySchool": i18next.t("additional:modules.tools.routingToSchool.regionalPrimarySchool"),
+            "selectSchool": i18next.t("additional:modules.tools.routingToSchool.selectSchool"),
+            "printRouteName": i18next.t("additional:modules.tools.routingToSchool.printRouteName"),
+            "deleteRoute": i18next.t("additional:modules.tools.routingToSchool.deleteRoute"),
+            "showRouteDescription": i18next.t("additional:modules.tools.routingToSchool.showRouteDescription"),
+            "hideRouteDescription": i18next.t("additional:modules.tools.routingToSchool.hideRouteDescription"),
+            "totalLength": i18next.t("additional:modules.tools.routingToSchool.totalLength"),
+            "from": i18next.t("additional:modules.tools.routingToSchool.from"),
+            "to": i18next.t("additional:modules.tools.routingToSchool.to"),
+            "currentLng": lng
         });
     },
 
@@ -129,7 +167,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     printRouteMapFish: function () {
-        var visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
+        const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                 return layer.getVisible() === true;
             }),
             address = this.get("startAddress"),
@@ -145,7 +183,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                     "address": address.street + " " + address.number + address.affix,
                     "school": school.get("schulname") + ", " + route.SchuleingangTyp + " (" + route.SchuleingangAdresse + ")",
                     "map": {
-                        "dpi": 96,
+                        "dpi": 200,
                         "projection": Radio.request("MapView", "getProjection").getCode(),
                         "center": Radio.request("MapView", "getCenter"),
                         "scale": Radio.request("MapView", "getOptions").scale
@@ -157,30 +195,38 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
                         }
                     }]
                 }
-            },
-            buildSpec = new BuildSpecModel(attr);
+            };
+
+        let buildSpec = new BuildSpecModel(attr);
 
         buildSpec.buildLayers(visibleLayerList);
         buildSpec = buildSpec.toJSON();
-        buildSpec = _.omit(buildSpec, "uniqueIdList");
-        Radio.trigger("Print", "createPrintJob", "schulwegrouting", encodeURIComponent(JSON.stringify(buildSpec)), "pdf");
+        buildSpec = Radio.request("Util", "omit", buildSpec, ["uniqueIdList"]);
+
+        Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "schulwegrouting", "pdf");
     },
 
-    prepareRouteDesc: function (routeDesc) {
-        var data = [];
+    prepareRouteDesc: function (routeDesc = []) {
+        const data = [],
+            routeDescription = Array.isArray(routeDesc) ? routeDesc : [];
 
-        _.each(routeDesc, function (route, index) {
+        routeDescription.forEach((route, index) => {
             data.push([String(index + 1), route.anweisung]);
         });
         return data;
     },
 
     handleResponse: function (response, status) {
-        var parsedData;
+        let parsedData;
 
         this.toggleLoader(false);
         if (status === 200) {
-            if (_.has(response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData, "Schulweg")) {
+            if (response.ExecuteResponse &&
+                response.ExecuteResponse.ProcessOutputs &&
+                response.ExecuteResponse.ProcessOutputs.Output &&
+                response.ExecuteResponse.ProcessOutputs.Output.Data &&
+                response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData &&
+                response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.hasOwnProperty("Schulweg")) {
                 parsedData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.Schulweg.Ergebnis;
                 if (parsedData.ErrorOccured === "yes") {
                     this.handleWPSError(parsedData);
@@ -207,13 +253,14 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     handleSuccess: function (response) {
-        var routeGeometry = this.parseRoute(response.route.edge),
-            routeDescription = response.routenbeschreibung.part;
+        const routeGeometry = this.parseRoute(response.route.edge);
+
+        let routeDescription = response.routenbeschreibung.part;
 
         this.setGeometryByFeatureId("route", this.get("layer").getSource(), routeGeometry);
-        response.kuerzesteStrecke = Radio.request("Util", "punctuate", response.kuerzesteStrecke);
+        response.kuerzesteStrecke = thousandsSeparator(response.kuerzesteStrecke);
         this.setRouteResult(response);
-        if (!_.isArray(routeDescription)) {
+        if (!Array.isArray(routeDescription)) {
             routeDescription = [routeDescription];
         }
         this.setRouteDescription(routeDescription);
@@ -237,9 +284,10 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     parseRegionalSchool: function (xml) {
-        var schoolId,
+        const primarySchool = $(xml).find("gages\\:grundschulnr,grundschulnr");
+
+        let schoolId,
             school,
-            primarySchool = $(xml).find("gages\\:grundschulnr,grundschulnr"),
             schoolWithAdress;
 
         if (primarySchool.length > 0) {
@@ -262,10 +310,10 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {ol.geom.MultiLineString} multiLineString - the route geometry
      */
     parseRoute: function (routeParts) {
-        var wktParser = new WKT(),
+        const wktParser = new WKT(),
             multiLineString = new MultiLineString({});
 
-        if (_.isArray(routeParts)) {
+        if (Array.isArray(routeParts)) {
             routeParts.forEach(function (routePart) {
                 multiLineString.appendLineString(wktParser.readGeometry(routePart.wkt));
             });
@@ -283,7 +331,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     prepareRequest: function (address) {
-        const schoolID = !_.isEmpty(this.get("selectedSchool")) ? this.get("selectedSchool").get("schul_id") : "";
+        const schoolID = Object.keys(this.get("selectedSchool")).length > 0 ? this.get("selectedSchool")?.get("schul_id") : "";
         let requestObj = {};
 
         if (Object.keys(address).length !== 0 && schoolID.length > 0) {
@@ -306,7 +354,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      */
     sendRequest: function (requestObj) {
         this.toggleLoader(true);
-        Radio.trigger("WPS", "request", "1001", "schulwegrouting_wps.fmw", requestObj, this.handleResponse.bind(this), 50000);
+        Radio.trigger("WPS", "request", this.get("wpsId"), "schulwegrouting_wps.fmw", requestObj, this.handleResponse.bind(this), 50000);
     },
 
     toggleLoader: function (show) {
@@ -319,7 +367,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     setObjectAttribute: function (object, attrName, dataType, value) {
-        var dataObj = {
+        const dataObj = {
             dataType: dataType,
             value: value
         };
@@ -329,7 +377,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     isRoutingRequest: function (ownRequests, requestID) {
-        return _.contains(ownRequests, requestID);
+        return ownRequests.includes(requestID);
     },
 
     /**
@@ -338,8 +386,11 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @return {ol.feature[]} sorted schools features by name
      */
     sortSchoolsByName: function (features) {
-        return _.sortBy(features, function (feature) {
-            return feature.get("schulname");
+        return features.sort(function (featureA, featureB) {
+            const schulnameA = featureA.get("schulname").toUpperCase(),
+                schulnameB = featureB.get("schulname").toUpperCase();
+
+            return schulnameA < schulnameB ? -1 : 1;
         });
     },
 
@@ -350,7 +401,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {ol.feature} -
      */
     filterSchoolById: function (schoolList, schoolId) {
-        return _.find(schoolList, function (school) {
+        return schoolList.find(school => {
             return school.get("schul_id") === schoolId;
         });
     },
@@ -362,7 +413,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @return {void}
      */
     startSearch: function (streetNameList, addressList) {
-        var filteredAddressList;
+        let filteredAddressList;
 
         if (streetNameList.length === 1) {
             this.setStreetNameList(streetNameList);
@@ -421,7 +472,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     selectStartAddress: function (searchString, addressListFiltered) {
-        const startAddress = _.find(addressListFiltered, function (address) {
+        const startAddress = addressListFiltered.find(function (address) {
             return address.joinAddress === searchString.replace(/ /g, "");
         });
 
@@ -460,7 +511,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     selectSchool: function (schoolList, schoolId) {
-        var school = this.filterSchoolById(schoolList, schoolId);
+        const school = this.filterSchoolById(schoolList, schoolId);
 
         this.setSelectedSchool(school);
         this.setGeometryByFeatureId("endPoint", this.get("layer").getSource(), school.getGeometry());
@@ -473,7 +524,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      */
     addRouteFeatures: function (source) {
         ["startPoint", "endPoint", "route"].forEach(function (id) {
-            var feature = new Feature();
+            const feature = new Feature();
 
             feature.setId(id);
             feature.set("styleId", id);
@@ -538,7 +589,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
     },
 
     resetRoute: function () {
-        var features = this.get("layer").getSource().getFeatures();
+        const features = this.get("layer").getSource().getFeatures();
 
         this.setStartAddress({});
         this.setSelectedSchool({});
@@ -548,7 +599,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
         this.trigger("togglePrintEnabled", false);
     },
     removeGeomFromFeatures: function (features) {
-        _.each(features, function (feature) {
+        features.forEach(function (feature) {
             feature.unset("geometry");
         });
     },
@@ -559,17 +610,17 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {array} targetList
      */
     filterStreets: function (evtValue) {
-        var streetNameList = this.get("streetNameList"),
+        const streetNameList = this.get("streetNameList"),
             targetStreet = evtValue.split(" ")[0],
             targetList = [];
 
-        _.each(streetNameList, function (street) {
-            var streetNameParts = _.contains(street, " ") ? street.split(" ") : [street],
+        streetNameList.forEach(function (street) {
+            const streetNameParts = street.includes(" ") ? street.split(" ") : [street],
                 resultStreets = streetNameParts.filter(function (part) {
                     return part.toLowerCase() === targetStreet.toLowerCase();
                 }, this);
 
-            if (!_.isEmpty(resultStreets)) {
+            if (resultStreets && resultStreets.length) {
                 targetList.push(street);
             }
         }, this);

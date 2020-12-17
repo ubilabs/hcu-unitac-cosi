@@ -1,0 +1,25 @@
+{
+    "modules": {
+        "tools": {
+            "gfi": {
+                "themes": {
+                    "verkehrsstaerken": {
+                        "kind": "Kind: {{kind}}",
+                        "table": "Info",
+                        "diagram": "Diagrams",
+                        "download": "Download",
+                        "DTV": "DTV",
+                        "DTVw": "DTVw",
+                        "carsPerDay": "DTV (Car/24h)",
+                        "carsPerDayWeekly": "DTVw (Car/24h)",
+                        "HGVsPerWeek": "SV share in DTVw (%)",
+                        "constructionSiteInfluence": "Construction site influence",
+                        "withConstructionSiteInfluence": "with construction site influence",
+                        "category": "Categorie",
+                        "year": "Year"
+                    }
+                }
+            }
+        }
+    }
+}

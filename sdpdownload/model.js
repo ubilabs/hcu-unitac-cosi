@@ -2,6 +2,7 @@ import Tool from "../../modules/core/modelList/tool/model";
 import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import {WFS} from "ol/format.js";
 import * as turf from "@turf/turf";
+import LoaderOverlay from "../../src/utils/loaderOverlay";
 
 const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
 
@@ -16,10 +17,10 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         renderToWindow: false,
         wmsRasterLayerId: "4707",
         formats: [
-            {id: "NAS", label: "NAS", isSelected: true, desc: "Daten im NAS-Format herunterladen"},
-            {id: "DWG_310", label: "DWG, Lagestatus 310 (kurz)", isSelected: false, desc: "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, UTM-Projektion"},
-            {id: "DWG_320", label: "DWG, Lagestatus 320", isSelected: false, desc: "Daten im DWG-Format herunterladen, Lagestatus: ETRS89, Gauß-Krüger-Projektion"},
-            {id: "JPG", label: "JPG + JGW, Lagestatus 310 (kurz)", isSelected: false, desc: "Daten im JPG-Format herunterladen, inkl. JGW-Dateien im Lagestatus: ETRS89, UTM-Projektion"}],
+            {id: "NAS", label: "", isSelected: true, desc: ""},
+            {id: "DWG_310", label: "", isSelected: false, desc: ""},
+            {id: "DWG_320", label: "", isSelected: false, desc: ""},
+            {id: "JPG", label: "", isSelected: false, desc: ""}],
         selectedFormat: "NAS", // is preselected
         compressDataId: "compressData",
         compressedFileId: "compressedFile",
@@ -33,9 +34,21 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
         overviewDownloadLocation: "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_",
         wfsRaster: {},
         graphicalSelectModel: {},
-        requesting: false,
         selectedRasterLimit: 9,
-        rasterNames: []
+        rasterNames: [],
+        // translations:
+        selectFormat: "",
+        howToChooseTiles: "",
+        downloadDataPackage: "",
+        specialDownloads: "",
+        neuwerkDataPackage: "",
+        scharhörnDataPackage: "",
+        tileOverview310: "",
+        tileOverview320: "",
+        pleaseSelectTiles: "",
+        failedToDownload: "",
+        details: "",
+        serviceNotResponding: ""
     }),
     /**
  * @class SdpDownloadModel
@@ -60,9 +73,20 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
  * @property {string} overviewDownloadLocation= "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_" location of the files to download
  * @property {Object} wfsRaster={} contains wfs raster features after loading them
  * @property {Object} graphicalSelectModel={} model for graphical selection
- * @property {Object} requesting=false state of server request
  * @property {Object} selectedRasterLimit=9 limit og raster images for download
  * @property {Array} rasterNames=[] stores the names of the tiles in the raster
+ * @property {String} selectFormat: "" contains the translated text
+ * @property {String} howToChooseTiles: "" contains the translated text
+ * @property {String} downloadDataPackage: "" contains the translated text
+ * @property {String} specialDownloads: "" contains the translated text
+ * @property {String} neuwerkDataPackage: "" contains the translated text
+ * @property {String} scharhörnDataPackage: "" contains the translated text
+ * @property {String} tileOverview310: "" contains the translated text
+ * @property {String} tileOverview320: "" contains the translated text
+ * @property {String} pleaseSelectTiles: "" contains the translated text
+ * @property {String} failedToDownload: "" contains the translated text
+ * @property {String} details: "" contains the translated text
+ * @property {String} serviceNotResponding: "" contains the translated text
  * @listens Addons.SdpDownloadModel#changeIsActive
  * @listens Core#RadioTriggerMapViewChangedOptions
  * @listens Core.ModelList#RadioTriggerModelListToggleDefaultTool
@@ -106,6 +130,50 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             }
         });
         this.setGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
+
+        this.listenTo(Radio.channel("i18next"), {
+            "languageChanged": this.changeLang
+        });
+        this.changeLang();
+    },
+    /**
+    * change language - sets default values for the language
+    * @param {String} lng - new language to be set
+    * @returns {Void} -
+    */
+    changeLang: function (lng) {
+        const nasDefaults = this.get("formats")[0],
+            dwg310Defaults = this.get("formats")[1],
+            dwg320Defaults = this.get("formats")[2],
+            jpgDefaults = this.get("formats")[3];
+
+        nasDefaults.label = i18next.t("additional:modules.tools.sdpdownload.nasLabel");
+        nasDefaults.desc = i18next.t("additional:modules.tools.sdpdownload.nasDescription");
+
+        dwg310Defaults.label = i18next.t("additional:modules.tools.sdpdownload.dwg310Label");
+        dwg310Defaults.desc = i18next.t("additional:modules.tools.sdpdownload.dwg310Description");
+
+        dwg320Defaults.label = i18next.t("additional:modules.tools.sdpdownload.dwg320Label");
+        dwg320Defaults.desc = i18next.t("additional:modules.tools.sdpdownload.dwg320Description");
+
+        jpgDefaults.label = i18next.t("additional:modules.tools.sdpdownload.jpgLabel");
+        jpgDefaults.desc = i18next.t("additional:modules.tools.sdpdownload.jpgDescription");
+
+        this.set({
+            "selectFormat": i18next.t("additional:modules.tools.sdpdownload.selectFormat"),
+            "howToChooseTiles": i18next.t("additional:modules.tools.sdpdownload.howToChooseTiles"),
+            "downloadDataPackage": i18next.t("additional:modules.tools.sdpdownload.downloadDataPackage"),
+            "specialDownloads": i18next.t("additional:modules.tools.sdpdownload.specialDownloads"),
+            "neuwerkDataPackage": i18next.t("additional:modules.tools.sdpdownload.neuwerkDataPackage"),
+            "scharhörnDataPackage": i18next.t("additional:modules.tools.sdpdownload.scharhörnDataPackage"),
+            "tileOverview310": i18next.t("additional:modules.tools.sdpdownload.tileOverview310"),
+            "tileOverview320": i18next.t("additional:modules.tools.sdpdownload.tileOverview320"),
+            "pleaseSelectTiles": i18next.t("additional:modules.tools.sdpdownload.pleaseSelectTiles"),
+            "failedToDownload": i18next.t("additional:modules.tools.sdpdownload.failedToDownload"),
+            "details": i18next.t("additional:modules.tools.sdpdownload.details"),
+            "serviceNotResponding": i18next.t("additional:modules.tools.sdpdownload.serviceNotResponding"),
+            "currentLng": lng
+        });
     },
     /**
      * Sets the state at GraphicalSelect - handles (de-)activation of this Tool
@@ -169,7 +237,7 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
             data = "service=" + params.service + "&version=" + params.version + "&request=" + params.request + "&TypeName=" + params.typename;
 
         $.ajax({
-            url: Radio.request("Util", "getProxyURL", params.url),
+            url: params.url,
             data: encodeURI(data),
             contentType: "text/xml",
             type: "GET",
@@ -277,16 +345,16 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
 
         if (selectedRasterNames.length > this.get("selectedRasterLimit")) {
             Radio.trigger("Alert", "alert", {
-                text: "Die von Ihnen getroffene Auswahl beinhaltet " + selectedRasterNames.length + " Kacheln.\nSie dürfen maximal " + this.get("selectedRasterLimit") + " Kacheln aufeinmal herunterladen.\n\nBitte reduzieren Sie Ihre Auswahl!",
+                text: i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: this.get("selectedRasterLimit")}),
                 kategorie: "alert-warning"
             });
-            this.setRequesting(false);
+            LoaderOverlay.hide();
             this.trigger("render");
             return false;
         }
         else if (selectedRasterNames.length === 0) {
             Radio.trigger("Alert", "alert", {
-                text: "<strong>Bitte wählen Sie Kacheln aus!</strong>",
+                text: "<strong>" + this.get("pleaseSelectTiles") + "</strong>",
                 kategorie: "alert-info"
             });
             return false;
@@ -321,25 +389,23 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      * @returns {void}
      */
     doRequest: function (params) {
-        let url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
+        const url = Radio.request("RestReader", "getServiceById", this.get("compressDataId")).get("url");
 
-        if (window.location.hostname === "localhost") {
-            url = Radio.request("Util", "getProxyURL", url);
-        }
         $.ajax({
             url: url,
             data: encodeURI(params),
             context: this,
             type: "POST",
             beforeSend: function () {
-                this.showLoader();
+                LoaderOverlay.show(15000);
+                this.trigger("render");
             },
             success: function (resp) {
                 this.resetView();
                 this.changeGraphicalSelectStatus(true);
                 if (resp.indexOf("Fehler") > -1) {
                     Radio.trigger("Alert", "alert", {
-                        text: "<strong>Die Daten konnten leider nicht heruntergeladen werden!</strong> <br> <small>Details: " + resp + "</small>",
+                        text: "<strong>" + this.get("failedToDownload") + "</strong> <br> <small>" + this.get("details") + " " + resp + "</small>",
                         kategorie: "alert-warning"
                     });
 
@@ -351,50 +417,20 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
                 }
             },
             complete: function () {
-                this.hideLoader();
+                LoaderOverlay.hide();
+                this.trigger("render");
             },
             timeout: 15000,
             error: function () {
                 this.resetView();
                 this.changeGraphicalSelectStatus(false);
                 Radio.trigger("Alert", "alert", {
-                    text: "<strong>Die Daten konnten leider nicht heruntergeladen werden!</strong> <br> <small>Details: Ein benötigter Dienst antwortet nicht.</small>",
+                    text: "<strong>" + this.get("failedToDownload") + "</strong> <br> <small>" + this.get("details") + " " + this.get("serviceNotResponding") + "</small>",
                     kategorie: "alert-warning"
                 });
             }
         });
     },
-    /**
-     * Hides the loader by setting the requesting to false and renders the view.
-     * @fires Addons.SdpDownloadModel#render
-     * @returns {void}
-     */
-    hideLoader: function () {
-        this.set("requesting", false);
-        this.trigger("render");
-    },
-    /**
-     * Shows the loader by setting the requesting to true and renders the view.
-     * @fires Addons.SdpDownloadModel#render
-     * @returns {void}
-     */
-    showLoader: function () {
-        this.set("requesting", true);
-        this.trigger("render");
-    },
-    /**
-     * Sets the requesting
-     * @param {Boolean} value true or false
-     * @returns {void}
-     */
-    setRequesting: function (value) {
-        this.set("requesting", value);
-    },
-    /**
-     * Sets the selected format
-     * @param {String} value SdpDownloadModel#defaults#formats
-     * @returns {void}
-     */
     setSelectedFormat: function (value) {
         this.set("selectedFormat", value);
     },
@@ -413,14 +449,6 @@ const SdpDownloadModel = Tool.extend(/** @lends SdpDownloadModel.prototype */{
      */
     setGraphicalSelectModel: function (value) {
         this.set("graphicalSelectModel", value);
-    },
-    /**
-     * Sets the loaderPath
-     * @param {String} value path to the loader gif
-     * @returns {void}
-     */
-    setLoaderPath: function (value) {
-        this.set("loaderPath", value);
     },
     /**
      * Sets the value to models property isSelected

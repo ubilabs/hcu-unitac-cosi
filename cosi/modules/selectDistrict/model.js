@@ -8,7 +8,7 @@ import * as Polygon from "ol/geom/Polygon";
 import GeoJSON from "ol/format/GeoJSON";
 
 const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype */{
-    defaults: _.extend({}, Tool.prototype.defaults, {
+    defaults: Object.assign({}, Tool.prototype.defaults, {
         id: "selectDistrict",
         selectedDistricts: [],
         districtLayer: [], // e.g.  {name:  "Statistische Gebiete", selector: "statgebiet", layerIds:[]}
@@ -313,7 +313,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
     },
 
     resetSelectedDistricts: function () {
-        _.each(this.get("selectedDistricts"), function (feature) {
+        this.get("selectedDistricts").forEach(feature => {
             feature.unset("styleId");
             feature.setStyle(this.get("defaultStyle"));
         }, this);
@@ -361,7 +361,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         return this.get("activeScope");
     },
     toggleScopeLayers: function () {
-        _.each(this.get("districtLayerNames"), (layerName) => {
+        this.get("districtLayerNames").forEach(layerName => {
             const layer = Radio.request("ModelList", "getModelByAttributes", {"name": layerName});
 
             if (layerName !== "Stadtteile") {
@@ -395,7 +395,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
                 .map(layer => layer.get("name"))
                 .filter(layerName => districtLayerNames.includes(layerName));
 
-        if (_.isEqual(districtLayerNames.sort(), districtLayersLoaded.sort())) {
+        if (Radio.request("Util", "isEqual", districtLayerNames.sort(), districtLayersLoaded.sort())) {
             this.setIsActive(true);
             this.set("isReady", true);
 
@@ -416,7 +416,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
             districts = layerSource.getFeatures();
         }
 
-        _.each(districts, (feature) => {
+        districts.forEach((feature) => {
             if (feature.getProperties()[this.getSelector()] === districtName) {
                 extent = feature.getGeometry().getExtent();
             }
@@ -473,14 +473,14 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
      * @returns {string[]} names - a list of the names of the selected districts
      */
     getSelectedDistrictNames: function (districts) {
-        var names = [];
+        const names = [];
 
         districts.forEach(function (district) {
             if (district.get("statgebiet")) {
                 names.push(district.get("statgebiet"));
             }
             else {
-                names.push(district.get("stadtteil"));
+                names.push(district.get("stadtteil_name"));
             }
         });
         return names;
@@ -508,7 +508,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         }
     },
     setBboxGeometry: function (bboxGeometry) {
-        const layerlist = _.union(Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}), Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+        const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
 
         Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, bboxGeometry);
     },
@@ -531,7 +531,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
 
         this.resetSelectedDistricts();
         this.set("selectedDistricts", features);
-        _.each(features, feature => {
+        features.forEach(feature => {
             feature.set("styleId", feature.getId());
             feature.setStyle(that.get("selectedStyle"));
         });

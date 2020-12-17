@@ -4,7 +4,7 @@
         <th scope="col">Art der Infrastruktur</th>
         <th scope="col">Menge</th>
     </tr>
-    <% _.each(dataObj.layers, function(layer, i){ %>
+    <% dataObj.layers.forEach((layer, i) => { %>
     <tr class="dashboard-tr">
         <!-- <th scope="row"><%= i + 1 %></th> -->
         <td scope="row"><%= layer.layerName %></td>
@@ -15,7 +15,7 @@
     <tr id="<%= layer.layerName.split(' ')[0] + '_tr' %>" class="detail">
         <td colspan="3">
             <p>
-                <% _.each(layer.features, function(feature){ %>
+                <% layer.features.forEach(feature => { %>
                 <span class="name-tag district-name zoom-to-coord" coord="<%= feature.get('coord').join(',') %>">
                     <%= feature.getProperties()[layer.idSelector] %>
                 </span>

@@ -7,7 +7,6 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @extends SourceModel
      * @memberof Tools.Filter.Query.Source
      * @constructs
-     * @fires Util#getProxyURL
      */
     initialize: function () {
         this.initializeFunction();
@@ -23,7 +22,7 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @returns {void}
      */
     buildQueryDatastructureByType: function (layerObject) {
-        const url = Radio.request("Util", "getProxyURL", layerObject.url),
+        const url = layerObject.url,
             featureType = layerObject.featureType,
             version = layerObject.version;
         let featureAttributesMap = [];
@@ -55,9 +54,9 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @return {object} - Mapobject containing names and types
      */
     parseResponse: function (response) {
-        const selector = "element",
-            featureAttributesMap = [];
-        let responseString,
+        const featureAttributesMap = [];
+        let selector = "element",
+            responseString,
             searchForNamespaceResult = "",
             elements = "";
 
@@ -76,11 +75,9 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
         }
 
         elements = $(selector, response);
-
-        _.each(elements, function (element) {
-
-            const type = $(element).attr("type");
-            let typeWithoutNamespace,
+        elements.forEach(function (element) {
+            let type = $(element).attr("type"),
+                typeWithoutNamespace,
                 simpleTypeIndex,
                 restriction;
 

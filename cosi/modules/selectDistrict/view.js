@@ -41,7 +41,7 @@ const SelectDistrictView = Backbone.View.extend(/** @lends SelectDistrictView.pr
      * @return {Backbone.View} this view
      */
     render: function (model, value) {
-        var attr = this.model.toJSON();
+        const attr = this.model.toJSON();
 
         if (value) {
             this.setElement(document.getElementsByClassName("win-body")[0]);
