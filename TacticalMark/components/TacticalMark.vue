@@ -19,6 +19,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/TacticalMark", Object.keys(getters)),
+        ...mapGetters(["imagePath"]),
         /**
          * Checks if the layer is visible.
          * @returns {boolean} Returns true if the layer is visible, otherwise false.
@@ -78,7 +79,6 @@ export default {
     created () {
         this.$on("close", this.close);
         this.interaction = null;
-        this.iconPath = "/addons/tacticalMark/img/";
         this.selectedIcon = "";
         this.layer = Radio.request("Map", "createLayerIfNotExists", "import_tactical_layer");
     },
@@ -102,7 +102,7 @@ export default {
          * @returns {String} the path to the icon
          */
         getIconPath (iconName) {
-            return this.iconPath + iconName;
+            return this.imagePath + iconName;
         },
 
         /**
@@ -152,7 +152,7 @@ export default {
                             offsetX: x
                         }),
                         image: new Icon({
-                            src: this.iconPath + iconName,
+                            src: this.imagePath + iconName,
                             scale: 1,
                             opacity: 1,
                             imgSize: [50, 50]
@@ -164,7 +164,7 @@ export default {
                     style = new Style({
 
                         image: new Icon({
-                            src: this.iconPath + iconName,
+                            src: this.imagePath + iconName,
                             scale: 1,
                             opacity: 1,
                             imgSize: [50, 50]
@@ -185,6 +185,7 @@ export default {
                         return style;
                     });
                     this.layer.setVisible(true);
+                    evt.feature.set("styleId", iconName);
                 });
 
                 this.addInteractionToMap(this.interaction);
