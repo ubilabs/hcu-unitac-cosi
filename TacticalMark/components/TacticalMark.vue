@@ -5,7 +5,8 @@ import getters from "../store/gettersTacticalMark";
 import mutations from "../store/mutationsTacticalMark";
 import Icon from "ol/style/Icon";
 import {Style, Text} from "ol/style.js";
-import {Draw} from "ol/interaction.js";
+import {click} from "ol/events/condition";
+import {Draw, Select, Modify} from "ol/interaction.js";
 
 export default {
     name: "TacticalMark",
@@ -20,6 +21,7 @@ export default {
     computed: {
         ...mapGetters("Tools/TacticalMark", Object.keys(getters)),
         ...mapGetters(["imagePath"]),
+
         /**
          * Checks if the layer is visible.
          * @returns {boolean} Returns true if the layer is visible, otherwise false.
@@ -44,6 +46,21 @@ export default {
         // Text for icon setting button
         iconSetting: function () {
             return this.$t("additional:modules.tools.TacticalMark.iconSetting");
+        },
+
+        // Text for icon delete button
+        iconDelete: function () {
+            return this.$t("additional:modules.tools.TacticalMark.iconDelete");
+        },
+
+        // Text for icon delete all button
+        iconDeleteAll: function () {
+            return this.$t("additional:modules.tools.TacticalMark.iconDeleteAll");
+        },
+
+        // Text for icon move button
+        iconMove: function () {
+            return this.$t("additional:modules.tools.TacticalMark.iconMove");
         },
 
         // Options for the first selectbox
@@ -78,8 +95,8 @@ export default {
     },
     created () {
         this.$on("close", this.close);
-        this.interaction = null;
-        this.selectedIcon = "";
+        this.interaction = "";
+        this.selectedBtn = "";
         this.layer = Radio.request("Map", "createLayerIfNotExists", "import_tactical_layer");
     },
     /**
@@ -118,13 +135,13 @@ export default {
                 y = 0,
                 number = "";
 
-            if (this.selectedIcon === null || this.selectedIcon !== iconName) {
+            if (this.selectedBtn === null || this.selectedBtn !== iconName) {
                 Object.keys(this.$refs).forEach(rf => {
                     this.$refs[rf].style.backgroundColor = "#F2F2F2";
                 });
                 ref.style.backgroundColor = "#CDCDCD";
 
-                this.selectedIcon = iconName;
+                this.selectedBtn = iconName;
 
                 this.setCanvasCursor();
 
@@ -195,7 +212,91 @@ export default {
 
                 this.removeInteractionFromMap(this.interaction);
                 this.resetCanvasCursor();
-                this.selectedIcon = "";
+                this.selectedBtn = "";
+            }
+        },
+
+        /**
+         * delete all of the marked icons
+         * @returns {Void}  -
+         */
+        deleteAll () {
+            Object.keys(this.$refs).forEach(rf => {
+                this.$refs[rf].style.backgroundColor = "#F2F2F2";
+            });
+
+            this.removeInteractionFromMap(this.interaction);
+            this.layer.getSource().clear();
+        },
+
+        /**
+         * delete selected icon
+         * @returns {Void}  -
+         */
+        deleteIcon () {
+            const ref = this.$refs.delete;
+
+            if (this.selectedBtn !== "delete") {
+                Object.keys(this.$refs).forEach(rf => {
+                    this.$refs[rf].style.backgroundColor = "#F2F2F2";
+                });
+                ref.style.backgroundColor = "#CDCDCD";
+
+                this.removeInteractionFromMap(this.interaction);
+
+                this.interaction = new Select({
+                    condition: click
+                });
+
+                this.addInteractionToMap(this.interaction);
+
+                this.interaction.on("select", (evt) => {
+                    evt.target.getFeatures().forEach((feature) => {
+                        this.layer.getSource().removeFeature(feature);
+                    });
+                });
+                this.setCanvasCursor();
+                this.selectedBtn = "delete";
+            }
+            else {
+                ref.style.backgroundColor = "#F2F2F2";
+
+                this.removeInteractionFromMap(this.interaction);
+                this.resetCanvasCursor();
+                this.selectedBtn = "";
+            }
+        },
+
+        /**
+         * modify selected icon
+         * @returns {Void}  -
+         */
+        modifyIcon () {
+            const ref = this.$refs.modify;
+
+            if (this.selectedBtn !== "modify") {
+                Object.keys(this.$refs).forEach(rf => {
+                    this.$refs[rf].style.backgroundColor = "#F2F2F2";
+                });
+                ref.style.backgroundColor = "#CDCDCD";
+
+                this.removeInteractionFromMap(this.interaction);
+
+                this.interaction = new Modify({
+                    source: this.layer.getSource()
+                });
+
+                this.addInteractionToMap(this.interaction);
+
+                this.setCanvasCursor();
+                this.selectedBtn = "modify";
+            }
+            else {
+                ref.style.backgroundColor = "#F2F2F2";
+
+                this.removeInteractionFromMap(this.interaction);
+                this.resetCanvasCursor();
+                this.selectedBtn = "";
             }
         },
 
@@ -223,7 +324,7 @@ export default {
 
             this.removeInteractionFromMap(this.interaction);
             this.resetCanvasCursor();
-            this.selectedIcon = "";
+            this.selectedBtn = "";
 
             Object.keys(this.$refs).forEach(rf => {
                 this.$refs[rf].style.backgroundColor = "#F2F2F2";
@@ -1945,6 +2046,47 @@ export default {
                                         {{ iconSetting }}
                                     </span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tm-container">
+                    <div class="tm-item">
+                        <div
+                            ref="modify"
+                            class="tm-btn"
+                            @click="modifyIcon();"
+                        >
+                            <div class="tm-btn-txt">
+                                <span>
+                                    {{ iconMove }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tm-item">
+                        <div
+                            ref="deleteAll"
+                            class="tm-btn"
+                            @click="deleteAll();"
+                        >
+                            <div class="tm-btn-txt">
+                                <span>
+                                    {{ iconDeleteAll }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tm-item">
+                        <div
+                            ref="delete"
+                            class="tm-btn"
+                            @click="deleteIcon();"
+                        >
+                            <div class="tm-btn-txt">
+                                <span>
+                                    {{ iconDelete }}
+                                </span>
                             </div>
                         </div>
                     </div>
