@@ -76,7 +76,7 @@ export default {
                             return this.getLayerName(file.name) === this.getLayerName(importedFileName);
                         });
 
-                    this.importKML({raw: f.target.result, checkSameLayer: checkSameLayer, layerName: layerName, filename: file.name});
+                    this.importKML({raw: f.target.result, checkSameLayer: checkSameLayer, layerName: layerName, filename: file.name, pointImages: this.pointImages, textColors: this.textColors, textSizes: this.textSizes});
                 };
 
                 reader.readAsText(file);

@@ -3,8 +3,6 @@ import testAction from "../../../../../test/unittests/VueTestUtils";
 import actions from "../../../store/actionsFileImportAddon";
 import importedState from "../../../store/stateFileImportAddon";
 import rawSources from "../../ressources/rawSources.js";
-import VectorLayer from "ol/layer/Vector.js";
-import VectorSource from "ol/source/Vector.js";
 import * as crs from "masterportalAPI/src/crs";
 
 const
@@ -28,15 +26,31 @@ before(() => {
 describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
     describe("file import - file should add some features to the current draw layer", () => {
         const
-            source = new VectorSource(),
-            layer = new VectorLayer({
-                name: name,
-                source: source,
-                alwaysOnTop: true
-            });
+            checkSameLayer = true,
+            pointImages = {
+                black: ["cc000000", "/img/tools/draw/circle_black.svg"],
+                blue: ["cc0000FF", "/img/tools/draw/circle_blue.svg"],
+                green: ["cc00FF00", "/img/tools/draw/circle_green.svg"],
+                yellow: ["cc00FFFF", "/img/tools/draw/circle_yellow.svg"],
+                red: ["ccFF0000", "/img/tools/draw/circle_red.svg"],
+                white: ["ccFFFFFF", "/img/tools/draw/circle_white.svg"]
+            },
+            textColors = {
+                schwarz: "cc000000",
+                blau: "cc0000FF",
+                gruen: "cc00FF00",
+                gelb: "cc00FFFF",
+                rot: "ccFF0000",
+                weiss: "ccFFFFFF"
+            },
+            textSizes = {
+                klein: 1,
+                mittel: 1.15,
+                gross: 1.3
+            };
 
         it("preset \"auto\", correct kml file, correct filename", done => {
-            const payload = {layer: layer, raw: rawSources[0], filename: "TestFile1.kml"};
+            const payload = {raw: rawSources[0], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
             testAction(importKML, payload, importedState, {}, [{
                 type: "Alerting/addSingleAlert",
@@ -48,7 +62,7 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
         });
 
         it("preset \"auto\", correct kml file, wrong filename", done => {
-            const payload = {layer: layer, raw: rawSources[0], filename: "bogus_file.bog"};
+            const payload = {raw: rawSources[0], checkSameLayer: checkSameLayer, layerName: "bogus_file", filename: "bogus_file.bog", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
             testAction(importKML, payload, importedState, {}, [{
                 type: "Alerting/addSingleAlert",
@@ -61,7 +75,7 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
         });
 
         it("preset \"auto\", broken kml file, correct filename", done => {
-            const payload = {layer: layer, raw: rawSources[1], filename: "TestFile1.kml"};
+            const payload = {raw: rawSources[1], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
             testAction(importKML, payload, importedState, {}, [{
                 type: "Alerting/addSingleAlert",
@@ -74,7 +88,7 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
         });
 
         it("preset \"auto\", empty kml file, correct filename", done => {
-            const payload = {layer: layer, raw: "", filename: "TestFile1.kml"};
+            const payload = {raw: "", checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
             testAction(importKML, payload, importedState, {}, [{
                 type: "Alerting/addSingleAlert",
@@ -87,7 +101,7 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
         });
 
         it("preset \"auto\", correct gpx file, correct filename", done => {
-            const payload = {layer: layer, raw: rawSources[2], filename: "TestFile1.gpx"};
+            const payload = {raw: rawSources[2], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.gpx", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
             testAction(importKML, payload, importedState, {}, [{
                 type: "Alerting/addSingleAlert",
@@ -99,7 +113,7 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
         });
 
         it("preset \"auto\", correct geojson file, correct filename", done => {
-            const payload = {layer: layer, raw: rawSources[3], filename: "TestFile1.json"};
+            const payload = {raw: rawSources[3], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.json", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
             testAction(importKML, payload, importedState, {}, [{
                 type: "Alerting/addSingleAlert",
@@ -112,7 +126,7 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
 
         it("preset \"gpx\", correct kml file, correct filename", done => {
             const
-                payload = {layer: layer, raw: rawSources[3], filename: "TestFile1.json"},
+                payload = {raw: rawSources[3], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.json", pointImages: pointImages, textColors: textColors, textSizes: textSizes},
                 tmpState = {...importedState, ...{selectedFiletype: "gpx"}};
 
             testAction(importKML, payload, tmpState, {}, [{
@@ -120,6 +134,42 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
                     content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.missingFileContent")},
+                dispatch: true
+            }], {}, done);
+        });
+
+        it("test the function getParsedData for old atlas innere sicherheit Polygon style", done => {
+            const payload = {raw: rawSources[4], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
+
+            testAction(importKML, payload, importedState, {}, [{
+                type: "Alerting/addSingleAlert",
+                payload: {
+                    category: i18next.t("common:modules.alerting.categories.info"),
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                dispatch: true
+            }], {}, done);
+        });
+
+        it("test the function getParsedData for old atlas innere sicherheit Line style", done => {
+            const payload = {raw: rawSources[5], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
+
+            testAction(importKML, payload, importedState, {}, [{
+                type: "Alerting/addSingleAlert",
+                payload: {
+                    category: i18next.t("common:modules.alerting.categories.info"),
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                dispatch: true
+            }], {}, done);
+        });
+
+        it("test the function getParsedData for old atlas innere sicherheit Point style", done => {
+            const payload = {raw: rawSources[6], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
+
+            testAction(importKML, payload, importedState, {}, [{
+                type: "Alerting/addSingleAlert",
+                payload: {
+                    category: i18next.t("common:modules.alerting.categories.info"),
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });

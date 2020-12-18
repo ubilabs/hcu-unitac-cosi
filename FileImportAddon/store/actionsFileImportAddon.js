@@ -69,6 +69,113 @@ function removeBadTags (rawSource) {
 }
 
 /**
+ * In case the kml file is from old atlas_innere_sicherheit, the raw source data will be parsed into the format of masterportal
+ * @param {String} rawData - KML source Data as string.
+ * @param {Object} pointImages - the images file and color code of the icon according to the point color style
+ * @param {Object} textColors - the color with key and color code of the point text style
+ * @param {Object} textSizes - the text sizes with key and scale value of the point text style
+ * @returns {String} Returns the parsed data from kml source data
+ */
+function getParsedData (rawData, pointImages, textColors, textSizes) {
+    const xmlDoc = new DOMParser().parseFromString(rawData, "text/xml");
+    let parsedData = rawData;
+
+    if (xmlDoc.getElementsByTagName("kml").length &&
+        xmlDoc.getElementsByTagName("kml")[0].attributes.xmlns.value.includes("/2.0") &&
+        xmlDoc.getElementsByTagName("Folder").length) {
+        const placeMarks = xmlDoc.getElementsByTagName("Placemark");
+
+        Array.prototype.forEach.call(placeMarks, placemark => {
+            const styleAll = xmlDoc.getElementsByTagName("Style"),
+                styleId = placemark.getElementsByTagName("styleUrl")[0].firstChild.nodeValue.replace("#", "");
+            let styles = "";
+
+            Array.prototype.forEach.call(styleAll, style => {
+                if (style.attributes.id.value.includes(styleId)) {
+                    styles = style;
+                }
+            });
+
+            if (placemark.getElementsByTagName("Point").length) {
+                if (styles.getElementsByTagName("IconStyle").length) {
+                    // here is for the point only with image like taktical marks
+                    const iconStyle = styles.getElementsByTagName("IconStyle")[0];
+
+                    if (iconStyle.getElementsByTagName("color").length) {
+                        iconStyle.removeChild(iconStyle.getElementsByTagName("color")[0]);
+                    }
+                    if (iconStyle.getElementsByTagName("colorMode")) {
+                        iconStyle.removeChild(iconStyle.getElementsByTagName("colorMode")[0]);
+                    }
+                    iconStyle.getElementsByTagName("scale")[0].childNodes[0].nodeValue = "1";
+                    placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue = "";
+                }
+                else if (placemark.getElementsByTagName("Data").length && placemark.getElementsByTagName("Data")[0].attributes.name.value.includes("feature_name") &&
+                    placemark.getElementsByTagName("Data")[1].attributes.name.value.includes("farbe")) {
+                    // here is for the point only with text
+                    const textColor = placemark.getElementsByTagName("Data")[1].getElementsByTagName("value")[0].childNodes[0].nodeValue,
+                        textSize = placemark.getElementsByTagName("Data")[2].getElementsByTagName("value")[0].childNodes[0].nodeValue,
+                        maskIcon = new DOMParser().parseFromString("<IconStyle><scale>0</scale><Icon><href>" + pointImages.blue[1] + "</href></Icon></IconStyle>", "text/xml");
+
+                    Object.entries(textColors).forEach(([key, color]) => {
+                        if (textColor === key) {
+                            styles.getElementsByTagName("LabelStyle")[0].getElementsByTagName("color")[0].childNodes[0].nodeValue = color;
+                        }
+                    });
+
+                    Object.entries(textSizes).forEach(([key, size]) => {
+                        if (textSize === key) {
+                            const maskScale = new DOMParser().parseFromString("<scale>" + size + "</scale>", "text/xml");
+
+                            styles.getElementsByTagName("LabelStyle")[0].appendChild(maskScale.getElementsByTagName("scale")[0]);
+                        }
+                    });
+
+                    placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue = placemark.getElementsByTagName("Data")[0].getElementsByTagName("value")[0].childNodes[0].nodeValue;
+
+                    styles.appendChild(maskIcon.getElementsByTagName("IconStyle")[0]);
+                }
+                else if (placemark.getElementsByTagName("Data").length && placemark.getElementsByTagName("Data")[1].attributes.name.value.includes("umkreis_gruppe")) {
+                    // here is for circle or double circle, to hide the point in the center
+                    const maskIcon = new DOMParser().parseFromString("<IconStyle><scale>0</scale><Icon><href>" + pointImages.blue[1] + "</href></Icon></IconStyle>", "text/xml");
+
+                    styles.appendChild(maskIcon.getElementsByTagName("IconStyle")[0]);
+                    placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue = "";
+                }
+                else if (!placemark.getElementsByTagName("ExtendedData").length) {
+                    // here is for the point only with color
+                    let iconImage;
+
+                    if (styles.getElementsByTagName("LineStyle").length &&
+                        styles.getElementsByTagName("LineStyle")[0].getElementsByTagName("color").length) {
+                        const lineColor = styles.getElementsByTagName("LineStyle")[0].getElementsByTagName("color")[0].childNodes[0].nodeValue;
+
+                        Object.entries(pointImages).forEach(([, pointImage]) => {
+                            if (pointImage[0] === lineColor) {
+                                iconImage = pointImage[1];
+                            }
+                        });
+                    }
+
+                    const maskIcon = new DOMParser().parseFromString("<IconStyle><scale>1</scale><Icon><href>" + iconImage + "</href></Icon></IconStyle>", "text/xml");
+
+                    styles.appendChild(maskIcon.getElementsByTagName("IconStyle")[0]);
+                    placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue = "";
+                }
+                else {
+                    placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue = "";
+                }
+            }
+
+            placemark.appendChild(styles);
+        });
+
+        parsedData = xmlDoc;
+    }
+
+    return parsedData;
+}
+/**
  * Adds the layer to theme tree under the menu Importierte Daten
  * @param {String} layerName - the name of layer from the imported file
  * @param {String} layerId - the id of layer from the imported file
@@ -101,7 +208,8 @@ export default {
         let
             featureError = false,
             alertingMessage,
-            features;
+            features,
+            parsedData = datasrc.raw;
 
         if (Array.isArray(checkSameLayer) && checkSameLayer.length) {
             alertingMessage = {
@@ -114,7 +222,7 @@ export default {
         }
 
         if (format instanceof KML) {
-            datasrc.raw = removeBadTags(datasrc.raw);
+            parsedData = getParsedData(removeBadTags(datasrc.raw), datasrc.pointImages, datasrc.textColors, datasrc.textSizes);
         }
 
         if (format === false) {
@@ -131,8 +239,7 @@ export default {
         }
 
         try {
-            features = format.readFeatures(datasrc.raw);
-
+            features = format.readFeatures(parsedData);
 
             if (format instanceof KML) {
                 const indices = [];
@@ -148,7 +255,7 @@ export default {
                 if (indices.length > 0) {
                     // type Point with no names (=Icons) have to be imported with special options, else if downloaded over draw tool again there will be an error
                     const specialFormat = new KML({extractStyles: true, showPointNames: false}),
-                        featuresNoPointNames = specialFormat.readFeatures(datasrc.raw);
+                        featuresNoPointNames = specialFormat.readFeatures(parsedData);
 
                     indices.forEach((index) => {
                         features[index] = featuresNoPointNames[index];

@@ -20,6 +20,27 @@ export default {
     glyphicon: "glyphicon-load",
     id: "FileImportAddon",
     name: "KML-Datei laden",
+    pointImages: {
+        black: ["cc000000", "/img/tools/draw/circle_black.svg"],
+        blue: ["cc0000FF", "/img/tools/draw/circle_blue.svg"],
+        green: ["cc00FF00", "/img/tools/draw/circle_green.svg"],
+        yellow: ["cc00FFFF", "/img/tools/draw/circle_yellow.svg"],
+        red: ["ccFF0000", "/img/tools/draw/circle_red.svg"],
+        white: ["ccFFFFFF", "/img/tools/draw/circle_white.svg"]
+    },
+    textColors: {
+        schwarz: "cc000000",
+        blau: "ccFF0000",
+        gruen: "cc00FF00",
+        gelb: "cc00FFFF",
+        rot: "cc0000FF",
+        weiss: "ccFFFFFF"
+    },
+    textSizes: {
+        klein: 1,
+        mittel: 1.15,
+        gross: 1.3
+    },
     onlyDesktop: true,
     renderToWindow: true,
     resizableWindow: false,
