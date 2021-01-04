@@ -28,12 +28,12 @@ describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
         const
             checkSameLayer = true,
             pointImages = {
-                black: ["cc000000", "/img/tools/draw/circle_black.svg"],
-                blue: ["cc0000FF", "/img/tools/draw/circle_blue.svg"],
-                green: ["cc00FF00", "/img/tools/draw/circle_green.svg"],
-                yellow: ["cc00FFFF", "/img/tools/draw/circle_yellow.svg"],
-                red: ["ccFF0000", "/img/tools/draw/circle_red.svg"],
-                white: ["ccFFFFFF", "/img/tools/draw/circle_white.svg"]
+                black: ["cc000000", ".https://localhost:9001/img/tools/draw/circle_black.svg"],
+                blue: ["cc0000FF", "https://localhost:9001/img/tools/draw/circle_blue.svg"],
+                green: ["cc00FF00", "https://localhost:9001/img/tools/draw/circle_green.svg"],
+                yellow: ["cc00FFFF", "https://localhost:9001/img/tools/draw/circle_yellow.svg"],
+                red: ["ccFF0000", "https://localhost:9001/img/tools/draw/circle_red.svg"],
+                white: ["ccFFFFFF", "https://localhost:9001/img/tools/draw/circle_white.svg"]
             },
             textColors = {
                 schwarz: "cc000000",
