@@ -7,6 +7,7 @@ import Icon from "ol/style/Icon";
 import {Style, Text} from "ol/style.js";
 import {click} from "ol/events/condition";
 import {Draw, Select, Modify} from "ol/interaction.js";
+import uniqueId from "../../../src/utils/uniqueId.js";
 
 export default {
     name: "TacticalMark",
@@ -131,8 +132,6 @@ export default {
         setIcon (iconName, dmaNumber = null) {
             const ref = this.$refs[iconName.slice(0, -4)];
             let style,
-                x = 0,
-                y = 0,
                 number = "";
 
             if (this.selectedBtn === null || this.selectedBtn !== iconName) {
@@ -148,31 +147,18 @@ export default {
                 if (typeof dmaNumber !== "undefined" && this.$refs.dma_number.value !== "undefined") {
                     number = this.$refs.dma_number.value;
 
-                    if (this.$refs.dma_number.value.length === 1) {
-                        x = -14;
-                        y = -3;
-                    }
-                    else if (this.$refs.dma_number.value.length === 2) {
-                        x = -17;
-                        y = -3;
-                    }
-                    else {
-                        number = "";
-                    }
-
                     style = new Style({
                         text: new Text({
                             text: number,
-                            textAlign: "left",
-                            font: "12px sans-serif",
-                            offsetY: y,
-                            offsetX: x
+                            textAlign: "center",
+                            textBaseline: "middle",
+                            offsetY: 7,
+                            font: "12px sans-serif"
                         }),
                         image: new Icon({
                             src: this.imagePath + iconName,
                             scale: 1,
-                            opacity: 1,
-                            imgSize: [50, 50]
+                            opacity: 1
                         }),
                         zIndex: 0
                     });
@@ -202,7 +188,7 @@ export default {
                         return style;
                     });
                     this.layer.setVisible(true);
-                    evt.feature.set("styleId", iconName);
+                    evt.feature.set("styleId", iconName + uniqueId("_"));
                 });
 
                 this.addInteractionToMap(this.interaction);
