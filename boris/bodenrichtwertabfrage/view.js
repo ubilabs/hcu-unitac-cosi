@@ -64,7 +64,7 @@ const BrwAbfrageView = Backbone.View.extend({
         this.$el.remove();
         this.$el.html(this.template(attr));
         this.renderLayerlist(attr);
-        Radio.trigger("Sidebar", "append", this.el);
+        Radio.trigger("Sidebar", "append", this.el, false, 450);
         Radio.trigger("Sidebar", "toggle", true);
         this.delegateEvents();
 

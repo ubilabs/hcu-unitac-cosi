@@ -82,8 +82,8 @@ const DashboardView = Backbone.View.extend(/** @lends DashboardView.prototype */
         // Export Button für das Dashboard wieder hinzufügen, sobald eine Lösung gefunden wurde
         // this.$el.find("#print-button").html(this.exportButtonView.render().el);
 
-        Radio.trigger("Sidebar", "append", this.$el, true);
-        Radio.trigger("Sidebar", "toggle", true, this.model.get("width"));
+        Radio.trigger("Sidebar", "toggle", true);
+        Radio.trigger("Sidebar", "append", this.$el, true, this.model.get("width"));
 
         Radio.request("Dashboard", "getChildren").forEach(widget => {
             widget.render();

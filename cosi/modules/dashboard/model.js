@@ -5,7 +5,7 @@ const DashboardModel = Tool.extend(/** @lends DashboardModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
         name: "",
         glyphicon: "",
-        width: "60%",
+        width: 0.6,
         infoScreenOpen: false,
         exportDashboardButton: {}
     }),
