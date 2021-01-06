@@ -62,7 +62,7 @@ export default {
         <dl class="dl-horizontal">
             <dt>Summe der Krankenhäuser:</dt>
             <dd>{{ sum_hospitals }}</dd>
-            <dt>Summe der Planbettern:</dt>
+            <dt>Summe der Planbetten:</dt>
             <dd>{{ sum_hospitals_beds }}</dd>
         </dl>
     </div>
