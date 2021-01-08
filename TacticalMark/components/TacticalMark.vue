@@ -115,6 +115,17 @@ export default {
         }),
 
         /**
+         * call the setIcon function by changes in damage account
+         * field to update the number with setted param dmaChg
+         * @returns {void} -
+         */
+        changeDmaNr () {
+            if (this.selectedBtn !== null && this.selectedBtn === "damage_account.jpg") {
+                this.setIcon("damage_account.jpg", "dma_number", "dmaChg");
+            }
+        },
+
+        /**
          * return the path to the given icon
          * @param {String} iconName the filename of the icon
          * @returns {String} the path to the icon
@@ -126,15 +137,16 @@ export default {
         /**
          * set the selected icon to mark on the map
          * @param {String} iconName the filename of the icon
-         * @param {String} dmaNumber the given number of the damage account
-         * @returns {Void}  -
+         * @param {String} [dmaNumber=null] the given number of the damage account
+         * @param {String} [dmaChg=null] is setted if the function called by onChange in damage account
+         * @returns {void} -
          */
-        setIcon (iconName, dmaNumber = null) {
+        setIcon (iconName, dmaNumber = null, dmaChg = null) {
             const ref = this.$refs[iconName.slice(0, -4)];
             let style,
                 number = "";
 
-            if (this.selectedBtn === null || this.selectedBtn !== iconName) {
+            if (this.selectedBtn === null || this.selectedBtn !== iconName || dmaChg !== null) {
                 Object.keys(this.$refs).forEach(rf => {
                     this.$refs[rf].style.backgroundColor = "#F2F2F2";
                 });
@@ -204,7 +216,7 @@ export default {
 
         /**
          * delete all of the marked icons
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         deleteAll () {
             Object.keys(this.$refs).forEach(rf => {
@@ -217,7 +229,7 @@ export default {
 
         /**
          * delete selected icon
-         * @returns {Void}  -
+         * @returns {valueControlsoid}  -
          */
         deleteIcon () {
             const ref = this.$refs.delete;
@@ -255,7 +267,7 @@ export default {
 
         /**
          * modify selected icon
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         modifyIcon () {
             const ref = this.$refs.modify;
@@ -2018,6 +2030,7 @@ export default {
                                 type="number"
                                 min="0"
                                 max="99"
+                                @change="changeDmaNr"
                             >
                             <div
                                 ref="damage_account"
