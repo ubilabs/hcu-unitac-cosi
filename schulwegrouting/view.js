@@ -111,7 +111,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
         this.initSelectpicker();
         this.setPresetValues();
         this.$el.find(".routing-checkbox").append(this.checkBoxHVV.render().$el);
-        Radio.trigger("Sidebar", "append", this.el);
+        Radio.trigger("Sidebar", "append", this.el, false, 450);
         Radio.trigger("Sidebar", "toggle", true);
         this.delegateEvents();
 

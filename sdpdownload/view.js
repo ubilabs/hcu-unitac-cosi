@@ -68,7 +68,7 @@ const SdpDownloadView = Backbone.View.extend(/** @lends SdpDownloadView.prototyp
         const attr = model.toJSON();
 
         this.$el.html(this.template(attr));
-        Radio.trigger("Sidebar", "append", this.el);
+        Radio.trigger("Sidebar", "append", this.el, false, 300);
         Radio.trigger("Sidebar", "toggle", true);
         this.initFormatsSelectpicker();
         this.$el.find(".geometric-selection").append(this.graphicalSelectView.render().el);
