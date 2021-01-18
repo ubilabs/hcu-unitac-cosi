@@ -1,0 +1,17 @@
+{
+    "modules": {
+        "tools": {
+            "TacticalMark": {
+                "title": "Tactical Mark",
+                "damageImage": "Damage Images",
+                "resources": "Resources",
+                "damageAccount": "Damage Account",
+                "damageAccounts": "Damage Accounts",
+                "iconSetting": "Icon setting",
+                "iconDelete": "Delete",
+                "iconDeleteAll": "Delete all",
+                "iconMove": "Move"
+            }
+        }
+    }
+}
