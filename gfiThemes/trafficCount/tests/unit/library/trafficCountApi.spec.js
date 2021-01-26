@@ -1407,7 +1407,7 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
 
             expect(lastDataset).to.deep.equal(expectedDataset);
         });
-        it("updateDataset: should add antSV data to dataset if meansOfTransport equals 'anzFahrzeuge'; should resend data anytime a subscribed message was received", function () {
+        it("updateDataset: should add Anteil_SV data to dataset if meansOfTransport equals 'Anzahl_Kfz'; should resend data anytime a subscribed message was received", function () {
             let lastDataset = false;
 
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",

@@ -33,12 +33,16 @@ export class TrafficCountApi {
      */
     constructor (httpHost, sensorThingsVersion, mqttOptions, sensorThingsHttpOpt, sensorThingsMqttOpt, noSingletonOpt) {
         if (!noSingletonOpt) {
-            // make this instance a singleton
-            if (TrafficCountApi.instance) {
-                return TrafficCountApi.instance;
+            // make this instance a multiton based on httpHost (one singleton for each unique host)
+            if (typeof TrafficCountApi.instance !== "object" || TrafficCountApi.instance === null) {
+                TrafficCountApi.instance = {};
             }
 
-            TrafficCountApi.instance = this;
+            if (TrafficCountApi.instance.hasOwnProperty(httpHost)) {
+                return TrafficCountApi.instance[httpHost];
+            }
+
+            TrafficCountApi.instance[httpHost] = this;
         }
 
         /** @private */

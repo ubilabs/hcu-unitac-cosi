@@ -59,14 +59,14 @@ export default {
 
         typeAssoc: function () {
             return {
-                AnzFahrzeuge: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor"),
+                Anzahl_Kfz: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor"),
                 Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.countingstation")
             };
         },
 
         meansOfTransportAssoc: function () {
             return {
-                AnzFahrzeuge: this.$t("additional:modules.tools.gfi.themes.trafficCount.carLabel"),
+                Anzahl_Kfz: this.$t("additional:modules.tools.gfi.themes.trafficCount.carLabel"),
                 Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.bicycleLabel")
             };
         },
@@ -147,7 +147,7 @@ export default {
          * returns the value in meansOfTransportArray that matches the start of the given array of datastreams property layerName, returns first match
          * @param {Object[]} datastreams the array of datastreams from the SensorThingsAPI
          * @param {String[]} meansOfTransportArray an array representing all terms to look for in the datastreams layerName
-         * @returns {String|Boolean}  a string representing the means of transport (e.g. AnzFahrzeuge, AnzFahrräder) or false if no means of transport where found
+         * @returns {String|Boolean}  a string representing the means of transport (e.g. Anzahl_Kfz, Anzahl_Fahrraeder) or false if no means of transport where found
          */
         getMeansOfTransportFromDatastream: function (datastreams, meansOfTransportArray) {
             let key,

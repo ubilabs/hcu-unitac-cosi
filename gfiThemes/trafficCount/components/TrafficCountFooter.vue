@@ -175,7 +175,7 @@ export default {
         /**
          * gets the download data for the last 7 days for the given thingId and meansOfTransport
          * @param {Integer} thingId the ID of the thing
-         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'AnzFahrzeuge'
+         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
          * @param {Function} onsuccess as event function(result) with result{title, dataset} and dataset{meansOfTransport: {date: value}}; fired once on success (no subscription)
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
@@ -196,7 +196,7 @@ export default {
         /**
          * gets the download data for the 54 weeks for the given thingId and meansOfTransport
          * @param {Integer} thingId the ID of the thing
-         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'AnzFahrzeuge'
+         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
          * @param {Function} onsuccess as event function(result) with result{title, dataset} and dataset{meansOfTransport: {date: value}}; fired once on success (no subscription)
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
@@ -217,7 +217,7 @@ export default {
         /**
          * gets the download data since the beginning
          * @param {Integer} thingId the ID of the thing
-         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'AnzFahrzeuge'
+         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
          * @param {Function} onsuccess as event function(result) with result{title, dataset} and dataset{meansOfTransport: {date: value}}; fired once on success (no subscription)
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
