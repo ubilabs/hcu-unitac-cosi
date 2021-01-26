@@ -10,7 +10,12 @@
                 "iconSetting": "Icon setting",
                 "iconDelete": "Delete",
                 "iconDeleteAll": "Delete all",
-                "iconMove": "Move"
+                "iconMove": "Move",
+                "iconDownload": "Download",
+                "format": "Format",
+                "filenameLabel": "Filename",
+                "saveFile": "Save",
+                "setFileName": "Please set file name"
             }
         }
     }

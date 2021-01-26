@@ -37,7 +37,9 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
                     }
                 }
             }
-        };
+        },
+        arr = [],
+        getFeatures = sinon.fake.returns(arr);
 
     let store,
         wrapper;
@@ -70,14 +72,23 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
         wrapper = shallowMount(TacticalMarkComponent, {
             store,
             localVue,
-            methods: {
-                setCanvasCursor: sinon.stub(),
-                resetCanvasCursor: sinon.stub()
+            mapElement: {
+                style: {
+                    cursor: "",
+                    onmousedown: "",
+                    onmouseup: ""
+                }
             },
+            layer: {
+                getSource: () => ({
+                    getFeatures: () => ({getFeatures})
+                })
+            },
+            setCanvasCursor: sinon.stub(),
+            resetCanvasCursor: sinon.stub(),
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true,
-                layer: () => sinon.stub()
+                hasFeatures: () => true
             }
         });
         store.commit("Tools/TacticalMark/setActive", true);
@@ -93,13 +104,6 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
         expect(wrapper.find("#tacticalMark").exists()).to.be.true;
     });
 
-    it("do not render the TacticalMark if not active", () => {
-        store.commit("Tools/TacticalMark/setActive", false);
-        wrapper = shallowMount(TacticalMarkComponent, {store, localVue});
-
-        expect(wrapper.find("#tacticalMark").exists()).to.be.false;
-    });
-
     it("Element should exists", () => {
         wrapper = shallowMount(TacticalMarkComponent, {
             store,
@@ -107,7 +111,9 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             computed: {
                 isLayerVisible: () => true,
                 hasFeatures: () => true
-            }
+            },
+            setCanvasCursor: sinon.stub(),
+            resetCanvasCursor: sinon.stub()
         });
         store.commit("Tools/TacticalMark/setActive", true);
 
@@ -116,21 +122,6 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
         expect(wrapper.find("#dma").exists()).to.be.true;
     });
 
-    it("containers should not exists", () => {
-        store.commit("Tools/TacticalMark/setActive", false);
-        wrapper = shallowMount(TacticalMarkComponent, {
-            store,
-            localVue,
-            computed: {
-                isLayerVisible: () => true,
-                hasFeatures: () => true
-            }
-        });
-        expect(wrapper.find("#dmg").exists()).to.be.false;
-        expect(wrapper.find("#rsc").exists()).to.be.false;
-        expect(wrapper.find("#dma").exists()).to.be.false;
-    });
-
     it("Element should exists", () => {
         wrapper = shallowMount(TacticalMarkComponent, {
             store,
@@ -138,34 +129,25 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             computed: {
                 isLayerVisible: () => true,
                 hasFeatures: () => true
-            }
+            },
+            setCanvasCursor: sinon.stub(),
+            resetCanvasCursor: sinon.stub()
         });
         store.commit("Tools/TacticalMark/setActive", true);
 
         expect(wrapper.findComponent({ref: "Vorlage_Dammbalken"}).exists()).to.be.true;
     });
 
-    it("Element should not exists", () => {
-        store.commit("Tools/TacticalMark/setActive", false);
+    it("check if buttons, images and texts exists in dmg container", () => {
         wrapper = shallowMount(TacticalMarkComponent, {
             store,
             localVue,
             computed: {
                 isLayerVisible: () => true,
                 hasFeatures: () => true
-            }
-        });
-        expect(wrapper.findComponent({ref: "Vorlage_Dammbalken"}).exists()).to.be.false;
-    });
-
-    it("check if buttons, images and texta exists in dmg container", () => {
-        wrapper = shallowMount(TacticalMarkComponent, {
-            store,
-            localVue,
-            computed: {
-                isLayerVisible: () => true,
-                hasFeatures: () => true
-            }
+            },
+            setCanvasCursor: sinon.stub(),
+            resetCanvasCursor: sinon.stub()
         });
         store.commit("Tools/TacticalMark/setActive", true);
 
@@ -253,5 +235,52 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
 
         expect(iPath).to.equal("https://test-url/Vorlage_Dammbalken.jpg");
     });
-});
 
+    it("check prepareFileName function with suffix", () => {
+        const res = wrapper.vm.prepareFileName("filename.kml");
+
+        expect(res).to.equal("filename.kml");
+    });
+
+    it("check prepareFileName function without suffix", () => {
+        const res = wrapper.vm.prepareFileName("filename");
+
+        expect(res).to.equal("filename.kml");
+    });
+
+    it("check download function if showDownload is false", () => {
+        wrapper.vm.showDownload = false;
+        wrapper.vm.download();
+
+        expect(wrapper.vm.showDownload).to.equal(true);
+    });
+
+    it("check download function if showDownload is true", () => {
+        wrapper.vm.showDownload = true;
+        wrapper.vm.download();
+
+        expect(wrapper.vm.showDownload).to.equal(false);
+    });
+
+    it("check enableDownloadBtn function with filename ", () => {
+        wrapper = shallowMount(TacticalMarkComponent, {
+            store,
+            localVue,
+            computed: {
+                isLayerVisible: () => true,
+                hasFeatures: () => true
+            }
+        });
+        store.commit("Tools/TacticalMark/setActive", true);
+        wrapper.vm.layer = {
+            getSource: () => ({
+                getFeatures: () => ({getFeatures})
+            })
+        };
+
+        wrapper.vm.filename = "test";
+        wrapper.vm.enableDownloadBtn();
+
+        expect(wrapper.vm.disableFileDownload).to.equal(true);
+    });
+});

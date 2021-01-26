@@ -8,6 +8,9 @@ import {Style, Text} from "ol/style.js";
 import {click} from "ol/events/condition";
 import {Draw, Select, Modify} from "ol/interaction.js";
 import uniqueId from "../../../src/utils/uniqueId.js";
+import convertFeaturesToKml from "../../../src/utils/convertFeaturesToKml.js";
+import {Circle} from "ol/geom.js";
+import {fromCircle} from "ol/geom/Polygon.js";
 
 export default {
     name: "TacticalMark",
@@ -16,7 +19,13 @@ export default {
     },
     data () {
         return {
-            mapElement: document.getElementById("map")
+            mapElement: document.getElementById("map"),
+            showDownload: false,
+            format: "kml",
+            filename: "",
+            fileUrl: "",
+            file: "",
+            disableFileDownload: true
         };
     },
     computed: {
@@ -39,32 +48,50 @@ export default {
             return this.layer.getSource().getFeatures().length > 0;
         },
 
-        // Title for selectbox
+        /**
+         * returns text for title
+         * @returns {String} -
+         */
         title: function () {
             return this.$t("additional:modules.tools.TacticalMark.title");
         },
 
-        // Text for icon setting button
+        /**
+         * returns text for iconSetting
+         * @returns {String} -
+         */
         iconSetting: function () {
             return this.$t("additional:modules.tools.TacticalMark.iconSetting");
         },
 
-        // Text for icon delete button
+        /**
+         * returns text for iconDelete
+         * @returns {String} -
+         */
         iconDelete: function () {
             return this.$t("additional:modules.tools.TacticalMark.iconDelete");
         },
 
-        // Text for icon delete all button
-        iconDeleteAll: function () {
-            return this.$t("additional:modules.tools.TacticalMark.iconDeleteAll");
+        /**
+         * returns text for iconDownload
+         * @returns {String} -
+         */
+        iconDownload: function () {
+            return this.$t("additional:modules.tools.TacticalMark.iconDownload");
         },
 
-        // Text for icon move button
+        /**
+         * returns text for iconMove
+         * @returns {String} -
+         */
         iconMove: function () {
             return this.$t("additional:modules.tools.TacticalMark.iconMove");
         },
 
-        // Options for the first selectbox
+        /**
+         * returns options for category selectbox
+         * @returns {Array} -
+         */
         options: function () {
             return [
                 {name: this.$t("additional:modules.tools.TacticalMark.damageImage"), id: "dmg"},
@@ -73,9 +100,36 @@ export default {
             ];
         },
 
-        // Text for damage account
+        /**
+         * returns text for damageAccount
+         * @returns {String} -
+         */
         damageAccount: function () {
             return this.$t("additional:modules.tools.TacticalMark.damageAccount");
+        },
+
+        /**
+         * returns text for saveFile
+         * @returns {String} -
+         */
+        saveFile: function () {
+            return this.$t("additional:modules.tools.TacticalMark.saveFile");
+        },
+
+        /**
+         * returns text for setFileName
+         * @returns {String} -
+         */
+        setFileName: function () {
+            return this.$t("additional:modules.tools.TacticalMark.setFileName");
+        },
+
+        /**
+         * returns text for filenameLabel
+         * @returns {String} -
+         */
+        filenameLabel: function () {
+            return this.$t("additional:modules.tools.TacticalMark.filenameLabel");
         }
     },
     watch: {
@@ -98,7 +152,7 @@ export default {
         this.$on("close", this.close);
         this.interaction = "";
         this.selectedBtn = "";
-        this.layer = Radio.request("Map", "createLayerIfNotExists", "import_tactical_layer");
+        this.layer = Radio.request("Map", "createLayerIfNotExists", "import_draw_layer");
     },
     /**
      * Put initialize here if mounting occurs after config parsing
@@ -196,7 +250,12 @@ export default {
                 });
 
                 this.interaction.on("drawend", (evt) => {
+                    const that = this;
+
+                    evt.feature.set("drawState", {drawType: {id: "drawSymbol"}});
+
                     evt.feature.setStyle(function () {
+                        that.enableDownloadBtn();
                         return style;
                     });
                     this.layer.setVisible(true);
@@ -212,19 +271,6 @@ export default {
                 this.resetCanvasCursor();
                 this.selectedBtn = "";
             }
-        },
-
-        /**
-         * delete all of the marked icons
-         * @returns {void}  -
-         */
-        deleteAll () {
-            Object.keys(this.$refs).forEach(rf => {
-                this.$refs[rf].style.backgroundColor = "#F2F2F2";
-            });
-
-            this.removeInteractionFromMap(this.interaction);
-            this.layer.getSource().clear();
         },
 
         /**
@@ -252,6 +298,7 @@ export default {
                     evt.target.getFeatures().forEach((feature) => {
                         this.layer.getSource().removeFeature(feature);
                     });
+                    this.enableDownloadBtn();
                 });
                 this.setCanvasCursor();
                 this.selectedBtn = "delete";
@@ -370,7 +417,100 @@ export default {
          * @returns {void}
          */
         setVisibility (layer, value) {
-            layer.setVisible(value);
+            this.layer.setVisible(value);
+        },
+
+        /**
+         * toggle the download area
+         *  @returns {void}
+         */
+        download () {
+            this.showDownload = !this.showDownload;
+        },
+
+        /**
+         * deactivates or activates the download button
+         * @returns {void}
+         */
+        enableDownloadBtn () {
+            if (this.prepareFileName(this.filename) !== "" && this.layer.getSource().getFeatures().length > 0) {
+                this.disableFileDownload = false;
+            }
+            else {
+                this.disableFileDownload = true;
+            }
+        },
+
+        /**
+         * Commits the current features of the draw layer to the state.
+         * Action is dispatched when a feature is drawn, edited or deleted.
+         * NOTE: When a feature is an instance of ol/Circle, it is converted to a ol/Polygon first.
+         *
+         * @returns {void}
+         */
+        async setDownloadFeatures () {
+            const downloadFeatures = [],
+                drawnFeatures = this.layer.getSource().getFeatures();
+
+            drawnFeatures.forEach(drawnFeature => {
+                const feature = drawnFeature.clone(),
+                    geometry = feature.getGeometry();
+
+                if (geometry instanceof Circle) {
+                    feature.setGeometry(fromCircle(geometry));
+                }
+                downloadFeatures.push(feature);
+            });
+
+            await this.startDownload(downloadFeatures);
+        },
+
+        /**
+         * starts the download process
+         * @param {module:ol/Feature[]} downloadFeatures - Collection of openlayers features to be downloaded
+         * @returns {void}
+         */
+        async startDownload (downloadFeatures) {
+            if (downloadFeatures.length > 0) {
+
+                const dataString = await convertFeaturesToKml(downloadFeatures);
+
+                this.file = this.prepareFileName(this.filename);
+
+                if (this.file && this.file !== "") {
+                    this.prepareDownload(dataString, this.file);
+                }
+            }
+        },
+
+        /**
+         * prepares the download process
+         * @param {String} dataString - data in string
+         * @returns {void}
+         */
+        prepareDownload (dataString) {
+            const isIE = Radio.request("Util", "isInternetExplorer");
+
+            if (isIE) {
+                window.navigator.msSaveOrOpenBlob(new Blob([dataString]), this.file);
+            }
+            else {
+                this.fileUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(dataString)}`;
+            }
+        },
+
+        /**
+         * prepares the file name
+         * @param {String} fileName - the given filename from html input field
+         * @returns {String} - prepared filename with suffix or empty string
+         */
+        prepareFileName (fileName) {
+            if (fileName.length > 0) {
+                const suffix = "." + this.format;
+
+                return fileName.toLowerCase().endsWith(suffix) ? fileName : fileName + suffix;
+            }
+            return "";
         }
     }
 };
@@ -2065,19 +2205,6 @@ export default {
                     </div>
                     <div class="tm-item">
                         <div
-                            ref="deleteAll"
-                            class="tm-btn"
-                            @click="deleteAll();"
-                        >
-                            <div class="tm-btn-txt">
-                                <span>
-                                    {{ iconDeleteAll }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tm-item">
-                        <div
                             ref="delete"
                             class="tm-btn"
                             @click="deleteIcon();"
@@ -2089,6 +2216,72 @@ export default {
                             </div>
                         </div>
                     </div>
+                    <div class="tm-item">
+                        <div
+                            ref="download"
+                            class="tm-btn"
+                            @click="download()"
+                        >
+                            <div class="tm-btn-txt">
+                                <span>
+                                    {{ iconDownload }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    v-show="showDownload"
+                    class="tm-container download-container"
+                >
+                    <div class="tm-item">
+                    </div>
+                    <div class="tm-item">
+                    </div>
+                    <div class="tm-item">
+                        <form
+                            id="tool-tacticalmark-download"
+                            role="form"
+                            class="form-horizontal"
+                        >
+                            <div class="form-group form-group-sm">
+                                <label
+                                    class="col-md-5 col-sm-5 control-label"
+                                    for="tool-tacticalmark-download-filename"
+                                >
+                                    {{ filenameLabel }}
+                                </label>
+                                <div class="col-md-7 col-sm-7">
+                                    <input
+                                        id="tool-tacticalmark-download-filename"
+                                        v-model="filename"
+                                        type="text"
+                                        :placeholder="setFileName"
+                                        class="form-control"
+                                        @keyup="enableDownloadBtn"
+                                    >
+                                </div>
+                            </div>
+                            <label class="col-md-5 col-sm-5 control-label"></label>
+                            <a
+                                id="tool-tacticalmark-download-file"
+                                class="downloadFile"
+                                :href="fileUrl"
+                                :download="file"
+                            >
+                                <button
+                                    class="btn btn-sm btn-block btn-lgv-grey"
+                                    type="button"
+                                    :disabled="disableFileDownload"
+                                    @click="setDownloadFeatures"
+                                >
+                                    <span>
+                                        {{ saveFile }}
+                                    </span>
+                                </button>
+                            </a>
+                        </form>
+                    </div>
                 </div>
             </div>
         </template>
@@ -2098,6 +2291,17 @@ export default {
 <style lang="less" scoped>
     input[type="checkbox"] {
         margin-top: 0;
+    }
+    #tool-tacticalmark-download {
+        margin:0 auto;
+        text-align: center;
+    }
+    .download-container {
+        margin-top: 14px;
+    }
+    .btn-lgv-grey {
+        float: right;
+        width: 206px;
     }
     .tm-container {
         display: grid;
@@ -2109,6 +2313,16 @@ export default {
         padding: 0px 1px;
         font-size: 12px;
         text-align: center;
+    }
+    button {
+        border-radius: 3px;
+        background-color: #f2f2f2;
+        border: 1px solid #cdcdcd;
+    }
+    .button:hover {
+        background-color: #FFFFFF;
+        color: black;
+        border: 1px solid #e7e7e7;
     }
     .tm-btn {
         border-radius: 3px;

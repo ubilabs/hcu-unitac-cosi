@@ -10,7 +10,12 @@
                 "iconSetting": "Icon setzen",
                 "iconDelete": "Löschen",
                 "iconDeleteAll": "Alles löschen",
-                "iconMove": "Verschieben"
+                "iconMove": "Verschieben",
+                "iconDownload": "Herunterladen",
+                "format": "Format",
+                "filenameLabel": "Dateiname",
+                "saveFile": "Speichern",
+                "setFileName": "Bitte Dateiname angeben"
             }
         }
     }
