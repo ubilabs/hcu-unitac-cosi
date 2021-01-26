@@ -12,7 +12,7 @@ const mutations = {
 
     /**
      * If name from config.json starts with "translate#", the corrected key is set to name here.
-     * @param {object} state of this component
+     * @param {object} state - vuex element
      * @param {string} payload name of this component
      * @returns {void}
      */
@@ -21,24 +21,70 @@ const mutations = {
             state.name = payload.substr("translate#".length);
         }
     },
-    updateSelectedFormat: (newFormat) => {
+
+    /**
+     * Sets the value to models property rasterNames
+     * @param {object} state - vuex element
+     * @param {String} newFormat value of selected file Format like dwg or jpg
+     * @returns {void}
+     */
+    updateSelectedFormat: (state, newFormat) => {
         if (newFormat) {
-            stateSdpAddon.selectedFormat = newFormat;
+            state.selectedFormat = newFormat;
         }
     },
-    updateGraphicalSelectModel: (graphicalSelectModel) => {
+
+    /**
+     * Sets the graphicalSelectModel
+     * @param {Object} state - vuex element
+     * @param {Object} graphicalSelectModel from the graphical selection snippet
+     * @returns {void}
+     */
+    updateGraphicalSelectModel: (state, graphicalSelectModel) => {
         if (graphicalSelectModel) {
-            stateSdpAddon.graphicalSelectModel = graphicalSelectModel;
+            state.graphicalSelectModel = graphicalSelectModel;
         }
     },
-    updateWfsRaster: function (value) {
-        stateSdpAddon.wfsRaster = value;
+
+    /**
+     * Sets the selectedAreaGeoJson from the selected area by the graphicalSelect snippet
+     * @param {Object} state - vuex element
+     * @param {Object} selectedAreaGeoJson of the selected area by the graphicalSelect snippet
+     * @returns {void}
+     */
+    updateSelectedAreaGeoJson: (state, selectedAreaGeoJson) => {
+        if (selectedAreaGeoJson) {
+            state.graphicalSelectModel.attributes.selectedAreaGeoJson = selectedAreaGeoJson;
+        }
     },
-    updateIsSelected: function (value) {
-        stateSdpAddon.isSelected = value;
+    /**
+     * Sets the WFSRaster
+     * @param {Object} state - vuex element
+     * @param {ol.feature} value the features of the WFSRaster
+     * @returns {void}
+     */
+    updateWfsRaster: (state, value) => {
+        if (value) {
+            state.wfsRaster = value;
+        }
     },
-    updateSelectedRasternames: function (value) {
-        stateSdpAddon.rasterNames = value;
+    /**
+     * Sets the value to models property rasterNames
+     * @param {Object} state - vuex element
+     * @param {Array} value names of the raster squares from the intersected graphical selection
+     * @returns {void}
+     */
+    updateSelectedRasterNames: (state, value) => {
+        state.rasterNames = value;
+    },
+    /**
+     * Sets the value to property isSelected
+     * @param {Object} state - vuex element
+     * @param {Boolean} value is selected or not
+     * @returns {void}
+     */
+    updateIsSelected: (state, value) => {
+        state.isSelected = value;
     }
 };
 
