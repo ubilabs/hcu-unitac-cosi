@@ -12,8 +12,8 @@ const mutations = {
 
     /**
      * If name from config.json starts with "translate#", the corrected key is set to name here.
-     * @param {object} state - vuex element
-     * @param {string} payload name of this component
+     * @param {Object} state - vuex element
+     * @param {String} payload name of this component
      * @returns {void}
      */
     applyTranslationKey: (state, payload) => {
@@ -24,11 +24,11 @@ const mutations = {
 
     /**
      * Sets the value to models property rasterNames
-     * @param {object} state - vuex element
+     * @param {Object} state - vuex element
      * @param {String} newFormat value of selected file Format like dwg or jpg
      * @returns {void}
      */
-    updateSelectedFormat: (state, newFormat) => {
+    setSelectedFormat: (state, newFormat) => {
         if (newFormat) {
             state.selectedFormat = newFormat;
         }
@@ -40,7 +40,7 @@ const mutations = {
      * @param {Object} graphicalSelectModel from the graphical selection snippet
      * @returns {void}
      */
-    updateGraphicalSelectModel: (state, graphicalSelectModel) => {
+    setGraphicalSelectModel: (state, graphicalSelectModel) => {
         if (graphicalSelectModel) {
             state.graphicalSelectModel = graphicalSelectModel;
         }
@@ -52,7 +52,7 @@ const mutations = {
      * @param {Object} selectedAreaGeoJson of the selected area by the graphicalSelect snippet
      * @returns {void}
      */
-    updateSelectedAreaGeoJson: (state, selectedAreaGeoJson) => {
+    setSelectedAreaGeoJson: (state, selectedAreaGeoJson) => {
         if (selectedAreaGeoJson) {
             state.graphicalSelectModel.attributes.selectedAreaGeoJson = selectedAreaGeoJson;
         }
@@ -63,7 +63,7 @@ const mutations = {
      * @param {ol.feature} value the features of the WFSRaster
      * @returns {void}
      */
-    updateWfsRaster: (state, value) => {
+    setWfsRaster: (state, value) => {
         if (value) {
             state.wfsRaster = value;
         }
@@ -74,8 +74,10 @@ const mutations = {
      * @param {Array} value names of the raster squares from the intersected graphical selection
      * @returns {void}
      */
-    updateSelectedRasterNames: (state, value) => {
-        state.rasterNames = value;
+    setSelectedRasterNames: (state, value) => {
+        if (value) {
+            state.rasterNames = value;
+        }
     },
     /**
      * Sets the value to property isSelected
@@ -83,8 +85,10 @@ const mutations = {
      * @param {Boolean} value is selected or not
      * @returns {void}
      */
-    updateIsSelected: (state, value) => {
-        state.isSelected = value;
+    setIsSelected: (state, value) => {
+        if (value) {
+            state.isSelected = value;
+        }
     }
 };
 

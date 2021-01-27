@@ -50,7 +50,7 @@ const actions = {
     },
     /**
      * Shows or hides the raster layer
-     * @param {Object} getters and dispatch - vuex  objects
+     * @param {Object} getters and dispatch - vuex elements
      * @returns {void}
      */
     toggleRasterLayer: function ({getters, dispatch}) {
@@ -101,7 +101,7 @@ const actions = {
         const format = new WFS(),
             features = format.readFeatures(data);
 
-        state.commit("updateWfsRaster", features);
+        state.commit("setWfsRaster", features);
     },
 
     /**
@@ -139,7 +139,7 @@ const actions = {
             });
         }
 
-        commit("updateSelectedRasterNames", rasterNames);
+        commit("setSelectedRasterNames", rasterNames);
 
     },
     /**
@@ -226,7 +226,7 @@ const actions = {
      * @param {String} format the LS state
      * @returns {void}
      */
-    requestCompressRasterOverviewData: function (getters, format) {
+    requestCompressRasterOverviewData: function ({getters}, format) {
         const temp = getters.overviewDownloadLocation + format + ".dwg",
             url = Radio.request("RestReader", "getServiceById", getters.compressedFileId).get("url");
 
@@ -273,7 +273,7 @@ const actions = {
                 else {
                     // download zip-file
                     window.location.href = Radio.request("RestReader", "getServiceById", getters.compressedFileId).get("url") + "?name=" + resp.data;
-                    commit("updateSelectedAreaGeoJson", {});
+                    commit("setSelectedAreaGeoJson", {});
                 }
             })
             .catch(function () {

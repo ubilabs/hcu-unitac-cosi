@@ -11,8 +11,7 @@ export default {
     name: "SdpDownload",
     data() {
       return {
-        selectedFormats: this.$store.state.Tools.SdpDownload.formats,
-        //selected: "additional:modules.tools.sdpdownload.nasLabel"
+        selectedFormats: this.$store.state.Tools.SdpDownload.formats
       }
     },
     components: {
@@ -30,12 +29,10 @@ export default {
      */
     mounted () {
         this.applyTranslationKey(this.name);
-        this.setGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
-
     },
     watch: {
         /**
-         * Starts the action for processes, if the tool is be activated (active === true).
+         * Starts the action for processes, if the tool is activated (active === true).
          * @param {Boolean} value Value deciding whether the tool gets activated or deactivated.
          * @returns {void}
          */
@@ -78,7 +75,7 @@ export default {
                 model.set("isActive", false);
             }
         },
-        /**
+        /** ToDo move to mutation
          * sets default values for the language
          * @returns {void}
          */
@@ -100,26 +97,26 @@ export default {
             jpgDefaults.label = this.$t('additional:modules.tools.sdpdownload.jpgLabel');
             jpgDefaults.desc = this.$t('additional:modules.tools.sdpdownload.jpgDescription');
 
-            this.selectFormat = this.$t('additional:modules.tools.sdpdownload.selectFormat');
-            this.howToChooseTiles = this.$t('additional:modules.tools.sdpdownload.howToChooseTiles');
-            this.downloadDataPackage = this.$t('additional:modules.tools.sdpdownload.downloadDataPackage');
-            this.specialDownloads = this.$t('additional:modules.tools.sdpdownload.specialDownloads');
-            this.neuwerkDataPackage = this.$t('additional:modules.tools.sdpdownload.neuwerkDataPackage');
-            this.scharhoernDataPackage = this.$t('additional:modules.tools.sdpdownload.scharhörnDataPackage');
-            this.tileOverview310 = this.$t('additional:modules.tools.sdpdownload.tileOverview310');
-            this.tileOverview320 = this.$t('additional:modules.tools.sdpdownload.tileOverview320');
-            this.pleaseSelectTiles = this.$t('additional:modules.tools.sdpdownload.pleaseSelectTiles');
-            this.failedToDownload = this.$t('additional:modules.tools.sdpdownload.failedToDownload');
-            this.details = this.$t('additional:modules.tools.sdpdownload.details');
-            this.serviceNotResponding = this.$t('additional:modules.tools.sdpdownload.serviceNotResponding');
-        },
+            this.$store.state.Tools.SdpDownload.selectFormat = this.$t('additional:modules.tools.sdpdownload.selectFormat');
+            this.$store.state.Tools.SdpDownload.howToChooseTiles = this.$t('additional:modules.tools.sdpdownload.howToChooseTiles');
+            this.$store.state.Tools.SdpDownload.downloadDataPackage = this.$t('additional:modules.tools.sdpdownload.downloadDataPackage');
+            this.$store.state.Tools.SdpDownload.specialDownloads = this.$t('additional:modules.tools.sdpdownload.specialDownloads');
+            this.$store.state.Tools.SdpDownload.neuwerkDataPackage = this.$t('additional:modules.tools.sdpdownload.neuwerkDataPackage');
+            this.$store.state.Tools.SdpDownload.scharhoernDataPackage = this.$t('additional:modules.tools.sdpdownload.scharhörnDataPackage');
+            this.$store.state.Tools.SdpDownload.tileOverview310 = this.$t('additional:modules.tools.sdpdownload.tileOverview310');
+            this.$store.state.Tools.SdpDownload.tileOverview320 = this.$t('additional:modules.tools.sdpdownload.tileOverview320');
+            this.$store.state.Tools.SdpDownload.pleaseSelectTiles = this.$t('additional:modules.tools.sdpdownload.pleaseSelectTiles');
+            this.$store.state.Tools.SdpDownload.failedToDownload = this.$t('additional:modules.tools.sdpdownload.failedToDownload');
+            this.$store.state.Tools.SdpDownload.details = this.$t('additional:modules.tools.sdpdownload.details');
+            this.$store.state.Tools.SdpDownload.serviceNotResponding = this.$t('additional:modules.tools.sdpdownload.serviceNotResponding');
+       },
         /**
          * Sets the graphicalSelectModel
          * @param {Snippets.GraphicalSelect.GraphicalSelectModel} value graphicalSelectModel
          * @returns {void}
          */
         updateGraphicalSelectModel: function (value)  {
-           this.updategraphicalSelectModel(value);
+           this.setGraphicalSelectModel(value);
         },
         /**
          * Sets the value to models property isSelected by mutation updateSelectedFormat
@@ -127,7 +124,7 @@ export default {
          * @returns {void}
          */
         formatSelected: function (evt) {
-            this.updateSelectedFormat(evt);
+            this.setSelectedFormat(evt);
         },
         /**
         * Sets the WFSRaster
@@ -135,7 +132,7 @@ export default {
         * @returns {void}
         */
         updateWfsRaster: function (value) {
-            this.updateWfsRaster(value);
+            this.setWfsRaster(value);
         },
         /**
          * Sets the value to models property isSelected
@@ -143,7 +140,7 @@ export default {
          * @returns {void}
          */
         updateIsSelected: function (value) {
-            this.updateIsSelected(value);
+            this.setIsSelected(value);
         },
         /**
          * Sets the value to models property rasterNames
@@ -151,7 +148,7 @@ export default {
          * @returns {void}
          */
         updateSelectedRasterNames: function (value) {
-            this.updateSelectedRasterNames(value);
+            this.setSelectedRasterNames(value);
         },
         /**
          * Creates new graphicalSelectView instance and adds the divs to the template with drawing selections: circle|rectangle|polygon
@@ -160,7 +157,7 @@ export default {
          */
         renderDrawSelection: function () {
             this.graphicalSelectView= {};
-            this.setGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
+            this.updateGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
             this.graphicalSelectView = new GraphicalSelectView({model: this.graphicalSelectModel});
             this.$refs.drawSelection.appendChild(this.graphicalSelectView.render().el);
         },
@@ -200,7 +197,7 @@ export default {
             </div>
             <div class="content">
                 <div class="form-group col-xs-12 first">
-                    <span>{{ $t("additional:modules.tools.sdpdownload.selectFormat") }}</span>
+                    <span>{{ selectFormat }}</span>
                 </div>
                 <div class="form-group col-xs-12">
                         <select  class="input-group bootstrap-select" style="width: 100%" name="formatSelection" @change="formatSelected($event.target.value)">
@@ -208,7 +205,7 @@ export default {
                         </select>
                     </div>
                 <div class="form-group col-xs-12 first">
-                     <span>{{ $t("additional:modules.tools.sdpdownload.howToChooseTiles") }}</span>
+                     <span>{{ howToChooseTiles }}</span>
                 </div>
                 <div class="form-group col-xs-12">
                     <div class="input-group bootstrap-select" style="width: 100%">
@@ -217,30 +214,30 @@ export default {
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
                     <button v-on:click="download" type="button" class="btn btn-default btn-sm btn-block sdp-download center-block">
-                        {{ $t("additional:modules.tools.sdpdownload.downloadDataPackage") }}
+                        {{ downloadDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-xs-12">
-                    <span>{{ $t("additional:modules.tools.sdpdownload.specialDownloads") }}</span>
+                    <span>{{ specialDownloads }}</span>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button v-on:click="downloadNeuwerk" type="button" class="btn btn-default btn-sm btn-block sdp-neuwerk-download center-block">
-                        {{ $t("additional:modules.tools.sdpdownload.neuwerkDataPackage") }}
+                        {{ neuwerkDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button v-on:click="downloadScharhoern" type="button" class="btn btn-default btn-sm btn-block sdp-download-scharhoern center-block">
-                        {{ $t("additional:modules.tools.sdpdownload.scharhoernDataPackage") }}
+                        {{ scharhoernDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button v-on:click="downloadRasterOverview310" type="button" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-310 center-block">
-                        {{ $t("additional:modules.tools.sdpdownload.tileOverview310") }}
+                        {{ tileOverview310 }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button v-on:click="downloadRasterOverview320" type="button" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-320 center-block">
-                        {{ $t("additional:modules.tools.sdpdownload.tileOverview320") }}
+                        {{ tileOverview320 }}
                     </button>
                 </div>
             </div>
