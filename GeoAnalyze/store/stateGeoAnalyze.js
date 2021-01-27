@@ -9,6 +9,7 @@
  * @property {boolean} resizableWindow if true, window is resizable (config-param)
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
  * @property {boolean} deactivateGFI flag if tool should deactivate gfi (config-param)
+ * @property {string} The url of the AIS GeoAnalyze API.
  */
 const state = {
     active: false,
@@ -20,7 +21,7 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    apiUrl: "https://test-geofos.fhhnet.stadt.hamburg.de/atlas-innere-sicherheit/backend/analyze"
+    apiUrl: ""
 };
 
 export default state;

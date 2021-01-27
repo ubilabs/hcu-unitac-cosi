@@ -61,7 +61,7 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
                 }
             },
             getters: {
-                imagePath: () => "https://geofos.fhhnet.stadt.hamburg.de/lgv-config/img/"
+                imagePath: () => "https://test-url/"
             },
             state: {
                 configJson: mockConfigJson
@@ -251,7 +251,7 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
     it("check getIconPath function", () => {
         const iPath = wrapper.vm.getIconPath("Vorlage_Dammbalken.jpg");
 
-        expect(iPath).to.equal("https://geofos.fhhnet.stadt.hamburg.de/lgv-config/img/Vorlage_Dammbalken.jpg");
+        expect(iPath).to.equal("https://test-url/Vorlage_Dammbalken.jpg");
     });
 });
 
