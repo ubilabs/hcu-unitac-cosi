@@ -644,7 +644,7 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
 
             api.updateYear("thingId", "meansOfTransport", "2020", "onupdate", "onerror", "onstart", "oncomplete", "2021");
 
-            expect(lastUrl).to.equal("https://www.example.com/v1234/Things(thingId)?$expand=Datastreams($filter=properties/layerName eq 'meansOfTransport" + api.getLayerNameInfix() + "_1-Woche';$expand=Observations($filter=phenomenonTime ge " + expectedFrom + " and phenomenonTime lt " + expectedUntil + "))");
+            expect(lastUrl).to.equal("https://www.example.com/v1234/Things(thingId)?$expand=Datastreams($filter=properties/layerName eq 'meansOfTransport" + api.getLayerNameInfix() + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + expectedFrom + " and phenomenonTime lt " + expectedUntil + "))");
             expect(typeof lastOnupdate === "function").to.be.true;
             expect(lastOnerror).to.equal("onerror");
             expect(lastOnstart).to.equal("onstart");
@@ -680,12 +680,12 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
             expect(lastDate).to.equal(expectedDate);
             expect(lastValue).to.equal(expectedValue);
         });
-        it("updateYear: should call onupdate with a sum of all observations for the _1-Woche and _15-Min urls if year does equal todays year", function () {
+        it("updateYear: should call onupdate with a sum of all observations for the _1-Tag and _15-Min urls if year does equal todays year", function () {
             let lastDate = false,
                 lastValue = false;
             const dummySensorThingsHttp = {
                     get: (url, onupdate) => {
-                        if (url.indexOf("_1-Woche") !== -1) {
+                        if (url.indexOf("_1-Tag") !== -1) {
                             onupdate([{
                                 Datastreams: [{
                                     "@iot.id": "foo",
@@ -757,7 +757,7 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
 
             const dummySensorThingsHttp = {
                     get: (url, onupdate) => {
-                        if (url.indexOf("_1-Woche") !== -1) {
+                        if (url.indexOf("_1-Tag") !== -1) {
                             onupdate([{
                                 Datastreams: [{
                                     "@iot.id": "foo",

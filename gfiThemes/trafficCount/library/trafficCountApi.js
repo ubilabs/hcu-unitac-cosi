@@ -313,25 +313,25 @@ export class TrafficCountApi {
      * @returns {Void}  -
      */
     updateYear (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete, yearTodayOpt) {
-        let sumWeekly = 0,
+        let sumYear = 0,
             sumThisWeek = 0;
         const startDate = moment(year, "YYYY").toISOString(),
             endDate = moment(year, "YYYY").add(1, "year").toISOString(),
-            urlWeekly = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Woche';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + "))",
+            urlYear = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + "))",
             lastMonday = moment().startOf("isoWeek").toISOString(),
             yearToday = yearTodayOpt || moment().format("YYYY"),
             urlThisWeeks15min = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + lastMonday + "))";
 
-        return this.http.get(urlWeekly, (datasetWeekly) => {
-            if (!this.checkForObservations(datasetWeekly)) {
-                (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateYear: datasetWeekly does not include a datastream with an observation", datasetWeekly);
+        return this.http.get(urlYear, (datasetYear) => {
+            if (!this.checkForObservations(datasetYear)) {
+                (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateYear: datasetYear does not include a datastream with an observation", datasetYear);
                 return;
             }
 
-            sumWeekly = this.sumObservations(datasetWeekly);
+            sumYear = this.sumObservations(datasetYear);
 
             if (typeof onupdate === "function") {
-                onupdate(year, sumWeekly);
+                onupdate(year, sumYear);
             }
 
 
@@ -348,7 +348,7 @@ export class TrafficCountApi {
                 sumThisWeek = this.sumObservations(dataset15min);
 
                 if (typeof onupdate === "function") {
-                    onupdate(year, sumWeekly + sumThisWeek);
+                    onupdate(year, sumYear + sumThisWeek);
                 }
 
                 // subscribe via mqtt
@@ -367,7 +367,7 @@ export class TrafficCountApi {
                     sumThisWeek += payload.result;
 
                     if (typeof onupdate === "function") {
-                        onupdate(year, sumWeekly + sumThisWeek);
+                        onupdate(year, sumYear + sumThisWeek);
                     }
                 });
             }, false, oncomplete, onerror || this.defaultErrorHandler);
