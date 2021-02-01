@@ -1550,11 +1550,11 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
             expect(lastTopic).to.equal("v1234/Datastreams(foo)/Observations");
             expect(lastMqttOptions).to.deep.equal({rh: 0});
         });
-        it("subscribeLastUpdate: should push an event to subscriptionTopics that will hand over phenomenonTime to the given onupdate handler", function () {
+        it("subscribeLastUpdate: should push an event to subscriptionTopics that will hand over resultTime to the given onupdate handler", function () {
             let lastDatetime = false,
                 lastErrorMessage = false;
-            const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
-                expectedDateTimeA = moment(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
+            const resultTimeA = "2020-03-22T00:00:00.000Z",
+                expectedDateTimeA = moment(resultTimeA).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
                         onupdate([{
@@ -1575,7 +1575,7 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
             api.getSubscriptionTopics()[expectedTopic][0]({
-                phenomenonTime: phenomenonTimeA
+                resultTime: resultTimeA
             });
             expect(lastDatetime).to.equal(expectedDateTimeA);
 
@@ -1587,7 +1587,7 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
                 lastErrorMessage = error;
             }, "onstart", "oncomplete");
             api.getSubscriptionTopics()[expectedTopic][0]({
-                wrongPhenomenonTime: "foo"
+                wrongResultTime: "foo"
             });
             expect(lastDatetime).to.be.false;
             expect(lastErrorMessage).to.be.a("string");

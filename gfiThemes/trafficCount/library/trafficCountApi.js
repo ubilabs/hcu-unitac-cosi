@@ -657,15 +657,15 @@ export class TrafficCountApi {
 
                 // set retain to 0 to get the last message from the server immediately (see doc\sensorThings_EN.md)
                 this.mqttSubscribe(topic, {rh: 0}, (payload) => {
-                    if (payload && payload.hasOwnProperty("phenomenonTime")) {
+                    if (payload && payload.hasOwnProperty("resultTime")) {
                         if (typeof onupdate === "function") {
-                            const datetime = moment(this.parsePhenomenonTime(payload.phenomenonTime)).format("YYYY-MM-DD HH:mm:ss");
+                            const datetime = moment(payload.resultTime).format("YYYY-MM-DD HH:mm:ss");
 
                             onupdate(datetime);
                         }
                     }
                     else {
-                        (onerror || this.defaultErrorHandler)("TrafficCountAPI.subscribeLastUpdate: the payload does not include a phenomenonTime", payload);
+                        (onerror || this.defaultErrorHandler)("TrafficCountAPI.subscribeLastUpdate: the payload does not include a resultTime", payload);
                     }
                 });
             }
