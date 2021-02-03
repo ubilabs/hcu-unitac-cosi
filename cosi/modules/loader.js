@@ -6,7 +6,13 @@ import DashboardView from "./dashboard/view";
 import DashboardTableView from "./dashboardTable/view";
 import ContextMenuView from "./contextMenu/view";
 import SelectDistrictView from "./selectDistrict/view";
-import SaveSelectionCosiView from "./saveSelection/view";
+/**
+ * The saveSelection addon module has been disabled in cosi.
+ * The saveselection module in the master portal has been migrated to Vue,
+ * so no parent module is available for this module anymore.
+ * To get this module running again a move to Vue is necessary.
+ */
+// import SaveSelectionCosiView from "./saveSelection/view";
 import InfoScreenView from "./infoScreen/view";
 import TimeSliderView from "./timeSlider/view";
 import CalculateRatioView from "./calculateRatio/selectView";
@@ -66,7 +72,7 @@ function initializeCosi () {
         new ReachabilityFromPointView({model: tools.reachabilityFromPoint});
         new ReachabilityInAreaView({model: tools.reachabilityInArea});
         new ColorCodeMapView({model: tools.colorCodeMap});
-        new SaveSelectionCosiView({model: tools.saveSelectionCosi});
+        // new SaveSelectionCosiView({model: tools.saveSelectionCosi});
         new SelectDistrictView({model: tools.selectDistrict});
         new PrintView({model: tools.print});
         new CompareDistrictsView({model: tools.compareDistricts});

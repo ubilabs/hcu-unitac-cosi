@@ -5,7 +5,13 @@ import Dashboard from "./dashboard/model";
 import DashboardTable from "./dashboardTable/model";
 import DashboardWidgetHandler from "./dashboardWidget/handler";
 import SelectDistrict from "./selectDistrict/model";
-import SaveSelectionCosi from "./saveSelection/model";
+/**
+ * The saveSelection addon module has been disabled in cosi.
+ * The saveselection module in the master portal has been migrated to Vue,
+ * so no parent module is available for this module anymore.
+ * To get this module running again a move to Vue is necessary.
+ */
+// import SaveSelectionCosi from "./saveSelection/model";
 import InfoScreenHandler from "./infoScreen/infoScreenHandler/model";
 import ReachabilityFromPoint from "./reachabilityFromPoint/model";
 import ReachabilityInArea from "./reachabilityInArea/model";
@@ -212,12 +218,12 @@ const general = {
             glyphicon: "glyphicon-time",
             resizableWindow: true
         }),
-        colorCodeMap: new ColorCodeMap(),
-        saveSelectionCosi: new SaveSelectionCosi({
-            parentId: "utilities",
-            type: "tool",
-            glyphicon: "glyphicon-copy"
-        })
+        colorCodeMap: new ColorCodeMap()
+        // saveSelectionCosi: new SaveSelectionCosi({
+        //     parentId: "utilities",
+        //     type: "tool",
+        //     glyphicon: "glyphicon-copy"
+        // })
     } : {};
 
 export {tools, general};

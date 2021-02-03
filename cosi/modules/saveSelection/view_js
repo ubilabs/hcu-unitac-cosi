@@ -1,3 +1,9 @@
+/**
+ * The saveSelection addon module has been disabled in cosi.
+ * The saveselection module in the master portal has been migrated to Vue,
+ * so no parent module is available for this module anymore.
+ * To get this module running again a move to Vue is necessary.
+ */
 import SaveSelectionView from "../../../../modules/tools/saveSelection/view";
 
 const SaveSelectionCosiView = SaveSelectionView.extend(/** @lends SaveSelectionCosiView.prototype */{
