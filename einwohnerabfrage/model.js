@@ -3,7 +3,7 @@ import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
 import LoaderOverlay from "../../src/utils/loaderOverlay";
-import wpsRequest from "../../src/utils/wps";
+import WPS from "../../src/utils/wps";
 import "./RadioBridge.js";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
@@ -433,7 +433,7 @@ const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.proto
         LoaderOverlay.show();
         this.trigger("renderResult");
 
-        wpsRequest("1001", "einwohner_ermitteln.fmw", {
+        WPS.wpsRequest("1001", "einwohner_ermitteln.fmw", {
             "such_flaeche": JSON.stringify(geoJson)
         }, this.handleResponse.bind(this));
     },

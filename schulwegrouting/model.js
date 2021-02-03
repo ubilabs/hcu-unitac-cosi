@@ -4,7 +4,8 @@ import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
 import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import {MultiLineString, Point} from "ol/geom.js";
 import {WKT} from "ol/format.js";
-import Feature from "ol/Feature.js";
+import Feature from "ol/Feature.js"
+import WPS from "../../src/utils/wps";;
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
@@ -354,7 +355,7 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      */
     sendRequest: function (requestObj) {
         this.toggleLoader(true);
-        Radio.trigger("WPS", "request", this.get("wpsId"), "schulwegrouting_wps.fmw", requestObj, this.handleResponse.bind(this), 50000);
+        WPS.wpsRequest(this.get("wpsId"), "schulwegrouting_wps.fmw", requestObj, this.handleResponse.bind(this), 50000);
     },
 
     toggleLoader: function (show) {

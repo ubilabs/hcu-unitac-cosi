@@ -1,7 +1,7 @@
 import BuildSpecModel from "../../../modules/tools/print_/buildSpec.js";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
-import wpsRequest from "../../../src/utils/wps";
+import WPS from "../../../src/utils/wps";
 import store from "../../../src/app-store";
 
 /**
@@ -504,7 +504,7 @@ function initializeBrwAbfrageModel () {
         sendWpsConvertRequest: function () {
             const data = this.getConvertObject(this.get("selectedBrwFeature"));
 
-            wpsRequest("1001", "BRWConvert.fmw", data, this.handleConvertResponse.bind(this));
+            WPS.wpsRequest("1001", "BRWConvert.fmw", data, this.handleConvertResponse.bind(this));
         },
 
         /**
