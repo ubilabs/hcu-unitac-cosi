@@ -108,6 +108,15 @@ export default {
                 this.setComponentKey(newVal);
                 this.setActiveDefaultTab();
             }
+        },
+
+        currentTabId: function (newVal) {
+            if (newVal !== "infos") {
+                this.setGfiDiagramWidth();
+            }
+            else {
+                this.setGfiDefaultWidth();
+            }
         }
     },
     created: function () {
@@ -271,6 +280,23 @@ export default {
             this.keyDay = value + "day";
             this.keyWeek = value + "week";
             this.keyYear = value + "year";
+        },
+
+        /**
+         * setting the width for day, week and year tabs to show the whole diagram
+         * @returns {void}  -
+         */
+        setGfiDiagramWidth: function () {
+            this.$el.style.minWidth = "620px";
+        },
+
+        /**
+         * setting the standard width for info tab
+         * @returns {void} -
+         */
+        setGfiDefaultWidth: function () {
+            this.$el.style.maxWidth = Math.round(document.getElementById("map").offsetWidth / 2.2) + "px";
+            this.$el.style.minWidth = "inherit";
         }
     }
 };
@@ -278,8 +304,8 @@ export default {
 
 <template>
     <div class="trafficCount-gfi">
-        <div class="panel header">
-            <span class="title bold">{{ idLabel }} {{ title }}</span><br>
+        <div class="header">
+            <span class="title">{{ idLabel }} {{ title }}</span><br>
             {{ typeLabel }} <span class="type">{{ type }}</span><br>
             {{ meansOfTransportLabel }} <span class="meansOfTransport">{{ meansOfTransport }}</span><br>
             {{ $t("additional:modules.tools.gfi.themes.trafficCount.directionLabel") }} <span class="direction">{{ direction }}</span>
@@ -364,9 +390,7 @@ export default {
 
 <style lang="less" scoped>
 .trafficCount-gfi{
-        width: 600px;
-        height: 645px;
-        padding: 5px 20px 5px 20px;
+        padding: 10px 5px 0;
         @media (max-width: 600px) {
           width: inherit;
             height: inherit;
@@ -380,12 +404,14 @@ export default {
     .header {
         min-width: 280px;
         max-width: 320px;
-        margin: 0 auto 20px auto;
-        padding: 0 60px;
-        text-align: center;
+        margin: 0 auto 10px;
+        padding: 0 40px;
+        text-align: left;
     }
     .footer {
         position: relative;
+        display: inline-block;
+        width: 100%;
     }
 }
 </style>

@@ -432,9 +432,16 @@ export default {
         margin: 6px 0 0 0;
         table {
             margin: 0;
+            tbody {
+                tr:first-child {
+                    td {
+                        text-align: left;
+                    }
+                }
+            }
             td,
             th {
-                text-align: center;
+                text-align: right;
             }
              td:first-child{
                  text-align: left;

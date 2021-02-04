@@ -151,11 +151,14 @@ export default {
 <style lang="less" scoped>
     div.table {
         margin-top: 5px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         overflow: auto;
         text-align: center;
         tbody > tr > td {
             min-width: 50px;
+            &:first-child {
+                font-weight: bold;
+            }
         }
     }
     .table-responsive {
