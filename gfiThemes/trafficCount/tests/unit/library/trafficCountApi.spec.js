@@ -877,11 +877,12 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
                         lastOnerror = onerror;
                     }
                 },
-                api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt");
+                api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
+                lastMonday = moment().startOf("isoWeek").toISOString();
 
             api.updateTotal("thingId", "meansOfTransport", "onupdate", "onerror", "onstart", "oncomplete");
 
-            expect(lastUrl).to.equal("https://www.example.com/v1234/Things(thingId)?$expand=Datastreams($filter=properties/layerName eq 'meansOfTransport" + api.getLayerNameInfix() + "_1-Woche';$expand=Observations)");
+            expect(lastUrl).to.equal("https://www.example.com/v1234/Things(thingId)?$expand=Datastreams($filter=properties/layerName eq 'meansOfTransport" + api.getLayerNameInfix() + "_1-Woche';$expand=Observations($filter=phenomenonTime lt " + lastMonday + "))");
             expect(typeof lastOnupdate === "function").to.be.true;
             expect(lastOnerror).to.equal("onerror");
             expect(lastOnstart).to.equal("onstart");

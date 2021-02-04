@@ -314,13 +314,13 @@ export class TrafficCountApi {
      */
     updateYear (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete, yearTodayOpt) {
         let sumYear = 0,
-            sumThisWeek = 0;
+            sumThisDay = 0;
         const startDate = moment(year, "YYYY").toISOString(),
             endDate = moment(year, "YYYY").add(1, "year").toISOString(),
-            urlYear = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + "))",
-            lastMonday = moment().startOf("isoWeek").toISOString(),
+            lastMidnight = moment().startOf("day").toISOString(),
             yearToday = yearTodayOpt || moment().format("YYYY"),
-            urlThisWeeks15min = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + lastMonday + "))";
+            urlYear = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + (year === yearToday ? lastMidnight : endDate) + "))",
+            urlThisDays15min = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + lastMidnight + "))";
 
         return this.http.get(urlYear, (datasetYear) => {
             if (!this.checkForObservations(datasetYear)) {
@@ -340,15 +340,15 @@ export class TrafficCountApi {
             }
 
             // year eq todays year
-            this.http.get(urlThisWeeks15min, (dataset15min) => {
+            this.http.get(urlThisDays15min, (dataset15min) => {
                 if (!this.checkForObservations(dataset15min)) {
                     (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateYear: dataset15min does not include a datastream with an observation", dataset15min);
                 }
 
-                sumThisWeek = this.sumObservations(dataset15min);
+                sumThisDay = this.sumObservations(dataset15min);
 
                 if (typeof onupdate === "function") {
-                    onupdate(year, sumYear + sumThisWeek);
+                    onupdate(year, sumYear + sumThisDay);
                 }
 
                 // subscribe via mqtt
@@ -364,10 +364,10 @@ export class TrafficCountApi {
                     if (!payload || !payload.hasOwnProperty("result")) {
                         (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateYear: the payload does not include a result", payload);
                     }
-                    sumThisWeek += payload.result;
+                    sumThisDay += payload.result;
 
                     if (typeof onupdate === "function") {
-                        onupdate(year, sumYear + sumThisWeek);
+                        onupdate(year, sumYear + sumThisDay);
                     }
                 });
             }, false, oncomplete, onerror || this.defaultErrorHandler);
@@ -388,8 +388,8 @@ export class TrafficCountApi {
         let sumWeekly = 0,
             sumThisWeek = 0,
             firstDate = false;
-        const urlWeekly = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Woche';$expand=Observations)",
-            lastMonday = moment().startOf("isoWeek").toISOString(),
+        const lastMonday = moment().startOf("isoWeek").toISOString(),
+            urlWeekly = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Woche';$expand=Observations($filter=phenomenonTime lt " + lastMonday + "))",
             urlThisWeeks15min = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + lastMonday + "))";
 
         return this.http.get(urlWeekly, (datasetWeekly) => {
