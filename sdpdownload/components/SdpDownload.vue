@@ -75,40 +75,12 @@ export default {
                 model.set("isActive", false);
             }
         },
-        /** ToDo move to mutation
-         * sets default values for the language
+        /** sets default values for the language
+        * @param {void}
          * @returns {void}
          */
         initLanguage: function ()  {
-            const nasDefaults = this.formats[0],
-            dwg310Defaults = this.formats[1],
-            dwg320Defaults = this.formats[2],
-            jpgDefaults = this.formats[3];
-
-            nasDefaults.label = this.$t('additional:modules.tools.sdpdownload.nasLabel');
-            nasDefaults.desc = this.$t('additional:modules.tools.sdpdownload.nasDescription');
-
-            dwg310Defaults.label = this.$t('additional:modules.tools.sdpdownload.dwg310Label');
-            dwg310Defaults.desc = this.$t('additional:modules.tools.sdpdownload.dwg310Description');
-
-            dwg320Defaults.label = this.$t('additional:modules.tools.sdpdownload.dwg320Label');
-            dwg320Defaults.desc = this.$t('additional:modules.tools.sdpdownload.dwg320Description');
-
-            jpgDefaults.label = this.$t('additional:modules.tools.sdpdownload.jpgLabel');
-            jpgDefaults.desc = this.$t('additional:modules.tools.sdpdownload.jpgDescription');
-
-            this.$store.state.Tools.SdpDownload.selectFormat = this.$t('additional:modules.tools.sdpdownload.selectFormat');
-            this.$store.state.Tools.SdpDownload.howToChooseTiles = this.$t('additional:modules.tools.sdpdownload.howToChooseTiles');
-            this.$store.state.Tools.SdpDownload.downloadDataPackage = this.$t('additional:modules.tools.sdpdownload.downloadDataPackage');
-            this.$store.state.Tools.SdpDownload.specialDownloads = this.$t('additional:modules.tools.sdpdownload.specialDownloads');
-            this.$store.state.Tools.SdpDownload.neuwerkDataPackage = this.$t('additional:modules.tools.sdpdownload.neuwerkDataPackage');
-            this.$store.state.Tools.SdpDownload.scharhoernDataPackage = this.$t('additional:modules.tools.sdpdownload.scharhörnDataPackage');
-            this.$store.state.Tools.SdpDownload.tileOverview310 = this.$t('additional:modules.tools.sdpdownload.tileOverview310');
-            this.$store.state.Tools.SdpDownload.tileOverview320 = this.$t('additional:modules.tools.sdpdownload.tileOverview320');
-            this.$store.state.Tools.SdpDownload.pleaseSelectTiles = this.$t('additional:modules.tools.sdpdownload.pleaseSelectTiles');
-            this.$store.state.Tools.SdpDownload.failedToDownload = this.$t('additional:modules.tools.sdpdownload.failedToDownload');
-            this.$store.state.Tools.SdpDownload.details = this.$t('additional:modules.tools.sdpdownload.details');
-            this.$store.state.Tools.SdpDownload.serviceNotResponding = this.$t('additional:modules.tools.sdpdownload.serviceNotResponding');
+            this.setInitLanguage();
        },
         /**
          * Sets the graphicalSelectModel
@@ -161,18 +133,43 @@ export default {
             this.graphicalSelectView = new GraphicalSelectView({model: this.graphicalSelectModel});
             this.$refs.drawSelection.appendChild(this.graphicalSelectView.render().el);
         },
+        /**
+         * Calls action to achieve data for graphical selection
+         * @param {void}
+         * @returns {void}
+         */
         download: function () {
             this.requestCompressedData();
         },
+        /**
+         * Calls action to achieve data for special format Neuwerk
+         * @param {void}
+         * @returns {void}
+         */
         downloadNeuwerk: function () {
             this.requestCompressIslandData("Neuwerk");
         },
+        /**
+         * Calls action to achieve data for special format Scharhoern
+         * @param {void}
+         * @returns {void}
+         */
         downloadScharhoern: function () {
             this.requestCompressIslandData("Scharhoern");
         },
+        /**
+         * Calls action to achieve raster overview data LS310
+         * @param {void}
+         * @returns {void}
+         */
         downloadRasterOverview310: function () {
             this.requestCompressRasterOverviewData("LS310");
         },
+        /**
+         * Calls action to achieve raster overview data LS320
+         * @param {void}
+         * @returns {void}
+         */
         downloadRasterOverview320: function () {
             this.requestCompressRasterOverviewData("LS320");
         },
@@ -200,7 +197,7 @@ export default {
                     <span>{{ selectFormat }}</span>
                 </div>
                 <div class="form-group col-xs-12">
-                        <select  class="input-group bootstrap-select" style="width: 100%" name="formatSelection" @change="formatSelected($event.target.value)">
+                        <select  class="input-group bootstrap-select" style="width: 100%" id="formatSelection" name="formatSelection" @change="formatSelected($event.target.value)">
                             <option v-for="(format,index) in selectedFormats" :key="index" :value="format.id" data-toggle="tooltip" :title= format.label>{{ $t("additional:modules.tools.sdpdownload."+format.fileId+"Label") }}</option>
                         </select>
                     </div>
@@ -213,7 +210,7 @@ export default {
                     </div>
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
-                    <button v-on:click="download" type="button" class="btn btn-default btn-sm btn-block sdp-download center-block">
+                    <button v-on:click="download" type="button" id="bselectedDownload" class="btn btn-default btn-sm btn-block sdp-download center-block">
                         {{ downloadDataPackage }}
                     </button>
                 </div>
@@ -221,22 +218,22 @@ export default {
                     <span>{{ specialDownloads }}</span>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadNeuwerk" type="button" class="btn btn-default btn-sm btn-block sdp-neuwerk-download center-block">
+                    <button v-on:click="downloadNeuwerk" type="button" id="bNeuwerk" class="btn btn-default btn-sm btn-block sdp-neuwerk-download center-block">
                         {{ neuwerkDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadScharhoern" type="button" class="btn btn-default btn-sm btn-block sdp-download-scharhoern center-block">
+                    <button v-on:click="downloadScharhoern" type="button" id="bScharhoern" class="btn btn-default btn-sm btn-block sdp-download-scharhoern center-block">
                         {{ scharhoernDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadRasterOverview310" type="button" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-310 center-block">
+                    <button v-on:click="downloadRasterOverview310" type="button" id="b310" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-310 center-block">
                         {{ tileOverview310 }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadRasterOverview320" type="button" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-320 center-block">
+                    <button v-on:click="downloadRasterOverview320" type="button" id="b320" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-320 center-block">
                         {{ tileOverview320 }}
                     </button>
                 </div>

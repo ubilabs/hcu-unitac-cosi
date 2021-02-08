@@ -94,7 +94,7 @@ const actions = {
     /**
      * Reads all features in the given data and stores it in the property wfsRaster
      * @param {Object} state vuex element
-     * @param {Object} data of the wfs response
+     * @param {Object} data of the wfs response (XML)
      * @returns {void}
      */
     readFeatures: function (state, data) {
@@ -113,7 +113,7 @@ const actions = {
      * @returns {GeoJSON} the converted feature
      */
     featureToGeoJson: function (payload) {
-        return Radio.request("GraphicalSelect", "featureToGeoJson", payload);
+          return Radio.request("GraphicalSelect", "featureToGeoJson", payload);
     },
     /**
      * Calculates the intersection of the graphical selection with the raster. The names of the intersected raster squares are then commited to the state.
@@ -123,8 +123,8 @@ const actions = {
      */
     calculateSelectedRasterNames: function ({getters, dispatch, commit}) {
         const rasterLayerFeatures = getters.wfsRaster,
-            selectedAreaGeoJson = getters.graphicalSelectModel.attributes.selectedAreaGeoJson,
-            rasterNames = [];
+        selectedAreaGeoJson = getters.graphicalSelectModel.attributes.selectedAreaGeoJson,
+        rasterNames = [];
 
         if (selectedAreaGeoJson) {
             const turfGeoSelection = turf.polygon([selectedAreaGeoJson.coordinates[0]]);
@@ -139,7 +139,7 @@ const actions = {
             });
         }
 
-        commit("setSelectedRasterNames", rasterNames);
+    commit("setSelectedRasterNames", rasterNames);
 
     },
     /**
@@ -163,22 +163,27 @@ const actions = {
      * @param {Object} getters, dispatch - vuex elements
      * @returns {void}
      */
-    requestCompressedData: function ({getters, dispatch}) {
-        dispatch("calculateSelectedRasterNames");
+    requestCompressedData: async function ({getters, dispatch}) {
+        
+        dispatch("calculateSelectedRasterNames").then(() =>
 
-        if (dispatch("checkRasterNamesAmount")) {
-            const adaptedNames = [],
-                selectedRasterNames = getters.rasterNames;
+            dispatch("checkRasterNamesAmount").then(response => {
+                if (response === true){
+                    const adaptedNames = [],
+                        selectedRasterNames = getters.rasterNames;
 
 
-            selectedRasterNames.forEach(rasterName => {
-                const adaptedName = rasterName.substring(0, 2) + "0" + rasterName.substring(2, 4) + "0";
+                    selectedRasterNames.forEach(rasterName => {
+                        const adaptedName = rasterName.substring(0, 2) + "0" + rasterName.substring(2, 4) + "0";
 
-                adaptedNames.push(adaptedName);
-            });
-            // params have to look like: "kacheln=650330§650340&type=JPG"
-            dispatch("doRequest", "kacheln=" + adaptedNames.join("§") + "&type=" + getters.selectedFormat);
-        }
+                        adaptedNames.push(adaptedName);
+                    });
+
+                    // params have to look like: "kacheln=650330§650340&type=JPG"
+                    dispatch("doRequest", "kacheln=" + adaptedNames.join("§") + "&type=" + getters.selectedFormat);
+                }
+            })
+        )
     },
     /**
      * Checks the models "rasterNames":
@@ -192,11 +197,11 @@ const actions = {
 
         if (selectedRasterNames.length > getters.selectedRasterLimit) {
             Radio.trigger("Alert", "alert", {
-                text: this.$t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: getters.selectedRasterLimit}),
+                text: i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: getters.selectedRasterLimit}),
                 kategorie: "alert-warning"
             });
             LoaderOverlay.hide();
-            this.trigger("render");
+            Radio.trigger("render");
             return false;
         }
         else if (selectedRasterNames.length === 0) {
