@@ -1408,6 +1408,9 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
 
             expect(lastDataset).to.deep.equal(expectedDataset);
         });
+        /*
+        // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
+        // use this code to test Kfz + SV
         it("updateDataset: should add Anteil_SV data to dataset if meansOfTransport equals 'Anzahl_Kfz'; should resend data anytime a subscribed message was received", function () {
             let lastDataset = false;
 
@@ -1480,6 +1483,7 @@ describe("addons/trafficCount/components/trafficCountApi", function () {
             expectedOutcome.AntSV[expectedDateTimeC] = 2;
             expect(lastDataset).to.deep.equal(expectedOutcome);
         });
+        */
     });
 
     describe("TrafficCountApi.subscribeLastUpdate", function () {

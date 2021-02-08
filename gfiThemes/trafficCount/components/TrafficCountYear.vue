@@ -63,7 +63,18 @@ export default {
             },
             setRowTitle: (meansOfTransports, datetime) => {
                 // datetime is the monday of the week - so we have to add 3 days to get the thursday of the week
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
+                const txt = moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
+
+                switch (meansOfTransports) {
+                    // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
+                    // use this code to enable Kfz + SV
+                    // case "Anzahl_Kfz":
+                    //    return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
+                    case "Anteil_SV":
+                        return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix");
+                    default:
+                        return txt;
+                }
             },
             setFieldValue: value => {
                 return thousandsSeparator(value);

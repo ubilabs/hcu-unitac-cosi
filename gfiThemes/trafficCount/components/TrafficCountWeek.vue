@@ -66,7 +66,16 @@ export default {
                 txt += "/" + moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
                 txt += " (" + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd, DD.MM.YYYY") + ")";
 
-                return txt;
+                switch (meansOfTransports) {
+                    // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
+                    // use this code to enable Kfz + SV
+                    // case "Anzahl_Kfz":
+                    //    return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
+                    case "Anteil_SV":
+                        return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix");
+                    default:
+                        return txt;
+                }
             },
             setFieldValue: value => {
                 return thousandsSeparator(value);

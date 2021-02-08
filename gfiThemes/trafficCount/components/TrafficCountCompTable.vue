@@ -135,7 +135,9 @@ export default {
                     v-for="(dataObjFlat, idx) in getFlatApiData(apiData)"
                     :key="idx"
                 >
-                    <td>{{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }}</td>
+                    <td class="td-first-col">
+                        {{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }}
+                    </td>
                     <td
                         v-for="(value, datetime) of dataObjFlat.dataset"
                         :key="datetime"
@@ -173,5 +175,8 @@ export default {
         text-align: center;
         vertical-align: middle;
         font-size: 13px;
+    }
+    .td-first-col {
+        text-align: left;
     }
 </style>
