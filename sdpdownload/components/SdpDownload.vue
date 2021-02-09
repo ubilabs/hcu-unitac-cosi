@@ -29,6 +29,7 @@ export default {
      */
     mounted () {
         this.applyTranslationKey(this.name);
+        
     },
     watch: {
         /**
@@ -197,16 +198,16 @@ export default {
                     <span>{{ selectFormat }}</span>
                 </div>
                 <div class="form-group col-xs-12">
-                        <select  class="input-group bootstrap-select" style="width: 100%" id="formatSelection" name="formatSelection" @change="formatSelected($event.target.value)">
+                        <select class="input-group bootstrap-select formatselect" id="formatSelection" name="formatSelection" @change="formatSelected($event.target.value)">
                             <option v-for="(format,index) in selectedFormats" :key="index" :value="format.id" data-toggle="tooltip" :title= format.label>{{ $t("additional:modules.tools.sdpdownload."+format.fileId+"Label") }}</option>
                         </select>
-                    </div>
+                </div>
                 <div class="form-group col-xs-12 first">
                      <span>{{ howToChooseTiles }}</span>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="input-group bootstrap-select" style="width: 100%">
-                        <div ref="drawSelection" class="geometric-selection" style="width: 100%"></div>
+                    <div class="input-group bootstrap-select" style="width:100%;">
+                        <div ref="drawSelection" style="width:100%;"></div>
                     </div>
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
@@ -248,15 +249,12 @@ export default {
 @background_color_1: rgba(0, 0, 0,.5);
 
 /*sdp download*/
-.sdpDownload {
-    min-height: 150px;
-    .header {
-        width: 100%;
-        border-bottom: 1px solid rgb(229,229,229);
-        padding: 10px;
-        .glyphicon-download{
-            cursor: default;
-        }
+    #formatSelection {
+        cursor: pointer;
+        opacity: 1;
+    }
+    .input-group.bootstrap-select.formatselect >option:hover{
+        background-color: #08589e;
     }
     .content {
         .first{
@@ -269,12 +267,7 @@ export default {
             }
         }
     }
-    .tool-name {
-        padding-left: 15px;
-        font-family: @font_family_1;
-        font-size: 16px;
-    }
-    .btn{
+    .btn {
         white-space:initial;
     }
     .btn-select {
@@ -285,9 +278,6 @@ export default {
                 font-weight: normal;
             }
         }
-    }
-    .dropdown-container {
-        padding: 8px 0px;
     }
     .bootstrap-select {
         .dropdown-menu {
@@ -302,13 +292,18 @@ export default {
     .sdp-download{
         margin-top: 15px;
     }
+    .formatselect{
+        width: calc(100% - 30px) !important;
+        height: 30px;
+        padding-left: 15px;
+        margin-left: 15px;
+        margin-rigth: 15px;
+        padding: 5px 10px;
+        font-size: 12px;
+    }
     .limiter{
         border-bottom: 1px solid rgb(229,229,229);
         padding-bottom: 20px;
-    }
-    .selectpicker{
-        width: "100%";
-        font-size: 6px;
     }
     #sdp-loader {
         background-color: rgba(0, 0, 0, 0.4);
@@ -323,7 +318,6 @@ export default {
             top: 45%;
         }
     }
-}
 @media (min-width: 768px) {
     .sdpDownload {
         .header {

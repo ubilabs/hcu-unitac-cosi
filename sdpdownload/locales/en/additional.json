@@ -2,7 +2,8 @@
     "modules": {
         "tools": {
             "sdpdownload": {
-                "selectFormat": "Select the format",
+                "name": "SDP Download",
+                "selectFormat": "Select the format:",
                 "howToChooseTiles": "How would you like to choose the tiles?",
                 "downloadDataPackage": "Download data package",
                 "specialDownloads": "Special downloads",
@@ -25,5 +26,5 @@
                 "serviceNotResponding": "A required service is not responding."
             }
         }
-    } 
+    }
 }

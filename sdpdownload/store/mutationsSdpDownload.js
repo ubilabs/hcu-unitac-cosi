@@ -1,7 +1,6 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
 import stateSdpAddon from "./stateSdpDownload";
 
-
 const mutations = {
     /**
      * Creates from every state-key a setter.
@@ -42,10 +41,8 @@ const mutations = {
 
         dwg320Defaults.label = i18next.t('additional:modules.tools.sdpdownload.dwg320Label');
         dwg320Defaults.desc = i18next.t('additional:modules.tools.sdpdownload.dwg320Description');
-
         jpgDefaults.label = i18next.t('additional:modules.tools.sdpdownload.jpgLabel');
         jpgDefaults.desc = i18next.t('additional:modules.tools.sdpdownload.jpgDescription');
-
         state.selectFormat = i18next.t('additional:modules.tools.sdpdownload.selectFormat');
         state.howToChooseTiles = i18next.t('additional:modules.tools.sdpdownload.howToChooseTiles');
         state.downloadDataPackage = i18next.t('additional:modules.tools.sdpdownload.downloadDataPackage');

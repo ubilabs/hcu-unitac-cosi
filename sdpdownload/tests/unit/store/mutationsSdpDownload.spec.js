@@ -14,7 +14,7 @@ describe("addons/SdpDownload/store/mutationsSdpDownload", function () {
                 payload = "translate#additional:modules.tools.sdpdownload.name";
 
             applyTranslationKey(state, payload);
-            expect(state.name).to.equals("additional:modules.tools.sdpdownload.name");
+            expect(state.name).to.equal("additional:modules.tools.sdpdownload.name");
         });
         it("does nothing, if name not starts with 'translate#'", function () {
             const name = "dies ist ein VueAddon",
@@ -24,7 +24,7 @@ describe("addons/SdpDownload/store/mutationsSdpDownload", function () {
                 payload = name;
 
             applyTranslationKey(state, payload);
-            expect(state.name).to.equals(name);
+            expect(state.name).to.equal(name);
         });
         it('setSelectedFormat changes value', () => {
             // mock state

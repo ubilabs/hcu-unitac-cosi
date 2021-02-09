@@ -2,7 +2,8 @@
     "modules": {
         "tools": {
             "sdpdownload": {
-                "selectFormat": "Wählen Sie das Format aus",
+                "name": "SDP Download",
+                "selectFormat": "Wählen Sie das Format aus:",
                 "howToChooseTiles": "Wie möchten Sie die Kacheln auswählen?",
                 "downloadDataPackage": "Datenpaket herunterladen",
                 "specialDownloads": "Spezielle Downloads",
@@ -25,5 +26,5 @@
                 "serviceNotResponding": "Ein benötigter Dienst antwortet nicht."
             }
         }
-    } 
+    }
 }

@@ -103,18 +103,6 @@ const actions = {
 
         state.commit("setWfsRaster", features);
     },
-
-    /**
-     * Requests GraphicalSelect.featureToGeoJson.
-     * It converts a feature to a geojson,
-     * if the feature geometry is a circle, it is converted to a polygon.
-     * @param {ol.Feature} payload - drawn feature
-     * @fires Snippets.GraphicalSelect#featureToGeoJson
-     * @returns {GeoJSON} the converted feature
-     */
-    featureToGeoJson: function (payload) {
-          return Radio.request("GraphicalSelect", "featureToGeoJson", payload);
-    },
     /**
      * Calculates the intersection of the graphical selection with the raster. The names of the intersected raster squares are then commited to the state.
      * @see {@link https://turfjs.org/docs/#intersect}
@@ -126,12 +114,12 @@ const actions = {
         selectedAreaGeoJson = getters.graphicalSelectModel.attributes.selectedAreaGeoJson,
         rasterNames = [];
 
-        if (selectedAreaGeoJson) {
+        if (selectedAreaGeoJson.coordinates) {
             const turfGeoSelection = turf.polygon([selectedAreaGeoJson.coordinates[0]]);
 
             rasterLayerFeatures.forEach(feature => {
-                // Rewrite with dispatch instead of actions.
-                const turfRaster = turf.polygon([actions.featureToGeoJson(feature).coordinates[0]]);
+                const featureGeojson = Radio.request("GraphicalSelect", "featureToGeoJson", feature),
+                      turfRaster = turf.polygon([featureGeojson.coordinates[0]]);
 
                 if (turf.intersect(turfGeoSelection, turfRaster)) {
                     dispatch("addFeaturenameToRasternames", {feature: feature, rasterNames: rasterNames});
@@ -139,7 +127,7 @@ const actions = {
             });
         }
 
-    commit("setSelectedRasterNames", rasterNames);
+        commit("setSelectedRasterNames", rasterNames);
 
     },
     /**

@@ -124,15 +124,6 @@ describe("addons/SdpDownload/store/actionsSdpDownload", () => {
           // commit mutation
           expect(state.commit.calledOnce).to.be.true;
     });
-    it("featureToGeoJson calls Backbones GraphicalSelect.featureToGeoJson", () => {
-        const radioRequest = sinon.spy(Radio, "request"),
-        payload = {id_:"Kachelid", values_: {}};
-       
-        actions.featureToGeoJson(payload)
-
-          // Radio request
-          expect(radioRequest.calledOnceWithExactly("GraphicalSelect","featureToGeoJson", payload)).to.be.true;
-    });
     it("calculateSelectedRasterNames commits setSelectedRasterNames", () => {
               const getters = {wfsRaster: importedState.wfsRaster, graphicalSelectModel: {attributes: {selectedAreaGeoJson: undefined}}},
                     rasterNames = [];
