@@ -147,11 +147,11 @@ const traficChannel = Backbone.Model.extend({
 
         if (startDay !== endDay) {
             time = moment(startTime).format("DD.MM.YYYY, HH:mm") +
-                " Uhr - " + moment(endTime).format("DD.MM.YYYY, HH:mm") + " Uhr";
+                " Uhr - " + moment(endTime).add(1, "seconds").format("DD.MM.YYYY, HH:mm") + " Uhr";
         }
         else {
             time = moment(startTime).format("DD.MM.YYYY, HH:mm") +
-                " Uhr - " + moment(endTime).format("HH:mm") + " Uhr";
+                " Uhr - " + moment(endTime).add(1, "seconds").format("HH:mm") + " Uhr";
         }
 
         return time;
