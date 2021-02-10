@@ -41,12 +41,14 @@ const traficChannel = Backbone.Model.extend({
      */
     updateMouseHoverAttribute: function (feature) {
         const dataStreamValue = feature.get("dataStreamValue"),
-            dataDirection = feature.get("richtung");
+            dataDirection = feature.get("richtung"),
+            layerName = feature.get("layerName") ? feature.get("layerName") : "";
 
         let phenomenonTime = "",
             phenomenonTimeRange = "invalid date",
             absTrafficCount = "",
-            propTrafficCount = "",
+            // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
+            //    propTrafficCount = "",
             direction = "";
 
         if (feature.get("Datastreams") && Array.isArray(feature.get("Datastreams")) && feature.get("Datastreams").length
@@ -65,28 +67,35 @@ const traficChannel = Backbone.Model.extend({
 
         if (dataStreamValue) {
             absTrafficCount = this.getAbsTrafficCount(dataStreamValue);
-            propTrafficCount = this.getPropTrafficCount(dataStreamValue);
+            // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
+            // propTrafficCount = this.getPropTrafficCount(dataStreamValue);
         }
 
         if (typeof dataDirection === "string") {
             direction = "(" + dataDirection + ")";
         }
 
-        if (propTrafficCount === "") {
+        if (layerName.includes("Anzahl_Fahrraeder")) {
             // Only the absolute traffic count is needed
             absTrafficCount = this.get("number") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
         }
-        else {
+        else if (layerName.includes("Anzahl_Kfz")) {
+            // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
             // put the absolute traffic count and proportion in right format
-            absTrafficCount = this.get("carsHeaderSuffix") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            // absTrafficCount = this.get("carsHeaderSuffix") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            absTrafficCount = this.get("number") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            /**
+             * search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
             if (propTrafficCount === "no data") {
                 propTrafficCount = "0";
             }
             propTrafficCount = "<span class='title'>" + this.get("trucksHeaderSuffix") + ": " + propTrafficCount + "</span>";
+             */
         }
 
         feature.set("absTrafficCount", absTrafficCount);
-        feature.set("propTrafficCount", propTrafficCount);
+        // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
+        // feature.set("propTrafficCount", propTrafficCount);
         feature.set("phenomenonTimeRange", phenomenonTimeRange);
     },
 
@@ -119,10 +128,11 @@ const traficChannel = Backbone.Model.extend({
     },
 
     /**
+     * search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
      * Getting the proportional traffic count
      * @param {String} dataStreamValue - dataStream Value(s) of the current feature
      * @return {Number|String} the proportional count or "No data"
-     */
+
     getPropTrafficCount: function (dataStreamValue) {
         let value = "No data";
 
@@ -132,6 +142,7 @@ const traficChannel = Backbone.Model.extend({
 
         return value;
     },
+   */
 
     /**
      * parsing the right date format

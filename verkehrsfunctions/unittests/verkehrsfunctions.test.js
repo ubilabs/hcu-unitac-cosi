@@ -48,6 +48,8 @@ describe("ADDON: Verkehrsfunctions", function () {
         });
     });
 
+    /**
+     * search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
     describe("getPropTrafficCount", function () {
         it("should return text with 'No data'", function () {
             const dataStreamValue = null;
@@ -61,4 +63,5 @@ describe("ADDON: Verkehrsfunctions", function () {
             expect(model.getPropTrafficCount(dataStreamValue)).to.equal(29);
         });
     });
+     */
 });
