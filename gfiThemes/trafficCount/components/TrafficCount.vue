@@ -287,7 +287,7 @@ export default {
          * @returns {void}  -
          */
         setGfiDiagramWidth: function () {
-            this.$el.style.minWidth = "620px";
+            document.querySelector(".tool-window-vue").style.maxWidth = "640px";
         },
 
         /**
@@ -295,8 +295,7 @@ export default {
          * @returns {void} -
          */
         setGfiDefaultWidth: function () {
-            this.$el.style.maxWidth = Math.round(document.getElementById("map").offsetWidth / 2.2) + "px";
-            this.$el.style.minWidth = "inherit";
+            document.querySelector(".tool-window-vue").style.maxWidth = "600px";
         }
     }
 };
