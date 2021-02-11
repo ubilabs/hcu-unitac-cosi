@@ -9,27 +9,16 @@ import GraphicalSelectModel from "../../../modules/snippets/graphicalSelect/mode
 
 export default {
     name: "SdpDownload",
-    data() {
-      return {
-        selectedFormats: this.$store.state.Tools.SdpDownload.formats
-      }
-    },
     components: {
         Tool
     },
+    data () {
+        return {
+            selectedFormats: this.$store.state.Tools.SdpDownload.formats
+        };
+    },
     computed: {
         ...mapGetters("Tools/SdpDownload", Object.keys(getters))
-    },
-    created () {
-        this.$on("close", this.close);
-    },
-    /**
-     * Put initialize here if mounting occurs after config parsing
-     * @returns {void}
-     */
-    mounted () {
-        this.applyTranslationKey(this.name);
-        
     },
     watch: {
         /**
@@ -48,13 +37,25 @@ export default {
                     this.loadWfsRaster();
                     this.changeGraphicalSelectStatus(value);
                     Radio.trigger("GraphicalSelect", "resetGeographicSelection");
-                }else{
-                    this.toggleRasterLayer()
+                }
+                else {
+                    this.toggleRasterLayer();
                     this.changeGraphicalSelectStatus(value);
                     this.resetView();
                 }
             });
         }
+    },
+    created () {
+        this.$on("close", this.close);
+    },
+    /**
+     * Put initialize here if mounting occurs after config parsing
+     * @returns {void}
+     */
+    mounted () {
+        this.applyTranslationKey(this.name);
+
     },
     methods: {
         ...mapMutations("Tools/SdpDownload", Object.keys(mutations)),
@@ -77,19 +78,18 @@ export default {
             }
         },
         /** sets default values for the language
-        * @param {void}
          * @returns {void}
          */
-        initLanguage: function ()  {
+        initLanguage: function () {
             this.setInitLanguage();
-       },
+        },
         /**
          * Sets the graphicalSelectModel
          * @param {Snippets.GraphicalSelect.GraphicalSelectModel} value graphicalSelectModel
          * @returns {void}
          */
-        updateGraphicalSelectModel: function (value)  {
-           this.setGraphicalSelectModel(value);
+        updateGraphicalSelectModel: function (value) {
+            this.setGraphicalSelectModel(value);
         },
         /**
          * Sets the value to models property isSelected by mutation updateSelectedFormat
@@ -125,18 +125,16 @@ export default {
         },
         /**
          * Creates new graphicalSelectView instance and adds the divs to the template with drawing selections: circle|rectangle|polygon
-         * @param {void}
          * @returns {void}
          */
         renderDrawSelection: function () {
-            this.graphicalSelectView= {};
+            this.graphicalSelectView = {};
             this.updateGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
             this.graphicalSelectView = new GraphicalSelectView({model: this.graphicalSelectModel});
             this.$refs.drawSelection.appendChild(this.graphicalSelectView.render().el);
         },
         /**
          * Calls action to achieve data for graphical selection
-         * @param {void}
          * @returns {void}
          */
         download: function () {
@@ -144,7 +142,6 @@ export default {
         },
         /**
          * Calls action to achieve data for special format Neuwerk
-         * @param {void}
          * @returns {void}
          */
         downloadNeuwerk: function () {
@@ -152,7 +149,6 @@ export default {
         },
         /**
          * Calls action to achieve data for special format Scharhoern
-         * @param {void}
          * @returns {void}
          */
         downloadScharhoern: function () {
@@ -160,7 +156,6 @@ export default {
         },
         /**
          * Calls action to achieve raster overview data LS310
-         * @param {void}
          * @returns {void}
          */
         downloadRasterOverview310: function () {
@@ -168,12 +163,11 @@ export default {
         },
         /**
          * Calls action to achieve raster overview data LS320
-         * @param {void}
          * @returns {void}
          */
         downloadRasterOverview320: function () {
             this.requestCompressRasterOverviewData("LS320");
-        },
+        }
     }
 };
 </script>
@@ -188,9 +182,10 @@ export default {
         :deactivateGFI="deactivateGFI"
     >
         <template v-slot:toolBody>
-            <div class="header"
+            <div
                 v-if="active"
                 id="sdp-addon"
+                class="header"
             >
             </div>
             <div class="content">
@@ -198,20 +193,43 @@ export default {
                     <span>{{ selectFormat }}</span>
                 </div>
                 <div class="form-group col-xs-12">
-                        <select class="input-group bootstrap-select formatselect" id="formatSelection" name="formatSelection" @change="formatSelected($event.target.value)">
-                            <option v-for="(format,index) in selectedFormats" :key="index" :value="format.id" data-toggle="tooltip" :title= format.label>{{ $t("additional:modules.tools.sdpdownload."+format.fileId+"Label") }}</option>
-                        </select>
+                    <select
+                        id="formatSelection"
+                        name="formatSelection"
+                        class="form-control input-sm formatselect"
+                        @change="formatSelected($event.target.value)"
+                    >
+                        <option
+                            v-for="(format,index) in selectedFormats"
+                            :key="index"
+                            :value="format.id"
+                            data-toggle="tooltip"
+                            :title="format.label"
+                        >
+                            {{ $t("additional:modules.tools.sdpdownload."+format.fileId+"Label") }}
+                        </option>
+                    </select>
                 </div>
                 <div class="form-group col-xs-12 first">
-                     <span>{{ howToChooseTiles }}</span>
+                    <span>{{ howToChooseTiles }}</span>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="input-group bootstrap-select" style="width:100%;">
-                        <div ref="drawSelection" style="width:100%;"></div>
+                    <div
+                        class="form-group form-group-sm"
+                    >
+                        <div
+                            ref="drawSelection"
+                        >
+                        </div>
                     </div>
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
-                    <button v-on:click="download" type="button" id="bselectedDownload" class="btn btn-default btn-sm btn-block sdp-download center-block">
+                    <button
+                        id="bselectedDownload"
+                        type="button"
+                        class="btn btn-default btn-sm btn-block center-block"
+                        @click="download"
+                    >
                         {{ downloadDataPackage }}
                     </button>
                 </div>
@@ -219,22 +237,42 @@ export default {
                     <span>{{ specialDownloads }}</span>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadNeuwerk" type="button" id="bNeuwerk" class="btn btn-default btn-sm btn-block sdp-neuwerk-download center-block">
+                    <button
+                        id="bNeuwerk"
+                        type="button"
+                        class="btn btn-default btn-sm btn-block center-block"
+                        @click="downloadNeuwerk"
+                    >
                         {{ neuwerkDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadScharhoern" type="button" id="bScharhoern" class="btn btn-default btn-sm btn-block sdp-download-scharhoern center-block">
+                    <button
+                        id="bScharhoern"
+                        type="button"
+                        class="btn btn-default btn-sm btn-block center-block"
+                        @click="downloadScharhoern"
+                    >
                         {{ scharhoernDataPackage }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadRasterOverview310" type="button" id="b310" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-310 center-block">
+                    <button
+                        id="b310"
+                        type="button"
+                        class="btn btn-default btn-sm btn-block center-block"
+                        @:click="downloadRasterOverview310"
+                    >
                         {{ tileOverview310 }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                    <button v-on:click="downloadRasterOverview320" type="button" id="b320" class="btn btn-default btn-sm btn-block sdp-download-raster-overview-320 center-block">
+                    <button
+                        id="b320"
+                        type="button"
+                        class="btn btn-default btn-sm btn-block center-block"
+                        @click="downloadRasterOverview320"
+                    >
                         {{ tileOverview320 }}
                     </button>
                 </div>
@@ -249,12 +287,12 @@ export default {
 @background_color_1: rgba(0, 0, 0,.5);
 
 /*sdp download*/
+    #tool-sidebar-vue{
+        width: 350px;
+    }
     #formatSelection {
         cursor: pointer;
         opacity: 1;
-    }
-    .input-group.bootstrap-select.formatselect >option:hover{
-        background-color: #08589e;
     }
     .content {
         .first{
@@ -279,16 +317,6 @@ export default {
             }
         }
     }
-    .bootstrap-select {
-        .dropdown-menu {
-            right: 0;
-            left: null;
-        }
-        .filter-option{
-            font-size: 12px;
-            line-height: 1.5;
-        }
-    }
     .sdp-download{
         margin-top: 15px;
     }
@@ -297,7 +325,7 @@ export default {
         height: 30px;
         padding-left: 15px;
         margin-left: 15px;
-        margin-rigth: 15px;
+        margin-right: 15px;
         padding: 5px 10px;
         font-size: 12px;
     }

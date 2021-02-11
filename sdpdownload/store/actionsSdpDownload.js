@@ -1,7 +1,7 @@
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 import {WFS} from "ol/format.js";
 import * as turf from "@turf/turf/";
-import axios from "axios";
+import axios from "axios"; 
 
 const actions = {
     /**
