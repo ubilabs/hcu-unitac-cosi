@@ -111,15 +111,15 @@ const actions = {
      */
     calculateSelectedRasterNames: function ({getters, dispatch, commit}) {
         const rasterLayerFeatures = getters.wfsRaster,
-        selectedAreaGeoJson = getters.graphicalSelectModel.attributes.selectedAreaGeoJson,
-        rasterNames = [];
+            selectedAreaGeoJson = getters.graphicalSelectModel.attributes.selectedAreaGeoJson,
+            rasterNames = [];
 
-        if (selectedAreaGeoJson.coordinates) {
+        if (selectedAreaGeoJson && selectedAreaGeoJson.coordinates) {
             const turfGeoSelection = turf.polygon([selectedAreaGeoJson.coordinates[0]]);
 
             rasterLayerFeatures.forEach(feature => {
                 const featureGeojson = Radio.request("GraphicalSelect", "featureToGeoJson", feature),
-                      turfRaster = turf.polygon([featureGeojson.coordinates[0]]);
+                    turfRaster = turf.polygon([featureGeojson.coordinates[0]]);
 
                 if (turf.intersect(turfGeoSelection, turfRaster)) {
                     dispatch("addFeaturenameToRasternames", {feature: feature, rasterNames: rasterNames});
@@ -152,26 +152,23 @@ const actions = {
      * @returns {void}
      */
     requestCompressedData: async function ({getters, dispatch}) {
-        
-        dispatch("calculateSelectedRasterNames").then(() =>
 
-            dispatch("checkRasterNamesAmount").then(response => {
-                if (response === true){
-                    const adaptedNames = [],
-                        selectedRasterNames = getters.rasterNames;
+        dispatch("calculateSelectedRasterNames").then(() =>dispatch("checkRasterNamesAmount").then(response => {
+            if (response === true) {
+                const adaptedNames = [],
+                    selectedRasterNames = getters.rasterNames;
 
 
-                    selectedRasterNames.forEach(rasterName => {
-                        const adaptedName = rasterName.substring(0, 2) + "0" + rasterName.substring(2, 4) + "0";
+                selectedRasterNames.forEach(rasterName => {
+                    const adaptedName = rasterName.substring(0, 2) + "0" + rasterName.substring(2, 4) + "0";
 
-                        adaptedNames.push(adaptedName);
-                    });
+                    adaptedNames.push(adaptedName);
+                });
 
-                    // params have to look like: "kacheln=650330§650340&type=JPG"
-                    dispatch("doRequest", "kacheln=" + adaptedNames.join("§") + "&type=" + getters.selectedFormat);
-                }
-            })
-        )
+                // params have to look like: "kacheln=650330650340&type=JPG"
+                dispatch("doRequest", "kacheln=" + adaptedNames.join("") + "&type=" + getters.selectedFormat);
+            }
+        }));
     },
     /**
      * Checks the models "rasterNames":
@@ -281,4 +278,3 @@ const actions = {
 };
 
 export default actions;
-
