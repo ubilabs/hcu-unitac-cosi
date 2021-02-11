@@ -33,11 +33,19 @@ export default {
         ...mapGetters(["imagePath"]),
 
         /**
-         * Checks if the layer is visible.
-         * @returns {boolean} Returns true if the layer is visible, otherwise false.
+         * Checks if there are visible features.
+         * @returns {Boolean} True if there are visible features otherwise false.
          */
-        isLayerVisible () {
-            return this.layer.getVisible();
+        hasVisibleFeatures () {
+            const features = this.layer.getSource().getFeatures(),
+                visibleFeatures = features.filter(feature => {
+                    if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
+                        return feature.get("isVisible");
+                    }
+                    return [];
+                });
+
+            return visibleFeatures.length > 0;
         },
 
         /**
@@ -252,14 +260,18 @@ export default {
                 this.interaction.on("drawend", (evt) => {
                     const that = this;
 
-                    evt.feature.set("drawState", {drawType: {id: "drawSymbol"}});
+                    evt.feature.set("drawState", {drawType: {id: "drawTacticalSymbol"}});
 
-                    evt.feature.setStyle(function () {
+                    evt.feature.setStyle(feature => {
                         that.enableDownloadBtn();
-                        return style;
+                        if (feature.get("isVisible")) {
+                            return style;
+                        }
+                        return undefined;
                     });
                     this.layer.setVisible(true);
                     evt.feature.set("styleId", iconName + uniqueId("_"));
+                    evt.feature.set("isVisible", true);
                 });
 
                 this.addInteractionToMap(this.interaction);
@@ -412,12 +424,19 @@ export default {
 
         /**
          * Sets the visibility of the layer.
-         * @param {module:ol/layer/Vector} layer - The layer to be set.
          * @param {Boolean} value - True for visible and false for not.
          * @returns {void}
          */
-        setVisibility (layer, value) {
-            this.layer.setVisible(value);
+        setVisibility (value) {
+            const features = this.layer.getSource().getFeatures();
+
+            if (features.length > 0) {
+                features.forEach(feature => {
+                    if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
+                        feature.set("isVisible", value);
+                    }
+                });
+            }
         },
 
         /**
@@ -478,7 +497,7 @@ export default {
                 this.file = this.prepareFileName(this.filename);
 
                 if (this.file && this.file !== "") {
-                    this.prepareDownload(dataString, this.file);
+                    this.prepareDownload(dataString);
                 }
             }
         },
@@ -537,8 +556,8 @@ export default {
                     <label>
                         <input
                             type="checkbox"
-                            :checked="isLayerVisible"
-                            @change="setVisibility(layer, $event.target.checked)"
+                            :checked="hasVisibleFeatures"
+                            @change="setVisibility($event.target.checked)"
                         > {{ title }}
                     </label>
                 </div>
