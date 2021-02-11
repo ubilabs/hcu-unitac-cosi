@@ -1,7 +1,7 @@
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 import {WFS} from "ol/format.js";
 import * as turf from "@turf/turf/";
-import axios from "axios"; 
+import axios from "axios";
 
 const actions = {
     /**
@@ -165,8 +165,8 @@ const actions = {
                     adaptedNames.push(adaptedName);
                 });
 
-                // params have to look like: "kacheln=650330650340&type=JPG"
-                dispatch("doRequest", "kacheln=" + adaptedNames.join("") + "&type=" + getters.selectedFormat);
+                // params have to look like: "kacheln=650330§650340&type=JPG"
+                dispatch("doRequest", "kacheln=" + adaptedNames.join("§") + "&type=" + getters.selectedFormat);
             }
         }));
     },
@@ -278,3 +278,4 @@ const actions = {
 };
 
 export default actions;
+
