@@ -5,7 +5,7 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import {MultiLineString, Point} from "ol/geom.js";
 import {WKT} from "ol/format.js";
 import Feature from "ol/Feature.js";
-import WPS from "../../src/utils/wps";
+import WPS from "../../src/api/wps";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
 
 const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{

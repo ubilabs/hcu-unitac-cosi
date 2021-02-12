@@ -3,7 +3,7 @@ import GraphicalSelectModel from "../../modules/snippets/graphicalSelect/model";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
 import LoaderOverlay from "../../src/utils/loaderOverlay";
-import WPS from "../../src/utils/wps";
+import WPS from "../../src/api/wps";
 import "./RadioBridge.js";
 
 const EinwohnerabfrageModel = Tool.extend(/** @lends EinwohnerabfrageModel.prototype */{
