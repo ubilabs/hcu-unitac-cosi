@@ -88,7 +88,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             resetCanvasCursor: sinon.stub(),
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             }
         });
         store.commit("Tools/TacticalMark/setActive", true);
@@ -110,7 +111,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             localVue,
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             },
             setCanvasCursor: sinon.stub(),
             resetCanvasCursor: sinon.stub()
@@ -128,7 +130,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             localVue,
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             },
             setCanvasCursor: sinon.stub(),
             resetCanvasCursor: sinon.stub()
@@ -144,7 +147,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             localVue,
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             },
             setCanvasCursor: sinon.stub(),
             resetCanvasCursor: sinon.stub()
@@ -176,7 +180,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             localVue,
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             }
         });
         store.commit("Tools/TacticalMark/setActive", true);
@@ -206,7 +211,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             localVue,
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             }
         });
         store.commit("Tools/TacticalMark/setActive", true);
@@ -268,7 +274,8 @@ describe("addons/TacticalMark/components/TacticalMark.vue", () => {
             localVue,
             computed: {
                 isLayerVisible: () => true,
-                hasFeatures: () => true
+                hasTacticalFeatures: () => true,
+                hasVisibleFeatures: () => true
             }
         });
         store.commit("Tools/TacticalMark/setActive", true);

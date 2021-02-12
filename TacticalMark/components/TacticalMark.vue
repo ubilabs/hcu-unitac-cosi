@@ -40,11 +40,7 @@ export default {
             const features = this.layer.getSource().getFeatures();
             let visibleFeatures = [];
 
-                visibleFeatures = features.filter(feature => {
-                    if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
-                        return feature.get("isVisible");
-                    }
-                });
+            visibleFeatures = features.filter(feature => feature.get("drawState").drawType.id === "drawTacticalSymbol" && feature.get("isVisible"));
 
             return visibleFeatures.length > 0;
         },
@@ -57,11 +53,7 @@ export default {
             const features = this.layer.getSource().getFeatures();
             let tacticalFeatures = [];
 
-            tacticalFeatures = features.filter(feature => {
-                if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
-                    return feature;
-                }
-            });
+            tacticalFeatures = features.filter(feature => feature.get("drawState").drawType.id === "drawTacticalSymbol");
 
             return tacticalFeatures.length > 0;
         },
