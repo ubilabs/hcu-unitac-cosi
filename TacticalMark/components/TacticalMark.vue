@@ -37,23 +37,33 @@ export default {
          * @returns {Boolean} True if there are visible features otherwise false.
          */
         hasVisibleFeatures () {
-            const features = this.layer.getSource().getFeatures(),
+            const features = this.layer.getSource().getFeatures();
+            let visibleFeatures = [];
+
                 visibleFeatures = features.filter(feature => {
                     if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
                         return feature.get("isVisible");
                     }
-                    return [];
                 });
 
             return visibleFeatures.length > 0;
         },
 
         /**
-         * Checks if the layer has features.
+         * Checks if the layer has tactical features.
          * @returns {boolean} Returns true if the layer has features, otherwise false.
          */
-        hasFeatures () {
-            return this.layer.getSource().getFeatures().length > 0;
+        hasTacticalFeatures () {
+            const features = this.layer.getSource().getFeatures();
+            let tacticalFeatures = [];
+
+            tacticalFeatures = features.filter(feature => {
+                if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
+                    return feature;
+                }
+            });
+
+            return tacticalFeatures.length > 0;
         },
 
         /**
@@ -550,7 +560,7 @@ export default {
                 id="tacticalMark"
             >
                 <div
-                    v-if="hasFeatures"
+                    v-if="hasTacticalFeatures"
                     class="checkbox"
                 >
                     <label>
