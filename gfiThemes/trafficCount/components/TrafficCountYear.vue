@@ -53,7 +53,7 @@ export default {
             },
             descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextYear"),
             renderLabelLegend: (datetime) => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("YYYY");
+                return moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
             },
 
             // props for table
