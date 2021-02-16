@@ -184,13 +184,12 @@ export class TrafficCountApi {
         if (!this.subscriptionTopics.hasOwnProperty(topic)) {
             // new subscription
             this.subscriptionTopics[topic] = [];
-
-            if (this.mqttClient && typeof this.mqttClient.subscribe === "function") {
-                this.mqttClient.subscribe(topic, options);
-            }
         }
-
         this.subscriptionTopics[topic].push(handler);
+
+        if (this.mqttClient && typeof this.mqttClient.subscribe === "function") {
+            this.mqttClient.subscribe(topic, options);
+        }
     }
 
     /**

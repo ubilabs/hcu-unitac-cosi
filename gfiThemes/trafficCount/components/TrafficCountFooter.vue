@@ -77,7 +77,7 @@ export default {
             }
         }
     },
-    created: function () {
+    mounted: function () {
         // set the date
         this.setFooterLastUpdate(this.api, this.thingId, this.meansOfTransport);
     },
