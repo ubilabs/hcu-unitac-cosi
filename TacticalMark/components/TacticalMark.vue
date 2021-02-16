@@ -274,6 +274,7 @@ export default {
                     this.layer.setVisible(true);
                     evt.feature.set("styleId", iconName + uniqueId("_"));
                     evt.feature.set("isVisible", true);
+                    evt.feature.set("invisibleStyle", style);
                 });
 
                 this.addInteractionToMap(this.interaction);
@@ -476,6 +477,11 @@ export default {
             drawnFeatures.forEach(drawnFeature => {
                 const feature = drawnFeature.clone(),
                     geometry = feature.getGeometry();
+
+                // If the feature is invisible from filter, the style will be reset by printing.
+                if (!feature.get("isVisible") && feature.get("invisibleStyle")) {
+                    feature.setStyle(feature.get("invisibleStyle"));
+                }
 
                 if (geometry instanceof Circle) {
                     feature.setGeometry(fromCircle(geometry));
