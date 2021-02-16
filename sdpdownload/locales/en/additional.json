@@ -23,7 +23,11 @@
                 "tooManyTilesSelected": "The selection you made contains {{tilesCount}} tiles. You can download a maximum of  {{maxTiles}} tiles at a time. Please reduce your selection!",
                 "failedToDownload": "Unfortunately the data could not be downloaded!",
                 "details": "Details:",
-                "serviceNotResponding": "A required service is not responding."
+                "serviceNotResponding": "A required service is not responding.",
+                "alerts":{
+                  "info": "Info",
+                  "error": "Error"
+                }
             }
         }
     }

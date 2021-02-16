@@ -23,7 +23,11 @@
                 "tooManyTilesSelected": "Die von Ihnen getroffene Auswahl beinhaltet {{tilesCount}} Kacheln. Sie dürfen maximal {{maxTiles}} Kacheln aufeinmal herunterladen. Bitte reduzieren Sie Ihre Auswahl!",
                 "failedToDownload": "Die Daten konnten leider nicht heruntergeladen werden!",
                 "details": "Details:",
-                "serviceNotResponding": "Ein benötigter Dienst antwortet nicht."
+                "serviceNotResponding": "Ein benötigter Dienst antwortet nicht.",
+                "alerts":{
+                  "info": "Info",
+                  "error": "Fehler"
+                }
             }
         }
     }

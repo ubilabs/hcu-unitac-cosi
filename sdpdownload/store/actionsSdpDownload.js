@@ -76,6 +76,7 @@ const actions = {
                 "Request": params.request,
                 "TypeName": params.typename
             };
+        let alertingFailedToDownload = {};
 
         axios.get(params.url, {
             params: urlParams,
@@ -88,7 +89,12 @@ const actions = {
                 dispatch("readFeatures", resp.data);
             })
             .catch(function (error) {
-                Radio.trigger("Alert", "alert", error.response);
+                alertingFailedToDownload = {
+                    "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
+                    "content": "<strong>" + error.response + "</strong>",
+                    "displayClass": "error"
+                };
+                dispatch("Alerting/addSingleAlert", alertingFailedToDownload, {root: true});
             });
     },
     /**
@@ -175,25 +181,33 @@ const actions = {
      * If there are more than 9 tiles selected, the user is warned to reduce the selection.
      * If there are no tiles selected, the user is informed to select some.
      * @param {Object} getters - vuex element
+     * @param {Object} dispatch - vuex element
      * @returns {Booelan} if check is okay to request server
      */
-    checkRasterNamesAmount: function ({getters}) {
+    checkRasterNamesAmount: function ({getters, dispatch}) {
         const selectedRasterNames = getters.rasterNames;
 
+        let alertingTilesAmount = {},
+            alertingNoTiles = {};
+
+
         if (selectedRasterNames.length > getters.selectedRasterLimit) {
-            Radio.trigger("Alert", "alert", {
-                text: i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: getters.selectedRasterLimit}),
-                kategorie: "alert-warning"
-            });
+            alertingTilesAmount = {
+                "category": i18next.t("additional:modules.tools.sdpdownload.alerts.info"),
+                "content": i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: getters.selectedRasterLimit}),
+                "displayClass": "info"
+            };
+            dispatch("Alerting/addSingleAlert", alertingTilesAmount, {root: true});
             LoaderOverlay.hide();
-            Radio.trigger("render");
             return false;
         }
         else if (selectedRasterNames.length === 0) {
-            Radio.trigger("Alert", "alert", {
-                text: "<strong>" + getters.pleaseSelectTiles + "</strong>",
-                kategorie: "alert-info"
-            });
+            alertingNoTiles = {
+                "category": i18next.t("additional:modules.tools.sdpdownload.alerts.info"),
+                "content": "<strong>" + getters.pleaseSelectTiles + "</strong>",
+                "displayClass": "info"
+            };
+            dispatch("Alerting/addSingleAlert", alertingNoTiles, {root: true});
             return false;
         }
         return true;
@@ -233,17 +247,18 @@ const actions = {
             // dataZip as axios instance to add specific interceptors
             dataZip = axios.create();
 
+        let alertingFailedToDownload = {},
+            alertingServiceNotresponding = {};
+
         // function before the request is sent
         dataZip.interceptors.request.use(function (request) {
             LoaderOverlay.show(15000);
-            Radio.trigger("render");
             return request;
         });
 
         // function before the response is handled
         dataZip.interceptors.response.use(function (response) {
             LoaderOverlay.hide();
-            Radio.trigger("render");
             return response;
         });
 
@@ -254,11 +269,12 @@ const actions = {
                 dispatch("resetView");
                 dispatch("changeGraphicalSelectStatus", true);
                 if (resp.data.indexOf("Fehler") > -1) {
-                    Radio.trigger("Alert", "alert", {
-                        text: "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + resp.data + "</small>",
-                        kategorie: "alert-warning"
-                    });
-
+                    alertingFailedToDownload = {
+                        "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
+                        "content": "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + resp.data + "</small>",
+                        "displayClass": "error"
+                    };
+                    dispatch("Alerting/addSingleAlert", alertingFailedToDownload, {root: true});
                 }
                 else {
                     // download zip-file
@@ -267,12 +283,14 @@ const actions = {
                 }
             })
             .catch(function () {
+                alertingServiceNotresponding = {
+                    "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
+                    "content": "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + getters.serviceNotResponding + "</small>",
+                    "displayClass": "error"
+                };
                 dispatch("resetView");
                 dispatch("changeGraphicalSelectStatus", false);
-                Radio.trigger("Alert", "alert", {
-                    text: "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + getters.serviceNotResponding + "</small>",
-                    kategorie: "alert-warning"
-                });
+                dispatch("Alerting/addSingleAlert", alertingServiceNotresponding, {root: true});
             });
     }
 };
