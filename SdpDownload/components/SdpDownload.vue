@@ -196,7 +196,7 @@ export default {
                     <select
                         id="formatSelection"
                         name="formatSelection"
-                        class="form-control input-sm formatselect"
+                        class="form-control formatselect"
                         @change="formatSelected($event.target.value)"
                     >
                         <option
@@ -219,6 +219,7 @@ export default {
                     >
                         <div
                             ref="drawSelection"
+                            class="geometric-selection"
                         >
                         </div>
                     </div>
@@ -283,18 +284,10 @@ export default {
 
 <style lang="less" scoped>
 @color_1: #fff;
-@font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
-@background_color_1: rgba(0, 0, 0,.5);
 
 /*sdp download*/
-    #tool-sidebar-vue{
-        width: 350px;
-    }
-    #formatSelection {
-        cursor: pointer;
-        opacity: 1;
-    }
     .content {
+        width: 350px;
         .first{
             padding-top: 20px;
         }
@@ -308,62 +301,23 @@ export default {
     .btn {
         white-space:initial;
     }
-    .btn-select {
-        color: @color_1;
-        background-color: @background_color_1;
-        .name {
-            &:hover {
-                font-weight: normal;
-            }
-        }
-    }
-    .sdp-download{
-        margin-top: 15px;
-    }
     .formatselect{
-        width: calc(100% - 30px) !important;
+        width: calc(100% - 30px);
         height: 30px;
         padding-left: 15px;
         margin-left: 15px;
         margin-right: 15px;
-        padding: 5px 10px;
+        padding: 5px 5px;
         font-size: 12px;
+        cursor: pointer;
     }
     .limiter{
         border-bottom: 1px solid rgb(229,229,229);
         padding-bottom: 20px;
     }
-    #sdp-loader {
-        background-color: rgba(0, 0, 0, 0.4);
-        color: #FFFFFF;
-        height: calc(100% - 50px);
-        position: absolute;
-        width: 100%;
-        z-index: 2000;
-        img {
-            position: absolute;
-            left: 45%;
-            top: 45%;
-        }
-    }
 @media (min-width: 768px) {
-    .sdpDownload {
-        .header {
-            padding: 10px;
-        }
+    .header {
+        padding: 10px;
     }
-}
-
-#circle-overlay {
-    position: relative;
-    background: rgba(51, 153, 204, 0.8);
-    color: @color_1;
-    padding: 4px 8px;
-}
-#tooltip-overlay {
-    position: relative;
-    background: rgba(51, 153, 204, 0.8);
-    color: @color_1;
-    padding: 4px 8px;
 }
 </style>
