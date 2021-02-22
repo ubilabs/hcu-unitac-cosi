@@ -157,7 +157,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
 
         const renameResults = {},
             selectedDistricts = Radio.request("SelectDistrict", "getSelectedDistricts"),
-            selector = Radio.request("SelectDistrict", "getSelector");
+            selector = Radio.request("SelectDistrict", "getSelector") === "stadtteil" ? "stadtteil_name" : Radio.request("SelectDistrict", "getSelector");
         let facilities,
             demographics,
             ratio,
@@ -257,7 +257,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
 
                     const scope = Radio.request("FeaturesLoader", "getDistrictAttrMapping", Radio.request("SelectDistrict", "getScope")),
                         districtFeature = Radio.request("FeaturesLoader", "getDistrictsByScope", scope.attribute)
-                            .filter(feature => feature.get("kategorie") === den && feature.get(selector) === district.get(selector));
+                            .filter(feature => feature.get("kategorie") === den && feature.get(selector === "stadtteil_name" ? "stadtteil" : selector) === district.get(selector));
 
                     if (districtFeature) {
                         const districtProperties = districtFeature[0].getProperties(),

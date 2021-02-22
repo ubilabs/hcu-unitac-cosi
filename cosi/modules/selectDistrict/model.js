@@ -261,8 +261,9 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         this.setScope(scope, true);
         const layer = Radio.request("ModelList", "getModelByAttributes", {name: scope}),
             source = layer.get("layerSource"),
+            selector = this.getSelector() === "stadtteil" ? "stadtteil_name" : this.getSelector(),
             allFeatures = await this.getFeaturesAsync(source),
-            features = allFeatures.filter(feature => ids.includes(feature.get(this.getSelector())));
+            features = allFeatures.filter(feature => ids.includes(feature.get(selector)));
 
         if (features && features.length !== 0) {
             this.set("selectedDistricts", features);
