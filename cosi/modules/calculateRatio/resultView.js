@@ -47,7 +47,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
     createTextLabels: function (results) {
         const features = Radio.request("SelectDistrict", "getSelectedDistricts"),
             values = [],
-            selector = Radio.request("SelectDistrict", "getSelector") === "stadtteil" ? "stadtteil_name" : Radio.request("SelectDistrict", "getSelector");
+            selector = Radio.request("SelectDistrict", "getGeomSelector");
         let colorScale = {};
 
         Radio.trigger("ColorCodeMap", "reset");
@@ -76,7 +76,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
                         color: "#000",
                         width: 2
                     }),
-                    text: results[feature.getProperties()[selector]].coverage + "%"
+                    text: results[feature.getProperties()[selector]].coverage.toLocaleString("de-DE")
                 })
             }));
         });

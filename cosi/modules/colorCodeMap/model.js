@@ -83,18 +83,6 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         }
     },
 
-    // updateColorCodeMap: function () {
-    //     const value = this.get("dropDownModel").getSelectedValues().values[0];
-
-    //     if (value) {
-    //         const scope = Radio.request("SelectDistrict", "getScope"),
-    //             statisticsFeatures = Radio.request("FeaturesLoader", "getDistrictsByValue", scope, value);
-
-    //         this.setStatisticsFeatures(statisticsFeatures);
-    //         this.styleDistrictFeatures(statisticsFeatures, this.getLastYearAttribute(statisticsFeatures[0].getProperties()));
-    //     }
-    // },
-
     /**
      * finds the attribute key for the last avaiable year
      * @param {object} featureProperties - properties of a statistics feature
@@ -127,6 +115,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
     styleDistrictFeatures: function (features, attribute) {
         const districtFeatures = Radio.request("SelectDistrict", "getSelectedDistricts"),
             selector = Radio.request("SelectDistrict", "getSelector"),
+            geomSelector = Radio.request("SelectDistrict", "getGeomSelector"),
             foundDistrictFeatures = [],
             values = features.map(feature => feature.getProperties()[attribute]),
             colorScale = Radio.request("ColorScale", "getColorScaleByValues", values, "interpolateBlues");
@@ -134,7 +123,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         features.forEach(function (feature) {
             // find the equivalent district feature -> to do for stadtteile
             const foundFeature = districtFeatures.find(function (districtFeature) {
-                return feature.get(selector) === districtFeature.get("stadtteil_name") || feature.get(selector) === districtFeature.get("statgebiet");
+                return feature.get(selector) === districtFeature.get(geomSelector);
             });
 
             foundFeature.setStyle(new Style({

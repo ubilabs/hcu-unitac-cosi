@@ -275,8 +275,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
 
                         // Add values for all columns
                         table.forEach((col) => {
-                            // dirty fix for data inconsistencies
-                            const selector = col.verwaltungseinheit === "stadtteile" ? "stadtteil" : col.verwaltungseinheit || this.get("sortKey");
+                            const selector = Radio.request("SelectDistrict", "getSelector");
 
                             if (col[selector] !== "Gesamt" && col[selector] !== "Durchschnitt" && selector === this.get("sortKey")) {
                                 total += parseFloat(col[prop]);
@@ -302,7 +301,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                         // Create Matrix from timeline values
                         table.forEach((col) => {
                             // dirty fix for data inconsistencies
-                            const selector = col.verwaltungseinheit === "stadtteile" ? "stadtteil" : col.verwaltungseinheit || this.get("sortKey");
+                            const selector = Radio.request("SelectDistrict", "getSelector");
 
                             if (col[this.get("sortKey")] !== "Gesamt" && col[this.get("sortKey")] !== "Durchschnitt" && selector === this.get("sortKey")) {
                                 matrixTotal.push(col[prop]);

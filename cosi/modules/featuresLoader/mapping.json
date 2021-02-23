@@ -4,7 +4,8 @@
     "value": "Bevölkerung insgesamt",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -12,7 +13,8 @@
     "value": "Bevölkerung weiblich",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -20,7 +22,8 @@
     "value": "Bevölkerung männlich",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -28,7 +31,8 @@
     "value": "Bevölkerung unter 6 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -36,7 +40,8 @@
     "value": "Bevölkerung unter 18 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -44,7 +49,8 @@
     "value": "Bevölkerung 10 bis unter 15 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -52,7 +58,8 @@
     "value": "Bevölkerung 15 bis unter 21 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -60,7 +67,8 @@
     "value": "Bevölkerung 15 bis unter 65 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -68,7 +76,8 @@
     "value": "Bevölkerung 21 bis unter 45 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -76,7 +85,8 @@
     "value": "Bevölkerung 45 bis unter 65 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -84,7 +94,8 @@
     "value": "Bevölkerung 6 bis unter 10 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -92,7 +103,8 @@
     "value": "Bevölkerung ab 65 Jahren",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -100,7 +112,8 @@
     "value": "Ausländer insgesamt",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -108,7 +121,8 @@
     "value": "Anteil der Ausländer",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -116,7 +130,8 @@
     "value": "Bevölkerung mit Migrationshintergrund",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -124,7 +139,8 @@
     "value": "Anteil der Bevölkerung mit Migrationshintergrund",
     "group": "Bevölkerung",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -132,7 +148,8 @@
     "value": "Bruttofläche in ha",
     "group": "Fläche",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -140,7 +157,8 @@
     "value": "Einwohner je ha",
     "group": "Fläche",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -148,7 +166,8 @@
     "value": "Alleinerziehende",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -156,7 +175,8 @@
     "value": "Anteil der Alleinerziehenden",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -164,7 +184,8 @@
     "value": "Einpersonenhaushalte",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -172,7 +193,8 @@
     "value": "Anteil der Einpersonenhaushalte",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -180,7 +202,8 @@
     "value": "Haushalte mit Kindern",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -188,7 +211,8 @@
     "value": "Anteil der Haushalte mit Kindern",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -196,7 +220,8 @@
     "value": "Durchschnittliche Haushaltsgröße",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -204,7 +229,8 @@
     "value": "Privathaushalte",
     "group": "Haushalte",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -212,7 +238,8 @@
     "value": "Anteil der Sozialversicherungspflichtig beschäftigten Frauen 15 bis unter 65 Jahren",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -220,7 +247,8 @@
     "value": "Anteil der Sozialversicherungspflichtig beschäftigten Männern 15 bis unter 65 Jahren",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -228,7 +256,8 @@
     "value": "Anteil der Sozialversicherungspflichtig Beschäftigten 15 bis unter 65 Jahren",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -236,7 +265,8 @@
     "value": "Sozialversicherungspflichtig beschäftigte Frauen",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -244,7 +274,8 @@
     "value": "Sozialversicherungspflichtig Beschäftigte insgesamt",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -252,7 +283,8 @@
     "value": "Sozialversicherungspflichtig beschäftigte Männer",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -260,7 +292,8 @@
     "value": "Anteil der SGB II (Arbeitslosengeld II) Empfänger 15 bis unter 65 Jahren",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -268,7 +301,8 @@
     "value": "SGB II (Arbeitlosengeld II) Empfänger insgesamt",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -276,7 +310,8 @@
     "value": "Anteil der SGB II (Arbeitslosengeld II) Empfänger insgesamt",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -284,7 +319,8 @@
     "value": "Anteil der SGB III (Arbeitslosengeld) Empfänger 15 bis unter 65 Jahren",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -292,7 +328,8 @@
     "value": "SGB III (Arbeitslosengeld) Empfänger insgesamt",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -300,7 +337,8 @@
     "value": "Anteil der SGB III (Arbeitslosengeld) Empfänger insgesamt",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -308,7 +346,8 @@
     "value": "Anteil der Arbeitslosen 15 bis unter 65 Jahren",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -316,7 +355,8 @@
     "value": "Arbeitslose insgesamt",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -324,7 +364,8 @@
     "value": "Anteil der Arbeitslosen",
     "group": "Arbeitslose",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -332,7 +373,8 @@
     "value": "Anteil an der Bevölkerung 15 bis unter 25 Jahren",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -340,7 +382,8 @@
     "value": "Anteil an der Bevölkerung unter 15 Jahren",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -348,7 +391,8 @@
     "value": "Anteil der ausländischen Bevölkerung 15 bis unter 65 Jahren",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -356,7 +400,8 @@
     "value": "Anteil an der Bevölkerung 15 bis unter 65 Jahren",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -364,7 +409,8 @@
     "value": "Anteil an der Bevölkerung der Leistungsempfänger/-innen insgesamt",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -372,7 +418,8 @@
     "value": "Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -380,7 +427,8 @@
     "value": "Bedarfsgemeinschaften nach SGB II",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -388,7 +436,8 @@
     "value": "Erwerbsfähige Leistungsempfänger/-innen nach SGB II",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -396,7 +445,8 @@
     "value": "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -404,7 +454,8 @@
     "value": "Leistungsempfänger/-innen nach SGB II",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -412,7 +463,8 @@
     "value": "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II",
     "group": "SGB II Leistungen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -420,7 +472,8 @@
     "value": "Anteil der Bevölkerung ab 65 Jahren",
     "group": "Grundsicherung im Alter",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -428,7 +481,8 @@
     "value": "Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre",
     "group": "Grundsicherung im Alter",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -436,7 +490,8 @@
     "value": "Sozialwohnung mit Bindungsauslauf",
     "group": "Wohnen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -444,7 +499,8 @@
     "value": "Sozialwohnungen",
     "group": "Wohnen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -452,7 +508,8 @@
     "value": "Wohngebäude",
     "group": "Wohnen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -460,7 +517,8 @@
     "value": "Wohnungen in Wohn- und Nichtwohngebäuden",
     "group": "Wohnen",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -468,7 +526,8 @@
     "value": "Anteil der PKW mit Schadstoffklasse 4 bis 6",
     "group": "Verkehr",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "relative"
   },
   {
@@ -476,7 +535,8 @@
     "value": "Gewerbliche PKW",
     "group": "Verkehr",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -484,7 +544,8 @@
     "value": "PKW Bestand",
     "group": "Verkehr",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -492,7 +553,8 @@
     "value": "Private PKW",
     "group": "Verkehr",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   },
   {
@@ -500,7 +562,8 @@
     "value": "Private PKW je 1000 Einwohner",
     "group": "Verkehr",
     "statgebiet": true,
-    "stadtteil":true,
+    "stadtteil": true,
+    "bezirk": true,
     "valueType": "absolute"
   }
 ]

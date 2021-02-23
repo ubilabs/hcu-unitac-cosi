@@ -12,8 +12,8 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         id: "selectDistrict",
         selectedDistricts: [],
         districtLayer: [], // e.g.  {name:  "Statistische Gebiete", selector: "statgebiet", layerIds:[]}
-        districtLayerNames: ["Statistische Gebiete", "Stadtteile"],
-        districtLayerIds: ["6071", "1694"],
+        districtLayerNames: ["Statistische Gebiete", "Stadtteile", "Bezirke"],
+        districtLayerIds: ["6071", "1694", "1692"],
         districtLayersLoaded: [],
         buffer: 0,
         isReady: false,
@@ -143,6 +143,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
             "getSelectedDistricts": this.getSelectedDistricts,
             "getScope": this.getScope,
             "getSelector": this.getSelector,
+            "getGeomSelector": this.getGeomSelector,
             "getScopeAndSelector": this.getScopeAndSelector,
             "getDistrictLayer": this.getDistrictLayer,
             "getBuffer": this.getBuffer,
@@ -449,7 +450,13 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         return this.get("activeSelector");
     },
     getGeomSelector: function () {
-        return this.getSelector() === "stadtteil" ? "stadtteil_name" : this.getSelector();
+        let selector = this.getSelector();
+
+        if (selector === "stadtteil" || selector === "bezirk") {
+            selector += "_name";
+        }
+
+        return selector;
     },
     getScopeAndSelector: function () {
         return {
@@ -478,15 +485,11 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
      * @returns {string[]} names - a list of the names of the selected districts
      */
     getSelectedDistrictNames: function (districts) {
-        const names = [];
+        const names = [],
+            selector = this.getGeomSelector();
 
         districts.forEach(function (district) {
-            if (district.get("statgebiet")) {
-                names.push(district.get("statgebiet"));
-            }
-            else {
-                names.push(district.get("stadtteil_name"));
-            }
+            names.push(district.get(selector));
         });
         return names;
     },

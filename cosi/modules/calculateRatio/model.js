@@ -157,7 +157,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
 
         const renameResults = {},
             selectedDistricts = Radio.request("SelectDistrict", "getSelectedDistricts"),
-            selector = Radio.request("SelectDistrict", "getSelector") === "stadtteil" ? "stadtteil_name" : Radio.request("SelectDistrict", "getSelector");
+            selector = Radio.request("SelectDistrict", "getGeomSelector");
         let facilities,
             demographics,
             ratio,
@@ -169,7 +169,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
             selectedDistricts.forEach((district) => {
                 // get the facilities and demographics for each district
                 facilities = this.getFacilitiesInDistrict(district);
-                demographics = this.getTargetDemographicsInDistrict(district, selector);
+                demographics = this.getTargetDemographicsInDistrict(district);
 
                 // add up all demographics and facilities for all selected districts
                 totalFacilities += facilities;
@@ -181,7 +181,8 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
                     ratio: ratio, // the simple ratio between target group and facility value
                     capacity: facilities * this.get("modifier")[1], // number of people the given facility property can accomodate
                     demand: demographics / this.get("modifier")[1], // necessary facility value to accomodate all people of the target group
-                    coverage: Math.round(ratio * this.get("modifier")[1] * 100 * this.get("resolution")), // percentage of demand met, modified by resolution (e.g. calc per 1000 ppl)
+                    coverage: ratio * this.get("modifier")[1] * this.get("resolution"), // percentage of demand met as decimal, modified by resolution (e.g. calc per 1000 ppl)
+                    // coverage: Math.round(ratio * this.get("modifier")[1] * 100 * this.get("resolution")), // percentage of demand met, modified by resolution (e.g. calc per 1000 ppl)
                     facilities: facilities, // facility value (e.g. sqm)
                     demographics: demographics, // target group
                     f: this.get("modifier")[1] // modifier "f"
@@ -193,7 +194,8 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
                 ratio: totalRatio,
                 capacity: totalFacilities * this.get("modifier")[1],
                 demand: totalDemographics / this.get("modifier")[1],
-                coverage: Math.round(totalRatio * this.get("modifier")[1] * 100 * this.get("resolution")),
+                coverage: totalRatio * this.get("modifier")[1] * this.get("resolution"),
+                // coverage: Math.round(totalRatio * this.get("modifier")[1] * 100 * this.get("resolution")),
                 facilities: totalFacilities,
                 demographics: totalDemographics,
                 f: this.get("modifier")[1]
@@ -202,7 +204,8 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
                 ratio: totalRatio / selectedDistricts.length,
                 capacity: (totalFacilities * this.get("modifier")[1]) / selectedDistricts.length,
                 demand: totalDemographics / this.get("modifier")[1] / selectedDistricts.length,
-                coverage: Math.round((totalRatio * this.get("modifier")[1] * 100 * this.get("resolution")) / selectedDistricts.length),
+                coverage: (totalRatio * this.get("modifier")[1] * this.get("resolution")) / selectedDistricts.length,
+                // coverage: Math.round((totalRatio * this.get("modifier")[1] * 100 * this.get("resolution")) / selectedDistricts.length),
                 facilities: totalFacilities / selectedDistricts.length,
                 demographics: totalDemographics / selectedDistricts.length,
                 f: this.get("modifier")[1]
@@ -248,8 +251,10 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
      * @param {*} selector the demographics attribute to retrieve
      * @returns {number} the target population for the latest year
      */
-    getTargetDemographicsInDistrict: function (district, selector) {
+    getTargetDemographicsInDistrict: function (district) {
         let targetPopulation = 0;
+        const selector = Radio.request("SelectDistrict", "getSelector"),
+            geomSelector = Radio.request("SelectDistrict", "getGeomSelector");
 
         if (typeof this.getDenominators() !== "undefined") {
             if (this.getDenominators().length > 0) {
@@ -259,8 +264,8 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
                         districtFeature = Radio.request("FeaturesLoader", "getDistrictsByScope", scope.attribute)
                             .filter(feature => {
                                 if (feature.get("kategorie") === den) {
-                                    const featureName = Radio.request("FeaturesLoader", "unifyString", feature.get(selector === "stadtteil_name" ? "stadtteil" : selector)),
-                                        districtName = Radio.request("FeaturesLoader", "unifyString", district.get(selector));
+                                    const featureName = Radio.request("FeaturesLoader", "unifyString", feature.get(selector)),
+                                        districtName = Radio.request("FeaturesLoader", "unifyString", district.get(geomSelector));
 
                                     return featureName === districtName;
                                 }
