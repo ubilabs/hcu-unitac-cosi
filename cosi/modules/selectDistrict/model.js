@@ -226,19 +226,20 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
      */
     boxSelect: function (geoJson) {
         const extent = new GeoJSON().readGeometry(geoJson).getExtent(),
-            layerSource = Radio.request("ModelList", "getModelByAttributes", {"name": this.getScope()}).get("layerSource");
+            layerSource = Radio.request("ModelList", "getModelByAttributes", {"name": this.getScope()}).get("layerSource"),
+            selector = this.getGeomSelector();
 
         layerSource.forEachFeatureIntersectingExtent(extent, (feature) => {
             switch (this.get("boxSelectMode")) {
                 case 1:
                     // to do, check how the ctrlKey interferes with the OL drawInteraction... it blocks the click event
-                    if (this.get("selectedDistricts").map(district => district.get(this.getSelector())).includes(feature.get(this.getSelector()))) {
+                    if (this.get("selectedDistricts").map(district => district.get(selector)).includes(feature.get(selector))) {
                         this.removeSelectedDistrict(feature, this.getSelectedDistricts());
                         feature.setStyle(this.get("defaultStyle"));
                     }
                     break;
                 default:
-                    if (!this.get("selectedDistricts").map(district => district.get(this.getSelector())).includes(feature.get(this.getSelector()))) {
+                    if (!this.get("selectedDistricts").map(district => district.get(selector)).includes(feature.get(selector))) {
                         this.pushSelectedDistrict(feature);
                         feature.setStyle(this.get("selectedStyle"));
                     }
@@ -261,7 +262,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         this.setScope(scope, true);
         const layer = Radio.request("ModelList", "getModelByAttributes", {name: scope}),
             source = layer.get("layerSource"),
-            selector = this.getSelector() === "stadtteil" ? "stadtteil_name" : this.getSelector(),
+            selector = this.getGeomSelector(),
             allFeatures = await this.getFeaturesAsync(source),
             features = allFeatures.filter(feature => ids.includes(feature.get(selector)));
 
@@ -418,7 +419,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         }
 
         districts.forEach((feature) => {
-            if (feature.getProperties()[this.getSelector()] === districtName) {
+            if (feature.getProperties()[this.getGeomSelector()] === districtName) {
                 extent = feature.getGeometry().getExtent();
             }
         });
@@ -446,6 +447,9 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
     },
     getSelector: function () {
         return this.get("activeSelector");
+    },
+    getGeomSelector: function () {
+        return this.getSelector() === "stadtteil" ? "stadtteil_name" : this.getSelector();
     },
     getScopeAndSelector: function () {
         return {
