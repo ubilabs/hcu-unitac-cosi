@@ -77,13 +77,12 @@ function removeBadTags (rawSource) {
  * @returns {String} Returns the parsed data from kml source data
  */
 function getParsedData (rawData, pointImages, textColors, textSizes) {
-    const xmlDoc = new DOMParser().parseFromString(rawData, "text/xml");
-    let parsedData = rawData;
+    const xmlDoc = new DOMParser().parseFromString(rawData, "text/xml"),
+        placeMarks = xmlDoc.getElementsByTagName("Placemark");
 
     if (xmlDoc.getElementsByTagName("kml").length &&
         xmlDoc.getElementsByTagName("kml")[0].attributes.xmlns.value.includes("/2.0") &&
         xmlDoc.getElementsByTagName("Folder").length) {
-        const placeMarks = xmlDoc.getElementsByTagName("Placemark");
 
         Array.prototype.forEach.call(placeMarks, placemark => {
             const styleAll = xmlDoc.getElementsByTagName("Style"),
@@ -169,11 +168,28 @@ function getParsedData (rawData, pointImages, textColors, textSizes) {
 
             placemark.appendChild(styles);
         });
-
-        parsedData = xmlDoc;
     }
 
-    return parsedData;
+    // Parsing damage accounts features to the feature which could be used for new AIS system
+    Array.prototype.forEach.call(placeMarks, placemark => {
+        if (placemark.getElementsByTagName("name").length &&
+            placemark.getElementsByTagName("name")[0].childNodes.length &&
+            placemark.getElementsByTagName("href").length &&
+            placemark.getElementsByTagName("href")[0].childNodes.length) {
+            const value = placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue,
+                img = placemark.getElementsByTagName("href")[0].childNodes[0].nodeValue;
+
+            let parsedImg = "";
+
+            if (img.includes("damage_account.jpg")) {
+                parsedImg = img.replace("damage_account.jpg", "damage_account_" + value + ".jpg");
+                placemark.getElementsByTagName("name")[0].childNodes[0].nodeValue = "";
+                placemark.getElementsByTagName("href")[0].childNodes[0].nodeValue = parsedImg;
+            }
+        }
+    });
+
+    return xmlDoc;
 }
 /**
  * Adds the layer to theme tree under the menu Importierte Daten
