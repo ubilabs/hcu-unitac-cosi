@@ -235,7 +235,7 @@ export default {
 .gfi .tool-window-vue {
     max-width:  980px;
 }
-#vue-tool-content-body{
+.vue-tool-content-body{
     max-width: 980px;
     max-height: 720px;
 }
@@ -245,7 +245,7 @@ export default {
      padding: 5px 20px 5px 20px;
         @media (max-width: 767px) {
             width: inherit;
-            max-height: 80vh;
+            height: 80vh;
             padding-left: 10px;
             padding-right: 10px;
 
@@ -256,11 +256,11 @@ export default {
         }
         @media (min-width: 768px) {
             width: 80vw;
-            max-height: 60vh;
+            height: 60vh;
         }
         @media (min-width: 1024px) {
             width: 50vw;
-            max-height: 60vh;
+            height: 60vh;
         }
     .bikeLevelHeader{
         margin-bottom: 0;
