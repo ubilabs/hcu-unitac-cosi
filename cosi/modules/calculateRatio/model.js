@@ -257,7 +257,15 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
 
                     const scope = Radio.request("FeaturesLoader", "getDistrictAttrMapping", Radio.request("SelectDistrict", "getScope")),
                         districtFeature = Radio.request("FeaturesLoader", "getDistrictsByScope", scope.attribute)
-                            .filter(feature => feature.get("kategorie") === den && feature.get(selector === "stadtteil_name" ? "stadtteil" : selector) === district.get(selector));
+                            .filter(feature => {
+                                if (feature.get("kategorie") === den) {
+                                    const featureName = Radio.request("FeaturesLoader", "unifyString", feature.get(selector === "stadtteil_name" ? "stadtteil" : selector)),
+                                        districtName = Radio.request("FeaturesLoader", "unifyString", district.get(selector));
+
+                                    return featureName === districtName;
+                                }
+                                return false;
+                            });
 
                     if (districtFeature) {
                         const districtProperties = districtFeature[0].getProperties(),

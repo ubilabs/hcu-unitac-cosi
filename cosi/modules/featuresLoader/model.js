@@ -61,7 +61,8 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             "getFeatureList": this.getFeatureList,
             "getAllFeaturesByAttribute": this.getAllFeaturesByAttribute,
             "getAllValuesByScope": this.getAllValuesByScope,
-            "getDistrictAttrMapping": this.getDistrictAttrMapping
+            "getDistrictAttrMapping": this.getDistrictAttrMapping,
+            "unifyString": this.unifyString
         }, this);
 
         this.listenTo(Radio.channel("SelectDistrict"), {
@@ -140,9 +141,10 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
                     })
                     .then(features => {
                         return features.filter((feature) => {
-                            const attr = this.getDistrictAttrMapping(attribute).selector;
+                            const attr = this.getDistrictAttrMapping(attribute).selector,
+                                unifiedDistrictNamesList = districtNameList.map(name => this.unifyString(name));
 
-                            if (districtNameList.includes(feature.get(attr))) {
+                            if (unifiedDistrictNamesList.includes(this.unifyString(feature.get(attr)))) {
                                 // rename feature name for reference levels to avoid naming conflict
                                 if (subDistrictNameList) {
                                     const districtName = feature.get(attr);
@@ -357,7 +359,10 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
      * @returns {string} the converted string
      */
     unifyString: function (str) {
-        return str.replace(/\s/g, "").replace(/^\w/, c => c.toLowerCase());
+        if (typeof str === "string") {
+            return str.replace(/\s/g, "").replace(/^\w/, c => c.toLowerCase());
+        }
+        return str;
     }
 
 });
