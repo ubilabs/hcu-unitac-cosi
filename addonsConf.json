@@ -4,13 +4,15 @@
   "cosi": "modules/loader.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
-  "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "fileImportAddon": {
     "type": "tool"
   },
   "populationRequest": {
+    "type": "tool"
+  },
+  "SdpDownload": {
     "type": "tool"
   },
   "commuterFlows": {
