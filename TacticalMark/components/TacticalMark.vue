@@ -40,7 +40,7 @@ export default {
             const features = this.layer.getSource().getFeatures();
             let visibleFeatures = [];
 
-            visibleFeatures = features.filter(feature => feature.get("drawState").drawType.id === "drawTacticalSymbol" && feature.get("isVisible"));
+            visibleFeatures = features.filter(feature => feature.get("drawState").drawType.isTacticalMark && feature.get("isVisible"));
 
             return visibleFeatures.length > 0;
         },
@@ -53,7 +53,7 @@ export default {
             const features = this.layer.getSource().getFeatures();
             let tacticalFeatures = [];
 
-            tacticalFeatures = features.filter(feature => feature.get("drawState").drawType.id === "drawTacticalSymbol");
+            tacticalFeatures = features.filter(feature => feature.get("drawState").drawType.isTacticalMark);
 
             return tacticalFeatures.length > 0;
         },
@@ -262,7 +262,17 @@ export default {
                 this.interaction.on("drawend", (evt) => {
                     const that = this;
 
-                    evt.feature.set("drawState", {drawType: {id: "drawTacticalSymbol"}});
+                    evt.feature.set("drawState", {
+                        drawType: {
+                            id: "drawSymbol",
+                            geometry: "Point",
+                            isTacticalMark: true
+                        },
+                        symbol: {
+                            id: "iconPoint",
+                            type: "simple_point",
+                            value: "simple_point"
+                        }});
 
                     evt.feature.setStyle(feature => {
                         that.enableDownloadBtn();
@@ -435,7 +445,7 @@ export default {
 
             if (features.length > 0) {
                 features.forEach(feature => {
-                    if (feature.get("drawState").drawType.id === "drawTacticalSymbol") {
+                    if (feature.get("drawState").drawType.isTacticalMark) {
                         feature.set("isVisible", value);
                     }
                 });
