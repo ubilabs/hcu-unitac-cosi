@@ -200,16 +200,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
                 demographics: totalDemographics,
                 f: this.get("modifier")[1]
             });
-            this.setResultForDistrict("Durchschnitt", {
-                ratio: totalRatio / selectedDistricts.length,
-                capacity: (totalFacilities * this.get("modifier")[1]) / selectedDistricts.length,
-                demand: totalDemographics / this.get("modifier")[1] / selectedDistricts.length,
-                coverage: (totalRatio * this.get("modifier")[1] * this.get("resolution")) / selectedDistricts.length,
-                // coverage: Math.round((totalRatio * this.get("modifier")[1] * 100 * this.get("resolution")) / selectedDistricts.length),
-                facilities: totalFacilities / selectedDistricts.length,
-                demographics: totalDemographics / selectedDistricts.length,
-                f: this.get("modifier")[1]
-            });
+            this.setResultForDistrict("Durchschnitt", this.calculateAverage(this.getResults()));
         }
         else {
             this.setMessage("Bitte wählen Sie mindestens einen Stadtteil aus.");
@@ -243,6 +234,21 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         }
         this.setMessage(`In ${area} ist keine Population der Zielgruppe vorhanden. Daher können keine Ergebnisse angezeigt werden.`);
         return "n/a";
+    },
+
+    calculateAverage (results) {
+        const districtResults = Object.entries(results).filter(res => res[0] !== "Gesamt"),
+            n = districtResults.length;
+
+        return {
+            ratio: districtResults.reduce((sum, district) => sum + district[1].ratio, 0) / n,
+            capacity: results.Gesamt.capacity / n,
+            demand: results.Gesamt.demand / n,
+            coverage: districtResults.reduce((sum, district) => sum + district[1].coverage, 0) / n,
+            facilities: results.Gesamt.facilities / n,
+            demographics: results.Gesamt.demographics / n,
+            f: this.get("modifier")[1]
+        };
     },
 
     /**

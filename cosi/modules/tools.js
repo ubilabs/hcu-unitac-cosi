@@ -147,6 +147,20 @@ const general = {
                         "anzahl_planbetten",
                         "anzahl_plaetze_teilstationaer"
                     ]
+                },
+                {
+                    layerId: "20161",
+                    isActive: false,
+                    isSelected: false,
+                    name: "Corona Testzentren",
+                    attributeWhiteList: [
+                        "typ",
+                        "bezirk",
+                        "antigentestung",
+                        "pcr_testung",
+                        "oeffnungszeiten",
+                        "betreiber"
+                    ]
                 }
             ]
         }),

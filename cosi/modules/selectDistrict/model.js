@@ -367,7 +367,7 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         this.get("districtLayerNames").forEach(layerName => {
             const layer = Radio.request("ModelList", "getModelByAttributes", {"name": layerName});
 
-            if (layerName !== "Stadtteile") {
+            if (layerName === "Statistische Gebiete") {
 
                 if (layerName !== this.getScope()) {
                     layer.setIsVisibleInMap(false);
