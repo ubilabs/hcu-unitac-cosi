@@ -1,7 +1,8 @@
 const openRouteService = Backbone.Model.extend(/** @lends openRouteService.prototype */{
     defaults: {
-        baseUrl: "https://api.openrouteservice.org/v2/isochrones/",
-        accessKey: "5b3ce3597851110001cf6248283d336e17c34bc8940c75bc55590fe7"
+        baseUrl: "https://csl-lig.hcu-hamburg.de/ors/v2/isochrones/"
+        // baseUrl: "https://api.openrouteservice.org/v2/isochrones/",
+        // accessKey: "5b3ce3597851110001cf6248283d336e17c34bc8940c75bc55590fe7"
     },
     /**
      * @class openRouteService
@@ -31,8 +32,6 @@ const openRouteService = Backbone.Model.extend(/** @lends openRouteService.proto
         const that = this;
 
         return new Promise(function (resolve, reject) {
-            // console.log(rangeType);
-            // const body = '{"locations":[[9.9937,53.5511],[9.9937,53.5511]],"range":[300,200]}',
             const queryBody = `{"locations":${JSON.stringify(coordinates)},"range_type":"${rangeType}", "range":${JSON.stringify(rangeArray)}}`,
                 url = that.get("baseUrl") + pathType.trim(),
                 xhr = new XMLHttpRequest();
@@ -41,7 +40,7 @@ const openRouteService = Backbone.Model.extend(/** @lends openRouteService.proto
             xhr.open("POST", url);
             xhr.setRequestHeader("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("Authorization", that.get("accessKey"));
+            // xhr.setRequestHeader("Authorization", that.get("accessKey"));
             xhr.onload = function () {
                 if (this.status >= 200 && this.status < 300) {
                     resolve(xhr.response);
