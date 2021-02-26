@@ -171,9 +171,9 @@ const general = {
             glyphicon: "glyphicon-picture",
             districtLayer: [
                 {
-                    name: "Bezirke",
-                    selector: "bezirk",
-                    id: "1692"
+                    name: "Statistische Gebiete",
+                    selector: "statgebiet",
+                    id: "6071"
                 },
                 {
                     name: "Stadtteile",
@@ -181,9 +181,9 @@ const general = {
                     id: "1694"
                 },
                 {
-                    name: "Statistische Gebiete",
-                    selector: "statgebiet",
-                    id: "6071"
+                    name: "Bezirke",
+                    selector: "bezirk",
+                    id: "1692"
                 }
             ]
         }),
