@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "selectFeatures": {
+                    "title": "Gebiete auswählen",
+                    "content": "Ich bin ein Vue Addon"
+                }
+            }
+        }
+    }
+}
