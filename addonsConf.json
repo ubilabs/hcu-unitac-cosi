@@ -69,5 +69,9 @@
   "verkehrsstaerken": {
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
+  },
+  "SelectFeatures": {
+    "type": "tool",
+    "path": "cosi/SelectFeatures"
   }
 }
