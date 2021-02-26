@@ -102,10 +102,10 @@ function initializeCosi () {
         general.dashboardTable
     ]);
 
-    if (!window.location.pathname.includes("infoscreen.html")) {
-        window.localStorage.setItem("infoScreenOpen", JSON.stringify(infoScreenOpen));
-        tools.selectDistrict.set("isActive", true);
-    }
+    // if (!window.location.pathname.includes("infoscreen.html")) {
+    //     window.localStorage.setItem("infoScreenOpen", JSON.stringify(infoScreenOpen));
+    //     tools.selectDistrict.set("isActive", true);
+    // }
 
     Radio.trigger("General", "loaded");
     addInfoButtons();
