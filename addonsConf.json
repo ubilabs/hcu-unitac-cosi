@@ -77,5 +77,8 @@
   "SelectFeatures": {
     "type": "tool",
     "path": "cosi/SelectFeatures"
+  },
+  "ORS": {
+    "type": "tool"
   }
 }
