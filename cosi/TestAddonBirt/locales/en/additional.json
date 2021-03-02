@@ -1,0 +1,10 @@
+{
+    "modules": {
+        "tools": {
+            "testAddonBirt": {
+                "title": "My Test Addon",
+                "content": "I am a Vue Addon"
+            }
+        }
+    }
+}
