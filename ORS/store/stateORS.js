@@ -11,6 +11,9 @@ export default {
     requestUrl: "https://api.openrouteservice.org/v2",
     apiKey: null,
     colorspace: "interpolateRdYlGn",
+    coloralpha: 0.1,
+    innerLineWidth: 1.5,
+    outerLineWidth: 4.5,
     crs: {
         portal: "EPSG:25832",
         service: "EPSG:4326"
@@ -23,8 +26,9 @@ export default {
         options: {},
         range_type: "distance"
     },
-    defaultRequestProfile: "/isochrones/foot-walking",
+    defaultRequestService: "isochrones",
+    defaultRequestProfile: "foot-walking",
+    defaultJoinIsochrones: true,
     requestData: {},
-    // coords: null,
     geoJson: []
 };

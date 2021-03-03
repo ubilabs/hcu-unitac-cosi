@@ -4,22 +4,36 @@ import * as Proj from "ol/proj";
 
 export default {
     ...generateSimpleGetters(initialState),
-    request: state => payload => ({
-        mode: "cors",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": state.apiKey || ""
-        },
-        body: JSON.stringify(payload)
-    }),
-    requestBody: state => payload => {
-        delete payload.profile;
+    profile: state => profile => (profile || state.defaultRequestProfile).replace("/", ""),
+    service: state => service => (service || state.defaultRequestService).replace("/", ""),
+    joinIsochrones: state => drawIsochrones => typeof drawIsochrones !== "undefined" ? drawIsochrones : state.defaultJoinIsochrones,
+    request: state => payload => {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (state.apiKey) {
+            headers.Authorization = state.apiKey;
+        }
 
         return {
+            mode: "cors",
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload)
+        };
+    },
+    requestBody: state => payload => {
+        const requestBody = {
             ...state.defaultRequestBody,
             ...payload
         };
+
+        delete requestBody.profile;
+        delete requestBody.service;
+        delete requestBody.joinIsochrones;
+
+        return requestBody;
     },
     geomTransformed: state => {
         let polygon,

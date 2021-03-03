@@ -12,6 +12,8 @@
     "versionMinor": "npm version minor && git push --tags",
     "versionMajor": "npm version major && git push --tags"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@turf/turf": "^6.3.0"
+  },
   "devDependencies": {}
 }

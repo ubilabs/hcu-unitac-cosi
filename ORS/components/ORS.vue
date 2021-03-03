@@ -3,7 +3,10 @@
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style} from "ol/style";
-import state from "../store/stateORS";
+import getters from "../store/gettersORS";
+import mutations from "../store/mutationsORS";
+import {union} from "@turf/turf";
+import {getRgbArray} from "../../cosi/utils";
 
 /**
  * Routing, Isochrones and Matrix Requests through OpenRouteService API
@@ -22,7 +25,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/ORS", Object.keys(state)),
+        ...mapGetters("Tools/ORS", Object.keys(getters)),
         ...mapGetters("Map", [
             "map",
             "layers"
@@ -30,7 +33,10 @@ export default {
     },
     watch: {
         requestData (newRequest) {
-            this.requestIsochrone(newRequest);
+            switch (this.service(newRequest.service)) {
+                default:
+                    this.requestIsochrone(newRequest);
+            }
         },
         geoJson () {
             if (this.geoJson.length > 0) {
@@ -43,14 +49,12 @@ export default {
     },
     mounted () {
         this.createDrawingLayer();
-        console.log(this.$store.state.Tools.ORS)
-        console.log("online")
+
+        /** @todo JUST FOR TESTING */
+        this.$store.dispatch("Tools/ORS/newRequest", {range: [1000], locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]]});
     },
     methods: {
-        ...mapMutations("Tools/ORS", [
-            "setGeoJson",
-            "setDrawingLayer"
-        ]),
+        ...mapMutations("Tools/ORS", Object.keys(mutations)),
         ...mapActions("Map", [
             "loopLayerLoader"
         ]),
@@ -60,11 +64,19 @@ export default {
          * @returns {void}
          */
         requestIsochrone (payload) {
-            fetch(this.requestUrl + (payload.profile || this.defaultRequestProfile), this.request(this.requestBody(payload)))
+            const profile = this.profile(payload.profile),
+                url = `${this.requestUrl}/isochrones/${profile}`;
+
+            fetch(url, this.request(this.requestBody(payload)))
                 .then(response => response.json())
                 .then(json => {
+                    let geoJson = json;
+
                     // reverse array order for rendering
-                    json.features = json.features?.reverse();
+                    geoJson.features = geoJson.features?.reverse();
+                    if (this.joinIsochrones(payload.joinIsochrones)) {
+                        geoJson = this.unionizeFeatures(geoJson);
+                    }
                     this.setGeoJson(json);
                 });
         },
@@ -91,6 +103,32 @@ export default {
             return newLayer;
         },
         /**
+         * @param {Object} geoJson the input geoJson as FeatureCollection
+         * @returns {Object} the FeatureCollection with joined polygons per step
+         */
+        unionizeFeatures (geoJson) {
+            const features = geoJson.features,
+                steps = features.length / this.requestData.locations.length,
+                unionFeatures = [];
+            let stepFeatures = [],
+                unionFeature;
+
+            for (let i = 0; i < steps; i++) {
+                stepFeatures = [];
+                unionFeature = null;
+                for (let j = 0; j < this.requestData.locations.length; j++) {
+                    stepFeatures.push(features[i + (j * steps)]);
+                    unionFeature = unionFeature
+                        ? union(unionFeature, features[i + (j * steps)])
+                        : features[i + (j * steps)];
+                }
+                unionFeatures.push(unionFeature);
+            }
+
+            geoJson.features = unionFeatures;
+            return geoJson;
+        },
+        /**
          * @description draw an isochrone on the map
          * @returns {void}
          */
@@ -99,22 +137,15 @@ export default {
                 source = layer.getSource();
             let features;
 
-            layer.setZIndex(3000); // TODO: zIndex should not be a magic number!
-
+            layer.setZIndex(this.zIndex);
             source.clear();
 
             this.geoJson.forEach(item => {
                 features = this.parser.readFeatures(item);
-
                 // transform feature geom to portal crs
                 this.transformFeatures(features);
-
-                // style features
                 this.styleFeatures(features);
 
-                // clear old isochrones
-                // source.clear();
-                // clear isochrones through other means, as we might need multiple request systems
                 source.addFeatures(features);
             });
         },
@@ -124,11 +155,16 @@ export default {
          * @returns {void}
          */
         styleFeatures (features) {
-            const colorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], this.colorspace, features.length / this.requestData.locations.length + 1);
+            const joinedIsochrones = this.joinIsochrones(this.requestData.joinIsochrones),
+                steps = joinedIsochrones ? features.length : features.length / this.requestData.locations.length,
+                colorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], this.colorspace, steps + 1);
+            let stepFeatures;
 
             for (let i = 0; i < this.requestData.locations.length; i++) {
-                features.filter(feature => feature.get("group_index") === i)
-                    .forEach((feature, j) => feature.setStyle(this.style(j + 1, colorScale)));
+                stepFeatures = joinedIsochrones ? features : features.filter(feature => feature.get("group_index") === i);
+                stepFeatures.forEach((feature, j) => {
+                    feature.setStyle(this.style(j + 1, colorScale));
+                });
             }
         },
         /**
@@ -140,11 +176,11 @@ export default {
         style (i, colorScale) {
             return new Style({
                 fill: new Fill({
-                    color: colorScale?.legend?.colors[i]?.replace("1.0", "0.1")
+                    color: getRgbArray(colorScale?.legend?.colors[i], this.coloralpha)
                 }),
                 stroke: new Stroke({
                     color: colorScale?.legend?.colors[i],
-                    width: i === 1 ? 4.5 : 1.5
+                    width: i === 1 ? this.outerLineWidth : this.innerLineWidth
                 })
             });
         },
