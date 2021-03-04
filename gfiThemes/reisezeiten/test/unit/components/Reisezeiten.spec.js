@@ -115,7 +115,7 @@ describe("addons/reisezeiten/components/Reisezeiten.vue", () => {
         sinon.stub(ReisezeitenTheme.methods, "parseRequestedDestinations").callsFake(function () {
         });
         sinon.stub(ReisezeitenTheme.methods, "removeCurrentyDisplayedRoute").callsFake(function () {
-        }); 
+        });
         sinon.stub(ReisezeitenTheme.methods, "createTempLayer").callsFake(function () {
         });
         sinon.stub(ReisezeitenTheme.methods, "chooseRoute").callsFake(function () {
