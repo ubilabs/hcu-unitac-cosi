@@ -43,8 +43,6 @@ export default {
     },
     mounted () {
         this.createDrawingLayer();
-        console.log(this.$store.state.Tools.ORS)
-        console.log("online")
     },
     methods: {
         ...mapMutations("Tools/ORS", [

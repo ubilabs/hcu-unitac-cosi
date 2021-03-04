@@ -2,8 +2,9 @@ export default {
     // common attributes for tools
     active: true,
     id: "ORS",
-    title: "OpenRouteService",
+    name: "OpenRouteService",
     glyphicon: "glyphicon-map",
+    isVisibleInMenu: false,
     // default service parameters
     layerId: "ORS",
     drawingLayer: null,
