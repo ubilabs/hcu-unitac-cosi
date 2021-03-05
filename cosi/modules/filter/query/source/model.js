@@ -176,6 +176,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {string[]} array of string[] || number[]
      */
     parseValuesFromString: function (feature, attributeName) {
+        console.log(feature, attributeName);
         const values = [],
             attributeValue = feature.get(attributeName);
         let attributeValues = [];

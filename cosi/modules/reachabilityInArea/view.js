@@ -64,7 +64,6 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                         });
                     }
                     this.render(model, value);
-                    this.createMapLayer(this.model.get("mapLayerName"));
                 }
                 else {
                     this.clearInput();
@@ -120,22 +119,11 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
     },
 
     /**
-     * creates the map layer that contains the isochrones
-     * @returns {void}
-     */
-    createMapLayer: function () {
-        const newLayer = Radio.request("Map", "createLayerIfNotExists", this.model.get("mapLayerName"));
-
-        newLayer.setVisible(true);
-        newLayer.setMap(Radio.request("Map", "getMap"));
-    },
-
-    /**
      * clears the map layer that contains the isochrones
      * @returns {void}
      */
     clearMapLayer: function () {
-        const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+        const mapLayer = this.model.get("mapLayer");
 
         if (mapLayer.getSource().getFeatures().length > 0) {
             mapLayer.getSource().clear();
@@ -184,7 +172,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                     }));
             });
             Promise.all(promiseList).then((groupedFeaturesList) => {
-                const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+                const mapLayer = this.model.get("mapLayer");
                 let layerUnion, layerUnionFeatures;
 
                 mapLayer.getSource().clear();

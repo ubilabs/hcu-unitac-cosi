@@ -58,11 +58,8 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
     initialize: function () {
         this.listenTo(this.model, {
             "change:isActive": function (model, value) {
-                const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
-
                 if (value) {
                     this.render(model, value);
-                    this.createMapLayer(this.model.get("mapLayerName"));
                     if (this.model.get("isochroneFeatures").length > 0) {
                         this.initializeUi();
                         this.setIsochroneAsBbox();
@@ -76,7 +73,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
                     this.unregisterSetCoordListener();
                     Radio.trigger("SelectDistrict", "revertBboxGeometry");
                     Radio.trigger("Alert", "alert:remove");
-                    if (mapLayer.getSource().getFeatures().length === 0) {
+                    if (this.model.get("mapLayer").getSource().getFeatures().length === 0) {
                         this.clearInput();
                     }
                     if (!this.model.get("setBySearch")) {
@@ -120,24 +117,11 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
     },
 
     /**
-     * creates the map layer that contains the isochrones
-     * @param {string} name map layer name
-     * @returns {void}
-     */
-    createMapLayer: function (name) {
-        // returns the existing layer if already exists
-        const newLayer = Radio.request("Map", "createLayerIfNotExists", name);
-
-        newLayer.setMap(Radio.request("Map", "getMap"));
-        newLayer.setVisible(true);
-    },
-
-    /**
      * clears the map layer that contains the isochrones
      * @returns {void}
      */
     clearMapLayer: function () {
-        const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+        const mapLayer = this.model.get("mapLayer");
 
         if (mapLayer.getSource().getFeatures().length > 0) {
             mapLayer.getSource().clear();
@@ -193,7 +177,7 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
             Radio.request("OpenRoute", "requestIsochrones", pathType, coordinate, rangeType, [range * 0.33, range * 0.67, range])
                 .then(res => {
                     // reverse JSON object sequence to render the isochrones in the correct order
-                    const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName")),
+                    const mapLayer = this.model.get("mapLayer"),
                         json = JSON.parse(res),
                         reversedFeatures = [...json.features].reverse();
 
@@ -240,7 +224,10 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
      * @returns {void}
      */
     setIsochroneAsBbox: function () {
-        const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).contact(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
+        const layerlist = [
+                ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
+                ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})
+            ],
             polygonGeometry = this.model.get("isochroneFeatures")[this.model.get("steps") - 1].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
