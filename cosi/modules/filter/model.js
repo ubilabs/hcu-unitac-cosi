@@ -123,6 +123,8 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
                             return query.layerId === layerId;
                         });
 
+                    console.log(oldQuery, newQuery)
+
                     queryCollection.remove(oldQuery);
                     this.createQuery(newQuery);
                 }
@@ -359,6 +361,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
 
         if (layer !== undefined && layer.has("layer")) {
             query = this.getQueryByTyp(layer.get("typ"), model);
+            console.log(query)
             if (query !== null) {
                 if (this.get("allowMultipleQueriesPerLayer") !== undefined) {
                     Object.assign(query.set("activateOnSelection", !this.get("allowMultipleQueriesPerLayer")));

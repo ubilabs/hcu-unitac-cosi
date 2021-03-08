@@ -19,7 +19,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
         this.superInitialize();
         this.prepareQuery();
         if (this.get("searchInMapExtent") === true) {
-            Radio.trigger("Map", "registerListener", "moveend", this.isSearchInMapExtentActive.bind(this), this);
+            // Radio.trigger("Map", "registerListener", "moveend", this.isSearchInMapExtentActive.bind(this), this);
         }
         if (modelList && modelList.get("autoRefresh")) {
             this.set("isAutoRefreshing", true);
@@ -176,7 +176,6 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {string[]} array of string[] || number[]
      */
     parseValuesFromString: function (feature, attributeName) {
-        console.log(feature, attributeName);
         const values = [],
             attributeValue = feature.get(attributeName);
         let attributeValues = [];

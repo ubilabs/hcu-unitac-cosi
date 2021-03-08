@@ -149,11 +149,11 @@ const general = {
                     ]
                 },
                 {
-                    layerId: "20161",
-                    isActive: false,
-                    isSelected: false,
-                    name: "Corona Testzentren",
-                    attributeWhiteList: [
+                    "layerId": "20161",
+                    "isActive": false,
+                    "isSelected": false,
+                    "name": "Corona Testzentren",
+                    "attributeWhiteList": [
                         "typ",
                         "bezirk",
                         "antigentestung",
