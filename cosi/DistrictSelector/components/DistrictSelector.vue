@@ -243,7 +243,7 @@ export default {
                 this.zoomTo(extent);
             }
             else {
-                this.showAlert(this.$t("additional:modules.tools.districtSelector.warning"), "Warnung", "warning");
+                this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
         }
     }
@@ -252,7 +252,7 @@ export default {
 
 <template lang="html">
     <Tool
-        :title="$t('additional:modules.tools.districtSelector.title')"
+        :title="$t('additional:modules.tools.cosi.districtSelector.title')"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -265,14 +265,14 @@ export default {
         >
             <form>
                 <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.districtSelector.dropdownLabel') }}</label>
+                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownLabel') }}</label>
                     <Dropdown
                         v-model="selectedLevelId"
                         :options="optionsDropdown"
                     />
                 </div>
                 <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.districtSelector.dropdownInput') }}</label>
+                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownInput') }}</label>
                     <input
                         v-model="bufferValue"
                         class="form-control"
@@ -281,7 +281,7 @@ export default {
                         min="0"
                     >
                     <p class="help-block">
-                        {{ $t('additional:modules.tools.districtSelector.explaination') }}
+                        {{ $t('additional:modules.tools.cosi.districtSelector.explaination') }}
                     </p>
                 </div>
                 <button
@@ -289,14 +289,14 @@ export default {
                     type="button"
                     @click="setActive(false);"
                 >
-                    {{ $t('additional:modules.tools.districtSelector.buttonConfirm') }}
+                    {{ $t('additional:modules.tools.cosi.districtSelector.buttonConfirm') }}
                 </button>
                 <button
                     class="btn btn-lgv-grey"
                     type="button"
                     @click="clearFeatures"
                 >
-                    {{ $t('additional:modules.tools.districtSelector.buttonReset') }}
+                    {{ $t('additional:modules.tools.cosi.districtSelector.buttonReset') }}
                 </button>
                 <button
                     type="button"

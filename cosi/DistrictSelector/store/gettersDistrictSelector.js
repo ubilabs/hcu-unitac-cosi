@@ -57,9 +57,9 @@ const getters = {
      * @param {module:ol/Collection[]} getters.selectedDistrictsCollection - The collection with the selected features.
      * @returns {String[]} The names of all selected features.
      */
-    districtNameList: (state, {keyOfAttrNameStats, selectedDistrictsCollection}) => {
+    districtNameList: (state, {keyOfAttrName, selectedDistrictsCollection}) => {
         const nameList = selectedDistrictsCollection.getArray().map(feature => {
-            return feature.get(keyOfAttrNameStats);
+            return feature.get(keyOfAttrName);
         });
 
         return nameList;

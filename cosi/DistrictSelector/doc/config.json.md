@@ -15,28 +15,29 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
 **Beispiel**
 ```
 "DistrictSelector": {
-        "name": "Gebiet auswählen",
-        "glyphicon": "glyphicon-picture",
-        "districtLevels": [
-          {
-            "layerId": "6071",
-            "label": "Statistische Gebiete",
-            "keyOfAttrName": "statgebiet",
-            "keyOfAttrNameStats": "statgebiet"
-          },
-          {
-            "layerId": "1694",
-            "label": "Stadtteile",
-            "keyOfAttrName": "stadtteil_name",
-            "keyOfAttrNameStats": "stadtteil"
-          },
-          {
-            "layerId": "1692",
-            "label":"Bezirke",
-            "keyOfAttrName": "bezirk_name",
-            "keyOfAttrNameStats": "bezirk"
-          }
-        ],
+  "name": "Gebiet auswählen",
+  "glyphicon": "glyphicon-picture",
+  "districtLevels": [
+    {
+      "layerId": "6071",
+      "label": "Statistische Gebiete",
+      "keyOfAttrName": "statgebiet",
+      "keyOfAttrNameStats": "statgebiet"
+    },
+    {
+      "layerId": "1694",
+      "label": "Stadtteile",
+      "keyOfAttrName": "stadtteil_name",
+      "keyOfAttrNameStats": "stadtteil"
+    },
+    {
+      "layerId": "1692",
+      "label":"Bezirke",
+      "keyOfAttrName": "bezirk_name",
+      "keyOfAttrNameStats": "bezirk"
+    }
+  ]
+}
 ```
 
 ***

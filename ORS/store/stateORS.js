@@ -1,6 +1,6 @@
 export default {
     // common attributes for tools
-    active: true,
+    active: false,
     id: "ORS",
     name: "OpenRouteService",
     glyphicon: "glyphicon-map",
