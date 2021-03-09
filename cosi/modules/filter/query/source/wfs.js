@@ -1,4 +1,5 @@
 import SourceModel from "./model";
+import getProxyUrl from "../.././../../../../src/utils/getProxyUrl";
 
 const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
 
@@ -22,12 +23,15 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
      * @returns {void}
      */
     buildQueryDatastructureByType: function (layerObject) {
-        const url = layerObject.url,
+        /**
+         * @deprecated in the next major-release!
+         * useProxy
+         * getProxyUrl()
+         */
+        const url = this.get("useProxy") ? getProxyUrl(layerObject.url) : layerObject.url,
             featureType = layerObject.featureType,
-            version = layerObject.version;
-        let featureAttributesMap = [];
-
-        featureAttributesMap = this.requestMetadata(url, featureType, version, this.parseResponse);
+            version = layerObject.version,
+            featureAttributesMap = this.requestMetadata(url, featureType, version, this.parseResponse);
 
         return featureAttributesMap;
     },
@@ -44,7 +48,6 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
             url: url,
             context: this,
             data: "service=WFS&version=" + version + "&request=DescribeFeatureType&typename=" + featureType,
-            // parent (QueryModel) function
             success: callback
         });
     },

@@ -2,6 +2,7 @@ import MappingJson from "./mapping.json";
 import {WFS} from "ol/format.js";
 import "whatwg-fetch";
 import {getLayerList, getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import store from "../../../../src/app-store";
 
 const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype */{
     defaults: {
@@ -68,6 +69,13 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
         this.listenTo(Radio.channel("SelectDistrict"), {
             "selectionChanged": this.checkDistrictScope
         });
+
+        store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
+            if (extent.length > 0) {
+                this.checkDistrictScope(extent, store.getters["Tools/DistrictSelector/label"], store.getters["Tools/DistrictSelector/districtNameList"]);
+            }
+        });
+
     },
 
     /**
@@ -180,7 +188,6 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
                 }
                 Radio.trigger("Util", "hideLoader");
                 Radio.trigger("Alert", "alert:remove");
-
                 return Radio.trigger("FeaturesLoader", "districtsLoaded", layerList);
             }).catch(function (error) {
                 this.alertError();

@@ -2,6 +2,7 @@ import "./style.less";
 import template from "text-loader!./template.html";
 import SnippetDropdownView from "../../../../modules/snippets/dropdown/view";
 import InfoTemplate from "text-loader!./info.html";
+import store from "../../../../src/app-store";
 
 const ColorCodeMapView = Backbone.View.extend(/** @lends ColorCodeMapView.prototype */{
     events: {
@@ -24,9 +25,12 @@ const ColorCodeMapView = Backbone.View.extend(/** @lends ColorCodeMapView.protot
             "change:dropDownModel": this.renderDropDownView
         });
 
-        this.listenTo(Radio.channel("SelectDistrict"), {
-            "selectionChanged": this.checkDistrictSelection
+        store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
+            this.checkDistrictSelection(extent)
         });
+        // this.listenTo(Radio.channel("SelectDistrict"), {
+        //     "selectionChanged": this.checkDistrictSelection
+        // });
 
         this.render();
     },

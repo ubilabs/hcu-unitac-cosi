@@ -1,5 +1,6 @@
 import SliderModel from "../../../../modules/snippets/slider/model";
 import {Fill, Style, Stroke} from "ol/style.js";
+import store from "../../../../src/app-store";
 
 const TimeSliderModel = Backbone.Model.extend({
     defaults: {
@@ -29,7 +30,7 @@ const TimeSliderModel = Backbone.Model.extend({
      */
     run: function (title) {
         // the used features
-        this.setFeaturesByValueAndScope(title.trim(), Radio.request("SelectDistrict", "getScope"));
+        this.setFeaturesByValueAndScope(title.trim(), store.getters["Tools/DistrictSelector/label"]);
         // only continue if the related data is available
         if (this.get("features").length > 0) {
             // data for the graph
@@ -113,8 +114,8 @@ const TimeSliderModel = Backbone.Model.extend({
      * @returns {void}
      */
     styleDistrictFeaturs: function (features, attribute, max) {
-        const districtFeatures = this.getDistrictFeaturesByScope(Radio.request("SelectDistrict", "getScope")),
-            selector = Radio.request("SelectDistrict", "getSelector"),
+        const districtFeatures = this.getDistrictFeaturesByScope(store.getters["Tools/DistrictSelector/label"]),
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             foundDistrictFeatures = [],
             colorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, max]);
 
