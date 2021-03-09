@@ -9,6 +9,8 @@ import LayerFilterView from "./layerFilter/view";
 import LayerFilterCollection from "./layerFilter/list";
 import InfoTemplate from "text-loader!./info.html";
 import paramsTemplate from "text-loader!./paramsTemplate.html";
+import store from "../../../../src/app-store";
+import Collection from "ol/Collection";
 
 const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsView.prototype */{
     events: {
@@ -328,7 +330,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
     setComparableFeatures: function (model, value) {
         if (JSON.parse(value).length > 0) {
             const layerFilterList = JSON.parse(value),
-                selector = Radio.request("SelectDistrict", "getSelector"),
+                selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
                 results = [],
                 resultNames = [];
             let intersection = [],
@@ -388,8 +390,8 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
                 selectedFeatures = featureCollection.filter(feature => {
                     return feature.getProperties()[filterKey] >= refValue - tolerance[0]
                         && feature.getProperties()[filterKey] <= refValue + tolerance[1]
-                        && feature.getProperties()[Radio.request("SelectDistrict", "getSelector")] !== Radio.request("DistrictSelector", "getSelectedDistrict")
-                        && feature.getProperties()[this.model.get("selectorField")].indexOf(Radio.request("SelectDistrict", "getSelector")) !== -1;
+                        && feature.getProperties()[store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]] !== Radio.request("DistrictSelector", "getSelectedDistrict")
+                        && feature.getProperties()[this.model.get("selectorField")].indexOf(store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]) !== -1;
                 });
 
             filterResults.push(selectedFeatures);
@@ -429,10 +431,9 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
          * should add a radio function in the FeatureLoader module!!!
          */
         const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName")),
-            scope = Radio.request("SelectDistrict", "getScope"),
-            districtLayer = Radio.request("ModelList", "getModelByAttributes", {"name": scope}),
-            selector = Radio.request("SelectDistrict", "getDistrictLayer").filter(item => item.name === scope)[0].selector,
-            featureCollection = districtLayer.get("layer").getSource().getFeatures(),
+            districtLayer = store.getters["Tools/DistrictSelector/layer"],
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
+            featureCollection = districtLayer.getSource().getFeatures(),
             refDistrict = featureCollection.filter(feature => feature.getProperties()[selector] === refDistrictName)[0],
             featureClone = refDistrict.clone();
 
@@ -494,10 +495,24 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      */
     zoomToDistrict: function (evt) {
         if (Radio.request("InfoScreen", "getIsInfoScreen")) {
+            // läuft aktuell ins Leere.
             Radio.trigger("InfoScreen", "triggerRemote", "SelectDistrict", "zoomToDistrict", [evt.target.innerHTML.trim(), false]);
         }
         else {
-            Radio.trigger("SelectDistrict", "zoomToDistrict", evt.target.innerHTML.trim(), false);
+            const selectedDistrictLayer = store.getters["Tools/DistrictSelector/layer"],
+                attributeSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"],
+                districtFeatures = selectedDistrictLayer.getSource().getFeatures(),
+                districtName = evt.target.innerHTML.trim();
+            let extent;
+
+            districtFeatures.forEach((feature) => {
+                if (feature.getProperties()[attributeSelector] === districtName) {
+                    extent = feature.getGeometry().getExtent();
+                }
+            });
+            if (extent) {
+                store.dispatch("Map/zoomTo", extent, {padding: [20, 20, 20, 20]});
+            }
         }
     },
     /**
@@ -534,16 +549,21 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      * @returns {void}
      */
     changeDistrictSelection: function () {
-        const scope = Radio.request("SelectDistrict", "getScope"),
-            districtLayer = Radio.request("ModelList", "getModelByAttributes", {"name": scope}),
-            selector = Radio.request("SelectDistrict", "getDistrictLayer").filter(item => item.name === scope)[0].selector,
-            featureCollection = districtLayer.get("layer").getSource().getFeatures(),
-            selectedFeatures = featureCollection.filter(feature => this.model.get("comparableFeaturesNames").includes(feature.getProperties()[selector]));
+        const districtLayer = store.getters["Tools/DistrictSelector/layer"],
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
+            features = districtLayer.getSource().getFeatures(),
+            selectedFeatures = features.filter(feature => this.model.get("comparableFeaturesNames").includes(feature.getProperties()[selector])),
+            featureCollection = new Collection(selectedFeatures);
+
+        featureCollection.set("fromExternal", true);
 
         if (this.model.get("refDistrict")) {
             selectedFeatures.push(this.model.get("refDistrict"));
         }
-        Radio.request("SelectDistrict", "setSelectedDistrictsToFeatures", selectedFeatures);
+
+        store.commit("Tools/DistrictSelector/setSelectedFeatures", featureCollection);
+
+        // Radio.request("SelectDistrict", "setSelectedDistrictsToFeatures", selectedFeatures);
     },
 
     /**
