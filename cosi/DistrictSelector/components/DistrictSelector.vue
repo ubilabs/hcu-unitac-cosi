@@ -195,9 +195,6 @@ export default {
             this.dragBox.setActive(false);
             this.registerDragBoxListener(this.dragBox, this.selectedLevleId, this.select.getFeatures());
             this.addInteraction(this.dragBox);
-
-            // fürs template verfügbar machen
-            this.info = info;
         },
 
         /**
@@ -246,7 +243,7 @@ export default {
                 this.zoomTo(extent);
             }
             else {
-                this.showAlert(this.$t("additional:modules.tools.DistrictSelector.warning"), "Warnung", "warning");
+                this.showAlert(this.$t("additional:modules.tools.districtSelector.warning"), "Warnung", "warning");
             }
         }
     }
@@ -268,14 +265,14 @@ export default {
         >
             <form>
                 <div class="form-group">
-                    <label>Bitte wählen Sie einen Bezugsrahmen aus:</label>
+                    <label>{{ $t('additional:modules.tools.districtSelector.dropdownLabel') }}</label>
                     <Dropdown
                         v-model="selectedLevelId"
                         :options="optionsDropdown"
                     />
                 </div>
                 <div class="form-group">
-                    <label>Puffer[m] (optional)</label>
+                    <label>{{ $t('additional:modules.tools.districtSelector.dropdownInput') }}</label>
                     <input
                         v-model="bufferValue"
                         class="form-control"
@@ -284,8 +281,7 @@ export default {
                         min="0"
                     >
                     <p class="help-block">
-                        Klicken Sie in der Karte auf ein oder mehrere Gebiete, um Ihr Planungsgebiet zu bestimmen.
-                        Anschließend bestätigen Sie Ihre Auswahl mit einem Klick auf den Button "Auswahl bestätigen".
+                        {{ $t('additional:modules.tools.districtSelector.explaination') }}
                     </p>
                 </div>
                 <button
@@ -293,14 +289,14 @@ export default {
                     type="button"
                     @click="setActive(false);"
                 >
-                    Auswahlt bestätigen
+                    {{ $t('additional:modules.tools.districtSelector.buttonConfirm') }}
                 </button>
                 <button
                     class="btn btn-lgv-grey"
                     type="button"
                     @click="clearFeatures"
                 >
-                    Auswahlt zurücksetzen
+                    {{ $t('additional:modules.tools.districtSelector.buttonReset') }}
                 </button>
                 <button
                     type="button"
