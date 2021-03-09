@@ -74,7 +74,11 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
                 }
                 else {
                     this.unregisterSetCoordListener();
-                    Radio.trigger("SelectDistrict", "revertBboxGeometry");
+                    if (store.getters["Tools/DistrictSelector/extent"].length > 0) {
+                        const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+
+                        Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, store.getters["Tools/DistrictSelector/extent"]);
+                    }
                     Radio.trigger("Alert", "alert:remove");
                     if (mapLayer.getSource().getFeatures().length === 0) {
                         this.clearInput();
@@ -142,7 +146,11 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
         if (mapLayer.getSource().getFeatures().length > 0) {
             mapLayer.getSource().clear();
             this.model.set("isochroneFeatures", []);
-            Radio.trigger("SelectDistrict", "revertBboxGeometry");
+            if (store.getters["Tools/DistrictSelector/extent"].length > 0) {
+                const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+
+                Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, store.getters["Tools/DistrictSelector/extent"]);
+            }
         }
     },
 

@@ -2,6 +2,7 @@ import Template from "text-loader!./template.html";
 import SnippetSliderView from "../../../../modules/snippets/slider/view";
 import TimeSliderModel from "./model";
 import "./style.less";
+import store from "../../../../src/app-store";
 
 const TimeSliderView = Backbone.View.extend({
     events: {
@@ -75,7 +76,7 @@ const TimeSliderView = Backbone.View.extend({
             scaleTypeY: "linear",
             data: graphData,
             attrToShowArray: ["jahr_" + value],
-            xAttr: Radio.request("SelectDistrict", "getSelector"),
+            xAttr: store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             xAxisLabel: {
                 "rotate": 45
             },

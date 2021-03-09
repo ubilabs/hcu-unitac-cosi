@@ -1,5 +1,6 @@
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
+import store from "../../../../src/app-store";
 
 const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
     /**
@@ -19,16 +20,17 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         districtFeatures: []
     },
     initialize: function () {
-        this.listenTo(Radio.channel("SelectDistrict"), {
-            "reset": function () {
+        store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
+            if (extent.length > 0) {
+                this.setDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]));
+                this.set("districtFeatures", store.getters["Tools/DistrictSelector/SelectedFeatures"]);
+            }
+            else {
                 this.reset();
                 this.trigger("resetView");
-            },
-            "selectionChanged": function (districts) {
-                this.setDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", Radio.request("SelectDistrict", "getSelector")));
-                this.set("districtFeatures", districts);
             }
         });
+
         this.listenTo(Radio.channel("ColorCodeMap"), {
             "reset": function () {
                 this.trigger("resetView");
@@ -73,7 +75,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
      */
     dropDownCallback: function (valueModel, isSelected) {
         if (isSelected) {
-            const scope = Radio.request("SelectDistrict", "getScope"),
+            const scope = store.getters["Tools/DistrictSelector/label"],
                 // the selected value in the dropdown
                 value = valueModel.get("value"),
                 statisticsFeatures = Radio.request("FeaturesLoader", "getDistrictsByValue", scope, value);
@@ -113,9 +115,9 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
      * @returns {void}
      */
     styleDistrictFeatures: function (features, attribute) {
-        const districtFeatures = Radio.request("SelectDistrict", "getSelectedDistricts"),
-            selector = Radio.request("SelectDistrict", "getSelector"),
-            geomSelector = Radio.request("SelectDistrict", "getGeomSelector"),
+        const districtFeatures = store.getters["Tools/DistrictSelector/SelectedFeatures"],
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
+            geomSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"],
             foundDistrictFeatures = [],
             values = features.map(feature => feature.getProperties()[attribute]),
             colorScale = Radio.request("ColorScale", "getColorScaleByValues", values, "interpolateBlues");

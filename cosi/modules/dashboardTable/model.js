@@ -3,6 +3,7 @@ import Tool from "../../../../modules/core/modelList/tool/model";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import TimelineModel from "../timeline/model";
+import store from "../../../../src/app-store";
 
 const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype */ {
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -77,14 +78,14 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             "valuesChanged": this.filterTableView
         });
 
-        this.listenTo(Radio.channel("SelectDistrict"), {
-            "selectionChanged": function () {
+        store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
+            if (extent.length > 0) {
                 Radio.trigger("Dashboard", "destroyWidgetById", "dashboard");
                 this.set("tableView", []);
                 this.set("filteredTableView", []);
-                this.set("sortKey", Radio.request("SelectDistrict", "getSelector"));
+                this.set("sortKey", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]);
             }
-        }, this);
+        });
 
         this.listenTo(Radio.channel("FeaturesLoader"), {
             "districtsLoaded": this.getData
@@ -275,7 +276,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
 
                         // Add values for all columns
                         table.forEach((col) => {
-                            const selector = Radio.request("SelectDistrict", "getSelector");
+                            const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
 
                             if (col[selector] !== "Gesamt" && col[selector] !== "Durchschnitt" && selector === this.get("sortKey")) {
                                 total += parseFloat(col[prop]);
@@ -301,7 +302,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                         // Create Matrix from timeline values
                         table.forEach((col) => {
                             // dirty fix for data inconsistencies
-                            const selector = Radio.request("SelectDistrict", "getSelector");
+                            const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
 
                             if (col[this.get("sortKey")] !== "Gesamt" && col[this.get("sortKey")] !== "Durchschnitt" && selector === this.get("sortKey")) {
                                 matrixTotal.push(col[prop]);
@@ -353,7 +354,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {object} the grouped table
      */
     groupTable (table) {
-        const values = Radio.request("FeaturesLoader", "getAllValuesByScope", Radio.request("SelectDistrict", "getSelector")),
+        const values = Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]),
             metaInfo = {
                 group: "Gebietsinformation",
                 values: table.reduce((meta, col) => {
@@ -428,7 +429,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {void}
      */
     getData: function () {
-        const attrMap = Radio.request("FeaturesLoader", "getDistrictAttrMapping", Radio.request("SelectDistrict", "getScope")),
+        const attrMap = Radio.request("FeaturesLoader", "getDistrictAttrMapping", store.getters["Tools/DistrictSelector/label"]),
             features = Radio.request("FeaturesLoader", "getDistrictsByScope", [attrMap.attribute, ...attrMap.referenceAttributes]);
 
         if (features) {
@@ -825,7 +826,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
         const selector = this.get("sortKey");
         let extent;
 
-        Radio.request("SelectDistrict", "getSelectedDistricts").forEach((feature) => {
+        store.getters["Tools/DistrictSelector/selectedFeatures"].forEach((feature) => {
             if (feature.getProperties()[selector] === district) {
                 extent = feature.getGeometry().getExtent();
             }
@@ -900,7 +901,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     updateFilter: function () {
         this.get("filterDropdownModel").set("values", [
-            ...Radio.request("FeaturesLoader", "getAllValuesByScope", Radio.request("SelectDistrict", "getSelector")),
+            ...Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]),
             ...this.get("customFilters")
         ]);
     },

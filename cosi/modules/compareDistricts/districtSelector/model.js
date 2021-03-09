@@ -1,4 +1,5 @@
 import DropdownModel from "../../../../../modules/snippets/dropdown/model";
+import store from "../../../../../src/app-store";
 
 const DistrictSelectorModel = Backbone.Model.extend(/** @lends DistrictSelectorModel.prototype */{
     defaults: {
@@ -26,10 +27,10 @@ const DistrictSelectorModel = Backbone.Model.extend(/** @lends DistrictSelectorM
         this.initializeDistrictNames();
     },
     initializeDistrictNames: function () {
-        const selector = Radio.request("SelectDistrict", "getSelector");
+        const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
 
-        if (Radio.request("SelectDistrict", "getSelectedDistricts").length > 0) {
-            const selectedDistricts = Radio.request("SelectDistrict", "getSelectedDistricts"),
+        if (store.getters["Tools/DistrictSelector/selectedFeatures"].getLength() > 0) {
+            const selectedDistricts = store.getters["Tools/DistrictSelector/SelectedFeatures"],
                 districtNames = selectedDistricts.map(feature => feature.getProperties()[selector]);
 
             this.set("districtNames", districtNames);
@@ -37,8 +38,7 @@ const DistrictSelectorModel = Backbone.Model.extend(/** @lends DistrictSelectorM
             this.setDropDownModel(districtNames);
         }
         else {
-            const scope = Radio.request("SelectDistrict", "getScope"),
-                districts = Radio.request("ModelList", "getModelByAttributes", {name: scope}).get("layer").getSource().getFeatures(),
+            const districts = store.getters["Tools/DistrictSelector/layer"].getSource().getFeatures(),
                 districtNames = districts.map(district => district.getProperties()[selector]);
 
             this.set("districtNames", districtNames);

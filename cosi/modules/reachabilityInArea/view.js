@@ -6,6 +6,7 @@ import {Fill, Stroke, Style} from "ol/style.js";
 import GeoJSON from "ol/format/GeoJSON";
 import InfoTemplate from "text-loader!./info.html";
 import * as turf from "@turf/turf";
+import store from "../../../../src/app-store";
 
 const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAreaView.prototype */{
     events: {
@@ -55,7 +56,8 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
         this.listenTo(this.model, {
             "change:isActive": function (model, value) {
                 if (value) {
-                    if (Radio.request("SelectDistrict", "getSelectedDistricts").length === 0) {
+                    if (store.getters["Tools/DistrictSelector/selectedFeatures"].getLength() === 0) {
+                    // if (Radio.request("SelectDistrict", "getSelectedDistricts").length === 0) {
                         Radio.trigger("Alert", "alert", {
                             text: "<strong>Warnung: Sie haben noch keine Gebiete ausgewählt.</strong>" +
                                 "<br /> Sie können trotzdem die Erreichbarkeit von Einrichtungen für das gesamte Stadtgebiet ermitteln ermitteln.<br />" +

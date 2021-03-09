@@ -140,14 +140,14 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
         });
 
         this.get("channel").reply({
-            "getSelectedDistricts": this.getSelectedDistricts,
-            "getScope": this.getScope,
-            "getSelector": this.getSelector,
-            "getGeomSelector": this.getGeomSelector,
-            "getScopeAndSelector": this.getScopeAndSelector,
-            "getDistrictLayer": this.getDistrictLayer,
-            "getBuffer": this.getBuffer,
-            "setSelectedDistrictsToFeatures": this.setSelectedDistrictsToFeatures
+            "getSelectedDistricts": this.getSelectedDistricts, // selectedFeatures
+            "getScope": this.getScope, // label?
+            "getSelector": this.getSelector, // steht am selectedDistrict
+            "getGeomSelector": this.getGeomSelector, // prüfen -> vlt an die districts schreiben
+            "getScopeAndSelector": this.getScopeAndSelector, // wird noch nicht genutzt - später für saveselection
+            "getDistrictLayer": this.getDistrictLayer, // selectedDistrict
+            "getBuffer": this.getBuffer, // wird noch nicht genutzt - später für saveselection
+            "setSelectedDistrictsToFeatures": this.setSelectedDistrictsToFeatures // commit or dispatch an districtSelector store
         }, this);
 
         this.get("channel").on({

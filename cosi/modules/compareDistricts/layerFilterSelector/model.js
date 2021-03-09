@@ -1,5 +1,6 @@
 import DropdownModel from "../../../../../modules/snippets/dropdown/model";
 import {getLayerList, getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import store from "../../../../../src/app-store";
 
 const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSelectorModel.prototype */{
     defaults: {
@@ -28,7 +29,7 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
      * @listens DropdownModel#ValuesChanged
      */
     initialize: function () {
-        const currentSelector = Radio.request("SelectDistrict", "getSelector"),
+        const currentSelector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             layers = getLayerList().filter(function (layer) {
                 return layer.url === this.get("urls")[currentSelector];
             }, this),
@@ -104,7 +105,7 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
          * This is not stable. better add fields in the mapping.json to avoid hard-coding!
          */
         const mappingObj = this.get("dropDownModel").attributes.values.filter(item => item.value === value)[0],
-            layerModel = Radio.request("SelectDistrict", "getScope") === "Stadtteile" ?
+            layerModel = store.getters["Tools/DistrictSelector/label"] === "Stadtteile" ?
                 getLayerWhere({featureType: "v_hh_stadtteil_" + mappingObj.category.toLowerCase()}) :
                 getLayerWhere({featureType: "v_hh_statistik_" + mappingObj.category.toLowerCase()});
 

@@ -1,3 +1,5 @@
+import store from "../../../../../src/app-store";
+
 const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.prototype */{
     defaults: {
         districtInfo: [], // [{key:...,value:..., max: ..., min: ...},{},...]
@@ -44,7 +46,7 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
      * @returns {void}
      */
     initializeDistrictInfo: function () {
-        const selector = Radio.request("SelectDistrict", "getSelector"),
+        const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             layerId = this.get("layerInfo").layerId,
             featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
                 id: layerId
@@ -83,7 +85,7 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
      * @returns {void}
      */
     updateRefDistrictValue: function () {
-        const selector = Radio.request("SelectDistrict", "getSelector"),
+        const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             layerId = this.get("layerInfo").layerId,
             featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
                 id: layerId
