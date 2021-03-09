@@ -3,6 +3,8 @@ import Tool from "../../../../src/modules/tools/Tool.vue";
 import Dropdown from "../../../../src/share-components/dropdowns/DropdownSimple.vue";
 import prepareDistrictLevels from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
+import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
+import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDistrictSelector";
 import mutations from "../store/mutationsDistrictSelector";
@@ -236,11 +238,14 @@ export default {
          * @returns {void}
          */
         updateExtent () {
-            const extent = calculateExtent(this.selectedFeatures, this.bufferValue);
+            const extent = calculateExtent(this.selectedFeatures, this.bufferValue),
+                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferValue);
 
             if (extent) {
+                console.log(extent)
                 this.setExtent(extent);
                 this.zoomTo(extent);
+                setBBoxToGeom(bboxGeom);
             }
             else {
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
@@ -272,7 +277,7 @@ export default {
                     />
                 </div>
                 <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownInput') }}</label>
+                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.inputLabel') }}</label>
                     <input
                         v-model="bufferValue"
                         class="form-control"

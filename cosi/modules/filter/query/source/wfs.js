@@ -112,6 +112,8 @@ const WfsQueryModel = SourceModel.extend(/** @lends WfsQueryModel.prototype*/{
             featureAttributesMap.push({name: $(element).attr("name"), type: typeWithoutNamespace});
         });
 
+        console.log(featureAttributesMap)
+
         this.createSnippets(featureAttributesMap);
     }
 });
