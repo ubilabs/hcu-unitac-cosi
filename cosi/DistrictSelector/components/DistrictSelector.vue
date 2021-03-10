@@ -1,5 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/Tool.vue";
+import getComponent from "../../../../src/utils/getComponent";
 import Dropdown from "../../../../src/share-components/dropdowns/DropdownSimple.vue";
 import prepareDistrictLevels from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
@@ -60,10 +61,16 @@ export default {
                 this.select.setActive(true);
             }
             else {
+                const model = getComponent(this.id);
+
                 this.updateExtent();
                 this.dragBox.setActive(false);
                 this.select.setActive(false);
-                this.$refs.Tool.close()
+
+                console.log(model, this.id)
+                if (model) {
+                    model.set("isActive", false);
+                }
             }
         },
 
