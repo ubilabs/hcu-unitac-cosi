@@ -63,6 +63,7 @@ export default {
                 this.updateExtent();
                 this.dragBox.setActive(false);
                 this.select.setActive(false);
+                this.$refs.Tool.close()
             }
         },
 
@@ -234,6 +235,7 @@ export default {
 
         /**
          * Sets the extent and zoom to it, if not empty.
+         * Sets the BBox of all Vector Layers to the selected districts
          * If the extent is empty (this means no features are selected), a warning appears.
          * @returns {void}
          */
@@ -242,7 +244,6 @@ export default {
                 bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferValue);
 
             if (extent) {
-                console.log(extent)
                 this.setExtent(extent);
                 this.zoomTo(extent);
                 setBBoxToGeom(bboxGeom);
@@ -263,6 +264,7 @@ export default {
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivateGFI="deactivateGFI"
+        ref="Tool"
     >
         <template
             v-if="active"

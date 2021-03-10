@@ -9,7 +9,7 @@ import Feature from "ol/Feature";
  * @returns {Number[]|Boolean} The extent of the features or false for no extent.
  */
 export default function calculateExtent (features, bufferValue = 0) {
-    if (!Array.isArray(features) || typeof bufferValue !== "number") {
+    if (!(Array.isArray(features) && typeof parseFloat(bufferValue) === "number")) {
         console.error(`calculateExtent: ${features} has to be defined and an array. ${bufferValue} has to be defined and a number`);
         return false;
     }
@@ -22,7 +22,7 @@ export default function calculateExtent (features, bufferValue = 0) {
                 extent = extend(extent, feature.getGeometry().getExtent());
             }
         });
-        return buffer(extent, bufferValue);
+        return buffer(extent, parseFloat(bufferValue));
     }
     return false;
 }
