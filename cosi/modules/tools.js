@@ -1,5 +1,5 @@
 import FeaturesLoader from "./featuresLoader/model";
-import BboxSettor from "./bboxSettor/model";
+// import BboxSettor from "./bboxSettor/model";
 import ColorCodeMap from "./colorCodeMap/model";
 import Dashboard from "./dashboard/model";
 import DashboardTable from "./dashboardTable/model";
@@ -22,7 +22,7 @@ import CompareDistricts from "./compareDistricts/model";
 import Filter from "./filter/model";
 
 new FeaturesLoader();
-new BboxSettor();
+// new BboxSettor();
 new OpenRouteService();
 
 const general = {
