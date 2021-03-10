@@ -29,8 +29,8 @@ const DistrictSelectorModel = Backbone.Model.extend(/** @lends DistrictSelectorM
     initializeDistrictNames: function () {
         const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
 
-        if (store.getters["Tools/DistrictSelector/selectedFeatures"].getLength() > 0) {
-            const selectedDistricts = store.getters["Tools/DistrictSelector/SelectedFeatures"],
+        if (store.getters["Tools/DistrictSelector/selectedFeatures"].length > 0) {
+            const selectedDistricts = store.getters["Tools/DistrictSelector/selectedFeatures"],
                 districtNames = selectedDistricts.map(feature => feature.getProperties()[selector]);
 
             this.set("districtNames", districtNames);

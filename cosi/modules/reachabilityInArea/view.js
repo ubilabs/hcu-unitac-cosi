@@ -56,7 +56,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
         this.listenTo(this.model, {
             "change:isActive": function (model, value) {
                 if (value) {
-                    if (store.getters["Tools/DistrictSelector/selectedFeatures"].getLength() === 0) {
+                    if (store.getters["Tools/DistrictSelector/selectedFeatures"].length === 0) {
                     // if (Radio.request("SelectDistrict", "getSelectedDistricts").length === 0) {
                         Radio.trigger("Alert", "alert", {
                             text: "<strong>Warnung: Sie haben noch keine Gebiete ausgewählt.</strong>" +

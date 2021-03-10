@@ -9,17 +9,21 @@ import mutations from "../store/mutationsDistrictSelector";
 import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
+import VueSelect from "vue-select";
 
 export default {
     name: "DistrictSelector",
     components: {
         Tool,
-        Dropdown
+        Dropdown,
+        VueSelect
     },
     data () {
         return {
-            // The current id of the selected district level
+            // The current id (layer id) of the selected district level
             selectedLevelId: "",
+            // The current names of the selected districts
+            selectedNames: [],
             // A buffer for the extent of the selected district(s)
             bufferValue: 0,
             // css class for the drag box button
@@ -42,6 +46,13 @@ export default {
             });
 
             return obj;
+        },
+
+        optionsDropdownTwo: function () {
+            if (this.selectedDistrictLevel?.nameList) {
+                return this.selectedDistrictLevel.nameList;
+            }
+            return [];
         }
     },
 
@@ -75,7 +86,25 @@ export default {
 
         selectedDistrictsCollection: "transferFeatures",
         selectedDistrictLevel: "clearFeatures",
-        selectedLevelId: "changeSelectedDistrictLevel"
+        selectedLevelId: "changeSelectedDistrictLevel",
+        selectedNames: function (newNames) {
+            if (newNames.length !== this?.selectedDistrictsCollection?.getLength()) {
+                const districtFeatures = this.layer.getSource().getFeatures(),
+                    namesAssoc = {};
+
+                newNames.forEach(name => {
+                    namesAssoc[name] = true;
+                });
+
+                this.clearFeatures();
+                districtFeatures.forEach(feature => {
+                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
+                        this.select.getFeatures().push(feature);
+                    }
+                });
+
+            }
+        }
     },
     created () {
         this.$on("close", () => {
@@ -97,6 +126,7 @@ export default {
          */
         clearFeatures () {
             this.select.getFeatures().clear();
+            // this.selectedNames = [];
         },
 
         /**
@@ -127,14 +157,13 @@ export default {
          * On "boxend" all features that intersect the box are added to the feature collection.
          * On "boxstart" calls the clearFeatures function.
          * @param {module:ol/interaction/DragBox} dragBox - Interaction for drawing a vector box.
-         * @param {String} selectedLevleId - Id of the selected district level.
          * @param {module:ol/Collection} featureCollection - The feature collection of the select interaction.
          * @returns {void}
          */
-        registerDragBoxListener (dragBox, selectedLevleId, featureCollection) {
+        registerDragBoxListener (dragBox, featureCollection) {
             dragBox.on("boxend", (evt) => {
                 const extent = evt.target.getGeometry().getExtent(),
-                    source = this.getDistrictById(selectedLevleId).layer.getSource();
+                    source = this.getDistrictLevelById(this.selectedLevelId).layer.getSource();
 
                 source.forEachFeatureIntersectingExtent(extent, (feature) => {
                     featureCollection.push(feature);
@@ -153,6 +182,12 @@ export default {
         registerFeatureCollectionListener (featureCollection) {
             featureCollection.on("change:length", (evt) => {
                 this.setSelectedDistrictsCollection(evt.target);
+
+                const sNames = evt.target.getArray().map(feature => {
+                    return feature.get(this.keyOfAttrName);
+                });
+
+                this.selectedNames = sNames;
             });
         },
 
@@ -193,7 +228,7 @@ export default {
             // drag box interaction
             this.dragBox = new DragBox();
             this.dragBox.setActive(false);
-            this.registerDragBoxListener(this.dragBox, this.selectedLevleId, this.select.getFeatures());
+            this.registerDragBoxListener(this.dragBox, this.select.getFeatures());
             this.addInteraction(this.dragBox);
         },
 
@@ -272,7 +307,17 @@ export default {
                     />
                 </div>
                 <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.districtSelector.dropdownInput') }}</label>
+                    <label>{{ $t('additional:modules.tools.districtSelector.multiDropdownLabel') }}</label>
+                    <VueSelect
+                        v-model="selectedNames"
+                        class="style-chooser"
+                        :options="optionsDropdownTwo"
+                        multiple
+                        placeholder="Keine Auswahl"
+                    />
+                </div>
+                <div class="form-group">
+                    <label>{{ $t('additional:modules.tools.districtSelector.inputLabel') }}</label>
                     <input
                         v-model="bufferValue"
                         class="form-control"
@@ -337,3 +382,8 @@ export default {
         border-width: 1.25
     }
 </style>
+
+<style src="vue-select/dist/vue-select.css">
+</style>
+
+

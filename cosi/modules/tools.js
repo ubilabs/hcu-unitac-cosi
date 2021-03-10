@@ -4,7 +4,7 @@ import ColorCodeMap from "./colorCodeMap/model";
 import Dashboard from "./dashboard/model";
 import DashboardTable from "./dashboardTable/model";
 import DashboardWidgetHandler from "./dashboardWidget/handler";
-import SelectDistrict from "./selectDistrict/model";
+// import SelectDistrict from "./selectDistrict/model";
 /**
  * The saveSelection addon module has been disabled in cosi.
  * The saveselection module in the master portal has been migrated to Vue,
@@ -164,29 +164,29 @@ const general = {
                 }
             ]
         }),
-        selectDistrict: new SelectDistrict({
-            id: "selectDistrict",
-            // type: "tool",
-            name: "Gebiet auswählen",
-            glyphicon: "glyphicon-picture",
-            districtLayer: [
-                {
-                    name: "Bezirke",
-                    selector: "bezirk",
-                    id: "1692"
-                },
-                {
-                    name: "Stadtteile",
-                    selector: "stadtteil",
-                    id: "1694"
-                },
-                {
-                    name: "Statistische Gebiete",
-                    selector: "statgebiet",
-                    id: "6071"
-                }
-            ]
-        }),
+        // selectDistrict: new SelectDistrict({
+        //     id: "selectDistrict",
+        //     // type: "tool",
+        //     name: "Gebiet auswählen",
+        //     glyphicon: "glyphicon-picture",
+        //     districtLayer: [
+        //         {
+        //             name: "Bezirke",
+        //             selector: "bezirk",
+        //             id: "1692"
+        //         },
+        //         {
+        //             name: "Stadtteile",
+        //             selector: "stadtteil",
+        //             id: "1694"
+        //         },
+        //         {
+        //             name: "Statistische Gebiete",
+        //             selector: "statgebiet",
+        //             id: "6071"
+        //         }
+        //     ]
+        // }),
         infoScreenHandler: new InfoScreenHandler({
             parentId: "utilities",
             type: "tool",

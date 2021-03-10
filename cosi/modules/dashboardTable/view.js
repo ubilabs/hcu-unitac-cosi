@@ -151,7 +151,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
             Radio.trigger("InfoScreen", "triggerRemote", "SelectDistrict", "zoomToDistrict", districtName);
         }
         else {
-            const districtFeatures = store.getters["Tools/DistrictSelector/SelectedFeatures"],
+            const districtFeatures = store.getters["Tools/DistrictSelector/selectedFeatures"],
                 attributeSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
             let extent;
 
