@@ -98,7 +98,7 @@ export default {
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert"]),
-        ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo"]),
+        ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
 
         /**
          * Remove all features from the features collection of the select interaction.
@@ -251,11 +251,15 @@ export default {
 
             if (extent) {
                 this.setExtent(extent);
-                this.setBoundingGeometry(bboxGeom);
                 this.zoomTo(extent);
+                this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom(bboxGeom);
             }
             else {
+                this.setExtent([]);
+                this.resetView();
+                this.setBoundingGeometry(undefined);
+                setBBoxToGeom(undefined);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
         }

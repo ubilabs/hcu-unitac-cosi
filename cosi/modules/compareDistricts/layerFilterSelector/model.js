@@ -1,5 +1,5 @@
 import DropdownModel from "../../../../../modules/snippets/dropdown/model";
-import {getLayerList, getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import {getLayerList} from "masterportalAPI/src/rawLayerList";
 import store from "../../../../../src/app-store";
 
 const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSelectorModel.prototype */{
@@ -8,7 +8,8 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
         selectedLayer: null, // selected option e.g. {layerName:"",layerId:""}
         urls: {
             "statgebiet": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
-            "stadtteile": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"
+            "stadtteil": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            "bezirk": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"
         },
         dropDownModel: {},
         dropDownDisplayName: "Auswahl statistische Daten"
@@ -30,9 +31,7 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
      */
     initialize: function () {
         const currentSelector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
-            layers = getLayerList().filter(function (layer) {
-                return layer.url === this.get("urls")[currentSelector];
-            }, this),
+            layers = this.getRawLayersBySelector(currentSelector),
             layerOptions = layers.map(layer => {
                 return {
                     "layerName": layer.name, "layerId": layer.id
@@ -101,15 +100,23 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
      * @returns {void}
      */
     setSelectedLayer: function (value) {
-        /**
-         * This is not stable. better add fields in the mapping.json to avoid hard-coding!
-         */
         const mappingObj = this.get("dropDownModel").attributes.values.filter(item => item.value === value)[0],
-            layerModel = store.getters["Tools/DistrictSelector/label"] === "Stadtteile" ?
-                getLayerWhere({featureType: "v_hh_stadtteil_" + mappingObj.category.toLowerCase()}) :
-                getLayerWhere({featureType: "v_hh_statistik_" + mappingObj.category.toLowerCase()});
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
+            layers = this.getRawLayersBySelector(selector),
+            layerModel = layers.find(layer => layer.featureType.includes(mappingObj.category.toLowerCase()));
 
         this.set("selectedLayer", {layerName: layerModel.name, layerId: layerModel.id, layerText: mappingObj});
+    },
+
+    /**
+     * gets the rawLayers from services.json for an administrative level
+     * @param {string} selector - the selector of the district layer ("stadtteil", "statgebiet", "bezirk")
+     * @returns {object[]} returns the List of rawLayers of the relevant WFS
+     */
+    getRawLayersBySelector (selector) {
+        return getLayerList().filter(function (layer) {
+            return layer.url === this.get("urls")[selector];
+        }, this);
     },
 
     /**

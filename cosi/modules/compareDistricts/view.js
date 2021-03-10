@@ -3,7 +3,7 @@ import "./style.less";
 import DistrictSelectorView from "./districtSelector/view";
 import LayerFilterSelectorModel from "./layerFilterSelector/model";
 import LayerFilterSelectorView from "./layerFilterSelector/view";
-import VectorSource from "ol/source/Vector";
+// import VectorSource from "ol/source/Vector";
 import LayerFilterModel from "./layerFilter/model";
 import LayerFilterView from "./layerFilter/view";
 import LayerFilterCollection from "./layerFilter/list";
@@ -61,7 +61,6 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
         });
         this.listenTo(this.model, {
             "change:isActive": function (model, value) {
-                this.createMapLayer(this.model.get("mapLayerName"));
                 this.layerFilterCollection = new LayerFilterCollection();
                 this.listenTo(this.layerFilterCollection, {
                     "add": this.renderLayerFilter,
@@ -75,6 +74,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
                 else {
                     this.$el.empty();
                     this.undelegateEvents();
+                    this.clearMapLayer();
                     this.model.set("layerFilterList", "");
                     Radio.trigger("Alert", "alert:remove");
                 }
@@ -413,9 +413,11 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      * @returns {void}
      */
     clearMapLayer: function () {
-        const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+        // const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+        const mapLayer = this.model.get("mapLayer");
 
         mapLayer.getSource().clear();
+        mapLayer.setVisible(false);
     },
     /**
      * shows reference district in map
@@ -430,9 +432,10 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
         /**
          * should add a radio function in the FeatureLoader module!!!
          */
-        const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName")),
+        // const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName")),
+        const mapLayer = this.model.get("mapLayer"),
             districtLayer = store.getters["Tools/DistrictSelector/layer"],
-            selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrName"],
             featureCollection = districtLayer.getSource().getFeatures(),
             refDistrict = featureCollection.filter(feature => feature.getProperties()[selector] === refDistrictName)[0],
             featureClone = refDistrict.clone();
@@ -450,7 +453,8 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
      * @returns {void}
      */
     showComparableDistricts: function (districtFeatures) {
-        const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName")),
+        // const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName")),
+        const mapLayer = this.model.get("mapLayer"),
             cloneCollection = [];
 
         this.clearMapLayer();
@@ -469,20 +473,6 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
         }
         mapLayer.setVisible(true);
         mapLayer.getSource().addFeatures(cloneCollection);
-    },
-
-    /**
-     * creats map layer
-     * @param {String} name map layer name
-     * @fires Core#RadioRequestMapCreateLayerIfNotExists
-     * @returns {void}
-     */
-    createMapLayer: function (name) {
-        const newLayer = Radio.request("Map", "createLayerIfNotExists", name),
-            newSource = new VectorSource();
-
-        newLayer.setSource(newSource);
-        newLayer.setVisible(false);
     },
 
     /**
