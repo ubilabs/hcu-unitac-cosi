@@ -251,6 +251,7 @@ export default {
 
             if (extent) {
                 this.setExtent(extent);
+                this.setBoundingGeometry(bboxGeom);
                 this.zoomTo(extent);
                 setBBoxToGeom(bboxGeom);
             }

@@ -22,6 +22,7 @@ const state = {
     deactivateGFI: true,
     districtLevels: [],
     extent: [],
+    boundingGeometry: undefined,
     glyphicon: "glyphicon-screenshot",
     id: "districtSelector",
     isVisibleInMenu: true,
