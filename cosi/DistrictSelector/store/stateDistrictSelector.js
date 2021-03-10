@@ -30,7 +30,7 @@ const state = {
     renderToWindow: true,
     resizableWindow: false,
     selectedDistrictLevel: {},
-    selectedDistrictsCollection: []
+    selectedDistrictsCollection: null
 };
 
 export default state;

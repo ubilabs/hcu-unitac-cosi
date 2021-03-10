@@ -551,7 +551,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             selectedFeatures.push(this.model.get("refDistrict"));
         }
 
-        store.commit("Tools/DistrictSelector/setSelectedFeatures", featureCollection);
+        store.commit("Tools/DistrictSelector/setSelectedDistrictsCollection", featureCollection);
 
         // Radio.request("SelectDistrict", "setSelectedDistrictsToFeatures", selectedFeatures);
     },
