@@ -157,16 +157,6 @@
  * @example Radio.request("SelectDistrict", "getSelectedDistricts");
  */
 
-/** -------------------- Bounding Box Settor -------------------- */
-
-/**
- * @event BboxSettor#RadioTriggerSetBboxGeometryToLayer
- * sets the bbox geometry for targeted raw layers or exisiting vector layers
- * @param {Array} itemList - list of target raw layers
- * @param {GeometryCollection} bboxGeometry - target geometry to be set as bbox
- * @example  Radio.trigger("BboxSettor", "setBboxGeometryToLayer", itemList, bboxGeometry);
- */
-
 /**
  * @event Dashboard#RadioTriggerDashboardDestroyWidgetById
  * @description destroys widget by Id

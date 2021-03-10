@@ -9,6 +9,7 @@ import GeometryCollection from "ol/geom/GeometryCollection";
 import InfoTemplate from "text-loader!./info.html";
 import ReachabilityResultView from "./resultView";
 import store from "../../../../src/app-store";
+import setBBoxToGeom from "../../utils/setBBoxToGeom";
 
 const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFromPointView.prototype */{
     events: {
@@ -72,9 +73,12 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
                 else {
                     this.unregisterSetCoordListener();
                     if (store.getters["Tools/DistrictSelector/extent"].length > 0) {
-                        const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+                        const bboxGeometry = store.getters["Tools/DistrictSelector/boundingGeometry"];
 
-                        Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, store.getters["Tools/DistrictSelector/boundingGeometry"]);
+                        setBBoxToGeom(bboxGeometry);
+                        // const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+
+                        // Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, store.getters["Tools/DistrictSelector/boundingGeometry"]);
                     }
                     Radio.trigger("Alert", "alert:remove");
                     if (this.model.get("mapLayer").getSource().getFeatures().length === 0) {
@@ -131,9 +135,12 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
             mapLayer.getSource().clear();
             this.model.set("isochroneFeatures", []);
             if (store.getters["Tools/DistrictSelector/extent"].length > 0) {
-                const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+                const bboxGeometry = store.getters["Tools/DistrictSelector/boundingGeometry"];
 
-                Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, store.getters["Tools/DistrictSelector/boundingGeometry"]);
+                setBBoxToGeom(bboxGeometry);
+                // const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
+
+                // Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, store.getters["Tools/DistrictSelector/boundingGeometry"]);
             }
         }
     },
@@ -232,14 +239,11 @@ const ReachabilityFromPointView = Backbone.View.extend(/** @lends ReachabilityFr
      * @returns {void}
      */
     setIsochroneAsBbox: function () {
-        const layerlist = [
-                ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
-                ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})
-            ],
-            polygonGeometry = this.model.get("isochroneFeatures")[this.model.get("steps") - 1].getGeometry(),
+        const polygonGeometry = this.model.get("isochroneFeatures")[this.model.get("steps") - 1].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
-        Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, geometryCollection);
+        setBBoxToGeom(geometryCollection);
+        // Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, geometryCollection);
     },
 
     /**
