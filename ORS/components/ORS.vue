@@ -13,7 +13,6 @@ import {getRgbArray} from "../../cosi/utils";
  * @vue-data {Object} parser - GeoJSON
  * @vue-data {Object} layer - OpenLayers Layer
  */
-
 export default {
     name: "ORS",
     components: {
@@ -51,7 +50,7 @@ export default {
         this.createDrawingLayer();
 
         /** @todo JUST FOR TESTING */
-        this.$store.dispatch("Tools/ORS/newRequest", {range: [1000], locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]]});
+        // this.$store.dispatch("Tools/ORS/newRequest", {range: [1000], locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]]});
     },
     methods: {
         ...mapMutations("Tools/ORS", Object.keys(mutations)),
