@@ -45,8 +45,8 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
      * @returns {void}
      */
     createTextLabels: function (results) {
-        const features = store.getters["Tools/DistrictSelector/SelectedFeatures"],
-        // const features = Radio.request("SelectDistrict", "getSelectedDistricts"),
+        const features = store.getters["Tools/DistrictSelector/selectedFeatures"],
+            // const features = Radio.request("SelectDistrict", "getSelectedDistricts"),
             values = [],
             selector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
         let colorScale = {};

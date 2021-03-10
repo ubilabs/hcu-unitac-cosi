@@ -341,7 +341,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
         queries.forEach(function (query) {
             oneQuery = query;
             if (queryObjects !== undefined) {
-                queryObject = queryObjects.find({name: oneQuery.name});
+                queryObject = queryObjects.find(el => el.name === oneQuery.name);
                 oneQuery = Object.assign(oneQuery, queryObject);
             }
             this.createQuery(oneQuery);

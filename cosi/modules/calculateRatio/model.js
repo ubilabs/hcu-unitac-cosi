@@ -158,7 +158,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         this.set("modifier", this.get("adjustParameterView").model.getSelectedOption());
 
         const renameResults = {},
-            selectedDistricts = store.getters["Tools/DistrictSelector/SelectedFeatures"],
+            selectedDistricts = store.getters["Tools/DistrictSelector/selectedFeatures"],
             // selectedDistricts = Radio.request("SelectDistrict", "getSelectedDistricts"),
             selector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
             // selector = Radio.request("SelectDistrict", "getGeomSelector");

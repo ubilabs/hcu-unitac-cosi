@@ -67,7 +67,6 @@ export default {
                 this.dragBox.setActive(false);
                 this.select.setActive(false);
 
-                console.log(model, this.id)
                 if (model) {
                     model.set("isActive", false);
                 }
@@ -271,7 +270,6 @@ export default {
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivateGFI="deactivateGFI"
-        ref="Tool"
     >
         <template
             v-if="active"

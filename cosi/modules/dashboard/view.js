@@ -26,7 +26,7 @@ const DashboardView = Backbone.View.extend(/** @lends DashboardView.prototype */
             "change:isActive": function (model, isActive) {
                 if (isActive & !this.model.get("infoScreenOpen")) {
                     if (Radio.request("InfoScreen", "getIsInfoScreen")) {
-                        if (store.getters["Tools/DistrictSelector/selectedFeatures"].getLength() === 0) {
+                        if (store.getters["Tools/DistrictSelector/selectedFeatures"]?.length === 0) {
                             Radio.trigger("Alert", "alert", {
                                 text: "<strong>Warnung: Sie haben noch keine Gebiete ausgewählt.</strong>" +
                                     "<br />Daher werden im Dashboard keine statistischen Daten angezeigt. Sie können dennoch Ergebnisse aus anderen Werkzeugen im Dashboard anzeigen lassen.",

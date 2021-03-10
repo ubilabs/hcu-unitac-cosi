@@ -23,7 +23,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
             if (extent.length > 0) {
                 this.setDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]));
-                this.set("districtFeatures", store.getters["Tools/DistrictSelector/SelectedFeatures"]);
+                this.set("districtFeatures", store.getters["Tools/DistrictSelector/selectedFeatures"]);
             }
             else {
                 this.reset();
@@ -115,7 +115,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
      * @returns {void}
      */
     styleDistrictFeatures: function (features, attribute) {
-        const districtFeatures = store.getters["Tools/DistrictSelector/SelectedFeatures"],
+        const districtFeatures = store.getters["Tools/DistrictSelector/selectedFeatures"],
             selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             geomSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"],
             foundDistrictFeatures = [],
