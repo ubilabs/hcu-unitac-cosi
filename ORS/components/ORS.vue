@@ -6,7 +6,7 @@ import {Fill, Stroke, Style} from "ol/style";
 import getters from "../store/gettersORS";
 import mutations from "../store/mutationsORS";
 import {union} from "@turf/turf";
-import {getRgbArray} from "../../cosi/utils";
+import getRgbArray from "../../cosi/utils/getRgbArray";
 
 /**
  * Routing, Isochrones and Matrix Requests through OpenRouteService API

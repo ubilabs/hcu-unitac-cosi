@@ -4,7 +4,7 @@
  * @param {number} alpha - alpha value
  * @returns {array} an array of rgb(a) values
  */
-export function getRgbArray (color, alpha) {
+export default function getRgbArray (color, alpha) {
     let rgb = [];
 
     rgb = color.match(/([0-9]+\.?[0-9]*)/g);

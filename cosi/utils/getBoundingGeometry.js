@@ -2,7 +2,7 @@ import {buffer} from "@turf/turf";
 import GeoJSON from "ol/format/GeoJSON";
 import GeometryCollection from "ol/geom/GeometryCollection";
 
-export const defaultCRS = {
+const defaultCRS = {
     utm32: "EPSG:25832",
     wgs84: "EPSG:4326"
 };
@@ -11,8 +11,8 @@ export const defaultCRS = {
  * @description Get the (buffered) GeometryCollection encompassing a set of features
  * @param {module:ol/Feature[]} features - The feature list
  * @param {number} [bufferValue=0] - the buffer distance in m
- * @param {Object} [portalCrs="EPSG:25832"] - the CRSs of the portal and the geometry library
- * @returns {GeometryCollection} - the buffered GeometryCollection
+ * @param {string} [portalCrs="EPSG:25832"] - the CRSs of the portal and the geometry library
+ * @returns {module:ol/geom/GeometryCollection} - the buffered GeometryCollection
  */
 export default function getBoundingGeometry (features, bufferValue = 0, portalCrs = defaultCRS.utm32) {
     if (!(Array.isArray(features) && typeof parseFloat(bufferValue) === "number")) {
