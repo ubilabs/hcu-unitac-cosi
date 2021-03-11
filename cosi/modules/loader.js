@@ -1,7 +1,7 @@
 import {tools, general} from "./tools";
 import {addPolyfills} from "./polyfills";
 
-import ColorCodeMapView from "./colorCodeMap/view";
+// import ColorCodeMapView from "./colorCodeMap/view";
 import DashboardView from "./dashboard/view";
 import DashboardTableView from "./dashboardTable/view";
 import ContextMenuView from "./contextMenu/view";
