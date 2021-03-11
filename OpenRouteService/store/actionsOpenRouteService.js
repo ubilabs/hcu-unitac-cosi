@@ -17,8 +17,8 @@ export default {
 
     /**
      * @description toggles or sets the visibility of the drawing layer of the module
-     * @param {*} param0 - ctx - the store context
-     * @param {*} [isActive=undefined] - (optional) the new state of the drawing layer
+     * @param {*} ctx - ctx - the store context
+     * @param {*} [isActive=undefined] - the new state of the drawing layer
      * @returns {void}
      */
     toggleIsochroneView ({state}, isActive = undefined) {

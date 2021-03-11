@@ -7,21 +7,21 @@ export default {
 
     /**
      * @description Returns the profile of the current request or the default.
-     * @param {string} state - (optional) the profile specified in the request
+     * @param {string} [state] - the profile specified in the request
      * @returns {string} the current profile (foot-walking | driving-car | cycling-regular | etc)
      */
     profile: state => profile => (profile || state.defaultRequestProfile).replace("/", ""),
 
     /**
      * @description Returns the service of the current request or the default.
-     * @param {string} state - (optional) the service specified in the request
+     * @param {string} [state] - the service specified in the request
      * @returns {string} the current service (isochrones | matrix | directions)
      */
     service: state => service => (service || state.defaultRequestService).replace("/", ""),
 
     /**
      * @description Returns whether isochrones on the same level should be joined if they intersect, can be defined in the request
-     * @param {*} state - (optional) the joinIsochrones boolean of the request
+     * @param {*} [state] - the joinIsochrones boolean of the request
      * @returns {boolean} the current joinIsochrones value
      */
     joinIsochrones: state => joinIsochrones => typeof joinIsochrones !== "undefined" ? joinIsochrones : state.defaultJoinIsochrones,

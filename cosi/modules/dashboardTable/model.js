@@ -513,7 +513,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
 
         svgParent.className = "svg-container";
 
-
+        console.log(year)
         if (Object.keys(data[0]).length <= 1) {
             return Radio.trigger("Alert", "alert", `Für das Jahr ${year} sind leider keine Werte zu ${this.get("selectedAttrsForCharts").join(", ")} verfügbar.`);
         }
