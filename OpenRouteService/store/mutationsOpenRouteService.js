@@ -1,5 +1,5 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
-import initialState from "./stateORS";
+import initialState from "./stateOpenRouteService";
 
 export default {
     ...generateSimpleMutations(initialState),

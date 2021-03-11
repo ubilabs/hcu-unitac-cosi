@@ -3,8 +3,8 @@
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style} from "ol/style";
-import getters from "../store/gettersORS";
-import mutations from "../store/mutationsORS";
+import getters from "../store/gettersOpenRouteService";
+import mutations from "../store/mutationsOpenRouteService";
 import {union} from "@turf/turf";
 import getRgbArray from "../../cosi/utils/getRgbArray";
 
@@ -14,7 +14,7 @@ import getRgbArray from "../../cosi/utils/getRgbArray";
  * @vue-data {Object} layer - OpenLayers Layer
  */
 export default {
-    name: "ORS",
+    name: "OpenRouteService",
     components: {
     },
     data () {
@@ -24,7 +24,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/ORS", Object.keys(getters)),
+        ...mapGetters("Tools/OpenRouteService", Object.keys(getters)),
         ...mapGetters("Map", [
             "map",
             "layers"
@@ -50,16 +50,16 @@ export default {
         this.createDrawingLayer();
 
         /** @todo JUST FOR TESTING */
-        // this.$store.dispatch("Tools/ORS/newRequest", {range: [1000], locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]]});
+        // this.$store.dispatch("Tools/OpenRouteService/newRequest", {range: [1000], locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]]});
     },
     methods: {
-        ...mapMutations("Tools/ORS", Object.keys(mutations)),
+        ...mapMutations("Tools/OpenRouteService", Object.keys(mutations)),
         ...mapActions("Map", [
             "loopLayerLoader"
         ]),
         /**
-         * @description requests an isochrone from the ORS
-         * @param {Object} payload information needed to make the request towards ORS
+         * @description requests an isochrone from the OpenRouteService
+         * @param {Object} payload information needed to make the request towards OpenRouteService
          * @returns {void}
          */
         requestIsochrone (payload) {
@@ -80,7 +80,7 @@ export default {
                 });
         },
         /**
-         * @description transform the features to the right projection for the ORS
+         * @description transform the features to the right projection for the OpenRouteService
          * @param {Object} features OpenLayers feature
          * @returns {void}
          */

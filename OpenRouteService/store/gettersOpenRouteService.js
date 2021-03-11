@@ -1,5 +1,5 @@
 import {generateSimpleGetters} from "../../../src/app-store/utils/generators";
-import initialState from "./stateORS";
+import initialState from "./stateOpenRouteService";
 import * as Proj from "ol/proj";
 
 export default {

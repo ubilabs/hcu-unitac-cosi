@@ -1,7 +1,7 @@
 {
-  "name": "ors",
+  "name": "openrouteservice",
   "version": "1.0.0",
-  "description": "Standarddatenpaket Download",
+  "description": "OpenRouteservice Addon for Masterportal",
   "title": "OpenRouteService",
   "license": "MIT",
   "repository": {

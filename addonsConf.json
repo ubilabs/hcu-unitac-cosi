@@ -74,7 +74,7 @@
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   },
-  "ORS": {
+  "OpenRouteService": {
     "type": "tool"
   }
 }

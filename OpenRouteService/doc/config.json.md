@@ -1,6 +1,6 @@
 **DistrictSelector**
 
-Mit dem ORS Addon können Anfragen an einen OpenRouteService Dienst (z.B. den BKG) gestellt und in der Karte visualisiert werden.
+Mit dem OpenRouteSerivce Addon können Anfragen an einen OpenRouteService Dienst (z.B. den BKG) gestellt und in der Karte visualisiert werden.
 Die Ergebnisse werden als GeoJson im Store gespeichert und können über die StoreGetters abgerufen werden.
 Die API umfasst Isochronen, Routen und Matrix-Request. Die Dokumentation findet sich unter https://openrouteservice.org/dev/#/api-docs.
 Das Modul hat kein UI und wird über eine StoreAction angesprochen.
@@ -10,7 +10,7 @@ Gegenwärtig sind (für den Anwendungsfall CoSI) nur Isochronen für die Visuali
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|
 |----|-------------|---|-------|------------|
-|layerId|nein|ORS|String|ID des Layers für die Visualisierung der Ergebnisse.|
+|layerId|nein|OpenRouteService|String|ID des Layers für die Visualisierung der Ergebnisse.|
 |zindex|nein|3000|Number|Z-Index des Layers für die Visualisierungen.|
 |requestUrl|nein|String|https://api.openrouteservice.org/v2|URL der API.|
 |apiKey|ja|String|Authentifikation für die API, muss gesetzt werden wenn die offene OpenRouteService API verwendet wird.|
@@ -25,7 +25,7 @@ Gegenwärtig sind (für den Anwendungsfall CoSI) nur Isochronen für die Visuali
 
 **Beispiel**
 ```
-"ORS": {
+"OpenRouteService": {
   "name": "OpenRouteService",
   "isVisibleInMenu": false,
   "requestUrl": "https://api.openrouteservice.org/v2",
