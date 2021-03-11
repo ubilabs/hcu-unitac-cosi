@@ -1,14 +1,14 @@
 <script>
 import {mapGetters, mapMutations} from "vuex";
-import getters from "../store/gettersVueAddon";
-import mutations from "../store/mutationsVueAddon";
+import getters from "../store/gettersColorCodeMap";
+import mutations from "../store/mutationsColorCodeMap";
 import {unifyString, getRGBArray} from "../../utils";
 import {Fill, Stroke, Style, Icon, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import MappingJson from "../../modules/featuresLoader/mapping.json";
 
 export default {
-    name: "TestAddonBirt",
+    name: "ColorCodeMap",
     components: {
         Multiselect
     },
@@ -31,7 +31,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/TestAddonBirt", Object.keys(getters))
+        ...mapGetters("Tools/ColorCodeMap", Object.keys(getters))
     },
     watch: {
         featuresSelected () {
@@ -51,7 +51,7 @@ export default {
         this.applyTranslationKey(this.name);
     },
     methods: {
-        ...mapMutations("Tools/TestAddonBirt", Object.keys(mutations)),
+        ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
         updateSelectedDistricts (districtDataLoaded) {
             this.districtDataLoaded = districtDataLoaded;
 

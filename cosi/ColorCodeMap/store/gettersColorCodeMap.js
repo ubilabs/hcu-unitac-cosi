@@ -1,9 +1,9 @@
 
 import {generateSimpleGetters} from "../../../../src/app-store/utils/generators";
-import vueAddonState from "./stateVueAddon";
+import colorCodeMapState from "./stateColorCodeMap";
 
 const getters = {
-    ...generateSimpleGetters(vueAddonState)
+    ...generateSimpleGetters(colorCodeMapState)
 };
 
 export default getters;

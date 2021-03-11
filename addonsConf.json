@@ -19,8 +19,8 @@
   "VueAddon": {
     "type": "tool"
   },
-  "TestAddonBirt": {
-    "path": "cosi/TestAddonBirt",
+  "ColorCodeMap": {
+    "path": "cosi/ColorCodeMap",
     "type": "tool"
   },
   "FileImportAddon": {

@@ -1,5 +1,5 @@
 import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
-import stateVueAddon from "./stateVueAddon";
+import stateColorCodeMap from "./stateColorCodeMap";
 
 const mutations = {
     /**
@@ -8,7 +8,7 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateVueAddon),
+    ...generateSimpleMutations(stateColorCodeMap),
 
     /**
      * If name from config.json starts with "translate#", the corrected key is set to name here.

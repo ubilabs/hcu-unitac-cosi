@@ -1,6 +1,6 @@
 /**
  * User type definition
- * @typedef {object} VueAddonState
+ * @typedef {object} ColorCodeMapState
  * @property {boolean} active if true, VueAddon will rendered
  * @property {string} id id of the VueAddon component
  * @property {module:ol/interaction/Pointer} selectPointerMove contains interaction listener to map
@@ -22,9 +22,9 @@
  */
 const state = {
     active: false,
-    id: "TestAddonBirt",
+    id: "ColorCodeMap",
     // defaults for config.json parameters
-    name: "Better Vue Addon",
+    name: "ColorCodeMap",
     glyphicon: "glyphicon-map",
     renderToWindow: false,
     resizableWindow: false,
