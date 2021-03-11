@@ -14,6 +14,9 @@ Gegenwärtig sind (für den Anwendungsfall CoSI) nur Isochronen für die Visuali
 |zindex|nein|3000|Number|Z-Index des Layers für die Visualisierungen.|
 |requestUrl|nein|String|https://api.openrouteservice.org/v2|URL der API.|
 |apiKey|ja|String|Authentifikation für die API, muss gesetzt werden wenn die offene OpenRouteService API verwendet wird.|
+|requestServices|no|String[]|["isochrones", "matrix", "directions"]|Die verfügbaren Dienste im definierten OpenRouteService.|
+|requestProfiles|no|String[]|["foot-walking", "driving-car", "driving-lgv", "cycling-regular", "cycling-electric", "wheelchair"]|Die verfügbaren Profile im definierten OpenRouteService.|
+|defaultJoinIsochrones|no|Boolean|true|Definiert ob die Isochronen derselben Ebene verbunden werden sollen, wenn sie sich überlappen|
 |colorspace|nein|String|interpolateRdYlGn|Farb-Skala der Visualisierungen, vgl. https://github.com/d3/d3-scale-chromatic|
 |coloralpha|nein|Number|0.1|Transparenz der Visualisierungen.|
 |innerLineWidth|nein|Number|1.5|Innere Linienstärke der Polygone.|
