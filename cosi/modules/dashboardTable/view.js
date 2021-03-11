@@ -325,7 +325,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
     /**
      * sets the row selection, or adds a row to existing selection, depending on the event
      * @param {*} event the DOM event
-     * @param {string} _row (optional) the already parsed row name
+     * @param {string} [_row] (optional) the already parsed row name
      * @returns {void}
      */
     selectRow (event, _row) {

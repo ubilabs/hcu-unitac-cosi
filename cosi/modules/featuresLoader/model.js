@@ -348,7 +348,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
 
     /**
      * returns the string mapping of the given scope or all
-     * @param {string} attr attribute/scope (optional)
+     * @param {string} [attr] attribute/scope (optional)
      * @returns {object} the attrMap
      */
     getDistrictAttrMapping: function (attr) {

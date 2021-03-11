@@ -322,9 +322,9 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @param {Object[]} data Data for graph.
      * @param {String} className Class name of point.
      * @param {Object} d3line D3 line object.
-     * @param {String} tooltipDiv (optional)
-     * @param {String} attrName (optional) name of Attr for hover
-     * @param {String} color (optional) color of the line
+     * @param {String} [tooltipDiv=null] (optional)
+     * @param {String} [attrName=null] (optional) name of Attr for hover
+     * @param {String} [color="rgb(8, 88, 158)"] (optional) color of the line
      * @returns {void}
      */
     appendDataToSvg: function (svg, data, className, d3line, tooltipDiv = null, attrName = null, color = "rgb(8, 88, 158)") {
@@ -483,8 +483,8 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @param {String} yAttrToShow Attribute name for line point on y-axis.
      * @param {Selection} tooltipDiv Selection of the tooltip-div.
      * @param {Number} dotSize The size of the dots.
-     * @param {String} className optional className for the dots.
-     * @param {String} color optional color for the dots
+     * @param {String} [className=null] optional className for the dots.
+     * @param {String} [color="rgb(8, 88, 158)"] optional color for the dots
      * @returns {void}
      */
     /* eslint-disable max-params */

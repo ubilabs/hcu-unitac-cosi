@@ -171,8 +171,8 @@
  * @description appends a new widget to the dashboard
  * @param {Backbone.View | object | string} child the child object to append
  * @param {string} parent the container-selector to append to, defaults to ".info-screen-children"
- * @param {object} opts appending options (optional)
- * @param {boolean} cullButtons remove buttons when appending html to InfoScreen, defaults to false (optional)
+ * @param {object} [opts] appending options (optional)
+ * @param {boolean} [cullButtons] remove buttons when appending html to InfoScreen, defaults to false (optional)
  * @example Radio.trigger("Dashboard", "append", child, parent = ".info-screen-children", opts, cullButtons = false);
  */
 
