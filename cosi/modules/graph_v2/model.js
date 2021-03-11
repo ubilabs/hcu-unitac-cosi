@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-call */
 import {scaleBand, scaleLinear} from "d3-scale";
 import {axisBottom, axisLeft} from "d3-axis";
 import {line} from "d3-shape";
@@ -59,8 +60,12 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         }
 
         if (graphConfig.hasContextMenu) {
+            const that = this;
+
             svg.on("pointerup", function () {
-                this.appendContextMenu(svg.select("svg").node(), graphConfig);
+                const contextActions = that.addContextMenuEventListeners.call(that, svg.select("svg").node(), graphConfig);
+
+                that.appendContextMenu.call(that, contextActions, graphConfig.title);
             }, this);
         }
 
@@ -243,7 +248,8 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - axisBottom
      */
     createAxisBottom: function (scale, xAxisTicks) {
-        const unit = !xAxisTicks.hasOwnProperty("unit") ? "" : " " + xAxisTicks.unit;
+        const unit = xAxisTicks?.unit ? " " + xAxisTicks.unit : "";
+        // const unit = !xAxisTicks.hasOwnProperty("unit") ? "" : " " + xAxisTicks.unit;
         let d3Object;
 
         if (xAxisTicks === undefined) {
@@ -276,7 +282,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createAxisLeft: function (scale, yAxisTicks) {
         let d3Object;
 
-        if (yAxisTicks === undefined && !yAxisTicks.hasOwnProperty("ticks")) {
+        if (!(yAxisTicks && yAxisTicks.ticks)) {
             d3Object = axisLeft(scale)
                 .tickFormat(function (d) {
                     if (d % 1 === 0) {
@@ -604,20 +610,20 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     },
 
     /**
-     * Appends the CoSI context menu actions and defines the context actions
+     * Adds event listeners for the the context menu actions
      * @param {*} svg the DOM element
      * @param {*} graphConfig the graphConfig object
      * @fires ContextMenu#RadioTriggerSetActions
      * @returns {void}
      */
-    appendContextMenu: function (svg, graphConfig) {
+    addContextMenuEventListeners (svg, graphConfig) {
         const contextActions = $(_.template(ContextActions)()),
             width = graphConfig.width,
             height = graphConfig.height,
             title = graphConfig.graphTitle;
 
         // Download SVG
-        $(contextActions).find("li#downloadSvg").on("click", function () {
+        $(contextActions).find("li#downloadSvg").get(0).addEventListener("click", function () {
             const blob = this.svgToBlob(svg),
                 url = URL.createObjectURL(blob);
 
@@ -630,7 +636,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         }, this);
 
         // Download PNG
-        $(contextActions).find("li#downloadPng").on("click", async function () {
+        $(contextActions).find("li#downloadPng").get(0).addEventListener("click", async function () {
             const convertToPng = this.svgToPng(this.svgToBlob(svg), width * 2, height * 2),
                 png = await convertToPng;
 
@@ -642,6 +648,17 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             }
         }, this);
 
+        return contextActions;
+    },
+
+    /**
+     * Appends the CoSI context menu actions and defines the context actions
+     * @param {*} contextActions the context actions DOM element
+     * @param {*} title the context menu title
+     * @fires ContextMenu#RadioTriggerSetActions
+     * @returns {void}
+     */
+    appendContextMenu: function (contextActions, title) {
         Radio.trigger("ContextMenu", "setActions", contextActions, title, "glyphicon-stats");
     },
 
