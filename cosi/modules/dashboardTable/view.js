@@ -247,14 +247,6 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         const row = this.$(event.target).closest("tr"),
             contextActions = this.contextActionsEl;
 
-
-        $(contextActions).on("mouseup", () => {
-            console.log("mouseup");
-        });
-
-        // console.log(event, contextActions, $(contextActions).find("li#barChart #input-year button"))
-        // console.log(event, contextActions, )
-
         // only change selection on right click, if not more than one item is selected
         if (!(event.button === 2 && this.model.get("selectedAttrsForCharts").length > 1)) {
             this.selectRow(event, row);
@@ -262,7 +254,6 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
 
         // Create Bar Chart
         $(contextActions).find("li#barChart #input-year button").on("click", function () {
-            console.log($(contextActions).find("li#barChart #input-year input").val())
             this.model.createBarChart($(contextActions).find("li#barChart #input-year input").val());
         }, this);
 
