@@ -12,11 +12,6 @@ export default {
     components: {
         Tool
     },
-    data () {
-        return {
-            selectedFormats: this.$store.state.Tools.SdpDownload.formats
-        };
-    },
     computed: {
         ...mapGetters("Tools/SdpDownload", Object.keys(getters))
     },
@@ -31,7 +26,7 @@ export default {
                 if (value && this.$refs.drawSelection) {
                     // Fills the dropdown with the elements from the snippet
                     this.renderDrawSelection();
-                    this.initLanguage();
+                    this.setInitLanguage();
                     // Adds the WMS overview to the map
                     this.toggleRasterLayer();
                     this.loadWfsRaster();
@@ -77,96 +72,15 @@ export default {
                 model.set("isActive", false);
             }
         },
-        /** sets default values for the language
-         * @returns {void}
-         */
-        initLanguage: function () {
-            this.setInitLanguage();
-        },
-        /**
-         * Sets the graphicalSelectModel
-         * @param {Snippets.GraphicalSelect.GraphicalSelectModel} value graphicalSelectModel
-         * @returns {void}
-         */
-        updateGraphicalSelectModel: function (value) {
-            this.setGraphicalSelectModel(value);
-        },
-        /**
-         * Sets the value to models property isSelected by mutation updateSelectedFormat
-         * @param {String} evt is value of selected file Format like dwg or jpg
-         * @returns {void}
-         */
-        formatSelected: function (evt) {
-            this.setSelectedFormat(evt);
-        },
-        /**
-        * Sets the WFSRaster
-        * @param {ol.feature} value the features of the WFSRaster
-        * @returns {void}
-        */
-        updateWfsRaster: function (value) {
-            this.setWfsRaster(value);
-        },
-        /**
-         * Sets the value to models property isSelected
-         * @param {Boolean} value is selected or not
-         * @returns {void}
-         */
-        updateIsSelected: function (value) {
-            this.setIsSelected(value);
-        },
-        /**
-         * Sets the value to models property rasterNames
-         * @param {Boolean} value rasterNames
-         * @returns {void}
-         */
-        updateSelectedRasterNames: function (value) {
-            this.setSelectedRasterNames(value);
-        },
         /**
          * Creates new graphicalSelectView instance and adds the divs to the template with drawing selections: circle|rectangle|polygon
          * @returns {void}
          */
         renderDrawSelection: function () {
             this.graphicalSelectView = {};
-            this.updateGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
+            this.setGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
             this.graphicalSelectView = new GraphicalSelectView({model: this.graphicalSelectModel});
             this.$refs.drawSelection.appendChild(this.graphicalSelectView.render().el);
-        },
-        /**
-         * Calls action to achieve data for graphical selection
-         * @returns {void}
-         */
-        download: function () {
-            this.requestCompressedData();
-        },
-        /**
-         * Calls action to achieve data for special format Neuwerk
-         * @returns {void}
-         */
-        downloadNeuwerk: function () {
-            this.requestCompressIslandData("Neuwerk");
-        },
-        /**
-         * Calls action to achieve data for special format Scharhoern
-         * @returns {void}
-         */
-        downloadScharhoern: function () {
-            this.requestCompressIslandData("Scharhoern");
-        },
-        /**
-         * Calls action to achieve raster overview data LS310
-         * @returns {void}
-         */
-        downloadRasterOverview310: function () {
-            this.requestCompressRasterOverviewData("LS310");
-        },
-        /**
-         * Calls action to achieve raster overview data LS320
-         * @returns {void}
-         */
-        downloadRasterOverview320: function () {
-            this.requestCompressRasterOverviewData("LS320");
         }
     }
 };
@@ -197,16 +111,16 @@ export default {
                         id="formatSelection"
                         name="formatSelection"
                         class="form-control formatselect"
-                        @change="formatSelected($event.target.value)"
+                        @change="setSelectedFormat($event.target.value)"
                     >
                         <option
-                            v-for="(format,index) in selectedFormats"
+                            v-for="(format,index) in formats"
                             :key="index"
                             :value="format.id"
                             data-toggle="tooltip"
                             :title="format.label"
                         >
-                            {{ $t("additional:modules.tools.sdpdownload."+format.fileId+"Label") }}
+                            {{ $t(`additional:modules.tools.sdpdownload.${format.fileId}Label`) }}
                         </option>
                     </select>
                 </div>
@@ -229,7 +143,7 @@ export default {
                         id="bselectedDownload"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
-                        @click="download"
+                        @click="requestCompressedData"
                     >
                         {{ downloadDataPackage }}
                     </button>
@@ -242,7 +156,7 @@ export default {
                         id="bNeuwerk"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
-                        @click="downloadNeuwerk"
+                        @click="requestCompressIslandData('Neuwerk')"
                     >
                         {{ neuwerkDataPackage }}
                     </button>
@@ -252,7 +166,7 @@ export default {
                         id="bScharhoern"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
-                        @click="downloadScharhoern"
+                        @click="requestCompressIslandData('Scharhoern')"
                     >
                         {{ scharhoernDataPackage }}
                     </button>
@@ -262,7 +176,7 @@ export default {
                         id="b310"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
-                        @:click="downloadRasterOverview310"
+                        @click="requestCompressRasterOverviewData('LS310')"
                     >
                         {{ tileOverview310 }}
                     </button>
@@ -272,7 +186,7 @@ export default {
                         id="b320"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
-                        @click="downloadRasterOverview320"
+                        @click="requestCompressRasterOverviewData('LS320')"
                     >
                         {{ tileOverview320 }}
                     </button>
@@ -283,7 +197,6 @@ export default {
 </template>
 
 <style lang="less" scoped>
-@color_1: #fff;
 
 /*sdp download*/
     .content {

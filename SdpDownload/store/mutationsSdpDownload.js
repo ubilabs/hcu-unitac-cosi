@@ -56,31 +56,6 @@ const mutations = {
         state.details = i18next.t("additional:modules.tools.sdpdownload.details");
         state.serviceNotResponding = i18next.t("additional:modules.tools.sdpdownload.serviceNotResponding");
     },
-
-    /**
-     * Sets the value to models property rasterNames
-     * @param {Object} state - vuex element
-     * @param {String} newFormat value of selected file Format like dwg or jpg
-     * @returns {void}
-     */
-    setSelectedFormat: function (state, newFormat) {
-        if (newFormat) {
-            state.selectedFormat = newFormat;
-        }
-    },
-
-    /**
-     * Sets the graphicalSelectModel
-     * @param {Object} state - vuex element
-     * @param {Object} graphicalSelectModel from the graphical selection snippet
-     * @returns {void}
-     */
-    setGraphicalSelectModel: (state, graphicalSelectModel) => {
-        if (graphicalSelectModel) {
-            state.graphicalSelectModel = graphicalSelectModel;
-        }
-    },
-
     /**
      * Sets the selectedAreaGeoJson from the selected area by the graphicalSelect snippet
      * @param {Object} state - vuex element
@@ -90,39 +65,6 @@ const mutations = {
     setSelectedAreaGeoJson: (state, selectedAreaGeoJson) => {
         if (selectedAreaGeoJson) {
             state.graphicalSelectModel.attributes.selectedAreaGeoJson = selectedAreaGeoJson;
-        }
-    },
-    /**
-     * Sets the WFSRaster
-     * @param {Object} state - vuex element
-     * @param {ol.feature} value the features of the WFSRaster
-     * @returns {void}
-     */
-    setWfsRaster: (state, value) => {
-        if (value) {
-            state.wfsRaster = value;
-        }
-    },
-    /**
-     * Sets the value to models property rasterNames
-     * @param {Object} state - vuex element
-     * @param {Array} value names of the raster squares from the intersected graphical selection
-     * @returns {void}
-     */
-    setSelectedRasterNames: (state, value) => {
-        if (value) {
-            state.rasterNames = value;
-        }
-    },
-    /**
-     * Sets the value to property isSelected
-     * @param {Object} state - vuex element
-     * @param {Boolean} value is selected or not
-     * @returns {void}
-     */
-    setIsSelected: (state, value) => {
-        if (value) {
-            state.isSelected = value;
         }
     }
 };

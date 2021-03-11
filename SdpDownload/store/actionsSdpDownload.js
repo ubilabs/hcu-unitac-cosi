@@ -69,7 +69,6 @@ const actions = {
     loadWfsRaster: function ({getters, dispatch}) {
 
         const params = getters.wfsRasterParams,
-            // Object for urlParams = "?service=" + params.service + "&version=" + params.version + "&request=" + params.request + "&TypeName=" + params.typename;
             urlParams = {
                 "Service": params.service,
                 "Version": params.version,
@@ -85,10 +84,10 @@ const actions = {
             },
             responseType: "document"
         })
-            .then(function (resp) {
+            .then(resp => {
                 dispatch("readFeatures", resp.data);
             })
-            .catch(function (error) {
+            .catch(error => {
                 alertingFailedToDownload = {
                     "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
                     "content": "<strong>" + error.response + "</strong>",
@@ -99,15 +98,15 @@ const actions = {
     },
     /**
      * Reads all features in the given data and stores it in the property wfsRaster
-     * @param {Object} state vuex element
+     * @param {Object} commit vuex element
      * @param {Object} data of the wfs response (XML)
      * @returns {void}
      */
-    readFeatures: function (state, data) {
+    readFeatures: function ({commit}, data) {
         const format = new WFS(),
             features = format.readFeatures(data);
 
-        state.commit("setWfsRaster", features);
+        commit("setWfsRaster", features);
     },
     /**
      * Calculates the intersection of the graphical selection with the raster. The names of the intersected raster squares are then commited to the state.
@@ -133,7 +132,7 @@ const actions = {
             });
         }
 
-        commit("setSelectedRasterNames", rasterNames);
+        commit("setRasterNames", rasterNames);
 
     },
     /**
@@ -164,7 +163,6 @@ const actions = {
                 const adaptedNames = [],
                     selectedRasterNames = getters.rasterNames;
 
-
                 selectedRasterNames.forEach(rasterName => {
                     const adaptedName = rasterName.substring(0, 2) + "0" + rasterName.substring(2, 4) + "0";
 
@@ -190,7 +188,6 @@ const actions = {
         let alertingTilesAmount = {},
             alertingNoTiles = {};
 
-
         if (selectedRasterNames.length > getters.selectedRasterLimit) {
             alertingTilesAmount = {
                 "category": i18next.t("additional:modules.tools.sdpdownload.alerts.info"),
@@ -213,13 +210,12 @@ const actions = {
         return true;
     },
     /**
-     * Collects the params to request the WMS for island data.
+     * Collects the params to request the WMS for island data.Params have to look like: "insel=Neuwerk&type=JPG"
      * @param {Object} getters, dispatch - vuex elements
      * @param {String} islandName name of the island
      * @returns {void}
      */
     requestCompressIslandData: function ({getters, dispatch}, islandName) {
-        // params have to look like: "insel=Neuwerk&type=JPG"
         const params = "insel=" + islandName + "&type=" + getters.selectedFormat;
 
         dispatch("doRequest", params);
@@ -265,7 +261,7 @@ const actions = {
         dataZip.post(url, params, {
             timeout: 15000
         })
-            .then(function (resp) {
+            .then(resp => {
                 dispatch("resetView");
                 dispatch("changeGraphicalSelectStatus", true);
                 if (resp.data.indexOf("Fehler") > -1) {
@@ -282,7 +278,7 @@ const actions = {
                     commit("setSelectedAreaGeoJson", {});
                 }
             })
-            .catch(function () {
+            .catch(() => {
                 alertingServiceNotresponding = {
                     "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
                     "content": "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + getters.serviceNotResponding + "</small>",

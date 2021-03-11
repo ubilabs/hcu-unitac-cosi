@@ -10,7 +10,7 @@
  * @property {Boolean} renderToSidebar= true show this tool in sidebar
  * @property {Boolean} renderToWindow= false not show this tool in window
  * @property {String} wmsRasterLayerId= "4707" id of the Layer utm_dk5_1km (WMS Uebersicht Kachelbezeichnungen)
- * @property {Array} formats= [] provided formats of data to download
+ * @property {String[]} formats= [] provided formats of data to download
  * @property {String} selectedFormat= "NAS" is the preselected format
  * @property {String} compressDataId= "compressData" name of the  data service configured in the rest-service.json
  * @property {String} compressedFileId= "compressedFile" name of the  data service configured in the rest-service.json
@@ -24,7 +24,7 @@
  * @property {Object} wfsRaster= {} contains wfs raster features after loading them
  * @property {Object} graphicalSelectModel= {} model for graphical selection
  * @property {Object} selectedRasterLimit= 9 limit og raster images for download
- * @property {Array} rasterNames=[] stores the names of the tiles in the raster
+ * @property {String[]} rasterNames=[] stores the names of the tiles in the raster
  * @property {String} selectFormat= "" contains the translated text
  * @property {String} howToChooseTiles= "" contains the translated text
  * @property {String} downloadDataPackage= "" contains the translated text

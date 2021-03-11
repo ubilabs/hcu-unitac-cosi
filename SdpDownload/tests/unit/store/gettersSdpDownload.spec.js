@@ -2,7 +2,6 @@ import {expect} from "chai";
 import stateSdpDownload from "../../../store/stateSdpDownload";
 
 
-
 describe("addons/SdpDownload/store/gettersSdpDownload", function () {
     it("returns the active from state", function () {
         expect(stateSdpDownload.active).to.be.false;
@@ -34,7 +33,7 @@ describe("addons/SdpDownload/store/gettersSdpDownload", function () {
             expect(stateSdpDownload.renderToSidebar).to.be.true;
         });
         it("returns the wmsRasterLayerId default value from state", function () {
-            expect(stateSdpDownload.wmsRasterLayerId).to.be.equal("4707")
+            expect(stateSdpDownload.wmsRasterLayerId).to.be.equal("4707");
         });
         it("returns the formats default value from state", function () {
             expect(stateSdpDownload.formats).to.be.eql([
@@ -42,7 +41,7 @@ describe("addons/SdpDownload/store/gettersSdpDownload", function () {
                 {id: "DWG_310", label: "", isSelected: false, desc: "", fileId: "dwg310"},
                 {id: "DWG_320", label: "", isSelected: false, desc: "", fileId: "dwg320"},
                 {id: "JPG", label: "", isSelected: false, desc: "", fileId: "jpg"}
-            ])
+            ]);
         });
         it("returns the selectedFormat default value from state", function () {
             expect(stateSdpDownload.selectedFormat).to.be.equal("NAS");

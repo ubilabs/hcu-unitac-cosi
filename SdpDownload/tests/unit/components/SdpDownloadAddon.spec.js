@@ -2,7 +2,6 @@ import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import SDPComponent from "../../../components/SdpDownload.vue";
 import SdpDownload from "../../../store/index.js";
-import actions from "../../../store/actionsSdpDownload";
 import sinon from "sinon";
 import {expect} from "chai";
 
@@ -87,20 +86,20 @@ describe("SdpDownload.vue", () => {
 
     });
 
-    it("should call download function if selectedDownload is clicked", async () => {
-        //declaration of sinon spy before wrapper otherwise the test fails
-        const spyDownload = sinon.spy(SDPComponent.methods, "download"),
+    it("should call requestCompressedData function if selectedDownload is clicked", async () => {
+        // declaration of sinon spy before wrapper otherwise the test fails
+        const spyDownload = sinon.spy(SDPComponent.methods, "requestCompressedData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
             button = wrapper.find("#bselectedDownload");
 
         await button.trigger("click");
         expect(spyDownload.calledOnce).to.be.true;
 
-        //removes the spy
+        // removes the spy
         spyDownload.restore();
     });
     it("should call download function if Neuwerk format button is clicked", async () => {
-        const spyDownload = sinon.spy(SDPComponent.methods, "downloadNeuwerk"),
+        const spyDownload = sinon.spy(SDPComponent.methods, "requestCompressIslandData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
             button = wrapper.find("#bNeuwerk");
 
@@ -110,7 +109,7 @@ describe("SdpDownload.vue", () => {
         spyDownload.restore();
     });
     it("should call download function if Scharhoern format button is clicked", async () => {
-        const spyDownload = sinon.spy(SDPComponent.methods, "downloadScharhoern"),
+        const spyDownload = sinon.spy(SDPComponent.methods, "requestCompressIslandData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
             button = wrapper.find("#bScharhoern");
 
@@ -120,7 +119,7 @@ describe("SdpDownload.vue", () => {
         spyDownload.restore();
     });
     it("should call download function if tile overview 310 format button is clicked", async () => {
-        const spyDownload = sinon.spy(SDPComponent.methods, "downloadRasterOverview310"),
+        const spyDownload = sinon.spy(SDPComponent.methods, "requestCompressRasterOverviewData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
             button = wrapper.find("#b310");
 
@@ -130,7 +129,7 @@ describe("SdpDownload.vue", () => {
         spyDownload.restore();
     });
     it("should call download function if tile overview 320 format button is clicked", async () => {
-        const spyDownload = sinon.spy(SDPComponent.methods, "downloadRasterOverview320"),
+        const spyDownload = sinon.spy(SDPComponent.methods, "requestCompressRasterOverviewData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
             button = wrapper.find("#b320");
 
@@ -139,8 +138,8 @@ describe("SdpDownload.vue", () => {
 
         spyDownload.restore();
     });
-    it("should call formatSelected function if select is changed", async () => {
-        const spy= sinon.spy(SDPComponent.methods, "formatSelected"),
+    it("should call setSelectedFormat function if select is changed", async () => {
+        const spy = sinon.spy(SDPComponent.methods, "setSelectedFormat"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
             select = wrapper.find("#formatSelection");
 
@@ -150,5 +149,3 @@ describe("SdpDownload.vue", () => {
         spy.restore();
     });
 });
-
-
