@@ -77,7 +77,7 @@ const Timeline = Tool.extend({
     /**
      * @description returns the selector for the latest entry in properties
      * @param {*} feature the feature to test, works also if a properties-object is provided
-     * @param {string} currentLatestField the current latest field (optional)
+     * @param {string} [currentLatestField] the current latest field (optional)
      * @returns {string} the selector
      */
     getLatestField (feature, currentLatestField) {

@@ -6,6 +6,7 @@ const CompareDistrictsModel = Tool.extend(/** @lends CompareDistrictsModel.proto
         comparableFeaturesNames: [],
         layerFilterList: "", // e.g [{layerId: "", filter: {key: [],...}},...]
         mapLayerName: "compare-district",
+        mapLayer: null,
         selectedStyle: new Style({
             fill: new Fill({
                 color: [8, 119, 95, 0.3]
@@ -32,6 +33,22 @@ const CompareDistrictsModel = Tool.extend(/** @lends CompareDistrictsModel.proto
      */
     initialize: function () {
         this.superInitialize();
+        this.createMapLayer(this.get("mapLayerName"));
+    },
+
+    /**
+     * creats map layer
+     * @param {String} name map layer name
+     * @fires Core#RadioRequestMapCreateLayerIfNotExists
+     * @returns {void}
+     */
+    createMapLayer: function (name) {
+        const newLayer = Radio.request("Map", "createLayerIfNotExists", name);
+        // newSource = new VectorSource();
+
+        // newLayer.setSource(newSource);
+        newLayer.setVisible(false);
+        this.set("mapLayer", newLayer);
     }
 });
 

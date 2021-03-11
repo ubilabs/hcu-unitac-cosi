@@ -6,6 +6,7 @@ import {Fill, Stroke, Style} from "ol/style.js";
 import GeoJSON from "ol/format/GeoJSON";
 import InfoTemplate from "text-loader!./info.html";
 import * as turf from "@turf/turf";
+import store from "../../../../src/app-store";
 
 const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAreaView.prototype */{
     events: {
@@ -55,7 +56,8 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
         this.listenTo(this.model, {
             "change:isActive": function (model, value) {
                 if (value) {
-                    if (Radio.request("SelectDistrict", "getSelectedDistricts").length === 0) {
+                    if (store.getters["Tools/DistrictSelector/selectedFeatures"]?.length === 0) {
+                    // if (Radio.request("SelectDistrict", "getSelectedDistricts").length === 0) {
                         Radio.trigger("Alert", "alert", {
                             text: "<strong>Warnung: Sie haben noch keine Gebiete ausgewählt.</strong>" +
                                 "<br /> Sie können trotzdem die Erreichbarkeit von Einrichtungen für das gesamte Stadtgebiet ermitteln ermitteln.<br />" +
@@ -64,7 +66,6 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                         });
                     }
                     this.render(model, value);
-                    this.createMapLayer(this.model.get("mapLayerName"));
                 }
                 else {
                     this.clearInput();
@@ -120,22 +121,11 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
     },
 
     /**
-     * creates the map layer that contains the isochrones
-     * @returns {void}
-     */
-    createMapLayer: function () {
-        const newLayer = Radio.request("Map", "createLayerIfNotExists", this.model.get("mapLayerName"));
-
-        newLayer.setVisible(true);
-        newLayer.setMap(Radio.request("Map", "getMap"));
-    },
-
-    /**
      * clears the map layer that contains the isochrones
      * @returns {void}
      */
     clearMapLayer: function () {
-        const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+        const mapLayer = this.model.get("mapLayer");
 
         if (mapLayer.getSource().getFeatures().length > 0) {
             mapLayer.getSource().clear();
@@ -184,7 +174,7 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                     }));
             });
             Promise.all(promiseList).then((groupedFeaturesList) => {
-                const mapLayer = Radio.request("Map", "getLayerByName", this.model.get("mapLayerName"));
+                const mapLayer = this.model.get("mapLayer");
                 let layerUnion, layerUnionFeatures;
 
                 mapLayer.getSource().clear();

@@ -1,6 +1,7 @@
 import Tool from "../../../../modules/core/modelList/tool/model";
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
+// import store from "../../../../src/app-store";
 
 const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -12,6 +13,7 @@ const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointM
         isochroneFeatures: [], // isochrone features
         dropDownModel: {},
         mapLayerName: "reachability-from-point",
+        mapLayer: null,
         markerId: "markerOverlay", // overlay id of the marker
         setBySearch: false, // if coordinate is set by searchbar
         featureType: "Erreichbarkeit ab einem Referenzpunkt" // used for targeting the features within the layer
@@ -35,8 +37,24 @@ const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointM
         const layerList = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
             layerNames = layerList.map(layer => layer.featureType.trim());
 
+        this.set("mapLayer", this.createMapLayer(this.get("mapLayerName")));
         this.setDropDownModel(layerNames);
     },
+
+    /**
+     * creates the map layer that contains the isochrones
+     * @param {string} name map layer name
+     * @returns {void}
+     */
+    createMapLayer: function (name) {
+        // returns the existing layer if already exists
+        const newLayer = Radio.request("Map", "createLayerIfNotExists", name);
+
+        newLayer.setVisible(true);
+
+        return newLayer;
+    },
+
     /**
      * sets the selection list for the time slider
      * @param {object[]} valueList - available values

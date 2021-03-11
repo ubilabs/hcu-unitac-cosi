@@ -22,7 +22,7 @@ const DashboardWidgetView = Backbone.View.extend(/** @lends DashboardWidgetView 
      * @constructs
      * @param {Backbone.View | $ | d3.selection | string} content the content to render
      * @param {string} parent the container to append to
-     * @param {*} opts options (optional)
+     * @param {*} [opts={}] options (optional)
      * @returns {void}
      */
     initialize (content, parent, opts = {}) {

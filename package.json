@@ -12,8 +12,5 @@
     "versionMinor": "npm version minor && git push --tags",
     "versionMajor": "npm version major && git push --tags"
   },
-  "dependencies": {
-    "vue-multiselect": "^2.1.6"
-  },
   "devDependencies": {}
 }

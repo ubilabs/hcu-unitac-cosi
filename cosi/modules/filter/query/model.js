@@ -182,7 +182,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
         this.get("attributeWhiteList").forEach(function (attr) {
             const attrObj = this.createAttrObject(attr);
 
-            featureAttribute = featureAttributesMap.find({name: attrObj.name});
+            featureAttribute = featureAttributesMap.find(el => el.name === attrObj.name);
             if (featureAttribute !== undefined) {
                 featureAttribute.matchingMode = attrObj.matchingMode;
                 trimmedFeatureAttributesMap.push(featureAttribute);
@@ -235,7 +235,7 @@ const QueryModel = Backbone.Model.extend(/** @lends QueryModel.prototype */{
 
         if (rules !== undefined) {
             rules.forEach(function (rule) {
-                attrMap = featureAttributesMap.find({name: rule.attrName});
+                attrMap = featureAttributesMap.find(el => el.name === rule.attrName);
 
                 if (attrMap) {
                     attrMap.preselectedValues = rule.values;

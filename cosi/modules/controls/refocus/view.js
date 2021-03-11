@@ -1,5 +1,6 @@
 import RefocusTemplate from "text-loader!./template.html";
 import "./style.less";
+import store from "../../../../../src/app-store";
 
 const RefocusView = Backbone.View.extend(/** @lends RefocusView.prototype */{
     events: {
@@ -38,8 +39,10 @@ const RefocusView = Backbone.View.extend(/** @lends RefocusView.prototype */{
      * @returns {void}
      */
     refocus: function () {
-        if (Radio.request("SelectDistrict", "getSelectedDistricts").length > 0) {
-            Radio.trigger("SelectDistrict", "setMapViewToBbox");
+        if (store.getters["Tools/DistrictSelector/extent"].length > 0) {
+            const extent = store.getters["Tools/DistrictSelector/extent"];
+
+            store.dispatch("Map/zoomTo", extent);
         }
     },
 

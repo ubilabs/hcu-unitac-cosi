@@ -5,7 +5,7 @@ import ColorCodeMapView from "./colorCodeMap/view";
 import DashboardView from "./dashboard/view";
 import DashboardTableView from "./dashboardTable/view";
 import ContextMenuView from "./contextMenu/view";
-import SelectDistrictView from "./selectDistrict/view";
+// import SelectDistrictView from "./selectDistrict/view";
 /**
  * The saveSelection addon module has been disabled in cosi.
  * The saveselection module in the master portal has been migrated to Vue,
@@ -73,7 +73,7 @@ function initializeCosi () {
         new ReachabilityInAreaView({model: tools.reachabilityInArea});
         // new ColorCodeMapView({model: tools.colorCodeMap});
         // new SaveSelectionCosiView({model: tools.saveSelectionCosi});
-        new SelectDistrictView({model: tools.selectDistrict});
+        // new SelectDistrictView({model: tools.selectDistrict});
         new PrintView({model: tools.print});
         new CompareDistrictsView({model: tools.compareDistricts});
         $(document).ready(function () {
@@ -102,10 +102,10 @@ function initializeCosi () {
         general.dashboardTable
     ]);
 
-    // if (!window.location.pathname.includes("infoscreen.html")) {
-    //     window.localStorage.setItem("infoScreenOpen", JSON.stringify(infoScreenOpen));
-    //     tools.selectDistrict.set("isActive", true);
-    // }
+    if (!window.location.pathname.includes("infoscreen.html")) {
+        window.localStorage.setItem("infoScreenOpen", JSON.stringify(infoScreenOpen));
+        // tools.selectDistrict.set("isActive", true);
+    }
 
     Radio.trigger("General", "loaded");
     addInfoButtons();

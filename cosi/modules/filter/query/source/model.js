@@ -19,7 +19,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
         this.superInitialize();
         this.prepareQuery();
         if (this.get("searchInMapExtent") === true) {
-            Radio.trigger("Map", "registerListener", "moveend", this.isSearchInMapExtentActive.bind(this), this);
+            // Radio.trigger("Map", "registerListener", "moveend", this.isSearchInMapExtentActive.bind(this), this);
         }
         if (modelList && modelList.get("autoRefresh")) {
             this.set("isAutoRefreshing", true);
@@ -337,7 +337,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
             let attribute = "";
 
             snippet.resetValues();
-            attribute = selectableOptions.find({name: snippet.get("name")});
+            attribute = selectableOptions.find(el => el.name === snippet.get("name"));
             snippet.updateSelectableValues(attribute.values);
         });
     },
@@ -348,7 +348,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
      * @return {Boolean}               true if feature has attribute that contains value
      */
     isValueMatch: function (feature, attribute) {
-        const featureMap = this.get("featureAttributesMap").find({name: attribute.attrName});
+        const featureMap = this.get("featureAttributesMap").find(el => el.name === attribute.attrName);
 
         attribute.matchingMode = featureMap.matchingMode;
         return attribute.matchingMode === "OR" ? this.isORMatch(feature, attribute) : this.isANDMatch(feature, attribute);

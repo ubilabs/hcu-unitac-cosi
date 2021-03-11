@@ -2,6 +2,7 @@ import MappingJson from "./mapping.json";
 import {WFS} from "ol/format.js";
 import "whatwg-fetch";
 import {getLayerList, getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import store from "../../../../src/app-store";
 
 const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype */{
     defaults: {
@@ -68,6 +69,13 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
         this.listenTo(Radio.channel("SelectDistrict"), {
             "selectionChanged": this.checkDistrictScope
         });
+
+        store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
+            if (extent.length > 0) {
+                this.checkDistrictScope(extent, store.getters["Tools/DistrictSelector/label"], store.getters["Tools/DistrictSelector/districtNameList"]);
+            }
+        });
+
     },
 
     /**
@@ -88,6 +96,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             const attrMap = this.getDistrictAttrMapping(scope);
 
             // this.set("featureList", []);
+            Radio.trigger("Util", "showLoader");
             this.loadDistricts(bbox, attrMap.url, attrMap.attribute, districtNameList, attrMap.referenceAttributes);
         }
     },
@@ -103,11 +112,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
      * @returns {void}
      */
     loadDistricts: function (bbox, serviceUrl, attribute, districtNameList, referenceAttributes = [], subDistrictNameList = undefined) {
-        Radio.trigger("Util", "showLoader");
-        Radio.trigger("Alert", "alert", {
-            text: "Datensätze werden geladen",
-            kategorie: "alert-info"
-        });
+        store.dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"});
         const layerList = getLayerList().filter(function (layer) {
                 return layer.url === serviceUrl;
             }),
@@ -179,8 +184,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
                     return this.loadDistricts(referenceAttributes[0] === "bezirke" ? undefined : bbox, url, referenceAttributes[0], referenceDistricts, referenceAttributes.splice(1), districtNameList);
                 }
                 Radio.trigger("Util", "hideLoader");
-                Radio.trigger("Alert", "alert:remove");
-
+                store.dispatch("Alerting/cleanup");
                 return Radio.trigger("FeaturesLoader", "districtsLoaded", layerList);
             }).catch(function (error) {
                 this.alertError();
@@ -341,7 +345,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
 
     /**
      * returns the string mapping of the given scope or all
-     * @param {string} attr attribute/scope (optional)
+     * @param {string} [attr] attribute/scope (optional)
      * @returns {object} the attrMap
      */
     getDistrictAttrMapping: function (attr) {

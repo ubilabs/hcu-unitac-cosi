@@ -3,6 +3,7 @@ import SnippetDropdownModel from "../../../../modules/snippets/dropdown/model";
 import AdjustParameterView from "./adjustParameter/view";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import * as Extent from "ol/extent";
+import store from "../../../../src/app-store";
 
 const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -41,7 +42,8 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         this.listenTo(this, {
             "change:isActive": function (model, isActive) {
                 if (isActive) {
-                    const scope = Radio.request("SelectDistrict", "getSelector");
+                    const scope = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
+
                     let demographicValueList = Radio.request("FeaturesLoader", "getAllValuesByScope", scope);
 
                     demographicValueList = demographicValueList.filter(function (layer) {
@@ -156,8 +158,10 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         this.set("modifier", this.get("adjustParameterView").model.getSelectedOption());
 
         const renameResults = {},
-            selectedDistricts = Radio.request("SelectDistrict", "getSelectedDistricts"),
-            selector = Radio.request("SelectDistrict", "getGeomSelector");
+            selectedDistricts = store.getters["Tools/DistrictSelector/selectedFeatures"],
+            // selectedDistricts = Radio.request("SelectDistrict", "getSelectedDistricts"),
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
+            // selector = Radio.request("SelectDistrict", "getGeomSelector");
         let facilities,
             demographics,
             ratio,
@@ -259,14 +263,14 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
      */
     getTargetDemographicsInDistrict: function (district) {
         let targetPopulation = 0;
-        const selector = Radio.request("SelectDistrict", "getSelector"),
-            geomSelector = Radio.request("SelectDistrict", "getGeomSelector");
+        const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
+            geomSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
 
         if (typeof this.getDenominators() !== "undefined") {
             if (this.getDenominators().length > 0) {
                 this.getDenominators().forEach((den) => {
 
-                    const scope = Radio.request("FeaturesLoader", "getDistrictAttrMapping", Radio.request("SelectDistrict", "getScope")),
+                    const scope = Radio.request("FeaturesLoader", "getDistrictAttrMapping", store.getters["Tools/DistrictSelector/label"]),
                         districtFeature = Radio.request("FeaturesLoader", "getDistrictsByScope", scope.attribute)
                             .filter(feature => {
                                 if (feature.get("kategorie") === den) {

@@ -23,6 +23,10 @@
     "path": "cosi/ColorCodeMap",
     "type": "tool"
   },
+  "DistrictSelector": {
+    "path":"cosi/DistrictSelector",
+    "type": "tool"
+  },
   "FileImportAddon": {
     "type": "tool"
   },
@@ -74,11 +78,7 @@
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   },
-  "SelectFeatures": {
-    "type": "tool",
-    "path": "cosi/SelectFeatures"
-  },
-  "ORS": {
+  "OpenRouteService": {
     "type": "tool"
   }
 }

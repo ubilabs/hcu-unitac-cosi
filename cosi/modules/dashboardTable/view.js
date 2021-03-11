@@ -4,6 +4,7 @@ import ContextActions from "text-loader!./contextActions.html";
 import "./style.less";
 import DropdownView from "../../../../modules/snippets/dropdown/view";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
+import store from "../../../../src/app-store";
 
 const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.prototype */ {
     events: {
@@ -146,10 +147,22 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         const districtName = event.target.innerHTML;
 
         if (Radio.request("InfoScreen", "getIsInfoScreen")) {
+            // Läuft aktuell ins Leere
             Radio.trigger("InfoScreen", "triggerRemote", "SelectDistrict", "zoomToDistrict", districtName);
         }
         else {
-            Radio.trigger("SelectDistrict", "zoomToDistrict", districtName);
+            const districtFeatures = store.getters["Tools/DistrictSelector/selectedFeatures"],
+                attributeSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
+            let extent;
+
+            districtFeatures.forEach((feature) => {
+                if (feature.getProperties()[attributeSelector] === districtName) {
+                    extent = feature.getGeometry().getExtent();
+                }
+            });
+            if (extent) {
+                store.dispatch("Map/zoomTo", extent, {padding: [20, 20, 20, 20]});
+            }
         }
     },
 
@@ -303,7 +316,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
     /**
      * sets the row selection, or adds a row to existing selection, depending on the event
      * @param {*} event the DOM event
-     * @param {string} _row (optional) the already parsed row name
+     * @param {string} [_row] (optional) the already parsed row name
      * @returns {void}
      */
     selectRow (event, _row) {

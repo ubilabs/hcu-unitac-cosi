@@ -1,10 +1,10 @@
 import FeaturesLoader from "./featuresLoader/model";
-import BboxSettor from "./bboxSettor/model";
+// import BboxSettor from "./bboxSettor/model";
 import ColorCodeMap from "./colorCodeMap/model";
 import Dashboard from "./dashboard/model";
 import DashboardTable from "./dashboardTable/model";
 import DashboardWidgetHandler from "./dashboardWidget/handler";
-import SelectDistrict from "./selectDistrict/model";
+// import SelectDistrict from "./selectDistrict/model";
 /**
  * The saveSelection addon module has been disabled in cosi.
  * The saveselection module in the master portal has been migrated to Vue,
@@ -22,7 +22,7 @@ import CompareDistricts from "./compareDistricts/model";
 import Filter from "./filter/model";
 
 new FeaturesLoader();
-new BboxSettor();
+// new BboxSettor();
 new OpenRouteService();
 
 const general = {
@@ -149,11 +149,11 @@ const general = {
                     ]
                 },
                 {
-                    layerId: "20161",
-                    isActive: false,
-                    isSelected: false,
-                    name: "Corona Testzentren",
-                    attributeWhiteList: [
+                    "layerId": "20161",
+                    "isActive": false,
+                    "isSelected": false,
+                    "name": "Corona Testzentren",
+                    "attributeWhiteList": [
                         "typ",
                         "bezirk",
                         "antigentestung",
@@ -164,29 +164,29 @@ const general = {
                 }
             ]
         }),
-        selectDistrict: new SelectDistrict({
-            id: "selectDistrict",
-            // type: "tool",
-            name: "Gebiet auswählen",
-            glyphicon: "glyphicon-picture",
-            districtLayer: [
-                {
-                    name: "Statistische Gebiete",
-                    selector: "statgebiet",
-                    id: "6071"
-                },
-                {
-                    name: "Stadtteile",
-                    selector: "stadtteil",
-                    id: "1694"
-                },
-                {
-                    name: "Bezirke",
-                    selector: "bezirk",
-                    id: "1692"
-                }
-            ]
-        }),
+        // selectDistrict: new SelectDistrict({
+        //     id: "selectDistrict",
+        //     // type: "tool",
+        //     name: "Gebiet auswählen",
+        //     glyphicon: "glyphicon-picture",
+        //     districtLayer: [
+        //         {
+        //             name: "Bezirke",
+        //             selector: "bezirk",
+        //             id: "1692"
+        //         },
+        //         {
+        //             name: "Stadtteile",
+        //             selector: "stadtteil",
+        //             id: "1694"
+        //         },
+        //         {
+        //             name: "Statistische Gebiete",
+        //             selector: "statgebiet",
+        //             id: "6071"
+        //         }
+        //     ]
+        // }),
         infoScreenHandler: new InfoScreenHandler({
             parentId: "utilities",
             type: "tool",

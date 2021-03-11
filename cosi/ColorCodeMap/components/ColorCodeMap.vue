@@ -2,7 +2,7 @@
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
-import {unifyString, getRGBArray} from "../../utils";
+import utils from "../../utils";
 import {Fill, Stroke, Style, Icon, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import MappingJson from "../../modules/featuresLoader/mapping.json";
@@ -31,7 +31,8 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/ColorCodeMap", Object.keys(getters))
+        ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"])
     },
     watch: {
         featuresSelected () {
@@ -55,23 +56,24 @@ export default {
         updateSelectedDistricts (districtDataLoaded) {
             this.districtDataLoaded = districtDataLoaded;
 
-            this.districtsSelected = Radio.request("SelectDistrict", "getSelectedDistricts");
-            this.selectedType = Radio.request("SelectDistrict", "getSelector");
-            const featuresScope = Radio.request("SelectDistrict", "getScope");
+            this.districtsSelected = this.selectedFeatures;
+            this.selectedType = this.keyOfAttrName;
+            const featuresScope = this.label;
+
+            console.log("selectedFeatures:" + this.districtsSelected);
+            console.log("keyOfAttrName:" + this.keyOfAttrName);
 
             this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", featuresScope);
             this.options = Radio.request("FeaturesLoader", "getFeatureList");
 
-            console.log("SELECTED DISTRICTS-FEATURES BLA", this.districtDataLoaded);
-
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
-                Object.keys(this.featuresStatistics[0].values_).forEach(key => {
+                Object.keys(this.featuresStatistics[0].getProperties()).forEach(key => {
                     if (key.includes(this.yearSelector)) {
                         this.availableYears.push(key.substr(key.indexOf("_") + 1));
                     }
                 });
-                this.selectedFeature = this.featuresStatistics[0].values_.kategorie;
+                this.selectedFeature = this.featuresStatistics[0].getProperties().kategorie;
                 this.selectedYear = this.availableYears[0];
 
                 this.districtDataLoaded.forEach(feature => {
@@ -98,17 +100,17 @@ export default {
         },
 
         generateVisualization () {
-            const results = this.featuresStatistics.filter(x => x.values_.kategorie === this.selectedFeature),
-                resultValues = results.map(x => x.values_[this.yearSelector + this.selectedYear]),
+            const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
+                resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                 colorScale = this.getColorsByValues(resultValues);
 
-            this.generateDynamicLegend(results, resultValues, colorScale);
+            this.generateDynamicLegend(results, colorScale);
             this.districtsSelected.forEach(district => {
                 const getStyling = district.getStyle(),
-                    matchResults = results.filter(x => unifyString(x.values_[this.selectedType]) === unifyString(district.values_[this.selectedType + "_name"]));
+                    matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
                 if (matchResults) {
-                    getStyling.fill = new Fill({color: getRGBArray(colorScale.scale(matchResults[0].values_[this.yearSelector + this.selectedYear]), 0.75)});
+                    getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
                     getStyling.zIndex = 1;
                     getStyling.text = new Text({
                         font: "16px Calibri,sans-serif",
@@ -119,7 +121,7 @@ export default {
                             color: [0, 0, 0],
                             width: 3
                         }),
-                        text: matchResults[0].values_[this.yearSelector + this.selectedYear] ? parseFloat(matchResults[0].values_[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                        text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
                     });
                     if (this.lastYear !== null) {
                         const additionalText = new Style({
@@ -133,7 +135,7 @@ export default {
                                         color: [240, 240, 240],
                                         width: 2
                                     }),
-                                    text: matchResults[0].values_[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults[0].values_[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults[0].values_[this.yearSelector + this.lastYear] / matchResults[0].values_[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
+                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
                                     offsetY: 25
                                 })
                             }),
@@ -141,8 +143,8 @@ export default {
                             addIcon = new Style({
                                 zIndex: 3,
                                 image: new Icon(/** @type {olx.style.IconOptions} */ {
-                                    color: matchResults[0].values_[this.yearSelector + this.lastYear] > matchResults[0].values_[this.yearSelector + this.selectedYear] ? [255, 79, 66] : [173, 255, 133],
-                                    src: matchResults[0].values_[this.yearSelector + this.lastYear] > matchResults[0].values_[this.yearSelector + this.selectedYear] ? "../../utils/assets/arrow_dwn.png" : "../../utils/assets/arrow_up.png"
+                                    color: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? [255, 79, 66] : [173, 255, 133],
+                                    src: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? "../../utils/assets/arrow_dwn.png" : "../../utils/assets/arrow_up.png"
                                 })
                             });
 
@@ -158,7 +160,7 @@ export default {
 
             this.lastYear = this.selectedYear;
         },
-        generateDynamicLegend (results, resultValues, colorScale) {
+        generateDynamicLegend (results, colorScale) {
             if (results.length > 2) {
                 const legendDiv = document.getElementById("colorCodeMapLegend"),
                     legendMarks = document.querySelector("#legend_wrapper").children,
@@ -176,13 +178,13 @@ export default {
                 legendDiv.setAttribute("style", "background:linear-gradient(90deg," + this.legendValues[0] + "," + this.legendValues[1] + "," + this.legendValues[2] + ")");
 
                 legendMarksArray.forEach((mark, index) => {
-                    const value = results[index].values_[this.yearSelector + this.selectedYear],
+                    const value = results[index].getProperties()[this.yearSelector + this.selectedYear],
                         relativeValue = ((value - colorScale.legend.values[0]) * 100) / (colorScale.legend.values[colorScale.legend.values.length - 1] - colorScale.legend.values[0]),
                         pDistrict = mark.querySelector(".district"),
                         pValue = mark.querySelector(".value");
 
-                    this.hiVal = colorScale.legend.values[0];
-                    this.loVal = colorScale.legend.values[colorScale.legend.values.length - 1];
+                    this.hiVal = colorScale.legend.values[0].toLocaleString("de-DE");
+                    this.loVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString("de-DE");
 
                     if (relativeValue > 50) {
                         mark.setAttribute("style", "left: " + relativeValue + "%; border:1.5px solid whitesmoke;");
@@ -191,7 +193,7 @@ export default {
                         mark.setAttribute("style", "left: " + relativeValue + "%; border:1.5px solid #222;");
                     }
 
-                    pDistrict.innerHTML = results[index].values_[this.selectedType] + ": ";
+                    pDistrict.innerHTML = results[index].getProperties()[this.keyOfAttrNameStats] + ": ";
                     pValue.innerHTML = value;
 
                 });
@@ -287,7 +289,7 @@ export default {
 
 <style lang="less">
 @import "../../utils/variables.less";
-@import (less) "../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
+@import (less) "../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
 
     .addon_container {
         position:fixed;

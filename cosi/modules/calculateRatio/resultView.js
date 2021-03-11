@@ -1,7 +1,7 @@
 import ResultTemplate from "text-loader!./resultTemplate.html";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
-
+import store from "../../../../src/app-store";
 
 const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
 
@@ -45,9 +45,10 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
      * @returns {void}
      */
     createTextLabels: function (results) {
-        const features = Radio.request("SelectDistrict", "getSelectedDistricts"),
+        const features = store.getters["Tools/DistrictSelector/selectedFeatures"],
+            // const features = Radio.request("SelectDistrict", "getSelectedDistricts"),
             values = [],
-            selector = Radio.request("SelectDistrict", "getGeomSelector");
+            selector = store.getters["Tools/DistrictSelector/keyOfAttrName"];
         let colorScale = {};
 
         Radio.trigger("ColorCodeMap", "reset");

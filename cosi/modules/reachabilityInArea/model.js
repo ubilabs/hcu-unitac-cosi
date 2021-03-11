@@ -13,6 +13,7 @@ const ReachabilityInAreaModel = Tool.extend(/** @lends ReachabilityInAreaModel.p
         isochroneFeatures: [], // isochrone features
         dropDownModel: {},
         mapLayerName: "reachability-in-area",
+        mapLayer: null,
         featureType: "Erreichbarkeit im Gebiet" // used for targeting the features within the layer
     }),
     /**
@@ -33,6 +34,7 @@ const ReachabilityInAreaModel = Tool.extend(/** @lends ReachabilityInAreaModel.p
     */
     initialize: function () {
         this.superInitialize();
+        this.createMapLayer(this.get("mapLayerName"));
     },
     /**
      * sets selected facility layer
@@ -57,6 +59,19 @@ const ReachabilityInAreaModel = Tool.extend(/** @lends ReachabilityInAreaModel.p
         }, this);
         this.set("dropDownModel", dropdownModel);
     },
+
+    /**
+     * creates the map layer that contains the isochrones
+     * @param {string} name - the layerName
+     * @returns {void}
+     */
+    createMapLayer: function (name) {
+        const newLayer = Radio.request("Map", "createLayerIfNotExists", name);
+
+        newLayer.setVisible(true);
+        this.set("mapLayer", newLayer);
+    },
+
     /**
      * update selected facility coordinates values
      * @param {Backbone.Model} valueModel - the value model which was selected or deselected
