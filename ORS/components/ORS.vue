@@ -102,6 +102,7 @@ export default {
             return newLayer;
         },
         /**
+         * @description Unionizes overlapping geojson polygons of the same distance hierarchy
          * @param {Object} geoJson the input geoJson as FeatureCollection
          * @returns {Object} the FeatureCollection with joined polygons per step
          */
