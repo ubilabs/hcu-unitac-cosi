@@ -60,12 +60,11 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         }
 
         if (graphConfig.hasContextMenu) {
-            const that = this;
+            const that = this,
+                contextActions = this.addContextMenuEventListeners(svg.select("svg").node(), graphConfig);
 
             svg.on("pointerup", function () {
-                const contextActions = that.addContextMenuEventListeners.call(that, svg.select("svg").node(), graphConfig);
-
-                that.appendContextMenu.call(that, contextActions, graphConfig.title);
+                that.appendContextMenu(contextActions, graphConfig.title);
             }, this);
         }
 
@@ -617,34 +616,35 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     addContextMenuEventListeners (svg, graphConfig) {
-        const contextActions = $(_.template(ContextActions)()),
+        const that = this,
+            contextActions = $(_.template(ContextActions)()),
             width = graphConfig.width,
             height = graphConfig.height,
             title = graphConfig.graphTitle;
 
         // Download SVG
         $(contextActions).find("li#downloadSvg").get(0).addEventListener("click", function () {
-            const blob = this.svgToBlob(svg),
+            const blob = that.svgToBlob(svg),
                 url = URL.createObjectURL(blob);
 
             if (navigator.msSaveBlob) { // IE 10+
                 navigator.msSaveBlob(blob, `CoSI_Diagramm_${title}.svg`);
             }
             else {
-                this.download(url, `CoSI_Diagramm_${title}.svg`);
+                that.download(url, `CoSI_Diagramm_${title}.svg`);
             }
         }, this);
 
         // Download PNG
         $(contextActions).find("li#downloadPng").get(0).addEventListener("click", async function () {
-            const convertToPng = this.svgToPng(this.svgToBlob(svg), width * 2, height * 2),
+            const convertToPng = that.svgToPng(that.svgToBlob(svg), width * 2, height * 2),
                 png = await convertToPng;
 
             if (navigator.msSaveBlob) { // IE 10+
                 navigator.msSaveBlob(png.blob, `CoSI_Diagramm_${title}.png`);
             }
             else {
-                this.download(png.url, `CoSI_Diagramm_${title}.png`);
+                that.download(png.url, `CoSI_Diagramm_${title}.png`);
             }
         }, this);
 
