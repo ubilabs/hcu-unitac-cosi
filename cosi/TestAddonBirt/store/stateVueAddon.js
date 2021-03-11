@@ -25,11 +25,13 @@ const state = {
     id: "TestAddonBirt",
     // defaults for config.json parameters
     name: "Better Vue Addon",
-    glyphicon: "glyphicon-pencil",
-    renderToWindow: true,
-    resizableWindow: true,
-    isVisibleInMenu: true,
-    deactivateGFI: true
+    glyphicon: "glyphicon-map",
+    renderToWindow: false,
+    resizableWindow: false,
+    isVisibleInMenu: false,
+    deactivateGFI: false,
+    yearSelector: "jahr_",
+    colorScheme: "interpolateBlues"
 };
 
 export default state;

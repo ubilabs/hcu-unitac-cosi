@@ -71,7 +71,7 @@ function initializeCosi () {
         new ReachabilitySelectView({model: tools.reachabilitySelect});
         new ReachabilityFromPointView({model: tools.reachabilityFromPoint});
         new ReachabilityInAreaView({model: tools.reachabilityInArea});
-        new ColorCodeMapView({model: tools.colorCodeMap});
+        // new ColorCodeMapView({model: tools.colorCodeMap});
         // new SaveSelectionCosiView({model: tools.saveSelectionCosi});
         new SelectDistrictView({model: tools.selectDistrict});
         new PrintView({model: tools.print});
