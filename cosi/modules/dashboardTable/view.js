@@ -209,6 +209,8 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         this.$el.find("tr").each(function (index, row) {
             $(row.children[cellIndex]).toggleClass("minimized");
         });
+
+        this.model.prepareExportLink();
     },
 
     /**

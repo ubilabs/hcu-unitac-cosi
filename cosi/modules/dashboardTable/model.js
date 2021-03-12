@@ -206,45 +206,58 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     flattenTable (data) {
         if (Array.prototype.flat) {
-            const flatData = data.map(group => {
-                const flatGroup = Object.values(Object.assign({}, group.values)),
-                    propertyNames = Object.keys(group.values);
+            const _data = JSON.parse(JSON.stringify(data)),
+                inactiveColumns = this.get("inactiveColumns"),
 
-                return flatGroup.map((prop, i) => {
-                    if (!Array.isArray(Object.values(prop)[0])) {
-                        return {...{
-                            Jahr: "-",
-                            Datensatz: propertyNames[i],
-                            Kategorie: group.group
-                        }, ...prop};
-                    }
-                    const flatProp = Object.assign({}, prop),
-                        years = flatProp.Durchschnitt.map(val => val[0]);
+                // map every category group
+                flatData = _data.map(group => {
+                    const flatGroup = Object.values(Object.assign({}, group.values)),
+                        propertyNames = Object.keys(group.values),
+                        colNames = Object.keys(flatGroup[0]);
 
-                    return years.map((year, j) => {
-                        const flatYear = Object.assign({}, flatProp);
-
-                        for (const district in flatYear) {
-                            if (flatYear[district]) {
-                                flatYear[district] = flatYear[district][j][1];
-                            }
-                            else {
-                                flatYear[district] = "-";
-                            }
+                    // map all properties in the group
+                    return flatGroup.map((prop, i) => {
+                        // remove inactive columns
+                        for (const j of inactiveColumns) {
+                            delete prop[colNames[j]];
                         }
 
-                        return {...{
-                            Jahr: year,
-                            Datensatz: propertyNames[i],
-                            Kategorie: group.group
-                        }, ...flatYear};
+                        // return single row if no timelines are present as array
+                        if (!Array.isArray(Object.values(prop)[0])) {
+                            return {...{
+                                Jahr: "-",
+                                Datensatz: propertyNames[i],
+                                Kategorie: group.group
+                            }, ...prop};
+                        }
+                        const flatProp = Object.assign({}, prop),
+                            // take the years from the first column
+                            years = Object.values(flatProp)[0].map(val => val[0]);
+
+                        // spread out all years to their own table rows
+                        return years.map((year, j) => {
+                            const flatYear = Object.assign({}, flatProp);
+
+                            for (const district in flatYear) {
+                                if (flatYear[district]) {
+                                    flatYear[district] = flatYear[district][j][1];
+                                }
+                                else {
+                                    flatYear[district] = "-";
+                                }
+                            }
+
+                            return {...{
+                                Jahr: year,
+                                Datensatz: propertyNames[i],
+                                Kategorie: group.group
+                            }, ...flatYear};
+                        });
                     });
-                });
-            }).flat(Infinity);
+                }).flat(Infinity);
 
             return flatData;
         }
-
         return data;
     },
 
