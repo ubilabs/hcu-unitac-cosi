@@ -1,0 +1,10 @@
+{
+    "modules": {
+        "tools": {
+            "CommuterFlows": {
+                "title": "Commuter flows"
+            }
+        }
+    }
+}
+
