@@ -34,11 +34,6 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"])
     },
-    watch: {
-        featuresSelected () {
-            console.log("features are selected", this.featuresSelected);
-        }
-    },
     created () {
         // this.$on("close", this.close);
     },
@@ -59,9 +54,6 @@ export default {
             this.districtsSelected = this.selectedFeatures;
             this.selectedType = this.keyOfAttrName;
             const featuresScope = this.label;
-
-            console.log("selectedFeatures:" + this.districtsSelected);
-            console.log("keyOfAttrName:" + this.keyOfAttrName);
 
             this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", featuresScope);
             this.options = Radio.request("FeaturesLoader", "getFeatureList");
@@ -88,15 +80,13 @@ export default {
 
                         if (findGrp) {
                             findGrp.data.push(feature.category);
-                            return true;
                         }
-
-                        this.options.push(createObj);
+                        else {
+                            this.options.push(createObj);
+                        }
                     }
                 });
             }
-
-            console.log(this.options);
         },
 
         generateVisualization () {
@@ -147,8 +137,6 @@ export default {
                                     src: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? "../../utils/assets/arrow_dwn.png" : "../../utils/assets/arrow_up.png"
                                 })
                             });
-
-                        console.log(addIcon);
 
                         district.setStyle([new Style(getStyling), additionalText, addIcon]);
                     }
@@ -228,16 +216,16 @@ export default {
 
             <div class="select_wrapper">
                 <button
-                    class="switch"
+                    class="switch btn btn-default btn-sm"
                     @click="generateVisualization"
                 >
                     <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
                 <div class="btn_group">
-                    <button class="button prev">
+                    <button class="prev btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
-                    <button class="button next">
+                    <button class="next btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
                 </div>
@@ -344,12 +332,12 @@ export default {
                     flex-basis:80px;
                     margin-left:3px;
 
-                    .button {
+                    /*.button {
                         flex-basis:40px;
                         height:30px;
                         border-radius:0px;
                         background-color:#eee;
-                    }
+                    }*/
                 }
 
                 .switch {
