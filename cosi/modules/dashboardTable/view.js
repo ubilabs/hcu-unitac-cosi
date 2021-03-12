@@ -342,7 +342,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         this.contextActionsEl
             .find("li#ratio")
             .get(0)
-            .addEventListener("pointerup", this.createRatio);
+            .addEventListener("pointerup", this.createRatio.bind(this));
     },
 
     /**
