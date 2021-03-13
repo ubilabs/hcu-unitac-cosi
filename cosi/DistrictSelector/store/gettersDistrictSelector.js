@@ -73,7 +73,7 @@ const getters = {
      * @returns {module:ol/Feature[]} The selected features in an array.
      */
     selectedFeatures: (state, {selectedDistrictsCollection}) => {
-        if (selectedDistrictsCollection.getLength() === 0) {
+        if (!selectedDistrictsCollection || selectedDistrictsCollection.getLength() === 0) {
             return [];
         }
         return selectedDistrictsCollection.getArray();
