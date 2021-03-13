@@ -5,6 +5,7 @@ import "./style.less";
 import DropdownView from "../../../../modules/snippets/dropdown/view";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import store from "../../../../src/app-store";
+import exportXlsx from "../../utils/exportXlsx";
 
 const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.prototype */ {
     events: {
@@ -15,7 +16,9 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         "click thead button.open": "toggleGroup",
         "click .btn-reset": "resetDropDown",
         "click .toggle-col": "toggleCol",
-        "click .move span": "moveCol"
+        "click .move span": "moveCol",
+        "click #export-button button": "exportTable",
+        "click #export-button-filtered button": "exportTableFiltered"
     },
 
     /**
@@ -104,8 +107,27 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
      * @returns {void}
      */
     renderExport () {
-        this.$el.find("#export-button").html(this.exportButtonView.render().el);
-        this.$el.find("#export-button-filtered").html(this.exportFilteredButtonView.render().el);
+        // this.$el.find("#export-button").html(this.exportButtonView.render().el);
+        // this.$el.find("#export-button-filtered").html(this.exportFilteredButtonView.render().el);
+    },
+
+    exportTable () {
+        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt");
+
+        exportXlsx(this.model.get("exportData"), filename);
+    },
+
+    exportTableFiltered () {
+        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt (gefiltert)");
+
+        exportXlsx(this.model.get("exportDataFiltered"), filename);
+    },
+
+    getExportFilename (filename) {
+        const date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"});
+
+        // return filename;
+        return `${filename}-${date}`;
     },
 
     /**
