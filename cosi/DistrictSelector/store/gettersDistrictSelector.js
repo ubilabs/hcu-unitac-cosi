@@ -69,7 +69,7 @@ const getters = {
      * Returns the selected districts in an array and not as a collection.
      * @param {Object} state - The DistrictSelector state.
      * @param {Object} getters - The DistrictSelector getters.
-     * @param {module:ol/Collection} getters.selectedDistrictsCollection - The collection with the selected features.
+     * @param {?module:ol/Collection} getters.selectedDistrictsCollection - The collection with the selected features or null if not exists.
      * @returns {module:ol/Feature[]} The selected features in an array.
      */
     selectedFeatures: (state, {selectedDistrictsCollection}) => {
