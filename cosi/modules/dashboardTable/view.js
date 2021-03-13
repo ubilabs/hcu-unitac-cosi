@@ -111,23 +111,67 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         // this.$el.find("#export-button-filtered").html(this.exportFilteredButtonView.render().el);
     },
 
+    /**
+     * @description exports the unfiltered table as XLSX
+     * @returns {void}
+     */
     exportTable () {
-        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt");
+        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt"),
+            data = this.model.get("exportData"),
+            options = this.getExportTableOptions(data);
 
-        exportXlsx(this.model.get("exportData"), filename);
+        exportXlsx(data, filename, options);
     },
 
+    /**
+     * @description exports the filtered table as XLSX
+     * @returns {void}
+     */
     exportTableFiltered () {
-        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt (gefiltert)");
+        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt (gefiltert)"),
+            data = this.model.get("exportDataFiltered"),
+            options = this.getExportTableOptions(data);
 
-        exportXlsx(this.model.get("exportDataFiltered"), filename);
+        exportXlsx(data, filename, options);
     },
 
+    /**
+     * @description appends the current date to the filename
+     * @param {String} filename - the default filename
+     * @returns {String} the filename with appended date
+     */
     getExportFilename (filename) {
         const date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"});
 
-        // return filename;
         return `${filename}-${date}`;
+    },
+
+    /**
+     * @description sets the width for the table columns
+     * @param {Object[]} json - the data to be exported as array of objects
+     * @returns {Object} the table options (width for columns)
+     */
+    getExportTableOptions (json) {
+        if (json.length > 0) {
+            const headers = Object.keys(json[0]);
+
+            return {
+                colOptions: headers.map(header => {
+                    if (header === "Jahr") {
+                        return {width: 8};
+                    }
+                    if (header === "Datensatz") {
+                        return {width: 42};
+                    }
+                    if (header === "Kategorie") {
+                        return {width: 25.5};
+                    }
+                    return {width: 20};
+                })
+            };
+        }
+
+        return undefined;
     },
 
     /**

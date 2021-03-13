@@ -243,7 +243,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
 
                             for (const district in flatYear) {
                                 if (flatYear[district]) {
-                                    flatYear[district] = flatYear[district][j][1];
+                                    flatYear[district] = parseFloat(flatYear[district][j][1]);
                                 }
                                 else {
                                     flatYear[district] = "-";
@@ -251,7 +251,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                             }
 
                             return {...{
-                                Jahr: year,
+                                Jahr: parseInt(year, 10),
                                 Datensatz: propertyNames[i],
                                 Kategorie: group.group
                             }, ...flatYear};

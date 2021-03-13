@@ -1,8 +1,17 @@
 /* eslint-disable one-var */
-// import * as Excel from "exceljs";
-// import {saveAs} from "file-saver"
 import * as XLSX from "xlsx";
-// import downloadBlobToFile from "./downloadBlobToFile";
+
+/**
+ * @description returns the width definition for the table columns by reading out the headers char-length
+ * @param {String[]} headers - the headers of the table columns
+ * @param {Number} [multiply=2] - multiply the col header length by
+ * @returns {Object[]} the column Options array for all columns of the table
+ */
+function generateColOptions (headers, multiply = 2) {
+    return headers.map(header => ({
+        wch: header.length * multiply
+    }));
+}
 
 /**
  * @description Converts a json array of objects to an styled and exportable XLSX format.
@@ -12,37 +21,16 @@ import * as XLSX from "xlsx";
  */
 export function parseJsonToXlsx (json, options) {
     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
-        tablename = options.tablename || options.sheetname || "Neue Tabelle",
-        creator = options.creator,
-        theme = options.theme,
 
-        sheet = XLSX.utils.json_to_sheet(json),
-        workbook = XLSX.utils.book_new();
+        header = Object.keys(json[0]),
+        colOptions = options.colOptions || generateColOptions(header),
+        rowOptions = options.rowOptions,
+        workbook = XLSX.utils.book_new(),
+        sheet = XLSX.utils.json_to_sheet(json, {header});
 
+    sheet["!cols"] = colOptions;
+    sheet["!rows"] = rowOptions;
     XLSX.utils.book_append_sheet(workbook, sheet, sheetname);
-
-
-    //     workbook = new Excel.Workbook(),
-    //     // sheet = workbook.addWorksheet(sheetname),
-    //     columns = Object.keys(json[0]).map(key => ({name: key, filterButton: true})),
-    //     rows = json.map(row => Object.values(row)),
-    //     table = {
-    //         name: tablename,
-    //         ref: "A1",
-    //         headerRow: true,
-    //         style: {
-    //             theme: theme || "TableStyleDark3",
-    //             showRowStripes: true
-    //         },
-    //         columns,
-    //         rows
-    //     };
-
-    // // sheet.addTable(table);
-    // workbook.creator = creator || "CoSI";
-    // workbook.created = new Date();
-    // workbook.modified = new Date();
-    // workbook.lastPrinted = new Date();
 
     return workbook;
 }
@@ -51,7 +39,7 @@ export function parseJsonToXlsx (json, options) {
  * @description Exports a given JSON Array of Objects to an XLSX-File with each object's keys as column-headers and resp. values as rows.
  * @param {Object[]} json - the array of objects to export
  * @param {String} filename - the filename of the exported XLSX
- * @param {Object} [options={}] - (optional) exlcude: keys to exclude from columns, sheetname: name of the worksheet, tablename: name of the table, creator: editor of the document, theme: the styletheme of the table
+ * @param {Object} [options={}] - (optional) exlcude: keys to exclude from columns, sheetname: name of the worksheet, rowOptions: height etc., colOptions: width etc.
  * @returns {void}
  */
 export default async function exportXlsx (json, filename, options = {}) {
@@ -74,32 +62,11 @@ export default async function exportXlsx (json, filename, options = {}) {
 
     const workbook = parseJsonToXlsx(exportJson, {
         sheetname: options.sheetname || filename,
-        tablename: options.tablename,
-        creator: options.creator,
-        theme: options.theme
+        rowOptions: options.rowOptions,
+        colOptions: options.colOptions
     });
 
     XLSX.writeFile(workbook, filename + ".xlsx");
-
-    // const workbook = parseJsonToXlsx(exportJson, {
-    //         sheetname: options.sheetname || filename,
-    //         tablename: options.tablename,
-    //         creator: options.creator,
-    //         theme: options.theme
-    //     }),
-
-    // const sheet = XLSX.utils.json_to_sheet(exportJson);
-    // const workbook = XLSX.utils.book_new();
-
-    // XLSX.utils.book_append_sheet(workbook, sheet, filename);
-    // XLSX.writeFile(workbook, filename + ".xlsx");
-    // buffer = workbook.xlsx.writeBuffer(),
-    // fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    // fileExtension = ".xlsx",
-    // blob = new Blob([buffer], {type: fileType});
-
-    // saveAs(blob, filename + fileExtension);
     return true;
-    // return downloadBlobToFile(blob, filename + fileExtension);
 }
 
