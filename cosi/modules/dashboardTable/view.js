@@ -5,6 +5,7 @@ import "./style.less";
 import DropdownView from "../../../../modules/snippets/dropdown/view";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import store from "../../../../src/app-store";
+import exportXlsx from "../../utils/exportXlsx";
 
 const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.prototype */ {
     events: {
@@ -15,7 +16,9 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         "click thead button.open": "toggleGroup",
         "click .btn-reset": "resetDropDown",
         "click .toggle-col": "toggleCol",
-        "click .move span": "moveCol"
+        "click .move span": "moveCol",
+        "click #export-button button": "exportTable",
+        "click #export-button-filtered button": "exportTableFiltered"
     },
 
     /**
@@ -33,6 +36,7 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         this.filterDropdownView = new DropdownView({model: this.model.get("filterDropdownModel")});
         this.contextActionsEl = $(this.contextActions());
         this.updateRatioSelection();
+        this.addContextMenuEventListeners();
 
         this.listenTo(this.model, {
             "isReady": this.render,
@@ -104,8 +108,71 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
      * @returns {void}
      */
     renderExport () {
-        this.$el.find("#export-button").html(this.exportButtonView.render().el);
-        this.$el.find("#export-button-filtered").html(this.exportFilteredButtonView.render().el);
+        // this.$el.find("#export-button").html(this.exportButtonView.render().el);
+        // this.$el.find("#export-button-filtered").html(this.exportFilteredButtonView.render().el);
+    },
+
+    /**
+     * @description exports the unfiltered table as XLSX
+     * @returns {void}
+     */
+    exportTable () {
+        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt"),
+            data = this.model.get("exportData"),
+            options = this.getExportTableOptions(data);
+
+        exportXlsx(data, filename, options);
+    },
+
+    /**
+     * @description exports the filtered table as XLSX
+     * @returns {void}
+     */
+    exportTableFiltered () {
+        const filename = this.getExportFilename("CoSI-Dashboard-Datenblatt (gefiltert)"),
+            data = this.model.get("exportDataFiltered"),
+            options = this.getExportTableOptions(data);
+
+        exportXlsx(data, filename, options);
+    },
+
+    /**
+     * @description appends the current date to the filename
+     * @param {String} filename - the default filename
+     * @returns {String} the filename with appended date
+     */
+    getExportFilename (filename) {
+        const date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"});
+
+        return `${filename}-${date}`;
+    },
+
+    /**
+     * @description sets the width for the table columns
+     * @param {Object[]} json - the data to be exported as array of objects
+     * @returns {Object} the table options (width for columns)
+     */
+    getExportTableOptions (json) {
+        if (json.length > 0) {
+            const headers = Object.keys(json[0]);
+
+            return {
+                colOptions: headers.map(header => {
+                    if (header === "Jahr") {
+                        return {width: 8};
+                    }
+                    if (header === "Datensatz") {
+                        return {width: 42};
+                    }
+                    if (header === "Kategorie") {
+                        return {width: 25.5};
+                    }
+                    return {width: 20};
+                })
+            };
+        }
+
+        return undefined;
     },
 
     /**
@@ -209,6 +276,8 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         this.$el.find("tr").each(function (index, row) {
             $(row.children[cellIndex]).toggleClass("minimized");
         });
+
+        this.model.prepareExportLink();
     },
 
     /**
@@ -233,6 +302,117 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         this.$el.find(".filter-dropdown ul.dropdown-menu > li").removeClass("selected");
     },
 
+    createBarChart () {
+        this.model.createBarChart(this.contextActionsEl.find("li#barChart #input-year input").val());
+    },
+
+    createLineChartUnscaled () {
+        this.model.createLineChart([this.row.find("th.prop").attr("id")], this.row.find("th.prop").text(), false);
+    },
+
+    createLineChartScaled () {
+        this.model.createLineChart([this.row.find("th.prop").attr("id")], this.row.find("th.prop").text(), true);
+    },
+
+    createScatterPlotUnscaled () {
+        this.model.createCorrelation(false);
+        this.model.deleteAttrsForRatio();
+    },
+
+    createScatterPlotScaled () {
+        this.model.createCorrelation(true);
+        this.model.deleteAttrsForRatio();
+    },
+
+    createTimeLine () {
+        Radio.trigger("Dashboard", "destroyWidgetById", "time-slider");
+        Radio.trigger("TimeSlider", "create", this.row.find("th.prop").text());
+    },
+
+    deleteSelection () {
+        this.model.deleteAttrsForRatio();
+    },
+
+    setNumerator () {
+        this.model.addAttrForRatio(this.row.find("th.prop").attr("id"), 0);
+    },
+
+    setDenominatpr () {
+        this.model.addAttrForRatio(this.row.find("th.prop").attr("id"), 1);
+    },
+
+    createRatio () {
+        this.model.createRatio();
+        this.model.deleteAttrsForRatio();
+    },
+
+    /**
+     * @description Adds all the event listeners to the context menu
+     * @returns {void}
+     */
+    addContextMenuEventListeners () {
+        // Create Bar Chart
+        this.contextActionsEl
+            .find("li#barChart #input-year button")
+            .get(0)
+            .addEventListener("pointerup", this.createBarChart.bind(this));
+
+        // Create unscaled Line Chart
+        this.contextActionsEl
+            .find("li#lineChart #unscaled")
+            .get(0)
+            .addEventListener("pointerup", this.createLineChartUnscaled.bind(this));
+
+        // Create scaled Line Chart
+        this.contextActionsEl
+            .find("li#lineChart #scaled")
+            .get(0)
+            .addEventListener("pointerup", this.createLineChartScaled.bind(this));
+
+        // Create Timeline
+        this.contextActionsEl
+            .find("li#timeline")
+            .get(0)
+            .addEventListener("pointerup", this.createTimeLine.bind(this));
+
+        // Delete Selection
+        this.contextActionsEl
+            .find("li#delete-selection")
+            .get(0)
+            .addEventListener("pointerup", this.deleteSelection.bind(this));
+
+        // Create new ratio data
+        // Add numerator
+        this.contextActionsEl
+            .find("li#numerator")
+            .get(0)
+            .addEventListener("pointerup", this.setNumerator.bind(this));
+
+        // Add denominator
+        this.contextActionsEl
+            .find("li#denominator")
+            .get(0)
+            .addEventListener("pointerup", this.setDenominatpr.bind(this));
+
+        // Create unscaled Correlation scatterPlot
+        this.contextActionsEl
+            .find("li#correlation #unscaled")
+            .get(0)
+            .addEventListener("pointerup", this.createScatterPlotUnscaled.bind(this));
+
+        // Create scaled Correlation scatterPlot
+        this.contextActionsEl
+            .find("li#correlation #scaled")
+            .get(0)
+            .addEventListener("pointerup", this.createScatterPlotScaled.bind(this));
+
+        // Create new Data Row
+        this.contextActionsEl
+            .find("li#ratio")
+            .get(0)
+            .addEventListener("pointerup", this.createRatio.bind(this));
+    },
+
     /**
      * sets the contextMenu HTML and handles actions
      * @param {*} event the mouseup event on the table
@@ -244,73 +424,17 @@ const DashboardTableView = Backbone.View.extend(/** @lends DashboardTableView.pr
         if (event.target.className === "select-row") {
             return;
         }
-        const row = this.$(event.target).closest("tr"),
-            contextActions = this.contextActionsEl;
+        this.row = this.$(event.target).closest("tr");
 
         // only change selection on right click, if not more than one item is selected
         if (!(event.button === 2 && this.model.get("selectedAttrsForCharts").length > 1)) {
-            this.selectRow(event, row);
+            this.selectRow(event, this.row);
         }
 
-        // Create Bar Chart
-        $(contextActions).find("li#barChart #input-year button").on("click", function () {
-            this.model.createBarChart($(contextActions).find("li#barChart #input-year input").val());
-        }, this);
-
-        // Create unscaled Line Chart
-        $(contextActions).find("li#lineChart #unscaled").on("click", function () {
-            this.model.createLineChart([row.find("th.prop").attr("id")], row.find("th.prop").text());
-        }, this);
-
-        // Create scaled Line Chart
-        $(contextActions).find("li#lineChart #scaled").on("click", function () {
-            this.model.createLineChart([row.find("th.prop").attr("id")], row.find("th.prop").text(), true);
-        }, this);
-
-        // Create Timeline
-        $(contextActions).find("li#timeline").on("click", function () {
-            Radio.trigger("Dashboard", "destroyWidgetById", "time-slider");
-            Radio.trigger("TimeSlider", "create", row.find("th.prop").text());
-        }, this);
-
-        // Delete Selection
-        $(contextActions).find("li#delete-selection").on("click", function () {
-            this.model.deleteAttrsForRatio();
-        }, this);
-
-        // Create new ratio data
-        // Add numerator
-        $(contextActions).find("li#numerator").on("click", function () {
-            this.model.addAttrForRatio(row.find("th.prop").attr("id"), 0);
-        }, this);
-
-        // Add denominator
-        $(contextActions).find("li#denominator").on("click", function () {
-            this.model.addAttrForRatio(row.find("th.prop").attr("id"), 1);
-        }, this);
-
-        // Create unscaled Correlation
-        $(contextActions).find("li#correlation #unscaled").on("click", function () {
-            this.model.createCorrelation(false);
-            this.model.deleteAttrsForRatio();
-        }, this);
-
-        // Create scaled Correlation
-        $(contextActions).find("li#correlation #scaled").on("click", function () {
-            this.model.createCorrelation(true);
-            this.model.deleteAttrsForRatio();
-        }, this);
-
-        // Create new Data Row
-        $(contextActions).find("li#ratio").on("click", function () {
-            this.model.createRatio();
-            this.model.deleteAttrsForRatio();
-        }, this);
-
-        Radio.trigger("ContextMenu", "setActions", contextActions, row.find("th.prop").text(), "glyphicon-stats");
+        Radio.trigger("ContextMenu", "setActions", this.contextActionsEl, this.row.find("th.prop").text(), "glyphicon-stats");
 
         // Set the current year for all inputs
-        $(contextActions).find("li#barChart #input-year input").val(new Date().getFullYear() - 1);
+        this.contextActionsEl.find("li#barChart #input-year input").val(new Date().getFullYear() - 1);
     },
 
     /**

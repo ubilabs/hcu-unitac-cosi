@@ -14,13 +14,10 @@ export default {
     },
     data () {
         return {
-            districtsSelected: [],
-            districtDataLoaded: [],
-            selectedType: "",
             featuresStatistics: [],
             featureCategories: [],
             selectedFeature: "",
-            options: [],
+            featuresList: [],
             availableYears: [],
             selectedYear: "",
             legendResults: [],
@@ -34,29 +31,19 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"])
     },
-    created () {
-        // this.$on("close", this.close);
-    },
     /**
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
     mounted () {
-        Radio.on("SelectDistrict", "selectionChanged");
         Radio.on("FeaturesLoader", "districtsLoaded", this.updateSelectedDistricts);
         this.applyTranslationKey(this.name);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
-        updateSelectedDistricts (districtDataLoaded) {
-            this.districtDataLoaded = districtDataLoaded;
-
-            this.districtsSelected = this.selectedFeatures;
-            this.selectedType = this.keyOfAttrName;
-            const featuresScope = this.label;
-
-            this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", featuresScope);
-            this.options = Radio.request("FeaturesLoader", "getFeatureList");
+        updateSelectedDistricts () {
+            this.featuresList = [];
+            this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", this.label);
 
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
@@ -65,28 +52,32 @@ export default {
                         this.availableYears.push(key.substr(key.indexOf("_") + 1));
                     }
                 });
-                this.selectedFeature = this.featuresStatistics[0].getProperties().kategorie;
-                this.selectedYear = this.availableYears[0];
 
-                this.districtDataLoaded.forEach(feature => {
-                    const mapData = MappingJson.find(obj => obj.value === feature.category);
-
-                    if (mapData) {
-                        const findGrp = this.options.find(el => el.group === mapData.group),
-                            createObj = {
-                                group: mapData.group,
-                                data: [feature.category]
-                            };
-
-                        if (findGrp) {
-                            findGrp.data.push(feature.category);
-                        }
-                        else {
-                            this.options.push(createObj);
-                        }
-                    }
-                });
+                this.updateFeaturesList();
             }
+        },
+
+        updateFeaturesList () {
+            this.selectedFeature = MappingJson[0].value;
+            this.selectedYear = this.availableYears[0];
+
+            MappingJson.forEach(attr => {
+                if (attr[this.keyOfAttrNameStats]) {
+                    const findGrp = this.featuresList.find(el => el.group === attr.group);
+
+                    if (findGrp) {
+                        findGrp.data.push(attr.value);
+                    }
+                    else {
+                        const createObj = {
+                            group: attr.group,
+                            data: [attr.value]
+                        };
+
+                        this.featuresList.push(createObj);
+                    }
+                }
+            });
         },
 
         generateVisualization () {
@@ -95,7 +86,7 @@ export default {
                 colorScale = this.getColorsByValues(resultValues);
 
             this.generateDynamicLegend(results, colorScale);
-            this.districtsSelected.forEach(district => {
+            this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
@@ -196,7 +187,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="districtsSelected.length"
+        v-if="selectedFeatures.length"
         class="addon_container"
     >
         <div
@@ -230,11 +221,11 @@ export default {
                     </button>
                 </div>
                 <Multiselect
-                    v-if="districtDataLoaded.length"
+                    v-if="featuresList.length"
                     v-model="selectedFeature"
                     class="feature_selection selection"
                     :allow-empty="false"
-                    :options="options"
+                    :options="featuresList"
                     group-label="group"
                     :group-select="false"
                     group-values="data"
@@ -250,11 +241,11 @@ export default {
             <div
                 id="colorCodeMapLegend"
                 class="legend"
-                :class="{ active: legendValues && districtsSelected.length > 2 }"
+                :class="{ active: legendValues && selectedFeatures.length > 2 }"
             >
                 <div id="legend_wrapper">
                     <div
-                        v-for="(district, i) in districtsSelected"
+                        v-for="(district, i) in selectedFeatures"
                         :key="i"
                         class="legend_mark"
                     >
