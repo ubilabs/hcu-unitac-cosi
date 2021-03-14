@@ -19,10 +19,11 @@ export default {
             selectedFeature: "",
             featuresList: [],
             availableYears: [],
-            selectedYear: "",
+            selectedYear: null,
             legendResults: [],
             legendValues: [],
             lastYear: null,
+            selectorPosition: 0,
             visualizationState: false,
             originalStyling: null,
             hiVal: null,
@@ -43,25 +44,9 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
-<<<<<<< HEAD
-        ...mapActions("Map", ["resetView"]),
-        updateSelectedDistricts (districtDataLoaded) {
-            this.districtDataLoaded = districtDataLoaded;
-
-            this.districtsSelected = this.selectedFeatures;
-            this.selectedType = this.keyOfAttrName;
-            const featuresScope = this.label;
-
-            console.log("selectedFeatures:" + this.districtsSelected);
-            console.log("keyOfAttrName:" + this.keyOfAttrName);
-
-            this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", featuresScope);
-            this.options = Radio.request("FeaturesLoader", "getFeatureList");
-=======
         updateSelectedDistricts () {
             this.featuresList = [];
             this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", this.label);
->>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
 
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
@@ -98,60 +83,18 @@ export default {
             });
         },
 
-<<<<<<< HEAD
-        toggleVisualization () {
-            this.visualizationState = !this.visualizationState;
-=======
-        generateVisualization () {
-            const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
-                resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
-                colorScale = this.getColorsByValues(resultValues);
-
-            this.generateDynamicLegend(results, colorScale);
-            this.selectedFeatures.forEach(district => {
-                const getStyling = district.getStyle(),
-                    matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
-
-                if (matchResults) {
-                    getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
-                    getStyling.zIndex = 1;
-                    getStyling.text = new Text({
-                        font: "16px Calibri,sans-serif",
-                        fill: new Fill({
-                            color: [255, 255, 255]
-                        }),
-                        stroke: new Stroke({
-                            color: [0, 0, 0],
-                            width: 3
-                        }),
-                        text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
-                    });
-                    if (this.lastYear !== null) {
-                        const additionalText = new Style({
-                                zIndex: 2,
-                                text: new Text({
-                                    font: "13px Calibri, sans-serif",
-                                    fill: new Fill({
-                                        color: [20, 20, 20]
-                                    }),
-                                    stroke: new Stroke({
-                                        color: [240, 240, 240],
-                                        width: 2
-                                    }),
-                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
-                                    offsetY: 25
-                                })
-                            }),
->>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
+        toggleVisualization (toggle) {
+            if (toggle) {
+                this.visualizationState = !this.visualizationState;
+            }
 
             if (this.visualizationState) {
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
 
-<<<<<<< HEAD
                 this.generateDynamicLegend(results, colorScale);
-                this.districtsSelected.forEach(district => {
+                this.selectedFeatures.forEach(district => {
                     const getStyling = district.getStyle(),
                         matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
@@ -173,49 +116,33 @@ export default {
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
                         });
-                        if (this.lastYear !== null) {
+                        if (this.lastYear) {
                             const additionalText = new Style({
-                                    zIndex: 2,
-                                    text: new Text({
-                                        font: "13px Calibri, sans-serif",
-                                        fill: new Fill({
-                                            color: [20, 20, 20]
-                                        }),
-                                        stroke: new Stroke({
-                                            color: [240, 240, 240],
-                                            width: 2
-                                        }),
-                                        text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
-                                        offsetY: 25
-                                    })
-                                }),
+                                zIndex: 2,
+                                text: new Text({
+                                    font: "13px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [20, 20, 20]
+                                    }),
+                                    stroke: new Stroke({
+                                        color: [240, 240, 240],
+                                        width: 2
+                                    }),
+                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
+                                    offsetY: 25
+                                })
+                            });
 
-                                addIcon = new Style({
-                                    zIndex: 3,
-                                    image: new Icon(/** @type {olx.style.IconOptions} */ {
-                                        color: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? [255, 79, 66] : [173, 255, 133],
-                                        src: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? "../../utils/assets/arrow_dwn.png" : "../../utils/assets/arrow_up.png"
-                                    })
-                                });
-
-                            console.log(addIcon);
-
-                            district.setStyle([new Style(getStyling), additionalText, addIcon]);
+                            district.setStyle([new Style(getStyling), additionalText]);
                         }
                         else {
                             district.setStyle(new Style(getStyling));
                         }
-=======
-                        district.setStyle([new Style(getStyling), additionalText, addIcon]);
-                    }
-                    else {
-                        district.setStyle(new Style(getStyling));
->>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
                     }
                 });
             }
             else {
-                this.districtsSelected.forEach(district => {
+                this.selectedFeatures.forEach(district => {
                     const style = new Style({
                         fill: new Fill({color: "rgba(255, 255, 255, 0)"}),
                         stroke: new Stroke({color: "#3399CC", width: 5})
@@ -224,8 +151,6 @@ export default {
                     district.setStyle(style);
                 });
             }
-
-            this.lastYear = this.selectedYear;
         },
         generateDynamicLegend (results, colorScale) {
             if (results.length > 2) {
@@ -250,14 +175,13 @@ export default {
                         pDistrict = mark.querySelector(".district"),
                         pValue = mark.querySelector(".value");
 
-                    this.hiVal = colorScale.legend.values[0].toLocaleString("de-DE");
-                    this.loVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString("de-DE");
-
-                    if (relativeValue > 50) {
-                        mark.setAttribute("style", "left: " + relativeValue + "%; border:1.5px solid whitesmoke;");
+                    this.loVal = colorScale.legend.values[0].toLocaleString("de-DE");
+                    this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString("de-DE");
+                    if (relativeValue === 100) {
+                        mark.setAttribute("style", "left: calc(" + relativeValue + "% - 8px);");
                     }
                     else {
-                        mark.setAttribute("style", "left: " + relativeValue + "%; border:1.5px solid #222;");
+                        mark.setAttribute("style", "left: " + relativeValue + "%;");
                     }
 
                     pDistrict.innerHTML = results[index].getProperties()[this.keyOfAttrNameStats] + ": ";
@@ -268,6 +192,20 @@ export default {
         },
         getColorsByValues (values) {
             return Radio.request("ColorScale", "getColorScaleByValues", values, this.colorScheme);
+        },
+        changeSelector (value) {
+            const index = MappingJson.map(e => e.value).indexOf(this.selectedFeature) + value;
+
+            if (index === -1) {
+                this.selectedFeature = MappingJson[MappingJson.length - 1].value;
+            }
+            else if (index === MappingJson.length) {
+                this.selectedFeature = MappingJson[0].value;
+            }
+            else {
+                this.selectedFeature = MappingJson[index].value;
+            }
+            this.toggleVisualization(false);
         }
     }
 };
@@ -275,43 +213,74 @@ export default {
 
 <template lang="html">
     <div
-        v-if="selectedFeatures.length"
+        v-if="featuresStatistics.length"
         class="addon_container"
     >
         <div
             class="addon_wrapper"
         >
-            <Multiselect
-                v-if="featuresStatistics.length"
-                v-model="selectedYear"
-                class="year_selection selection"
-                :allow-empty="false"
-                :options="availableYears"
-            >
-                <template>
-                    {{ selectedYear }}
-                </template>
-            </Multiselect>
-
             <div class="select_wrapper">
-                <button
-<<<<<<< HEAD
-                    class="switch"
-                    @click="toggleVisualization"
-=======
-                    class="switch btn btn-default btn-sm"
-                    @click="generateVisualization"
->>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
-                >
-                    <span class="glyphicon glyphicon-eye-open"></span>
-                </button>
                 <div class="btn_group">
-                    <button class="prev btn btn-default btn-sm">
+                    <button
+                        class="switch"
+                        :class="{ highlight: !visualizationState }"
+                        @click="toggleVisualization(true)"
+                    >
+                        <template v-if="visualizationState">
+                            <span class="glyphicon glyphicon-eye-close"></span>
+                        </template>
+                        <template v-else>
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </template>
+                    </button>
+                    <button
+                        class="prev btn btn-default btn-sm"
+                        @click="changeSelector(-1)"
+                    >
                         <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
-                    <button class="next btn btn-default btn-sm">
+                    <button
+                        class="next btn btn-default btn-sm"
+                        @click="changeSelector(1)"
+                    >
                         <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
+
+                    <Multiselect
+                        v-if="featuresStatistics.length"
+                        v-model="selectedYear"
+                        class="year_selection selection"
+                        :allow-empty="false"
+                        :options="availableYears"
+                        :multiple="false"
+                        selectedLabel=""
+                        selectLabel=""
+                        deselectLabel=""
+                        placeholder=""
+                        @input="toggleVisualization(false)"
+                    >
+                        <template>
+                            {{ selectedYear }}
+                        </template>
+                    </Multiselect>
+                    <Multiselect
+                        v-if="featuresStatistics.length"
+                        v-model="lastYear"
+                        class="year_selection selection"
+                        :class="{disable: !selectedYear}"
+                        :allow-empty="true"
+                        :options="availableYears"
+                        :multiple="false"
+                        selectedLabel=""
+                        selectLabel=""
+                        deselectLabel="Entfernen"
+                        placeholder=""
+                        @input="toggleVisualization(false)"
+                    >
+                        <template>
+                            {{ lastYear }}
+                        </template>
+                    </Multiselect>
                 </div>
                 <Multiselect
                     v-if="featuresList.length"
@@ -320,11 +289,15 @@ export default {
                     :allow-empty="false"
                     :options="featuresList"
                     group-label="group"
+                    :tabIndex="selectorPosition"
                     :group-select="false"
                     group-values="data"
                     :multiple="false"
+                    selectedLabel=""
                     selectLabel=""
-                    deselectLaben=""
+                    deselectLabel=""
+                    placeholder=""
+                    @input="toggleVisualization(false)"
                 >
                     <template>
                         <strong>{{ selectedFeature }}</strong>
@@ -334,7 +307,7 @@ export default {
             <div
                 id="colorCodeMapLegend"
                 class="legend"
-                :class="{ active: legendValues && selectedFeatures.length > 2 }"
+                :class="{ active: visualizationState && legendValues && selectedFeatures.length > 2 }"
             >
                 <div id="legend_wrapper">
                     <div
@@ -342,6 +315,7 @@ export default {
                         :key="i"
                         class="legend_mark"
                     >
+                        <div class="mark_tip"></div>
                         <div class="hoverbox">
                             <p class="district"></p>
                             <p class="value"></p>
@@ -368,11 +342,11 @@ export default {
         z-index:5000;
         left:10px;
         bottom:30px;
-        width:450px;
+        width:460px;
         height:auto;
 
         &:after {
-            .fullsize_bg_pseudo(whitesmoke, 0.85);
+            .fullsize_bg_pseudo(white, 0.95);
             .drop_shadow();
         }
 
@@ -383,28 +357,6 @@ export default {
             padding:10px;
             box-sizing: border-box;
 
-            .year_selection {
-                position:absolute;
-                top:-45px;
-                left:0;
-                height:30px;
-                width:150px;
-                border-radius:none;
-                .drop_shadow();
-
-                    .multiselect__single {
-                        font-size:90%;
-                    }
-
-                    .multiselect__element {
-                        font-size:90%;
-                    }
-
-                    .multiselect__tags {
-                        border-radius:0px;
-                    }
-            }
-
             .select_wrapper {
                 display:flex;
                 flex-flow:row wrap;
@@ -413,38 +365,92 @@ export default {
                 margin:5px auto 5px auto;
 
                 .btn_group {
-                    flex-basis:80px;
-                    margin-left:3px;
+                    display:flex;
+                    flex-flow:row wrap;
+                    justify-content: flex-start;
+                    flex-basis:100%;
+                    height:30px;
 
-                    /*.button {
+                    button {
                         flex-basis:40px;
                         height:30px;
                         border-radius:0px;
-                        background-color:#eee;
-                    }*/
-                }
+                        border:1px solid #aaa;
+                        margin-right:3px;
+                        background-color:@buttongrey;
 
-                .switch {
-                    flex-basis:40px;
-                    height:30px;
-                    border-radius:0px;
-                    background-color:#eee;
+                        &.switch {
+                            flex-basis:40px;
+                            height:30px;
+                            border-radius:0px;
+                            background-color:#eee;
+
+                            &.highlight {
+                                color:white;
+                                border:none;
+                                background-color:#3399CC;
+                            }
+                        }
+                    }
+
+                    .year_selection {
+                        height:30px;
+                        flex-basis:120px;
+                        border-radius:none;
+                        margin:0px 3px;
+                        min-height:0px;
+                        border:1px solid #aaa;
+
+                        &.disable {
+                            opacity:0.5;
+                            pointer-events:none;
+                        }
+
+                        .multiselect__single {
+                            font-size:90%;
+                        }
+
+                        .multiselect__element {
+                            font-size:90%;
+                        }
+
+                        .multiselect__tags {
+                            border-radius:0px;
+                            min-height:0px;
+                            height:30px;
+                            padding: 5px 30px 0 5px;
+                            box-sizing: border-box;
+                        }
+
+                        .multiselect__select {
+                            height:30px;
+                            line-height: 15px;
+                        }
+                    }
                 }
 
                 .feature_selection {
                     flex:1 0 100%;
-                    margin:5px auto;
+                    margin:10px auto;
+                    padding:10px 0px;
+                    border-top:1px solid #aaa;
+                    border-bottom:1px solid #aaa;
 
                     .multiselect__single {
                         font-size:80%;
                     }
 
                     .multiselect__element {
-                        font-size:80%;
+                        font-size:10px;
                     }
 
                     .multiselect__tags {
                         border-radius:0px;
+                    }
+
+                    .multiselect__select {
+                        height: 40px;
+                        line-height: 30px;
                     }
                 }
             }
@@ -452,7 +458,7 @@ export default {
 
         #colorCodeMapLegend {
             position:relative;
-            width:80%;
+            width:70%;
             height:0px;
             opacity:0;
             pointer-events:none;
@@ -469,36 +475,84 @@ export default {
             .val {
                 position:absolute;
                 top:0;
+                height:30px;
                 line-height:30px;
+                padding:0px 5px;
+                font-size:80%;
+                font-weight:700;
+                border:1.5px solid #222;
 
                 &.top {
-                    right: -40px;
+                    right: -50px;
                 }
 
                 &.low {
-                    left: -40px;
+                    left: -50px;
                 }
             }
 
             .legend_mark {
                 position:absolute;
-                width:8px;
+                width:10px;
                 background:transparent;
                 border-radius:1px;
-                top:-1px;
+                border:1px solid black !important;
+                top:-5px;
                 left:0;
-                height:calc(100% + 2px);
+                background:whitesmoke;
+                //height:calc(100% + 2px);
+                height:10px;
+                z-index:10;
+                .drop_shadow();
+
+                &:after {
+                    content:'';
+                    position:absolute;
+                    width:1px;
+                    height: 12px;
+                    top: 15px;
+                    left:50%;
+                    transform: translateX(-50%);
+                    background:rgba(255,255,255,0.8);
+                }
+
+                .mark_tip {
+                    position:absolute;
+                    top:100%;
+                    left:-1px;
+                    width:0;
+                    height:0;
+                    border-left: 5px solid transparent;
+                    border-right: 5px solid transparent;
+                    border-top: 5px solid black;
+                    z-index:15;
+                    .drop_shadow();
+
+                    &:after {
+                        content: '';
+                        width: 0;
+                        height: 0;
+                        border-left: 5px solid transparent;
+                        border-right: 5px solid transparent;
+                        border-top: 5px solid whitesmoke;
+                        position: absolute;
+                        z-index:18;
+                        top: -6px;
+                        left: -5px;
+                    }
+                }
 
                 .hoverbox {
                     position:absolute;
-                    left:0;
-                    bottom:100%;
-                    width:auto;
+                    left:50%;
+                    bottom:calc(100% + 3px);
+                    width:max-content;
                     height:30px;
                     padding:10px 20px;
                     opacity:0;
                     pointer-events:none;
                     box-sizing: border-box;
+                    z-index:10;
                     .paper_bg();
                     .drop_shadow();
 
@@ -522,10 +576,6 @@ export default {
                         pointer-events:all;
                         transition:0.3s;
                     }
-                }
-
-                &:last-child {
-                    transform: translateX(-8px);
                 }
             }
         }
