@@ -1,5 +1,5 @@
 <script>
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
@@ -26,6 +26,8 @@ export default {
             legendResults: [],
             legendValues: [],
             lastYear: null,
+            visualizationState: false,
+            originalStyling: null,
             hiVal: null,
             loVal: null
         };
@@ -53,6 +55,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
+        ...mapActions("Map", ["resetView"]),
         updateSelectedDistricts (districtDataLoaded) {
             this.districtDataLoaded = districtDataLoaded;
 
@@ -99,64 +102,82 @@ export default {
             console.log(this.options);
         },
 
-        generateVisualization () {
-            const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
-                resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
-                colorScale = this.getColorsByValues(resultValues);
+        toggleVisualization () {
+            this.visualizationState = !this.visualizationState;
 
-            this.generateDynamicLegend(results, colorScale);
-            this.districtsSelected.forEach(district => {
-                const getStyling = district.getStyle(),
-                    matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+            if (this.visualizationState) {
+                const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
+                    resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
+                    colorScale = this.getColorsByValues(resultValues);
 
-                if (matchResults) {
-                    getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
-                    getStyling.zIndex = 1;
-                    getStyling.text = new Text({
-                        font: "16px Calibri,sans-serif",
-                        fill: new Fill({
-                            color: [255, 255, 255]
-                        }),
-                        stroke: new Stroke({
-                            color: [0, 0, 0],
-                            width: 3
-                        }),
-                        text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
-                    });
-                    if (this.lastYear !== null) {
-                        const additionalText = new Style({
-                                zIndex: 2,
-                                text: new Text({
-                                    font: "13px Calibri, sans-serif",
-                                    fill: new Fill({
-                                        color: [20, 20, 20]
-                                    }),
-                                    stroke: new Stroke({
-                                        color: [240, 240, 240],
-                                        width: 2
-                                    }),
-                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
-                                    offsetY: 25
-                                })
+                this.generateDynamicLegend(results, colorScale);
+                this.districtsSelected.forEach(district => {
+                    const getStyling = district.getStyle(),
+                        matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+
+                    if (matchResults) {
+                        if (this.originalStyling === null) {
+                            this.originalStyling = getStyling;
+                        }
+
+                        getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
+                        getStyling.zIndex = 1;
+                        getStyling.text = new Text({
+                            font: "16px Calibri,sans-serif",
+                            fill: new Fill({
+                                color: [255, 255, 255]
                             }),
+                            stroke: new Stroke({
+                                color: [0, 0, 0],
+                                width: 3
+                            }),
+                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                        });
+                        if (this.lastYear !== null) {
+                            const additionalText = new Style({
+                                    zIndex: 2,
+                                    text: new Text({
+                                        font: "13px Calibri, sans-serif",
+                                        fill: new Fill({
+                                            color: [20, 20, 20]
+                                        }),
+                                        stroke: new Stroke({
+                                            color: [240, 240, 240],
+                                            width: 2
+                                        }),
+                                        text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
+                                        offsetY: 25
+                                    })
+                                }),
 
-                            addIcon = new Style({
-                                zIndex: 3,
-                                image: new Icon(/** @type {olx.style.IconOptions} */ {
-                                    color: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? [255, 79, 66] : [173, 255, 133],
-                                    src: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? "../../utils/assets/arrow_dwn.png" : "../../utils/assets/arrow_up.png"
-                                })
-                            });
+                                addIcon = new Style({
+                                    zIndex: 3,
+                                    image: new Icon(/** @type {olx.style.IconOptions} */ {
+                                        color: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? [255, 79, 66] : [173, 255, 133],
+                                        src: matchResults.getProperties()[this.yearSelector + this.lastYear] > matchResults.getProperties()[this.yearSelector + this.selectedYear] ? "../../utils/assets/arrow_dwn.png" : "../../utils/assets/arrow_up.png"
+                                    })
+                                });
 
-                        console.log(addIcon);
+                            console.log(addIcon);
 
-                        district.setStyle([new Style(getStyling), additionalText, addIcon]);
+                            district.setStyle([new Style(getStyling), additionalText, addIcon]);
+                        }
+                        else {
+                            district.setStyle(new Style(getStyling));
+                        }
                     }
-                    else {
-                        district.setStyle(new Style(getStyling));
-                    }
-                }
-            });
+                });
+            }
+            else {
+                this.districtsSelected.forEach(district => {
+                    const style = new Style({
+                        fill: new Fill({color: "rgba(255, 255, 255, 0)"}),
+                        stroke: new Stroke({color: "#3399CC", width: 5})
+                    });
+
+                    district.setStyle(style);
+                });
+            }
 
             this.lastYear = this.selectedYear;
         },
@@ -229,7 +250,7 @@ export default {
             <div class="select_wrapper">
                 <button
                     class="switch"
-                    @click="generateVisualization"
+                    @click="toggleVisualization"
                 >
                     <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
