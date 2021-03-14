@@ -1,9 +1,9 @@
 <script>
-import {mapGetters, mapActions, mapMutations} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
-import {Fill, Stroke, Style, Icon, Text} from "ol/style.js";
+import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import MappingJson from "../../modules/featuresLoader/mapping.json";
 
@@ -27,7 +27,8 @@ export default {
             visualizationState: false,
             originalStyling: null,
             hiVal: null,
-            loVal: null
+            loVal: null,
+            minimize: false
         };
     },
     computed: {
@@ -178,10 +179,10 @@ export default {
                     this.loVal = colorScale.legend.values[0].toLocaleString("de-DE");
                     this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString("de-DE");
                     if (relativeValue === 100) {
-                        mark.setAttribute("style", "left: calc(" + relativeValue + "% - 8px);");
+                        mark.setAttribute("style", "left: calc(" + Math.round(relativeValue) + "% - 8px);");
                     }
                     else {
-                        mark.setAttribute("style", "left: " + relativeValue + "%;");
+                        mark.setAttribute("style", "left: " + Math.round(relativeValue) + "%;");
                     }
 
                     pDistrict.innerHTML = results[index].getProperties()[this.keyOfAttrNameStats] + ": ";
@@ -215,12 +216,25 @@ export default {
     <div
         v-if="featuresStatistics.length"
         class="addon_container"
+        :class="{minimized: minimize}"
     >
         <div
             class="addon_wrapper"
         >
             <div class="select_wrapper">
                 <div class="btn_group">
+                    <button
+                        class="minimize"
+                        :class="{ highlight: !minimize }"
+                        @click="minimize = !minimize"
+                    >
+                        <template v-if="minimize">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </template>
+                        <template v-else>
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </template>
+                    </button>
                     <button
                         class="switch"
                         :class="{ highlight: !visualizationState }"
@@ -576,6 +590,46 @@ export default {
                         pointer-events:all;
                         transition:0.3s;
                     }
+                }
+            }
+        }
+
+        &.minimized {
+            .legend {
+                margin:0;
+                display:none;
+            }
+
+            .select_wrapper {
+
+                .year_selection {
+                    display:none;
+                }
+
+                .btn_group {
+                    flex-basis:40%;
+                }
+
+                .feature_selection {
+                    flex: 1 0 58%;
+                    border: none;
+                    margin: 0px 2px;
+                    height: 30px;
+                    min-height: 0px;
+                    padding: 0;
+
+                    .multiselect__tags {
+                            border-radius:0px;
+                            min-height:0px;
+                            height:30px;
+                            padding: 5px 30px 0 5px;
+                            box-sizing: border-box;
+                        }
+
+                        .multiselect__select {
+                            height:30px;
+                            line-height: 15px;
+                        }
                 }
             }
         }
