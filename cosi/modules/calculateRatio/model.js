@@ -1,7 +1,7 @@
 import Tool from "../../../../modules/core/modelList/tool/model";
 import SnippetDropdownModel from "../../../../modules/snippets/dropdown/model";
 import AdjustParameterView from "./adjustParameter/view";
-import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
+// import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import * as Extent from "ol/extent";
 import store from "../../../../src/app-store";
 
@@ -19,7 +19,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         denDropdownModel: {},
         message: "",
         adjustParameterView: {},
-        exportButtonModel: {},
+        // exportButtonModel: {},
         modifierInfoText: "<h3>Parameter wählen:</h3>" +
             "<p>Hier können Sie zwischen allen verfügbaren Feldern des Einrichtungstyps wählen (z.B. absolute Anzahl, Fläche in m², Schulplätze, etc.)<br />" +
             "Die wählbaren Werte können vom Administrator festgelegt werden. Sollte keine Festlegung erfolgt sein, werden alle numerischen Werte angeboten.<br /></p>" +
@@ -62,7 +62,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
             "updatedSelectedLayerList": this.updateFacilityLayerList
         }, this);
 
-        this.setExportButton();
+        // this.setExportButton();
     },
 
     /**
@@ -136,16 +136,26 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
     },
 
     /**
-     * sets the export button with result data
-     * @returns {void}
+     * gets the export data as an array of objects from the calculation results object
+     * @returns {Object[]} the export ready array of object
      */
-    setExportButton: function () {
-        this.set("exportButtonModel", new ExportButtonModel({
-            tag: "Als CSV herunterladen",
-            rawData: this.get("results"),
-            filename: "CoSI-Versorgungsanalyse",
-            fileExtension: "csv"
-        }));
+    getExportData () {
+        const rawData = this.get("results"),
+            data = [];
+
+        for (const area in rawData) {
+            data.push({
+                [`Gebiet (${store.getters["Tools/DistrictSelector/label"]})`]: area,
+                [`${this.get("numerators").values[0]} (${this.get("modifier")[0]})`]: rawData[area].facilities,
+                [this.get("denominators").values.join(", ")]: rawData[area].demographics,
+                Kapazität: rawData[area].capacity,
+                "Bedarf (Soll-Wert)": rawData[area].demand,
+                [`${this.get("modifier")[0]} / Bezugsgröße`]: rawData[area].ratio,
+                "Unter- / Überversorgung (1,0 ~ 100%)": rawData[area].coverage
+            });
+        }
+
+        return data;
     },
 
     /**
@@ -221,7 +231,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
                 f: "Faktor (F)"
             }, this.getResults()[objectKey]);
         }, this);
-        this.get("exportButtonModel").set("rawData", renameResults);
+        // this.get("exportButtonModel").set("rawData", renameResults);
         this.trigger("renderResults");
     },
 

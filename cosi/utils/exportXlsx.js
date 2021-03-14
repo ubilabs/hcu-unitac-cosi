@@ -4,12 +4,14 @@ import * as XLSX from "xlsx";
 /**
  * @description returns the width definition for the table columns by reading out the headers char-length
  * @param {String[]} headers - the headers of the table columns
- * @param {Number} [multiply=2] - multiply the col header length by
+ * @param {Number} [multiply] - multiply the col header length by
  * @returns {Object[]} the column Options array for all columns of the table
  */
-function generateColOptions (headers, multiply = 2) {
+function generateColOptions (headers, multiply) {
+    const _multiply = multiply || 2;
+
     return headers.map(header => ({
-        wch: header.length * multiply
+        wch: header.length * _multiply
     }));
 }
 
@@ -23,7 +25,7 @@ export function parseJsonToXlsx (json, options) {
     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
 
         header = Object.keys(json[0]),
-        colOptions = options.colOptions || generateColOptions(header),
+        colOptions = options.colOptions || generateColOptions(header, options.multiplyColWidth),
         rowOptions = options.rowOptions,
         workbook = XLSX.utils.book_new(),
         sheet = XLSX.utils.json_to_sheet(json, {header});
@@ -63,7 +65,8 @@ export default async function exportXlsx (json, filename, options = {}) {
     const workbook = parseJsonToXlsx(exportJson, {
         sheetname: options.sheetname || filename,
         rowOptions: options.rowOptions,
-        colOptions: options.colOptions
+        colOptions: options.colOptions,
+        multiplyColWidth: options.multiplyColWidth
     });
 
     XLSX.writeFile(workbook, filename + ".xlsx");
