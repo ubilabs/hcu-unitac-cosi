@@ -97,12 +97,6 @@ describe("addons/reisezeiten/components/Reisezeiten.vue", () => {
                     getMappedProperties: sinon.stub
                 }
             },
-            methods: {
-                parseRequestedDestinations: sinon.stub,
-                removeCurrentyDisplayedRoute: sinon.stub,
-                createTempLayer: sinon.stub,
-                chooseRoute: sinon.stub
-            },
             data: () => {
                 return {
                     currentRouteLayerName: "tempRouteLayerReisezeiten",
@@ -118,6 +112,10 @@ describe("addons/reisezeiten/components/Reisezeiten.vue", () => {
     sinon.stub(ReisezeitenTheme, "mounted");
 
     it("It should exist a container for the possible routes", () => {
+        sinon.stub(ReisezeitenTheme.methods, "parseRequestedDestinations");
+        sinon.stub(ReisezeitenTheme.methods, "removeCurrentyDisplayedRoute");
+        sinon.stub(ReisezeitenTheme.methods, "createTempLayer");
+        sinon.stub(ReisezeitenTheme.methods, "chooseRoute");
         expect(wrapper.find("#reisezeiten-container").exists()).to.be.true;
     });
 
