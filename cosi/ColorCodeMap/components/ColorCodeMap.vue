@@ -14,13 +14,10 @@ export default {
     },
     data () {
         return {
-            districtsSelected: [],
-            districtDataLoaded: [],
-            selectedType: "",
             featuresStatistics: [],
             featureCategories: [],
             selectedFeature: "",
-            options: [],
+            featuresList: [],
             availableYears: [],
             selectedYear: "",
             legendResults: [],
@@ -36,25 +33,17 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"])
     },
-    watch: {
-        featuresSelected () {
-            console.log("features are selected", this.featuresSelected);
-        }
-    },
-    created () {
-        // this.$on("close", this.close);
-    },
     /**
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
     mounted () {
-        Radio.on("SelectDistrict", "selectionChanged");
         Radio.on("FeaturesLoader", "districtsLoaded", this.updateSelectedDistricts);
         this.applyTranslationKey(this.name);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
+<<<<<<< HEAD
         ...mapActions("Map", ["resetView"]),
         updateSelectedDistricts (districtDataLoaded) {
             this.districtDataLoaded = districtDataLoaded;
@@ -68,6 +57,11 @@ export default {
 
             this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", featuresScope);
             this.options = Radio.request("FeaturesLoader", "getFeatureList");
+=======
+        updateSelectedDistricts () {
+            this.featuresList = [];
+            this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", this.label);
+>>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
 
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
@@ -76,40 +70,86 @@ export default {
                         this.availableYears.push(key.substr(key.indexOf("_") + 1));
                     }
                 });
-                this.selectedFeature = this.featuresStatistics[0].getProperties().kategorie;
-                this.selectedYear = this.availableYears[0];
 
-                this.districtDataLoaded.forEach(feature => {
-                    const mapData = MappingJson.find(obj => obj.value === feature.category);
-
-                    if (mapData) {
-                        const findGrp = this.options.find(el => el.group === mapData.group),
-                            createObj = {
-                                group: mapData.group,
-                                data: [feature.category]
-                            };
-
-                        if (findGrp) {
-                            findGrp.data.push(feature.category);
-                            return true;
-                        }
-
-                        this.options.push(createObj);
-                    }
-                });
+                this.updateFeaturesList();
             }
-
-            console.log(this.options);
         },
 
+        updateFeaturesList () {
+            this.selectedFeature = MappingJson[0].value;
+            this.selectedYear = this.availableYears[0];
+
+            MappingJson.forEach(attr => {
+                if (attr[this.keyOfAttrNameStats]) {
+                    const findGrp = this.featuresList.find(el => el.group === attr.group);
+
+                    if (findGrp) {
+                        findGrp.data.push(attr.value);
+                    }
+                    else {
+                        const createObj = {
+                            group: attr.group,
+                            data: [attr.value]
+                        };
+
+                        this.featuresList.push(createObj);
+                    }
+                }
+            });
+        },
+
+<<<<<<< HEAD
         toggleVisualization () {
             this.visualizationState = !this.visualizationState;
+=======
+        generateVisualization () {
+            const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
+                resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
+                colorScale = this.getColorsByValues(resultValues);
+
+            this.generateDynamicLegend(results, colorScale);
+            this.selectedFeatures.forEach(district => {
+                const getStyling = district.getStyle(),
+                    matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+
+                if (matchResults) {
+                    getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
+                    getStyling.zIndex = 1;
+                    getStyling.text = new Text({
+                        font: "16px Calibri,sans-serif",
+                        fill: new Fill({
+                            color: [255, 255, 255]
+                        }),
+                        stroke: new Stroke({
+                            color: [0, 0, 0],
+                            width: 3
+                        }),
+                        text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                    });
+                    if (this.lastYear !== null) {
+                        const additionalText = new Style({
+                                zIndex: 2,
+                                text: new Text({
+                                    font: "13px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [20, 20, 20]
+                                    }),
+                                    stroke: new Stroke({
+                                        color: [240, 240, 240],
+                                        width: 2
+                                    }),
+                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
+                                    offsetY: 25
+                                })
+                            }),
+>>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
 
             if (this.visualizationState) {
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
 
+<<<<<<< HEAD
                 this.generateDynamicLegend(results, colorScale);
                 this.districtsSelected.forEach(district => {
                     const getStyling = district.getStyle(),
@@ -165,6 +205,12 @@ export default {
                         else {
                             district.setStyle(new Style(getStyling));
                         }
+=======
+                        district.setStyle([new Style(getStyling), additionalText, addIcon]);
+                    }
+                    else {
+                        district.setStyle(new Style(getStyling));
+>>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
                     }
                 });
             }
@@ -229,7 +275,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="districtsSelected.length"
+        v-if="selectedFeatures.length"
         class="addon_container"
     >
         <div
@@ -249,25 +295,30 @@ export default {
 
             <div class="select_wrapper">
                 <button
+<<<<<<< HEAD
                     class="switch"
                     @click="toggleVisualization"
+=======
+                    class="switch btn btn-default btn-sm"
+                    @click="generateVisualization"
+>>>>>>> a4a9a0cf2c17afa9f3877149003db4400f2b37ad
                 >
                     <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
                 <div class="btn_group">
-                    <button class="button prev">
+                    <button class="prev btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
-                    <button class="button next">
+                    <button class="next btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
                 </div>
                 <Multiselect
-                    v-if="districtDataLoaded.length"
+                    v-if="featuresList.length"
                     v-model="selectedFeature"
                     class="feature_selection selection"
                     :allow-empty="false"
-                    :options="options"
+                    :options="featuresList"
                     group-label="group"
                     :group-select="false"
                     group-values="data"
@@ -283,11 +334,11 @@ export default {
             <div
                 id="colorCodeMapLegend"
                 class="legend"
-                :class="{ active: legendValues && districtsSelected.length > 2 }"
+                :class="{ active: legendValues && selectedFeatures.length > 2 }"
             >
                 <div id="legend_wrapper">
                     <div
-                        v-for="(district, i) in districtsSelected"
+                        v-for="(district, i) in selectedFeatures"
                         :key="i"
                         class="legend_mark"
                     >
@@ -365,12 +416,12 @@ export default {
                     flex-basis:80px;
                     margin-left:3px;
 
-                    .button {
+                    /*.button {
                         flex-basis:40px;
                         height:30px;
                         border-radius:0px;
                         background-color:#eee;
-                    }
+                    }*/
                 }
 
                 .switch {
