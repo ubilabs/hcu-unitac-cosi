@@ -33,6 +33,23 @@ function sanitizeData (json, exclude) {
 }
 
 /**
+ * converts an object to an array of objects
+ * @param {Object} data - the input data
+ * @returns {Object[]} the converted array
+ */
+function convertObject (data) {
+    const objArr = [];
+    let row;
+
+    for (const key in data) {
+        row = {id: key, ...data[key]};
+        objArr.push(row);
+    }
+
+    return objArr;
+}
+
+/**
  * @description Converts a json array of objects to an styled and exportable XLSX format.
  * @param {Object[]} json - the array of objects to export
  * @param {Object} [options={}] - (optional) sheetname: name of the worksheet, tablename: name of the table, creator: editor of the document, theme: the styletheme of the table
@@ -62,16 +79,32 @@ export function parseJsonToXlsx (json, options) {
  * @returns {void}
  */
 export default async function exportXlsx (json, filename, options = {}) {
-    if (!json || json.length === 0) {
+    let _json = json;
+
+    // catch not provided data
+    if (!_json || _json.length === 0) {
         console.warn("Die zu exportierende Tabelle ist leer oder existiert nicht, bitte überprüfen Sie Ihre Einstellungen");
         return false;
     }
-    if (json.constructor !== Array) {
-        console.warn("Die zu exportierenden Daten müssen als Array of Objects vorliegen. Bitte überprüfen Sie die Daten. Input: ", json);
-        return false;
+
+    // catch wrong data formats
+    if (_json.constructor !== Array) {
+
+        // convert if data is a dictionary
+        if (_json.constructor === Object) {
+            _json = convertObject(_json);
+            console.warn("Die exportierenden Daten liegen nicht als Array Of Object vor. Sie werden automatisch konvertiert.");
+        }
+
+        // break if other format
+        else {
+            console.warn("Die zu exportierenden Daten müssen als Array of Objects vorliegen. Bitte überprüfen Sie die Daten. Input: ", json);
+            return false;
+        }
     }
 
-    const exportJson = sanitizeData(JSON.parse(JSON.stringify(json)), options.exclude),
+    // convert to XLSX
+    const exportJson = sanitizeData(JSON.parse(JSON.stringify(_json)), options.exclude),
         workbook = parseJsonToXlsx(exportJson, {
             sheetname: options.sheetname || filename,
             rowOptions: options.rowOptions,
@@ -79,6 +112,7 @@ export default async function exportXlsx (json, filename, options = {}) {
             multiplyColWidth: options.multiplyColWidth
         });
 
+    // open download dialog
     XLSX.writeFile(workbook, filename + ".xlsx");
     return true;
 }
