@@ -49,6 +49,10 @@ export default async function exportXlsx (json, filename, options = {}) {
         console.warn("Die zu exportierende Tabelle ist leer oder existiert nicht, bitte überprüfen Sie Ihre Einstellungen");
         return false;
     }
+    if (json.constructor !== Array) {
+        console.warn("Die zu exportierenden Daten müssen als Array of Objects vorliegen. Bitte überprüfen Sie die Daten. Input: ", json);
+        return false;
+    }
 
     const exportJson = JSON.parse(JSON.stringify(json)),
         exclude = options.exclude;
