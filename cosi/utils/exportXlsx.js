@@ -1,4 +1,3 @@
-/* eslint-disable one-var */
 import * as XLSX from "xlsx";
 
 /**
@@ -13,6 +12,24 @@ function generateColOptions (headers, multiply) {
     return headers.map(header => ({
         wch: header.length * _multiply
     }));
+}
+
+/**
+ * @description Sanitizes the export data. Removes excluded columns.
+ * @param {Object[]} json - the array of objects
+ * @param {String[]} exclude - the list of keys to exclude
+ * @returns {Object[]} the sanitized data
+ */
+function sanitizeData (json, exclude) {
+    if (exclude) {
+        json.forEach(column => {
+            exclude.forEach(key => {
+                delete column[key];
+            });
+        });
+    }
+
+    return json;
 }
 
 /**
@@ -54,24 +71,13 @@ export default async function exportXlsx (json, filename, options = {}) {
         return false;
     }
 
-    const exportJson = JSON.parse(JSON.stringify(json)),
-        exclude = options.exclude;
-
-    // remove excluded columns
-    if (exclude) {
-        exportJson.forEach(column => {
-            exclude.forEach(key => {
-                delete column[key];
-            });
+    const exportJson = sanitizeData(JSON.parse(JSON.stringify(json)), options.exclude),
+        workbook = parseJsonToXlsx(exportJson, {
+            sheetname: options.sheetname || filename,
+            rowOptions: options.rowOptions,
+            colOptions: options.colOptions,
+            multiplyColWidth: options.multiplyColWidth
         });
-    }
-
-    const workbook = parseJsonToXlsx(exportJson, {
-        sheetname: options.sheetname || filename,
-        rowOptions: options.rowOptions,
-        colOptions: options.colOptions,
-        multiplyColWidth: options.multiplyColWidth
-    });
 
     XLSX.writeFile(workbook, filename + ".xlsx");
     return true;
