@@ -35,6 +35,15 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"])
     },
+    watch: {
+        selectedFeatures () {
+            if (this.visualizationState) {
+                this.$nextTick(function () {
+                    this.updateSelectedDistricts();
+                });
+            }
+        }
+    },
     /**
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
@@ -48,7 +57,6 @@ export default {
         updateSelectedDistricts () {
             this.featuresList = [];
             this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", this.label);
-
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
                 Object.keys(this.featuresStatistics[0].getProperties()).forEach(key => {
@@ -82,6 +90,10 @@ export default {
                     }
                 }
             });
+
+            if (this.visualizationState) {
+                this.toggleVisualization(false);
+            }
         },
 
         toggleVisualization (toggle) {
@@ -154,10 +166,15 @@ export default {
             }
         },
         generateDynamicLegend (results, colorScale) {
-            if (results.length > 2) {
+            if (results.length > 1) {
                 const legendDiv = document.getElementById("colorCodeMapLegend"),
                     legendMarks = document.querySelector("#legend_wrapper").children,
-                    legendMarksArray = Array.from(legendMarks);
+                    legendMarksArray = Array.from(legendMarks),
+                    matchResults = results.filter(x => {
+                        return this.selectedFeatures.some(y => {
+                            return utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(y.getProperties()[this.keyOfAttrName]);
+                        });
+                    });
 
                 colorScale.legend.values.forEach((value, index) => {
                     if (value === "Keine Daten") {
@@ -171,23 +188,27 @@ export default {
                 legendDiv.setAttribute("style", "background:linear-gradient(90deg," + this.legendValues[0] + "," + this.legendValues[1] + "," + this.legendValues[2] + ")");
 
                 legendMarksArray.forEach((mark, index) => {
-                    const value = results[index].getProperties()[this.yearSelector + this.selectedYear],
-                        relativeValue = ((value - colorScale.legend.values[0]) * 100) / (colorScale.legend.values[colorScale.legend.values.length - 1] - colorScale.legend.values[0]),
-                        pDistrict = mark.querySelector(".district"),
-                        pValue = mark.querySelector(".value");
+                    if (index > matchResults.length - 1) {
+                        mark.remove();
+                    }
+                    else {
+                        const value = matchResults[index].getProperties()[this.yearSelector + this.selectedYear],
+                            relativeValue = ((value - colorScale.legend.values[0]) * 100) / (colorScale.legend.values[colorScale.legend.values.length - 1] - colorScale.legend.values[0]),
+                            pDistrict = mark.querySelector(".district"),
+                            pValue = mark.querySelector(".value");
+
+                        if (Math.round(relativeValue) === 100) {
+                            mark.setAttribute("style", "left: calc(" + Math.round(relativeValue) + "% - 8px);");
+                        }
+                        else {
+                            mark.setAttribute("style", "left: " + Math.round(relativeValue) + "%;");
+                        }
+                        pDistrict.innerHTML = matchResults[index].getProperties()[this.keyOfAttrNameStats] + ": ";
+                        pValue.innerHTML = value;
+                    }
 
                     this.loVal = colorScale.legend.values[0].toLocaleString("de-DE");
                     this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString("de-DE");
-                    if (relativeValue === 100) {
-                        mark.setAttribute("style", "left: calc(" + Math.round(relativeValue) + "% - 8px);");
-                    }
-                    else {
-                        mark.setAttribute("style", "left: " + Math.round(relativeValue) + "%;");
-                    }
-
-                    pDistrict.innerHTML = results[index].getProperties()[this.keyOfAttrNameStats] + ": ";
-                    pValue.innerHTML = value;
-
                 });
             }
         },
@@ -274,7 +295,7 @@ export default {
                         @input="toggleVisualization(false)"
                     >
                         <template>
-                            {{ selectedYear }}
+                            <strong>{{ selectedYear }}</strong>
                         </template>
                     </Multiselect>
                     <Multiselect
@@ -292,7 +313,7 @@ export default {
                         @input="toggleVisualization(false)"
                     >
                         <template>
-                            {{ lastYear }}
+                            <strong>{{ lastYear }}</strong>
                         </template>
                     </Multiselect>
                 </div>
@@ -321,11 +342,11 @@ export default {
             <div
                 id="colorCodeMapLegend"
                 class="legend"
-                :class="{ active: visualizationState && legendValues && selectedFeatures.length > 2 }"
+                :class="{ active: visualizationState && legendValues && selectedFeatures.length > 1 }"
             >
                 <div id="legend_wrapper">
                     <div
-                        v-for="(district, i) in selectedFeatures"
+                        v-for="(value, i) in selectedFeatures"
                         :key="i"
                         class="legend_mark"
                     >
