@@ -91,11 +91,11 @@ export default {
         },
 
         /**
-         * returns text for iconMove
+         * returns text for iconEdit
          * @returns {String} -
          */
-        iconMove: function () {
-            return this.$t("additional:modules.tools.TacticalMark.iconMove");
+        iconEdit: function () {
+            return this.$t("additional:modules.tools.TacticalMark.iconEdit");
         },
 
         /**
@@ -2235,7 +2235,7 @@ export default {
                         >
                             <div class="tm-btn-txt">
                                 <span>
-                                    {{ iconMove }}
+                                    {{ iconEdit }}
                                 </span>
                             </div>
                         </div>

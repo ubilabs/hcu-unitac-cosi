@@ -19,6 +19,10 @@
   "VueAddon": {
     "type": "tool"
   },
+  "ColorCodeMap": {
+    "path": "cosi/ColorCodeMap",
+    "type": "tool"
+  },
   "DistrictSelector": {
     "path":"cosi/DistrictSelector",
     "type": "tool"
