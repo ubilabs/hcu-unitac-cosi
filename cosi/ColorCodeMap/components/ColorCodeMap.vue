@@ -240,12 +240,14 @@ export default {
                         :class="{ highlight: !visualizationState }"
                         @click="toggleVisualization(true)"
                     >
-                        <template v-if="visualizationState">
-                            <span class="glyphicon glyphicon-eye-close"></span>
-                        </template>
-                        <template v-else>
-                            <span class="glyphicon glyphicon-eye-open"></span>
-                        </template>
+                        <span
+                            v-if="visualizationState"
+                            class="glyphicon glyphicon-eye-close"
+                        />
+                        <span
+                            v-else
+                            class="glyphicon glyphicon-eye-open"
+                        />
                     </button>
                     <button
                         class="prev btn btn-default btn-sm"
@@ -273,9 +275,7 @@ export default {
                         placeholder=""
                         @input="toggleVisualization(false)"
                     >
-                        <template>
-                            {{ selectedYear }}
-                        </template>
+                        {{ selectedYear }}
                     </Multiselect>
                     <Multiselect
                         v-if="featuresStatistics.length"
@@ -291,9 +291,7 @@ export default {
                         placeholder=""
                         @input="toggleVisualization(false)"
                     >
-                        <template>
-                            {{ lastYear }}
-                        </template>
+                        {{ lastYear }}
                     </Multiselect>
                 </div>
                 <Multiselect
