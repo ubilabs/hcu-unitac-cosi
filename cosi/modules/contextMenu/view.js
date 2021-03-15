@@ -42,8 +42,8 @@ const ContextMenuView = Backbone.View.extend(/** @lends ContextMenuView */ {
         }, this);
 
         window.oncontextmenu = (evt) => {
-            //evt.preventDefault();
-            //return false;
+            evt.preventDefault();
+            return false;
         };
 
         this.render();
