@@ -1,16 +1,52 @@
-/* eslint-disable one-var */
 import * as XLSX from "xlsx";
 
 /**
  * @description returns the width definition for the table columns by reading out the headers char-length
  * @param {String[]} headers - the headers of the table columns
- * @param {Number} [multiply=2] - multiply the col header length by
+ * @param {Number} [multiply] - multiply the col header length by
  * @returns {Object[]} the column Options array for all columns of the table
  */
-function generateColOptions (headers, multiply = 2) {
+function generateColOptions (headers, multiply) {
+    const _multiply = multiply || 2;
+
     return headers.map(header => ({
-        wch: header.length * multiply
+        wch: header.length * _multiply
     }));
+}
+
+/**
+ * @description Sanitizes the export data. Removes excluded columns.
+ * @param {Object[]} json - the array of objects
+ * @param {String[]} exclude - the list of keys to exclude
+ * @returns {Object[]} the sanitized data
+ */
+function sanitizeData (json, exclude) {
+    if (exclude) {
+        json.forEach(column => {
+            exclude.forEach(key => {
+                delete column[key];
+            });
+        });
+    }
+
+    return json;
+}
+
+/**
+ * converts an object to an array of objects
+ * @param {Object} data - the input data
+ * @returns {Object[]} the converted array
+ */
+function convertObject (data) {
+    const objArr = [];
+    let row;
+
+    for (const key in data) {
+        row = {id: key, ...data[key]};
+        objArr.push(row);
+    }
+
+    return objArr;
 }
 
 /**
@@ -23,7 +59,7 @@ export function parseJsonToXlsx (json, options) {
     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
 
         header = Object.keys(json[0]),
-        colOptions = options.colOptions || generateColOptions(header),
+        colOptions = options.colOptions || generateColOptions(header, options.multiplyColWidth),
         rowOptions = options.rowOptions,
         workbook = XLSX.utils.book_new(),
         sheet = XLSX.utils.json_to_sheet(json, {header});
@@ -43,29 +79,40 @@ export function parseJsonToXlsx (json, options) {
  * @returns {void}
  */
 export default async function exportXlsx (json, filename, options = {}) {
-    if (!json || json.length === 0) {
+    let _json = json;
+
+    // catch not provided data
+    if (!_json || _json.length === 0) {
         console.warn("Die zu exportierende Tabelle ist leer oder existiert nicht, bitte überprüfen Sie Ihre Einstellungen");
         return false;
     }
 
-    const exportJson = JSON.parse(JSON.stringify(json)),
-        exclude = options.exclude;
+    // catch wrong data formats
+    if (_json.constructor !== Array) {
 
-    // remove excluded columns
-    if (exclude) {
-        exportJson.forEach(column => {
-            exclude.forEach(key => {
-                delete column[key];
-            });
-        });
+        // convert if data is a dictionary
+        if (_json.constructor === Object) {
+            _json = convertObject(_json);
+            console.warn("Die exportierenden Daten liegen nicht als Array Of Object vor. Sie werden automatisch konvertiert.");
+        }
+
+        // break if other format
+        else {
+            console.warn("Die zu exportierenden Daten müssen als Array of Objects vorliegen. Bitte überprüfen Sie die Daten. Input: ", json);
+            return false;
+        }
     }
 
-    const workbook = parseJsonToXlsx(exportJson, {
-        sheetname: options.sheetname || filename,
-        rowOptions: options.rowOptions,
-        colOptions: options.colOptions
-    });
+    // convert to XLSX
+    const exportJson = sanitizeData(JSON.parse(JSON.stringify(_json)), options.exclude),
+        workbook = parseJsonToXlsx(exportJson, {
+            sheetname: options.sheetname || filename,
+            rowOptions: options.rowOptions,
+            colOptions: options.colOptions,
+            multiplyColWidth: options.multiplyColWidth
+        });
 
+    // open download dialog
     XLSX.writeFile(workbook, filename + ".xlsx");
     return true;
 }

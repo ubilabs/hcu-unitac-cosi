@@ -26,11 +26,6 @@ describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
             computed: {
                 gfiFeatures: () => sinon.stub
             },
-            methods: {
-                createReport: () => {
-                    report = true;
-                }
-            },
             store: new Vuex.Store({
                 namespaced: true,
                 modules: {
@@ -41,7 +36,8 @@ describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
                             placingPolygonMarker: sinon.stub()
                         },
                         getters: {
-                            zoomLevel: sinon.stub()
+                            zoomLevel: sinon.stub(),
+                            markerPolygon: sinon.stub()
                         }
                     }
                 }
@@ -51,6 +47,9 @@ describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
     });
 
     it("should exist", () => {
+        sinon.stub(Flaecheninfo.methods, "createReport").callsFake(function () {
+            report = true;
+        });
         expect(wrapper.find("div").exists()).to.be.true;
     });
 

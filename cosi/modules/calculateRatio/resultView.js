@@ -1,7 +1,8 @@
 import ResultTemplate from "text-loader!./resultTemplate.html";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
-import ExportButtonView from "../../../../modules/snippets/exportButton/view";
+// import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import store from "../../../../src/app-store";
+import exportXlsx from "../../utils/exportXlsx";
 
 const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
 
@@ -11,7 +12,8 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
      * @memberof Tools.CalculateRatio
      */
     events: {
-        "click #push-dashboard": "pushToDashboard"
+        "click #push-dashboard": "pushToDashboard",
+        "click #export-button button": "exportResults"
     },
     model: {},
     template: _.template(ResultTemplate),
@@ -22,7 +24,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
      * @returns {Backbone.View} returns this
      */
     render: function () {
-        this.exportButtonView = new ExportButtonView({model: this.model.get("exportButtonModel")});
+        // this.exportButtonView = new ExportButtonView({model: this.model.get("exportButtonModel")});
 
         const attr = this.model.toJSON(),
             results = this.model.getResults();
@@ -30,13 +32,20 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
         attr.isModified = this.model.get("adjustParameterView").model.get("isModified");
 
         this.$el.html(this.template(attr));
-        this.$el.find("#export-button").append(this.exportButtonView.render().el);
+        // this.$el.find("#export-button").append(this.exportButtonView.render().el);
 
         if (Object.keys(results).length > 0) {
             this.createTextLabels(results);
         }
 
         return this;
+    },
+
+    exportResults () {
+        const date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
+            exportData = this.model.getExportData();
+
+        exportXlsx(exportData, `CoSI-Versorgungsanalyse-${date}`, {multiplyColWidth: 1});
     },
 
     /**

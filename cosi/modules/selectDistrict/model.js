@@ -402,10 +402,10 @@ const SelectDistrictModel = Tool.extend(/** @lends SelectDistrictModel.prototype
             this.setIsActive(true);
             this.set("isReady", true);
 
-            if (this.get("urlQuery")) {
-                this.setFeaturesByScopeAndIds(...this.get("urlQuery"));
-                this.getScopeFromDropdown();
-            }
+            // if (this.get("urlQuery")) {
+            //     this.setFeaturesByScopeAndIds(...this.get("urlQuery"));
+            //     this.getScopeFromDropdown();
+            // }
         }
     },
     zoomAndHighlightFeature: async function (districtName, onlySelected = true) {
