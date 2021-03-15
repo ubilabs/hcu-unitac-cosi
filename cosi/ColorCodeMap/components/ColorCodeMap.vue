@@ -45,6 +45,12 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
+
+        /**
+         * @todo todo
+         * @description todo
+         * @returns {void}
+         */
         updateSelectedDistricts () {
             this.featuresList = [];
             this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", this.label);
@@ -61,6 +67,11 @@ export default {
             }
         },
 
+        /**
+         * @todo todo
+         * @description todo
+         * @returns {void}
+         */
         updateFeaturesList () {
             this.selectedFeature = MappingJson[0].value;
             this.selectedYear = this.availableYears[0];
@@ -84,6 +95,12 @@ export default {
             });
         },
 
+        /**
+         * @todo todo
+         * @description todo
+         * @param {Boolean} toggle todo
+         * @returns {void}
+         */
         toggleVisualization (toggle) {
             if (toggle) {
                 this.visualizationState = !this.visualizationState;
@@ -153,6 +170,14 @@ export default {
                 });
             }
         },
+
+        /**
+         * @todo todo
+         * @description todo
+         * @param {*} results todo
+         * @param {*} colorScale todo
+         * @returns {void}
+         */
         generateDynamicLegend (results, colorScale) {
             if (results.length > 2) {
                 const legendDiv = document.getElementById("colorCodeMapLegend"),
@@ -191,9 +216,23 @@ export default {
                 });
             }
         },
+
+        /**
+         * @todo todo
+         * @description todo
+         * @param {*} values todo
+         * @returns {Object} the colorScale function(value) and the n-step legend color/value pairs.
+         */
         getColorsByValues (values) {
             return Radio.request("ColorScale", "getColorScaleByValues", values, this.colorScheme);
         },
+
+        /**
+         * @todo todo
+         * @description todo
+         * @param {*} value todo
+         * @returns {void}
+         */
         changeSelector (value) {
             const index = MappingJson.map(e => e.value).indexOf(this.selectedFeature) + value;
 
