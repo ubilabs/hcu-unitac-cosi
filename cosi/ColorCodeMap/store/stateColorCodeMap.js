@@ -22,7 +22,8 @@ const state = {
     isVisibleInMenu: false,
     deactivateGFI: false,
     yearSelector: "jahr_",
-    colorScheme: "interpolateBlues"
+    colorScheme: "interpolateBlues",
+    visualizationState: false
 };
 
 export default state;

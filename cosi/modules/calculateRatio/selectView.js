@@ -3,6 +3,7 @@ import SnippetDropdownView from "../../../../modules/snippets/dropdown/view";
 import ResultView from "./resultView";
 import InfoTemplate from "text-loader!./info.html";
 import "./style.less";
+import store from "../../../../src/app-store";
 
 const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
     events: {
@@ -118,6 +119,7 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
      * @returns {void}
      */
     calculateRatios: function () {
+        store.commit("Tools/ColorCodeMap/setVisualizationState", false);
         this.model.getRatiosForSelectedFeatures();
     },
 
@@ -169,7 +171,8 @@ const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
     clearResult: function () {
         this.resultView.remove();
         this.model.resetResults();
-        Radio.trigger("ColorCodeMap", "reset");
+        // Radio.trigger("ColorCodeMap", "reset");
+        store.commit("Tools/ColorCodeMap/setVisualizationState", false);
     }
 });
 

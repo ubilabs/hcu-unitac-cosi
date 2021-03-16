@@ -24,7 +24,6 @@ export default {
             legendValues: [],
             lastYear: null,
             selectorPosition: 0,
-            visualizationState: false,
             originalStyling: null,
             hiVal: null,
             loVal: null,
@@ -42,6 +41,9 @@ export default {
                     this.updateSelectedDistricts();
                 });
             }
+        },
+        visualizationState () {
+            this.renderVisualization();
         }
     },
     /**
@@ -102,21 +104,22 @@ export default {
                 }
             });
 
-            if (this.visualizationState) {
-                this.toggleVisualization(false);
-            }
+            this.renderVisualization();
         },
 
         /**
          * @todo todo
          * @description todo
-         * @param {Boolean} toggle todo
+         * @param {Boolean} [state] todo
          * @returns {void}
          */
-        toggleVisualization (toggle) {
-            if (toggle) {
-                this.visualizationState = !this.visualizationState;
-            }
+        renderVisualization () {
+            // if (state !== undefined) {
+            //     this.visualizationState = state;
+            // }
+            // else {
+            //     this.visualizationState = !this.visualizationState;
+            // }
 
             if (this.visualizationState) {
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
@@ -266,7 +269,7 @@ export default {
             else {
                 this.selectedFeature = MappingJson[index].value;
             }
-            this.toggleVisualization(false);
+            this.renderVisualization();
         }
     }
 };
@@ -298,7 +301,7 @@ export default {
                     <button
                         class="switch"
                         :class="{ highlight: !visualizationState }"
-                        @click="toggleVisualization(true)"
+                        @click="toggleVisualizationState()"
                     >
                         <span
                             v-if="visualizationState"
@@ -333,7 +336,7 @@ export default {
                         selectLabel=""
                         deselectLabel=""
                         placeholder=""
-                        @input="toggleVisualization(false)"
+                        @input="renderVisualization()"
                     >
                         <template>
                             <strong>{{ selectedYear }}</strong>
@@ -351,7 +354,7 @@ export default {
                         selectLabel=""
                         deselectLabel="Entfernen"
                         placeholder=""
-                        @input="toggleVisualization(false)"
+                        @input="renderVisualization()"
                     >
                         <template>
                             <strong>{{ lastYear }}</strong>
@@ -373,7 +376,7 @@ export default {
                     selectLabel=""
                     deselectLabel=""
                     placeholder=""
-                    @input="toggleVisualization(false)"
+                    @input="renderVisualization()"
                 >
                     <template>
                         <strong>{{ selectedFeature }}</strong>
