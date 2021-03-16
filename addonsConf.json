@@ -27,6 +27,10 @@
     "path":"cosi/DistrictSelector",
     "type": "tool"
   },
+  "DistrictLoader": {
+    "path":"cosi/DistrictLoader",
+    "type": "tool"
+  },
   "FileImportAddon": {
     "type": "tool"
   },

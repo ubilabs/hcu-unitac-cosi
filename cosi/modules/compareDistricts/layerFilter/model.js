@@ -8,6 +8,7 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
         filter: "" // e.g {filterKey:[lt,ut],filterKey:[lt,ut],filterKey:[lt,ut],...},
     },
 
+
     /**
      * @class LayerFilterModel
      * @extends Backbone.Model
@@ -31,6 +32,7 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
      * @returns {void}
      */
     initializeFilter: function () {
+        console.info("initfilter");
         const newFilter = {};
 
         newFilter[this.get("field")] = [0, 0];
@@ -48,33 +50,37 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
     initializeDistrictInfo: function () {
         const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             layerId = this.get("layerInfo").layerId,
-            featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
+            featureCollection = store.getters["Tools/DistrictLoader/getAllFeaturesByAttribute"]({
                 id: layerId
             }),
-            districtInfo = [],
-            field = Radio.request("Timeline", "getLatestFieldFromCollection", featureCollection),
-            values = featureCollection.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
-            max = parseInt(Math.max(...values), 10),
-            min = parseInt(Math.min(...values), 10);
-        let refValue = 0,
-            newInfo = {};
+            districtInfo = [];
 
-        this.set("field", field);
-        this.initializeFilter();
-        if (Radio.request("DistrictSelector", "getSelectedDistrict") !== "Leeren") {
-            const districtName = Radio.request("DistrictSelector", "getSelectedDistrict"),
-                refFeature = featureCollection.filter(feature => feature.getProperties()[selector] === districtName)[0];
+        featureCollection.then(features => {
+            console.info(features);
+            const field = Radio.request("Timeline", "getLatestFieldFromCollection", features),
+                values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
+                max = parseInt(Math.max(...values), 10),
+                min = parseInt(Math.min(...values), 10);
+            let refValue = 0,
+                newInfo = {};
 
-            refValue = parseInt(refFeature.getProperties()[field], 10);
-        }
-        else {
-            refValue = 0;
-        }
-        newInfo = {
-            key: field, value: refValue, max: max, min: min
-        };
-        districtInfo.push(newInfo);
-        this.set("districtInfo", districtInfo);
+            this.set("field", field);
+            this.initializeFilter();
+            if (Radio.request("DistrictSelector", "getSelectedDistrict") !== "Leeren") {
+                const districtName = Radio.request("DistrictSelector", "getSelectedDistrict"),
+                    refFeature = features.filter(feature => feature.getProperties()[selector] === districtName)[0];
+
+                refValue = parseInt(refFeature.getProperties()[field], 10);
+            }
+            else {
+                refValue = 0;
+            }
+            newInfo = {
+                key: field, value: refValue, max: max, min: min
+            };
+            districtInfo.push(newInfo);
+            this.set("districtInfo", districtInfo);
+        });
     },
 
     /**
@@ -87,23 +93,26 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
     updateRefDistrictValue: function () {
         const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             layerId = this.get("layerInfo").layerId,
-            featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
+            featureCollection = store.getters["Tools/DistrictLoader/getAllFeaturesByAttribute"]({
                 id: layerId
             }),
             newDistrictInfo = this.get("districtInfo").map({...this.get("districtInfo")});
         let refValue = 0;
 
-        if (Radio.request("DistrictSelector", "getSelectedDistrict") !== "Leeren") {
-            const districtName = Radio.request("DistrictSelector", "getSelectedDistrict"),
-                refFeature = featureCollection.filter(feature => feature.getProperties()[selector] === districtName)[0];
+        featureCollection.then(features => {
+            console.info(features);
+            if (Radio.request("DistrictSelector", "getSelectedDistrict") !== "Leeren") {
+                const districtName = Radio.request("DistrictSelector", "getSelectedDistrict"),
+                    refFeature = features.filter(feature => feature.getProperties()[selector] === districtName)[0];
 
-            refValue = parseInt(refFeature.getProperties()[this.get("field")], 10);
-        }
-        else {
-            refValue = 0;
-        }
-        newDistrictInfo.filter(item => item.key === this.get("field"))[0].value = refValue;
-        this.set("districtInfo", newDistrictInfo);
+                refValue = parseInt(refFeature.getProperties()[this.get("field")], 10);
+            }
+            else {
+                refValue = 0;
+            }
+            newDistrictInfo.filter(item => item.key === this.get("field"))[0].value = refValue;
+            this.set("districtInfo", newDistrictInfo);
+        });
     }
 });
 

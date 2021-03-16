@@ -17,6 +17,7 @@ export default function prepareDistrictLevels (districtLevels, layerList) {
             // at this point the features are probably not yet loaded, therefore the listener
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
             districtLevel.layer.getSource().on("change", setNameList.bind(districtLevel));
+            districtLevel.stats.districts = [];
         });
     }
 }

@@ -39,10 +39,10 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
             });
 
         this.setLayerOptions(layerOptions);
-        this.setDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", currentSelector));
+        this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllValuesByScope"]);
         this.listenTo(Radio.channel("FeaturesLoader"), {
             "districtsLoaded": function () {
-                this.updateDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", currentSelector));
+                this.updateDropDownModel(store.getters["Tools/DistrictLoader/getAllValuesByScope"]);
             }
         }, this);
     },

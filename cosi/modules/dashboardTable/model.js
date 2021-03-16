@@ -370,7 +370,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {object} the grouped table
      */
     groupTable (table) {
-        const values = Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]),
+        const values = store.getters["Tools/DistrictLoader/getAllValuesByScope"],
             metaInfo = {
                 group: "Gebietsinformation",
                 values: table.reduce((meta, col) => {
@@ -445,11 +445,17 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {void}
      */
     getData: function () {
-        const attrMap = Radio.request("FeaturesLoader", "getDistrictAttrMapping", store.getters["Tools/DistrictSelector/label"]),
-            features = Radio.request("FeaturesLoader", "getDistrictsByScope", [attrMap.attribute, ...attrMap.referenceAttributes]);
+        const districtLevels = store.getters["Tools/DistrictLoader/districtLevels"];
+        let districts = [];
 
-        if (features) {
-            this.updateTable(features);
+        districtLevels.forEach(level => {
+            if (typeof level.features !== "undefined" && level.features.length > 0) {
+                districts = districts.concat(level.features);
+            }
+        });
+
+        if (districts.length > 0) {
+            this.updateTable(districts);
         }
     },
 
@@ -916,7 +922,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     updateFilter: function () {
         this.get("filterDropdownModel").set("values", [
-            ...Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]),
+            ...store.getters["Tools/DistrictLoader/getAllValuesByScope"],
             ...this.get("customFilters")
         ]);
     },

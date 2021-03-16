@@ -57,13 +57,13 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
         const channel = Radio.channel("FeaturesLoader");
 
         channel.reply({
-            "getDistrictsByScope": this.getDistrictsByScope,
-            "getDistrictsByValue": this.getDistrictsByValue,
-            "getFeatureList": this.getFeatureList,
-            "getAllFeaturesByAttribute": this.getAllFeaturesByAttribute,
-            "getAllValuesByScope": this.getAllValuesByScope,
-            "getDistrictAttrMapping": this.getDistrictAttrMapping,
-            "unifyString": this.unifyString
+            // "getDistrictsByScope": this.getDistrictsByScope,
+            // "getDistrictsByValue": this.getDistrictsByValue,
+            // "getFeatureList": this.getFeatureList,
+            // "getAllFeaturesByAttribute": this.getAllFeaturesByAttribute,
+            // s"getAllValuesByScope": this.getAllValuesByScope,
+            // "getDistrictAttrMapping": this.getDistrictAttrMapping,
+            // "unifyString": this.unifyString
         }, this);
 
         this.listenTo(Radio.channel("SelectDistrict"), {
@@ -97,7 +97,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
 
             // this.set("featureList", []);
             Radio.trigger("Util", "showLoader");
-            this.loadDistricts(bbox, attrMap.url, attrMap.attribute, districtNameList, attrMap.referenceAttributes);
+            //this.loadDistricts(bbox, attrMap.url, attrMap.attribute, districtNameList, attrMap.referenceAttributes);
         }
     },
 

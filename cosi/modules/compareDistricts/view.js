@@ -332,32 +332,48 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             const layerFilterList = JSON.parse(value),
                 selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
                 results = [],
-                resultNames = [];
+                resultNames = [],
+                features = [];
             let intersection = [],
                 comparableFeatures = [];
 
             layerFilterList.forEach(layerFilter => {
-                resultNames.push(this.filterOne(layerFilter).map(feature => feature.getProperties()[selector]));
-                results.push(this.filterOne(layerFilter));
-            }, this);
-            comparableFeatures = results[0];
-            if (results.length > 1) {
-                intersection = resultNames.reduce(function (a, b) {
-                    return a.filter(function (val) {
-                        return b.includes(val);
-                    });
-                });
-                comparableFeatures = results[0].filter(feature => intersection.includes(feature.getProperties()[selector]));
-                this.model.set("comparableFeaturesNames", intersection);
-                this.renderCompareResults(intersection);
-                this.renderParams();
-            }
-            else {
-                this.renderCompareResults(resultNames.reduce((acc, val) => acc.concat(val), [])); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
-                this.renderParams();
-                this.model.set("comparableFeaturesNames", resultNames.reduce((acc, val) => acc.concat(val), [])); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
-            }
-            this.showComparableDistricts(comparableFeatures);
+                if (layerFilter.filter !== "") {
+                    features.push(store.getters["Tools/DistrictLoader/getAllFeaturesByAttribute"]({
+                        id: layerFilter.layerId
+                    }));
+                }
+            });
+
+            Promise.all(features).then((feat) => {
+                if (feat.length > 0) {
+                    layerFilterList.forEach(layerFilter => {
+                        if (layerFilter.filter !== "" && layerFilter.districtInfo.length > 0) {
+                            resultNames.push(this.filterOne(layerFilter, feat[0]).map(feature => feature.getProperties()[selector]));
+                            results.push(this.filterOne(layerFilter, feat[0]));
+                        }
+
+                    }, this);
+                    comparableFeatures = results[0];
+                    if (results.length > 1) {
+                        intersection = resultNames.reduce(function (a, b) {
+                            return a.filter(function (val) {
+                                return b.includes(val);
+                            });
+                        });
+                        comparableFeatures = results[0].filter(feature => intersection.includes(feature.getProperties()[selector]));
+                        this.model.set("comparableFeaturesNames", intersection);
+                        this.renderCompareResults(intersection);
+                        this.renderParams();
+                    }
+                    else {
+                        this.renderCompareResults(resultNames.reduce((acc, val) => acc.concat(val), [])); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
+                        this.renderParams();
+                        this.model.set("comparableFeaturesNames", resultNames.reduce((acc, val) => acc.concat(val), [])); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
+                    }
+                    this.showComparableDistricts(comparableFeatures);
+                }
+            });
         }
         else {
             this.$el.find("#compare-results").empty();
@@ -371,23 +387,20 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
     /**
      * runs all districts through one layerFilter
      * @param {Object} layerFilter the layerFilter to filter through
+     * @param {Object[]} features -
      * @fires FeaturesLoader#RadioRequestGetAllFeaturesByAttribute
      * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetSelector
      * @returns {Array} filter results
      */
-    filterOne: function (layerFilter) {
-        const filterResults = [],
-            layerId = layerFilter.layerId,
-            featureCollection = Radio.request("FeaturesLoader", "getAllFeaturesByAttribute", {
-                id: layerId
-            }),
-            filterCollection = JSON.parse(layerFilter.filter);
+    filterOne: function (layerFilter, features) {
         let intersection = [];
+        const filterResults = [],
+            filterCollection = JSON.parse(layerFilter.filter);
 
         Object.keys(filterCollection).forEach(filterKey => {
             const tolerance = [parseFloat(filterCollection[filterKey][0]), parseFloat(filterCollection[filterKey][1])],
                 refValue = layerFilter.districtInfo.filter(item => item.key === filterKey)[0].value,
-                selectedFeatures = featureCollection.filter(feature => {
+                selectedFeatures = features.filter(feature => {
                     return feature.getProperties()[filterKey] >= refValue - tolerance[0]
                         && feature.getProperties()[filterKey] <= refValue + tolerance[1]
                         && feature.getProperties()[store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]] !== Radio.request("DistrictSelector", "getSelectedDistrict")
@@ -458,21 +471,23 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
             cloneCollection = [];
 
         this.clearMapLayer();
-        districtFeatures.forEach((feature) => {
-            const featureClone = feature.clone();
+        if (typeof districtFeatures !== "undefined") {
+            districtFeatures.forEach((feature) => {
+                const featureClone = feature.clone();
 
-            featureClone.setStyle(this.model.get("selectedStyle"));
-            cloneCollection.push(featureClone);
-        });
-        //  add refDistrict feature to the collection
-        if (this.model.get("refDistrict")) {
-            const refDistrictClone = this.model.get("refDistrict").clone();
+                featureClone.setStyle(this.model.get("selectedStyle"));
+                cloneCollection.push(featureClone);
+            });
+            //  add refDistrict feature to the collection
+            if (this.model.get("refDistrict")) {
+                const refDistrictClone = this.model.get("refDistrict").clone();
 
-            refDistrictClone.setStyle(this.model.get("selectedStyle"));
-            cloneCollection.push(refDistrictClone);
+                refDistrictClone.setStyle(this.model.get("selectedStyle"));
+                cloneCollection.push(refDistrictClone);
+            }
+            mapLayer.setVisible(true);
+            mapLayer.getSource().addFeatures(cloneCollection);
         }
-        mapLayer.setVisible(true);
-        mapLayer.getSource().addFeatures(cloneCollection);
     },
 
     /**

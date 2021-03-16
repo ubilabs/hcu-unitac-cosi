@@ -77,6 +77,10 @@ const getters = {
             return [];
         }
         return selectedDistrictsCollection.getArray();
+    },
+
+    propertyNameList: (state, {selectedDistrictLevel}) => {
+        return selectedDistrictLevel.stats.propertyNameList;
     }
 };
 
