@@ -214,11 +214,10 @@ export default {
         ...mapMutations("Tools/EinwohnerAbfrage", Object.keys(mutations)),
 
         /**
-         * A number of Fake Requests for Testing
+         * Fake Request for Testing - square in HH Neustadt: Result 2548, 155.661 m²
          * @returns {void}
          */
         fakeReqHHNeustadt: function () {
-            // square in HH Neustadt: Result 2548, 155.661 m²
             const fakeJsonHHNeustadtSq = {
                 "type": "Polygon",
                 "coordinates": [
@@ -249,9 +248,11 @@ export default {
 
             this.makeRequest(fakeJsonHHNeustadtSq);
         },
-
+        /**
+         * Fake Request for Testing - square in HH und MRH: 48.817, 63.290 und 69 km²
+         * @returns {void}
+         */
         fakeReqHHUndMRH: function () {
-            // square in HH und MRH: 48.817, 63.290 und 69 km²
             const fakeJsonHHUndMRHSq = {
                 "type": "Polygon",
                 "coordinates": [
@@ -282,9 +283,11 @@ export default {
 
             this.makeRequest(fakeJsonHHUndMRHSq);
         },
-
+        /**
+         * Fake Request for Testing - square in MRH: 28.120, 75 km²
+         * @returns {void}
+         */
         fakeReqMRH: function () {
-            // square in MRH: 28.120, 75 km²
             const fakeJsonMRHSq = {
                 "type": "Polygon",
                 "coordinates": [
@@ -315,9 +318,11 @@ export default {
 
             this.makeRequest(fakeJsonMRHSq);
         },
-
+        /**
+         * Fake Request for Testing - partially outside MRH
+         * @returns {void}
+         */
         fakeReqPartiallyOutsideMRH: function () {
-            // partially outside MRH
             const fakeJsonPartiallyOutsideMRH = {
                 "type": "Polygon",
                 "coordinates": [
@@ -348,9 +353,11 @@ export default {
 
             this.makeRequest(fakeJsonPartiallyOutsideMRH);
         },
-
+        /**
+         * Fake Request for Testing - result 0 in MRH
+         * @returns {void}
+         */
         fakeReqMRHRes0: function () {
-            // result 0 in MRH
             const fakeJsonMRHRes0 = {
                 "type": "Polygon",
                 "coordinates": [
@@ -381,9 +388,11 @@ export default {
 
             this.makeRequest(fakeJsonMRHRes0);
         },
-
+        /**
+         * Fake Request for Testing - outside MRH
+         * @returns {void}
+         */
         fakeReqOutsideMRH: function () {
-            // result 0 in MRH
             const fakeOutsideMRH = {
                 "type": "Polygon",
                 "coordinates": [
@@ -414,9 +423,11 @@ export default {
 
             this.makeRequest(fakeOutsideMRH);
         },
-
+        /**
+         * Fake Request for Testing - too small in MRH
+         * @returns {void}
+         */
         fakeReqTooSmallMRH: function () {
-            // result 0 in MRH
             const fakeTooSmallMRH = {
                 "type": "Polygon",
                 "coordinates": [
@@ -447,9 +458,8 @@ export default {
 
             this.makeRequest(fakeTooSmallMRH);
         },
-
         /**
-         * Resets internal data. Triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
+         * Resets internal data and triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
          * @param  {Object} geoJson GeoJSON to get selected area from
          * @fires Addons.Einwohnerabfrage#handleResponse
          * @fires Core#RadioTriggerWPSRequest
@@ -542,13 +552,13 @@ export default {
                 else {
                     this.einwohner_mrh_num = -1;
                 }
-                if (obj.quelle_fhh) {
+                if (obj.hasOwnProperty("quelle_fhh")) {
                     this.quelle_fhh = obj.quelle_fhh;
                 }
                 else {
                     this.quelle_fhh = "nein";
                 }
-                if (obj.quelle_mrh) {
+                if (obj.hasOwnProperty("quelle_mrh")) {
                     this.quelle_mrh = obj.quelle_mrh;
                 }
                 else {
@@ -607,7 +617,6 @@ export default {
                 Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
             }
         },
-
         /**
          * checks whether the model has been loaded.
          * If it is not loaded, a corresponding error message is displayed and switches snippetCheckbox off
@@ -618,11 +627,12 @@ export default {
          * @returns {void}
          */
         checkIsModelLoaded: function (layerId) {
-            if (Radio.request("ModelList", "getModelsByAttributes", {id: layerId}).length === 0) {
+            const layerModel = Radio.request("ModelList", "getModelsByAttributes", {id: layerId});
+
+            if (layerModel === undefined || layerModel.length === 0) {
                 Radio.trigger("Alert", "alert", "Der Layer mit der ID: " + layerId + " konnte nicht geladen werden, da dieser im Portal nicht zur Verfügung steht!");
             }
         },
-
         /**
          * sets selected and visibility to ModelList via Radio.trigger
          * @param {String} layerId id of the layer to be toggled
@@ -676,6 +686,36 @@ export default {
                 this.checkIsModelLoaded(layerId, value);
             }
             this.setModelAttributesByIdToModelList(layerId, value);
+        },
+        /**
+         * Sets FHH values for Testing
+         * @param {String} quelle Value for Quelle_fhh
+         * @param {Integer} einwohner_num_value Value for einwohner_fhh_num
+         * @returns {void}
+         */
+        setFHH (quelle, einwohner_num_value) {
+            this.quelle_fhh = quelle;
+            this.einwohner_fhh_num = einwohner_num_value;
+            this.einwohner_fhh = thousandsSeparator(einwohner_num_value);
+        },
+        /**
+         * Sets MRH values for Testing
+         * @param {String} quelle Value for Quelle_fhh
+         * @param {Integer} einwohner_num_value Value for einwohner_fhh_num
+         * @returns {void}
+         */
+        setMRH (quelle, einwohner_num_value) {
+            this.quelle_mrh = quelle;
+            this.einwohner_mrh_num = einwohner_num_value;
+            this.einwohner_mrh = thousandsSeparator(einwohner_num_value);
+        },
+        /**
+         * Sets suchflaeche for Testing
+         * @param {String} flaeche Value for suchflaeche
+         * @returns {void}
+         */
+        setSuchflaeche (flaeche) {
+            this.suchflaeche = flaeche;
         },
         /**
          * Closes this tool window by setting active to false
@@ -803,6 +843,7 @@ export default {
                 </table>
                 <div
                     v-if="einwohner_fhh_num > -1"
+                    class="einwohner_fhh_add_text"
                 >
                     <div class="hinweis additional-text">
                         <span>{{ hint }}:</span>&nbsp;{{ confidentialityHintSmallValues }}
@@ -818,6 +859,7 @@ export default {
                 </div>
                 <div
                     v-if="einwohner_mrh_num > -1"
+                    class="einwohner_mrh_add_text"
                 >
                     <div class="hinweis additional-text">
                         <div

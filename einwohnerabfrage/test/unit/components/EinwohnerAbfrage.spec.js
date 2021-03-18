@@ -39,38 +39,54 @@ describe("addons/EinwohnerAbfrage/components/EinwohnerAbfrage.vue", () => {
         store.commit("Tools/EinwohnerAbfrage/setActive", true);
     });
 
-    it("should exist", () => {
+    it("should exist", async () => {
         const wrapper = shallowMount(EinwohnerAbfrageComponent, {store, localVue});
 
         expect(wrapper.exists()).to.be.true;
     });
 
-    it("should find Tool component", () => {
+    it("should find Tool component", async () => {
         const wrapper = shallowMount(EinwohnerAbfrageComponent, {store, localVue}),
             toolWrapper = wrapper.findComponent({name: "Tool"});
 
         expect(toolWrapper.exists()).to.be.true;
     });
 
-    it("should not render if active is false", () => {
+    it("should not render if active is false", async () => {
         store.commit("Tools/EinwohnerAbfrage/setActive", false);
         const wrapper = shallowMount(EinwohnerAbfrageComponent, {store, localVue});
 
         expect(wrapper.find("form").exists()).to.be.false;
     });
 
-    it("should render if active is true", () => {
+    it("should render if active is true", async () => {
         const wrapper = shallowMount(EinwohnerAbfrageComponent, {store, localVue});
 
         expect(wrapper.find("form").exists()).to.be.true;
     });
 
-    it("renders the EinwohnerAbfrage tool with the expected divs", () => {
+    it("renders the EinwohnerAbfrage tool with the expected divs", async () => {
         const wrapper = shallowMount(EinwohnerAbfrageComponent, {store, localVue});
 
         expect(wrapper.find("div.dropdown").exists()).to.be.true;
         expect(wrapper.find("div.result").exists()).to.be.false;
         expect(wrapper.find("div.checkbox").exists()).to.be.true;
+    });
+
+    it("renders the EinwohnerAbfrage result if values are set and checks the values", async () => {
+        const wrapper = shallowMount(EinwohnerAbfrageComponent, {store, localVue});
+
+        wrapper.vm.setFHH("ja", 100);
+        wrapper.vm.setMRH("ja", 100);
+        wrapper.vm.setSuchflaeche("10 ha");
+        await wrapper.vm.$nextTick();
+        expect(wrapper.find("td.einwohner_fhh").text()).to.be.equal("100");
+        expect(wrapper.find("td.einwohner_mrh").text()).to.be.equal("100");
+        expect(wrapper.find("td.suchflaeche").text()).to.be.equal("10 ha");
+
+        expect(wrapper.find("div.result").exists()).to.be.true;
+        expect(wrapper.find("div.einwohner_fhh_add_text").exists()).to.be.true;
+        expect(wrapper.find("div.einwohner_mrh_add_text").exists()).to.be.true;
     });
 
     it("should call toggleRasterLayer if Raster Checkbox is changed", async () => {

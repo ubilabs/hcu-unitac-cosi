@@ -1,8 +1,8 @@
 import {generateSimpleGetters} from ".../../../src/app-store/utils/generators";
-import vueAddonState from "./stateEinwohnerAbfrage";
+import EinwohnerAbfrageState from "./stateEinwohnerAbfrage";
 
 const getters = {
-    ...generateSimpleGetters(vueAddonState)
+    ...generateSimpleGetters(EinwohnerAbfrageState)
 };
 
 export default getters;
