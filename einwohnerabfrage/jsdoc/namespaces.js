@@ -1,4 +1,0 @@
-/**
- * @namespace Einwohnerabfrage
- * @memberof Addons
- */
