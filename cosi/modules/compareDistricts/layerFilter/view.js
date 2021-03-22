@@ -52,21 +52,23 @@ const LayerFilterView = Backbone.View.extend(/** @lends LayerFilterView.prototyp
      * @returns {void}
      */
     renderToleranceViews: function () {
-        const filterData = JSON.parse(this.model.get("filter"));
+        if (this.model.get("filter") !== "") {
+            console.info(this.model.get("filter"));
+            const filterData = JSON.parse(this.model.get("filter"));
+            Object.keys(filterData).forEach(filterKey => {
+                const newToleranceModel = new ToleranceModel({
+                        key: filterKey,
+                        lowerTolerance: parseInt(filterData[filterKey][0], 10),
+                        upperTolerance: parseInt(filterData[filterKey][1], 10)
+                    }),
+                    toleranceView = new ToleranceView({
+                        model: newToleranceModel
+                    });
 
-        Object.keys(filterData).forEach(filterKey => {
-            const newToleranceModel = new ToleranceModel({
-                    key: filterKey,
-                    lowerTolerance: parseInt(filterData[filterKey][0], 10),
-                    upperTolerance: parseInt(filterData[filterKey][1], 10)
-                }),
-                toleranceView = new ToleranceView({
-                    model: newToleranceModel
-                });
-
-            this.toleranceCollection.add(newToleranceModel);
-            this.$el.find("#" + filterKey + "-td").append(toleranceView.render().el);
-        });
+                this.toleranceCollection.add(newToleranceModel);
+                this.$el.find("#" + filterKey + "-td").append(toleranceView.render().el);
+            });
+        }
     },
 
     /**

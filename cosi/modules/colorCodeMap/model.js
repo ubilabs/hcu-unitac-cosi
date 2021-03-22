@@ -22,7 +22,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
     initialize: function () {
         store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
             if (extent.length > 0) {
-                this.setDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", store.getters["Tools/DistrictSelector/keyOfAttrNameStats"]));
+                this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllValuesByScope"]);
                 this.set("districtFeatures", store.getters["Tools/DistrictSelector/selectedFeatures"]);
             }
             else {
@@ -38,7 +38,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         });
 
         // load list initially for statgebiet and rerender on scope change
-        this.setDropDownModel(Radio.request("FeaturesLoader", "getAllValuesByScope", "statgebiet"));
+        this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllValuesByScope"]);
     },
 
     /**
@@ -75,10 +75,9 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
      */
     dropDownCallback: function (valueModel, isSelected) {
         if (isSelected) {
-            const scope = store.getters["Tools/DistrictSelector/label"],
-                // the selected value in the dropdown
-                value = valueModel.get("value"),
-                statisticsFeatures = Radio.request("FeaturesLoader", "getDistrictsByValue", scope, value);
+            // the selected value in the dropdown
+            const value = valueModel.get("value"),
+                statisticsFeatures = store.getters["Tools/DistrictLoader/statsFeaturesByCategory"](value);
 
             this.setStatisticsFeatures(statisticsFeatures);
             this.styleDistrictFeatures(this.get("statisticsFeatures"), this.getLastYearAttribute(statisticsFeatures[0].getProperties()));

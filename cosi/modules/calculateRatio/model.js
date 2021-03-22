@@ -4,6 +4,7 @@ import AdjustParameterView from "./adjustParameter/view";
 // import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import * as Extent from "ol/extent";
 import store from "../../../../src/app-store";
+import unifyString from "../../utils/unifyString.js";
 
 const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -42,9 +43,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         this.listenTo(this, {
             "change:isActive": function (model, isActive) {
                 if (isActive) {
-                    const scope = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
-
-                    let demographicValueList = Radio.request("FeaturesLoader", "getAllValuesByScope", scope);
+                    let demographicValueList = store.getters["Tools/DistrictLoader/getAllValuesByScope"];
 
                     demographicValueList = demographicValueList.filter(function (layer) {
                         return layer.valueType === "absolute";
@@ -280,17 +279,16 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
             if (this.getDenominators().length > 0) {
                 this.getDenominators().forEach((den) => {
 
-                    const scope = Radio.request("FeaturesLoader", "getDistrictAttrMapping", store.getters["Tools/DistrictSelector/label"]),
-                        districtFeature = Radio.request("FeaturesLoader", "getDistrictsByScope", scope.attribute)
-                            .filter(feature => {
-                                if (feature.get("kategorie") === den) {
-                                    const featureName = Radio.request("FeaturesLoader", "unifyString", feature.get(selector)),
-                                        districtName = Radio.request("FeaturesLoader", "unifyString", district.get(geomSelector));
+                    const districtFeature = store.getters["Tools/DistrictLoader/currentStatsFeatures"]
+                        .filter(feature => {
+                            if (feature.get("kategorie") === den) {
+                                const featureName = unifyString(feature.get(selector)),
+                                    districtName = unifyString(district.get(geomSelector));
 
-                                    return featureName === districtName;
-                                }
-                                return false;
-                            });
+                                return featureName === districtName;
+                            }
+                            return false;
+                        });
 
                     if (districtFeature) {
                         const districtProperties = districtFeature[0].getProperties(),
@@ -364,6 +362,18 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
 
             this.set("adjustParameterView", new AdjustParameterView(layer.get("id"), this.get("modifierInfoText")));
         }
+    },
+
+    /**
+     * Compensates for inconstistencies in naming by removing spaces and first capitals
+     * @param {*} str the string / tag to convert
+     * @returns {string} the converted string
+     */
+    unifyString: function (str) {
+        if (typeof str === "string") {
+            return str.replace(/\s/g, "").replace(/^\w/, c => c.toLowerCase());
+        }
+        return str;
     },
 
     /**

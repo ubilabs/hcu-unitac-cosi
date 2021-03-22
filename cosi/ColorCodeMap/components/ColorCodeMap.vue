@@ -6,6 +6,7 @@ import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import MappingJson from "../../modules/featuresLoader/mapping.json";
+import store from "../../../../src/app-store";
 
 export default {
     name: "ColorCodeMap",
@@ -56,7 +57,6 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
-
         /**
          * @todo todo
          * @description todo
@@ -64,7 +64,7 @@ export default {
          */
         updateSelectedDistricts () {
             this.featuresList = [];
-            this.featuresStatistics = Radio.request("FeaturesLoader", "getDistrictsByScope", this.label);
+            this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
                 Object.keys(this.featuresStatistics[0].getProperties()).forEach(key => {
@@ -114,13 +114,6 @@ export default {
          * @returns {void}
          */
         renderVisualization () {
-            // if (state !== undefined) {
-            //     this.visualizationState = state;
-            // }
-            // else {
-            //     this.visualizationState = !this.visualizationState;
-            // }
-
             if (this.visualizationState) {
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),

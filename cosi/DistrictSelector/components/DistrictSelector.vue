@@ -126,7 +126,8 @@ export default {
 
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
-        ...mapActions("Alerting", ["addSingleAlert"]),
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Tools/DistrictLoader", ["loadDistricts"]),
         ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
 
         /**
@@ -289,6 +290,10 @@ export default {
                 this.zoomTo(extent);
                 this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom(bboxGeom);
+                this.loadDistricts({
+                    extent: this.extent,
+                    districtNameList: this.districtNameList
+                });
             }
             else {
                 this.setExtent([]);

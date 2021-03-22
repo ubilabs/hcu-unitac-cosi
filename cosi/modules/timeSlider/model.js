@@ -206,11 +206,10 @@ const TimeSliderModel = Backbone.Model.extend({
     /**
      * sets the used features
      * @param {string} value - the selected value in the dropdown
-     * @param {string} scope - statgebiet | stadttteil
      * @returns {void}
      */
-    setFeaturesByValueAndScope: function (value, scope) {
-        this.set("features", Radio.request("FeaturesLoader", "getDistrictsByValue", scope, value));
+    setFeaturesByValueAndScope: function (value) {
+        this.set("features", store.getters["Tools/DistrictLoader/statsFeaturesByCategory"](value));
     },
 
     /**
