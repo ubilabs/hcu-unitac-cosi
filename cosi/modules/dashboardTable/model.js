@@ -130,6 +130,10 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             if (selector === "bezirke") {
                 selector = "bezirk";
             }
+            if (selector === "hamburg_gesamt") {
+                properties.bezirk = "Hamburg (gesamt)";
+                selector = "bezirk";
+            }
 
             distCol = newTable.findIndex(col => col[selector] === properties[selector] && col.verwaltungseinheit === properties.verwaltungseinheit);
 
