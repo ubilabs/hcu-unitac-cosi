@@ -13,14 +13,16 @@ export default function modifyDistricts (districtLevels) {
     districtLevels.forEach(async (level) => {
         const layer = getLayerList().find(rawlayer => rawlayer.url === level.url),
             json = await describeFeatureType(level.url),
-            desc = getFeatureDescription(json, layer.featureType),
+            desc = getFeatureDescription(json, layer?.featureType),
             propertyNameList = [];
 
-        desc.forEach(des => {
-            if (des.type.search("gml:") === -1) {
-                propertyNameList.push(des.name);
-            }
-        });
+        if (desc) {
+            desc.forEach(des => {
+                if (des.type.search("gml:") === -1) {
+                    propertyNameList.push(des.name);
+                }
+            });
+        }
 
         level.propertyNameList = propertyNameList.toString();
     });

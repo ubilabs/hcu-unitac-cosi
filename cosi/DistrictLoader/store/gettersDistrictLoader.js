@@ -26,7 +26,7 @@ const getters = {
         if (featureList.hasOwnProperty(valueOfLayer)) {
             return featureList[valueOfLayer];
         }
-        return getFeature(layer.url, layer.featureType)
+        return getFeature(layer?.url, layer?.featureType)
             .then(response => {
                 const wfsReader = new WFS({
                     featureNS: layer.featureNS

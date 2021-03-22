@@ -1,4 +1,4 @@
-import FeaturesLoader from "./featuresLoader/model";
+// import FeaturesLoader from "./featuresLoader/model";
 // import BboxSettor from "./bboxSettor/model";
 import ColorCodeMap from "./colorCodeMap/model";
 import Dashboard from "./dashboard/model";
@@ -21,7 +21,7 @@ import ReachabilitySelect from "./reachabilitySelect/model";
 import CompareDistricts from "./compareDistricts/model";
 import Filter from "./filter/model";
 
-new FeaturesLoader();
+// new FeaturesLoader();
 // new BboxSettor();
 new OpenRouteService();
 

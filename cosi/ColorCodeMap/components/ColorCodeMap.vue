@@ -114,13 +114,6 @@ export default {
          * @returns {void}
          */
         renderVisualization () {
-            // if (state !== undefined) {
-            //     this.visualizationState = state;
-            // }
-            // else {
-            //     this.visualizationState = !this.visualizationState;
-            // }
-
             if (this.visualizationState) {
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
