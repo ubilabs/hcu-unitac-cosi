@@ -9,9 +9,6 @@ const mutations = {
      * will be returned.
      */
     ...generateSimpleMutations(stateVueAddon)
-
-
-    // mutation for extent / bbox
 };
 
 export default mutations;

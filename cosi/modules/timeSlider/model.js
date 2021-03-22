@@ -209,7 +209,7 @@ const TimeSliderModel = Backbone.Model.extend({
      * @returns {void}
      */
     setFeaturesByValueAndScope: function (value) {
-        this.set("features", store.getters["Tools/DistrictLoader/getDistrictsByValue"](value));
+        this.set("features", store.getters["Tools/DistrictLoader/statsFeaturesByCategory"](value));
     },
 
     /**

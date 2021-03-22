@@ -6,27 +6,28 @@ import {getFeature} from "../../../../src/api/wfs/getFeature.js";
 
 const actions = {
     /**
-     * get all mapped data layer infos by scope
-     * @param {string} scope - statgebiet | stadtteil
-     * @returns {object[]} list of all available values
+     * @param {Function} dispatch - Function to dispatch a action.
+     * @param {Object} store.getters - The DistrictLoader getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @param {Object} getters.districtLevels - All avaiable district levels.
+     * @param {Object} payload - The stored features per layer.
+     * @param {Number[]} payload.extent - The extent of the selected districts.
+     * @param {String[]} payload.districtNameList - A list of the names of the selected districts.
+     * @param {Object} payload.districtLevel - The stored features per layer.
+     * @param {String[]} payload.subDistrictNameList - The district names on the lower level to avoid naming conflicts
+     * @returns {module:ol/Feature[]}Returns stats features.
      */
     loadDistricts ({dispatch, getters}, payload) {
         const {selectedDistrictLevel, districtLevels} = getters,
-            {extent, districtNameList, districtLevel, subDistrictNameList} = payload;
-        let level = districtLevel;
-
-        if (typeof level === "undefined") {
-            level = selectedDistrictLevel;
-        }
-        // console.info(extent);
-
-        const layerList = getLayerList().filter(function (layer) {
-            return layer.url === level.url;
-        }),
-        wfsReader = new WFS({
-            featureNS: layerList[0].featureNS
-        }),
-        featurePromiseList = [];
+            {extent, districtNameList, districtLevel, subDistrictNameList} = payload,
+            level = typeof districtLevel === "undefined" ? selectedDistrictLevel : districtLevel,
+            layerList = getLayerList().filter(function (layer) {
+                return layer.url === level.url;
+            }),
+            wfsReader = new WFS({
+                featureNS: layerList[0].featureNS
+            }),
+            featurePromiseList = [];
 
         layerList.forEach(function (layer) {
             featurePromiseList.push(getFeature(layer.url, layer.featureType, undefined, level.propertyNameList, typeof extent !== "undefined" ? extent.toString() : undefined)

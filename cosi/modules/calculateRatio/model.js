@@ -279,7 +279,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
             if (this.getDenominators().length > 0) {
                 this.getDenominators().forEach((den) => {
 
-                    const districtFeature = store.getters["Tools/DistrictLoader/getDistrictsByScope"]
+                    const districtFeature = store.getters["Tools/DistrictLoader/currentStatsFeatures"]
                         .filter(feature => {
                             if (feature.get("kategorie") === den) {
                                 const featureName = unifyString(feature.get(selector)),

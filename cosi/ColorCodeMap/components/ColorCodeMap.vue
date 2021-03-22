@@ -64,7 +64,7 @@ export default {
          */
         updateSelectedDistricts () {
             this.featuresList = [];
-            this.featuresStatistics = store.getters["Tools/DistrictLoader/getDistrictsByScope"];
+            this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
                 Object.keys(this.featuresStatistics[0].getProperties()).forEach(key => {

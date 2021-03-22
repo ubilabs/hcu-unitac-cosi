@@ -9,52 +9,22 @@ import {getFeature} from "../../../../src/api/wfs/getFeature.js";
 const getters = {
     ...generateSimpleGetters(districtSelectorState),
 
-
     /**
-     * get all mapped data layer infos by scope
-     * @param {string} scope - statgebiet | stadtteil
-     * @returns {object[]} list of all available values
+     * Returns all features of a layer by the given attributes.
+     * If the features are not yet stored, it will be loaded.
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters - The DistrictLoader getters.
+     * @param {Object} getters.featureList - The stored features per layer.
+     * @param {Object} attributes - Key value pair(s) of layer attribute(s).
+     * @returns {module:ol/Feature[]} The features of a layer.
      */
-    getAllValuesByScope: (state, {selectedDistrictLevel}) => {
-        return MappingJson;
-    },
-
-    /**
-     * returns district features by a value
-     * @param {string} scope - scope of districts, Stadtteile | Statistische Gebiet
-     * @param {string} value - the value to be filtered by
-     * @returns {ol.Feature[]} the district features
-     */
-    getDistrictsByValue: (state, {selectedDistrictLevel}) => (value) => {
-        return selectedDistrictLevel.features.filter(function (feature) {
-            return feature.getProperties().kategorie === value;
-        });
-    },
-
-    /**
-     * Returns the key for the attribute "name" of the district features.
-     * @param {Object} state - The DistrictSelector state.
-     * @param {Object} getters - The DistrictSelector getters.
-     * @param {Object} getters.selectedDistrictLevel - The selected district level.
-     * @returns {String} The key for the attribute "name".
-     */
-    getDistrictsByScope: (state, {selectedDistrictLevel}) => {
-        return selectedDistrictLevel.features;
-    },
-
-    /**
-     * returns all features of a layer
-     * if the features are not yet stored, it will be loaded
-     * @param {object} obj - key value pair of a layer attribute
-     * @returns {ol.Feature[]} the features of a layer
-     */
-    getAllFeaturesByAttribute: (state) => (obj) => {
+    getAllFeaturesByAttribute: (state, {featureList}) => (attributes) => {
         // layer name, layer id or any other value of the layer
-        const valueOfLayer = obj[Object.keys(obj)[0]],
-            layer = getLayerWhere(obj);
+        const valueOfLayer = attributes[Object.keys(attributes)[0]],
+            layer = getLayerWhere(attributes);
 
-        if (state.featureList.hasOwnProperty(valueOfLayer)) {
-            return state.featureList[valueOfLayer];
+        if (featureList.hasOwnProperty(valueOfLayer)) {
+            return featureList[valueOfLayer];
         }
         return getFeature(layer.url, layer.featureType)
             .then(response => {
@@ -62,12 +32,45 @@ const getters = {
                     featureNS: layer.featureNS
                 });
 
-                state.featureList[valueOfLayer] = wfsReader.readFeatures(response);
-                return state.featureList[valueOfLayer];
+                featureList[valueOfLayer] = wfsReader.readFeatures(response);
+                return featureList[valueOfLayer];
             })
             .catch(function (error) {
                 console.error(error);
             });
+    },
+
+    /**
+     * Gets all mapped data layer infos by the selected district level.
+     * @returns {object[]} List of all available values.
+     */
+    getAllValuesByScope: () => {
+        return MappingJson;
+    },
+
+    /**
+     * Returns all laoded stats features filtered by "kategorie".
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters - The DistrictLoader getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @param {String} value - The category to filter by.
+     * @returns {module:ol/Feature[]} The stats features.
+     */
+    statsFeaturesByCategory: (state, {selectedDistrictLevel}) => (value) => {
+        return selectedDistrictLevel.features.filter(function (feature) {
+            return feature.getProperties().kategorie === value;
+        });
+    },
+
+    /**
+     * Returns all current loaded stats features of the selected district level.
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters - The DistrictLoader getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @returns {module:ol/Feature[]} The stats features.
+     */
+    currentStatsFeatures: (state, {selectedDistrictLevel}) => {
+        return selectedDistrictLevel.features;
     }
 };
 

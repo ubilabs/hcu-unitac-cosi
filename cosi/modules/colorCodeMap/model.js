@@ -77,7 +77,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         if (isSelected) {
             // the selected value in the dropdown
             const value = valueModel.get("value"),
-                statisticsFeatures = store.getters["Tools/DistrictLoader/getDistrictsByValue"](value);
+                statisticsFeatures = store.getters["Tools/DistrictLoader/statsFeaturesByCategory"](value);
 
             this.setStatisticsFeatures(statisticsFeatures);
             this.styleDistrictFeatures(this.get("statisticsFeatures"), this.getLastYearAttribute(statisticsFeatures[0].getProperties()));
