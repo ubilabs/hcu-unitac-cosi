@@ -22,10 +22,10 @@ const actions = {
             {extent, districtNameList, districtLevel, subDistrictNameList} = payload,
             level = typeof districtLevel === "undefined" ? selectedDistrictLevel : districtLevel,
             layerList = getLayerList().filter(function (layer) {
-                return layer.url === level.url;
+                return layer.url === level?.url;
             }),
             wfsReader = new WFS({
-                featureNS: layerList[0].featureNS
+                featureNS: layerList[0]?.featureNS
             }),
             featurePromiseList = [];
 
@@ -61,10 +61,6 @@ const actions = {
                             }
                             return true;
                         }
-                        // hardcoded filter for overall FHH statistics
-                        else if (feature.get("verwaltungseinheit") === "hamburg_gesamt") {
-                            return true;
-                        }
                         return false;
                     });
                 })
@@ -93,7 +89,7 @@ const actions = {
                 return dispatch("loadDistricts", {
                     extent: reflevel.label === "Bezirke" ? undefined : extent,
                     districtLevel: reflevel,
-                    districtNameList: referenceDistricts,
+                    districtNameList: reflevel.label === "Hamburg" ? ["hamburg_gesamt"] : referenceDistricts,
                     subDistrictNameList: districtNameList
                 });
             }
