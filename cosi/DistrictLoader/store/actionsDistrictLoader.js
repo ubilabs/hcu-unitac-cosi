@@ -61,6 +61,10 @@ const actions = {
                             }
                             return true;
                         }
+                        // hardcoded filter for overall FHH statistics
+                        else if (feature.get("verwaltungseinheit") === "hamburg_gesamt") {
+                            return true;
+                        }
                         return false;
                     });
                 })
@@ -70,7 +74,7 @@ const actions = {
                 }));
         }, this);
         Promise.all(featurePromiseList).then((featureList) => {
-            level.features = featureList.reduce((total, feature) => total.concat(feature), []);
+            level.features = featureList.flat();
 
             const levelIndex = districtLevels.findIndex(element => {
                 return element.label === level.label;
@@ -78,7 +82,6 @@ const actions = {
 
             // loading reference Districts recursively
             if (levelIndex < districtLevels.length - 1) {
-
                 const reflevel = districtLevels[levelIndex + 1],
                     selector = reflevel.selector,
                     referenceDistricts = featureList[0].reduce((refDistricts, feature) => {
