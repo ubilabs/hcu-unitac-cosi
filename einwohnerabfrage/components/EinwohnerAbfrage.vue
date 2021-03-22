@@ -498,7 +498,6 @@ export default {
          * Called when the wps modules returns a request
          * @param  {String} response - the response xml of the wps
          * @param  {Number} status - the HTTPStatusCode
-         * @fires Addons.Einwohnerabfrage#RenderResult
          * @returns {void}
          */
         handleResponse: function (response, status) {
