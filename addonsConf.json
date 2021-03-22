@@ -23,6 +23,10 @@
     "path": "cosi/ColorCodeMap",
     "type": "tool"
   },
+  "CalculateRatio": {
+    "path": "cosi/CalculateRatio",
+    "type": "tool"
+  },
   "DistrictSelector": {
     "path":"cosi/DistrictSelector",
     "type": "tool"

@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "calculateRatio": {
+                    "title": "Coverage Analysis",
+                    "description": "With the coverage analysis you can determine the coverage of an area with a certain type of facility / infrastructure (see 'Topics')."
+                }
+            }
+        }
+    }
+}

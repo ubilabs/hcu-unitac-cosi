@@ -1,0 +1,112 @@
+[
+    {
+        "group": "Bildung und Wissenschaft",
+        "layer": [
+            "Öffentliche Schulen Hamburgs"
+        ]
+    },
+    {
+        "group": "Kultur, Freizeit, Sport und Tourismus",
+        "layer": [
+            "Hamburg aktiv", 
+            "Sportstätten", 
+            "Öffentliche Bibliotheken"
+        ]
+    },
+    {
+        "group": "Soziales - Angebote des Freiwilligen Engagements",
+        "layer": [
+            "Freiwilligenagenturen", 
+            "Mehrgenerationenhäuser"
+        ]
+    },
+    {
+        "group": "Soziales - Angebote für Familien in Hamburg",
+        "layer": [
+            "Eltern-Kind-Zentrum",
+            "Elternlotsenprojekt",
+            "Elternschule",
+            "Familienteam",
+            "Institutionelle Erziehungsberatung",
+            "Kinder-Familienzentrum",
+            "Konfessionelle Familienbildungsstätte",
+            "Mütterzentrum",
+            "Sonstige Angebote für Familien",
+            "Überregionale Beratungsstelle"
+        ]
+    },
+    {
+        "group": "Soziales - Beratungsstellen für kommunale Leistungen nach §16a SGB II",
+        "layer": [
+            "Gesundheitsberatung",
+            "Lebenslagenberatung",
+            "Schuldnerberatung"
+        ]
+    },
+    {
+        "group": "Soziales - Beratung zur Kindertagesbetreuung und Kindertagespflege",
+        "layer": [
+            "Abteilung Kitabetreuung", 
+            "Tagespflegebörse"
+        ]
+    },
+    {
+        "group": "Soziales - Jobcenter, Jugendberufsagentur-Standorte",
+        "layer": [
+            "Jobcenter",
+            "Jugendberufsagentur",
+            "W.I.R, wirk and integration for refugees"
+        ]
+    },
+    {
+        "group": "Soziales - Rahmenvereinbarung (RV) Schule -Jugendhilfe",
+        "layer": [
+            "Integrierte Angebote", 
+            "Temporaere Lerngruppe"
+        ]
+    },
+    {
+        "group": "Soziales - Sozialräumliche Angebote der Jugend- und Familienhilfe (SAJF)",
+        "layer": [
+            "Begleitung Kinder", 
+            "Berufliche Unterstützung", 
+            "Familienrat", 
+            "Frühe Hilfen", 
+            "Schulbezogene Angebote"
+        ]
+    },
+    {
+        "group": "Soziales - Weitere Angebote",
+        "layer": [
+            "Angebote und Nutzung der Jugendsozialarbeit (JSA)",
+            "Angebote und Nutzung der Offenen Kinder- und Jugendarbeit (OKJA)",
+            "Begegnungsstätten Ambulante Sozialpsychiatrie",
+            "Beratungsstellen für Wohnungsnotfälle",
+            "Frauenberatung",
+            "Jugend Aktiv Plus",
+            "Kindertagesstätten",
+            "Sozialräumliche Integrationsnetzwerke (SIN)",
+            "Übernachtungs- und Versorgungsangebote für Obdachlose und Wohnungslose"
+            ]
+    },
+    {
+        "group": "Umwelt und Klima",
+        "layer": ["Digitaler Grünplan"]
+    },
+    {
+        "group": "Nahversorgung (2017, Erreichbarkeitsanalysen MRH)",
+        "layer": [
+            "Haltestellen", 
+            "Bahnstationen", 
+            "Supermärkte", 
+            "Apotheken", 
+            "Autobahnausfahrten"
+        ]
+    },
+    {
+        "group": "Corona Testzentren",
+        "layer": [
+            "Corona Testzentren"
+        ]
+    }
+]
