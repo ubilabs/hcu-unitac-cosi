@@ -113,7 +113,7 @@ export default {
         checkSource () {
             const check = this.layerList.find(layer => layer.getProperties().name === this.selectedFieldA);
 
-            console.log(check.getSource);
+            console.log(check.getSource.getFeatures());
         }
     }
 };
