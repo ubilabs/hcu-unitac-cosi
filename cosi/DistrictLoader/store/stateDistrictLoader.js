@@ -16,25 +16,25 @@ const state = {
     districtLevels: [
         {
             label: "Statistische Gebiete",
-            selector: "statgebiet",
+            keyOfAttrName: "statgebiet",
             url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
             features: []
         },
         {
             label: "Stadtteile",
-            selector: "stadtteil",
+            keyOfAttrName: "stadtteil",
             url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
             features: []
         },
         {
             label: "Bezirke",
-            selector: "bezirk",
+            keyOfAttrName: "bezirk",
             url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke",
             features: []
         },
         {
             label: "Hamburg",
-            selector: "verwaltungseinheit",
+            keyOfAttrName: "verwaltungseinheit",
             url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke",
             features: []
         }

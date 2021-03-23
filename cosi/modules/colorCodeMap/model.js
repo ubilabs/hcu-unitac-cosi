@@ -22,7 +22,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
     initialize: function () {
         store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
             if (extent.length > 0) {
-                this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllValuesByScope"]);
+                this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllCategories"]);
                 this.set("districtFeatures", store.getters["Tools/DistrictSelector/selectedFeatures"]);
             }
             else {
@@ -38,7 +38,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         });
 
         // load list initially for statgebiet and rerender on scope change
-        this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllValuesByScope"]);
+        this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllCategories"]);
     },
 
     /**

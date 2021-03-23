@@ -33,7 +33,8 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"])
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
+        ...mapGetters("Tools/DistrictLoader", ["featureList"])
     },
     watch: {
         selectedFeatures () {
@@ -45,14 +46,17 @@ export default {
         },
         visualizationState () {
             this.renderVisualization();
+        },
+        featureList () {
+            this.updateSelectedDistricts();
         }
+
     },
     /**
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
     mounted () {
-        Radio.on("FeaturesLoader", "districtsLoaded", this.updateSelectedDistricts);
         this.applyTranslationKey(this.name);
     },
     methods: {
