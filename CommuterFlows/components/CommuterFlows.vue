@@ -3,6 +3,9 @@ import Tool from "../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersCommuterFlows";
 import mutations from "../store/mutationsCommuterFlows";
+import {CommuterApi} from "../library/commuterApi";
+import {Stroke, Style} from "ol/style.js";
+import Feature from "ol/Feature.js";
 
 export default {
     name: "CommuterFlows",
@@ -11,7 +14,21 @@ export default {
     },
     data () {
         return {
-            blacklistedDistricts: ["Bremen", "Berlin", "Kiel", "Hannover"]
+            blacklistedDistricts: ["Bremen", "Berlin", "Kiel", "Hannover"],
+            serviceURL: "https://geodienste.hamburg.de/MRH_WFS_Pendlerstroeme_im_Tool",
+            districts: [],
+            cities: [],
+            featureList: [],
+            currentDistrict: "",
+            currentCity: "",
+            start: false,
+            text: true,
+            number: true,
+            beams: true,
+            animation: false,
+            direction: "outCommuter",
+            api: {},
+            layer: ""
         };
     },
     computed: {
@@ -26,10 +43,16 @@ export default {
         active (value) {
             if (value) {
                 this.setActive(value);
+
+                this.api.getListDistricts(result => {
+                    this.districts = result;
+                });
             }
         }
     },
     created () {
+        this.layer = Radio.request("Map", "createLayerIfNotExists", "commuter_flows_layer");
+
         this.$on("close", this.close);
     },
     /**
@@ -37,15 +60,23 @@ export default {
      * @returns {void}
      */
     mounted () {
+        this.api = new CommuterApi({serviceUrl: this.serviceURL, blacklistedDistricts: this.blacklistedDistricts});
         this.applyTranslationKey(this.name);
     },
     methods: {
         ...mapMutations("Tools/CommuterFlows", Object.keys(mutations)),
 
+        translate (key) {
+            if (key.indexOf(this.$t(key)) !== -1) {
+                console.warn("the key " + key + " is unknown to the translation");
+            }
+            return this.$t(key);
+        },
+
         /**
-             * Closes this tool window by setting active to false
-             * @returns {void}
-             */
+         * Closes this tool window by setting active to false
+         * @returns {void}
+         */
         close () {
             this.setActive(false);
 
@@ -54,6 +85,114 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
+        },
+
+        /**
+         * Called if selection of currentDistrict changed.
+         * @param {Event} event changed selection event
+         * @returns {void}
+         */
+        selectDistrict (event) {
+            this.layer.getSource().getFeatures().forEach((feature) => {
+                this.layer.getSource().removeFeature(feature);
+            });
+            this.currentDistrict = event.target.value;
+            this.currentCity = -1;
+            console.log(this.currentDistrict);
+            this.api.getListCities(this.currentDistrict, result => {
+                this.cities = result;
+            });
+            this.api.getFeaturesDistrict(this.currentDistrict, false, 0, 5, result => {
+                this.featureList = result.featureList;
+                this.addBeamFeatureToLayer(this.featureList);
+                console.log(result);
+            });
+        },
+
+        /**
+         * Called if selection of currentCity changed.
+         * @param {Event} event changed selection event
+         * @returns {void}
+         */
+        selectCity (event) {
+            this.layer.getSource().getFeatures().forEach((feature) => {
+                this.layer.getSource().removeFeature(feature);
+            });
+            this.currentCity = event.target.value;
+            console.log(this.currentCity);
+            this.api.getFeaturesCity(this.currentCity, false, 0, 5, result => {
+                console.log(result);
+                this.addBeamFeatureToLayer(result.featureList);
+            });
+        },
+
+        /**
+         * adds lines (beams) into the layer
+         * @param {ol/Feature} features array of the ol/Feature to place
+         * @returns {void}
+         */
+        addBeamFeatureToLayer: function (features) {
+            features.forEach(feature => {
+                // Erzeuge die Strahlen
+                const newFeature = new Feature({
+                    geometry: feature.getGeometry()
+                });
+
+                newFeature.setStyle(new Style({
+                    stroke: new Stroke(Object.assign({
+                        color: [192, 9, 9, 1],
+                        width: "3"
+                    }))
+                }));
+                // "styleId" neccessary for print, that style and feature can be linked
+                newFeature.set("styleId", Radio.request("Util", "uniqueId"));
+                this.layer.getSource().addFeature(newFeature);
+            });
+        },
+
+        checkText (value) {
+            this.text = value;
+            console.log(this.text);
+        },
+        checkNumber (value) {
+            this.number = value;
+            console.log(this.number);
+        },
+        checkBeams (value) {
+            this.beams = value;
+            console.log(this.beams);
+        },
+        checkAnimation (value) {
+            this.animation = value;
+            console.log(this.animation);
+        },
+        checkCommuter (value) {
+            this.direction = value;
+            console.log(this.direction);
+        },
+        showMore () {
+            console.log("showMore called!");
+        },
+        showLess () {
+            console.log("showLess called!");
+        },
+        showAll () {
+            console.log("showAll called!");
+        },
+        clearAll () {
+            this.layer.getSource().getFeatures().forEach((feature) => {
+                this.layer.getSource().removeFeature(feature);
+            });
+
+            console.log("clearAll called!");
+        },
+        playAnimation () {
+            this.start = true;
+            console.log("playAnimation called!");
+        },
+        stopAnimation () {
+            this.start = false;
+            console.log("stopAnimation called!");
         }
     }
 };
@@ -69,15 +208,286 @@ export default {
         :deactivateGFI="deactivateGFI"
     >
         <template v-slot:toolBody>
-            <div
-                v-if="active"
-                id="CommuterFlows"
-            >
-                Pendlerströme
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div
+                            v-if="active"
+                            id="CommuterFlows"
+                        >
+                            <div class="form-group">
+                                <select
+                                    id="select-kreis"
+                                    v-model="currentDistrict"
+                                    class="form-control"
+                                    @change="selectDistrict($event)"
+                                >
+                                    <option
+                                        selected
+                                        disabled
+                                        value=""
+                                    >
+                                        {{ translate("additional:modules.tools.CommuterFlows.chooseDistrictLabel") }}
+                                    </option>
+                                    <option
+                                        v-for="(district, i) in districts"
+                                        :key="i"
+                                        :value="district"
+                                        :SELECTED="district === currentDistrict"
+                                    >
+                                        {{ district }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div
+                            v-if="cities.length > 0"
+                            class="form-group"
+                        >
+                            <select
+                                id="select-city"
+                                v-model="currentCity"
+                                class="form-control"
+                                @change="selectCity($event)"
+                            >
+                                <option
+                                    selected
+                                    disabled
+                                    value="-1"
+                                >
+                                    {{ translate("additional:modules.tools.CommuterFlows.chooseMunicipalityLabel") }}
+                                </option>
+                                <option
+                                    v-for="(city, i) in cities"
+                                    :key="i"
+                                    :value="city"
+                                    :SELECTED="city === currentCity"
+                                >
+                                    {{ city }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="currentDistrict">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>
+                                    <input
+                                        id="activateText"
+                                        v-model="text"
+                                        class="textCheckbox form-check-input"
+                                        type="checkbox"
+                                        @change="checkText($event.target.checked)"
+                                    > {{ translate("additional:modules.tools.CommuterFlows.activateTextLabel") }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>
+                                    <input
+                                        id="activateNumber"
+                                        v-model="number"
+                                        class="numberCheckbox form-check-input"
+                                        type="checkbox"
+                                        @change="checkNumber($event.target.checked)"
+                                    > {{ translate("additional:modules.tools.CommuterFlows.activateNumberLabel") }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>
+                                    <input
+                                        id="beams"
+                                        v-model="beams"
+                                        class="beamsCheckbox form-check-input"
+                                        type="checkbox"
+                                        @change="checkBeams($event.target.checked)"
+                                    > {{ translate("additional:modules.tools.CommuterFlows.beamsLabel") }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                <label>
+                                    <input
+                                        id="animation"
+                                        v-model="animation"
+                                        class="animationCheckbox form-check-input"
+                                        type="checkbox"
+                                        @change="checkAnimation($event.target.checked)"
+                                    > {{ translate("additional:modules.tools.CommuterFlows.animationLabel") }}
+                                </label>
+                            </div>
+                        </div>
+                        <div
+                            v-if="!start && animation"
+                            class="col-sm-2"
+                        >
+                            <div class="form-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-default btn-sm"
+                                    @click="playAnimation"
+                                >
+                                    <span class="glyphicon glyphicon-play"></span>
+                                    {{ translate("additional:modules.tools.CommuterFlows.startLabel") }}
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            v-if="start && animation"
+                            class="col-sm-2"
+                        >
+                            <div class="form-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-default btn-sm"
+                                    @click="stopAnimation"
+                                >
+                                    <span class="glyphicon glyphicon-stop"></span>
+                                    {{ translate("additional:modules.tools.CommuterFlows.stopLabel") }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="radio">
+                                <div class="col-sm-6">
+                                    <label class="radio-inline">
+                                        <input
+                                            v-model="direction"
+                                            type="radio"
+                                            name="outInCommuter"
+                                            value="outCommuter"
+                                            autocomplete="off"
+                                            data-toggle="tooltip"
+                                            title="tooltip on radio!"
+                                            @change="checkCommuter($event.target.value)"
+                                        >
+                                        {{ translate("additional:modules.tools.CommuterFlows.outCommuterLabel") }}
+                                        <!--<div class="tooltip">
+                                            <span class="tooltiptext">{{ outCommuterTooltip }}</span>
+                                        </div>-->
+                                    </label>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="radio-inline">
+                                        <input
+                                            v-model="direction"
+                                            type="radio"
+                                            name="outInCommuter"
+                                            value="inCommuter"
+                                            checked=""
+                                            @change="checkCommuter($event.target.value)"
+                                        >
+                                        {{ translate("additional:modules.tools.CommuterFlows.inCommuterLabel") }}
+                                        <!--<div class="tooltip" style="visibility: hidden;">
+                                            <span class="tooltiptext">{{ inCommuterTooltip }}</span>
+                                        </div>-->
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        v-if="featureList.length > 0"
+                        class="row"
+                    >
+                        <div class="col-sm-12">
+                            <span
+                                v-for="(feature, index) in featureList"
+                                :key="`feature-${index}`"
+                            >
+                                <span v-html="feature.ol_uid">
+                                    {{ feature.ol_uid }}
+                                </span>
+                                <br />
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <button
+                                type="button"
+                                class="btn btn-default btn-sm"
+                                @click="showLess"
+                            >
+                                <span class="glyphicon glyphicon-arrow-up"></span>
+                                {{ translate("additional:modules.tools.CommuterFlows.loadLessLabel") }}
+                            </button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button
+                                type="button"
+                                class="btn btn-default btn-sm"
+                                @click="showMore"
+                            >
+                                <span class="glyphicon glyphicon-arrow-down"></span>
+                                {{ translate("additional:modules.tools.CommuterFlows.loadMoreLabel") }}
+                            </button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button
+                                type="button"
+                                class="btn btn-default btn-sm"
+                                @click="showAll"
+                            >
+                                <span class="glyphicon glyphicon-arrow-right"></span>
+                                {{ translate("additional:modules.tools.CommuterFlows.loadAllLabel") }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <a
+                                :href="metaVerPath"
+                                target="_blank"
+                            >
+                                {{ translate("additional:modules.tools.CommuterFlows.moreInfoLabel") }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button
+                                type="button"
+                                class="btn btn-default btn-sm"
+                                @click="clearAll"
+                            >
+                                <span class="glyphicon glyphicon-trash"></span>
+                                 {{ translate("additional:modules.tools.CommuterFlows.deleteAllLabel") }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </template>
     </Tool>
 </template>
 
 <style lang="less" scoped>
+    .row {
+        padding: 2px;
+    }
+    .container {
+        width: auto;
+    }
+    .col-sm-12, .col-sm-10, .col-sm-6, .col-sm-4, .col-sm-2 {
+        padding-left: 0px;
+    }
 </style>

@@ -2,7 +2,24 @@
     "modules": {
         "tools": {
             "CommuterFlows": {
-                "title": "Pendlerströme"
+                "titleLabel": "Pendlerströme",
+                "chooseDistrictLabel": "Landkreis/kreisfreie Stadt auswählen",
+                "chooseMunicipalityLabel": "Stadt/Gemeinde auswählen",
+                "beamsLabel": "Linien",
+                "animationLabel": "Animation",
+                "outCommuterLabel": "Auspendler",
+                "inCommuterLabel": "Einpendler",
+                "outCommuterTooltipLabel": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet wohnen und in die angezeigten Gebiete pendeln.",
+                "inCommuterTooltipLabel": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet arbeiten und aus den angezeigten Gebieten pendeln.",
+                "startLabel": "Start",
+                "stopLabel": "Stop",
+                "loadLessLabel": "5 weniger laden",
+                "loadMoreLabel": "5 weitere laden",
+                "loadAllLabel": "Alle laden",
+                "deleteAllLabel": "Geometrien löschen",
+                "activateTextLabel": "Text aktivieren",
+                "activateNumberLabel": "Zahlenwerte aktivieren",
+                "moreInfoLabel": "Weitere Informationen"
             }
         }
     }

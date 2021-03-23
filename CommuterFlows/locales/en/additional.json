@@ -2,7 +2,24 @@
     "modules": {
         "tools": {
             "CommuterFlows": {
-                "title": "Commuter flows"
+                "titleLabel": "Commuter flows",
+                "chooseDistrictLabel": "Choose county/district",
+                "chooseMunicipalityLabel": "Choose town/municipality",
+                "beamsLabel": "Beams",
+                "animationLabel": "Animation",
+                "outCommuterLabel": "Out-Commuter",
+                "inCommuterLabel": "In-Commuter",
+                "outCommuterTooltipLabel": "Number of employees (subject to social insurance contributions) who live in the selected area and commute to the displayed areas.",
+                "inCommuterTooltipLabel": "Number of employees (subject to social insurance contributions) who work in the selected area and commute from the displayed areas.",
+                "startLabel": "Start",
+                "stopLabel": "Stop",
+                "loadLessLabel": "Load 5 less",
+                "loadMoreLabel": "Load 5 more",
+                "loadAllLabel": "Load all",
+                "deleteAllLabel": "Delete geometries",
+                "activateTextLabel": "Activate text",
+                "activateNumberLabel": "Activate numbers",
+                "moreInfoLabel": "More info"
             }
         }
     }

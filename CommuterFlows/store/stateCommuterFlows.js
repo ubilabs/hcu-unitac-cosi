@@ -8,17 +8,18 @@
  * @property {boolean} resizableWindow if true, window is resizable (config-param)
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
  * @property {boolean} deactivateGFI flag if tool should deactivate gfi (config-param)
+ * @property {string} metaVerPath the path to find more information about metaVer
  */
 const state = {
     active: false,
     id: "CommuterFlows",
-    // defaults for config.json parameters
     name: "Pendlerströme",
     glyphicon: "glyphicon glyphicon-transfer",
     renderToWindow: true,
     resizableWindow: true,
     isVisibleInMenu: true,
-    deactivateGFI: true
+    deactivateGFI: true,
+    metaVerPath: ""
 };
 
 export default state;
