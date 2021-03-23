@@ -7,6 +7,7 @@
                     "dropdownLabel": "Bitte wählen Sie einen Bezugsrahmen aus:",
                     "multiDropdownLabel": "Areas:",
                     "inputLabel": "Buffer[m] (optional)",
+                    "additionalLayerToggle": "Show social milieu areas",
                     "description": "Klicken Sie in der Karte auf ein oder mehrere Gebiete, um Ihr Planungsgebiet zu bestimmen. Alternativ können Sie die Gebiete über die Auswahlliste festlegen. Anschließend bestätigen Sie Ihre Auswahl mit einem Klick auf den Button \"Auswahl bestätigen\".",
                     "buttonConfirm": "Confirm Selection",
                     "buttonReset": "Reset Selection",

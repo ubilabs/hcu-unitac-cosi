@@ -56,6 +56,15 @@ export default {
                 return this.selectedDistrictLevel.nameList;
             }
             return [];
+        },
+
+        showAdditionalLayers: {
+            get () {
+                return this.$store.state.Tools.DistrictSelector.showAdditionalLayers;
+            },
+            set (val) {
+                this.setShowAdditionalLayers(val);
+            }
         }
     },
 
@@ -113,6 +122,14 @@ export default {
                 });
 
             }
+        },
+
+        /**
+         * @description Listens to the checkbox to display additional info layers
+         * @returns {void}
+         */
+        showAdditionalLayers () {
+            this.toggleAdditionalLayers();
         }
     },
     created () {
@@ -123,7 +140,9 @@ export default {
         this.selectedLevelId = this.districtLevels[0].layerId;
         this.setNonReactiveData();
     },
-
+    mounted () {
+        this.toggleAdditionalLayers();
+    },
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
@@ -302,6 +321,21 @@ export default {
                 setBBoxToGeom(undefined);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
+        },
+
+        /**
+         * @description Display additional info layers according to layerId List from config.
+         * @todo Refactor to vue when MP Core is updated
+         * @returns {void}
+         */
+        toggleAdditionalLayers () {
+            for (const layerId of this.additionalInfoLayerIds) {
+                const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+                if (model) {
+                    model.set("isSelected", this.showAdditionalLayers);
+                }
+            }
         }
     }
 };
@@ -350,6 +384,14 @@ export default {
                     <p class="help-block">
                         {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
                     </p>
+                </div>
+                <div class="form-group">
+                    <input
+                        v-model="showAdditionalLayers"
+                        class="form-check-input"
+                        type="checkbox"
+                    >
+                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle') }}</label>
                 </div>
                 <button
                     class="btn btn-lgv-grey"
