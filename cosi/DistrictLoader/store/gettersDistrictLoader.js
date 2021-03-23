@@ -41,10 +41,10 @@ const getters = {
     },
 
     /**
-     * Gets all mapped data layer infos by the selected district level.
-     * @returns {object[]} List of all available values.
+     * Gets all categories of the stats data.
+     * @returns {object[]} List of all available stats categories.
      */
-    getAllValuesByScope: () => {
+    getAllCategories: () => {
         return MappingJson;
     },
 

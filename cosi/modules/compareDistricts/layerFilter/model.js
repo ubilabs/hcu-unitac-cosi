@@ -32,7 +32,6 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
      * @returns {void}
      */
     initializeFilter: function () {
-        console.info("initfilter");
         const newFilter = {};
 
         newFilter[this.get("field")] = [0, 0];
@@ -56,7 +55,6 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
             districtInfo = [];
 
         featureCollection.then(features => {
-            console.info(features);
             const field = Radio.request("Timeline", "getLatestFieldFromCollection", features),
                 values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
                 max = parseInt(Math.max(...values), 10),
@@ -100,7 +98,6 @@ const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.proto
         let refValue = 0;
 
         featureCollection.then(features => {
-            console.info(features);
             if (Radio.request("DistrictSelector", "getSelectedDistrict") !== "Leeren") {
                 const districtName = Radio.request("DistrictSelector", "getSelectedDistrict"),
                     refFeature = features.filter(feature => feature.getProperties()[selector] === districtName)[0];

@@ -17,7 +17,8 @@ const actions = {
      * @param {String[]} payload.subDistrictNameList - The district names on the lower level to avoid naming conflicts
      * @returns {module:ol/Feature[]}Returns stats features.
      */
-    loadDistricts ({dispatch, getters}, payload) {
+    loadDistricts ({commit, dispatch, getters}, payload) {
+        dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         const {selectedDistrictLevel, districtLevels} = getters,
             {extent, districtNameList, districtLevel, subDistrictNameList} = payload,
             level = typeof districtLevel === "undefined" ? selectedDistrictLevel : districtLevel,
@@ -47,7 +48,7 @@ const actions = {
                 })
                 .then(features => {
                     return features.filter((feature) => {
-                        const attr = level.selector,
+                        const attr = level.keyOfAttrName,
                             unifiedDistrictNamesList = districtNameList.map(name => unifyString(name));
 
                         if (unifiedDistrictNamesList.includes(unifyString(feature.get(attr)))) {
@@ -79,7 +80,7 @@ const actions = {
             // loading reference Districts recursively
             if (levelIndex < districtLevels.length - 1) {
                 const reflevel = districtLevels[levelIndex + 1],
-                    selector = reflevel.selector,
+                    selector = reflevel.keyOfAttrName,
                     referenceDistricts = featureList[0].reduce((refDistricts, feature) => {
                         return refDistricts.includes(feature.get(selector)) ? refDistricts : [...refDistricts, feature.get(selector)];
                     }, []);
@@ -94,7 +95,7 @@ const actions = {
                 });
             }
             dispatch("Alerting/cleanup", null, {root: true});
-            return Radio.trigger("FeaturesLoader", "districtsLoaded", featureList);
+            return commit("setFeatureList", featureList);
         }).catch(function (error) {
             dispatch("alertError");
             console.error(error);

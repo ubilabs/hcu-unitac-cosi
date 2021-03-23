@@ -87,9 +87,9 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             }
         });
 
-        this.listenTo(Radio.channel("FeaturesLoader"), {
-            "districtsLoaded": this.getData
-        }, this);
+        store.watch((state, getters) => getters["Tools/DistrictLoader/featureList"], () => {
+            this.getData();
+        });
 
         this.listenTo(channel, {
             "dashboardOpen": function () {
@@ -374,7 +374,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {object} the grouped table
      */
     groupTable (table) {
-        const values = store.getters["Tools/DistrictLoader/getAllValuesByScope"],
+        const values = store.getters["Tools/DistrictLoader/getAllCategories"],
             metaInfo = {
                 group: "Gebietsinformation",
                 values: table.reduce((meta, col) => {
@@ -926,7 +926,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     updateFilter: function () {
         this.get("filterDropdownModel").set("values", [
-            ...store.getters["Tools/DistrictLoader/getAllValuesByScope"],
+            ...store.getters["Tools/DistrictLoader/getAllCategories"],
             ...this.get("customFilters")
         ]);
     },

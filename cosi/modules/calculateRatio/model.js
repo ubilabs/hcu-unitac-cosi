@@ -43,7 +43,7 @@ const CalculateRatioModel = Tool.extend(/** @lends CalculateRatioModel.prototype
         this.listenTo(this, {
             "change:isActive": function (model, isActive) {
                 if (isActive) {
-                    let demographicValueList = store.getters["Tools/DistrictLoader/getAllValuesByScope"];
+                    let demographicValueList = store.getters["Tools/DistrictLoader/getAllCategories"];
 
                     demographicValueList = demographicValueList.filter(function (layer) {
                         return layer.valueType === "absolute";
