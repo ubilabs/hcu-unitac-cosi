@@ -11,6 +11,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
 |districtLevels[i].label|ja|String||Die/der Bezeichnung/ Name für die Verwaltungsebene.|
 |districtLevels[i].keyOfAttrName|ja|String||Der Key für das Attribut in dem der Name der Verwaltungeinheit steht.|
 |districtLevels[i].keyOfAttrNameStats|ja|String||Der Key für das Attribut in dem der Name steht, für die statistischen Daten.|
+|additionalInfoLayerIds|nein|String[]|[]|Zusätzliche Info Layer die beim Nutzen des Tools angezeigt werden können.|
 
 **Beispiel**
 ```
@@ -36,7 +37,8 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
       "keyOfAttrName": "bezirk_name",
       "keyOfAttrNameStats": "bezirk"
     }
-  ]
+  ],
+  "additionalInfoLayerIds": ["20179"]
 }
 ```
 

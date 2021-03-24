@@ -30,7 +30,9 @@ export default {
             // A buffer for the extent of the selected district(s)
             bufferValue: 0,
             // css class for the drag box button
-            dragBoxButtonClass: "btn-lgv-grey"
+            dragBoxButtonClass: "btn-lgv-grey",
+            // display additional info layers true/false
+            showAdditionalLayers: false
         };
     },
     computed: {
@@ -56,15 +58,6 @@ export default {
                 return this.selectedDistrictLevel.nameList;
             }
             return [];
-        },
-
-        showAdditionalLayers: {
-            get () {
-                return this.$store.state.Tools.DistrictSelector.showAdditionalLayers;
-            },
-            set (val) {
-                this.setShowAdditionalLayers(val);
-            }
         }
     },
 
@@ -141,7 +134,7 @@ export default {
         this.setNonReactiveData();
     },
     mounted () {
-        this.toggleAdditionalLayers();
+        this.showAdditionalLayers = this.checkAdditionalLayers();
     },
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
@@ -336,6 +329,19 @@ export default {
                     model.set("isSelected", this.showAdditionalLayers);
                 }
             }
+        },
+
+        /**
+         * @description Checks if the additional info layers are visible on mounted.
+         * @todo Refactor to vue when MP Core is updated
+         * @returns {boolean} the state of at least one of the addtional layers
+         */
+        checkAdditionalLayers () {
+            return this.additionalInfoLayerIds.some(layerId => {
+                const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+                return model?.get("isSelected");
+            });
         }
     }
 };
@@ -385,7 +391,10 @@ export default {
                         {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
                     </p>
                 </div>
-                <div class="form-group">
+                <div
+                    v-if="additionalInfoLayerIds.length > 0"
+                    class="form-group"
+                >
                     <input
                         v-model="showAdditionalLayers"
                         class="form-check-input"
