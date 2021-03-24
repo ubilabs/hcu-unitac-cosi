@@ -31,8 +31,8 @@ export default {
             fhhId: "B3FD9BD5-F614-433F-A762-E14003C300BF",
             rasterLayerId: "13023",
             alkisAdressLayerId: "9726",
-            source_fhh: "nein",
-            source_mrh: "nein",
+            source_fhh: "no",
+            source_mrh: "no",
             inhabitants_fhh: "-1",
             inhabitants_fhh_num: -1,
             inhabitants_mrh: "-1",
@@ -43,6 +43,7 @@ export default {
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
         ...mapGetters(["isTableStyle", "isDefaultStyle"]),
+        ...mapGetters("Map", ["scale"]),
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -402,7 +403,6 @@ export default {
          */
         handleWPSError: function (response) {
             this.addSingleAlert({
-                "category": this.$t("additional:modules.tools.populationRequest.errors.caption"),
                 "content": this.$t("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response.ergebnis)
             });
         },
@@ -451,7 +451,6 @@ export default {
             }
             catch (e) {
                 this.addSingleAlert({
-                    category: this.$t("additional:modules.tools.populationRequest.errors.caption"),
                     content: this.$t("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response)
                 });
                 this.resetView();
@@ -506,7 +505,6 @@ export default {
 
             if (layerModel === undefined || layerModel.length === 0) {
                 this.addSingleAlert({
-                    "category": this.$t("additional:modules.tools.populationRequest.errors.caption"),
                     "content": this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedPrefix") + layerId + this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedSuffix")
                 });
             }
@@ -539,6 +537,24 @@ export default {
          * @returns {void}
          */
         triggerRaster (value) {
+            if (value) {
+                const scale = this.$store.state.Map.scale;
+
+                // if the Map has too large Scale give notification and undo the activation
+                if (scale > 100000) {
+                    const rasterCB = this.$refs.rasterCB;
+
+                    if (rasterCB !== undefined) {
+                        rasterCB.setActive(false);
+                    }
+
+                    this.addSingleAlert({
+                        "content": this.$t("additional:modules.tools.populationRequest.errors.reduceScaleForRaster")
+                    });
+                    return;
+                }
+            }
+
             this.setRaster(state, value);
 
             const layerId = this.rasterLayerId;
@@ -555,6 +571,24 @@ export default {
          * @returns {void}
          */
         triggerAlkisAdresses (value) {
+            if (value) {
+                const scale = this.$store.state.Map.scale;
+
+                // if the Map has too large Scale give notification and undo the activation
+                if (scale > 10000) {
+                    const alkisAdressesCB = this.$refs.alkisAdressesCB;
+
+                    if (alkisAdressesCB !== undefined) {
+                        alkisAdressesCB.setActive(false);
+                    }
+
+                    this.addSingleAlert({
+                        "content": this.$t("additional:modules.tools.populationRequest.errors.reduceScaleForAlkisAdresses")
+                    });
+                    return;
+                }
+            }
+
             this.setAlkisAdresses(state, value);
 
             const layerId = this.alkisAdressLayerId;

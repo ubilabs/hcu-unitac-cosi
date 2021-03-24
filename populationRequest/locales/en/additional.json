@@ -25,8 +25,9 @@
                     "dataSourceMRHLinktext": "more information"
                 },
                 "errors": {
-                    "caption": "Error",
-                    "requestException": "Request failed. Technical details: "
+                    "requestException": "Request failed. Technical details: ",
+                    "layerIdCantBeLoadedPrefix": "Layer with ID: ",
+                    "layerIdCantBeLoadedSuffix": "couldn't be loaded, since it's not available in the portal!"
                 }
             }
         }
