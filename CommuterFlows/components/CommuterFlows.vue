@@ -543,12 +543,6 @@ export default {
     .btn-btm {
         width: 125px;
     }
-    @media only screen and (max-width: 780px) {
-        .btn-btm {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-    }
     hr {
         margin-top: 10px;
         margin-bottom: 10px;
@@ -601,6 +595,25 @@ export default {
             top: 30px;
             left: -55px;
             border: solid 1px #000;
+        }
+    }
+    @media only screen and (max-width: 780px) {
+        .btn-btm {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .col-sm-6 {
+            width: 50%;
+            float: left;
+        }
+    }
+    @media only screen and (max-width: 480px) {
+        .row {
+            &.information {
+                text-align: center;
+                margin-top: -10px;
+                margin-bottom: 5px;
+            }
         }
     }
 </style>
