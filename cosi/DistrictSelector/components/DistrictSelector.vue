@@ -41,7 +41,7 @@ export default {
          * Gets the options for the dropdown. The layerId for the value and the label for the text content.
          * @returns {Object} The options.
          */
-        optionsDropdown: function () {
+        labelsOfDistrictLevels: function () {
             const obj = {};
 
             this.districtLevels.forEach(district => {
@@ -51,7 +51,11 @@ export default {
             return obj;
         },
 
-        optionsDropdownTwo: function () {
+        /**
+         * Gets the names of the districts of the selected district level.
+         * @returns {String[]} The district names or an empty array.
+         */
+        namesOfDistricts: function () {
             if (this.selectedDistrictLevel?.nameList) {
                 return this.selectedDistrictLevel.nameList;
             }
@@ -325,7 +329,7 @@ export default {
                     <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownLabel') }}</label>
                     <Dropdown
                         v-model="selectedLevelId"
-                        :options="optionsDropdown"
+                        :options="labelsOfDistrictLevels"
                     />
                 </div>
                 <div class="form-group">
@@ -333,7 +337,7 @@ export default {
                     <VueSelect
                         v-model="selectedNames"
                         class="style-chooser"
-                        :options="optionsDropdownTwo"
+                        :options="namesOfDistricts"
                         multiple
                         placeholder="Keine Auswahl"
                     />
@@ -402,6 +406,23 @@ export default {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);
         border-width: 1.25
+    }
+    .style-chooser {
+        font-size: 14px;
+        .vs__dropdown-toggle {
+            border-radius: 0;
+        }
+        .vs__open-indicator {
+            fill: rgba(60,60,60,.9);
+            transform: scale(0.7);
+        }
+        .vs__search, .vs__search:focus {
+            padding: 1px 14px;
+            line-height: 1.42857143
+        }
+        .vs__actions {
+            padding: 4px 4px 0 3px;
+        }
     }
 </style>
 
