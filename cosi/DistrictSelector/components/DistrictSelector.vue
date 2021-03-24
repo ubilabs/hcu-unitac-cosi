@@ -37,7 +37,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
-        ...mapGetters("Map", ["layerList"]),
+        ...mapGetters("Map", ["layerList", "visibleLayerList"]),
 
         /**
          * Gets the options for the dropdown. The layerId for the value and the label for the text content.
@@ -127,6 +127,14 @@ export default {
          */
         showAdditionalLayers () {
             this.toggleAdditionalLayers();
+        },
+
+        /**
+         * @description Watches Layer visiblity changes to determine whether the addtional info layers are active
+         * @returns {void}
+         */
+        visibleLayerList () {
+            this.showAdditionalLayers = this.checkAdditionalLayers();
         }
     },
     created () {
