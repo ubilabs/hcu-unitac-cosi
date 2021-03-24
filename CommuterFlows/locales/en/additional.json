@@ -19,7 +19,8 @@
                 "deleteAllLabel": "Delete geometries",
                 "activateTextLabel": "Activate text",
                 "activateNumberLabel": "Activate numbers",
-                "moreInfoLabel": "More info"
+                "moreInfoLabel": "More info",
+                "people": "People"
             }
         }
     }

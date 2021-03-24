@@ -19,7 +19,8 @@
                 "deleteAllLabel": "Geometrien löschen",
                 "activateTextLabel": "Text aktivieren",
                 "activateNumberLabel": "Zahlenwerte aktivieren",
-                "moreInfoLabel": "Weitere Informationen"
+                "moreInfoLabel": "Weitere Informationen",
+                "people": "Personen"
             }
         }
     }
