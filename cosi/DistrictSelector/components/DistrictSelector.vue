@@ -100,26 +100,7 @@ export default {
         },
 
         selectedDistrictsCollection: "transferFeatures",
-        selectedDistrictLevel: "clearFeatures",
-        selectedLevelId: "changeSelectedDistrictLevel",
-        selectedNames: function (newNames) {
-            if (newNames.length !== this?.selectedDistrictsCollection?.getLength()) {
-                const districtFeatures = this.layer.getSource().getFeatures(),
-                    namesAssoc = {};
-
-                newNames.forEach(name => {
-                    namesAssoc[name] = true;
-                });
-
-                this.clearFeatures();
-                districtFeatures.forEach(feature => {
-                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
-                        this.select.getFeatures().push(feature);
-                    }
-                });
-
-            }
-        },
+        selectedLevelId: ["clearFeatures", "changeSelectedDistrictLevel"],
 
         /**
          * @description Listens to the checkbox to display additional info layers
@@ -160,7 +141,6 @@ export default {
          */
         clearFeatures () {
             this.select.getFeatures().clear();
-            // this.selectedNames = [];
         },
 
         /**
@@ -217,11 +197,9 @@ export default {
             featureCollection.on("change:length", (evt) => {
                 this.setSelectedDistrictsCollection(evt.target);
 
-                const sNames = evt.target.getArray().map(feature => {
+                this.selectedNames = evt.target.getArray().map(feature => {
                     return feature.get(this.keyOfAttrName);
                 });
-
-                this.selectedNames = sNames;
             });
         },
 
@@ -354,6 +332,31 @@ export default {
 
                 return model?.get("isSelected");
             });
+        },
+
+        /**
+         * Find the district features by the given names
+         * and add them to the feature collection of the select interaction.
+         * @param {String[]} namesOfDistricts - Names of the districts to be selected.
+         * @returns {void}
+         */
+        updateSelectedFeatures (namesOfDistricts) {
+            this.clearFeatures();
+
+            if (namesOfDistricts.length > 0) {
+                const districtFeatures = this.layer.getSource().getFeatures(),
+                    namesAssoc = {};
+
+                namesOfDistricts.forEach(name => {
+                    namesAssoc[name] = true;
+                });
+
+                districtFeatures.forEach(feature => {
+                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
+                        this.select.getFeatures().push(feature);
+                    }
+                });
+            }
         }
     }
 };
@@ -383,11 +386,12 @@ export default {
                 <div class="form-group">
                     <label>{{ $t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel') }}</label>
                     <VueSelect
-                        v-model="selectedNames"
                         class="style-chooser"
+                        placeholder="Keine Auswahl"
+                        :value="selectedNames"
                         :options="namesOfDistricts"
                         multiple
-                        placeholder="Keine Auswahl"
+                        @input="updateSelectedFeatures"
                     />
                 </div>
                 <div class="form-group">
