@@ -76,17 +76,17 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
     it("renders the PopulationRequest result if values are set and checks the values", async () => {
         const wrapper = shallowMount(Component, {store, localVue});
 
-        wrapper.vm.setFHH("yes", 100);
-        wrapper.vm.setMRH("yes", 100);
+        wrapper.vm.setFHH("ja", 100);
+        wrapper.vm.setMRH("ja", 100);
         wrapper.vm.setSearchArea("10 ha");
         await wrapper.vm.$nextTick();
-        expect(wrapper.find("td.inhabitants_fhh").text()).to.be.equal("100");
-        expect(wrapper.find("td.inhabitants_mrh").text()).to.be.equal("100");
-        expect(wrapper.find("td.searcharea").text()).to.be.equal("10 ha");
+        expect(wrapper.find("td.inhabitantsFHH").text()).to.be.equal("100");
+        expect(wrapper.find("td.inhabitantsMRH").text()).to.be.equal("100");
+        expect(wrapper.find("td.searchArea").text()).to.be.equal("10 ha");
 
         expect(wrapper.find("div.result").exists()).to.be.true;
-        expect(wrapper.find("div.inhabitants_fhh_add_text").exists()).to.be.true;
-        expect(wrapper.find("div.inhabitants_mrh_add_text").exists()).to.be.true;
+        expect(wrapper.find("div.inhabitantsFHHAddText").exists()).to.be.true;
+        expect(wrapper.find("div.inhabitantsMRHAddText").exists()).to.be.true;
     });
 
     it("should call toggleRasterLayer if Raster Checkbox is changed", async () => {

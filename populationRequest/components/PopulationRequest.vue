@@ -31,19 +31,18 @@ export default {
             fhhId: "B3FD9BD5-F614-433F-A762-E14003C300BF",
             rasterLayerId: "13023",
             alkisAdressLayerId: "9726",
-            source_fhh: "no",
-            source_mrh: "no",
-            inhabitants_fhh: "-1",
-            inhabitants_fhh_num: -1,
-            inhabitants_mrh: "-1",
-            inhabitants_mrh_num: -1,
-            searcharea: 0
+            sourceFHH: "nein",
+            sourceMRH: "nein",
+            inhabitantsFHH: "-1",
+            inhabitantsFHHNum: -1,
+            inhabitantsMRH: "-1",
+            inhabitantsMRHNum: -1,
+            searchArea: 0
         };
     },
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
         ...mapGetters(["isTableStyle", "isDefaultStyle"]),
-        ...mapGetters("Map", ["scale"]),
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -345,10 +344,10 @@ export default {
          * @returns {void}
          */
         makeRequest: function (geoJson) {
-            this.inhabitants_fhh_num = -1;
-            this.inhabitants_mrh_num = -1;
-            this.source_fhh = "nein";
-            this.source_mrh = "nein";
+            this.inhabitantsFHHNum = -1;
+            this.inhabitantsMRHNum = -1;
+            this.sourceFHH = "nein";
+            this.sourceMRH = "nein";
             this.searcharea = 0;
             LoaderOverlay.show();
 
@@ -417,36 +416,36 @@ export default {
             try {
                 obj = JSON.parse(response.ergebnis);
                 if (obj.hasOwnProperty("einwohner_fhh")) {
-                    this.inhabitants_fhh_num = obj.einwohner_fhh;
-                    this.inhabitants_fhh = thousandsSeparator(obj.einwohner_fhh);
+                    this.inhabitantsFHHNum = obj.einwohner_fhh;
+                    this.inhabitantsFHH = thousandsSeparator(obj.einwohner_fhh);
                 }
                 else {
-                    this.inhabitants_fhh_num = -1;
+                    this.inhabitantsFHHNum = -1;
                 }
                 if (obj.hasOwnProperty("einwohner_mrh")) {
-                    this.inhabitants_mrh_num = obj.einwohner_mrh;
-                    this.inhabitants_mrh = thousandsSeparator(obj.einwohner_mrh);
+                    this.inhabitantsMRHNum = obj.einwohner_mrh;
+                    this.inhabitantsMRH = thousandsSeparator(obj.einwohner_mrh);
                 }
                 else {
-                    this.inhabitants_mrh_num = -1;
+                    this.inhabitantsMRHNum = -1;
                 }
                 if (obj.hasOwnProperty("quelle_fhh")) {
-                    this.source_fhh = obj.quelle_fhh;
+                    this.sourceFHH = obj.quelle_fhh;
                 }
                 else {
-                    this.source_fhh = "no";
+                    this.sourceFHH = "nein";
                 }
                 if (obj.hasOwnProperty("quelle_mrh")) {
-                    this.source_mrh = obj.quelle_mrh;
+                    this.sourceMRH = obj.quelle_mrh;
                 }
                 else {
-                    this.source_mrh = "no";
+                    this.sourceMRH = "nein";
                 }
                 if (obj.hasOwnProperty("suchflaeche")) {
-                    this.searcharea = this.chooseUnitAndThousandsSeparator(obj.suchflaeche);
+                    this.searchArea = this.chooseUnitAndThousandsSeparator(obj.suchflaeche);
                 }
                 else {
-                    this.searcharea = 0;
+                    this.searchArea = 0;
                 }
             }
             catch (e) {
@@ -497,13 +496,19 @@ export default {
          * checks whether the model has been loaded.
          * If it is not loaded, a corresponding error message is displayed
          * @param {string} layerId id of the layer to be toggled
+         * @param {boolean} value the new value
+         * @param {object} checkboxComponent the Component that triggered this call
          * @fires Core#RadioRequestModelListGetModelByAttributes
          * @returns {void}
          */
-        checkIsModelLoaded: function (layerId) {
+        checkIsModelLoaded: function (layerId, value, checkboxComponent) {
             const layerModel = Radio.request("ModelList", "getModelsByAttributes", {id: layerId});
 
             if (layerModel === undefined || layerModel.length === 0) {
+                if (value) {
+                    checkboxComponent.setActive(false);
+                }
+
                 this.addSingleAlert({
                     "content": this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedPrefix") + layerId + this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedSuffix")
                 });
@@ -537,13 +542,14 @@ export default {
          * @returns {void}
          */
         triggerRaster (value) {
+            const rasterCB = this.$refs.rasterCB,
+                layerId = this.rasterLayerId;
+
             if (value) {
-                const scale = this.$store.state.Map.scale;
+                const scale = this.$store.state.Map.scale; // Radio.request("MapView", "getOptions").scale
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 100000) {
-                    const rasterCB = this.$refs.rasterCB;
-
                     if (rasterCB !== undefined) {
                         rasterCB.setActive(false);
                     }
@@ -557,11 +563,9 @@ export default {
 
             this.setRaster(state, value);
 
-            const layerId = this.rasterLayerId;
-
             this.addModelsByAttributesToModelList(layerId);
             if (value) {
-                this.checkIsModelLoaded(layerId, value);
+                this.checkIsModelLoaded(layerId, value, rasterCB);
             }
             this.setModelAttributesByIdToModelList(layerId, value);
         },
@@ -571,13 +575,14 @@ export default {
          * @returns {void}
          */
         triggerAlkisAdresses (value) {
+            const alkisAdressesCB = this.$refs.alkisAdressesCB,
+                layerId = this.alkisAdressLayerId;
+
             if (value) {
-                const scale = this.$store.state.Map.scale;
+                const scale = this.$store.state.Map.scale; // Radio.request("MapView", "getOptions").scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 10000) {
-                    const alkisAdressesCB = this.$refs.alkisAdressesCB;
-
                     if (alkisAdressesCB !== undefined) {
                         alkisAdressesCB.setActive(false);
                     }
@@ -591,43 +596,41 @@ export default {
 
             this.setAlkisAdresses(state, value);
 
-            const layerId = this.alkisAdressLayerId;
-
             this.addModelsByAttributesToModelList(layerId);
             if (value) {
-                this.checkIsModelLoaded(layerId, value);
+                this.checkIsModelLoaded(layerId, value, alkisAdressesCB);
             }
             this.setModelAttributesByIdToModelList(layerId, value);
         },
         /**
          * Sets FHH values for Testing
-         * @param {string} source Value for source_fhh
-         * @param {integer} inhabitants_num_value Value for inhabitants_fhh_num
+         * @param {string} source Value for sourceFHH
+         * @param {integer} inhabitantsNumValue Value for inhabitantsFHHNum
          * @returns {void}
          */
-        setFHH (source, inhabitants_num_value) {
-            this.source_fhh = source;
-            this.inhabitants_fhh_num = inhabitants_num_value;
-            this.inhabitants_fhh = thousandsSeparator(inhabitants_num_value);
+        setFHH (source, inhabitantsNumValue) {
+            this.sourceFHH = source;
+            this.inhabitantsFHHNum = inhabitantsNumValue;
+            this.inhabitantsFHH = thousandsSeparator(inhabitantsNumValue);
         },
         /**
          * Sets MRH values for Testing
-         * @param {string} source Value for source_mrh
-         * @param {integer} inhabitants_num_value Value for inhabitants_mrh_num
+         * @param {string} source Value for sourceMRH
+         * @param {integer} inhabitantsNumValue Value for inhabitantsMRHNum
          * @returns {void}
          */
-        setMRH (source, inhabitants_num_value) {
-            this.source_mrh = source;
-            this.inhabitants_mrh_num = inhabitants_num_value;
-            this.inhabitants_mrh = thousandsSeparator(inhabitants_num_value);
+        setMRH (source, inhabitantsNumValue) {
+            this.sourceMRH = source;
+            this.inhabitantsMRHNum = inhabitantsNumValue;
+            this.inhabitantsMRH = thousandsSeparator(inhabitantsNumValue);
         },
         /**
          * Sets searcharea for Testing
-         * @param {string} area Value for searcharea
+         * @param {string} area Value for searchArea
          * @returns {void}
          */
         setSearchArea (area) {
-            this.searcharea = area;
+            this.searchArea = area;
         },
         /**
          * Closes this tool window by setting active to false
@@ -715,7 +718,7 @@ export default {
                 </form>
             </div>
             <div
-                v-if="inhabitants_fhh_num > -1 || inhabitants_mrh_num > -1"
+                v-if="inhabitantsFHHNum > -1 || inhabitantsMRHNum > -1"
                 class="result"
             >
                 <div class="heading additional-text">
@@ -723,39 +726,39 @@ export default {
                 </div>
                 <table class="table">
                     <tr
-                        v-if="source_fhh !== 'no'"
+                        v-if="sourceFHH !== 'nein'"
                     >
                         <td>{{ $t("additional:modules.tools.populationRequest.result.populationFHH") }}:</td>
                         <td
-                            class="inhabitants_fhh"
+                            class="inhabitantsFHH"
                         >
-                            {{ inhabitants_fhh }}
+                            {{ inhabitantsFHH }}
                         </td>
                     </tr>
                     <tr
-                        v-if="source_mrh !== 'no'"
+                        v-if="sourceMRH !== 'nein'"
                     >
                         <td>{{ $t("additional:modules.tools.populationRequest.result.populationMRH") }}:</td>
                         <td
-                            class="inhabitants_mrh"
+                            class="inhabitantsMRH"
                         >
-                            {{ inhabitants_mrh }}
+                            {{ inhabitantsMRH }}
                         </td>
                     </tr>
                     <tr
-                        v-if="searcharea"
+                        v-if="searchArea"
                     >
                         <td>{{ $t("additional:modules.tools.populationRequest.result.areaSize") }}:</td>
                         <td
-                            class="searcharea"
+                            class="searchArea"
                         >
-                            {{ searcharea }}
+                            {{ searchArea }}
                         </td>
                     </tr>
                 </table>
                 <div
-                    v-if="inhabitants_fhh_num > -1"
-                    class="inhabitants_fhh_add_text"
+                    v-if="(inhabitantsFHHNum > -1 && inhabitantsFHHNum < 1000 && sourceFHH === 'ja')"
+                    class="inhabitantsFHHAddText"
                 >
                     <div class="hinweis additional-text">
                         <span>{{ $t("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues") }}
@@ -770,18 +773,22 @@ export default {
                     </div>
                 </div>
                 <div
-                    v-if="inhabitants_mrh_num > -1"
-                    class="inhabitants_mrh_add_text"
+                    v-if="inhabitantsMRHNum > 0 && (sourceMRH === 'ja' || sourceMRH === 'tlw' || sourceFHH === 'nein')"
+                    class="inhabitantsMRHAddText"
                 >
-                    <div class="hinweis additional-text">
+                    <div
+                        class="hinweis additional-text"
+                    >
                         <div
-                            v-if="source_mrh === 'tlw' && source_fhh === 'no'"
+                            v-if="sourceFHH !== 'nein'"
                         >
                             <span>{{ $t("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
                         </div>
                         <span>{{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
                     </div>
-                    <div>
+                    <div
+                        v-if="sourceMRH === 'tlw' || sourceFHH === 'nein'"
+                    >
                         <a
                             target="_blank"
                             :href="`${metaDataLink}${mrhId}`"
