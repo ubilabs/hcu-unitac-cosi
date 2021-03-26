@@ -22,14 +22,12 @@ describe("addons/dipas/components/Dipas.vue", () => {
     /**
      * Creates the wrapper
      * @param {boolean} isTable true, if it is table UI
-     * @param {boolean} useVectorStyleBeta true, if use VectorStyleBeta
      * @returns {void}
      */
-    function createWrapper (isTable, useVectorStyleBeta = true) {
+    function createWrapper (isTable) {
         wrapper = shallowMount(Dipas, {
             computed: {
-                isTable: () => isTable,
-                useVectorStyleBeta: () => useVectorStyleBeta
+                isTable: () => isTable
             },
             localVue,
             propsData: {
