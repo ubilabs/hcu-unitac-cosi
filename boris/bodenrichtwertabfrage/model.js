@@ -1,4 +1,4 @@
-import BuildSpecModel from "../../../modules/tools/print_/buildSpec.js";
+import BuildSpecModel from "../../../modules/tools/print/buildSpec.js";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
