@@ -100,6 +100,13 @@ export class CommuterAnimation {
         this.ol.hideLayer(this.layers.animation);
         this.ol.showLayer(this.layers.bubbles);
     }
+    /**
+     * checkes whether or not the animation is running
+     * @returns {Boolean} true if the animation is currently running
+     */
+    isRunning () {
+        return this.startTime !== null;
+    }
 
     /**
      * the handler to move a feature with

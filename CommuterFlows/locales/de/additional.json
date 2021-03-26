@@ -5,22 +5,22 @@
                 "titleLabel": "Pendlerströme",
                 "chooseDistrictLabel": "Landkreis/kreisfreie Stadt auswählen",
                 "chooseMunicipalityLabel": "Stadt/Gemeinde auswählen",
-                "beamsLabel": "Linien",
-                "animationLabel": "Animation",
                 "outCommuterLabel": "Auspendler",
                 "inCommuterLabel": "Einpendler",
                 "outCommuterTooltipLabel": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet wohnen und in die angezeigten Gebiete pendeln.",
                 "inCommuterTooltipLabel": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet arbeiten und aus den angezeigten Gebieten pendeln.",
                 "startLabel": "Start",
                 "stopLabel": "Stop",
-                "loadLessLabel": "5 weniger laden",
-                "loadMoreLabel": "5 weitere laden",
+                "loadLessLabel": "{{listChunk}} weniger",
+                "loadMoreLabel": "{{listChunk}} weitere",
                 "loadAllLabel": "Alle laden",
                 "deleteAllLabel": "Geometrien löschen",
-                "activateTextLabel": "Text aktivieren",
-                "activateNumberLabel": "Zahlenwerte aktivieren",
+                "activateTextLabel": "Namen anzeigen",
+                "activateNumberLabel": "Werte anzeigen",
+                "beamsLabel": "Linien anzeigen",
+                "animationLabel": "Animation anzeigen",
                 "moreInfoLabel": "Weitere Informationen",
-                "people": "Personen"
+                "peopleLabel": "Personen"
             }
         }
     }

@@ -80,91 +80,146 @@ describe("addons/CommuterFlows/library/commuterOL.js", () => {
             expect(layernames).to.deep.equal(expected);
         });
     });
-    describe("calcRadiusPxByRatio", () => {
+
+    describe("calcRadiusLog10", () => {
         it("should return minRadiusPx if any invalid argument is given", () => {
-            expect(generalDummy.calcRadiusPxByRatio()).to.equal(0);
+            expect(generalDummy.calcRadiusLog10()).to.equal(0);
 
-            expect(generalDummy.calcRadiusPxByRatio(null, 1, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio("string", 1, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio([], 1, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio({}, 1, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(true, 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(null, 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10("string", 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10([], 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10({}, 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(true, 1, 1, 1)).to.equal(1);
 
-            expect(generalDummy.calcRadiusPxByRatio(1, null, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, "string", 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, [], 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, {}, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, true, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, null, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, "string", 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, [], 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, {}, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, true, 1, 1)).to.equal(1);
 
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, null, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, "string", 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, [], 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, {}, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, true, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, 1, null, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, 1, "string", 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, 1, [], 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, 1, {}, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLog10(1, 1, true, 1)).to.equal(1);
         });
         it("should return zero if the given minRadiusPx is anything but a number", () => {
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, 1, null)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, 1, "string")).to.equal(0);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, 1, [])).to.equal(0);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, 1, {})).to.equal(0);
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, 1, true)).to.equal(0);
+            expect(generalDummy.calcRadiusLog10(1, 1, 1, null)).to.equal(0);
+            expect(generalDummy.calcRadiusLog10(1, 1, 1, "string")).to.equal(0);
+            expect(generalDummy.calcRadiusLog10(1, 1, 1, [])).to.equal(0);
+            expect(generalDummy.calcRadiusLog10(1, 1, 1, {})).to.equal(0);
+            expect(generalDummy.calcRadiusLog10(1, 1, 1, true)).to.equal(0);
         });
         it("should return minRadiusPx if minRadiusPx is greater than maxRadiusPx", () => {
-            expect(generalDummy.calcRadiusPxByRatio(1, 1, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(1, 1, 1, 2)).to.equal(2);
         });
         it("should return minRadiusPx if value is equal or less than zero", () => {
-            expect(generalDummy.calcRadiusPxByRatio(0, 1, 1, 2)).to.equal(2);
-            expect(generalDummy.calcRadiusPxByRatio(-1, 1, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(0, 1, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(-1, 1, 1, 2)).to.equal(2);
         });
         it("should return minRadiusPx if the given maxValue is equal or less than zero (avoid devision by zero)", () => {
-            expect(generalDummy.calcRadiusPxByRatio(1, 0, 1, 2)).to.equal(2);
-            expect(generalDummy.calcRadiusPxByRatio(1, -1, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(1, 0, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(1, -1, 1, 2)).to.equal(2);
         });
         it("should return maxRadiusPx if the given value is equal or greater than maxValue", () => {
-            expect(generalDummy.calcRadiusPxByRatio(3, 3, 2, 1)).to.equal(2);
-            expect(generalDummy.calcRadiusPxByRatio(4, 3, 2, 1)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(3, 3, 2, 1)).to.equal(2);
+            expect(generalDummy.calcRadiusLog10(4, 3, 2, 1)).to.equal(2);
         });
 
         it("should calculate the linear ratio on a radius between maxRadiusPx and minRadiusPx", () => {
-            expect(generalDummy.calcRadiusPxByRatio(5, 10, 100, 0)).to.equal(50);
-            expect(generalDummy.calcRadiusPxByRatio(5, 10, 100, 50)).to.equal(75);
-            expect(generalDummy.calcRadiusPxByRatio(180, 640, 4.8, 1.6)).to.equal(2.5);
+            expect(generalDummy.calcRadiusLog10(1, 10000, 50, 5)).to.equal(5);
+            expect(generalDummy.calcRadiusLog10(10, 10000, 50, 5)).to.equal(16.25);
+            expect(generalDummy.calcRadiusLog10(100, 10000, 50, 5)).to.equal(27.5);
+            expect(generalDummy.calcRadiusLog10(1000, 10000, 50, 5)).to.equal(38.75);
+            expect(generalDummy.calcRadiusLog10(10000, 10000, 50, 5)).to.equal(50);
         });
     });
 
-    describe("calcRadiusPxByArea", () => {
+    describe("calcRadiusLinear", () => {
+        it("should return minRadiusPx if any invalid argument is given", () => {
+            expect(generalDummy.calcRadiusLinear()).to.equal(0);
+
+            expect(generalDummy.calcRadiusLinear(null, 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear("string", 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear([], 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear({}, 1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(true, 1, 1, 1)).to.equal(1);
+
+            expect(generalDummy.calcRadiusLinear(1, null, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, "string", 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, [], 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, {}, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, true, 1, 1)).to.equal(1);
+
+            expect(generalDummy.calcRadiusLinear(1, 1, null, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, 1, "string", 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, 1, [], 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, 1, {}, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusLinear(1, 1, true, 1)).to.equal(1);
+        });
+        it("should return zero if the given minRadiusPx is anything but a number", () => {
+            expect(generalDummy.calcRadiusLinear(1, 1, 1, null)).to.equal(0);
+            expect(generalDummy.calcRadiusLinear(1, 1, 1, "string")).to.equal(0);
+            expect(generalDummy.calcRadiusLinear(1, 1, 1, [])).to.equal(0);
+            expect(generalDummy.calcRadiusLinear(1, 1, 1, {})).to.equal(0);
+            expect(generalDummy.calcRadiusLinear(1, 1, 1, true)).to.equal(0);
+        });
+        it("should return minRadiusPx if minRadiusPx is greater than maxRadiusPx", () => {
+            expect(generalDummy.calcRadiusLinear(1, 1, 1, 2)).to.equal(2);
+        });
+        it("should return minRadiusPx if value is equal or less than zero", () => {
+            expect(generalDummy.calcRadiusLinear(0, 1, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLinear(-1, 1, 1, 2)).to.equal(2);
+        });
+        it("should return minRadiusPx if the given maxValue is equal or less than zero (avoid devision by zero)", () => {
+            expect(generalDummy.calcRadiusLinear(1, 0, 1, 2)).to.equal(2);
+            expect(generalDummy.calcRadiusLinear(1, -1, 1, 2)).to.equal(2);
+        });
+        it("should return maxRadiusPx if the given value is equal or greater than maxValue", () => {
+            expect(generalDummy.calcRadiusLinear(3, 3, 2, 1)).to.equal(2);
+            expect(generalDummy.calcRadiusLinear(4, 3, 2, 1)).to.equal(2);
+        });
+
+        it("should calculate the linear ratio on a radius between maxRadiusPx and minRadiusPx", () => {
+            expect(generalDummy.calcRadiusLinear(5, 10, 100, 0)).to.equal(50);
+            expect(generalDummy.calcRadiusLinear(5, 10, 100, 50)).to.equal(75);
+            expect(generalDummy.calcRadiusLinear(180, 640, 4.8, 1.6)).to.equal(2.5);
+        });
+    });
+
+    describe("calcRadiusArea", () => {
         it("should return zero if any invalid argument is given", () => {
-            expect(generalDummy.calcRadiusPxByArea()).to.equal(0);
+            expect(generalDummy.calcRadiusArea()).to.equal(0);
 
-            expect(generalDummy.calcRadiusPxByArea(null, 1, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea("string", 1, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea([], 1, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea({}, 1, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(true, 1, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(null, 1, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea("string", 1, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea([], 1, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea({}, 1, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(true, 1, 1)).to.equal(0);
 
-            expect(generalDummy.calcRadiusPxByArea(1, null, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, "string", 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, [], 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, {}, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, true, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, null, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, "string", 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, [], 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, {}, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, true, 1)).to.equal(0);
 
-            expect(generalDummy.calcRadiusPxByArea(1, 1, null)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, 1, "string")).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, 1, [])).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, 1, {})).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, 1, true)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 1, null)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 1, "string")).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 1, [])).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 1, {})).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 1, true)).to.equal(0);
         });
         it("should return zero if any argument is zero", () => {
-            expect(generalDummy.calcRadiusPxByArea(0, 1, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, 0, 1)).to.equal(0);
-            expect(generalDummy.calcRadiusPxByArea(1, 1, 0)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(0, 1, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 0, 1)).to.equal(0);
+            expect(generalDummy.calcRadiusArea(1, 1, 0)).to.equal(0);
         });
         it("should return maxRadiusPx if value equals or is greater than maxValue", () => {
-            expect(generalDummy.calcRadiusPxByArea(1, 1, 1)).to.equal(1);
-            expect(generalDummy.calcRadiusPxByArea(2, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusArea(1, 1, 1)).to.equal(1);
+            expect(generalDummy.calcRadiusArea(2, 1, 1)).to.equal(1);
         });
         it("should calculate the circle area", () => {
-            expect(generalDummy.calcRadiusPxByArea(5, 10, 100).toFixed(2)).to.equal("70.71");
+            expect(generalDummy.calcRadiusArea(5, 10, 100).toFixed(2)).to.equal("70.71");
         });
     });
     describe("getBubbleColor", () => {

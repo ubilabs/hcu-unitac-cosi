@@ -64,7 +64,13 @@ describe("addons/CommuterFlows/components/CommuterFlows.vue", () => {
         });
         wrapper = shallowMount(CommuterFlowsComponent, {
             store,
-            localVue
+            localVue,
+            data () {
+                return {
+                    wfsApi: "wfsApi",
+                    olApi: "wfsApi"
+                };
+            }
         });
         store.commit("Tools/CommuterFlows/setActive", true);
     });

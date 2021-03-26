@@ -26,12 +26,12 @@ export class CommuterOL {
      * @param {Object} options.fontShadow the shadow for the captions as ol/Stroke options
      * @param {Object} options.beam the style for the lines (beams) as ol/Stroke options
      * @param {Number} options.bubblePixelMax the maximum radius for bubbles in px
-     * @param {Number} options.bubblePixelMin the minimum radius for bubbles in px (does only apply for calcRadiusPxByRatio)
+     * @param {Number} options.bubblePixelMin the minimum radius for bubbles in px
      * @param {Object} options.bubbleBorder the style of the border of bubbles as ol/Stroke options
      * @param {Number[]} options.bubbleColors the colors to use for the bubbles as list of rgby colors
      * @param {Number[]} options.bubbleColorShift the highlight/lowlight shifting added to bubbleColors before repeating the colors
      * @param {Object} options.zoomOptions the options for the zoom function given to the ol event for zooming
-     * @param {Number[]} options.animationSpeeds the speeds for the animation: even idx for forwards speed in ms, odd idx for backwards speed in ms, leave a zero to jump forwards/backwards
+     * @param {Number[]} options.animationPaces the pace for the animation: even idx for forwards speed in ms, odd idx for backwards speed in ms, leave a zero to jump forwards/backwards
      * @param {Object} [olMock=null] the mock for the OpenLayers functions for testing
      * @constructor
      * @returns {CommuterOL} the instance of CommuterOL
@@ -69,7 +69,7 @@ export class CommuterOL {
                 padding: [20, 20, 20, 400]
             },
             // an array[a, b] to describe the speed with - a is forward, b is backward - if set to 0, forward/backward is not animated
-            animationSpeeds: [6000, 300]
+            animationPaces: [6000, 300]
         }, options);
 
         this.ol = Object.assign(this.getOpenlayersConnectors(), olMock);
@@ -226,17 +226,19 @@ export class CommuterOL {
      * initializes the animation and adds bubbles to the bubbles layer
      * @param {ol/Feature[]} featureList a list of features to calculate their extent from
      * @param {Number} maxValue the highest value of all features of the featureList to calculate the bubble radius
+     * @param {String} [algorithm="area"] the algorithm to use for the calculation ("area" or "radius")
      * @returns {void}
      */
-    initAnimation (featureList, maxValue) {
+    initAnimation (featureList, maxValue, algorithm = "area") {
         this.removeAnimation();
 
         if (!Array.isArray(featureList) || !featureList.length) {
             return;
         }
+        const calcRadius = this.getRadiusAlgorithm(algorithm);
+
         featureList.forEach((feature, idx) => {
-            const radius = this.calcRadiusPxByArea(feature.get("value"), maxValue, this.options.bubblePixelMax),
-                // radius = this.calcRadiusPxByRatio(feature.get("value"), maxValue, this.options.bubblePixelMax., this.options.bubblePixelMin),
+            const radius = calcRadius(feature.get("value"), maxValue, this.options.bubblePixelMax, this.options.bubblePixelMin),
                 color = this.getColor(idx),
                 bubble = this.getFeatureBubble(feature, radius, color);
 
@@ -244,13 +246,13 @@ export class CommuterOL {
         });
         this.animation = new CommuterAnimation(
             featureList,
-            this.options.animationSpeeds,
+            this.options.animationPaces,
             this.layers.bubbles,
             this.layers.animation,
             this.ol,
             (feature, idx) => {
                 // creates a bubble style for the animated feature
-                const radius = this.calcRadiusPxByArea(feature.get("value"), maxValue, this.options.bubblePixelMax),
+                const radius = calcRadius(feature.get("value"), maxValue, this.options.bubblePixelMax, this.options.bubblePixelMin),
                     color = this.getColor(idx);
 
                 return this.getBubbleStyle(radius, color, this.options.bubbleBorder);
@@ -276,6 +278,13 @@ export class CommuterOL {
         if (this.animation instanceof CommuterAnimation) {
             this.animation.stop();
         }
+    }
+    /**
+     * checkes whether or not the animation is running
+     * @returns {Boolean} true if the animation is currently running
+     */
+    isAnimationRunning () {
+        return this.animation instanceof CommuterAnimation && this.animation.isRunning();
     }
     /**
      * removes the animation and stops it if it is running
@@ -459,13 +468,31 @@ export class CommuterOL {
     }
 
     /**
+     * returns the function to use to calculate the radius of a bubble with
+     * @param {String} algorithm the algorithm to use
+     * @returns {Function} the function(value, maxValue, maxPx, minPx) to use for the calculation
+     */
+    getRadiusAlgorithm (algorithm) {
+        switch (algorithm) {
+            case "area":
+                return this.calcRadiusArea;
+            case "linear":
+                return this.calcRadiusLinear;
+            case "log":
+                return this.calcRadiusLog10;
+            default:
+                return this.calcRadiusArea;
+        }
+    }
+
+    /**
      * calculates the exact radius to represent the given sizes as circle area
      * @param {Number} value the amount for the circle area
      * @param {Number} maxValue the maximum amount for the biggest circle possible
      * @param {Number} maxRadiusPx the maximum size of the biggest circle in pixels
      * @returns {Number} the radius to use for the exact cirle area
      */
-    calcRadiusPxByArea (value, maxValue, maxRadiusPx) {
+    calcRadiusArea (value, maxValue, maxRadiusPx) {
         if (typeof value !== "number" || typeof maxValue !== "number" || typeof maxRadiusPx !== "number") {
             return 0;
         }
@@ -488,7 +515,7 @@ export class CommuterOL {
      * @param {Number} [minRadiusPx=0] the minimum size of the smalest radius in pixels (to avoid tiny bubbles)
      * @returns {Number} the radius to use
      */
-    calcRadiusPxByRatio (value, maxValue, maxRadiusPx, minRadiusPx = 0) {
+    calcRadiusLinear (value, maxValue, maxRadiusPx, minRadiusPx = 0) {
         if (typeof minRadiusPx !== "number") {
             return 0;
         }
@@ -509,5 +536,35 @@ export class CommuterOL {
         }
 
         return (maxRadiusPx - minRadiusPx) / maxValue * value + minRadiusPx;
+    }
+    /**
+     * calculates the radius on a logarithmic scale
+     * @param {Number} value the amount for the ratio of the max radius
+     * @param {Number} maxValue the maximum amount for the biggest radius possible
+     * @param {Number} maxRadiusPx the maximum size of the biggest radius in pixels
+     * @param {Number} [minRadiusPx=0] the minimum size of the smalest radius in pixels
+     * @returns {Number} the radius to use
+     */
+    calcRadiusLog10 (value, maxValue, maxRadiusPx, minRadiusPx = 0) {
+        if (typeof minRadiusPx !== "number") {
+            return 0;
+        }
+        else if (typeof value !== "number" || typeof maxValue !== "number" || typeof maxRadiusPx !== "number") {
+            return minRadiusPx;
+        }
+        else if (maxRadiusPx <= minRadiusPx) {
+            return minRadiusPx;
+        }
+        else if (value <= 0) {
+            return minRadiusPx;
+        }
+        else if (maxValue <= 0) {
+            return minRadiusPx;
+        }
+        else if (value >= maxValue) {
+            return maxRadiusPx;
+        }
+
+        return (maxRadiusPx - minRadiusPx) / Math.log10(maxValue) * Math.log10(value) + minRadiusPx;
     }
 }

@@ -1,6 +1,7 @@
 import {WFS} from "ol/format.js";
 import getProxyUrl from "../../../src/utils/getProxyUrl";
 import axios from "axios";
+import hash from "object-hash";
 
 /**
  * CommuterApi is the api for the Tool "CommuterFlows"
@@ -45,6 +46,9 @@ export class CommuterApi {
     getListDistricts (onsuccess, onerror) {
         const url = this.options.useProxy ? getProxyUrl(this.options.serviceUrl) : this.options.serviceUrl;
 
+        if (!url) {
+            return;
+        }
         this.getFeatureCall(url, {
             typename: "app:mrh_kreise",
             maxFeatures: "10000"
@@ -74,6 +78,9 @@ export class CommuterApi {
     getListCities (district, onsuccess, onerror) {
         const url = this.options.useProxy ? getProxyUrl(this.options.serviceUrl) : this.options.serviceUrl;
 
+        if (!url) {
+            return;
+        }
         this.getFeatureCall(url, {
             "StoredQuery_ID": "SamtgemeindeZuKreis",
             kreis: district
@@ -107,6 +114,9 @@ export class CommuterApi {
     getFeaturesDistrict (district, homeToWork, start, len, onsuccess, onerror) {
         const url = this.options.useProxy ? getProxyUrl(this.options.serviceUrl) : this.options.serviceUrl;
 
+        if (!url) {
+            return;
+        }
         this.getFilterCall(url, {
             featureType: "app:mrh_pendler_kreise",
             propertyName: homeToWork ? "app:wohnort" : "app:arbeitsort",
@@ -135,7 +145,8 @@ export class CommuterApi {
                 totalMax,
                 totalLength: featureList.length,
                 start,
-                len
+                len: len && len <= featureList.length ? len : featureList.length,
+                source: "getFeaturesDistrict"
             });
         }, onerror);
     }
@@ -154,6 +165,9 @@ export class CommuterApi {
     getFeaturesCity (city, homeToWork, start, len, onsuccess, onerror) {
         const url = this.options.useProxy ? getProxyUrl(this.options.serviceUrl) : this.options.serviceUrl;
 
+        if (!url) {
+            return;
+        }
         this.getFilterCall(url, {
             featureType: "app:mrh_einpendler_gemeinde",
             propertyName: homeToWork ? "app:wohnort" : "app:arbeitsort",
@@ -194,7 +208,8 @@ export class CommuterApi {
                 totalMax,
                 totalLength: featureList.length,
                 start,
-                len
+                len: len && len <= featureList.length ? len : featureList.length,
+                source: "getFeaturesCity"
             });
         }, onerror);
     }
@@ -389,7 +404,7 @@ export class CommuterApi {
                 request: "GetFeature",
                 version: "2.0.0"
             }, params),
-            cacheKey = url + "_" + JSON.stringify(axiosParams);
+            cacheKey = hash.sha1(url + "_" + JSON.stringify(axiosParams));
 
         if (this.cache.hasOwnProperty(cacheKey)) {
             onsuccess(this.cache[cacheKey]);
@@ -431,7 +446,7 @@ export class CommuterApi {
         </ogc:Filter>
     </wfs:Query>
 </wfs:GetFeature>`,
-            cacheKey = url + "_" + JSON.stringify(reqParams);
+            cacheKey = hash.sha1(url + "_" + JSON.stringify(reqParams));
 
         if (this.cache.hasOwnProperty(cacheKey)) {
             onsuccess(this.cache[cacheKey]);
