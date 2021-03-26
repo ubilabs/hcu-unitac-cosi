@@ -94,7 +94,7 @@ export default {
                 if (oldVal) {
                     this.createDataConnection(newVal.getProperties(), null);
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
-                    this.setComponentKey(this.propThingId);
+                    this.setComponentKey(this.propThingId + this.propMeansOfTransport);
                     this.setActiveDefaultTab();
                 }
             },

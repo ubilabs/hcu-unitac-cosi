@@ -86,6 +86,15 @@ export default {
                 }
             },
             immediate: true
+        },
+
+        meansOfTransport: {
+            handler (newVal, oldVal) {
+                if (oldVal) {
+                    this.setupTabInfo(this.api, this.thingId, newVal);
+                }
+            },
+            immediate: true
         }
     },
     mounted: function () {
