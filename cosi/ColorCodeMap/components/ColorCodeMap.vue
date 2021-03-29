@@ -71,6 +71,10 @@ export default {
             this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
                 this.availableYears = [];
+
+                /**
+                 * @todo refactor for utils!
+                 */
                 Object.keys(this.featuresStatistics[0].getProperties()).forEach(key => {
                     if (key.includes(this.yearSelector)) {
                         this.availableYears.push(key.substr(key.indexOf("_") + 1));
