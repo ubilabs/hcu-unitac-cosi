@@ -31,6 +31,14 @@
     "path":"cosi/DistrictLoader",
     "type": "tool"
   },
+  "DashboardManager": {
+    "path":"cosi/Dashboard/DashboardManager",
+    "type": "tool"
+  },
+  "DashboardTable": {
+    "path":"cosi/Dashboard/DashboardTable",
+    "type": "tool"
+  },
   "FileImportAddon": {
     "type": "tool"
   },
