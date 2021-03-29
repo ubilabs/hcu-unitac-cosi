@@ -464,7 +464,7 @@ export default {
                             &.highlight {
                                 color:white;
                                 border:none;
-                                background-color:#3399CC;
+                                background-color:@brightblue;
                             }
                         }
                     }

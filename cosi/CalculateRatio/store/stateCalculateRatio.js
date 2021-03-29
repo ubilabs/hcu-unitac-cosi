@@ -29,7 +29,8 @@ const state = {
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
-    deactivateGFI: true
+    deactivateGFI: true,
+    yearSelector: "jahr_"
 };
 
 export default state;
