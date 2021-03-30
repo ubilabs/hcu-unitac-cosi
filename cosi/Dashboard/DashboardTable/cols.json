@@ -1,0 +1,55 @@
+[
+    {
+        "field": "menu",
+        "fixed": "left",
+        "key": "menu"
+    },
+    {
+        "title": "Kategorie",
+        "field": "category",
+        "width": "25%",
+        "fixed": "left",
+        "key": "category"
+    },
+    {
+        "title": "Jahr",
+        "field": "years",
+        "fixed": "left",
+        "key": "years"
+    },
+    {
+        "title": "Stadtteile",
+        "children": [
+            {
+                "title": "Lemsahl-Mellingstedt",
+                "field": "Lemsahl-Mellingstedt",
+                "key": "Lemsahl-Mellingstedt"
+            },
+            {
+                "title": "Bergstedt",
+                "field": "Bergstedt",
+                "key": "Bergstedt"
+            }
+        ]
+    },
+    {
+        "title": "Bezirke",
+        "children": [
+            {
+                "title": "Wandsbek",
+                "field": "Wandsbek",
+                "key": "Wandsbek"
+            }
+        ]
+    },
+    {
+        "title": "Hamburg",
+        "children": [
+            {
+                "title": "hamburg_gesamt",
+                "field": "hamburg_gesamt",
+                "key": "hamburg_gesamt"
+            }
+        ]
+    }
+]
