@@ -25,6 +25,7 @@
                     "dataSourceMRHLinktext": "Weitere Informationen"
                 },
                 "errors": {
+                    "errorCategory": "Fehler",
                     "requestException": "Datenabfrage fehlgeschlagen. Technische Details: ",
                     "layerIdCantBeLoadedPrefix": "Der Layer mit der ID: ",
                     "layerIdCantBeLoadedSuffix": "konnte nicht geladen werden, da dieser im Portal nicht zur Verfügung steht!",

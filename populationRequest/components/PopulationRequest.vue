@@ -101,15 +101,6 @@ export default {
             WPS.wpsRequest("1001", "einwohner_ermitteln.fmw", {
                 "such_flaeche": JSON.stringify(geoJson)
             }, this.handleResponse.bind(this));
-
-            this.reset();
-        },
-        /**
-         * Reset State when tool becomes active/inactive
-         * @returns {void}
-         */
-        reset: function () {
-            LoaderOverlay.hide();
         },
         /**
          * Resets the GraphicalSelect
@@ -128,7 +119,6 @@ export default {
         handleResponse: function (response, status) {
             let parsedData = null;
 
-            LoaderOverlay.hide();
             parsedData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.einwohner;
             if (status === 200) {
                 if (parsedData.ErrorOccured === "yes") {
@@ -141,6 +131,8 @@ export default {
             else {
                 this.resetView();
             }
+
+            LoaderOverlay.hide();
         },
         /**
          * Displays Errortext if the WPS returns an Error
@@ -149,7 +141,9 @@ export default {
          */
         handleWPSError: function (response) {
             this.addSingleAlert({
-                "content": this.$t("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response.ergebnis)
+                category: this.translate("additional:modules.tools.populationRequest.errors.errorCategory"),
+                content: this.translate("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response.ergebnis),
+                displayClass: "error"
             });
         },
         /**
@@ -197,7 +191,9 @@ export default {
             }
             catch (e) {
                 this.addSingleAlert({
-                    content: this.$t("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response)
+                    category: this.translate("additional:modules.tools.populationRequest.errors.errorCategory"),
+                    content: this.translate("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response),
+                    displayClass: "error"
                 });
                 this.resetView();
                 (console.error || console.warn).call(console, e.stack || e);
@@ -257,7 +253,7 @@ export default {
                 }
 
                 this.addSingleAlert({
-                    "content": this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedPrefix") + layerId + this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedSuffix")
+                    "content": this.translate("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedPrefix") + layerId + this.translate("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedSuffix")
                 });
             }
         },
@@ -293,7 +289,7 @@ export default {
                     }
 
                     this.addSingleAlert({
-                        "content": this.$t("additional:modules.tools.populationRequest.errors.reduceScaleForRaster")
+                        "content": this.translate("additional:modules.tools.populationRequest.errors.reduceScaleForRaster")
                     });
                     return;
                 }
@@ -326,7 +322,7 @@ export default {
                     }
 
                     this.addSingleAlert({
-                        "content": this.$t("additional:modules.tools.populationRequest.errors.reduceScaleForAlkisAdresses")
+                        "content": this.translate("additional:modules.tools.populationRequest.errors.reduceScaleForAlkisAdresses")
                     });
                     return;
                 }
