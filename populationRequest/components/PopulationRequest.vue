@@ -5,7 +5,7 @@ import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
 import state from "../store/statePopulationRequest";
 import actions from "../store/actionsPopulationRequest";
-import Dropdown from "../../../src/share-components/dropdowns/DropdownSimple.vue";
+import GraphicalSelect from "../../../modules/snippets/graphicalSelect/components/GraphicalSelect.vue";
 import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
@@ -15,18 +15,12 @@ export default {
     name: "PopulationRequest",
     components: {
         Tool,
-        Dropdown,
+        GraphicalSelect,
         ToggleCheckbox
     },
     data () {
         return {
             metaDataLink: undefined,
-            selectedOption: "square",
-            options: {
-                "square": this.$t("common:snippets.graphicalSelect.selectBySquare"),
-                "circle": this.$t("common:snippets.graphicalSelect.selectByCircle"),
-                "polygon": this.$t("common:snippets.graphicalSelect.selectByPolygon")
-            },
             mrhId: "46969C7D-FAA8-420A-81A0-8352ECCFF526",
             fhhId: "B3FD9BD5-F614-433F-A762-E14003C300BF",
             rasterLayerId: "13023",
@@ -66,18 +60,16 @@ export default {
             return isVisibleInMap;
         }
     },
+    /**
+     * Created hook:
+     * @returns {void}
+     */
     created () {
         this.$on("close", this.close);
 
-        /*
-        Backbone.Events.listenTo(Radio.channel("GraphicalSelect"), {
-            "onDrawEnd": function (geoJson) {
-                if (this.isActive) {
-                    this.makeRequest(geoJson);
-                }
-            }
+        this.$on("onDrawEnd", function (geoJson) {
+            this.makeRequest(geoJson);
         });
-        */
 
         const service = Radio.request("RestReader", "getServiceById", this.populationReqServiceId);
 
@@ -91,251 +83,6 @@ export default {
         ...mapActions("Tools/PopulationRequest", Object.keys(actions)),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
-        /**
-         * Fake Request for Testing - square in HH Neustadt: Result 2548, 155.661 m²
-         * @returns {void}
-         */
-        fakeReqHHNeustadt: function () {
-            const fakeJsonHHNeustadtSq = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            564770.4077996021,
-                            5933854.868462995
-                        ],
-                        [
-                            565310.1575081373,
-                            5933854.868462995
-                        ],
-                        [
-                            565310.1575081373,
-                            5934143.264140594
-                        ],
-                        [
-                            564770.4077996021,
-                            5934143.264140594
-                        ],
-                        [
-                            564770.4077996021,
-                            5933854.868462995
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeJsonHHNeustadtSq);
-        },
-        /**
-         * Fake Request for Testing - square in HH und MRH: 48.817, 63.290 und 69 km²
-         * @returns {void}
-         */
-        fakeReqHHUndMRH: function () {
-            const fakeJsonHHUndMRHSq = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            562632.8559168844,
-                            5945847.806177786
-                        ],
-                        [
-                            572290.1423686164,
-                            5945847.806177786
-                        ],
-                        [
-                            572290.1423686164,
-                            5952991.552320163
-                        ],
-                        [
-                            562632.8559168844,
-                            5952991.552320163
-                        ],
-                        [
-                            562632.8559168844,
-                            5945847.806177786
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeJsonHHUndMRHSq);
-        },
-        /**
-         * Fake Request for Testing - square in MRH: 28.120, 75 km²
-         * @returns {void}
-         */
-        fakeReqMRH: function () {
-            const fakeJsonMRHSq = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            587172.946831902,
-                            5958812.382510248
-                        ],
-                        [
-                            595507.3173313419,
-                            5958812.382510248
-                        ],
-                        [
-                            595507.3173313419,
-                            5967808.210985834
-                        ],
-                        [
-                            587172.946831902,
-                            5967808.210985834
-                        ],
-                        [
-                            587172.946831902,
-                            5958812.382510248
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeJsonMRHSq);
-        },
-        /**
-         * Fake Request for Testing - partially outside MRH
-         * @returns {void}
-         */
-        fakeReqPartiallyOutsideMRH: function () {
-            const fakeJsonPartiallyOutsideMRH = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            674543.7833962495,
-                            5895666.4320419235
-                        ],
-                        [
-                            694122.9394901718,
-                            5895666.4320419235
-                        ],
-                        [
-                            694122.9394901718,
-                            5912467.464636033
-                        ],
-                        [
-                            674543.7833962495,
-                            5912467.464636033
-                        ],
-                        [
-                            674543.7833962495,
-                            5895666.4320419235
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeJsonPartiallyOutsideMRH);
-        },
-        /**
-         * Fake Request for Testing - result 0 in MRH
-         * @returns {void}
-         */
-        fakeReqMRHRes0: function () {
-            const fakeJsonMRHRes0 = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            597811.4600437658,
-                            5939733.7778160535
-                        ],
-                        [
-                            598016.5120163711,
-                            5939733.7778160535
-                        ],
-                        [
-                            598016.5120163711,
-                            5939933.538124849
-                        ],
-                        [
-                            597811.4600437658,
-                            5939933.538124849
-                        ],
-                        [
-                            597811.4600437658,
-                            5939733.7778160535
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeJsonMRHRes0);
-        },
-        /**
-         * Fake Request for Testing - outside MRH
-         * @returns {void}
-         */
-        fakeReqOutsideMRH: function () {
-            const fakeOutsideMRH = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            694283.2813496877,
-                            5892959.981420023
-                        ],
-                        [
-                            712671.8130865473,
-                            5892959.981420023
-                        ],
-                        [
-                            712671.8130865473,
-                            5902881.851062214
-                        ],
-                        [
-                            694283.2813496877,
-                            5902881.851062214
-                        ],
-                        [
-                            694283.2813496877,
-                            5892959.981420023
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeOutsideMRH);
-        },
-        /**
-         * Fake Request for Testing - too small in MRH
-         * @returns {void}
-         */
-        fakeReqTooSmallMRH: function () {
-            const fakeTooSmallMRH = {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            546278.9689146504,
-                            5939402.325029877
-                        ],
-                        [
-                            546347.7605441695,
-                            5939402.325029877
-                        ],
-                        [
-                            546347.7605441695,
-                            5939438.043760589
-                        ],
-                        [
-                            546278.9689146504,
-                            5939438.043760589
-                        ],
-                        [
-                            546278.9689146504,
-                            5939402.325029877
-                        ]
-                    ]
-                ]
-            };
-
-            this.makeRequest(fakeTooSmallMRH);
-        },
         /**
          * Resets internal data and triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
          * @param  {Object} geoJson GeoJSON to get selected area from
@@ -370,7 +117,7 @@ export default {
          * @returns {void}
          */
         resetView: function () {
-            Radio.trigger("GraphicalSelect", "resetView", this.id);
+            this.$refs.graphicalSelectComponent.resetView();
         },
         /**
          * Called when the wps modules returns a request
@@ -528,15 +275,6 @@ export default {
             });
         },
         /**
-         * Sets the state at GraphicalSelect - handles (de-)activation of this Tool
-         * @param {boolean} value flag is tool is active
-         * @fires Snippets.GraphicalSelect#setStatus
-         * @returns {void}
-         */
-        changeGraphicalSelectStatus: function (value) {
-            Radio.trigger("GraphicalSelect", "setStatus", this.id, value);
-        },
-        /**
          * Sets the state at the RasterLayer
          * @param {boolean} value flag if Raster is to be set
          * @returns {void}
@@ -647,6 +385,19 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
+        },
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+
+            return this.$t(key, options);
         }
     }
 };
@@ -654,7 +405,7 @@ export default {
 
 <template lang="html">
     <Tool
-        :title="$t('additional:modules.tools.populationRequest.title')"
+        :title="translate('additional:modules.tools.populationRequest.title')"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -666,69 +417,25 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <div>{{ $t("additional:modules.tools.populationRequest.select.info") }}</div>
+            <div>{{ translate("additional:modules.tools.populationRequest.select.info") }}</div>
             <div class="dropdown">
-                <form>
-                    <Dropdown
-                        v-model="selectedOption"
-                        :options="options"
-                    />
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqHHNeustadt"
-                    >
-                        HHNeustadt
-                    </button>
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqHHUndMRH"
-                    >
-                        HHUndMRH
-                    </button>
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqMRH"
-                    >
-                        MRH
-                    </button>
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqPartiallyOutsideMRH"
-                    >
-                        PartOutsMRH
-                    </button>
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqMRHRes0"
-                    >
-                        Res0MRH
-                    </button>
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqOutsideMRH"
-                    >
-                        OutsideMRH
-                    </button>
-                    <button
-                        class="btn-primary"
-                        @click="fakeReqTooSmallMRH"
-                    >
-                        TooSmallMRH
-                    </button>
-                </form>
+                <GraphicalSelect
+                    ref="graphicalSelectComponent"
+                    :selectElement="'Dropdown'"
+                />
             </div>
             <div
                 v-if="inhabitantsFHHNum > -1 || inhabitantsMRHNum > -1"
                 class="result"
             >
                 <div class="heading additional-text">
-                    {{ $t("additional:modules.tools.populationRequest.result.confidentialityHint") }}:
+                    {{ translate("additional:modules.tools.populationRequest.result.confidentialityHint") }}:
                 </div>
                 <table class="table">
                     <tr
                         v-if="sourceFHH !== 'nein'"
                     >
-                        <td>{{ $t("additional:modules.tools.populationRequest.result.populationFHH") }}:</td>
+                        <td>{{ translate("additional:modules.tools.populationRequest.result.populationFHH") }}:</td>
                         <td
                             class="inhabitantsFHH"
                         >
@@ -738,7 +445,7 @@ export default {
                     <tr
                         v-if="sourceMRH !== 'nein'"
                     >
-                        <td>{{ $t("additional:modules.tools.populationRequest.result.populationMRH") }}:</td>
+                        <td>{{ translate("additional:modules.tools.populationRequest.result.populationMRH") }}:</td>
                         <td
                             class="inhabitantsMRH"
                         >
@@ -748,7 +455,7 @@ export default {
                     <tr
                         v-if="searchArea"
                     >
-                        <td>{{ $t("additional:modules.tools.populationRequest.result.areaSize") }}:</td>
+                        <td>{{ translate("additional:modules.tools.populationRequest.result.areaSize") }}:</td>
                         <td
                             class="searchArea"
                         >
@@ -761,14 +468,14 @@ export default {
                     class="inhabitantsFHHAddText"
                 >
                     <div class="hinweis additional-text">
-                        <span>{{ $t("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues") }}
+                        <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues") }}
                     </div>
                     <div>
                         <a
                             target="_blank"
                             :href="`${metaDataLink}${fhhId}`"
                         >
-                            {{ $t("additional:modules.tools.populationRequest.result.dataSourceFHHLinktext") }}
+                            {{ translate("additional:modules.tools.populationRequest.result.dataSourceFHHLinktext") }}
                         </a>
                     </div>
                 </div>
@@ -782,9 +489,9 @@ export default {
                         <div
                             v-if="sourceFHH !== 'nein'"
                         >
-                            <span>{{ $t("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
+                            <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
                         </div>
-                        <span>{{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
+                        <span>{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
                     </div>
                     <div
                         v-if="sourceMRH === 'tlw' || sourceFHH === 'nein'"
@@ -793,7 +500,7 @@ export default {
                             target="_blank"
                             :href="`${metaDataLink}${mrhId}`"
                         >
-                            {{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHLinktext") }}
+                            {{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHLinktext") }}
                         </a>
                     </div>
                 </div>
@@ -806,13 +513,13 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label>{{ $t("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
+                                <label>{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
                                     ref="rasterCB"
                                     :defaultState="isRasterVisibleInMap"
-                                    :title="$t('additional:modules.tools.populationRequest.switchOffFilter')"
-                                    :textOn="$t('common:snippets.checkbox.on')"
-                                    :textOff="$t('common:snippets.checkbox.off')"
+                                    :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
+                                    :textOn="translate('common:snippets.checkbox.on')"
+                                    :textOff="translate('common:snippets.checkbox.off')"
                                     @change="triggerRaster"
                                 />
                             </div>
@@ -821,13 +528,13 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label>{{ $t("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
+                                <label>{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
                                 <ToggleCheckbox
                                     ref="alkisAdressesCB"
                                     :defaultState="isAlkisAdressesVisibleInMap"
-                                    :title="$t('additional:modules.tools.populationRequest.switchOffFilter')"
-                                    :textOn="$t('common:snippets.checkbox.on')"
-                                    :textOff="$t('common:snippets.checkbox.off')"
+                                    :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
+                                    :textOn="translate('common:snippets.checkbox.on')"
+                                    :textOff="translate('common:snippets.checkbox.off')"
                                     @change="triggerAlkisAdresses"
                                 />
                             </div>
