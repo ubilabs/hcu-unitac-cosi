@@ -1,40 +1,38 @@
 <script>
+import store from "../../../../../src/app-store";
+
 export default {
     name: "ValueCell",
     props: {
+        prop: {
+            required: true,
+            type: String
+        },
         rowIndex: {
             required: true,
             type: Number
         },
+        model: {
+            required: true,
+            type: Object
+        },
         column: {
-            required: true,
-            type: Object
-        },
-        row: {
-            required: true,
-            type: Object
-        },
-        currentTimestamp: {
-            type: Number,
-            default: 0
-        },
-        timestampPrefix: {
-            type: String,
-            default: "jahr_"
+            type: Object,
+            required: true
         }
     },
     computed: {
         values () {
-            return Object.entries(this.row[this.column.field]).filter(entry => entry[0].includes(this.timestampPrefix));
+            return Object.entries(this.model[this.prop]).filter(entry => entry[0].includes(this.timeStampPrefix));
         },
         timeStampPrefix () {
-            return this.timestampPrefix;
+            return this.column.timeStampPrefix || "jahr_";
         },
         currentTimeStamp () {
-            return this.currentTimeStamp;
+            return this.column.currentTimeStamp;
         },
         currentLocale () {
-            return this.$store.getters["Language/currentLocale"] || "de-DE";
+            return store.getters["Language/currentLocale"] || "de-DE";
         }
     },
     methods: {
@@ -62,16 +60,3 @@ export default {
         </li>
     </ul>
 </template>
-
-<style lang="less" scoped>
-    ul.timestamp-list {
-        padding: 0;
-        li.timestamp-list-item {
-            text-align: right;
-            list-style: none;
-            small {
-                color: #90c6f5;
-            }
-        }
-    }
-</style>

@@ -1,18 +1,24 @@
 <script>
+import store from "../../../../../src/app-store";
+
 export default {
     name: "CategoryCell",
     props: {
+        prop: {
+            required: true,
+            type: String
+        },
         rowIndex: {
             required: true,
             type: Number
         },
-        column: {
+        model: {
             required: true,
             type: Object
         },
-        row: {
-            required: true,
-            type: Object
+        column: {
+            type: Object,
+            required: true
         }
     },
     data () {
@@ -36,6 +42,6 @@ export default {
             class="form-check-input"
             type="checkbox"
         />
-        <strong>{{ row[column.field] }}</strong>
+        <strong>{{ model[prop] }}</strong>
     </div>
 </template>

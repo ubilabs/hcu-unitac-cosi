@@ -7,7 +7,7 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDashboardTable";
 import mutations from "../store/mutationsDashboardTable";
 import actions from "../store/actionsDashboardTable";
-import {VueGoodTable} from "vue-good-table";
+import VGrid, {VGridVueTemplate} from "@revolist/vue-datagrid";
 import categories from "../../../assets/mapping.json";
 import findDistrictFeatureByName from "../utils/findDistrictFeatureByName";
 import ValueCell from "./ValueCell.vue";
@@ -15,19 +15,12 @@ import YearCell from "./YearCell.vue";
 import MenuCell from "./MenuCell.vue";
 import CategoryCell from "./CategoryCell.vue";
 import {getTimestamps} from "../../../utils/timeline";
-import Test from "../test.json";
-import Cols from "../cols.json";
 
 export default {
     name: "DashboardTable",
     components: {
         Tool,
-        VueGoodTable,
-        ValueCell,
-        YearCell,
-        MenuCell,
-        CategoryCell
-        // VGrid,
+        VGrid
     },
     props: {
         dashboardOpen: {
@@ -39,17 +32,15 @@ export default {
     data () {
         return {
             columnsTemplate: [
-                {field: "menu", width: "60px" /* , autoSizeColumn: true, cellTemplate: VGridVueTemplate(MenuCell)*/},
-                {label: "Kategorie", field: "category", width: "250px" /* , cellTemplate: VGridVueTemplate(CategoryCell)*/},
-                {label: "Jahr", field: "years", width: "60px" /* , autoSizeColumn: true, cellTemplate: VGridVueTemplate(YearCell)*/}
+                {field: "menu", autoSizeColumn: true, cellTemplate: VGridVueTemplate(MenuCell)},
+                {name: "Kategorie", field: "category", width: "25%", cellTemplate: VGridVueTemplate(CategoryCell)},
+                {name: "Jahr", field: "years", autoSizeColumn: true, cellTemplate: VGridVueTemplate(YearCell)}
             ],
             rows: [],
             rowDefinitions: [],
-            testrows: Test,
-            colsTest: Cols,
-            // grouping: {
-            //     props: ["group"]
-            // },
+            grouping: {
+                props: ["group"]
+            },
             timeStampPrefix: "jahr_",
             currentTimeStamp: 0
         };
@@ -57,7 +48,7 @@ export default {
     computed: {
         ...mapGetters("Tools/DashboardTable", Object.keys(getters)),
         ...mapGetters("Tools/DistrictLoader", {featureList: "featureList", districtLevelStats: "districtLevels"}),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "keyOfAttrName", "keyOfAttrNameStats", "districtLevels", "label"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "keyOfAttrName", "keyOfAttrNameStats", "districtLevels"]),
         ...mapGetters("Map", ["layerById"]),
         columns () {
             console.log([
@@ -191,7 +182,11 @@ export default {
 
                 return [
                     ...cols,
-                    ...this.generateColumnsForLevel(level)
+                    {
+                        name: level.label,
+                        field: level.label,
+                        children: this.generateColumnsForLevel(level)
+                    }
                 ];
             }, []);
         },
@@ -201,10 +196,11 @@ export default {
             });
 
             return columnNames.map(districtName => ({
-                label: districtName,
+                name: districtName,
                 field: districtName,
-                level: level.label,
-                isReference: level.label === this.label
+                cellTemplate: VGridVueTemplate(ValueCell),
+                currentTimeStamp: 2019,
+                timeStampPrefix: this.timeStampPrefix
             }));
         }
     }
@@ -224,113 +220,43 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <VueGoodTable
+            <VGrid
+                key="dashboard-table"
                 ref="dashboard-table"
+                theme="compact"
+                :source="rows"
                 :columns="columns"
-                :rows="rows"
-                fixed-header
-                :search-options="{
-                    enabled: true
+                :grouping="grouping"
+                :autoSizeColumn="{
+                    mode: 'autoSizeOnTextOverlap'
                 }"
-                :pagination-options="{
-                    enabled: true
-                }"
-                max-height="60vh"
-            >
-                <template
-                    slot="table-row"
-                    slot-scope="props"
-                >
-                    <span v-if="props.column.field === 'menu'">
-                        <MenuCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                            :currentTimestamp="currentTimeStamp"
-                        />
-                    </span>
-                    <span v-if="props.column.field === 'years'">
-                        <YearCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                            :currentTimestamp="currentTimeStamp"
-                        />
-                    </span>
-                    <span v-else-if="props.column.field === 'category'">
-                        <CategoryCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                        />
-                    </span>
-                    <span v-else-if="props.column.level">
-                        <ValueCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                            :currentTimestamp="currentTimeStamp"
-                        />
-                    </span>
-                    <!-- <span v-if="props.column.field === 'menu'">
-                        <MenuCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                            :currentTimestamp="currentTimeStamp"
-                        />
-                    </span>
-                    <span v-if="props.column.field === 'years'">
-                        <YearCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                            :currentTimestamp="currentTimeStamp"
-                        />
-                    </span>
-                    <span v-else-if="props.column.field === 'category'">
-                        <CategoryCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                        />
-                    </span>
-                    <span v-else-if="props.column.level">
-                        <ValueCell
-                            :rowIndex="props.index"
-                            :column="props.column"
-                            :row="props.formattedRow"
-                            :currentTimestamp="currentTimeStamp"
-                        />
-                    </span> -->
-                    <span v-else>
-                        {{ props.formattedRow[props.column.field] }}
-                    </span>
-                </template>
-            </VueGoodTable>
+                :row-headers="{size: 40}"
+                :row-definitions="rowDefinitions"
+                resize
+            />
         </template>
     </Tool>
 </template>
 
 <style lang="less">
-    revo-grid {
-        font-size: 10px;
+    // revo-grid {
+    //     font-size: 10px;
 
-        .row {
-            margin: 0;
-        }
+    //     .row {
+    //         margin: 0;
+    //     }
 
-        ul.timestamp-list {
-            padding: 0;
-            li.timestamp-list-item {
-                text-align: right;
-                list-style: none;
-                small {
-                    color: #90c6f5;
-                }
-            }
-        }
-    }
+    //     ul.timestamp-list {
+    //         padding: 0;
+    //         li.timestamp-list-item {
+    //             text-align: right;
+    //             list-style: none;
+    //             small {
+    //                 color: #90c6f5;
+    //             }
+    //         }
+    //     }
+    // }
 </style>
 
 <style src="vue-good-table/dist/vue-good-table.css">

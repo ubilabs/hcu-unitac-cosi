@@ -1,26 +1,24 @@
 <script>
+import store from "../../../../../src/app-store";
+
 export default {
     name: "YearCell",
     props: {
+        prop: {
+            required: true,
+            type: String
+        },
         rowIndex: {
             required: true,
             type: Number
         },
+        model: {
+            required: true,
+            type: Object
+        },
         column: {
-            required: true,
-            type: Object
-        },
-        row: {
-            required: true,
-            type: Object
-        },
-        currentTimestamp: {
-            type: Number,
-            default: 0
-        },
-        timestampPrefix: {
-            type: String,
-            default: "jahr_"
+            type: Object,
+            required: true
         }
     }
 };
@@ -31,7 +29,7 @@ export default {
     <div>
         <ul class="timestamp-list">
             <li
-                v-for="(val, i) in row[column.field]"
+                v-for="(val, i) in model[prop]"
                 :key="i"
                 class="timestamp-list-item"
             >
@@ -42,16 +40,3 @@ export default {
         </ul>
     </div>
 </template>
-
-<style lang="less" scoped>
-    ul.timestamp-list {
-        padding: 0;
-        li.timestamp-list-item {
-            text-align: right;
-            list-style: none;
-            small {
-                color: #90c6f5;
-            }
-        }
-    }
-</style>

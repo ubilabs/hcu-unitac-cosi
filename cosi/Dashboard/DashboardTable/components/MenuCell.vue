@@ -1,26 +1,24 @@
 <script>
+import store from "../../../../../src/app-store";
+
 export default {
     name: "MenuCell",
     props: {
+        prop: {
+            required: true,
+            type: String
+        },
         rowIndex: {
             required: true,
             type: Number
         },
+        model: {
+            required: true,
+            type: Object
+        },
         column: {
-            required: true,
-            type: Object
-        },
-        row: {
-            required: true,
-            type: Object
-        },
-        currentTimestamp: {
-            type: Number,
-            default: 0
-        },
-        timestampPrefix: {
-            type: String,
-            default: "jahr_"
+            type: Object,
+            required: true
         }
     },
     data () {
@@ -35,6 +33,7 @@ export default {
         toggleTimeline () {
             this.timelineOpen = !this.timelineOpen;
             console.log("timeline open", this.rowIndex);
+            store.commit("Tools/DashboardTable/toggleTimelineRow", {timelineOpen: this.timelineOpen, rowIndex: this.rowIndex});
         }
     }
 };
