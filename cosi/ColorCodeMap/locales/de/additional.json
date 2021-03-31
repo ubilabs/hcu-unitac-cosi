@@ -1,7 +1,7 @@
 {
     "modules": {
         "tools": {
-            "ColorCodeMap": {
+            "colorCodeMap": {
                 "title": "ColorCodeMap",
                 "content": ""
             }

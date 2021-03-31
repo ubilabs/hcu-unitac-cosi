@@ -1,0 +1,19 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "calculateRatio": {
+                    "title": "Versorgungsanalyse (Vue)",
+                    "description": "Mit der Versorgungsanalyse können Sie die Abdeckung eines Gebietes mit einem bestimmten Einrichtungstyp / Infrastruktur ermitteln (s. 'Themen').",
+                    "dataA": "Einrichtungen",
+                    "dataB": "Statistische Daten",
+                    "warningNoData": "Es sind weder statistische Daten, noch Themendaten geladen. Bitte wählen Sie mit der Gebietsauswahl zuerst einige Gebiete aus oder Laden Sie Themen aus dem Hauptmenü.",
+                    "noFeaturesWarning": "Sie haben keine Gebiete als Grundlage für statistische Daten ausgewählt. Bitte laden Sie zuerst einige Gebiete über die Gebietsauswahl.",
+                    "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
+                    "placeholderA": "Paramenter (Zähler) auswählen",
+                    "placeholderB": "Referenzwert (Nenner) auswählen"
+                }
+            }
+        }
+    }
+}

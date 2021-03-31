@@ -1,0 +1,51 @@
+.multiselect {
+    .multiselect__select {
+
+    }
+
+    .multiselect__tags {
+        border-radius:0px;
+
+        input, .multiselect__placeholder {
+            font-size:80%;
+        }
+
+        .multiselect__tag {
+            background:@brightblue;
+            border-radius:0;
+            margin: 0px 10px 0px 0px;
+        }
+        
+        .multiselect__single {
+            font-size:80%;
+        }
+    }
+
+    .multiselect__content {
+
+        .multiselect__element {
+            font-size:80%;
+            font-weight:500;
+            color:#444;
+            overflow-x:hidden;
+
+            .multiselect__option--group {
+                background:transparent !important;
+                font-size:90%;
+                font-weight:900;
+                color:black !important;
+                border-bottom:1px solid #aaa;
+            }
+
+            .multiselect__option--highlight {
+                background:@masterportal_blue !important;
+            }
+
+            .multiselect__option {
+                &:hover {
+                    background:@brightblue !important;
+                }
+            }
+        }
+    }
+}

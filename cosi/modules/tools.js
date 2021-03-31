@@ -16,10 +16,10 @@ import InfoScreenHandler from "./infoScreen/infoScreenHandler/model";
 import ReachabilityFromPoint from "./reachabilityFromPoint/model";
 import ReachabilityInArea from "./reachabilityInArea/model";
 import OpenRouteService from "./openRouteService/model";
-import CalculateRatio from "./calculateRatio/model";
+// import CalculateRatio from "./calculateRatio/model";
 import ReachabilitySelect from "./reachabilitySelect/model";
 import CompareDistricts from "./compareDistricts/model";
-import Filter from "./filter/model";
+// import Filter from "./filter/model";
 
 // new FeaturesLoader();
 // new BboxSettor();
@@ -204,14 +204,14 @@ const general = {
             glyphicon: "glyphicon glyphicon-random",
             resizableWindow: true
         }),
-        calculateRatio: new CalculateRatio({
-            parentId: "tools",
-            type: "tool",
-            id: "calculateRatio",
-            name: "Versorgungsanalyse",
-            glyphicon: "glyphicon-tasks",
-            resizableWindow: true
-        }),
+        // calculateRatio: new CalculateRatio({
+        //     parentId: "tools",
+        //     type: "tool",
+        //     id: "calculateRatio",
+        //     name: "Versorgungsanalyse",
+        //     glyphicon: "glyphicon-tasks",
+        //     resizableWindow: true
+        // }),
         reachabilitySelect: new ReachabilitySelect({
             id: "reachabilitySelect",
             parentId: "tools",

@@ -1,0 +1,19 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "calculateRatio": {
+                    "title": "Coverage Analysis",
+                    "description": "With the coverage analysis you can determine the coverage of an area with a certain type of facility / infrastructure (see 'Topics').",
+                    "dataA": "Facilities",
+                    "dataB": "Statistical Data",
+                    "warningNoData": "Neither statistical data, nor facility data are loaded. Please select some areas first with the area selection tool or load topics from the main menu.",
+                    "noFeaturesWarning": "You have not selected any areas as a basis for statistical data. Please load some areas first via the area selection.",
+                    "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
+                    "placeholderA": "Select (counter) parameter",
+                    "placeholderB": "Select (denominator) reference value"
+                }
+            }
+        }
+    }
+}

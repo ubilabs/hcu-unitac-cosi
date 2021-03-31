@@ -5,6 +5,7 @@ import calculateExtent from "./calculateExtent";
 import setBBoxToGeom from "./setBBoxToGeom";
 import downloadBlobToFile from "./downloadBlobToFile";
 import exportXlsx from "./exportXlsx";
+import getAvailableYears from "./getAvailableYears";
 
 /**
  * @description Bundles the CoSI Utils into one export
@@ -16,5 +17,6 @@ export default {
     calculateExtent,
     setBBoxToGeom,
     downloadBlobToFile,
-    exportXlsx
+    exportXlsx,
+    getAvailableYears
 };
