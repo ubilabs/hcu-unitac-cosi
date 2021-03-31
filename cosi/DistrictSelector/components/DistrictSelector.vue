@@ -13,6 +13,7 @@ import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
 import VueSelect from "vue-select";
+import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
 
 export default {
     name: "DistrictSelector",
@@ -128,6 +129,18 @@ export default {
     },
     mounted () {
         this.showAdditionalLayers = this.checkAdditionalLayers();
+
+        /**
+         * @description Styles the selected district level when the layer is loaded, then unsubsubscribes the call
+         * @todo refactor to vuex, there should be an event on the map calling out loaded features
+         * @deprecated
+         */
+        Radio.on("VectorLayer", "featuresLoaded", (layerId) => {
+            if (this.selectedLevelId === layerId) {
+                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
+                Radio.off("VectorLayer", "featuresLoaded");
+            }
+        });
     },
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
@@ -152,6 +165,7 @@ export default {
             const districtLevel = this.getDistrictLevelById(id);
 
             this.setSelectedDistrictLevel(districtLevel);
+            styleSelectedDistrictLevels(this.districtLevels, id);
         },
 
         /**
@@ -164,7 +178,6 @@ export default {
                 return district.layerId === layerId;
             });
         },
-
 
         /**
          * Registers listener for drag box interaction events.
