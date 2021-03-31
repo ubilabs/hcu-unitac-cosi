@@ -30,7 +30,9 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    yearSelector: "jahr_"
+    yearSelector: "jahr_",
+    dataToCCM: false,
+    ccmDataSet: []
 };
 
 export default state;

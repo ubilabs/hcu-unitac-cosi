@@ -13,6 +13,5 @@
     "versionMajor": "npm version major && git push --tags"
   },
   "dependencies": {
-    "@revolist/vue-datagrid": "^2.9.9"
   }
 }

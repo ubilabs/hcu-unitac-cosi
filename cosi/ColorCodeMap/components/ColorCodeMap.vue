@@ -28,13 +28,21 @@ export default {
             originalStyling: null,
             hiVal: null,
             loVal: null,
-            minimize: false
+            minimize: false,
+            playState: false,
+            playSpeed: 1
         };
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList"])
+        ...mapGetters("Tools/DistrictLoader", ["featureList"]),
+        dataToCCM () {
+            return this.$store.state.Tools.CalculateRatio.dataToCCM;
+        },
+        ccmDataSet () {
+            return this.$store.state.Tools.CalculateRatio.ccmDataSet;
+        }
     },
     watch: {
         selectedFeatures () {
@@ -45,12 +53,28 @@ export default {
             }
         },
         visualizationState () {
-            this.renderVisualization();
+            if (!this.dataToCCM) {
+                this.renderVisualization();
+            }
         },
         featureList () {
             this.updateSelectedDistricts();
+        },
+        playState (stateChange) {
+            if (stateChange) {
+                this.animationOverYears(this.playSpeed);
+            }
+        },
+        dataToCCM (newState) {
+            if (newState) {
+                this.renderCCMData();
+            }
+        },
+        ccmDataSet () {
+            if (this.dataToCCM) {
+                this.renderCCMData();
+            }
         }
-
     },
     /**
      * Put initialize here if mounting occurs after config parsing
@@ -70,12 +94,13 @@ export default {
             this.featuresList = [];
             this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
-                this.availableYears = [];
+                this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
+                /* this.availableYears = [];
                 Object.keys(this.featuresStatistics[0].getProperties()).forEach(key => {
                     if (key.includes(this.yearSelector)) {
                         this.availableYears.push(key.substr(key.indexOf("_") + 1));
                     }
-                });
+                });*/
 
                 this.updateFeaturesList();
             }
@@ -109,6 +134,23 @@ export default {
             });
 
             this.renderVisualization();
+        },
+        animationOverYears (tempo) {
+            if (this.playState) {
+                let current = this.availableYears.indexOf(this.selectedYear) + 1;
+
+                if (current >= this.availableYears.length) {
+                    current = 0;
+                }
+
+                setTimeout(() => {
+                    window.requestAnimationFrame(() => {
+                        this.selectedYear = this.availableYears[current];
+                        this.renderVisualization();
+                        this.animationOverYears(tempo);
+                    });
+                }, tempo * 1000);
+            }
         },
 
         /**
@@ -181,6 +223,45 @@ export default {
                     district.setStyle(style);
                 });
             }
+        },
+        renderCCMData () {
+            if (!this.visualizationState) {
+                this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
+            }
+
+            const resultValues = this.ccmDataSet.map(x => {
+                    return x.data;
+                }),
+                colorScale = this.getColorsByValues(resultValues);
+
+            // this.generateDynamicLegend(results, colorScale);
+            this.selectedFeatures.forEach(district => {
+                const getStyling = district.getStyle(),
+                    matchResults = this.ccmDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+
+                if (matchResults) {
+                    if (this.originalStyling === null) {
+                        this.originalStyling = getStyling;
+                    }
+
+                    getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.data), 0.75)});
+                    getStyling.zIndex = 1;
+                    getStyling.text = new Text({
+                        font: "16px Calibri,sans-serif",
+                        fill: new Fill({
+                            color: [255, 255, 255]
+                        }),
+                        stroke: new Stroke({
+                            color: [0, 0, 0],
+                            width: 3
+                        }),
+                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                    });
+
+                    district.setStyle(new Style(getStyling));
+                }
+
+            });
         },
 
         /**
@@ -358,6 +439,13 @@ export default {
                         </template>
                     </Multiselect>
                 </div>
+                <button
+                    v-if="visualizationState"
+                    class="play_button"
+                    @click="playState = !playState"
+                >
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
                 <Multiselect
                     v-if="featuresList.length"
                     v-model="selectedFeature"
