@@ -16,10 +16,10 @@ import InfoScreenHandler from "./infoScreen/infoScreenHandler/model";
 import ReachabilityFromPoint from "./reachabilityFromPoint/model";
 import ReachabilityInArea from "./reachabilityInArea/model";
 import OpenRouteService from "./openRouteService/model";
-import CalculateRatio from "./calculateRatio/model";
+// import CalculateRatio from "./calculateRatio/model";
 import ReachabilitySelect from "./reachabilitySelect/model";
 import CompareDistricts from "./compareDistricts/model";
-import Filter from "./filter/model";
+// import Filter from "./filter/model";
 
 // new FeaturesLoader();
 // new BboxSettor();
@@ -41,129 +41,129 @@ const general = {
         dashboardWidgetHandler: new DashboardWidgetHandler()
     },
     tools = !window.location.pathname.includes("infoscreen.html") ? {
-        filter: new Filter({
-            id: "filterCoSI",
-            // type: "tool",
-            name: "Filter",
-            glyphicon: "glyphicon-filter",
-            deactivateGFI: false,
-            isGeneric: false,
-            isInitOpen: false,
-            allowMultipleQueriesPerLayer: false,
-            saveToUrl: false,
-            keepOpen: true,
-            predefinedQueries: [
-                {
-                    "layerId": "8712",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Schulen",
-                    "searchInMapExtent": false,
-                    "attributeWhiteList": [
-                        {
-                            "name": "kapitelbezeichnung",
-                            "matchingMode": "OR"
-                        },
-                        {
-                            "name": "bezirk",
-                            "matchingMode": "OR"
-                        },
-                        {
-                            "name": "stadtteil",
-                            "matchingMode": "OR"
-                        },
-                        {
-                            "name": "schulform",
-                            "matchingMode": "AND"
-                        },
-                        {
-                            "name": "abschluss",
-                            "matchingMode": "AND"
-                        },
-                        {
-                            "name": "anzahl_schueler",
-                            "matchingMode": "AND"
-                        }
-                    ]
-                },
-                {
-                    "layerId": "12868",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Sportstätten",
-                    "attributeWhiteList": [
-                        "bezirk",
-                        "stadtteil",
-                        "typ_zusammen",
-                        "segmente",
-                        "traegergruppe",
-                        "baujahr",
-                        "letzte_generalsanierung"
-                    ]
-                },
-                {
-                    "layerId": "753",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Kindertagesstätten",
-                    "attributeWhiteList": [
-                        "Bezirk",
-                        "Stadtteil",
-                        "Traeger",
-                        "Leistungsarten",
-                        "Leistungsname"
-                    ]
-                },
-                {
-                    "layerId": "17042",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Hamburg Aktiv",
-                    "attributeWhiteList": [
-                        "hauptklasse",
-                        "unterklasse"
-                    ]
-                },
-                {
-                    "layerId": "1534",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Grünflächen",
-                    "info": "Die Grünflächen sind im aktuellen digitalen Grünplan nur numerisch nach Bezirken und Stadtteilen geordnet. Diese Sortierung wurde aus Verständlichkeitsgründen im Filter deaktiviert.",
-                    "attributeWhiteList": [
-                        "gruenart",
-                        "eigentum",
-                        "flaeche_qm"
-                    ]
-                },
-                {
-                    "layerId": "1711",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Krankenhäuser",
-                    "attributeWhiteList": [
-                        "geburtsklinik_differenziert",
-                        "teilnahme_notversorgung",
-                        "anzahl_planbetten",
-                        "anzahl_plaetze_teilstationaer"
-                    ]
-                },
-                {
-                    "layerId": "20161",
-                    "isActive": false,
-                    "isSelected": false,
-                    "name": "Corona Testzentren",
-                    "attributeWhiteList": [
-                        "typ",
-                        "bezirk",
-                        "antigentestung",
-                        "pcr_testung",
-                        "oeffnungszeiten",
-                        "betreiber"
-                    ]
-                }
-            ]
-        }),
+        // filter: new Filter({
+        //     id: "filterCoSI",
+        //     // type: "tool",
+        //     name: "Filter",
+        //     glyphicon: "glyphicon-filter",
+        //     deactivateGFI: false,
+        //     isGeneric: false,
+        //     isInitOpen: false,
+        //     allowMultipleQueriesPerLayer: false,
+        //     saveToUrl: false,
+        //     keepOpen: true,
+        //     predefinedQueries: [
+        //         {
+        //             "layerId": "8712",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Schulen",
+        //             "searchInMapExtent": false,
+        //             "attributeWhiteList": [
+        //                 {
+        //                     "name": "kapitelbezeichnung",
+        //                     "matchingMode": "OR"
+        //                 },
+        //                 {
+        //                     "name": "bezirk",
+        //                     "matchingMode": "OR"
+        //                 },
+        //                 {
+        //                     "name": "stadtteil",
+        //                     "matchingMode": "OR"
+        //                 },
+        //                 {
+        //                     "name": "schulform",
+        //                     "matchingMode": "AND"
+        //                 },
+        //                 {
+        //                     "name": "abschluss",
+        //                     "matchingMode": "AND"
+        //                 },
+        //                 {
+        //                     "name": "anzahl_schueler",
+        //                     "matchingMode": "AND"
+        //                 }
+        //             ]
+        //         },
+        //         {
+        //             "layerId": "12868",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Sportstätten",
+        //             "attributeWhiteList": [
+        //                 "bezirk",
+        //                 "stadtteil",
+        //                 "typ_zusammen",
+        //                 "segmente",
+        //                 "traegergruppe",
+        //                 "baujahr",
+        //                 "letzte_generalsanierung"
+        //             ]
+        //         },
+        //         {
+        //             "layerId": "753",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Kindertagesstätten",
+        //             "attributeWhiteList": [
+        //                 "Bezirk",
+        //                 "Stadtteil",
+        //                 "Traeger",
+        //                 "Leistungsarten",
+        //                 "Leistungsname"
+        //             ]
+        //         },
+        //         {
+        //             "layerId": "17042",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Hamburg Aktiv",
+        //             "attributeWhiteList": [
+        //                 "hauptklasse",
+        //                 "unterklasse"
+        //             ]
+        //         },
+        //         {
+        //             "layerId": "1534",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Grünflächen",
+        //             "info": "Die Grünflächen sind im aktuellen digitalen Grünplan nur numerisch nach Bezirken und Stadtteilen geordnet. Diese Sortierung wurde aus Verständlichkeitsgründen im Filter deaktiviert.",
+        //             "attributeWhiteList": [
+        //                 "gruenart",
+        //                 "eigentum",
+        //                 "flaeche_qm"
+        //             ]
+        //         },
+        //         {
+        //             "layerId": "1711",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Krankenhäuser",
+        //             "attributeWhiteList": [
+        //                 "geburtsklinik_differenziert",
+        //                 "teilnahme_notversorgung",
+        //                 "anzahl_planbetten",
+        //                 "anzahl_plaetze_teilstationaer"
+        //             ]
+        //         },
+        //         {
+        //             "layerId": "20161",
+        //             "isActive": false,
+        //             "isSelected": false,
+        //             "name": "Corona Testzentren",
+        //             "attributeWhiteList": [
+        //                 "typ",
+        //                 "bezirk",
+        //                 "antigentestung",
+        //                 "pcr_testung",
+        //                 "oeffnungszeiten",
+        //                 "betreiber"
+        //             ]
+        //         }
+        //     ]
+        // }),
         // selectDistrict: new SelectDistrict({
         //     id: "selectDistrict",
         //     // type: "tool",

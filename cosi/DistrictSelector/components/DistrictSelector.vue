@@ -13,6 +13,7 @@ import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
 import VueSelect from "vue-select";
+import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
 
 export default {
     name: "DistrictSelector",
@@ -30,18 +31,22 @@ export default {
             // A buffer for the extent of the selected district(s)
             bufferValue: 0,
             // css class for the drag box button
-            dragBoxButtonClass: "btn-lgv-grey"
+            dragBoxButtonClass: "btn-lgv-grey",
+            // display additional info layers true/false
+            showAdditionalLayers: false,
+            // shows whether the features for all districts have been loaded
+            districtLevelLayersLoaded: false
         };
     },
     computed: {
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
-        ...mapGetters("Map", ["layerList"]),
+        ...mapGetters("Map", ["layerList", "visibleLayerList"]),
 
         /**
          * Gets the options for the dropdown. The layerId for the value and the label for the text content.
          * @returns {Object} The options.
          */
-        optionsDropdown: function () {
+        labelsOfDistrictLevels: function () {
             const obj = {};
 
             this.districtLevels.forEach(district => {
@@ -51,7 +56,11 @@ export default {
             return obj;
         },
 
-        optionsDropdownTwo: function () {
+        /**
+         * Gets the names of the districts of the selected district level.
+         * @returns {String[]} The district names or an empty array.
+         */
+        namesOfDistricts: function () {
             if (this.selectedDistrictLevel?.nameList) {
                 return this.selectedDistrictLevel.nameList;
             }
@@ -61,8 +70,8 @@ export default {
 
     watch: {
         /**
-         * If the tool is active, activate the select interaction.
-         * If the tool is not actvie, deactivate the interactions (select, drag box)
+         * If the tool is active, activate the select interaction and add overlay to the districtLayers if necessary
+         * If the tool is not actvie, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
          * and update the extent of the selected features (districts).
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
@@ -70,6 +79,11 @@ export default {
         active (newActive) {
             if (newActive) {
                 this.select.setActive(true);
+
+                // add overlay if no districts are selected at this point
+                if (this.selectedNames.length === 0) {
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
+                }
             }
             else {
                 const model = getComponent(this.id);
@@ -80,6 +94,11 @@ export default {
 
                 if (model) {
                     model.set("isActive", false);
+                }
+
+                // remove overlay if no districts are selected at this point
+                if (this.selectedNames.length === 0) {
+                    styleSelectedDistrictLevels(this.districtLevels);
                 }
             }
         },
@@ -94,25 +113,22 @@ export default {
         },
 
         selectedDistrictsCollection: "transferFeatures",
-        selectedDistrictLevel: "clearFeatures",
-        selectedLevelId: "changeSelectedDistrictLevel",
-        selectedNames: function (newNames) {
-            if (newNames.length !== this?.selectedDistrictsCollection?.getLength()) {
-                const districtFeatures = this.layer.getSource().getFeatures(),
-                    namesAssoc = {};
+        selectedLevelId: ["clearFeatures", "changeSelectedDistrictLevel"],
 
-                newNames.forEach(name => {
-                    namesAssoc[name] = true;
-                });
+        /**
+         * @description Listens to the checkbox to display additional info layers
+         * @returns {void}
+         */
+        showAdditionalLayers () {
+            this.toggleAdditionalLayers();
+        },
 
-                this.clearFeatures();
-                districtFeatures.forEach(feature => {
-                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
-                        this.select.getFeatures().push(feature);
-                    }
-                });
-
-            }
+        /**
+         * @description Watches Layer visiblity changes to determine whether the addtional info layers are active
+         * @returns {void}
+         */
+        visibleLayerList () {
+            this.showAdditionalLayers = this.checkAdditionalLayers();
         }
     },
     created () {
@@ -123,7 +139,21 @@ export default {
         this.selectedLevelId = this.districtLevels[0].layerId;
         this.setNonReactiveData();
     },
+    mounted () {
+        this.showAdditionalLayers = this.checkAdditionalLayers();
 
+        /**
+         * @description Styles the selected district level when the layer is loaded, then unsubsubscribes the call
+         * @todo refactor to vuex, there should be an event on the map calling out loaded features
+         * @deprecated
+         */
+        Radio.on("VectorLayer", "featuresLoaded", (layerId) => {
+            if (!this.districtLevelLayersLoaded && this.selectedLevelId === layerId) {
+                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
+                this.districtLevelLayersLoaded = true;
+            }
+        });
+    },
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
@@ -136,7 +166,6 @@ export default {
          */
         clearFeatures () {
             this.select.getFeatures().clear();
-            // this.selectedNames = [];
         },
 
         /**
@@ -148,6 +177,7 @@ export default {
             const districtLevel = this.getDistrictLevelById(id);
 
             this.setSelectedDistrictLevel(districtLevel);
+            styleSelectedDistrictLevels(this.districtLevels, id);
         },
 
         /**
@@ -160,7 +190,6 @@ export default {
                 return district.layerId === layerId;
             });
         },
-
 
         /**
          * Registers listener for drag box interaction events.
@@ -193,11 +222,9 @@ export default {
             featureCollection.on("change:length", (evt) => {
                 this.setSelectedDistrictsCollection(evt.target);
 
-                const sNames = evt.target.getArray().map(feature => {
+                this.selectedNames = evt.target.getArray().map(feature => {
                     return feature.get(this.keyOfAttrName);
                 });
-
-                this.selectedNames = sNames;
             });
         },
 
@@ -302,6 +329,59 @@ export default {
                 setBBoxToGeom(undefined);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
+        },
+
+        /**
+         * @description Display additional info layers according to layerId List from config.
+         * @todo Refactor to vue when MP Core is updated
+         * @returns {void}
+         */
+        toggleAdditionalLayers () {
+            for (const layerId of this.additionalInfoLayerIds) {
+                const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+                if (model) {
+                    model.set("isSelected", this.showAdditionalLayers);
+                }
+            }
+        },
+
+        /**
+         * @description Checks if the additional info layers are visible on mounted.
+         * @todo Refactor to vue when MP Core is updated
+         * @returns {boolean} the state of at least one of the addtional layers
+         */
+        checkAdditionalLayers () {
+            return this.additionalInfoLayerIds.some(layerId => {
+                const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+                return model?.get("isSelected");
+            });
+        },
+
+        /**
+         * Find the district features by the given names
+         * and add them to the feature collection of the select interaction.
+         * @param {String[]} namesOfDistricts - Names of the districts to be selected.
+         * @returns {void}
+         */
+        updateSelectedFeatures (namesOfDistricts) {
+            this.clearFeatures();
+
+            if (namesOfDistricts.length > 0) {
+                const districtFeatures = this.layer.getSource().getFeatures(),
+                    namesAssoc = {};
+
+                namesOfDistricts.forEach(name => {
+                    namesAssoc[name] = true;
+                });
+
+                districtFeatures.forEach(feature => {
+                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
+                        this.select.getFeatures().push(feature);
+                    }
+                });
+            }
         }
     }
 };
@@ -325,17 +405,18 @@ export default {
                     <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownLabel') }}</label>
                     <Dropdown
                         v-model="selectedLevelId"
-                        :options="optionsDropdown"
+                        :options="labelsOfDistrictLevels"
                     />
                 </div>
                 <div class="form-group">
                     <label>{{ $t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel') }}</label>
                     <VueSelect
-                        v-model="selectedNames"
                         class="style-chooser"
-                        :options="optionsDropdownTwo"
-                        multiple
                         placeholder="Keine Auswahl"
+                        :value="selectedNames"
+                        :options="namesOfDistricts"
+                        multiple
+                        @input="updateSelectedFeatures"
                     />
                 </div>
                 <div class="form-group">
@@ -350,6 +431,17 @@ export default {
                     <p class="help-block">
                         {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
                     </p>
+                </div>
+                <div
+                    v-if="additionalInfoLayerIds.length > 0"
+                    class="form-group"
+                >
+                    <input
+                        v-model="showAdditionalLayers"
+                        class="form-check-input"
+                        type="checkbox"
+                    >
+                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle') }}</label>
                 </div>
                 <button
                     class="btn btn-lgv-grey"
@@ -402,6 +494,23 @@ export default {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);
         border-width: 1.25
+    }
+    .style-chooser {
+        font-size: 14px;
+        .vs__dropdown-toggle {
+            border-radius: 0;
+        }
+        .vs__open-indicator {
+            fill: rgba(60,60,60,.9);
+            transform: scale(0.7);
+        }
+        .vs__search, .vs__search:focus {
+            padding: 1px 14px;
+            line-height: 1.42857143
+        }
+        .vs__actions {
+            padding: 4px 4px 0 3px;
+        }
     }
 </style>
 

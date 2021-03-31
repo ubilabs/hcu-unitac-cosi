@@ -9,7 +9,7 @@
 export default function prepareDistrictLevels (districtLevels, layerList) {
     const filteredDistrictLevels = getAllDistrictsWithoutLayer(districtLevels);
 
-    if (typeof filteredDistrictLevels !== "undefined") {
+    if (filteredDistrictLevels.length > 0) {
         filteredDistrictLevels.forEach(districtLevel => {
             // the layer for the district level
             districtLevel.layer = getLayerById(layerList, districtLevel.layerId);
@@ -25,9 +25,13 @@ export default function prepareDistrictLevels (districtLevels, layerList) {
 /**
  * Returns all district level objects without layer.
  * @param {Object[]} districtLevels - All avaiable district level objects.
- * @returns {Object[]} The filtered district levels.
+ * @returns {Object[]} The filtered district levels or an empty array.
  */
 export function getAllDistrictsWithoutLayer (districtLevels) {
+    if (!Array.isArray(districtLevels)) {
+        console.error(`prepareDistrictLevels.getAllDistrictsWithoutLayer: ${districtLevels} has to be defined and an array.`);
+        return [];
+    }
     return districtLevels.filter(district => {
         return typeof district.layer === "undefined";
     });
@@ -53,13 +57,21 @@ export function getLayerById (layerList, id) {
 
 /**
  * Returns the names of all avaible districts in the district level.
- * @param {module:ol/layer[]} layer - An array of layers.
+ * @param {module:ol/layer/VectorLayer} layer - An vector layer.
  * @param {String} keyOfAttrName - The key for the attribute "name" of the district features.
- * @returns {String[]} The names of the districts.
+ * @returns {String[]} The names of the districts or an empty array.
  */
 export function getNameList (layer, keyOfAttrName) {
-    const nameList = layer.getSource().getFeatures().map(feature => {
-        return feature.get(keyOfAttrName);
+    if (typeof layer !== "object" || layer === null || Array.isArray(layer) || typeof keyOfAttrName !== "string") {
+        console.error(`prepareDistrictLevels.getNameList: ${layer} has to be defined and an object. ${keyOfAttrName} has to be defined and a string`);
+        return [];
+    }
+    const nameList = [];
+
+    layer.getSource().getFeatures().forEach(feature => {
+        if (typeof feature.get(keyOfAttrName) !== "undefined") {
+            nameList.push(feature.get(keyOfAttrName));
+        }
     });
 
     return nameList;
