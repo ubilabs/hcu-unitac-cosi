@@ -15,7 +15,7 @@ import ContextMenuView from "./contextMenu/view";
 // import SaveSelectionCosiView from "./saveSelection/view";
 import InfoScreenView from "./infoScreen/view";
 import TimeSliderView from "./timeSlider/view";
-import CalculateRatioView from "./calculateRatio/selectView";
+// import CalculateRatioView from "./calculateRatio/selectView";
 import ReachabilityFromPointView from "./reachabilityFromPoint/view";
 import ReachabilityInAreaView from "./reachabilityInArea/view";
 import PrintView from "../../../modules/tools/print/view";
@@ -67,7 +67,7 @@ function initializeCosi () {
         });
         // Radio.trigger("ModelList", "addModelsAndUpdate", Object.values(tools));
         new FilterView({model: tools.filter});
-        new CalculateRatioView({model: tools.calculateRatio});
+        // new CalculateRatioView({model: tools.calculateRatio});
         new ReachabilitySelectView({model: tools.reachabilitySelect});
         new ReachabilityFromPointView({model: tools.reachabilityFromPoint});
         new ReachabilityInAreaView({model: tools.reachabilityInArea});

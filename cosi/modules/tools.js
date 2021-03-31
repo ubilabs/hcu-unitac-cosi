@@ -204,14 +204,14 @@ const general = {
             glyphicon: "glyphicon glyphicon-random",
             resizableWindow: true
         }),
-        calculateRatio: new CalculateRatio({
-            parentId: "tools",
-            type: "tool",
-            id: "calculateRatio",
-            name: "Versorgungsanalyse",
-            glyphicon: "glyphicon-tasks",
-            resizableWindow: true
-        }),
+        // calculateRatio: new CalculateRatio({
+        //     parentId: "tools",
+        //     type: "tool",
+        //     id: "calculateRatio",
+        //     name: "Versorgungsanalyse",
+        //     glyphicon: "glyphicon-tasks",
+        //     resizableWindow: true
+        // }),
         reachabilitySelect: new ReachabilitySelect({
             id: "reachabilitySelect",
             parentId: "tools",
