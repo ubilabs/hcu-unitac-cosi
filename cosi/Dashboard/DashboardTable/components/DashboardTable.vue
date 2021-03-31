@@ -1,6 +1,5 @@
 <script>
 /* eslint-disable new-cap */
-import Vue from "vue";
 import Tool from "../../../../../src/modules/tools/Tool.vue";
 import getComponent from "../../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
@@ -32,9 +31,9 @@ export default {
     data () {
         return {
             columnsTemplate: [
-                {field: "menu", autoSizeColumn: true, cellTemplate: VGridVueTemplate(MenuCell)},
-                {name: "Kategorie", field: "category", width: "25%", cellTemplate: VGridVueTemplate(CategoryCell)},
-                {name: "Jahr", field: "years", autoSizeColumn: true, cellTemplate: VGridVueTemplate(YearCell)}
+                {prop: "menu", autoSizeColumn: true, cellTemplate: VGridVueTemplate(MenuCell)},
+                {name: "Kategorie", prop: "category", size: 150, cellTemplate: VGridVueTemplate(CategoryCell)},
+                {name: "Jahr", prop: "years", autoSizeColumn: true, size: 40, cellTemplate: VGridVueTemplate(YearCell)}
             ],
             rows: [],
             rowDefinitions: [],
@@ -51,10 +50,6 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "keyOfAttrName", "keyOfAttrNameStats", "districtLevels"]),
         ...mapGetters("Map", ["layerById"]),
         columns () {
-            console.log([
-                ...this.columnsTemplate,
-                ...this.generateDynamicColumns()
-            ]);
             return [
                 ...this.columnsTemplate,
                 ...this.generateDynamicColumns()
@@ -79,6 +74,7 @@ export default {
             this.setActive(state);
         },
         rows () {
+            console.log(this.columns);
             console.log(this.rows);
         },
         featureList () {
@@ -88,7 +84,7 @@ export default {
             this.rowDefinitions = this.rows.map((row, rowIndex) => ({
                 type: "row",
                 index: rowIndex,
-                size: openRows.includes(rowIndex) ? 42 * row.years.length : 42
+                size: openRows.includes(rowIndex) ? 40 * row.years.length : 40
             }));
         }
     },
@@ -123,7 +119,7 @@ export default {
         ...mapMutations("Tools/DashboardTable", Object.keys(mutations)),
         ...mapActions("Tools/DashboardTable", Object.keys(actions)),
         getData () {
-            const rows = categories.reduce((rows, category) => {
+            this.rows = categories.reduce((rows, category) => {
                 if (!category[this.keyOfAttrNameStats]) {
                     return rows;
                 }
@@ -133,8 +129,6 @@ export default {
                     this.getDistrictStatsByCategory(category)
                 ];
             }, []);
-
-            this.rows = rows;
         },
         getDistrictStatsByCategory (category) {
             const districtStats = this.districtLevelStats.reduce((districts, level) => {
@@ -184,7 +178,7 @@ export default {
                     ...cols,
                     {
                         name: level.label,
-                        field: level.label,
+                        prop: level.label,
                         children: this.generateColumnsForLevel(level)
                     }
                 ];
@@ -197,7 +191,7 @@ export default {
 
             return columnNames.map(districtName => ({
                 name: districtName,
-                field: districtName,
+                prop: districtName,
                 cellTemplate: VGridVueTemplate(ValueCell),
                 currentTimeStamp: 2019,
                 timeStampPrefix: this.timeStampPrefix
@@ -232,6 +226,7 @@ export default {
                 }"
                 :row-headers="{size: 40}"
                 :row-definitions="rowDefinitions"
+                :row-size="40"
                 resize
             />
         </template>
@@ -239,27 +234,24 @@ export default {
 </template>
 
 <style lang="less">
-    // revo-grid {
-    //     font-size: 10px;
+    revo-grid {
+        font-size: 10px;
 
-    //     .row {
-    //         margin: 0;
-    //     }
+        .row {
+            margin: 0;
+        }
 
-    //     ul.timestamp-list {
-    //         padding: 0;
-    //         li.timestamp-list-item {
-    //             text-align: right;
-    //             list-style: none;
-    //             small {
-    //                 color: #90c6f5;
-    //             }
-    //         }
-    //     }
-    // }
-</style>
-
-<style src="vue-good-table/dist/vue-good-table.css">
+        ul.timestamp-list {
+            padding: 0;
+            li.timestamp-list-item {
+                text-align: right;
+                list-style: none;
+                small {
+                    color: #90c6f5;
+                }
+            }
+        }
+    }
 </style>
 
 

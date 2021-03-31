@@ -84,7 +84,6 @@ export function getNameList (layer, keyOfAttrName) {
  * @returns {void}
  */
 export function setNameList (evt) {
-    console.info(evt);
     if (evt.target.getFeatures().length > 0) {
         this.nameList = getNameList(this.layer, this.keyOfAttrName);
     }
