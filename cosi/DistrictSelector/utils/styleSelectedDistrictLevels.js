@@ -6,7 +6,7 @@ const defaultsStyleValues = {fillColor: [255, 255, 255, 0], stroke: {color: "#33
 /**
  * @description Styles the features of the selected layer with transparent overlay for better readability
  * @param {Object[]} districtLevels - the districtlevels object from the district selector module
- * @param {string} selectedLevelId - the ID of the selected level
+ * @param {string|undefined} selectedLevelId - the ID of the selected level
  * @param {number} [opacity=0.6] - the opacity of the overlay
  * @param {Object} [defaults={fillColor: [255, 255, 255, 0], stroke: {color: "#3399CC", width: 3}}] - the default values in case no styles can be obtained
  * @returns {void}

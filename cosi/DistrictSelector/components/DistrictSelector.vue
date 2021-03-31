@@ -33,7 +33,9 @@ export default {
             // css class for the drag box button
             dragBoxButtonClass: "btn-lgv-grey",
             // display additional info layers true/false
-            showAdditionalLayers: false
+            showAdditionalLayers: false,
+            // shows whether the features for all districts have been loaded
+            districtLevelLayersLoaded: false
         };
     },
     computed: {
@@ -68,8 +70,8 @@ export default {
 
     watch: {
         /**
-         * If the tool is active, activate the select interaction.
-         * If the tool is not actvie, deactivate the interactions (select, drag box)
+         * If the tool is active, activate the select interaction and add overlay to the districtLayers if necessary
+         * If the tool is not actvie, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
          * and update the extent of the selected features (districts).
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
@@ -77,6 +79,11 @@ export default {
         active (newActive) {
             if (newActive) {
                 this.select.setActive(true);
+
+                // add overlay if no districts are selected at this point
+                if (this.selectedNames.length === 0) {
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
+                }
             }
             else {
                 const model = getComponent(this.id);
@@ -87,6 +94,11 @@ export default {
 
                 if (model) {
                     model.set("isActive", false);
+                }
+
+                // remove overlay if no districts are selected at this point
+                if (this.selectedNames.length === 0) {
+                    styleSelectedDistrictLevels(this.districtLevels);
                 }
             }
         },
@@ -136,9 +148,9 @@ export default {
          * @deprecated
          */
         Radio.on("VectorLayer", "featuresLoaded", (layerId) => {
-            if (this.selectedLevelId === layerId) {
+            if (!this.districtLevelLayersLoaded && this.selectedLevelId === layerId) {
                 styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
-                Radio.off("VectorLayer", "featuresLoaded");
+                this.districtLevelLayersLoaded = true;
             }
         });
     },
