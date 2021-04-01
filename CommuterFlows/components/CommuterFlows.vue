@@ -812,7 +812,10 @@ export default {
                             </button>
                         </div>
                     </div>
-                    <div class="row section">
+                    <div
+                        v-if="metaVerPath"
+                        class="row section"
+                    >
                         <div class="col-sm-12">
                             <a
                                 :href="metaVerPath"

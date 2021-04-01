@@ -43,26 +43,45 @@ const state = {
     metaVerPath: "",
     blacklistedDistricts: [],
     serviceURL: "",
-    listChunk: 0,
-    setMarkerOnClickInList: false,
+    listChunk: 5,
+    setMarkerOnClickInList: true,
     onstart: {
-        captionsChecked: false,
-        numbersChecked: false,
-        beamsChecked: false,
+        captionsChecked: true,
+        numbersChecked: true,
+        beamsChecked: true,
         animationChecked: false,
-        direction: ""
+        direction: "out"
     },
-    olFont: "",
-    olFontShadow: {},
-    olBeam: {},
-    olBubbleAlgorithm: "",
-    olBubblePixelMax: 0,
-    olBubblePixelMin: 0,
-    olBubbleBorder: {},
-    olBubbleColors: [],
-    olBubbleColorShift: [],
-    olZoomOptions: null,
-    olAnimationPaces: []
+    olFont: "10pt sans-serif",
+    olFontShadow: {
+        color: [255, 255, 255, 0.8],
+        width: 5
+    },
+    olBeam: {
+        color: [192, 9, 9, 0.8],
+        width: 3
+    },
+    olBubbleAlgorithm: "linear",
+    olBubblePixelMax: 50,
+    olBubblePixelMin: 5,
+    olBubbleBorder: {
+        color: [255, 255, 255, 1],
+        width: 1
+    },
+    olBubbleColors: [
+        [230, 159, 0, 0.75],
+        [86, 180, 233, 0.75],
+        [0, 158, 115, 0.75],
+        [240, 228, 66, 0.75],
+        [0, 114, 178, 0.75],
+        [213, 94, 0, 0.75],
+        [204, 121, 167, 0.75]
+    ],
+    olBubbleColorShift: [0, -60, 60],
+    olZoomOptions: {
+        padding: [20, 20, 20, 400]
+    },
+    olAnimationPaces: [5000, 500]
 };
 
 export default state;
