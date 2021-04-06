@@ -37,6 +37,7 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList"]),
+        ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         dataToCCM () {
             return this.$store.state.Tools.CalculateRatio.dataToCCM;
         },
@@ -349,7 +350,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="featuresStatistics.length"
+        v-if="featuresStatistics.length && !dashboardOpen"
         class="addon_container"
         :class="{minimized: minimize}"
     >

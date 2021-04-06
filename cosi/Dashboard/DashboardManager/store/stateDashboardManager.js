@@ -15,7 +15,7 @@ const state = {
     glyphicon: "glyphicon-dashboard",
     id: "dashboard",
     isVisibleInMenu: true,
-    name: "Dashboard Table",
+    name: "Dashboard",
     renderToWindow: false,
     resizableWindow: true
 };
