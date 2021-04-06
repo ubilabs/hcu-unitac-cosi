@@ -137,10 +137,10 @@ export default {
         },
         animationOverYears (tempo) {
             if (this.playState) {
-                let current = this.availableYears.indexOf(this.selectedYear) + 1;
+                let current = this.availableYears.indexOf(this.selectedYear) - 1;
 
-                if (current >= this.availableYears.length) {
-                    current = 0;
+                if (current < 0) {
+                    current = this.availableYears.length - 1;
                 }
 
                 setTimeout(() => {
@@ -439,13 +439,17 @@ export default {
                         </template>
                     </Multiselect>
                 </div>
-                <button
+                <div
                     v-if="visualizationState"
-                    class="play_button"
-                    @click="playState = !playState"
+                    class="btn_group"
                 >
-                    <span class="glyphicon glyphicon-play"></span>
-                </button>
+                    <button
+                        class="play_button btn btn-default btn-sm prev"
+                        @click="playState = !playState"
+                    >
+                        <span class="glyphicon glyphicon-play"></span>
+                    </button>
+                </div>
                 <Multiselect
                     v-if="featuresList.length"
                     v-model="selectedFeature"
