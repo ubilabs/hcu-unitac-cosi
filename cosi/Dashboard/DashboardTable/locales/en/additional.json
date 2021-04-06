@@ -1,0 +1,16 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "dashboard": {
+                    "table": {
+                        "title": "Regional Statistical Data (StaNord)",
+                        "filterDropdownLabel": "Filter table",
+                        "exportButtonLabel": "Export table(XLSX)",
+                        "exportFilteredButtonLabel": "Export filtered Table (XLSX)"
+                    }
+                }
+            }
+        }
+    }
+}
