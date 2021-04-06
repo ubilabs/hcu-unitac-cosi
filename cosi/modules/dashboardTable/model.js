@@ -298,6 +298,10 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                         table.forEach((col) => {
                             const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
 
+                            if (col.notes === "Referenzgebiet") {
+                                return;
+                            }
+
                             if (col[selector] !== "Gesamt" && col[selector] !== "Durchschnitt" && selector === this.get("sortKey")) {
                                 total += parseFloat(col[prop]);
                             }
@@ -323,6 +327,10 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
                         table.forEach((col) => {
                             // dirty fix for data inconsistencies
                             const selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
+
+                            if (col.notes === "Referenzgebiet") {
+                                return;
+                            }
 
                             if (col[this.get("sortKey")] !== "Gesamt" && col[this.get("sortKey")] !== "Durchschnitt" && selector === this.get("sortKey")) {
                                 matrixTotal.push(col[prop]);
