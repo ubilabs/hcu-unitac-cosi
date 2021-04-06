@@ -546,8 +546,8 @@ export default {
                 relation = (this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) / (this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val),
                 mirroredRelation = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val)) / ((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val)) + Number.EPSILON) * 100) / 100,
                 capacity = Math.round((((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) * (this.faktorf_B / this.faktorf_A)) + Number.EPSILON) * 100) / 100,
-                // need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) * (this.faktorf_A / this.faktorf_B)) + Number.EPSILON) * 100) / 100,
-                need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / capacity) + Number.EPSILON) * 100) / 100,
+                need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) * (this.faktorf_A / this.faktorf_B)) + Number.EPSILON) * 100) / 100,
+                // need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / capacity) + Number.EPSILON) * 100) / 100, 
                 coverageA = this.fActive_A || this.fActive_B ? Math.round(((((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) / need) * this.perCalc_B) + Number.EPSILON) * 100) / 100 : Math.round(((this.perCalc_B * relation) + Number.EPSILON) * 100) / 100,
                 coverageB = this.fActive_A || this.fActive_B ? Math.round(((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / need) * this.perCalc_A) + Number.EPSILON) * 100) / 100 : Math.round(((this.perCalc_A * mirroredRelation) + Number.EPSILON) * 100) / 100,
                 weightedRelation = Math.round(((relation * (this.perCalc_A / this.perCalc_B)) + Number.EPSILON) * 100) / 100;
