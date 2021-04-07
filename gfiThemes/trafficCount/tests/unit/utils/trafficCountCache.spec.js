@@ -1,11 +1,11 @@
 import {expect} from "chai";
-import {TrafficCountCache} from "../../../library/trafficCountCache";
+import {TrafficCountCache} from "../../../utils/trafficCountCache";
 import moment from "moment";
 
 // change language from moment.js to german
 moment.locale("de");
 
-describe("addons/trafficCount/components/trafficCountCache", function () {
+describe("addons/trafficCount/utils/trafficCountCache", function () {
     let cache = null;
 
     beforeEach(() => {

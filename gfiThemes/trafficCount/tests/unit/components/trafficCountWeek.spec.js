@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
 import trafficCountWeek from "../../../components/TrafficCountWeek.vue";
-import {addMissingDataWeek} from "../../../library/addMissingData.js";
+import {addMissingDataWeek} from "../../../utils/addMissingData.js";
 
 const localVue = createLocalVue();
 

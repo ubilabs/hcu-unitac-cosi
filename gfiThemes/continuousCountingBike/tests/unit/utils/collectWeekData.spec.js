@@ -1,8 +1,8 @@
 import {expect} from "chai";
-import collectWeekData from "../../../library/collectWeekData";
+import collectWeekData from "../../../utils/collectWeekData";
 
 
-describe("src/modules/tools/gfi/components/themes/continuousCountingBike/library/collectWeekData.js", () => {
+describe("src/modules/tools/gfi/components/themes/continuousCountingBike/utils/collectWeekData.js", () => {
 
     const lastSevenDaysLine = "7,12.02.2018,3103|7,13.02.2018,3778";
 

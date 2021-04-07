@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import {getDataAttributes, getLegendAttributes, createxAxisTickValues} from "../../../library/helper.js";
+import {getDataAttributes, getLegendAttributes, createxAxisTickValues} from "../../../utils/helper.js";
 
-describe("src/modules/tools/gfi/components/themes/continuousCountingBike/library/helpers.js", () => {
+describe("src/modules/tools/gfi/components/themes/continuousCountingBike/utils/helpers.js", () => {
 
     const inspectData = {
             r_in: null,

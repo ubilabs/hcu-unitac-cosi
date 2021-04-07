@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
 import trafficCountYear from "../../../components/TrafficCountYear.vue";
-import {addMissingDataYear} from "../../../library/addMissingData.js";
+import {addMissingDataYear} from "../../../utils/addMissingData.js";
 
 const localVue = createLocalVue();
 

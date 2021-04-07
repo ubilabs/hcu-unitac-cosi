@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import collectInfoData from "../../../library/collectInfoData";
+import collectInfoData from "../../../utils/collectInfoData";
 
-describe("src/modules/tools/gfi/components/themes/continuousCountingBike/library/collectInfoData.js", () => {
+describe("src/modules/tools/gfi/components/themes/continuousCountingBike/utils/collectInfoData.js", () => {
     describe("collectInfoData", () => {
         it("should sort the structure of the given array by the given order", () => {
             const infoProps =

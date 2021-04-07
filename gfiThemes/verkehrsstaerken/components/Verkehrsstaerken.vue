@@ -1,7 +1,7 @@
 <script>
 
 import {mapGetters} from "vuex";
-import {createNewRowName, combineYearsData} from "../library/helpers";
+import {createNewRowName, combineYearsData} from "../utils/helpers";
 import VerkehrsstaerkenTable from "./VerkehrsstaerkenTable.vue";
 import VerkehrsstaerkenDiagram from "./VerkehrsstaerkenDiagram.vue";
 

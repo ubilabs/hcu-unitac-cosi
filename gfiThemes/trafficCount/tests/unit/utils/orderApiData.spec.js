@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import orderApiData from "../../../library/orderApiData.js";
+import orderApiData from "../../../utils/orderApiData.js";
 
-describe("addons/trafficCount/library/orderApiData.js", () => {
+describe("addons/trafficCount/utils/orderApiData.js", () => {
     describe("orderApiData", () => {
         it("should sort the structure of the given array by the given order", () => {
             const apiData = [

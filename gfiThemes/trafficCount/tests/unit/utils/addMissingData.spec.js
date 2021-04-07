@@ -3,9 +3,9 @@ import {
     addMissingDataDay,
     addMissingDataWeek,
     addMissingDataYear
-} from "../../../library/addMissingData.js";
+} from "../../../utils/addMissingData.js";
 
-describe("addons/trafficCount/library/addMissingData.js", () => {
+describe("addons/trafficCount/utils/addMissingData.js", () => {
     describe("addMissingDataDay", () => {
         it("should set the seconds of timeData to zero", () => {
             const from = "2020-09-15 00:00:01",

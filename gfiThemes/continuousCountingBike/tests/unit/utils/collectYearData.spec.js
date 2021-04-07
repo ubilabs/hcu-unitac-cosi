@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import {collectYearData, splitYearData} from "../../../library/collectYearData";
+import {collectYearData, splitYearData} from "../../../utils/collectYearData";
 
-describe("src/modules/tools/gfi/components/themes/continuousCountingBike/library/collectYearData.js", () => {
+describe("src/modules/tools/gfi/components/themes/continuousCountingBike/utils/collectYearData.js", () => {
 
     const yearLine = "2018,5,22200|2018,6,24896|2018,4,27518|2018,3,19464|2018,2,27534|2018,1,17096|2018,7,3103";
 

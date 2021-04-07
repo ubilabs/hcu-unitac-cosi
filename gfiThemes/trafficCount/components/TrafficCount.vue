@@ -1,7 +1,7 @@
 <script>
 import {mapGetters} from "vuex";
 
-import {TrafficCountCache} from "../library/trafficCountCache";
+import {TrafficCountCache} from "../utils/trafficCountCache";
 import TrafficCountInfo from "./TrafficCountInfo.vue";
 import TrafficCountDay from "./TrafficCountDay.vue";
 import TrafficCountWeek from "./TrafficCountWeek.vue";

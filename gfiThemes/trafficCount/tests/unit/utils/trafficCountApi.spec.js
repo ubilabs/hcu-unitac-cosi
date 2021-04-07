@@ -1,11 +1,11 @@
 import {expect} from "chai";
-import {TrafficCountApi} from "../../../library/trafficCountApi";
+import {TrafficCountApi} from "../../../utils/trafficCountApi";
 import moment from "moment";
 
 // change language from moment.js to german
 moment.locale("de");
 
-describe("addons/trafficCount/components/trafficCountApi.js", function () {
+describe("addons/trafficCount/utils/trafficCountApi.js", function () {
     describe("TrafficCountApi.constructor", function () {
         describe("SensorThingsHttp", function () {
             it("should take the given dummy instead of creating a new instance of SensorThingsHttp", function () {

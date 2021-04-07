@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import ContinuousCountingBikeChart from "../../../components/ContinuousCountingBikeChart.vue";
-import collectDayData from "../../../library/collectDayData";
+import collectDayData from "../../../utils/collectDayData";
 
 const localVue = createLocalVue();
 
