@@ -562,4 +562,8 @@ export default {
     .checkbox-container .form-inline .title-checkbox {
         width: 100%;
     }
+    .checkbox-container .form-inline .title-checkbox label {
+        white-space: normal;
+        padding-left:5px;
+    }
 </style>
