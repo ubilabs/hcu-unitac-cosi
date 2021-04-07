@@ -2,25 +2,25 @@
     "modules": {
         "tools": {
             "CommuterFlows": {
-                "titleLabel": "Pendlerströme",
-                "chooseDistrictLabel": "Landkreis/kreisfreie Stadt auswählen",
-                "chooseMunicipalityLabel": "Stadt/Gemeinde auswählen",
-                "outCommuterLabel": "Auspendler",
-                "inCommuterLabel": "Einpendler",
-                "outCommuterTooltipLabel": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet wohnen und in die angezeigten Gebiete pendeln.",
-                "inCommuterTooltipLabel": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet arbeiten und aus den angezeigten Gebieten pendeln.",
-                "startLabel": "Start",
-                "stopLabel": "Stop",
-                "loadLessLabel": "{{listChunk}} weniger",
-                "loadMoreLabel": "{{listChunk}} weitere",
-                "loadAllLabel": "Alle laden",
-                "deleteAllLabel": "Geometrien löschen",
-                "activateTextLabel": "Namen anzeigen",
-                "activateNumberLabel": "Werte anzeigen",
-                "beamsLabel": "Linien anzeigen",
-                "animationLabel": "Animation anzeigen",
-                "moreInfoLabel": "Weitere Informationen",
-                "peopleLabel": "Personen"
+                "title": "Pendlerströme",
+                "selectDistrict": "Landkreis/kreisfreie Stadt auswählen",
+                "selectCity": "Stadt/Gemeinde auswählen",
+                "checkName": "Namen anzeigen",
+                "checkNumber": "Werte anzeigen",
+                "checkBeams": "Linien anzeigen",
+                "checkAnimation": "Animation anzeigen",
+                "buttonStart": "Start",
+                "buttonStop": "Stop",
+                "selectOut": "Auspendler",
+                "selectIn": "Einpendler",
+                "tooltipOut": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet wohnen und in die angezeigten Gebiete pendeln.",
+                "tooltipIn": "Anzahl Beschäftigter (sozialversicherungspflichtig), die im ausgewählten Gebiet arbeiten und aus den angezeigten Gebieten pendeln.",
+                "buttonLess": "{{listChunk}} weniger",
+                "buttonMore": "{{listChunk}} weitere",
+                "buttonAll": "Alle laden",
+                "linkMoreInfo": "Weitere Informationen",
+                "buttonReset": "$t(additional:modules.tools.CommuterFlows.title) zurücksetzen",
+                "labelPeople": "Personen"
             }
         }
     }

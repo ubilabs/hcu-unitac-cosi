@@ -2,27 +2,26 @@
     "modules": {
         "tools": {
             "CommuterFlows": {
-                "titleLabel": "Commuter flows",
-                "chooseDistrictLabel": "Choose county/district",
-                "chooseMunicipalityLabel": "Choose town/municipality",
-                "outCommuterLabel": "Out-Commuter",
-                "inCommuterLabel": "In-Commuter",
-                "outCommuterTooltipLabel": "Number of employees (subject to social insurance contributions) who live in the selected area and commute to the displayed areas.",
-                "inCommuterTooltipLabel": "Number of employees (subject to social insurance contributions) who work in the selected area and commute from the displayed areas.",
-                "startLabel": "Start",
-                "stopLabel": "Stop",
-                "loadLessLabel": "{{listChunk}} less",
-                "loadMoreLabel": "{{listChunk}} more",
-                "loadAllLabel": "Load all",
-                "deleteAllLabel": "Delete geometries",
-                "activateTextLabel": "Show names",
-                "activateNumberLabel": "Show values",
-                "beamsLabel": "Show lines",
-                "animationLabel": "Show animation",
-                "moreInfoLabel": "More info",
-                "peopleLabel": "people"
+                "title": "Commuter flows",
+                "selectDistrict": "Choose county/district",
+                "selectCity": "Choose town/municipality",
+                "checkName": "Show names",
+                "checkNumber": "Show values",
+                "checkBeams": "Show lines",
+                "checkAnimation": "Show animation",
+                "buttonStart": "Start",
+                "buttonStop": "Stop",
+                "selectOut": "Out-Commuter",
+                "selectIn": "In-Commuter",
+                "tooltipOut": "Number of employees (subject to social insurance contributions) who live in the selected area and commute to the displayed areas.",
+                "tooltipIn": "Number of employees (subject to social insurance contributions) who work in the selected area and commute from the displayed areas.",
+                "buttonLess": "{{listChunk}} less",
+                "buttonMore": "{{listChunk}} more",
+                "buttonAll": "Load all",
+                "linkMoreInfo": "More Information",
+                "buttonReset": "Reset $t(additional:modules.tools.CommuterFlows.title)",
+                "labelPeople": "people"
             }
         }
     }
 }
-

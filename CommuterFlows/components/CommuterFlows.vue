@@ -66,6 +66,8 @@ export default {
                     }, this.onApiError);
                 }
                 if (this.olApi === null) {
+                    // the CommuterOL creates layers on construction
+                    // only construct when necessary - e.g. on first activation of the tool
                     this.olApi = new CommuterOL({
                         font: this.olFont,
                         fontShadow: this.olFontShadow,
@@ -118,6 +120,32 @@ export default {
             }
             else {
                 this.olApi.clearLayers();
+            }
+        },
+        /**
+         * watches the current district and calls selectDistrict if a district is given
+         * resets currentCity
+         * @param {String} district the new district
+         * @returns {void}
+         */
+        currentDistrict (district) {
+            this.currentCity = "";
+            if (district) {
+                this.selectDistrict(district, this.homeToWork, this.listChunk);
+            }
+        },
+        /**
+         * watches the current city and calls selectCity if a city is given
+         * calls selectDistrict if no city is given
+         * @param {String} city the new city
+         * @returns {void}
+         */
+        currentCity (city) {
+            if (city) {
+                this.selectCity(city, this.homeToWork, this.listChunk);
+            }
+            else {
+                this.selectDistrict(this.currentDistrict, this.homeToWork, this.listChunk);
             }
         }
     },
@@ -229,32 +257,31 @@ export default {
         },
 
         /**
-         * Called if selection of currentDistrict changed.
-         * @param {Event} event changed selection event
+         * sets the dataset for the selected district
+         * @param {String} district the selected district
+         * @param {Boolean} homeToWork out-commuter (true) or in-commuter (false)
+         * @param {Number} listChunk the number of features to load initialy
          * @returns {void}
          */
-        selectDistrict (event) {
-            this.currentDistrict = event.target.value;
-            this.currentCity = "";
-
-            this.wfsApi.getListCities(this.currentDistrict, result => {
+        selectDistrict (district, homeToWork, listChunk) {
+            this.wfsApi.getListCities(district, result => {
                 this.listCities = result;
             }, this.onApiError);
-            this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.homeToWork, 0, this.listChunk, dataset => {
+            this.wfsApi.getFeaturesDistrict(district, homeToWork, 0, listChunk, dataset => {
                 this.lastDataset = dataset;
                 this.zoomIntoExtent();
             }, this.onApiError);
         },
 
         /**
-         * Called if selection of currentCity changed.
-         * @param {Event} event changed selection event
+         * sets the dataset for the selected city
+         * @param {String} city the selected city
+         * @param {Boolean} homeToWork out-commuter (true) or in-commuter (false)
+         * @param {Number} listChunk the number of features to load initialy
          * @returns {void}
          */
-        selectCity (event) {
-            this.currentCity = event.target.value;
-
-            this.wfsApi.getFeaturesCity(this.currentCity, this.homeToWork, 0, this.listChunk, dataset => {
+        selectCity (city, homeToWork, listChunk) {
+            this.wfsApi.getFeaturesCity(city, homeToWork, 0, listChunk, dataset => {
                 this.lastDataset = dataset;
                 this.zoomIntoExtent();
             }, this.onApiError);
@@ -444,22 +471,17 @@ export default {
          * @returns {void}
          */
         clearAll () {
-            // to change behavior as wished, enable/disable the following lines:
+            this.listCities = [];
+            this.currentDistrict = "";
+            this.currentCity = "";
+            this.lastDataset = null;
+            this.captionsChecked = this.onstart.captionsChecked;
+            this.numbersChecked = this.onstart.numbersChecked;
+            this.beamsChecked = this.onstart.beamsChecked;
+            this.animationChecked = this.onstart.animationChecked;
+            this.currentDirection = this.onstart.direction;
+            this.toggleMarker(null);
 
-            // this.listCities = [];
-            // this.currentDistrict = "";
-            // this.currentCity = "";
-            // this.lastDataset = null;
-            // this.captionsChecked = this.onstart.captionsChecked;
-            // this.numbersChecked = this.onstart.numbersChecked;
-            // this.beamsChecked = this.onstart.beamsChecked;
-            // this.animationChecked = this.onstart.animationChecked;
-            // this.currentDirection = this.onstart.direction;
-            // this.toggleMarker(null);
-            this.captionsChecked = false;
-            this.numbersChecked = false;
-            this.beamsChecked = false;
-            this.animationChecked = false;
             this.olApi.clearLayers();
         },
         /**
@@ -503,14 +525,13 @@ export default {
                             <select
                                 v-model="currentDistrict"
                                 class="form-control"
-                                @change="selectDistrict($event)"
                             >
                                 <option
                                     selected
                                     disabled
                                     value=""
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.chooseDistrictLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.selectDistrict") }}
                                 </option>
                                 <option
                                     v-for="(district, i) in listDistricts"
@@ -531,14 +552,12 @@ export default {
                                 <select
                                     v-model="currentCity"
                                     class="form-control"
-                                    @change="selectCity($event)"
                                 >
                                     <option
                                         selected
-                                        disabled
                                         value=""
                                     >
-                                        {{ translate("additional:modules.tools.CommuterFlows.chooseMunicipalityLabel") }}
+                                        {{ translate("additional:modules.tools.CommuterFlows.selectCity") }}
                                     </option>
                                     <option
                                         v-for="(city, i) in listCities"
@@ -569,7 +588,7 @@ export default {
                                     class="form-check-label"
                                     for="idCaptionsChecked"
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.activateTextLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.checkName") }}
                                 </label>
                             </div>
                         </div>
@@ -586,7 +605,7 @@ export default {
                                     class="form-check-label"
                                     for="idNumbersChecked"
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.activateNumberLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.checkNumber") }}
                                 </label>
                             </div>
                         </div>
@@ -603,7 +622,7 @@ export default {
                                     class="form-check-label"
                                     for="idBeamsChecked"
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.beamsLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.checkBeams") }}
                                 </label>
                             </div>
                         </div>
@@ -620,7 +639,7 @@ export default {
                                     class="form-check-label"
                                     for="idAnimationChecked"
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.animationLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.checkAnimation") }}
                                 </label>
                             </div>
                         </div>
@@ -636,7 +655,7 @@ export default {
                                     @click="playAnimation"
                                 >
                                     <span class="glyphicon glyphicon-play"></span>
-                                    {{ translate("additional:modules.tools.CommuterFlows.startLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.buttonStart") }}
                                 </button>
                             </div>
                             <div
@@ -649,7 +668,7 @@ export default {
                                     @click="stopAnimation"
                                 >
                                     <span class="glyphicon glyphicon-stop"></span>
-                                    {{ translate("additional:modules.tools.CommuterFlows.stopLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.buttonStop") }}
                                 </button>
                             </div>
                         </div>
@@ -677,14 +696,14 @@ export default {
                                     class="form-check-label"
                                     for="idOutChecked"
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.outCommuterLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.selectOut") }}
                                 </label>
                             </div>
                             <div
                                 v-show="tooltipOutActive"
                                 class="tooltip"
                             >
-                                {{ translate("additional:modules.tools.CommuterFlows.outCommuterTooltipLabel") }}
+                                {{ translate("additional:modules.tools.CommuterFlows.tooltipOut") }}
                             </div>
                         </div>
                         <div class="col-6 col-sm-6 tooltipWrapper">
@@ -706,14 +725,14 @@ export default {
                                     class="form-check-label"
                                     for="idInChecked"
                                 >
-                                    {{ translate("additional:modules.tools.CommuterFlows.inCommuterLabel") }}
+                                    {{ translate("additional:modules.tools.CommuterFlows.selectIn") }}
                                 </label>
                             </div>
                             <div
                                 v-show="tooltipInActive"
                                 class="tooltip tooltipRight"
                             >
-                                {{ translate("additional:modules.tools.CommuterFlows.inCommuterTooltipLabel") }}
+                                {{ translate("additional:modules.tools.CommuterFlows.tooltipIn") }}
                             </div>
                         </div>
                     </div>
@@ -746,7 +765,7 @@ export default {
                                             {{ thousandsSeparator(feature.get("value")) }}
                                         </td>
                                         <td class="featurePeople">
-                                            {{ translate("additional:modules.tools.CommuterFlows.peopleLabel") }}
+                                            {{ translate("additional:modules.tools.CommuterFlows.labelPeople") }}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -766,7 +785,7 @@ export default {
                                 :disabled="lastDataset.len <= listChunk"
                                 @click="loadLess"
                             >
-                                {{ translate("additional:modules.tools.CommuterFlows.loadLessLabel", {listChunk}) }}
+                                {{ translate("additional:modules.tools.CommuterFlows.buttonLess", {listChunk}) }}
                                 <span class="glyphicon glyphicon-arrow-up"></span>
                             </button>
                         </div>
@@ -777,7 +796,7 @@ export default {
                                 :disabled="lastDataset.len >= lastDataset.totalLength"
                                 @click="loadMore"
                             >
-                                {{ translate("additional:modules.tools.CommuterFlows.loadMoreLabel", {listChunk}) }}
+                                {{ translate("additional:modules.tools.CommuterFlows.buttonMore", {listChunk}) }}
                                 <span class="glyphicon glyphicon-arrow-down"></span>
                             </button>
                         </div>
@@ -788,7 +807,7 @@ export default {
                                 :disabled="lastDataset.len >= lastDataset.totalLength"
                                 @click="loadAll"
                             >
-                                {{ translate("additional:modules.tools.CommuterFlows.loadAllLabel") }}
+                                {{ translate("additional:modules.tools.CommuterFlows.buttonAll") }}
                                 <!--<span class="glyphicon glyphicon-arrow-right"></span>-->
                             </button>
                         </div>
@@ -800,7 +819,7 @@ export default {
                                 target="_blank"
                                 class="pull-right"
                             >
-                                {{ translate("additional:modules.tools.CommuterFlows.moreInfoLabel") }}
+                                {{ translate("additional:modules.tools.CommuterFlows.linkMoreInfo") }}
                             </a>
                         </div>
                     </div>
@@ -812,7 +831,7 @@ export default {
                                 @click="clearAll"
                             >
                                 <span class="glyphicon glyphicon-trash"></span>
-                                {{ translate("additional:modules.tools.CommuterFlows.deleteAllLabel") }}
+                                {{ translate("additional:modules.tools.CommuterFlows.buttonReset") }}
                             </button>
                         </div>
                     </div>
