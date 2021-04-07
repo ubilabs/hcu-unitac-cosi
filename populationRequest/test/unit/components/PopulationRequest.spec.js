@@ -56,13 +56,13 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
         store.commit("Tools/PopulationRequest/setActive", false);
         const wrapper = shallowMount(Component, {store, localVue});
 
-        expect(wrapper.find("form").exists()).to.be.false;
+        expect(wrapper.find("div.dropdown").exists()).to.be.false;
     });
 
     it("should render if active is true", async () => {
         const wrapper = shallowMount(Component, {store, localVue});
 
-        expect(wrapper.find("form").exists()).to.be.true;
+        expect(wrapper.find("div.dropdown").exists()).to.be.true;
     });
 
     it("renders the PopulationRequest tool with the expected divs", async () => {
