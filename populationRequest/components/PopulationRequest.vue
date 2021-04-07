@@ -559,6 +559,11 @@ export default {
     .checkbox-container .form-inline {
         font-size: 15px;
     }
+    @media (max-width: 767px) {
+        .checkbox-container .form-inline {
+            font-size: 12px;
+        }
+    }
     .checkbox-container .form-inline .title-checkbox {
         width: 100%;
     }
