@@ -19,7 +19,6 @@ export default {
     },
     data () {
         return {
-            featuresStatistics: [],
             layerIdList: [],
             facilityList: [],
             featuresList: [],
@@ -52,7 +51,7 @@ export default {
     computed: {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList", "mapping"]),
+        ...mapGetters("Tools/DistrictLoader", ["mapping", "selectedDistrictLevel", "currentStatsFeatures"]),
         ...mapGetters("Map", ["layerList"]),
         resultData () {
             const json = {
@@ -113,8 +112,14 @@ export default {
             this.layerIdList = this.layerList.map(x => x.getProperties().name);
             this.updateFacilities();
         },
-        featureList () {
-            this.updateFeaturesList();
+        selectedDistrictLevel: {
+            deep: true,
+            handler () {
+                console.log("doin it again?!")
+                if (this.selectedDistrictLevel.features?.length > 0) {
+                    this.updateFeaturesList();
+                }
+            }
         },
         availableYears (newYears) {
             if (newYears.length > 0) {
@@ -185,8 +190,7 @@ export default {
          */
         updateFeaturesList () {
             this.featuresList = [];
-            this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
-            this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
+            this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
             this.mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
@@ -223,6 +227,8 @@ export default {
             if (this.featuresList.length !== 0) {
                 this.BSwitch = false;
             }
+
+            console.log(this.featuresList);
         },
         /**
          * @todo todo
@@ -511,7 +517,7 @@ export default {
         getFeatureData (districtName, featureName) {
             const featureDataList = [];
 
-            this.featuresStatistics.forEach(feature => {
+            this.currentStatsFeatures.forEach(feature => {
                 if (utils.unifyString(feature.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(districtName) && utils.unifyString(feature.get("kategorie")) === utils.unifyString(featureName)) {
                     Object.entries(feature.getProperties()).forEach(([key, val]) => {
                         if (key.includes(this.yearSelector)) {
