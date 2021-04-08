@@ -23,6 +23,9 @@
   "vueAddon": {
     "type": "tool"
   },
+  "schoolRoutePlanning": {
+    "type": "tool"
+  },
   "activeCityMaps": {
     "path":"gfiThemes/activeCityMaps",
     "type": "gfiTheme"
