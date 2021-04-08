@@ -5,7 +5,6 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-import MappingJson from "../../modules/featuresLoader/mapping.json";
 import store from "../../../../src/app-store";
 
 export default {
@@ -36,7 +35,7 @@ export default {
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList"]),
+        ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         dataToCCM () {
             return this.$store.state.Tools.CalculateRatio.dataToCCM;
@@ -58,8 +57,13 @@ export default {
                 this.renderVisualization();
             }
         },
-        featureList () {
-            this.updateSelectedDistricts();
+        selectedDistrictLevel: {
+            deep: true,
+            handler () {
+                if (this.selectedDistrictLevel.features?.length > 0) {
+                    this.updateSelectedDistricts();
+                }
+            }
         },
         playState (stateChange) {
             if (stateChange) {
@@ -107,10 +111,10 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            this.selectedFeature = MappingJson[0].value;
+            this.selectedFeature = this.mapping[0].value;
             this.selectedYear = this.availableYears[0];
 
-            MappingJson.forEach(attr => {
+            this.mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats]) {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
 
@@ -331,16 +335,16 @@ export default {
          * @returns {void}
          */
         changeSelector (value) {
-            const index = MappingJson.map(e => e.value).indexOf(this.selectedFeature) + value;
+            const index = this.mapping.map(e => e.value).indexOf(this.selectedFeature) + value;
 
             if (index === -1) {
-                this.selectedFeature = MappingJson[MappingJson.length - 1].value;
+                this.selectedFeature = this.mapping[this.mapping.length - 1].value;
             }
-            else if (index === MappingJson.length) {
-                this.selectedFeature = MappingJson[0].value;
+            else if (index === this.mapping.length) {
+                this.selectedFeature = this.mapping[0].value;
             }
             else {
-                this.selectedFeature = MappingJson[index].value;
+                this.selectedFeature = this.mapping[index].value;
             }
             this.renderVisualization();
         }

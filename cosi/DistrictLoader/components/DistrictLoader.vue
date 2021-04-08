@@ -1,7 +1,8 @@
 <script>
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersDistrictLoader";
 import mutations from "../store/mutationsDistrictLoader";
+import actions from "../store/actionsDistrictLoader";
 import modifyDistricts from "../utils/modifyDistricts.js";
 
 export default {
@@ -16,6 +17,18 @@ export default {
             this.setSelectedDistrictLevel(this.districtLevels.find(districtLevel => {
                 return districtLevel.label === newLabel;
             }));
+        },
+        /**
+         * Update the district features on the map by the loaded stats for the currently selected level
+         * Triggers whenever the selected level changes or new features are added/removed.
+         */
+        selectedDistrictLevel: {
+            deep: true,
+            handler () {
+                if (this.currentStatsFeatures?.length > 0) {
+                    this.appendStatsToDistricts(this.currentStatsFeatures);
+                }
+            }
         }
     },
     created () {
@@ -24,7 +37,8 @@ export default {
     },
 
     methods: {
-        ...mapMutations("Tools/DistrictLoader", Object.keys(mutations))
+        ...mapMutations("Tools/DistrictLoader", Object.keys(mutations)),
+        ...mapActions("Tools/DistrictLoader", Object.keys(actions))
     },
     /**
      * @description override render function for Renderless Component

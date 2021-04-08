@@ -319,7 +319,8 @@ export default {
                 setBBoxToGeom(bboxGeom);
                 this.loadDistricts({
                     extent: this.extent,
-                    districtNameList: this.districtNameList
+                    districtNameList: this.districtNameList,
+                    districtFeatures: this.selectedFeatures
                 });
             }
             else {

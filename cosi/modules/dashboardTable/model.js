@@ -4,6 +4,7 @@ import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import TimelineModel from "../timeline/model";
 import store from "../../../../src/app-store";
+import Feature from "ol/Feature";
 
 const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype */ {
     defaults: Object.assign({}, Tool.prototype.defaults, {
@@ -480,6 +481,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             num = this.getValueByAttribute(this.getAttrsForRatio()[0]),
             den = this.getValueByAttribute(this.getAttrsForRatio()[1]),
             ratio = JSON.parse(JSON.stringify(num)),
+            category = `(${this.getAttrsForRatio()[0]} / ${this.getAttrsForRatio()[1]})`,
             calcGroup = tableView.find(group => group.group === "Berechnungen");
 
         for (const col in ratio) {
@@ -488,32 +490,53 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             }
             const match = this.get("unsortedTable").find(distCol => distCol[this.get("sortKey")] === col);
 
-            match[`(${this.getAttrsForRatio()[0]} / ${this.getAttrsForRatio()[1]})`] = ratio[col];
+            match[category] = ratio[col];
+            this.createStatsFeature(ratio[col], category, match);
         }
 
         if (calcGroup) {
-            calcGroup.values[`(${this.getAttrsForRatio()[0]} / ${this.getAttrsForRatio()[1]})`] = ratio;
+            calcGroup.values[category] = ratio;
         }
         else {
             tableView.push({
                 group: "Berechnungen",
                 values: {
-                    [`(${this.getAttrsForRatio()[0]} / ${this.getAttrsForRatio()[1]})`]: ratio
+                    [category]: ratio
                 }
             });
         }
 
         this.get("customFilters").push({
-            category: `(${this.getAttrsForRatio()[0]} / ${this.getAttrsForRatio()[1]})`,
+            category: category,
             group: "Berechnungen",
             stadtteil: true,
             statgebiet: true,
-            value: `(${this.getAttrsForRatio()[0]} / ${this.getAttrsForRatio()[1]})`,
+            value: category,
             valueType: "relative"
         });
 
         this.filterTableView();
         this.trigger("filterUpdated");
+    },
+
+    createStatsFeature (data, category, col) {
+        const labelMap = {
+                hamburg_gesamt: "hamburg"
+            },
+            label = labelMap[col.verwaltungseinheit] || col.verwaltungseinheit,
+            _data = data.map(entry => ["jahr_" + entry[0], entry[1]]),
+            featureProps = {
+                kategorie: category,
+                bezirk: col.bezirk,
+                stadtteil: col.stadtteil,
+                statgebiet: col.statgebiet,
+                group: "Berechnungen",
+                verwaltungseinheit: col.verwaltungseinheit,
+                ...Object.fromEntries(_data)
+            },
+            feature = new Feature(featureProps);
+
+        store.dispatch("Tools/DistrictLoader/addDistrictLevelFeature", {label, feature});
     },
 
     /**
