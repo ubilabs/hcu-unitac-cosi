@@ -115,7 +115,6 @@ export default {
         selectedDistrictLevel: {
             deep: true,
             handler () {
-                console.log("doin it again?!")
                 if (this.selectedDistrictLevel.features?.length > 0) {
                     this.updateFeaturesList();
                 }
