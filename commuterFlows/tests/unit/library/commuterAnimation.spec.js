@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import {CommuterAnimation} from "../../../library/commuterAnimation.js";
+import {CommuterAnimation} from "../../../utils/commuterAnimation.js";
 
-describe("addons/CommuterFlows/library/commuterAnimation.js", () => {
+describe("addons/commuterFlows/utils/commuterAnimation.js", () => {
     const generalDummy = new CommuterAnimation("featureList", "speeds", "layerBubbles", "layerAnimation", {
         hideLayer: () => {
             return false;

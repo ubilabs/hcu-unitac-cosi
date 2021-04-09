@@ -3,8 +3,8 @@ import Tool from "../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersCommuterFlows";
 import mutations from "../store/mutationsCommuterFlows";
-import {CommuterApi} from "../library/commuterApi";
-import {CommuterOL} from "../library/commuterOL";
+import {CommuterApi} from "../utils/commuterApi";
+import {CommuterOL} from "../utils/commuterOL";
 import {convertColor} from "../../../src/utils/colorTools.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator.js";
 

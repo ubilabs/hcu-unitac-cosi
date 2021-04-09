@@ -4,11 +4,11 @@ List of all configurable tools. Each tool inherits from **[tool](#markdown-heade
 
 |Name|Mandatory|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
-|CommuterFlows|no|**[CommuterFlows](#markdown-header-portalconfigmenutoolschildrencommuterflows)**||Tool for displaying commuter flows.|true|
+|commuterFlows|no|**[commuterFlows](#markdown-header-portalconfigmenutoolschildrencommuterflows)**||Tool for displaying commuter flows.|true|
 
 
 
-## Portalconfig.menu.tools.children.CommuterFlows
+## Portalconfig.menu.tools.children.commuterFlows
 
 **ATTENTION: Backend required!**
 

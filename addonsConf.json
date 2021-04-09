@@ -15,7 +15,7 @@
   "geoAnalyze": {
     "type": "tool"
   },
-  "CommuterFlows": {
+  "commuterFlows": {
     "type": "tool"
   },
   "tacticalMark": {

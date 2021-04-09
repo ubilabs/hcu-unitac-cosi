@@ -4,11 +4,11 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
-|CommuterFlows|nein|**[CommuterFlows](#markdown-header-portalconfigmenutoolschildrencommuterflows)**||Werkzeug zur Darstellung von Pendlerströmen.|true|
+|commuterFlows|nein|**[commuterFlows](#markdown-header-portalconfigmenutoolschildrencommuterflows)**||Werkzeug zur Darstellung von Pendlerströmen.|true|
 
 
 
-## Portalconfig.menu.tools.children.CommuterFlows
+## Portalconfig.menu.tools.children.commuterFlows
 
 **ACHTUNG: Backend notwendig!**
 

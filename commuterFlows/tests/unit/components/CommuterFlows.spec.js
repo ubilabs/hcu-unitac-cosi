@@ -12,7 +12,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("addons/CommuterFlows/components/CommuterFlows.vue", () => {
+describe("addons/commuterFlows/components/CommuterFlows.vue", () => {
 
     const mockMapGetters = {
             map: () => sinon.stub()

@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import {CommuterApi} from "../../../library/commuterApi.js";
+import {CommuterApi} from "../../../utils/commuterApi.js";
 
-describe("addons/CommuterFlows/library/commuterApi.js", () => {
+describe("addons/commuterFlows/utils/commuterApi.js", () => {
     describe("CommuterApi.constructor", () => {
         it("should assign the given options to internal options plus default options", () => {
             const api = new CommuterApi({key1: "value1", key2: "value2"}),

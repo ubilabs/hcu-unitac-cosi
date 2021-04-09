@@ -1,9 +1,9 @@
 import {expect} from "chai";
-import {CommuterOL} from "../../../library/commuterOL.js";
+import {CommuterOL} from "../../../utils/commuterOL.js";
 import {Point} from "ol/geom.js";
 import Feature from "ol/Feature.js";
 
-describe("addons/CommuterFlows/library/commuterOL.js", () => {
+describe("addons/commuterFlows/utils/commuterOL.js", () => {
     let lastCalls = {};
     const dummyFunc = {
             resetLastCalls: () => {
