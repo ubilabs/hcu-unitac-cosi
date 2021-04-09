@@ -12,12 +12,12 @@
  * @property {String[]} blacklistedDistricts districts (or cities) to not show in any case
  * @property {String} serviceURL the url to the commuter service (wfs)
  * @property {Number} listChunk the amount of features to receive for each show more/less call
- * @property {Boolean} setMarkerOnClickInList wheather or not the marker should be placed clicking in the feature list
+ * @property {Boolean} setMarkerOnClickInList whether or not the marker should be placed clicking in the feature list
  * @property {Object} onstart the initial settings for start or reset
- * @property {Boolean} onstart.captionsChecked wheather or not the captions are set on start or reset
- * @property {Boolean} onstart.numbersChecked wheather or not the numbers are set on start or reset
- * @property {Boolean} onstart.beamsChecked wheather or not the beams are set on start or reset
- * @property {Boolean} onstart.animationChecked wheather or not the animtaion is set on start or reset
+ * @property {Boolean} onstart.captionsChecked whether or not the captions are set on start or reset
+ * @property {Boolean} onstart.numbersChecked whether or not the numbers are set on start or reset
+ * @property {Boolean} onstart.beamsChecked whether or not the beams are set on start or reset
+ * @property {Boolean} onstart.animationChecked whether or not the animtaion is set on start or reset
  * @property {String} onstart.direction the start direction as String "out" or String "in"
  * @property {String} olFont the font to use for captions as ol/Text.font
  * @property {Object} olFontShadow the shadow for the captions as ol/Stroke options

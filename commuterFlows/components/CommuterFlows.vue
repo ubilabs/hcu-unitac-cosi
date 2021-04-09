@@ -39,17 +39,19 @@ export default {
     computed: {
         ...mapGetters("Tools/CommuterFlows", Object.keys(getters)),
 
-        homeToWork () {
-            return this.currentDirection === "out";
-        },
+        /**
+         * checkes if the animation is running using olApi
+         * @returns {Boolean} true if the animation is currently running
+         */
         isAnimationRunning () {
             return this.olApi.isAnimationRunning();
         }
     },
     watch: {
         /**
-         * Starts the action for processes, if the tool is be activated (active === true).
-         * @param {Boolean} value Value deciding whether the tool gets activated or deactivated.
+         * watches the status of the tool
+         * starts initial processes if the tool has been activated for the first time
+         * @param {Boolean} value true if the tool has been activated
          * @returns {void}
          */
         active (value) {
@@ -57,6 +59,7 @@ export default {
                 this.setActive(value);
 
                 if (this.wfsApi === null) {
+                    // the wfsApi can't be loaded on created or mounted, beacause the serviceURL might not be there yet
                     this.wfsApi = new CommuterApi({
                         serviceUrl: this.serviceURL,
                         blacklistedDistricts: this.blacklistedDistricts
@@ -80,43 +83,22 @@ export default {
                         zoomOptions: this.olZoomOptions,
                         animationPaces: this.olAnimationPaces
                     });
-                }
-                if (typeof this.onstart === "object") {
-                    this.captionsChecked = this.onstart.captionsChecked;
-                    this.numbersChecked = this.onstart.numbersChecked;
-                    this.beamsChecked = this.onstart.beamsChecked;
-                    this.animationChecked = this.onstart.animationChecked;
-                    this.currentDirection = this.onstart.direction;
+
+                    // resets the tool for a clean start
+                    this.resetAll();
                 }
             }
         },
         /**
-         * on change of the last dataset all kinds of ol changes take place
+         * watches changes of lastDataset
+         * @param {Object} newLastDataset the new lastDataset to react to
          * @returns {void}
          */
-        lastDataset () {
-            if (Array.isArray(this.lastDataset?.featureList)) {
-                this.olApi.addCaptions(
-                    this.lastDataset.caption,
-                    this.lastDataset.coordinate,
-                    this.lastDataset.featureList,
-                    this.captionsChecked,
-                    this.numbersChecked
-                );
-
-                if (this.beamsChecked) {
-                    this.olApi.addBeams(this.lastDataset.featureList);
-                }
-                else {
-                    this.olApi.removeBeams();
-                }
-
-                if (this.animationChecked) {
-                    this.olApi.initAnimation(this.lastDataset.featureList, this.lastDataset.totalMax, this.olBubbleAlgorithm);
-                }
-                else {
-                    this.olApi.removeAnimation();
-                }
+        lastDataset (newLastDataset) {
+            if (Array.isArray(newLastDataset?.featureList)) {
+                this.refreshCaptions();
+                this.refreshBeams();
+                this.refreshAnimation();
             }
             else {
                 this.olApi.clearLayers();
@@ -131,7 +113,7 @@ export default {
         currentDistrict (district) {
             this.currentCity = "";
             if (district) {
-                this.selectDistrict(district, this.homeToWork, this.listChunk);
+                this.selectDistrict(district, this.isOutCommuter(), this.listChunk);
             }
         },
         /**
@@ -142,10 +124,59 @@ export default {
          */
         currentCity (city) {
             if (city) {
-                this.selectCity(city, this.homeToWork, this.listChunk);
+                this.selectCity(city, this.isOutCommuter(), this.listChunk);
             }
             else {
-                this.selectDistrict(this.currentDistrict, this.homeToWork, this.listChunk);
+                this.selectDistrict(this.currentDistrict, this.isOutCommuter(), this.listChunk);
+            }
+        },
+        /**
+         * watches if the captions are checked
+         * @returns {void}
+         */
+        captionsChecked () {
+            this.refreshCaptions();
+        },
+        /**
+         * watches if the numbers are checked
+         * @returns {void}
+         */
+        numbersChecked () {
+            this.refreshCaptions();
+        },
+        /**
+         * watches if the beams are checked
+         * @returns {void}
+         */
+        beamsChecked () {
+            this.refreshBeams();
+        },
+        /**
+         * watches if the animation is checked
+         * @returns {void}
+         */
+        animationChecked () {
+            this.refreshAnimation();
+        },
+        /**
+         * watches if the current direction is changed
+         * @returns {void}
+         */
+        currentDirection () {
+            if (this.lastDataset?.source === "getFeaturesDistrict") {
+                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.isOutCommuter(), 0, this.listChunk, dataset => {
+                    this.lastDataset = dataset;
+                    this.zoomIntoExtent();
+                }, this.onApiError);
+            }
+            else if (this.lastDataset?.source === "getFeaturesCity") {
+                this.wfsApi.getFeaturesCity(this.currentCity, this.isOutCommuter(), 0, this.listChunk, dataset => {
+                    this.lastDataset = dataset;
+                    this.zoomIntoExtent();
+                }, this.onApiError);
+            }
+            else {
+                this.olApi.clearLayers();
             }
         }
     },
@@ -162,51 +193,6 @@ export default {
     methods: {
         ...mapMutations("Tools/CommuterFlows", Object.keys(mutations)),
         thousandsSeparator,
-
-        /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-
-        /**
-         * logs the given error as api error
-         * @param {Object} error the error from the api
-         * @returns {void}
-         */
-        onApiError (error) {
-            console.warn("addons/CommuterFlow - Api error", error);
-        },
-
-        /**
-         * returns the css style to use for the feature at a certain list position
-         * @param {Number} idx the list position
-         * @returns {Object} the css style to be interpreted by Vues :style argument
-         */
-        getStyleByIdx (idx) {
-            return {
-                "background-color": convertColor(this.olApi.getColor(idx), "rgbaString")
-            };
-        },
-
-        /**
-         * helper function to zoom into the current extent
-         * @returns {void}
-         * @pre the zoom is anywhere
-         * @post the map is zoomed into the extent of this.lastDataset.featureList
-         */
-        zoomIntoExtent () {
-            if (typeof this.olZoomOptions === "object" && this.olZoomOptions !== null && Array.isArray(this.lastDataset?.featureList)) {
-                this.olApi.zoomToExtent(this.lastDataset.featureList);
-            }
-        },
         /**
          * Closes this tool window by setting active to false
          * @returns {void}
@@ -220,7 +206,47 @@ export default {
                 model.set("isActive", false);
             }
         },
-
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+            return this.$t(key, options);
+        },
+        /**
+         * logs the given error as api error
+         * @param {Object} error the error from the api
+         * @returns {void}
+         */
+        onApiError (error) {
+            console.warn("addons/CommuterFlow - Api error", error);
+        },
+        /**
+         * returns the css style to use for the feature at a certain list position
+         * @param {Number} idx the list position
+         * @returns {Object} the css style to be interpreted by Vues :style argument
+         */
+        getStyleByIdx (idx) {
+            return {
+                "background-color": convertColor(this.olApi.getColor(idx), "rgbaString")
+            };
+        },
+        /**
+         * helper function to zoom into the current extent
+         * @returns {void}
+         * @pre the zoom is anywhere
+         * @post the map is zoomed into the extent of this.lastDataset.featureList
+         */
+        zoomIntoExtent () {
+            if (typeof this.olZoomOptions === "object" && this.olZoomOptions !== null && Array.isArray(this.lastDataset?.featureList)) {
+                this.olApi.zoomToExtent(this.lastDataset.featureList);
+            }
+        },
         /**
          * auto scrolls the div of the featureList
          * @param {String} whereto whether to scroll up ("top") or down ("bottom")
@@ -236,7 +262,6 @@ export default {
                 elem.scrollTop = elem.scrollHeight;
             }
         },
-
         /**
          * sets/unsets the marker
          * @param {Number[]} coords the coordinates to place the marker at
@@ -255,46 +280,40 @@ export default {
                 this.$store.dispatch("MapMarker/placingPointMarker", coords);
             }
         },
-
         /**
          * sets the dataset for the selected district
          * @param {String} district the selected district
-         * @param {Boolean} homeToWork out-commuter (true) or in-commuter (false)
+         * @param {Boolean} isOutCommuter out-commuter (true) or in-commuter (false)
          * @param {Number} listChunk the number of features to load initialy
          * @returns {void}
          */
-        selectDistrict (district, homeToWork, listChunk) {
+        selectDistrict (district, isOutCommuter, listChunk) {
             this.wfsApi.getListCities(district, result => {
                 this.listCities = result;
             }, this.onApiError);
-            this.wfsApi.getFeaturesDistrict(district, homeToWork, 0, listChunk, dataset => {
+            this.wfsApi.getFeaturesDistrict(district, isOutCommuter, 0, listChunk, dataset => {
                 this.lastDataset = dataset;
                 this.zoomIntoExtent();
             }, this.onApiError);
         },
-
         /**
          * sets the dataset for the selected city
          * @param {String} city the selected city
-         * @param {Boolean} homeToWork out-commuter (true) or in-commuter (false)
+         * @param {Boolean} isOutCommuter out-commuter (true) or in-commuter (false)
          * @param {Number} listChunk the number of features to load initialy
          * @returns {void}
          */
-        selectCity (city, homeToWork, listChunk) {
-            this.wfsApi.getFeaturesCity(city, homeToWork, 0, listChunk, dataset => {
+        selectCity (city, isOutCommuter, listChunk) {
+            this.wfsApi.getFeaturesCity(city, isOutCommuter, 0, listChunk, dataset => {
                 this.lastDataset = dataset;
                 this.zoomIntoExtent();
             }, this.onApiError);
         },
-
         /**
-         * reacts to the check of the checkbox
-         * @param {Boolean} value true if the checkbox was checked
+         * refreshes the captions e.g. after change of checkboxes captions and numbers or change of lastDataset
          * @returns {void}
          */
-        checkCaptions (value) {
-            this.captionsChecked = value;
-
+        refreshCaptions () {
             if (Array.isArray(this.lastDataset?.featureList)) {
                 this.olApi.addCaptions(
                     this.lastDataset.caption,
@@ -309,34 +328,10 @@ export default {
             }
         },
         /**
-         * reacts to the check of the checkbox
-         * @param {Boolean} value true if the checkbox was checked
+         * refreshes the beams e.g. after change of checkbox beams or change of lastDataset
          * @returns {void}
          */
-        checkNumbers (value) {
-            this.numbersChecked = value;
-
-            if (Array.isArray(this.lastDataset?.featureList)) {
-                this.olApi.addCaptions(
-                    this.lastDataset.caption,
-                    this.lastDataset.coordinate,
-                    this.lastDataset.featureList,
-                    this.captionsChecked,
-                    this.numbersChecked
-                );
-            }
-            else {
-                this.olApi.removeCaptions();
-            }
-        },
-        /**
-         * reacts to the check of the checkbox
-         * @param {Boolean} value true if the checkbox was checked
-         * @returns {void}
-         */
-        checkBeams (value) {
-            this.beamsChecked = value;
-
+        refreshBeams () {
             if (this.beamsChecked && Array.isArray(this.lastDataset?.featureList)) {
                 this.olApi.addBeams(this.lastDataset.featureList);
             }
@@ -345,13 +340,10 @@ export default {
             }
         },
         /**
-         * reacts to the check of the checkbox
-         * @param {Boolean} value true if the checkbox was checked
+         * refreshes the animation e.g. after change of checkbox animation or change of lastDataset
          * @returns {void}
          */
-        checkAnimation (value) {
-            this.animationChecked = value;
-
+        refreshAnimation () {
             if (this.animationChecked && Array.isArray(this.lastDataset?.featureList)) {
                 this.olApi.initAnimation(this.lastDataset.featureList, this.lastDataset.totalMax, this.olBubbleAlgorithm);
             }
@@ -360,39 +352,12 @@ export default {
             }
         },
         /**
-         * reacts to the check of a radio box
-         * @param {Boolean} value "out" or "in" based on the direction
-         * @returns {void}
-         */
-        checkDirection (value) {
-            this.currentDirection = value;
-
-            if (this.lastDataset?.source === "getFeaturesDistrict") {
-                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.homeToWork, 0, this.listChunk, dataset => {
-                    this.lastDataset = dataset;
-                    this.zoomIntoExtent();
-                }, this.onApiError);
-            }
-            else if (this.lastDataset?.source === "getFeaturesCity") {
-                this.wfsApi.getFeaturesCity(this.currentCity, this.homeToWork, 0, this.listChunk, dataset => {
-                    this.lastDataset = dataset;
-                    this.zoomIntoExtent();
-                }, this.onApiError);
-            }
-            else {
-                this.olApi.clearLayers();
-            }
-        },
-        /**
          * loads more features in the feature list
          * @returns {void}
          */
         loadMore () {
-            let len = 0;
-
             if (this.lastDataset?.source === "getFeaturesDistrict") {
-                len = this.lastDataset.len + this.listChunk;
-                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.homeToWork, 0, len, dataset => {
+                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.isOutCommuter(), 0, this.lastDataset.len + this.listChunk, dataset => {
                     this.lastDataset = dataset;
                     this.zoomIntoExtent();
                     this.$nextTick(() => {
@@ -401,8 +366,7 @@ export default {
                 }, this.onApiError);
             }
             else if (this.lastDataset?.source === "getFeaturesCity") {
-                len = this.lastDataset.len + this.listChunk;
-                this.wfsApi.getFeaturesCity(this.currentCity, this.homeToWork, 0, len, dataset => {
+                this.wfsApi.getFeaturesCity(this.currentCity, this.isOutCommuter(), 0, this.lastDataset.len + this.listChunk, dataset => {
                     this.lastDataset = dataset;
                     this.zoomIntoExtent();
                     this.$nextTick(() => {
@@ -419,18 +383,14 @@ export default {
          * @returns {void}
          */
         loadLess () {
-            let len = 0;
-
             if (this.lastDataset?.source === "getFeaturesDistrict") {
-                len = this.lastDataset.len - this.listChunk;
-                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.homeToWork, 0, len, dataset => {
+                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.isOutCommuter(), 0, this.lastDataset.len - this.listChunk, dataset => {
                     this.lastDataset = dataset;
                     this.zoomIntoExtent();
                 }, this.onApiError);
             }
             else if (this.lastDataset?.source === "getFeaturesCity") {
-                len = this.lastDataset.len - this.listChunk;
-                this.wfsApi.getFeaturesCity(this.currentCity, this.homeToWork, 0, len, dataset => {
+                this.wfsApi.getFeaturesCity(this.currentCity, this.isOutCommuter(), 0, this.lastDataset.len - this.listChunk, dataset => {
                     this.lastDataset = dataset;
                     this.zoomIntoExtent();
                 }, this.onApiError);
@@ -440,12 +400,12 @@ export default {
             }
         },
         /**
-         * loads all features in the feature list
+         * loads all available features in the feature list
          * @returns {void}
          */
         loadAll () {
             if (this.lastDataset?.source === "getFeaturesDistrict") {
-                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.homeToWork, 0, this.lastDataset.totalLength, dataset => {
+                this.wfsApi.getFeaturesDistrict(this.currentDistrict, this.isOutCommuter(), 0, this.lastDataset.totalLength, dataset => {
                     this.lastDataset = dataset;
                     this.zoomIntoExtent();
                     this.$nextTick(() => {
@@ -454,7 +414,7 @@ export default {
                 }, this.onApiError);
             }
             else if (this.lastDataset?.source === "getFeaturesCity") {
-                this.wfsApi.getFeaturesCity(this.currentCity, this.homeToWork, 0, this.lastDataset.totalLength, dataset => {
+                this.wfsApi.getFeaturesCity(this.currentCity, this.isOutCommuter(), 0, this.lastDataset.totalLength, dataset => {
                     this.lastDataset = dataset;
                     this.zoomIntoExtent();
                     this.$nextTick(() => {
@@ -467,19 +427,22 @@ export default {
             }
         },
         /**
-         * removes all features from the layers, empties list
+         * resets the tool
          * @returns {void}
          */
-        clearAll () {
+        resetAll () {
+            // note: remember to check behavior of watch:active -> use of resetAll, when changing this function
             this.listCities = [];
             this.currentDistrict = "";
             this.currentCity = "";
             this.lastDataset = null;
-            this.captionsChecked = this.onstart.captionsChecked;
-            this.numbersChecked = this.onstart.numbersChecked;
-            this.beamsChecked = this.onstart.beamsChecked;
-            this.animationChecked = this.onstart.animationChecked;
-            this.currentDirection = this.onstart.direction;
+            if (typeof this.onstart === "object") {
+                this.captionsChecked = this.onstart.captionsChecked;
+                this.numbersChecked = this.onstart.numbersChecked;
+                this.beamsChecked = this.onstart.beamsChecked;
+                this.animationChecked = this.onstart.animationChecked;
+                this.currentDirection = this.onstart.direction;
+            }
             this.toggleMarker(null);
 
             this.olApi.clearLayers();
@@ -497,6 +460,13 @@ export default {
          */
         stopAnimation () {
             this.olApi.stopAnimation();
+        },
+        /**
+         * returns true if the current commuters are commuting out (from home to work)
+         * @returns {Boolean} true if the currentDirection eq "out"
+         */
+        isOutCommuter () {
+            return this.currentDirection === "out";
         }
     }
 };
@@ -582,7 +552,6 @@ export default {
                                     v-model="captionsChecked"
                                     class="form-check-input"
                                     type="checkbox"
-                                    @change="checkCaptions($event.target.checked)"
                                 >
                                 <label
                                     class="form-check-label"
@@ -599,7 +568,6 @@ export default {
                                     v-model="numbersChecked"
                                     class="form-check-input"
                                     type="checkbox"
-                                    @change="checkNumbers($event.target.checked)"
                                 >
                                 <label
                                     class="form-check-label"
@@ -616,7 +584,6 @@ export default {
                                     v-model="beamsChecked"
                                     class="form-check-input"
                                     type="checkbox"
-                                    @change="checkBeams($event.target.checked)"
                                 >
                                 <label
                                     class="form-check-label"
@@ -633,7 +600,6 @@ export default {
                                     v-model="animationChecked"
                                     class="form-check-input"
                                     type="checkbox"
-                                    @change="checkAnimation($event.target.checked)"
                                 >
                                 <label
                                     class="form-check-label"
@@ -690,7 +656,6 @@ export default {
                                     type="radio"
                                     name="outInCommuter"
                                     value="out"
-                                    @change="checkDirection($event.target.value)"
                                 >
                                 <label
                                     class="form-check-label"
@@ -719,7 +684,6 @@ export default {
                                     type="radio"
                                     name="outInCommuter"
                                     value="in"
-                                    @change="checkDirection($event.target.value)"
                                 >
                                 <label
                                     class="form-check-label"
@@ -831,7 +795,7 @@ export default {
                             <button
                                 type="button"
                                 class="btn btn-default btn-block"
-                                @click="clearAll"
+                                @click="resetAll"
                             >
                                 <span class="glyphicon glyphicon-trash"></span>
                                 {{ translate("additional:modules.tools.CommuterFlows.buttonReset") }}

@@ -18,7 +18,7 @@
                 "buttonLess": "{{listChunk}} less",
                 "buttonMore": "{{listChunk}} more",
                 "buttonAll": "Load all",
-                "linkMoreInfo": "More Information",
+                "linkMoreInfo": "More information",
                 "buttonReset": "Reset $t(additional:modules.tools.CommuterFlows.title)",
                 "labelPeople": "people"
             }
