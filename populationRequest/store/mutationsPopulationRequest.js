@@ -8,27 +8,7 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(statePopulationRequest),
-
-    /**
-     * Sets the Raster state
-     * @param {object} state vuex state
-     * @param {boolean} payload new status
-     * @returns {void}
-     */
-    setRasterActive (state, payload) {
-        state.rasterActive = payload;
-    },
-
-    /**
-     * Sets the Alkis Adresses state
-     * @param {object} state vuex state
-     * @param {boolean} payload new status
-     * @returns {void}
-     */
-    setAlkisAdressesActive (state, payload) {
-        state.alkisAdressesActive = payload;
-    }
+    ...generateSimpleMutations(statePopulationRequest)
 };
 
 export default mutations;

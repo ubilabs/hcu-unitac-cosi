@@ -5,14 +5,14 @@ import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
 import state from "../store/statePopulationRequest";
 import actions from "../store/actionsPopulationRequest";
-import GraphicalSelect from "../../../modules/snippets/graphicalSelect/components/GraphicalSelect.vue";
+import GraphicalSelect from "../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
 import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 
 export default {
-    name: "PopulationRequest",
+    name: "populationRequest",
     components: {
         Tool,
         GraphicalSelect,
@@ -35,12 +35,12 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
+        ...mapGetters("Tools/populationRequest", Object.keys(getters)),
         ...mapGetters(["isTableStyle", "isDefaultStyle"]),
 
         /**
          * returns if the Raster Layer is Visible in the map
-         * @returns {Boolean} -
+         * @returns {Boolean} RasterLayerVisibleInMap
          */
         isRasterVisibleInMap: function () {
             const model = Radio.request("ModelList", "getModelByAttributes", {id: this.rasterLayerId}),
@@ -51,13 +51,37 @@ export default {
 
         /**
          * returns if the Alkis Adress Layer is Visible in the map
-         * @returns {Boolean} -
+         * @returns {Boolean} AlkisAdressLayerVisibleInMap
          */
         isAlkisAdressesVisibleInMap: function () {
             const model = Radio.request("ModelList", "getModelByAttributes", {id: this.alkisAdressLayerId}),
                 isVisibleInMap = model !== undefined ? model.get("isVisibleInMap") : false;
 
             return isVisibleInMap;
+        },
+
+        /**
+         * returns if the Hint and Linktext should be shown
+         * @returns {Boolean} shall Text be shown
+         */
+        showFHHHintAndLinktext: function () {
+            return this.inhabitantsFHHNum > -1 && (this.sourceFHH === "ja" || this.sourceFHH === "tlw");
+        },
+
+        /**
+         * returns if the Hint and Linktext should be shown
+         * @returns {Boolean} shall Text be shown
+         */
+        showMRHHintAndLinktext: function () {
+            return this.inhabitantsMRHNum > -1 && (this.sourceMRH === "ja" || this.sourceMRH === "tlw");
+        },
+
+        /**
+         * returns if the SourceAreaOutsideHint should be shown
+         * @returns {Boolean} shall Hint be shown
+         */
+        showMRHSourceAreaOutsideHint: function () {
+            return this.sourceMRH === "tlw" && this.sourceFHH === "nein";
         }
     },
     /**
@@ -79,8 +103,8 @@ export default {
 
     },
     methods: {
-        ...mapMutations("Tools/PopulationRequest", Object.keys(mutations)),
-        ...mapActions("Tools/PopulationRequest", Object.keys(actions)),
+        ...mapMutations("Tools/populationRequest", Object.keys(mutations)),
+        ...mapActions("Tools/populationRequest", Object.keys(actions)),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
@@ -112,8 +136,8 @@ export default {
         },
         /**
          * Called when the wps modules returns a request
-         * @param  {string} response - the response xml of the wps
-         * @param  {number} status - the HTTPStatusCode
+         * @param  {String} response the response xml of the wps
+         * @param  {Number} status the HTTPStatusCode
          * @returns {void}
          */
         handleResponse: function (response, status) {
@@ -136,7 +160,7 @@ export default {
         },
         /**
          * Displays Errortext if the WPS returns an Error
-         * @param  {string} response received by wps
+         * @param  {String} response received by wps
          * @returns {void}
          */
         handleWPSError: function (response) {
@@ -148,42 +172,42 @@ export default {
         },
         /**
          * Used when statuscode is 200 and wps did not return an error
-         * @param  {string} response received by wps
+         * @param  {String} response received by wps
          * @returns {void}
          */
         handleSuccess: function (response) {
-            let obj = null;
+            let responseResult = null;
 
             try {
-                obj = JSON.parse(response.ergebnis);
-                if (obj.hasOwnProperty("einwohner_fhh")) {
-                    this.inhabitantsFHHNum = obj.einwohner_fhh;
-                    this.inhabitantsFHH = thousandsSeparator(obj.einwohner_fhh);
+                responseResult = JSON.parse(response.ergebnis);
+                if (responseResult.hasOwnProperty("einwohner_fhh")) {
+                    this.inhabitantsFHHNum = responseResult.einwohner_fhh;
+                    this.inhabitantsFHH = thousandsSeparator(responseResult.einwohner_fhh);
                 }
                 else {
                     this.inhabitantsFHHNum = -1;
                 }
-                if (obj.hasOwnProperty("einwohner_mrh")) {
-                    this.inhabitantsMRHNum = obj.einwohner_mrh;
-                    this.inhabitantsMRH = thousandsSeparator(obj.einwohner_mrh);
+                if (responseResult.hasOwnProperty("einwohner_mrh")) {
+                    this.inhabitantsMRHNum = responseResult.einwohner_mrh;
+                    this.inhabitantsMRH = thousandsSeparator(responseResult.einwohner_mrh);
                 }
                 else {
                     this.inhabitantsMRHNum = -1;
                 }
-                if (obj.hasOwnProperty("quelle_fhh")) {
-                    this.sourceFHH = obj.quelle_fhh;
+                if (responseResult.hasOwnProperty("quelle_fhh")) {
+                    this.sourceFHH = responseResult.quelle_fhh;
                 }
                 else {
                     this.sourceFHH = "nein";
                 }
-                if (obj.hasOwnProperty("quelle_mrh")) {
-                    this.sourceMRH = obj.quelle_mrh;
+                if (responseResult.hasOwnProperty("quelle_mrh")) {
+                    this.sourceMRH = responseResult.quelle_mrh;
                 }
                 else {
                     this.sourceMRH = "nein";
                 }
-                if (obj.hasOwnProperty("suchflaeche")) {
-                    this.searchArea = this.chooseUnitAndThousandsSeparator(obj.suchflaeche);
+                if (responseResult.hasOwnProperty("suchflaeche")) {
+                    this.searchArea = this.chooseUnitAndThousandsSeparator(responseResult.suchflaeche);
                 }
                 else {
                     this.searchArea = 0;
@@ -201,30 +225,30 @@ export default {
         },
         /**
          * Chooses unit based on value, calls thousandsSeparator and converts to unit and appends unit
-         * @param  {number} value - to inspect
-         * @param  {number} maxDecimals - decimals are cut after maxlength chars
-         * @returns {string} unit
+         * @param  {Number} value to inspect
+         * @param  {Number} maxDecimals decimals are cut after maxlength chars
+         * @returns {String} unit
          */
         chooseUnitAndThousandsSeparator: function (value, maxDecimals) {
             let newValue = null,
-                ret = null;
+                result = null;
 
             if (value < 250000) {
-                ret = thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
+                result = thousandsSeparator(value.toFixed(maxDecimals)) + " m²";
             }
             else if (value < 10000000) {
                 newValue = value / 10000.0;
-                ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
+                result = thousandsSeparator(newValue.toFixed(maxDecimals)) + " ha";
             }
             else {
                 newValue = value / 1000000.0;
-                ret = thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
+                result = thousandsSeparator(newValue.toFixed(maxDecimals)) + " km²";
             }
-            return ret;
+            return result;
         },
         /**
          * if the model does not exist, add Model from Parser to ModelList via Radio.trigger
-         * @param {string} layerId id of the layer to be toggled
+         * @param {String} layerId id of the layer to be toggled
          * @fires Core#RadioRequestModelListGetModelByAttributes
          * @returns {void}
          */
@@ -238,9 +262,9 @@ export default {
         /**
          * checks whether the model has been loaded.
          * If it is not loaded, a corresponding error message is displayed
-         * @param {string} layerId id of the layer to be toggled
-         * @param {boolean} value the new value
-         * @param {object} checkboxComponent the Component that triggered this call
+         * @param {String} layerId id of the layer to be toggled
+         * @param {Boolean} value the new value
+         * @param {Object} checkboxComponent the Component that triggered this call
          * @fires Core#RadioRequestModelListGetModelByAttributes
          * @returns {void}
          */
@@ -259,8 +283,8 @@ export default {
         },
         /**
          * sets selected and visibility to ModelList via Radio.trigger
-         * @param {string} layerId id of the layer to be toggled
-         * @param {boolean} value - true | false
+         * @param {String} layerId id of the layer to be toggled
+         * @param {Boolean} value true | false
          * @fires Core#RadioTriggerModelListSetModelAttributesById
          * @returns {void}
          */
@@ -272,11 +296,11 @@ export default {
         },
         /**
          * Sets the state at the RasterLayer
-         * @param {boolean} value flag if Raster is to be set
+         * @param {Boolean} value flag if Raster is to be set
          * @returns {void}
          */
         triggerRaster (value) {
-            const rasterCB = this.$refs.rasterCB,
+            const rasterCheckBox = this.$refs.rasterCheckBox,
                 layerId = this.rasterLayerId;
 
             if (value) {
@@ -284,8 +308,8 @@ export default {
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 100000) {
-                    if (rasterCB !== undefined) {
-                        rasterCB.setActive(false);
+                    if (rasterCheckBox !== undefined) {
+                        rasterCheckBox.setActive(false);
                     }
 
                     this.addSingleAlert({
@@ -295,21 +319,21 @@ export default {
                 }
             }
 
-            this.setRaster(state, value);
+            this.setRasterActive(value);
 
             this.addModelsByAttributesToModelList(layerId);
             if (value) {
-                this.checkIsModelLoaded(layerId, value, rasterCB);
+                this.checkIsModelLoaded(layerId, value, rasterCheckBox);
             }
             this.setModelAttributesByIdToModelList(layerId, value);
         },
         /**
          * Sets the state at the alkisAdresses Layer
-         * @param {boolean} value flag if alkisAdresses is to be set
+         * @param {Boolean} value flag if alkisAdresses is to be set
          * @returns {void}
          */
         triggerAlkisAdresses (value) {
-            const alkisAdressesCB = this.$refs.alkisAdressesCB,
+            const alkisAdressesCheckBox = this.$refs.alkisAdressesCheckBox,
                 layerId = this.alkisAdressLayerId;
 
             if (value) {
@@ -317,8 +341,8 @@ export default {
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 10000) {
-                    if (alkisAdressesCB !== undefined) {
-                        alkisAdressesCB.setActive(false);
+                    if (alkisAdressesCheckBox !== undefined) {
+                        alkisAdressesCheckBox.setActive(false);
                     }
 
                     this.addSingleAlert({
@@ -328,43 +352,13 @@ export default {
                 }
             }
 
-            this.setAlkisAdresses(state, value);
+            this.setAlkisAdressesActive(value);
 
             this.addModelsByAttributesToModelList(layerId);
             if (value) {
-                this.checkIsModelLoaded(layerId, value, alkisAdressesCB);
+                this.checkIsModelLoaded(layerId, value, alkisAdressesCheckBox);
             }
             this.setModelAttributesByIdToModelList(layerId, value);
-        },
-        /**
-         * Sets FHH values for Testing
-         * @param {string} source Value for sourceFHH
-         * @param {integer} inhabitantsNumValue Value for inhabitantsFHHNum
-         * @returns {void}
-         */
-        setFHH (source, inhabitantsNumValue) {
-            this.sourceFHH = source;
-            this.inhabitantsFHHNum = inhabitantsNumValue;
-            this.inhabitantsFHH = thousandsSeparator(inhabitantsNumValue);
-        },
-        /**
-         * Sets MRH values for Testing
-         * @param {string} source Value for sourceMRH
-         * @param {integer} inhabitantsNumValue Value for inhabitantsMRHNum
-         * @returns {void}
-         */
-        setMRH (source, inhabitantsNumValue) {
-            this.sourceMRH = source;
-            this.inhabitantsMRHNum = inhabitantsNumValue;
-            this.inhabitantsMRH = thousandsSeparator(inhabitantsNumValue);
-        },
-        /**
-         * Sets searcharea for Testing
-         * @param {string} area Value for searchArea
-         * @returns {void}
-         */
-        setSearchArea (area) {
-            this.searchArea = area;
         },
         /**
          * Closes this tool window by setting active to false
@@ -460,7 +454,7 @@ export default {
                     </tr>
                 </table>
                 <div
-                    v-if="(inhabitantsFHHNum > -1 && inhabitantsFHHNum < 1000 && sourceFHH === 'ja')"
+                    v-if="showFHHHintAndLinktext"
                     class="inhabitantsFHHAddText"
                 >
                     <div class="hinweis additional-text">
@@ -476,22 +470,23 @@ export default {
                     </div>
                 </div>
                 <div
-                    v-if="inhabitantsMRHNum > 0 && (sourceMRH === 'ja' || sourceMRH === 'tlw' || sourceFHH === 'nein')"
+                    v-if="showMRHHintAndLinktext"
                     class="inhabitantsMRHAddText"
                 >
                     <div
                         class="hinweis additional-text"
                     >
-                        <div
-                            v-if="sourceFHH !== 'nein'"
-                        >
-                            <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
+                        <div>
+                            <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>
+                            <span
+                                v-if="showMRHSourceAreaOutsideHint"
+                            >
+                                {{ translate("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
+                            </span>
                         </div>
                         <span>{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
                     </div>
-                    <div
-                        v-if="sourceMRH === 'tlw' || sourceFHH === 'nein'"
-                    >
+                    <div>
                         <a
                             target="_blank"
                             :href="`${metaDataLink}${mrhId}`"
@@ -511,7 +506,7 @@ export default {
                             <div class="title-checkbox pull-left">
                                 <label>{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
-                                    ref="rasterCB"
+                                    ref="rasterCheckBox"
                                     :defaultState="isRasterVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
                                     :textOn="translate('common:snippets.checkbox.on')"
@@ -526,7 +521,7 @@ export default {
                             <div class="title-checkbox pull-left">
                                 <label>{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
                                 <ToggleCheckbox
-                                    ref="alkisAdressesCB"
+                                    ref="alkisAdressesCheckBox"
                                     :defaultState="isAlkisAdressesVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
                                     :textOn="translate('common:snippets.checkbox.on')"

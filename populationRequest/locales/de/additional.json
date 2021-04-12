@@ -26,7 +26,7 @@
                 },
                 "errors": {
                     "errorCategory": "Fehler",
-                    "requestException": "Datenabfrage fehlgeschlagen. Technische Details: ",
+                    "requestException": "Datenabfrage fehlgeschlagen. ",
                     "layerIdCantBeLoadedPrefix": "Der Layer mit der ID: ",
                     "layerIdCantBeLoadedSuffix": "konnte nicht geladen werden, da dieser im Portal nicht zur Verfügung steht!",
                     "reduceScaleForRaster": "Das Raster Layer kann erst ab 1: 100.000 eingeblendet werden.",
