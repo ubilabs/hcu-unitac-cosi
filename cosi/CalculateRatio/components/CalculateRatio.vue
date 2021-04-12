@@ -3,12 +3,9 @@ import Tool from "../../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCalculateRatio";
 import mutations from "../store/mutationsCalculateRatio";
-import MappingJsonFacilities from "../mapping.json";
-// import MappingJsonFeatures from "../../assets/mapping.json";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
 import JsonExcel from "vue-json-excel";
-import store from "../../../../src/app-store";
 
 export default {
     name: "CalculateRatio",
@@ -52,6 +49,7 @@ export default {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["mapping", "selectedDistrictLevel", "currentStatsFeatures"]),
+        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
         resultData () {
             const json = {
@@ -162,7 +160,7 @@ export default {
          * @returns {void}
          */
         updateFacilities () {
-            this.facilityList = MappingJsonFacilities.reduce((list, group) => {
+            this.facilityList = this.facilitiesMapping.reduce((list, group) => {
                 const lengthCheck = group.layer.filter(layer => this.layerIdList.includes(layer.id));
 
                 if (lengthCheck.length > 0) {
@@ -226,12 +224,11 @@ export default {
             if (this.featuresList.length !== 0) {
                 this.BSwitch = false;
             }
-
-            console.log(this.featuresList);
         },
         /**
          * @todo todo
          * @description todo
+         * @param {String} letter -
          * @returns {void}
          */
         switchVal (letter) {
