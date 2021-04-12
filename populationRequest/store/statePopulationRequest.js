@@ -1,8 +1,8 @@
 /**
  * User type definition
  * @typedef {object} VueAddonState
- * @property {boolean} active if true, EinwohnerAbfrage will rendered
- * @property {string} id id of the EinwohnerAbfrage component
+ * @property {boolean} active if true, PopulationRequest will rendered
+ * @property {string} id id of the PopulationRequest component
  * @property {string} name displayed as title (config-param)
  * @property {string} glyphicon icon next to title (config-param)
  * @property {boolean} renderToWindow if true, tool is rendered in a window, else in sidebar (config-param)
@@ -16,7 +16,7 @@
  */
 const state = {
     active: false,
-    id: "EinwohnerAbfrage",
+    id: "PopulationRequest",
     // defaults for config.json parameters
     name: "Einwohner abfragen",
     glyphicon: "glyphicon-wrench",

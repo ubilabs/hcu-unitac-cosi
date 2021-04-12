@@ -1,8 +1,8 @@
 import {generateSimpleGetters} from ".../../../src/app-store/utils/generators";
-import EinwohnerAbfrageState from "./stateEinwohnerAbfrage";
+import state from "./statePopulationRequest";
 
 const getters = {
-    ...generateSimpleGetters(EinwohnerAbfrageState)
+    ...generateSimpleGetters(state)
 };
 
 export default getters;

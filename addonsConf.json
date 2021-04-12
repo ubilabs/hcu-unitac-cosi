@@ -12,6 +12,7 @@
     "type": "tool"
   },
   "populationRequest": {
+    "path":"populationRequest",
     "type": "tool"
   },
   "commuterFlows": {

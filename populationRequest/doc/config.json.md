@@ -4,11 +4,11 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
-|EinwohnerAbfrage|nein|**[EinwohnerAbfrage](#markdown-header-portalconfigmenutooleinwohnerabfrage)**||Hamburg spezifisches Werkzeug um die Einwohner in der FHH (Freie und Hansestadt Hamburg) und der MRH (Metropol Region Hamburg) über eine zu zeichnende Geometrie abfragen zu können.|true|
+|PopulationRequest|nein|**[PopulationRequest](#markdown-header-portalconfigmenutooleinwohnerabfrage)**||Hamburg spezifisches Werkzeug um die Einwohner in der FHH (Freie und Hansestadt Hamburg) und der MRH (Metropol Region Hamburg) über eine zu zeichnende Geometrie abfragen zu können.|true|
 
 ***
 
-#### Portalconfig.menu.tool.EinwohnerAbfrage
+#### Portalconfig.menu.tool.einwohnerAbfrage
 
 [inherits]: # (Portalconfig.menu.tool)
 
@@ -29,7 +29,7 @@ Einwohnerabfrage für Hamburg und die MRH (Metropolregion Hamburg).
 **Beispiel Einwohnerabfrage**
 ```
 #!json
-"EinwohnerAbfrage": {
+"PopulationRequest": {
     "name": "Einwohneranzahl abfragen",
     "glyphicon": "glyphicon-wrench",
     "onlyDesktop": false

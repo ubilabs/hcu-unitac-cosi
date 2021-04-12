@@ -1,17 +1,18 @@
 <script>
 import Tool from "../../../src/modules/tools/Tool.vue";
-import {mapGetters, mapMutations} from "vuex";
-import getters from "../store/gettersEinwohnerAbfrage";
-import mutations from "../store/mutationsEinwohnerAbfrage";
-import state from "../store/stateEinwohnerAbfrage";
+import {mapGetters, mapMutations, mapActions} from "vuex";
+import getters from "../store/gettersPopulationRequest";
+import mutations from "../store/mutationsPopulationRequest";
+import state from "../store/statePopulationRequest";
+import actions from "../store/actionsPopulationRequest";
 import Dropdown from "../../../src/share-components/dropdowns/DropdownSimple.vue";
-import ToggleCheckbox from "./ToggleCheckbox.vue";
+import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 
 export default {
-    name: "EinwohnerAbfrage",
+    name: "PopulationRequest",
     components: {
         Tool,
         Dropdown,
@@ -30,138 +31,18 @@ export default {
             fhhId: "B3FD9BD5-F614-433F-A762-E14003C300BF",
             rasterLayerId: "13023",
             alkisAdressLayerId: "9726",
-            quelle_fhh: "nein",
-            quelle_mrh: "nein",
-            einwohner_fhh: "-1",
-            einwohner_fhh_num: -1,
-            einwohner_mrh: "-1",
-            einwohner_mrh_num: -1,
-            suchflaeche: 0
+            source_fhh: "nein",
+            source_mrh: "nein",
+            inhabitants_fhh: "-1",
+            inhabitants_fhh_num: -1,
+            inhabitants_mrh: "-1",
+            inhabitants_mrh_num: -1,
+            searcharea: 0
         };
     },
     computed: {
-        ...mapGetters("Tools/EinwohnerAbfrage", Object.keys(getters)),
+        ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
         ...mapGetters(["isTableStyle", "isDefaultStyle"]),
-
-        /**
-         * returns text for title
-         * @returns {String} -
-         */
-        title: function () {
-            return this.$t("additional:modules.tools.populationRequest.title");
-        },
-
-        /**
-         * returns text for info
-         * @returns {String} -
-         */
-        info: function () {
-            return this.$t("additional:modules.tools.populationRequest.select.info");
-        },
-
-        /**
-         * returns text for confidentialityHint
-         * @returns {String} -
-         */
-        confidentialityHint: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.confidentialityHint");
-        },
-
-        /**
-         * returns text for populationFHH
-         * @returns {String} -
-         */
-        populationFHH: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.populationFHH");
-        },
-
-        /**
-         * returns text for populationMRH
-         * @returns {String} -
-         */
-        populationMRH: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.populationMRH");
-        },
-
-        /**
-         * returns text for areaSize
-         * @returns {String} -
-         */
-        areaSize: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.areaSize");
-        },
-
-        /**
-         * returns text for hint
-         * @returns {String} -
-         */
-        hint: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.hint");
-        },
-
-        /**
-         * returns text for confidentialityHintSmallValues
-         * @returns {String} -
-         */
-        confidentialityHintSmallValues: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues");
-        },
-
-        /**
-         * returns text for dataSourceFHHLinktext
-         * @returns {String} -
-         */
-        dataSourceFHHLinktext: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.dataSourceFHHLinktext");
-        },
-
-        /**
-         * returns text for sourceAreaOutside
-         * @returns {String} -
-         */
-        sourceAreaOutside: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.sourceAreaOutside");
-        },
-
-        /**
-         * returns text for dataSourceMRHKey
-         * @returns {String} -
-         */
-        dataSourceMRHKey: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.dataSourceMRHKey");
-        },
-
-        /**
-         * returns text for dataSourceMRHValue
-         * @returns {String} -
-         */
-        dataSourceMRHValue: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.dataSourceMRHValue");
-        },
-
-        /**
-         * returns text for dataSourceMRHLinktext
-         * @returns {String} -
-         */
-        dataSourceMRHLinktext: function () {
-            return this.$t("additional:modules.tools.populationRequest.result.dataSourceMRHLinktext");
-        },
-
-        /**
-         * returns text for showRasterLayer
-         * @returns {String} -
-         */
-        showRasterLayer: function () {
-            return this.$t("additional:modules.tools.populationRequest.select.showRasterLayer");
-        },
-
-        /**
-         * returns text for showAlkisAdresses
-         * @returns {String} -
-         */
-        showAlkisAdresses: function () {
-            return this.$t("additional:modules.tools.populationRequest.select.showAlkisAdresses");
-        },
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -185,11 +66,6 @@ export default {
             return isVisibleInMap;
         }
     },
-    watch: {
-        active (value) {
-            this.setActive(value);
-        }
-    },
     created () {
         this.$on("close", this.close);
 
@@ -211,7 +87,9 @@ export default {
 
     },
     methods: {
-        ...mapMutations("Tools/EinwohnerAbfrage", Object.keys(mutations)),
+        ...mapMutations("Tools/PopulationRequest", Object.keys(mutations)),
+        ...mapActions("Tools/PopulationRequest", Object.keys(actions)),
+        ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
          * Fake Request for Testing - square in HH Neustadt: Result 2548, 155.661 m²
@@ -461,16 +339,16 @@ export default {
         /**
          * Resets internal data and triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
          * @param  {Object} geoJson GeoJSON to get selected area from
-         * @fires Addons.Einwohnerabfrage#handleResponse
+         * @fires Addons.PopulationRequest#handleResponse
          * @fires Core#RadioTriggerWPSRequest
          * @returns {void}
          */
         makeRequest: function (geoJson) {
-            this.einwohner_fhh_num = -1;
-            this.einwohner_mrh_num = -1;
-            this.quelle_fhh = "nein";
-            this.quelle_mrh = "nein";
-            this.suchflaeche = 0;
+            this.inhabitants_fhh_num = -1;
+            this.inhabitants_mrh_num = -1;
+            this.source_fhh = "nein";
+            this.source_mrh = "nein";
+            this.searcharea = 0;
             LoaderOverlay.show();
 
             WPS.wpsRequest("1001", "einwohner_ermitteln.fmw", {
@@ -496,8 +374,8 @@ export default {
         },
         /**
          * Called when the wps modules returns a request
-         * @param  {String} response - the response xml of the wps
-         * @param  {Number} status - the HTTPStatusCode
+         * @param  {string} response - the response xml of the wps
+         * @param  {number} status - the HTTPStatusCode
          * @returns {void}
          */
         handleResponse: function (response, status) {
@@ -519,17 +397,18 @@ export default {
         },
         /**
          * Displays Errortext if the WPS returns an Error
-         * @param  {String} response received by wps
-         * @fires Alerting#RadioTriggerAlertAlert
+         * @param  {string} response received by wps
          * @returns {void}
          */
         handleWPSError: function (response) {
-            Radio.trigger("Alert", "alert", JSON.stringify(response.ergebnis));
+            this.addSingleAlert({
+                "category": this.$t("additional:modules.tools.populationRequest.errors.caption"),
+                "content": this.$t("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response.ergebnis)
+            });
         },
         /**
          * Used when statuscode is 200 and wps did not return an error
-         * @param  {String} response received by wps
-         * @fires Alerting#RadioTriggerAlertAlert
+         * @param  {string} response received by wps
          * @returns {void}
          */
         handleSuccess: function (response) {
@@ -538,50 +417,52 @@ export default {
             try {
                 obj = JSON.parse(response.ergebnis);
                 if (obj.hasOwnProperty("einwohner_fhh")) {
-                    this.einwohner_fhh_num = obj.einwohner_fhh;
-                    this.einwohner_fhh = thousandsSeparator(obj.einwohner_fhh);
+                    this.inhabitants_fhh_num = obj.einwohner_fhh;
+                    this.inhabitants_fhh = thousandsSeparator(obj.einwohner_fhh);
                 }
                 else {
-                    this.einwohner_fhh_num = -1;
+                    this.inhabitants_fhh_num = -1;
                 }
                 if (obj.hasOwnProperty("einwohner_mrh")) {
-                    this.einwohner_mrh_num = obj.einwohner_mrh;
-                    this.einwohner_mrh = thousandsSeparator(obj.einwohner_mrh);
+                    this.inhabitants_mrh_num = obj.einwohner_mrh;
+                    this.inhabitants_mrh = thousandsSeparator(obj.einwohner_mrh);
                 }
                 else {
-                    this.einwohner_mrh_num = -1;
+                    this.inhabitants_mrh_num = -1;
                 }
                 if (obj.hasOwnProperty("quelle_fhh")) {
-                    this.quelle_fhh = obj.quelle_fhh;
+                    this.source_fhh = obj.quelle_fhh;
                 }
                 else {
-                    this.quelle_fhh = "nein";
+                    this.source_fhh = "no";
                 }
                 if (obj.hasOwnProperty("quelle_mrh")) {
-                    this.quelle_mrh = obj.quelle_mrh;
+                    this.source_mrh = obj.quelle_mrh;
                 }
                 else {
-                    this.quelle_mrh = "nein";
+                    this.source_mrh = "no";
                 }
                 if (obj.hasOwnProperty("suchflaeche")) {
-                    this.suchflaeche = this.chooseUnitAndThousandsSeparator(obj.suchflaeche);
+                    this.searcharea = this.chooseUnitAndThousandsSeparator(obj.suchflaeche);
                 }
                 else {
-                    this.suchflaeche = 0;
+                    this.searcharea = 0;
                 }
             }
             catch (e) {
-                Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + JSON.stringify(response));
+                this.addSingleAlert({
+                    category: this.$t("additional:modules.tools.populationRequest.errors.caption"),
+                    content: this.$t("additional:modules.tools.populationRequest.errors.requestException") + JSON.stringify(response)
+                });
                 this.resetView();
                 (console.error || console.warn).call(console, e.stack || e);
             }
         },
         /**
          * Chooses unit based on value, calls thousandsSeparator and converts to unit and appends unit
-         * @param  {Number} value - to inspect
-         * @param  {Number} maxDecimals - decimals are cut after maxlength chars
-         * @fires Core#RadioRequestUtilThousandsSeparator
-         * @returns {String} unit
+         * @param  {number} value - to inspect
+         * @param  {number} maxDecimals - decimals are cut after maxlength chars
+         * @returns {string} unit
          */
         chooseUnitAndThousandsSeparator: function (value, maxDecimals) {
             let newValue = null,
@@ -602,40 +483,38 @@ export default {
         },
         /**
          * if the model does not exist, add Model from Parser to ModelList via Radio.trigger
-         * @param {String} layerId id of the layer to be toggled
+         * @param {string} layerId id of the layer to be toggled
          * @fires Core#RadioRequestModelListGetModelByAttributes
          * @returns {void}
          */
         addModelsByAttributesToModelList: function (layerId) {
             const layerModel = Radio.request("ModelList", "getModelsByAttributes", {id: layerId});
 
-            if (layerModel === undefined) {
-                Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
-            }
-            else if (layerModel.length === 0) {
+            if (layerModel === undefined || layerModel.length === 0) {
                 Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
             }
         },
         /**
          * checks whether the model has been loaded.
-         * If it is not loaded, a corresponding error message is displayed and switches snippetCheckbox off
-         * @param {String} layerId id of the layer to be toggled
-         * @param {SnippetCheckboxModel} snippetCheckboxModel - snippet checkbox model for a layer
+         * If it is not loaded, a corresponding error message is displayed
+         * @param {string} layerId id of the layer to be toggled
          * @fires Core#RadioRequestModelListGetModelByAttributes
-         * @fires Alerting#RadioTriggerAlertAlert
          * @returns {void}
          */
         checkIsModelLoaded: function (layerId) {
             const layerModel = Radio.request("ModelList", "getModelsByAttributes", {id: layerId});
 
             if (layerModel === undefined || layerModel.length === 0) {
-                Radio.trigger("Alert", "alert", "Der Layer mit der ID: " + layerId + " konnte nicht geladen werden, da dieser im Portal nicht zur Verfügung steht!");
+                this.addSingleAlert({
+                    "category": this.$t("additional:modules.tools.populationRequest.errors.caption"),
+                    "content": this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedPrefix") + layerId + this.$t("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedSuffix")
+                });
             }
         },
         /**
          * sets selected and visibility to ModelList via Radio.trigger
-         * @param {String} layerId id of the layer to be toggled
-         * @param {Boolean} value - true | false
+         * @param {string} layerId id of the layer to be toggled
+         * @param {boolean} value - true | false
          * @fires Core#RadioTriggerModelListSetModelAttributesById
          * @returns {void}
          */
@@ -647,7 +526,7 @@ export default {
         },
         /**
          * Sets the state at GraphicalSelect - handles (de-)activation of this Tool
-         * @param {Boolean} value flag is tool is active
+         * @param {boolean} value flag is tool is active
          * @fires Snippets.GraphicalSelect#setStatus
          * @returns {void}
          */
@@ -656,11 +535,11 @@ export default {
         },
         /**
          * Sets the state at the RasterLayer
-         * @param {Boolean} value flag if Raster is to be set
+         * @param {boolean} value flag if Raster is to be set
          * @returns {void}
          */
         triggerRaster (value) {
-            state.rasterActive = value;
+            this.setRaster(state, value);
 
             const layerId = this.rasterLayerId;
 
@@ -672,11 +551,11 @@ export default {
         },
         /**
          * Sets the state at the alkisAdresses Layer
-         * @param {Boolean} value flag if alkisAdresses is to be set
+         * @param {boolean} value flag if alkisAdresses is to be set
          * @returns {void}
          */
         triggerAlkisAdresses (value) {
-            state.alkisAdressesActive = value;
+            this.setAlkisAdresses(state, value);
 
             const layerId = this.alkisAdressLayerId;
 
@@ -688,33 +567,33 @@ export default {
         },
         /**
          * Sets FHH values for Testing
-         * @param {String} quelle Value for Quelle_fhh
-         * @param {Integer} einwohner_num_value Value for einwohner_fhh_num
+         * @param {string} source Value for source_fhh
+         * @param {integer} inhabitants_num_value Value for inhabitants_fhh_num
          * @returns {void}
          */
-        setFHH (quelle, einwohner_num_value) {
-            this.quelle_fhh = quelle;
-            this.einwohner_fhh_num = einwohner_num_value;
-            this.einwohner_fhh = thousandsSeparator(einwohner_num_value);
+        setFHH (source, inhabitants_num_value) {
+            this.source_fhh = source;
+            this.inhabitants_fhh_num = inhabitants_num_value;
+            this.inhabitants_fhh = thousandsSeparator(inhabitants_num_value);
         },
         /**
          * Sets MRH values for Testing
-         * @param {String} quelle Value for Quelle_fhh
-         * @param {Integer} einwohner_num_value Value for einwohner_fhh_num
+         * @param {string} source Value for source_mrh
+         * @param {integer} inhabitants_num_value Value for inhabitants_mrh_num
          * @returns {void}
          */
-        setMRH (quelle, einwohner_num_value) {
-            this.quelle_mrh = quelle;
-            this.einwohner_mrh_num = einwohner_num_value;
-            this.einwohner_mrh = thousandsSeparator(einwohner_num_value);
+        setMRH (source, inhabitants_num_value) {
+            this.source_mrh = source;
+            this.inhabitants_mrh_num = inhabitants_num_value;
+            this.inhabitants_mrh = thousandsSeparator(inhabitants_num_value);
         },
         /**
-         * Sets suchflaeche for Testing
-         * @param {String} flaeche Value for suchflaeche
+         * Sets searcharea for Testing
+         * @param {string} area Value for searcharea
          * @returns {void}
          */
-        setSuchflaeche (flaeche) {
-            this.suchflaeche = flaeche;
+        setSearchArea (area) {
+            this.searcharea = area;
         },
         /**
          * Closes this tool window by setting active to false
@@ -738,19 +617,19 @@ export default {
 
 <template lang="html">
     <Tool
-        :title="title"
+        :title="$t('additional:modules.tools.populationRequest.title')"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivateGFI="deactivateGFI"
-        class="EinwohnerAbfrage"
+        class="PopulationRequest"
     >
         <template
             v-if="active"
             v-slot:toolBody
         >
-            <div>{{ info }}</div>
+            <div>{{ $t("additional:modules.tools.populationRequest.select.info") }}</div>
             <div class="dropdown">
                 <form>
                     <Dropdown
@@ -802,78 +681,78 @@ export default {
                 </form>
             </div>
             <div
-                v-if="einwohner_fhh_num > -1 || einwohner_mrh_num > -1"
+                v-if="inhabitants_fhh_num > -1 || inhabitants_mrh_num > -1"
                 class="result"
             >
                 <div class="heading additional-text">
-                    {{ confidentialityHint }}:
+                    {{ $t("additional:modules.tools.populationRequest.result.confidentialityHint") }}:
                 </div>
                 <table class="table">
                     <tr
-                        v-if="quelle_fhh !== 'nein'"
+                        v-if="source_fhh !== 'no'"
                     >
-                        <td>{{ populationFHH }}:</td>
+                        <td>{{ $t("additional:modules.tools.populationRequest.result.populationFHH") }}:</td>
                         <td
-                            class="einwohner_fhh"
+                            class="inhabitants_fhh"
                         >
-                            {{ einwohner_fhh }}
+                            {{ inhabitants_fhh }}
                         </td>
                     </tr>
                     <tr
-                        v-if="quelle_mrh !== 'nein'"
+                        v-if="source_mrh !== 'no'"
                     >
-                        <td>{{ populationMRH }}:</td>
+                        <td>{{ $t("additional:modules.tools.populationRequest.result.populationMRH") }}:</td>
                         <td
-                            class="einwohner_mrh"
+                            class="inhabitants_mrh"
                         >
-                            {{ einwohner_mrh }}
+                            {{ inhabitants_mrh }}
                         </td>
                     </tr>
                     <tr
-                        v-if="suchflaeche"
+                        v-if="searcharea"
                     >
-                        <td>{{ areaSize }}:</td>
+                        <td>{{ $t("additional:modules.tools.populationRequest.result.areaSize") }}:</td>
                         <td
-                            class="suchflaeche"
+                            class="searcharea"
                         >
-                            {{ suchflaeche }}
+                            {{ searcharea }}
                         </td>
                     </tr>
                 </table>
                 <div
-                    v-if="einwohner_fhh_num > -1"
-                    class="einwohner_fhh_add_text"
+                    v-if="inhabitants_fhh_num > -1"
+                    class="inhabitants_fhh_add_text"
                 >
                     <div class="hinweis additional-text">
-                        <span>{{ hint }}:</span>&nbsp;{{ confidentialityHintSmallValues }}
+                        <span>{{ $t("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues") }}
                     </div>
                     <div>
                         <a
                             target="_blank"
                             :href="`${metaDataLink}${fhhId}`"
                         >
-                            {{ dataSourceFHHLinktext }}
+                            {{ $t("additional:modules.tools.populationRequest.result.dataSourceFHHLinktext") }}
                         </a>
                     </div>
                 </div>
                 <div
-                    v-if="einwohner_mrh_num > -1"
-                    class="einwohner_mrh_add_text"
+                    v-if="inhabitants_mrh_num > -1"
+                    class="inhabitants_mrh_add_text"
                 >
                     <div class="hinweis additional-text">
                         <div
-                            v-if="quelle_mrh === 'tlw' && quelle_fhh === 'nein'"
+                            v-if="source_mrh === 'tlw' && source_fhh === 'no'"
                         >
-                            <span>{{ hint }}:</span>&nbsp;{{ sourceAreaOutside }}
+                            <span>{{ $t("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
                         </div>
-                        <span>{{ dataSourceMRHKey }}:</span>&nbsp;{{ dataSourceMRHValue }}
+                        <span>{{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
                     </div>
                     <div>
                         <a
                             target="_blank"
                             :href="`${metaDataLink}${mrhId}`"
                         >
-                            {{ dataSourceMRHLinktext }}
+                            {{ $t("additional:modules.tools.populationRequest.result.dataSourceMRHLinktext") }}
                         </a>
                     </div>
                 </div>
@@ -886,10 +765,13 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label>{{ showRasterLayer }}</label>
+                                <label>{{ $t("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
                                     ref="rasterCB"
                                     :defaultState="isRasterVisibleInMap"
+                                    :title="$t('additional:modules.tools.populationRequest.switchOffFilter')"
+                                    :textOn="$t('common:snippets.checkbox.on')"
+                                    :textOff="$t('common:snippets.checkbox.off')"
                                     @change="triggerRaster"
                                 />
                             </div>
@@ -898,10 +780,13 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label>{{ showAlkisAdresses }}</label>
+                                <label>{{ $t("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
                                 <ToggleCheckbox
                                     ref="alkisAdressesCB"
                                     :defaultState="isAlkisAdressesVisibleInMap"
+                                    :title="$t('additional:modules.tools.populationRequest.switchOffFilter')"
+                                    :textOn="$t('common:snippets.checkbox.on')"
+                                    :textOff="$t('common:snippets.checkbox.off')"
                                     @change="triggerAlkisAdresses"
                                 />
                             </div>
@@ -914,7 +799,7 @@ export default {
 </template>
 
 <style lang="less" scoped>
-    .EinwohnerAbfrage {
+    .PopulationRequest {
         max-width:500px;
     }
     div.result {
@@ -926,5 +811,11 @@ export default {
     .result .table td {
         padding: 8px;
         border-top: 1px solid #ddd;
+    }
+    .checkbox-container .form-inline {
+        font-size: 15px;
+    }
+    .checkbox-container .form-inline .title-checkbox {
+        width: 100%;
     }
 </style>
