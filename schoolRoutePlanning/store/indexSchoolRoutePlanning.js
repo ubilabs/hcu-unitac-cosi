@@ -1,4 +1,4 @@
-// import actions from "./actionsSchoolRoutePlanning";
+import actions from "./actionsSchoolRoutePlanning";
 import getters from "./gettersSchoolRoutePlanning";
 import mutations from "./mutationsSchoolRoutePlanning";
 import state from "./stateSchoolRoutePlanning";
@@ -6,7 +6,7 @@ import state from "./stateSchoolRoutePlanning";
 export default {
     namespaced: true,
     state,
-    // actions,
+    actions,
     mutations,
     getters
 };

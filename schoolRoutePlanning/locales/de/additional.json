@@ -3,7 +3,7 @@
         "tools": {
             "schoolRoutePlanning": {
                 "title": "Schulwegrouting",
-                "startingAddress": "Startadresse",
+                "inputPlaceHolder": "Startadresse",
                 "regionalPrimarySchool": "Regional zuständige Schule: ",
                 "selectSchool": "Schule auswählen",
                 "printRouteName": "Route drucken",

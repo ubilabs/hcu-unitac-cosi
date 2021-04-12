@@ -16,7 +16,15 @@ const state = {
     glyphicon: "glyphicon-filter",
     layerId: "8712",
     wpsId: "1001",
-    renderToWindow: false
+    renderToWindow: false,
+    resizableWindow: true,
+    deactivateGFI: true,
+
+    inputAddress: "",
+    schools: [],
+    streetNames: [],
+    houseNumbers: [],
+    filteredHouseNumbers: []
 };
 
 export default state;
