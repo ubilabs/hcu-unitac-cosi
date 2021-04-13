@@ -76,7 +76,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
     it("should call toggleRasterLayer if Raster Checkbox is changed", async () => {
         const spyRaster = sinon.spy(Component.methods, "triggerRaster"),
             wrapper = shallowMount(Component, {store, localVue}),
-            rasterComponent = wrapper.findComponent({ref: "rasterCB"});
+            rasterComponent = wrapper.findComponent({ref: "rasterCheckBox"});
 
         await rasterComponent.vm.$emit("change");
         expect(spyRaster.calledOnce).to.be.true;
@@ -87,7 +87,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
     it("should call toggleAlkisAdresses if alkisAdresses Checkbox is changed", async () => {
         const spyAlkisAdresses = sinon.spy(Component.methods, "triggerAlkisAdresses"),
             wrapper = shallowMount(Component, {store, localVue}),
-            alkisAdressesComponent = wrapper.findComponent({ref: "alkisAdressesCB"});
+            alkisAdressesComponent = wrapper.findComponent({ref: "alkisAdressesCheckBox"});
 
         await alkisAdressesComponent.vm.$emit("change");
         expect(spyAlkisAdresses.calledOnce).to.be.true;
