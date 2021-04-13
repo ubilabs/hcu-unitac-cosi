@@ -19,7 +19,7 @@ export default {
          * @returns {String | undefined} returns the source url of the img
          */
         getIconSrc () {
-            if (this.item.style.getImage().constructor === Icon) {
+            if (this.item.style.getImage()?.constructor === Icon) {
                 return this.item.style.getImage()?.getSrc();
             }
             return undefined;
@@ -28,7 +28,7 @@ export default {
          * @returns {module:ol/Style | undefined} the Circle Style
          */
         getCircleStyle () {
-            if (this.item.style.getImage().constructor === CircleStyle) {
+            if (this.item.style.getImage()?.constructor === CircleStyle) {
                 return this.item.style.getImage();
             }
             return undefined;
@@ -52,10 +52,10 @@ export default {
          * @returns {String} the color string
          */
         convertColor (color) {
-            if (color.constructor === Array) {
+            if (color?.constructor === Array) {
                 return color.length === 3 ? `rgb(${color.toString()})` : `rgba(${color.toString()})`;
             }
-            if (color.constructor === String) {
+            if (color?.constructor === String) {
                 return color;
             }
             return undefined;
