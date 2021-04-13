@@ -12,11 +12,9 @@
   "dependencies": {
     "@revolist/vue-datagrid": "^2.9.9",
     "@turf/turf": "^5.1.6",
-    "vue-good-table": "^2.21.9",
     "vue-json-excel": "^0.3.0",
     "vue-multiselect": "^2.1.6",
     "vue-select": "^3.11.2",
-    "vuetable-2": "^2.0.0-beta.4",
     "xlsx": "^0.16.9"
   }
 }

@@ -7,11 +7,6 @@ import getters from "../store/gettersFeaturesList";
 import mutations from "../store/mutationsFeaturesList";
 import getVectorlayerMapping from "../utils/getVectorlayerMapping";
 import Multiselect from "vue-multiselect";
-import Vue from "vue";
-import VGrid, {VGridVueTemplate, VGridVueEditor} from "@revolist/vue-datagrid";
-import MenuCell from "./MenuCell.vue";
-// import "vue-good-table/dist/vue-good-table.css";
-// import {VueGoodTable} from "vue-good-table";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import extractClusters from "../../utils/extractClusterFeatures";
 
@@ -19,38 +14,35 @@ export default {
     name: "FeaturesList",
     components: {
         Tool,
-        Multiselect,
-        VGrid
+        Multiselect
     },
     data () {
         return {
             listFilter: [],
             columns: [
+                // {
+                //     title: "",
+                //     name: "menu"
+                // },
                 {
-                    prop: "menu",
-                    autoSizeColumn: true,
-                    // cellTemplate: VGridVueTemplate(MenuCell)
-                    cellTemplate: VGridVueTemplate(MenuCell)
+                    title: "Einrichtung",
+                    name: "name"
                 },
                 {
-                    name: "Einrichtung",
-                    prop: "name"
+                    title: "Gebiet",
+                    name: "district"
                 },
                 {
-                    name: "Gebiet",
-                    prop: "district"
+                    title: "Thema",
+                    name: "group"
                 },
                 {
-                    name: "Thema",
-                    prop: "group"
-                },
-                {
-                    name: "Typ",
-                    prop: "layer"
+                    title: "Typ",
+                    name: "layer"
                 }
                 // {
-                //     label: "Daten",
-                //     field: "data"
+                //     title: "Daten",
+                //     name: "data"
                 // }
             ],
             rows: []
@@ -94,16 +86,9 @@ export default {
         },
         districtFeatures () {
             return this.selectedDistrictFeatures.length > 0 ? this.selectedDistrictFeatures : this.districtLayer.getSource().getFeatures();
-        },
-        clientHeight () {
-            return this.$refs.tool?.$el?.clientHeight;
         }
     },
-
     watch: {
-        clientHeight () {
-            console.log(this.clientHeight);
-        },
         /**
          * Unselect the Menu item if the tool is deactivated
          * @param {boolean} state - Defines if the tool is active.
@@ -111,13 +96,8 @@ export default {
          */
         active (state) {
             if (state) {
-                console.log(this.clientHeight);
-                console.log(this.$refs.tool);
-                console.log(this.$refs.tool.$el);
                 this.$nextTick(() => {
                     this.updateFeaturesList();
-                    console.log(this.clientHeight);
-                    console.log(this.$refs.tool.$el);
                 });
             }
             else {
@@ -141,20 +121,16 @@ export default {
     mounted () {
         // initally set the facilities mapping based on the config.json
         this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
-
-        console.log(this.mapping);
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         updateFeaturesList () {
-            // console.log(this.activeLayerMapping);
-            // console.log(this.flatActiveVectorLayerIdList);
-            // console.log(this.activeVectorLayerList);
             if (this.activeLayerMapping.length > 0) {
                 this.rows = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = extractClusters(vectorLayer.getSource()?.getFeatures() || []),
                         layerMap = this.layerMapById(vectorLayer.get("id"));
 
+                    console.log(features);
                     return [...list, ...features.map(feature => {
                         return {
                             name: feature.get(layerMap.keyOfAttrName),
@@ -169,6 +145,12 @@ export default {
             else {
                 this.rows = [];
             }
+        },
+        onPaginationData (paginationData) {
+            this.$refs.pagination.setPaginationData(paginationData);
+        },
+        onChangePage (page) {
+            this.$refs.vuetable.changePage(page);
         }
     }
 };
@@ -212,25 +194,6 @@ export default {
                     </Multiselect>
                 </div>
                 <div class="form-group features-list-table">
-                    <VGrid
-                        key="features-table"
-                        ref="features-table"
-                        theme="compact"
-                        :source="rows"
-                        :columns="columns"
-                        :autoSizeColumn="{
-                            mode: 'autoSizeOnTextOverlap'
-                        }"
-                        :row-headers="{size: 40}"
-                        :row-size="40"
-                        resize
-                        :style="{height: clientHeight + 'px'}"
-                    />
-                    <!-- <VueGoodTable
-                        :columns="columns"
-                        :rows="rows"
-                    >
-                    </VueGoodTable> -->
                 </div>
             </form>
         </template>
@@ -238,15 +201,12 @@ export default {
 </template>
 
 <style lang="less">
-    form#features-list {
-        height: 100%;
-        .features-list-table {
-            height: 400px;
-            revo-grid {
-                height: 100%;
-            }
-        }
-    }
+    // form#features-list {
+    //     height: 100%;
+    //     .features-list-table {
+    //         height: 400px;
+    //     }
+    // }
 </style>
 
 <style src="vue-select/dist/vue-select.css">

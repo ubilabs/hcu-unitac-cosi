@@ -9,7 +9,6 @@ function mapVectorLayersInFolder (layers, condition) {
         if (layer[condition]) {
             const keyOfAttrName = layer.mouseHoverField || "name";
 
-
             layerlist.push({
                 layerId: layer.id,
                 id: layer.name,
@@ -19,6 +18,18 @@ function mapVectorLayersInFolder (layers, condition) {
         }
         return layerlist;
     }, []);
+}
+
+/**
+ * @description Extracts the layer of a folder recursively
+ * @param {*} folder - the folder to extract
+ * @param {String} condition - the attribute that must be set (value or true) for a layer to qualify
+ * @returns {Object[]} the flat layer array
+ */
+function flattenFolderLayers (folder, condition) {
+    return (folder.Ordner || []).reduce((layers, subFolder) => {
+        return [...layers, ...flattenFolderLayers(subFolder, condition)];
+    }, mapVectorLayersInFolder(folder.Layer, condition));
 }
 
 
@@ -49,7 +60,7 @@ export default function getVectorlayerMapping (topicsConfig, path = "Fachdaten/F
         for (const folder of vectorlayerHierarchy.Ordner) {
             mapping.push({
                 group: folder.Titel,
-                layer: mapVectorLayersInFolder(folder.Layer, condition)
+                layer: flattenFolderLayers(folder, condition)
             });
         }
 
