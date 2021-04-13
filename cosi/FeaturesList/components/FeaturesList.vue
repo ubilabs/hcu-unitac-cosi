@@ -9,22 +9,28 @@ import getVectorlayerMapping from "../utils/getVectorlayerMapping";
 import Multiselect from "vue-multiselect";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import extractClusters from "../../utils/extractClusterFeatures";
+import DetailView from "./DetailView.vue";
+import FeatureIcon from "./FeatureIcon.vue";
 
 export default {
     name: "FeaturesList",
     components: {
         Tool,
-        Multiselect
+        Multiselect,
+        DetailView,
+        FeatureIcon
     },
     data () {
         return {
             search: "",
             typeFilter: [],
+            expanded: [],
             columns: [
-                // {
-                //     title: "",
-                //     name: "menu"
-                // },
+                {
+                    text: "Icon",
+                    value: "style",
+                    filterable: false
+                },
                 {
                     text: "Einrichtung",
                     value: "name"
@@ -32,10 +38,6 @@ export default {
                 {
                     text: "Gebiet",
                     value: "district"
-                },
-                {
-                    text: "Thema",
-                    value: "group"
                 },
                 {
                     text: "Typ",
@@ -46,14 +48,15 @@ export default {
                         }
 
                         return this.typeFilter.map(t => t.id).includes(value);
-                    }
+                    },
+                    divider: true
+                },
+                {
+                    text: "Thema",
+                    value: "group"
                 }
-                // {
-                //     title: "Daten",
-                //     name: "data"
-                // }
             ],
-            rows: []
+            propBlacklist: ["geometry", "geom", "the_geom", "coordinates", "flatCoordinates", "x", "y", "lat", "lon", "latlon", "lonlat"]
         };
     },
     computed: {
@@ -94,6 +97,22 @@ export default {
         },
         districtFeatures () {
             return this.selectedDistrictFeatures.length > 0 ? this.selectedDistrictFeatures : this.districtLayer.getSource().getFeatures();
+        },
+        selected: {
+            get () {
+                return this.selectedFeatureItems;
+            },
+            set (value) {
+                this.setSelectedFeatureItems(value);
+            }
+        },
+        items: {
+            get () {
+                return this.featuresListItems;
+            },
+            set (value) {
+                this.setFeaturesListItems(value);
+            }
         }
     },
     watch: {
@@ -115,6 +134,14 @@ export default {
                     model.set("isActive", false);
                 }
             }
+        },
+
+        selected () {
+            console.log(this.selected);
+        },
+
+        featuresList () {
+            console.log(this.featuresList);
         }
     },
     created () {
@@ -130,31 +157,48 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         updateFeaturesList () {
             if (this.activeLayerMapping.length > 0) {
-                this.rows = this.activeVectorLayerList.reduce((list, vectorLayer) => {
+                this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = extractClusters(vectorLayer.getSource()?.getFeatures() || []),
-                        layerMap = this.layerMapById(vectorLayer.get("id"));
+                        layerMap = this.layerMapById(vectorLayer.get("id")),
+                        layerStyleFunction = vectorLayer.getStyleFunction();
 
-                    console.log(features);
-                    return [...list, ...features.map(feature => {
+                    return [...list, ...features.map((feature, i) => {
                         return {
+                            key: layerMap.id + i,
                             name: feature.get(layerMap.keyOfAttrName),
+                            style: layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.districtFeatures, feature),
                             group: layerMap.group,
                             layer: layerMap.id,
-                            data: feature
+                            feature: feature
                         };
                     })];
                 }, []);
             }
             else {
-                this.rows = [];
+                this.items = [];
             }
         },
-        onPaginationData (paginationData) {
-            this.$refs.pagination.setPaginationData(paginationData);
+        getFeatureProperties (tableItem) {
+            const _propBlacklist = this.propBlacklist,
+                props = tableItem.feature.getProperties(),
+                filteredProps = Object.entries(props).filter(prop => !_propBlacklist.includes(prop[0]));
+
+            return Object.fromEntries(filteredProps);
         },
-        onChangePage (page) {
-            this.$refs.vuetable.changePage(page);
+        getFeatureTypeFields (tableItem) {
+            const _propBlacklist = this.propBlacklist,
+                props = tableItem.feature.getProperties();
+
+            return Object.keys(props).reduce((fields, field) => {
+                if (!_propBlacklist.includes(field)) {
+                    return [...fields, {
+                        text: field,
+                        value: field
+                    }];
+                }
+                return fields;
+            }, []);
         }
     }
 };
@@ -174,65 +218,73 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <div id="features-list">
-                <form class="form-inline features-list-controls">
-                    <div class="form-group">
-                        <Multiselect
-                            v-if="mapping.length > 0"
-                            v-model="typeFilter"
-                            class="layer_selection selection"
-                            :options="activeLayerMapping"
-                            group-label="group"
-                            :group-select="false"
-                            group-values="layer"
-                            track-by="id"
-                            label="id"
-                            :multiple="true"
-                            selectedLabel=""
-                            selectLabel=""
-                            deselectLabel=""
-                            :placeholder="$t('additional:modules.tools.cosi.featuresList.typeFilter')"
-                        >
-                            <template slot="singleLabel">
-                                <strong>{{ typeFilter.id }}</strong>
-                            </template>
-                        </Multiselect>
-                    </div>
-                    <div class="form-group">
-                        <input
-                            v-model="search"
-                            class="form-control"
-                            type="text"
-                            :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
-                        >
-                        <!-- <v-text-field
-                            v-model="search"
-                            append-icon="mdi-magnify"
-                            label="Tabelle Durchsuchen"
-                            outlined
-                            clearable
-                            dense
-                        ></v-text-field> -->
-                    </div>
-                </form>
-                <form>
-                    <div class="form-group features-list-table">
-                        <v-data-table
-                            :headers="columns"
-                            :items="rows"
-                            :search="search"
-                            multi-sort
-                            show-select
-                            :items-per-page="20"
-                        ></v-data-table>
-                    </div>
-                </form>
-            </div>
+            <v-app>
+                <div id="features-list">
+                    <form class="form-inline features-list-controls">
+                        <div class="form-group">
+                            <Multiselect
+                                v-if="mapping.length > 0"
+                                v-model="typeFilter"
+                                class="layer_selection selection"
+                                :options="activeLayerMapping"
+                                group-label="group"
+                                :group-select="false"
+                                group-values="layer"
+                                track-by="id"
+                                label="id"
+                                :multiple="true"
+                                selectedLabel=""
+                                selectLabel=""
+                                deselectLabel=""
+                                :placeholder="$t('additional:modules.tools.cosi.featuresList.typeFilter')"
+                            >
+                                <template slot="singleLabel">
+                                    <strong>{{ typeFilter.id }}</strong>
+                                </template>
+                            </Multiselect>
+                        </div>
+                        <div class="form-group">
+                            <input
+                                v-model="search"
+                                class="form-control"
+                                type="text"
+                                :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
+                            >
+                        </div>
+                    </form>
+                    <form>
+                        <div class="form-group features-list-table">
+                            <v-data-table
+                                v-model="selected"
+                                :headers="columns"
+                                :items="items"
+                                :search="search"
+                                :expanded.sync="expanded"
+                                multi-sort
+                                item-key="key"
+                                show-select
+                                show-expand
+                                :items-per-page="20"
+                            >
+                                <template v-slot:expanded-item="{ headers, item }">
+                                    <td :colspan="headers.length">
+                                        <DetailView :items="getFeatureProperties(item)" />
+                                    </td>
+                                </template>
+                                <template v-slot:item.style="{ item }">
+                                    <FeatureIcon :item="item" />
+                                </template>
+                            </v-data-table>
+                        </div>
+                    </form>
+                </div>
+            </v-app>
         </template>
     </Tool>
 </template>
 
 <style lang="less">
+    @import "../../utils/variables.less";
     #features-list {
         input.form-control {
             font-size: 12px;

@@ -19,7 +19,9 @@ const state = {
     renderToWindow: true,
     resizableWindow: true,
     // FeaturesList State
-    mapping: []
+    mapping: [],
+    featuresListItems: [],
+    selectedFeatureItems: []
 };
 
 export default state;
