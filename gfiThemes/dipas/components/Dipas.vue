@@ -11,8 +11,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            isTable: "isTableStyle",
-            useVectorStyleBeta: "useVectorStyleBeta"
+            isTable: "isTableStyle"
         })
     },
     methods: {
@@ -28,14 +27,7 @@ export default {
                 iconPath = this.feature.getTheme()?.params?.gfiIconPath;
 
             if (styleModel) {
-                if (!this.useVectorStyleBeta && styleModel.has("styleFieldValues")) {
-                    // @deprecated with new vectorStyle module. Should be removed with version 3.0.
-                    valueStyle = styleModel.get("styleFieldValues").filter(function (styleFieldValue) {
-                        return styleFieldValue.styleFieldValue === value;
-                    });
-                    iconPath = this.fetchIconPathDeprecated(valueStyle);
-                }
-                else if (this.useVectorStyleBeta && styleModel.has("rules") && styleModel.get("rules").length > 0) {
+                if (styleModel.has("rules") && styleModel.get("rules").length > 0) {
                     valueStyle = styleModel.get("rules").filter(function (rule) {
                         return rule.conditions.properties.Thema === value;
                     });

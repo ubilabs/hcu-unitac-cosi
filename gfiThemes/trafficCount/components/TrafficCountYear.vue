@@ -6,7 +6,7 @@ import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
-import {addMissingDataYear} from "../library/addMissingData.js";
+import {addMissingDataYear} from "../utils/addMissingData.js";
 
 export default {
     name: "TrafficCountYear",

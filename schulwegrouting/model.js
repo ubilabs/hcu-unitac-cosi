@@ -1,5 +1,5 @@
 import Tool from "../../modules/core/modelList/tool/model";
-import BuildSpecModel from "../../modules/tools/print_/buildSpec";
+import BuildSpecModel from "../../modules/tools/print/buildSpec";
 import SnippetCheckboxModel from "../../modules/snippets/checkbox/model";
 import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import {MultiLineString, Point} from "ol/geom.js";

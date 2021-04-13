@@ -317,7 +317,8 @@ export default {
                                 maxTicksLimit: options.yAxisTicks,
                                 callback: (yValue) => {
                                     return options.renderLabelYAxis(yValue);
-                                }
+                                },
+                                stepSize: 1
                             },
                             gridLines: {
                                 color: options.gridLinesColor,

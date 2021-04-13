@@ -4,19 +4,18 @@
   "cosi": "modules/loader.js",
   "einwohnerabfrage": "selectView.js",
   "formular": "view.js",
-  "gfiOnAddress": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
   "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
-  "GeoAnalyze": {
+  "fileImportAddon": {
     "type": "tool"
   },
-  "TacticalMark": {
+  "geoAnalyze": {
     "type": "tool"
   },
-  "VueAddon": {
+  "tacticalMark": {
     "type": "tool"
   },
   "ColorCodeMap": {
