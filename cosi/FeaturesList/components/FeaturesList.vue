@@ -29,7 +29,8 @@ export default {
                 {
                     text: "Icon",
                     value: "style",
-                    filterable: false
+                    filterable: false,
+                    sortable: false
                 },
                 {
                     text: "Einrichtung",
