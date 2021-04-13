@@ -208,7 +208,7 @@ export default {
 <template lang="html">
     <Tool
         ref="tool"
-        :title="$t('additional:modules.tools.cosi.districtSelector.title')"
+        :title="$t('additional:modules.tools.cosi.featuresList.title')"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
