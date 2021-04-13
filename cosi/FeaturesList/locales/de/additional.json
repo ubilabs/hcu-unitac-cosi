@@ -1,0 +1,13 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "featuresList": {
+                    "title": "Einrichtungsübersicht",
+                    "help": "Listet alle geladenen Einrichtungen für die ausgewählten Gebiete",
+                    "listFilter": "Liste nach Thema filtern"
+                }
+            }
+        }
+    }
+}
