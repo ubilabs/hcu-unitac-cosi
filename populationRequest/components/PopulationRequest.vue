@@ -4,7 +4,6 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
 import state from "../store/statePopulationRequest";
-import actions from "../store/actionsPopulationRequest";
 import GraphicalSelect from "../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
 import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
@@ -12,7 +11,7 @@ import WPS from "../../../src/api/wps";
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 
 export default {
-    name: "populationRequest",
+    name: "PopulationRequest",
     components: {
         Tool,
         GraphicalSelect,
@@ -35,7 +34,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/populationRequest", Object.keys(getters)),
+        ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
         ...mapGetters(["isTableStyle", "isDefaultStyle"]),
 
         /**
@@ -100,17 +99,15 @@ export default {
         if (service !== undefined) {
             this.metaDataLink = service.get("url");
         }
-
     },
     methods: {
-        ...mapMutations("Tools/populationRequest", Object.keys(mutations)),
-        ...mapActions("Tools/populationRequest", Object.keys(actions)),
+        ...mapMutations("Tools/PopulationRequest", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
          * Resets internal data and triggers the wps request "einwohner_ermitteln.fmw" for the selected area.
          * @param  {Object} geoJson GeoJSON to get selected area from
-         * @fires Addons.PopulationRequest#handleResponse
+         * @fires Addons.populationRequest#handleResponse
          * @fires Core#RadioTriggerWPSRequest
          * @returns {void}
          */
