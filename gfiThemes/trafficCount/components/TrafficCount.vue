@@ -1,7 +1,7 @@
 <script>
 import {mapGetters} from "vuex";
 
-import {TrafficCountCache} from "../library/trafficCountCache";
+import {TrafficCountCache} from "../utils/trafficCountCache";
 import TrafficCountInfo from "./TrafficCountInfo.vue";
 import TrafficCountDay from "./TrafficCountDay.vue";
 import TrafficCountWeek from "./TrafficCountWeek.vue";
@@ -94,7 +94,7 @@ export default {
                 if (oldVal) {
                     this.createDataConnection(newVal.getProperties(), null);
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
-                    this.setComponentKey(this.propThingId);
+                    this.setComponentKey(this.propThingId + this.propMeansOfTransport);
                     this.setActiveDefaultTab();
                 }
             },

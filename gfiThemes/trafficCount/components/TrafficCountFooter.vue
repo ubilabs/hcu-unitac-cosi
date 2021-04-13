@@ -71,6 +71,15 @@ export default {
             immediate: true
         },
 
+        meansOfTransport: {
+            handler (newVal, oldVal) {
+                if (oldVal) {
+                    this.setFooterLastUpdate(this.api, this.thingId, newVal);
+                }
+            },
+            immediate: true
+        },
+
         currentTabId: function (newVal) {
             if (newVal !== "infos") {
                 this.updateFooter(newVal);

@@ -1,5 +1,5 @@
 <script>
-import {createLegendData, createYAxisLabel} from "../library/helpers";
+import {createLegendData, createYAxisLabel} from "../utils/helpers";
 export default {
     name: "VerkehrsstaerkenDiagram",
     components: {},

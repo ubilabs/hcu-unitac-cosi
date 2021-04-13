@@ -1,7 +1,7 @@
 <script>
 import {mapGetters} from "vuex";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
-import mouseOverCotentLivingLocation from "../library/mouseOverContent.js";
+import mouseOverCotentLivingLocation from "../utils/mouseOverContent.js";
 
 export default {
     name: "BildungsatlasSchulenWohnort",
