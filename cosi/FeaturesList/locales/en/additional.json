@@ -5,7 +5,8 @@
                 "featuresList": {
                     "title": "Facilities Overview",
                     "help": "Lists all active facilities for the selected districts",
-                    "listFilter": "Filter list by topic"
+                    "typeFilter": "Filter list by topic",
+                    "search": "Search List"
                 }
             }
         }

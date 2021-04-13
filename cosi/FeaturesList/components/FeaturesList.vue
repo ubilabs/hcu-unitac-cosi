@@ -18,27 +18,35 @@ export default {
     },
     data () {
         return {
-            listFilter: [],
+            search: "",
+            typeFilter: [],
             columns: [
                 // {
                 //     title: "",
                 //     name: "menu"
                 // },
                 {
-                    title: "Einrichtung",
-                    name: "name"
+                    text: "Einrichtung",
+                    value: "name"
                 },
                 {
-                    title: "Gebiet",
-                    name: "district"
+                    text: "Gebiet",
+                    value: "district"
                 },
                 {
-                    title: "Thema",
-                    name: "group"
+                    text: "Thema",
+                    value: "group"
                 },
                 {
-                    title: "Typ",
-                    name: "layer"
+                    text: "Typ",
+                    value: "layer",
+                    filter: value => {
+                        if (this.typeFilter.length < 1) {
+                            return true;
+                        }
+
+                        return this.typeFilter.map(t => t.id).includes(value);
+                    }
                 }
                 // {
                 //     title: "Daten",
@@ -107,10 +115,6 @@ export default {
                     model.set("isActive", false);
                 }
             }
-        },
-
-        rows () {
-            console.log(this.rows);
         }
     },
     created () {
@@ -170,43 +174,72 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <form id="features-list">
-                <div class="form-group">
-                    <Multiselect
-                        v-if="mapping.length > 0"
-                        v-model="listFilter"
-                        class="layer_selection selection"
-                        :options="activeLayerMapping"
-                        group-label="group"
-                        :group-select="false"
-                        group-values="layer"
-                        track-by="id"
-                        label="id"
-                        :multiple="true"
-                        selectedLabel=""
-                        selectLabel=""
-                        deselectLabel=""
-                        :placeholder="$t('additional:modules.tools.cosi.featuresList.listFilter')"
-                    >
-                        <template slot="singleLabel">
-                            <strong>{{ listFilter.id }}</strong>
-                        </template>
-                    </Multiselect>
-                </div>
-                <div class="form-group features-list-table">
-                </div>
-            </form>
+            <div id="features-list">
+                <form class="form-inline features-list-controls">
+                    <div class="form-group">
+                        <Multiselect
+                            v-if="mapping.length > 0"
+                            v-model="typeFilter"
+                            class="layer_selection selection"
+                            :options="activeLayerMapping"
+                            group-label="group"
+                            :group-select="false"
+                            group-values="layer"
+                            track-by="id"
+                            label="id"
+                            :multiple="true"
+                            selectedLabel=""
+                            selectLabel=""
+                            deselectLabel=""
+                            :placeholder="$t('additional:modules.tools.cosi.featuresList.typeFilter')"
+                        >
+                            <template slot="singleLabel">
+                                <strong>{{ typeFilter.id }}</strong>
+                            </template>
+                        </Multiselect>
+                    </div>
+                    <div class="form-group">
+                        <input
+                            v-model="search"
+                            class="form-control"
+                            type="text"
+                            :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
+                        >
+                        <!-- <v-text-field
+                            v-model="search"
+                            append-icon="mdi-magnify"
+                            label="Tabelle Durchsuchen"
+                            outlined
+                            clearable
+                            dense
+                        ></v-text-field> -->
+                    </div>
+                </form>
+                <form>
+                    <div class="form-group features-list-table">
+                        <v-data-table
+                            :headers="columns"
+                            :items="rows"
+                            :search="search"
+                            multi-sort
+                            show-select
+                            :items-per-page="20"
+                        ></v-data-table>
+                    </div>
+                </form>
+            </div>
         </template>
     </Tool>
 </template>
 
 <style lang="less">
-    // form#features-list {
-    //     height: 100%;
-    //     .features-list-table {
-    //         height: 400px;
-    //     }
-    // }
+    #features-list {
+        input.form-control {
+            font-size: 12px;
+            border-color: #e8e8e8;
+            height: 40px;
+        }
+    }
 </style>
 
 <style src="vue-select/dist/vue-select.css">

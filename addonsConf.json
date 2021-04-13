@@ -18,7 +18,6 @@
   "tacticalMark": {
     "type": "tool"
   },
-<<<<<<< HEAD
   "ColorCodeMap": {
     "path": "cosi/ColorCodeMap",
     "type": "tool"
@@ -48,9 +47,6 @@
     "type": "tool"
   },
   "FileImportAddon": {
-=======
-  "vueAddon": {
->>>>>>> origin
     "type": "tool"
   },
   "activeCityMaps": {

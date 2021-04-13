@@ -5,7 +5,8 @@
                 "featuresList": {
                     "title": "Einrichtungsübersicht",
                     "help": "Listet alle geladenen Einrichtungen für die ausgewählten Gebiete",
-                    "listFilter": "Liste nach Thema filtern"
+                    "typeFilter": "Liste nach Thema filtern",
+                    "search": "Liste durchsuchen"
                 }
             }
         }
