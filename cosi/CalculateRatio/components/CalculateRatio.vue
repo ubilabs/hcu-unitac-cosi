@@ -19,34 +19,62 @@ export default {
     },
     data () {
         return {
+            // All available features
             featuresStatistics: [],
+            // List with names of selected Layers
             layerIdList: [],
+            // List of all available "facilites" (theme layers)
             facilityList: [],
+            // Sorted an grouped list of availabke features
             featuresList: [],
+            // List with summable features like "age 10-15" etc
             subFeaturesList: [],
+            // All available years in data
             availableYears: [],
+            // Year the user selected manually
             selectedYear: "",
+            // Properties of facility type (like Schülerzahl in schools) for Field A
             facilityPropertyList_A: [],
+            // Properties of facility type (like Schülerzahl in schools) for Field B
             facilityPropertyList_B: [],
+            // Var that controls if user calculates with statistical data (feature) oder facility for Field A
             ASwitch: true,
+            // Var that controls if user calculates with statistical data (feature) oder facility for Field B
             BSwitch: true,
+            // Var that controls if user chose summable statistical data set for Field A
             sumUpSwitchA: false,
+            // Var that controls if user chose summable statistical data set for Field B
             sumUpSwitchB: false,
+            // Selected value for Field A (it's an object because it can carry more information like values or properties, depending on the data set)
             selectedFieldA: {id: ""},
+            // Selected value for Field B (it's an object because it can carry more information like values or properties, depending on the data set)
             selectedFieldB: {id: ""},
+            // Selected property for Field A (facility only)
             paramFieldA: "",
+            // Selected property for Field B (facility only)
             paramFieldB: "",
+            // "Faktor F" has been entered by the user for Field A
             fActive_A: false,
+            // "Faktor F" has been entered by the user for Field B
             fActive_B: false,
+            // "Faktor F" for Field A
             faktorf_A: 1,
+            // "Faktor F" for Field B
             faktorf_B: 1,
+            // Modifier "berechnen pro" for Field A
             perCalc_A: 1,
+            // Modifier "berechnen pro" for Field B
             perCalc_B: 1,
+            // Helper Array to use selected values beyond function scope
             featureVals: [],
+            // Object that helps calculating the data in prepareCoverage function
             calcHelper: {},
+            // Results for rendering in the table
             results: [],
+            // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
-            columnSelector: "relation"
+            // Selected column to render in CCM
+            columnSelector: {name: "Verhältnis", key: "relation"}
         };
     },
     computed: {
@@ -54,6 +82,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList"]),
         ...mapGetters("Map", ["layerList"]),
+        // Transforming results data for excel export
         resultData () {
             const json = {
                 json_fields: {
@@ -137,10 +166,6 @@ export default {
     created () {
         this.$on("close", this.close);
     },
-    /**
-     * Put initialize here if mounting occurs after config parsing
-     * @returns {void}
-     */
     mounted () {
         this.applyTranslationKey(this.name);
 
@@ -153,8 +178,7 @@ export default {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         /**
-         * @todo todo
-         * @description todo
+         * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @returns {void}
          */
         updateFacilities () {
@@ -179,8 +203,7 @@ export default {
             }
         },
         /**
-         * @todo todo
-         * @description todo
+         * @description Updates featuresList and sorting/ grouping it for display in multiselect.
          * @returns {void}
          */
         updateFeaturesList () {
@@ -225,8 +248,8 @@ export default {
             }
         },
         /**
-         * @todo todo
-         * @description todo
+         * @description Changes dropdown display between statistical data (features) and them layers (facilities).
+         * @param {String} letter String that determines which field is to be modified (A or B for FieldA or FieldB).
          * @returns {void}
          */
         switchVal (letter) {
@@ -272,9 +295,8 @@ export default {
             }
         },
         /**
-         * @todo todo
-         * @description todo
-         * @param {String} letter The String that is to be modified.
+         * @description Checks if the user selected a summable statistical data set (feature).
+         * @param {String} letter String that determines which field is to be modified (A or B for FieldA or FieldB).
          * @returns {void}
          */
         checkSumUp (letter) {
@@ -292,9 +314,8 @@ export default {
             }
         },
         /**
-         * @todo todo
-         * @description todo
-         * @param {String} letter The String that is to be modified.
+         * @description Gets Data for the selected theme layer (facility)
+         * @param {String} letter String that determines for which field the data should be loaded (A or B for FieldA or FieldB).
          * @returns {void}
          */
         getFacilityData (letter) {
@@ -322,7 +343,6 @@ export default {
             }
         },
         /**
-         * @todo todo
          * @description Clears all values from Field A and Field B
          * @returns {void}
          */
@@ -338,8 +358,7 @@ export default {
             this.results = [];
         },
         /**
-         * @todo todo
-         * @description todo
+         * @description Switches all parameters between FieldA and FieldB.
          * @returns {void}
          */
         switchSelection () {
@@ -370,30 +389,43 @@ export default {
             }
         },
         /**
-         * @todo todo
-         * @description todo
-         * @param {String} letter The String that is to be modified.
+         * @description Fires when user hits calulcate button. Prepares data sets for calculation.
          * @returns {void}
          */
         prepareCoverage () {
             this.results = [];
+            const dataArray = [];
+
             this.selectedFeatures.forEach(district => {
                 const name = district.getProperties()[this.keyOfAttrName],
                     geometry = district.getGeometry();
 
                 this.calcHelper = {};
                 this.calcHelper.name = name;
+                this.calcHelper.faktorF_A = this.faktorf_A;
+                this.calcHelper.faktorF_B = this.faktorf_B;
+                this.calcHelper.perCalc_A = this.perCalc_A;
+                this.calcHelper.perCalc_B = this.perCalc_B;
                 if (this.ASwitch) {
                     const findLayer = this.layerList.find(layer => layer.get("name") === this.selectedFieldA.id),
                         layerFeatures = findLayer.getSource().getFeatures();
 
+                    this.calcHelper.type_A = "facility";
                     this.featureVals = [];
                     layerFeatures.forEach(layer => {
                         const layerGeometry = layer.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
-                                this.featureVals.push(layer.getProperties()[this.paramFieldA.id]);
+                                if (layer.getProperties()[this.paramFieldA.id]) {
+                                    const value = layer.getProperties()[this.paramFieldA.id],
+                                        valueTransformed = parseFloat(value.replace(/\D/g, ""));
+
+                                    this.featureVals.push(valueTransformed);
+                                }
+                                else {
+                                    this.featureVals.push("avg");
+                                }
                             }
                             else {
                                 this.featureVals.push(0);
@@ -403,9 +435,16 @@ export default {
 
                     this.calcHelper.paramA_count = this.featureVals.length;
                     this.calcHelper.paramA_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+                    if (this.paramFieldA.name === "Anzahl") {
+                        this.calcHelper.paramA_calc = this.calcHelper.paramA_count;
+                    }
+                    else {
+                        this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
+                    }
                 }
                 else {
                     this.featureVals = [];
+                    this.calcHelper.type_A = "feature";
                     if (Array.isArray(this.selectedFieldA.id)) {
                         this.selectedFieldA.id.forEach(id => {
                             const featureData = this.getFeatureData(name, id);
@@ -444,12 +483,21 @@ export default {
                         layerFeatures = findLayer.getSource().getFeatures();
 
                     this.featureVals = [];
+                    this.calcHelper.type_B = "facility";
                     layerFeatures.forEach(layer => {
                         const layerGeometry = layer.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldB.name !== "Anzahl") {
-                                this.featureVals.push(layer.getProperties()[this.paramFieldB.id]);
+                                if (layer.getProperties()[this.paramFieldB.id]) {
+                                    const value = layer.getProperties()[this.paramFieldB.id],
+                                        valueTransformed = parseFloat(value.replace(/\D/g, ""));
+
+                                    this.featureVals.push(valueTransformed);
+                                }
+                                else {
+                                    this.featureVals.push("avg");
+                                }
                             }
                             else {
                                 this.featureVals.push(0);
@@ -459,9 +507,16 @@ export default {
 
                     this.calcHelper.paramB_count = this.featureVals.length;
                     this.calcHelper.paramB_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+                    if (this.paramFieldB.name === "Anzahl") {
+                        this.calcHelper.paramB_calc = this.calcHelper.paramB_count;
+                    }
+                    else {
+                        this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
+                    }
                 }
                 else {
                     this.featureVals = [];
+                    this.calcHelper.type_B = "feature";
                     if (Array.isArray(this.selectedFieldB.id)) {
                         this.selectedFieldB.id.forEach(id => {
                             const featureData = this.getFeatureData(name, id);
@@ -496,16 +551,16 @@ export default {
                     this.calcHelper.paramB_val = this.featureVals;
                 }
 
-                this.calculateRatio(name, this.calcHelper);
+                dataArray.push(this.calcHelper);
             });
 
-            this.calculateTotalValues();
+            this.results = utils.calculateRatio(dataArray, this.selectedYear);
+            console.log(this.results);
         },
         /**
-         * @todo todo
-         * @description todo
-         * @param {String} districtName The String that is to be modified.
-         * @param {String} featureName The String that is to be modified.
+         * @description Gets Data for the selected statistical data (features)
+         * @param {String} districtName name of the district.
+         * @param {String} featureName name of the statistical data set (feature).
          * @returns {void}
          */
         getFeatureData (districtName, featureName) {
@@ -529,84 +584,18 @@ export default {
             return featureDataList;
         },
         /**
-         * @todo todo
-         * @description todo
-         * @param {String} name The String that is to be modified.
-         * @param {String} data The String that is to be modified.
-         * @returns {void}
-         */
-        calculateRatio (name, data) {
-            const calcObj = {
-                    scope: name,
-                    paramA_count: this.ASwitch ? data.paramA_count : 0,
-                    paramA_val: typeof data.paramA_val === "object" ? data.paramA_val[this.selectedYear] : data.paramA_val,
-                    paramB_count: this.BSwitch ? data.paramB_count : 0,
-                    paramB_val: typeof data.paramB_val === "object" ? data.paramB_val[this.selectedYear] : data.paramB_val
-                },
-                relation = (this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) / (this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val),
-                mirroredRelation = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val)) / ((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val)) + Number.EPSILON) * 100) / 100,
-                capacity = Math.round((((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) * (this.faktorf_B / this.faktorf_A)) + Number.EPSILON) * 100) / 100,
-                need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) * (this.faktorf_A / this.faktorf_B)) + Number.EPSILON) * 100) / 100,
-                // need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / capacity) + Number.EPSILON) * 100) / 100, 
-                coverageA = this.fActive_A || this.fActive_B ? Math.round(((((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) / need) * this.perCalc_B) + Number.EPSILON) * 100) / 100 : Math.round(((this.perCalc_B * relation) + Number.EPSILON) * 100) / 100,
-                coverageB = this.fActive_A || this.fActive_B ? Math.round(((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / need) * this.perCalc_A) + Number.EPSILON) * 100) / 100 : Math.round(((this.perCalc_A * mirroredRelation) + Number.EPSILON) * 100) / 100,
-                weightedRelation = Math.round(((relation * (this.perCalc_A / this.perCalc_B)) + Number.EPSILON) * 100) / 100;
-
-            calcObj.relation = relation;
-            calcObj.mirroredRelation = mirroredRelation;
-            calcObj.capacity = capacity;
-            calcObj.need = need;
-            calcObj.coverage = coverageA;
-            calcObj.mirrorCoverage = coverageB;
-            calcObj.weightedRelation = weightedRelation;
-            calcObj.data = data;
-
-            this.results.push(calcObj);
-        },
-        /**
-         * @todo todo
-         * @description todo
+         * @description Recalculate the data set dynamically when one parameter changes.
          * @returns {void}
          */
         recalcData () {
             this.results = [];
 
             this.resultsClone.forEach(result => {
-                this.calculateRatio(result.scope, result.data);
+                utils.calculateRatio(result.scope, result.data);
             });
-
-            this.calculateTotalValues();
-
-            console.log(this.results);
         },
         /**
-         * @todo todo
-         * @description todo
-         * @returns {void}
-         */
-        calculateTotalValues () {
-            const resultsTotal = {
-                    scope: "Gesamt",
-                    paramA_count: this.results.reduce((total, district) => total + district.paramA_count, 0),
-                    paramB_count: this.results.reduce((total, district) => total + district.paramB_count, 0),
-                    paramA_val: this.results.reduce((total, district) => total + district.paramA_val, 0),
-                    paramB_val: this.results.reduce((total, district) => total + district.paramB_val, 0)
-                },
-
-                resultsAverage = {
-                    scope: "Durchschnitt",
-                    paramA_count: resultsTotal.paramA_count / this.results.length,
-                    paramB_count: resultsTotal.paramB_count / this.results.length,
-                    paramA_val: resultsTotal.paramA_val / this.results.length,
-                    paramB_val: resultsTotal.paramB_val / this.results.length
-                };
-
-            this.calculateRatio(resultsTotal.scope, resultsTotal);
-            this.calculateRatio(resultsAverage.scope, resultsAverage);
-        },
-        /**
-         * @todo todo
-         * @description todo
+         * @description Push data that is to be visualized on the map to ColorCodeMap Component.
          * @returns {void}
          */
         loadToCCM () {

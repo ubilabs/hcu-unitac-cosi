@@ -15,29 +15,44 @@ export default {
     },
     data () {
         return {
+            // All available features
             featuresStatistics: [],
-            featureCategories: [],
+            // Selected Feature
             selectedFeature: "",
+            // List of available features for selected Districts
             featuresList: [],
+            // Array of all available years
             availableYears: [],
+            // Selected Year
             selectedYear: null,
+            // Results for generating the CCM legend including colorscale values
             legendResults: [],
+            // Values displayed in CCM legend
             legendValues: [],
+            // Saves the last year when user changes year manually.
             lastYear: null,
+            // Index in Array of selected Feature
             selectorPosition: 0,
+            // Saves riginal Map Styling before ColorCodeMap changes styling
             originalStyling: null,
+            // Highest Value of selected feature among all selected districts
             hiVal: null,
+            // Lowest Value of selected feature among all selected districts
             loVal: null,
+            // Triggers classes for minimized view
             minimize: false,
+            // State of animation playing
             playState: false,
-            playSpeed: 1
+            // Playback speed of the animation
+            playSpeed: 1,
+            // Helper Variable to force Legend Markers to rerender
+            updateLegendList: 1
         };
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList"]),
-        ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         dataToCCM () {
             return this.$store.state.Tools.CalculateRatio.dataToCCM;
         },
@@ -47,6 +62,7 @@ export default {
     },
     watch: {
         selectedFeatures () {
+            this.updateLegendList += 1;
             if (this.visualizationState) {
                 this.$nextTick(function () {
                     this.updateSelectedDistricts();
@@ -68,27 +84,22 @@ export default {
         },
         dataToCCM (newState) {
             if (newState) {
-                this.renderCCMData();
+                this.renderCCData();
             }
         },
         ccmDataSet () {
             if (this.dataToCCM) {
-                this.renderCCMData();
+                this.renderCCData();
             }
         }
     },
-    /**
-     * Put initialize here if mounting occurs after config parsing
-     * @returns {void}
-     */
     mounted () {
         this.applyTranslationKey(this.name);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
         /**
-         * @todo todo
-         * @description todo
+         * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
          */
         updateSelectedDistricts () {
@@ -96,14 +107,12 @@ export default {
             this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
                 this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
-
                 this.updateFeaturesList();
             }
         },
 
         /**
-         * @todo todo
-         * @description todo
+         * @description Gets relevant features based on MappingJson and triggers visualization.
          * @returns {void}
          */
         updateFeaturesList () {
@@ -130,12 +139,17 @@ export default {
 
             this.renderVisualization();
         },
+        /**
+         * @description Animates data for selected feature on the map over the available years.
+         * @param {String} tempo Value for animation playback speed in seconds.
+         * @returns {void}
+         */
         animationOverYears (tempo) {
             if (this.playState) {
-                let current = this.availableYears.indexOf(this.selectedYear) - 1;
+                let current = this.availableYears.indexOf(this.selectedYear) + 1;
 
-                if (current < 0) {
-                    current = this.availableYears.length - 1;
+                if (current >= this.availableYears.length) {
+                    current = 0;
                 }
 
                 setTimeout(() => {
@@ -147,11 +161,8 @@ export default {
                 }, tempo * 1000);
             }
         },
-
         /**
-         * @todo todo
-         * @description todo
-         * @param {Boolean} [state] todo
+         * @description Changes map styling based on selected feature data.
          * @returns {void}
          */
         renderVisualization () {
@@ -219,7 +230,12 @@ export default {
                 });
             }
         },
-        renderCCMData () {
+        /**
+         * @todo Generate Dynamic Legend for incoming data from CalculateRatio Component.
+         * @description Renders data on map from CalculateRatio Component.
+         * @returns {void}
+         */
+        renderCCData () {
             if (!this.visualizationState) {
                 this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
             }
@@ -229,7 +245,7 @@ export default {
                 }),
                 colorScale = this.getColorsByValues(resultValues);
 
-            // this.generateDynamicLegend(results, colorScale);
+            // todo generate Legend for CC Data
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.ccmDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
@@ -261,9 +277,9 @@ export default {
 
         /**
          * @todo todo
-         * @description todo
-         * @param {*} results todo
-         * @param {*} colorScale todo
+         * @description Generates dynamic Legend in CCM based on selected feature values.
+         * @param {*} results Values calculated in renderVisualization() function.
+         * @param {*} colorScale color range for values from getColorsByValues() function.
          * @returns {void}
          */
         generateDynamicLegend (results, colorScale) {
@@ -277,6 +293,7 @@ export default {
                         });
                     });
 
+                console.log(matchResults);
                 colorScale.legend.values.forEach((value, index) => {
                     if (value === "Keine Daten") {
                         colorScale.legend.colors.splice(index, 1);
@@ -288,8 +305,9 @@ export default {
 
                 legendDiv.setAttribute("style", "background:linear-gradient(90deg," + this.legendValues[0] + "," + this.legendValues[1] + "," + this.legendValues[2] + ")");
 
+
                 legendMarksArray.forEach((mark, index) => {
-                    if (index > matchResults.length - 1) {
+                    if (index > matchResults.length) {
                         mark.remove();
                     }
                     else {
@@ -315,9 +333,8 @@ export default {
         },
 
         /**
-         * @todo todo
-         * @description todo
-         * @param {*} values todo
+         * @description Calculate dynamic colors for Array based on its values.
+         * @param {*} values Array of ints.
          * @returns {Object} the colorScale function(value) and the n-step legend color/value pairs.
          */
         getColorsByValues (values) {
@@ -325,9 +342,8 @@ export default {
         },
 
         /**
-         * @todo todo
-         * @description todo
-         * @param {*} value todo
+         * @description Changes selected feature with arrow buttons.
+         * @param {*} value 1 or -1 for next or prev.
          * @returns {void}
          */
         changeSelector (value) {
@@ -350,7 +366,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="featuresStatistics.length && !dashboardOpen"
+        v-if="featuresStatistics.length"
         class="addon_container"
         :class="{minimized: minimize}"
     >
@@ -434,17 +450,13 @@ export default {
                         </template>
                     </Multiselect>
                 </div>
-                <div
+                <button
                     v-if="visualizationState"
-                    class="btn_group"
+                    class="play_button"
+                    @click="playState = !playState"
                 >
-                    <button
-                        class="play_button btn btn-default btn-sm prev"
-                        @click="playState = !playState"
-                    >
-                        <span class="glyphicon glyphicon-play"></span>
-                    </button>
-                </div>
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
                 <Multiselect
                     v-if="featuresList.length"
                     v-model="selectedFeature"
@@ -472,10 +484,13 @@ export default {
                 class="legend"
                 :class="{ active: visualizationState && legendValues && selectedFeatures.length > 1 }"
             >
-                <div id="legend_wrapper">
+                <div
+                    id="legend_wrapper"
+                    :key="updateLegendList"
+                >
                     <div
-                        v-for="(value, i) in selectedFeatures"
-                        :key="i"
+                        v-for="feature in selectedFeatures"
+                        :key="feature.id"
                         class="legend_mark"
                     >
                         <div class="mark_tip"></div>
