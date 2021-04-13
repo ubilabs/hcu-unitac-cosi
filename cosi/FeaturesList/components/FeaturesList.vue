@@ -11,6 +11,7 @@ import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import extractClusters from "../../utils/extractClusterFeatures";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
+import {Stroke} from "ol/style.js";
 
 export default {
     name: "FeaturesList",
@@ -23,7 +24,7 @@ export default {
     data () {
         return {
             search: "",
-            typeFilter: [],
+            layerFilter: [],
             expanded: [],
             columns: [
                 {
@@ -38,26 +39,39 @@ export default {
                 },
                 {
                     text: "Gebiet",
-                    value: "district"
+                    value: "district",
+                    divider: true
                 },
                 {
-                    text: "Typ",
-                    value: "layer",
+                    text: "Layer",
+                    value: "layerName",
                     filter: value => {
-                        if (this.typeFilter.length < 1) {
+                        if (this.layerFilter.length < 1) {
                             return true;
                         }
 
-                        return this.typeFilter.map(t => t.id).includes(value);
-                    },
+                        return this.layerFilter.map(t => t.id).includes(value);
+                    }
+                },
+                {
+                    text: "Typ",
+                    value: "type",
                     divider: true
                 },
                 {
                     text: "Thema",
-                    value: "group"
+                    value: "group",
+                    divider: true
+                },
+                {
+                    text: "Aktionen",
+                    value: "actions"
+                },
+                {
+                    text: "Ein-/Ausschalten",
+                    value: "disabled"
                 }
-            ],
-            propBlacklist: ["geometry", "geom", "the_geom", "coordinates", "flatCoordinates", "x", "y", "lat", "lon", "latlon", "lonlat"]
+            ]
         };
     },
     computed: {
@@ -156,6 +170,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
+        ...mapActions("Map", ["highlightFeature", "removeHighlightFeature"]),
         updateFeaturesList () {
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
@@ -170,8 +185,11 @@ export default {
                             style: layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.districtFeatures, feature),
                             group: layerMap.group,
-                            layer: layerMap.id,
-                            feature: feature
+                            layerName: layerMap.id,
+                            layerId: layerMap.layerId,
+                            type: feature.get(layerMap.categoryField),
+                            feature: feature,
+                            disabled: false
                         };
                     })];
                 }, []);
@@ -200,6 +218,52 @@ export default {
                 }
                 return fields;
             }, []);
+        },
+        /**
+         * Highlights a vector feature
+         * @param {Object} item the table item
+         * @returns {void}
+         */
+        highlightVectorFeatures (item) {
+            this.removeHighlighting();
+            if (item.feature.getGeometry()?.getType() === "Point") {
+                this.highlightFeature({
+                    feature: item.feature,
+                    type: "increase",
+                    scale: 1.2,
+                    layer: {id: item.layerId}
+                });
+            }
+            else if (item.feature.getGeometry()?.getType() === "Polygon") {
+                this.highlightFeature({
+                    feature: item.feature,
+                    type: "highlightPolygon",
+                    highlightStyle: {
+                        stroke: new Stroke({color: "#3399CC", width: 5})
+                    },
+                    layer: {id: item.layerId}
+                });
+            }
+        },
+        /**
+         * Removes the feature highlighting
+         * @returns {void}
+         */
+        removeHighlighting () {
+            this.removeHighlightFeature();
+        },
+
+        editFeature (item) {
+            console.log(item);
+            console.warn("not implemented");
+        },
+        deleteFeature (item) {
+            console.log(item);
+            console.warn("not implemented");
+        },
+        disableFeature (item) {
+            console.log(item);
+            console.warn("not implemented");
         }
     }
 };
@@ -225,7 +289,7 @@ export default {
                         <div class="form-group">
                             <Multiselect
                                 v-if="mapping.length > 0"
-                                v-model="typeFilter"
+                                v-model="layerFilter"
                                 class="layer_selection selection"
                                 :options="activeLayerMapping"
                                 group-label="group"
@@ -237,10 +301,10 @@ export default {
                                 selectedLabel=""
                                 selectLabel=""
                                 deselectLabel=""
-                                :placeholder="$t('additional:modules.tools.cosi.featuresList.typeFilter')"
+                                :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
                             >
                                 <template slot="singleLabel">
-                                    <strong>{{ typeFilter.id }}</strong>
+                                    <strong>{{ layerFilter.id }}</strong>
                                 </template>
                             </Multiselect>
                         </div>
@@ -268,12 +332,37 @@ export default {
                                 :items-per-page="20"
                             >
                                 <template v-slot:expanded-item="{ headers, item }">
-                                    <td :colspan="headers.length">
+                                    <td
+                                        class="detail-view"
+                                        :colspan="headers.length"
+                                    >
                                         <DetailView :items="getFeatureProperties(item)" />
                                     </td>
                                 </template>
                                 <template v-slot:item.style="{ item }">
                                     <FeatureIcon :item="item" />
+                                </template>
+                                <template v-slot:item.actions="{ item }">
+                                    <v-icon
+                                        small
+                                        class="mr-2"
+                                        @click="editFeature(item)"
+                                    >
+                                        mdi-pencil
+                                    </v-icon>
+                                    <v-icon
+                                        small
+                                        @click="deleteFeature(item)"
+                                    >
+                                        mdi-delete
+                                    </v-icon>
+                                </template>
+                                <template v-slot:item.disabled="{ item }">
+                                    <v-switch
+                                        v-model="item.disabled"
+                                        dense
+                                        @change="disableFeature(item)"
+                                    />
                                 </template>
                             </v-data-table>
                         </div>
@@ -291,6 +380,9 @@ export default {
             font-size: 12px;
             border-color: #e8e8e8;
             height: 40px;
+        }
+        .detail-view {
+            padding: 0;
         }
     }
 </style>

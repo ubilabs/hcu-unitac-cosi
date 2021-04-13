@@ -13,7 +13,12 @@ function mapVectorLayersInFolder (layers, condition) {
                 layerId: layer.id,
                 id: layer.name,
                 numericalValues: layer.numericalValues || [],
-                keyOfAttrName: Array.isArray(keyOfAttrName) ? keyOfAttrName[0] : keyOfAttrName
+                categoryField: Array.isArray(layer.searchField) // last search field, must be set in config.json
+                    ? layer.searchField[layer.searchField.length - 1]
+                    : layer.searchField,
+                keyOfAttrName: Array.isArray(keyOfAttrName) // first mouse hover field
+                    ? keyOfAttrName[0]
+                    : keyOfAttrName
             });
         }
         return layerlist;

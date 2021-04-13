@@ -1,4 +1,5 @@
 <script>
+import beautifyKey from "../../../../src/utils/beautifyKey";
 export default {
     name: "DetailView",
     props: {
@@ -9,13 +10,16 @@ export default {
     },
     mounted () {
         console.log(this.$store);
+    },
+    methods: {
+        beautifyKey: key => beautifyKey(key)
     }
 };
 </script>
 
 <template>
-    <v-container fluid>
-        <v-sheet>
+    <v-sheet>
+        <v-card>
             <v-simple-table>
                 <template v-slot:default>
                     <tbody class="detail-view-row">
@@ -23,14 +27,14 @@ export default {
                             v-for="(val, prop) in items"
                             :key="prop"
                         >
-                            <th>{{ prop }}</th>
+                            <th>{{ beautifyKey(prop) }}</th>
                             <td>{{ val }}</td>
                         </tr>
                     </tbody>
                 </template>
             </v-simple-table>
-        </v-sheet>
-    </v-container>
+        </v-card>
+    </v-sheet>
 </template>
 
 <style lang="less">

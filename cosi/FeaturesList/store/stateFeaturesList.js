@@ -21,7 +21,20 @@ const state = {
     // FeaturesList State
     mapping: [],
     featuresListItems: [],
-    selectedFeatureItems: []
+    selectedFeatureItems: [],
+    propBlacklist: [
+        "geometry",
+        "geom",
+        "the_geom",
+        "coordinates",
+        "flatCoordinates",
+        "x",
+        "y",
+        "lat",
+        "lon",
+        "latlon",
+        "lonlat"
+    ]
 };
 
 export default state;

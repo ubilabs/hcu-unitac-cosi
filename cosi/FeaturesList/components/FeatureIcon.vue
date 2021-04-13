@@ -13,14 +13,19 @@ export default {
             type: Object
         }
     },
+    computed: {
+        style () {
+            return Array.isArray(this.item.style) ? this.item.style[0] : this.item.style;
+        }
+    },
     methods: {
         /**
          * @description
          * @returns {String | undefined} returns the source url of the img
          */
         getIconSrc () {
-            if (this.item.style.getImage()?.constructor === Icon) {
-                return this.item.style.getImage()?.getSrc();
+            if (this.style?.getImage()?.constructor === Icon) {
+                return this.style.getImage().getSrc();
             }
             return undefined;
         },
@@ -28,8 +33,8 @@ export default {
          * @returns {module:ol/Style | undefined} the Circle Style
          */
         getCircleStyle () {
-            if (this.item.style.getImage()?.constructor === CircleStyle) {
-                return this.item.style.getImage();
+            if (this.style?.getImage()?.constructor === CircleStyle) {
+                return this.style.getImage();
             }
             return undefined;
         },
@@ -38,14 +43,14 @@ export default {
          * @returns {String} the color
          */
         getBgColor (style) {
-            return this.convertColor(style.getFill()?.getColor()) || "grey";
+            return this.convertColor(style?.getFill()?.getColor()) || "grey";
         },
         /**
          * @param {module:ol/Style} style - the style object to read
          * @returns {String} the color
          */
         getBorderColor (style) {
-            return this.convertColor(style.getStroke()?.getColor()) || "grey";
+            return this.convertColor(style?.getStroke()?.getColor()) || "grey";
         },
         /**
          * @param {number[] | String} color - the color to convert
@@ -65,7 +70,7 @@ export default {
          * @returns {String} the stroke width
          */
         getBorderWidth (style) {
-            return style.getStroke()?.getWidth() + "px" || "0px";
+            return style?.getStroke()?.getWidth() + "px" || "0px";
         }
     }
 };
@@ -92,9 +97,9 @@ export default {
             v-else
             class="marker"
             :style="{
-                backgroundColor: getBgColor(item.style),
-                borderWidth: getBorderWidth(item.style),
-                borderColor: getBorderColor(item.style)
+                backgroundColor: getBgColor(style),
+                borderWidth: getBorderWidth(style),
+                borderColor: getBorderColor(style)
             }"
         />
     </span>
