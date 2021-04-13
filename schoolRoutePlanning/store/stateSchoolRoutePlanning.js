@@ -24,7 +24,9 @@ const state = {
     schools: [],
     streetNames: [],
     houseNumbers: [],
-    filteredHouseNumbers: []
+    filteredHouseNumbers: [],
+    regionalPrimarySchoolNumber: null,
+    regionalPrimarySchoolName: null
 };
 
 export default state;

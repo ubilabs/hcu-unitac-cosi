@@ -58,6 +58,7 @@ export default {
                 source: inputs.layer.getSource(),
                 geometry: new Point(filteredHouseNumbers[0].geometry.coordinates)
             });
+            dispatch("searchRegionalPrimarySchool", filteredHouseNumbers[0].name);
         }
         else {
             commit("setFilteredHouseNumbers", state.houseNumbers.filter(houseNumber => houseNumber.name.search(input) !== -1));
@@ -75,6 +76,7 @@ export default {
             source: inputs.layer.getSource(),
             geometry: new Point(foundHouseNumber.geometry.coordinates)
         });
+        dispatch("searchRegionalPrimarySchool", foundHouseNumber.name);
     },
 
     /**
@@ -101,5 +103,14 @@ export default {
             Radio.trigger("Map", "zoomToExtent", source.getExtent());
         }
         Radio.trigger("MapView", "setZoomLevelDown");
+    },
+
+    searchRegionalPrimarySchool ({commit}, address) {
+        search(address, {
+            map: Radio.request("Map", "getMap"),
+            searchAddress: true
+        }).then(response => {
+            commit("setRegionalPrimarySchool", response[0].properties.grundschulnr);
+        });
     }
 };

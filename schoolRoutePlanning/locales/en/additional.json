@@ -8,6 +8,7 @@
                 "selectSchool": "Select school",
                 "printRouteName": "Print route",
                 "deleteRoute": "Delete route",
+                "noSchoolFound": "No school found!",
                 "showRouteDescription": "Show route description",
                 "hideRouteDescription": "Hide route description",
                 "totalLength": "The total length is",

@@ -4,7 +4,7 @@ import stateSchoolRoutePlanning from "./stateSchoolRoutePlanning";
 const getters = {
     ...generateSimpleGetters(stateSchoolRoutePlanning),
 
-    getSortedSchools: (state) => {
+    sortedSchools: (state) => {
         return state.schools.sort((featureA, featureB) => {
             const schulnameA = featureA.get("schulname").toUpperCase(),
                 schulnameB = featureB.get("schulname").toUpperCase();

@@ -8,6 +8,7 @@
                 "selectSchool": "Schule auswählen",
                 "printRouteName": "Route drucken",
                 "deleteRoute": "Route löschen",
+                "noSchoolFound": "Keine Schule gefunden!",
                 "showRouteDescription": "Routenbeschreibung einblenden",
                 "hideRouteDescription": "Routenbeschreibung ausblenden",
                 "totalLength": "Die Gesamtlänge beträgt",

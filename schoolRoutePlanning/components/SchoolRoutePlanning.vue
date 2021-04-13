@@ -27,7 +27,7 @@ export default {
         getSchools () {
             this.$nextTick(() => $(".selectpicker").selectpicker("refresh"));
 
-            return this.getSortedSchools;
+            return this.sortedSchools;
         },
 
         inputAddress: {
@@ -208,7 +208,9 @@ export default {
                         <span class="regionalPrimarySchool">
                             {{ $t("additional:modules.tools.routingToSchool.regionalPrimarySchool") }}
                         </span>
-                        <a id="regional-school"></a>
+                        <a id="regional-school">
+                            {{ $t(regionalPrimarySchoolName) }}
+                        </a>
                     </span>
                 </div>
                 <div class="form-group col-xs-12">
