@@ -38,14 +38,14 @@ export default {
          * @returns {String} the color
          */
         getBgColor (style) {
-            return this.convertColor(style.getFill().getColor()) || "grey";
+            return this.convertColor(style.getFill()?.getColor()) || "grey";
         },
         /**
          * @param {module:ol/Style} style - the style object to read
          * @returns {String} the color
          */
         getBorderColor (style) {
-            return this.convertColor(style.getStroke().getColor()) || "grey";
+            return this.convertColor(style.getStroke()?.getColor()) || "grey";
         },
         /**
          * @param {number[] | String} color - the color to convert
