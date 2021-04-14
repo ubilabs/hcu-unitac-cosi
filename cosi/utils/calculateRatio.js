@@ -4,11 +4,12 @@
 * @returns {Array} Array of calculated Data.
 */
 export default function calculateRatio (dataArray, year) {
-    const results = [];
+    const results = [],
+        noDataResults = [];
 
     dataArray.forEach(dataSet => {
         const calcObj = {
-                scope: dataSet.name,
+                scope: dataSet.name ? dataSet.name : dataSet.scope,
                 paramA_val: typeof dataSet.paramA_calc === "object" ? dataSet.paramA_calc[year] : dataSet.paramA_calc,
                 paramB_val: typeof dataSet.paramB_calc === "object" ? dataSet.paramB_calc[year] : dataSet.paramB_calc
             },
@@ -17,7 +18,7 @@ export default function calculateRatio (dataArray, year) {
         results.push(calculation);
     });
 
-    return calculateTotals(results);
+    return calculateTotals(results, noDataResults);
 }
 /** Calculates the extent of a set of features.
 * @param {Object} calcObj pre-transformed dataSet.
@@ -45,6 +46,7 @@ function calculateSingle (calcObj, dataSet) {
 }
 /** Calculates total and average values for all single Datasets.
 * @param {Array} results Array of all single dataset.
+* @param {Array} noDataResults Array of all single datasets that have a missing data value.
 * @returns {Array} Updated Array.
 */
 function calculateTotals (results) {
@@ -52,18 +54,18 @@ function calculateTotals (results) {
             faktorF_A: results[0].data.faktorF_A,
             faktorF_B: results[0].data.faktorF_B,
             perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalcB
+            perCalc_B: results[0].data.perCalc_B
         },
         resultsTotal = {
             scope: "Gesamt",
             paramA_val: results.reduce((total, district) => total + district.paramA_val, 0),
-            paramB_val: this.results.reduce((total, district) => total + district.paramB_val, 0)
+            paramB_val: results.reduce((total, district) => total + district.paramB_val, 0)
         },
 
         resultsAverage = {
             scope: "Durchschnitt",
-            paramA_val: resultsTotal.paramA_val / this.results.length,
-            paramB_val: resultsTotal.paramB_val / this.results.length
+            paramA_val: resultsTotal.paramA_val / results.length,
+            paramB_val: resultsTotal.paramB_val / results.length
         },
 
         total = calculateSingle(resultsTotal, dataHelpers),
@@ -71,7 +73,5 @@ function calculateTotals (results) {
 
     results.push(total, avg);
     return results;
-
 }
-
 

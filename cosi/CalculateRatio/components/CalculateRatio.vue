@@ -412,13 +412,13 @@ export default {
 
                     this.calcHelper.type_A = "facility";
                     this.featureVals = [];
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const featureGeometry = feature.getGeometry().getExtent();
 
-                        if (geometry.intersectsExtent(layerGeometry)) {
+                        if (geometry.intersectsExtent(featureGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldA.id]) {
-                                    const value = layer.getProperties()[this.paramFieldA.id],
+                                if (feature.getProperties()[this.paramFieldA.id]) {
+                                    const value = feature.getProperties()[this.paramFieldA.id],
                                         valueTransformed = parseFloat(value.replace(/\D/g, ""));
 
                                     this.featureVals.push(valueTransformed);
@@ -433,8 +433,15 @@ export default {
                         }
                     });
 
+                    this.featureVals = utils.compensateLackingData(this.featureVals);
+                    if (this.featureVals === "error") {
+                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noDataWarning')");
+                        return false;
+                    }
+
                     this.calcHelper.paramA_count = this.featureVals.length;
                     this.calcHelper.paramA_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+
                     if (this.paramFieldA.name === "Anzahl") {
                         this.calcHelper.paramA_calc = this.calcHelper.paramA_count;
                     }
@@ -476,6 +483,7 @@ export default {
                     }
 
                     this.calcHelper.paramA_val = this.featureVals;
+                    this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
                 }
 
                 if (this.BSwitch) {
@@ -484,13 +492,13 @@ export default {
 
                     this.featureVals = [];
                     this.calcHelper.type_B = "facility";
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const featureGeometry = feature.getGeometry().getExtent();
 
-                        if (geometry.intersectsExtent(layerGeometry)) {
+                        if (geometry.intersectsExtent(featureGeometry)) {
                             if (this.paramFieldB.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldB.id]) {
-                                    const value = layer.getProperties()[this.paramFieldB.id],
+                                if (feature.getProperties()[this.paramFieldB.id]) {
+                                    const value = feature.getProperties()[this.paramFieldB.id],
                                         valueTransformed = parseFloat(value.replace(/\D/g, ""));
 
                                     this.featureVals.push(valueTransformed);
@@ -505,8 +513,15 @@ export default {
                         }
                     });
 
+                    this.featureVals = utils.compensateLackingData(this.featureVals);
+                    if (this.featureVals === "error") {
+                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noDataWarning')");
+                        return false;
+                    }
+
                     this.calcHelper.paramB_count = this.featureVals.length;
                     this.calcHelper.paramB_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+
                     if (this.paramFieldB.name === "Anzahl") {
                         this.calcHelper.paramB_calc = this.calcHelper.paramB_count;
                     }
@@ -549,6 +564,7 @@ export default {
                     }
 
                     this.calcHelper.paramB_val = this.featureVals;
+                    this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
                 }
 
                 dataArray.push(this.calcHelper);
@@ -588,11 +604,7 @@ export default {
          * @returns {void}
          */
         recalcData () {
-            this.results = [];
-
-            this.resultsClone.forEach(result => {
-                utils.calculateRatio(result.scope, result.data);
-            });
+            this.results = utils.calculateRatio(this.resultsClone, this.selectedYear);
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -1055,32 +1067,32 @@ export default {
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ paramFieldA.name === "Anzahl" ? result.paramA_count : result.paramA_val }}
+                                        {{ result.paramA_val.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ paramFieldB.name === "Anzahl" ? result.paramB_count : result.paramB_val }}
+                                        {{ result.paramB_val.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td v-if="fActive_A || fActive_B">
                                     <div class="styling_helper">
-                                        {{ result.capacity }}
+                                        {{ result.capacity.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td v-if="fActive_A || fActive_B">
                                     <div class="styling_helper">
-                                        {{ result.need }}
+                                        {{ result.need.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ result.relation.toFixed(2) }}
+                                        {{ result.relation.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ result.coverage }}
+                                        {{ result.coverage.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                             </tr>

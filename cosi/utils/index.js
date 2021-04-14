@@ -3,6 +3,7 @@ import getRgbArray from "./getRgbArray";
 import getBoundingGeometry from "./getBoundingGeometry";
 import calculateExtent from "./calculateExtent";
 import calculateRatio from "./calculateRatio";
+import compensateLackingData from "./compensateLackingData";
 import setBBoxToGeom from "./setBBoxToGeom";
 import downloadBlobToFile from "./downloadBlobToFile";
 import exportXlsx from "./exportXlsx";
@@ -17,6 +18,7 @@ export default {
     getBoundingGeometry,
     calculateExtent,
     calculateRatio,
+    compensateLackingData,
     setBBoxToGeom,
     downloadBlobToFile,
     exportXlsx,
