@@ -5,10 +5,11 @@ import getComponent from "../../../../src/utils/getComponent";
 import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersFeaturesList";
 import mutations from "../store/mutationsFeaturesList";
+import actions from "../store/actionsFeaturesList";
 import getVectorlayerMapping from "../utils/getVectorlayerMapping";
 import Multiselect from "vue-multiselect";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
-import extractClusters from "../../utils/extractClusterFeatures";
+import getClusterSource from "../../utils/getClusterSource";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
 import {Stroke} from "ol/style.js";
@@ -25,25 +26,32 @@ export default {
         return {
             search: "",
             layerFilter: [],
-            expanded: [],
-            columns: [
+            expanded: []
+        };
+    },
+    computed: {
+        ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
+        ...mapState(["configJson"]),
+        columns () {
+            return [
                 {
-                    text: "Icon",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colIcon"),
                     value: "style",
                     filterable: false,
                     sortable: false
                 },
                 {
-                    text: "Einrichtung",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colFacility"),
                     value: "name"
                 },
                 {
-                    text: "Gebiet",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colDistrict"),
                     value: "district",
                     divider: true
                 },
                 {
-                    text: "Layer",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colLayerName"),
                     value: "layerName",
                     filter: value => {
                         if (this.layerFilter.length < 1) {
@@ -54,61 +62,24 @@ export default {
                     }
                 },
                 {
-                    text: "Typ",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colType"),
                     value: "type",
                     divider: true
                 },
                 {
-                    text: "Thema",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colGroup"),
                     value: "group",
                     divider: true
                 },
                 {
-                    text: "Aktionen",
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
                     value: "actions"
                 },
                 {
-                    text: "Ein-/Ausschalten",
-                    value: "disabled"
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
+                    value: "enabled"
                 }
-            ]
-        };
-    },
-    computed: {
-        ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
-        ...mapGetters("Map", ["layerList"]),
-        ...mapState(["configJson"]),
-        activeVectorLayerList () {
-            return this.layerList.filter(layer => this.flatActiveVectorLayerIdList.includes(layer.get("id")));
-        },
-        activeLayerMapping () {
-            const activeLayerList = this.layerList.map(layer => layer.get("id"));
-
-            return this.mapping.reduce((groups, group) => {
-                const groupLayers = group.layer.filter(layer => activeLayerList.includes(layer.layerId));
-
-                if (groupLayers.length > 0) {
-                    return [...groups, {
-                        group: group.group,
-                        layer: groupLayers
-                    }];
-                }
-                return groups;
-            }, []);
-        },
-        flatActiveVectorLayerIdList () {
-            return this.activeLayerMapping.reduce((list, group) => {
-                return [...list, ...group.layer.map(l => l.layerId)];
-            }, []);
-        },
-        flatActiveLayerMapping () {
-            return this.activeLayerMapping.reduce((list, group) => {
-                return [...list, ...group.layer.map(l => ({...l, group: group.group}))];
-            }, []);
-        },
-        layerMapById () {
-            return id => this.flatActiveLayerMapping.find(l => l.layerId === id);
+            ];
         },
         districtFeatures () {
             return this.selectedDistrictFeatures.length > 0 ? this.selectedDistrictFeatures : this.districtLayer.getSource().getFeatures();
@@ -137,12 +108,7 @@ export default {
          * @returns {void}
          */
         active (state) {
-            if (state) {
-                this.$nextTick(() => {
-                    this.updateFeaturesList();
-                });
-            }
-            else {
+            if (!state) {
                 const model = getComponent(this.id);
 
                 if (model) {
@@ -153,10 +119,6 @@ export default {
 
         selected () {
             console.log(this.selected);
-        },
-
-        featuresList () {
-            console.log(this.featuresList);
         }
     },
     created () {
@@ -167,14 +129,31 @@ export default {
     mounted () {
         // initally set the facilities mapping based on the config.json
         this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
+
+        /**
+         * @description Listen to newly loaded VectorLayer Features to update the FeaturesList
+         * @todo refactor to vuex, there should be an event on the map calling out loaded features
+         * @deprecated
+         */
+        Radio.on("VectorLayer", "featuresLoaded", () => {
+            this.updateFeaturesList();
+        });
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
+        ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Map", ["highlightFeature", "removeHighlightFeature"]),
+
+        /**
+         * Reads the active vector layers, constructs the list of table items and writes them to the store.
+         * Finds the containing district from districtSelector for each feature
+         * @todo connect to other features and statistics to build location score
+         * @returns {void}
+         */
         updateFeaturesList () {
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
-                    const features = extractClusters(vectorLayer.getSource()?.getFeatures() || []),
+                    const features = getClusterSource(vectorLayer).getFeatures(),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
@@ -189,7 +168,7 @@ export default {
                             layerId: layerMap.layerId,
                             type: feature.get(layerMap.categoryField),
                             feature: feature,
-                            disabled: false
+                            enabled: true
                         };
                     })];
                 }, []);
@@ -198,6 +177,12 @@ export default {
                 this.items = [];
             }
         },
+
+        /**
+         * Get a feature's properties, sanitized of blacklisted attributes
+         * @param {Object} tableItem - the table item containing the feature
+         * @returns {Object} the properties as dictionary
+         */
         getFeatureProperties (tableItem) {
             const _propBlacklist = this.propBlacklist,
                 props = tableItem.feature.getProperties(),
@@ -258,10 +243,6 @@ export default {
             console.warn("not implemented");
         },
         deleteFeature (item) {
-            console.log(item);
-            console.warn("not implemented");
-        },
-        disableFeature (item) {
             console.log(item);
             console.warn("not implemented");
         }
@@ -357,11 +338,11 @@ export default {
                                         mdi-delete
                                     </v-icon>
                                 </template>
-                                <template v-slot:item.disabled="{ item }">
+                                <template v-slot:item.enabled="{ item }">
                                     <v-switch
-                                        v-model="item.disabled"
+                                        v-model="item.enabled"
                                         dense
-                                        @change="disableFeature(item)"
+                                        @change="toggleFeatureDisabled(item)"
                                     />
                                 </template>
                             </v-data-table>

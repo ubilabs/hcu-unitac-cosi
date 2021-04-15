@@ -6,7 +6,15 @@
                     "title": "Facilities Overview",
                     "help": "Lists all active facilities for the selected districts",
                     "layerFilter": "Filter list by topic",
-                    "search": "Search List"
+                    "search": "Search List",
+                    "colIcon": "Icon",
+                    "colFacility": "Facility",
+                    "colDistrict": "District",
+                    "colLayerName": "Layer",
+                    "colType": "Type",
+                    "colGroup": "Topic",
+                    "colActions": "Actions",
+                    "colToggleEnabled": "Enable/Disable"
                 }
             }
         }

@@ -20,7 +20,7 @@ export default {
 <template>
     <v-sheet>
         <v-card>
-            <v-simple-table>
+            <v-simple-table dense>
                 <template v-slot:default>
                     <tbody class="detail-view-row">
                         <tr

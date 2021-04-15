@@ -34,7 +34,8 @@ const state = {
         "lon",
         "latlon",
         "lonlat"
-    ]
+    ],
+    disabledFeatureItems: []
 };
 
 export default state;

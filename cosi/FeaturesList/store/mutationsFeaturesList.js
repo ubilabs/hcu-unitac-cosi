@@ -8,10 +8,13 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateFeaturesList)
-
-
-    // mutation for extent / bbox
+    ...generateSimpleMutations(stateFeaturesList),
+    addDisabledFeatureItem (state, featureItem) {
+        state.disabledFeatureItems.push(featureItem);
+    },
+    removeDisabledFeatureItem (state, featureItem) {
+        state.disabledFeatureItems = state.disabledFeatureItems.filter(item => item !== featureItem);
+    }
 };
 
 export default mutations;
