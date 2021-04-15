@@ -5,7 +5,7 @@ import getters from "../store/gettersCommuterFlows";
 import mutations from "../store/mutationsCommuterFlows";
 import {CommuterApi} from "../utils/commuterApi";
 import {CommuterOL} from "../utils/commuterOL";
-import {convertColor} from "../../../src/utils/colorTools.js";
+import {convertColor} from "../../../src/utils/convertColor.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator.js";
 
 export default {
