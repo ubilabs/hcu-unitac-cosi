@@ -16,7 +16,7 @@
  * @property {String} selectedDistrictLevel.keyOfAttrName - The key for the attribute "name" of the selected district layer.
  * @property {String} selectedDistrictLevel.keyOfAttrNameStats - The key for the attribute "name" of the regional statistical data layer.
  * @property {module:ol/Collection} selectedDistrictsCollection - All districts of the current district level.
- * @property {String[]} additionalInfoLayerIds - Additional Layers to display as guidance and information (config-param).
+ * @property {Object {String: String[]}} additionalInfoLayers - Additional Layers to display as guidance and information. Set as keys to display with lists of layerIds. (config-param).
  */
 const state = {
     active: false,
@@ -32,7 +32,7 @@ const state = {
     resizableWindow: false,
     selectedDistrictLevel: {},
     selectedDistrictsCollection: null,
-    additionalInfoLayerIds: []
+    additionalInfoLayers: {}
 };
 
 export default state;
