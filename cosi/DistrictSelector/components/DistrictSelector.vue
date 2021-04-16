@@ -32,8 +32,8 @@ export default {
             bufferValue: 0,
             // css class for the drag box button
             dragBoxButtonClass: "btn-lgv-grey",
-            // display additional info layers true/false
-            showAdditionalLayers: false,
+            // display additional info layers by key true/false
+            visibleInfoLayers: [],
             // shows whether the features for all districts have been loaded
             districtLevelLayersLoaded: false
         };
@@ -115,11 +115,7 @@ export default {
         selectedDistrictsCollection: "transferFeatures",
         selectedLevelId: ["clearFeatures", "changeSelectedDistrictLevel"],
 
-        /**
-         * @description Listens to the checkbox to display additional info layers
-         * @returns {void}
-         */
-        showAdditionalLayers () {
+        visibleInfoLayers () {
             this.toggleAdditionalLayers();
         },
 
@@ -128,7 +124,7 @@ export default {
          * @returns {void}
          */
         visibleLayerList () {
-            this.showAdditionalLayers = this.checkAdditionalLayers();
+            this.checkAdditionalLayers();
         }
     },
     created () {
@@ -138,10 +134,9 @@ export default {
         prepareDistrictLevels(this.districtLevels, this.layerList);
         this.selectedLevelId = this.districtLevels[0].layerId;
         this.setNonReactiveData();
+        this.initializeAdditionalInfoLayers();
     },
     mounted () {
-        this.showAdditionalLayers = this.checkAdditionalLayers();
-
         /**
          * @description Styles the selected district level when the layer is loaded, then unsubsubscribes the call
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
@@ -335,14 +330,19 @@ export default {
         /**
          * @description Display additional info layers according to layerId List from config.
          * @todo Refactor to vue when MP Core is updated
+         * @param {String} key the infolayer groups key
          * @returns {void}
          */
         toggleAdditionalLayers () {
-            for (const layerId of this.additionalInfoLayerIds) {
-                const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+            for (const key in this.additionalInfoLayers) {
+                const state = this.visibleInfoLayers.includes(key);
 
-                if (model) {
-                    model.set("isSelected", this.showAdditionalLayers);
+                for (const layerId of this.additionalInfoLayers[key]) {
+                    const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+                    if (model) {
+                        model.set("isSelected", state);
+                    }
                 }
             }
         },
@@ -353,11 +353,33 @@ export default {
          * @returns {boolean} the state of at least one of the addtional layers
          */
         checkAdditionalLayers () {
-            return this.additionalInfoLayerIds.some(layerId => {
-                const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+            const activeLayers = [];
 
-                return model?.get("isSelected");
-            });
+            for (const key in this.additionalInfoLayers) {
+                if (this.additionalInfoLayers[key].some(layerId => {
+                    const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+
+                    return model?.get("isSelected");
+                })) {
+                    activeLayers.push(key);
+                }
+            }
+            this.visibleInfoLayers = activeLayers;
+        },
+
+        /**
+         * @description Checks if the additional info layers are added to the ModelList and adds them if not.
+         * @todo Refactor to vue when MP Core is updated
+         * @returns {void}
+         */
+        initializeAdditionalInfoLayers () {
+            for (const key in this.additionalInfoLayers) {
+                for (const layerId of this.additionalInfoLayers[key]) {
+                    if (!Radio.request("ModelList", "getModelByAttributes", {id: layerId})) {
+                        Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
+                    }
+                }
+            }
         },
 
         /**
@@ -401,7 +423,7 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <form>
+            <form class="district-selector">
                 <div class="form-group">
                     <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownLabel') }}</label>
                     <Dropdown
@@ -434,15 +456,30 @@ export default {
                     </p>
                 </div>
                 <div
-                    v-if="additionalInfoLayerIds.length > 0"
                     class="form-group"
                 >
-                    <input
-                        v-model="showAdditionalLayers"
-                        class="form-check-input"
-                        type="checkbox"
-                    >
-                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle') }}</label>
+                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.additionalLayer') }}</label>
+                    <span
+                        class="glyphicon glyphicon-question-sign"
+                        @click="showAlert($t('additional:modules.tools.cosi.districtSelector.additionalInfoLayersHelp'))"
+                    />
+                    <v-row dense>
+                        <v-col
+                            v-for="(ids, key) in additionalInfoLayers"
+                            :key="key"
+                        >
+                            <v-checkbox
+                                v-model="visibleInfoLayers"
+                                :value="key"
+                                multiple
+                                dense
+                                hide-details
+                                class="form-check-input"
+                                type="checkbox"
+                                :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
+                            />
+                        </v-col>
+                    </v-row>
                 </div>
                 <button
                     class="btn btn-lgv-grey"
@@ -471,7 +508,7 @@ export default {
                     type="button"
                     class="btn btn-lgv-grey"
                     title="Info"
-                    @click="showAlert(info.DistrictSelector.help)"
+                    @click="showAlert($t('additional:modules.tools.cosi.districtSelector.info'))"
                 >
                     <span class="glyphicon glyphicon-question-sign" />
                 </button>
@@ -483,14 +520,30 @@ export default {
 <style lang="less" scoped>
     form {
         max-width: 420px;;
-            .help-block {
-                margin-top: 5px;
-                font-size: 12px;
-            }
+        .help-block {
+            margin-top: 5px;
+            font-size: 12px;
+        }
     }
 </style>
 
 <style lang="less">
+    .district-selector {
+        .row {
+            margin-right: 0px;
+            margin-left: 0px;
+        }
+    }
+    .form-group {
+        .v-input--selection-controls {
+            margin-top: 0px;
+        }
+        .v-label {
+            font-size: 12px;
+            padding-bottom: 0px;
+            padding-top: 6px;
+        }
+    }
     .ol-dragbox {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);

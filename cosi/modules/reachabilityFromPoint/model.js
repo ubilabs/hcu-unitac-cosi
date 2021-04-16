@@ -35,7 +35,7 @@ const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointM
     initialize: function () {
         this.superInitialize();
         const layerList = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})),
-            layerNames = layerList.map(layer => layer.featureType.trim());
+            layerNames = layerList.map(layer => layer.featureType?.trim() || layer.name);
 
         this.set("mapLayer", this.createMapLayer(this.get("mapLayerName")));
         this.setDropDownModel(layerNames);
