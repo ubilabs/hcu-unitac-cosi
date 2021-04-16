@@ -1,3 +1,5 @@
+import MappingJson from "../assets/mapping.json";
+
 /**
  * User type definition
  * @typedef {Object} DistrictSelectorState
@@ -40,7 +42,8 @@ const state = {
         }
     ],
     selectedDistrictLevel: null,
-    featureList: []
+    featureList: [],
+    mapping: MappingJson
 };
 
 export default state;

@@ -42,6 +42,10 @@
     "path":"cosi/Dashboard/DashboardTable",
     "type": "tool"
   },
+  "FeaturesList": {
+    "path":"cosi/FeaturesList",
+    "type": "tool"
+  },
   "FileImportAddon": {
     "type": "tool"
   },

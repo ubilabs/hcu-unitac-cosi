@@ -26,7 +26,8 @@
             {
                 "id": "Öffentliche Bibliotheken",
                 "numericalValues": [
-                    { "id": "medienanzahl",
+                    {
+                        "id": "medienanzahl",
                         "name": "Medienanzahl"
                     }
                 ]
@@ -181,11 +182,17 @@
         "layer": [
             {
                 "id": "Angebote und Nutzung der Jugendsozialarbeit (JSA)",
-                "numericalValues": []
+                "numericalValues": [
+                    {"id": "durchsch_stammnutzer", "name": "Stammnutzer/-innen pro Woche"},
+                    {"id": "angebotsstunden_pro_jahr", "name": "Stunden pro Jahr"}
+                ]
             },
             {
                 "id": "Angebote und Nutzung der Offenen Kinder- und Jugendarbeit (OKJA)",
-                "numericalValues": []
+                "numericalValues": [
+                    {"id": "durchsch_stammnutzer", "name": "Stammnutzer/-innen pro Woche"},
+                    {"id": "angebotsstunden_pro_jahr", "name": "Stunden pro Jahr"}
+                ]
             },
             {
                 "id": "Begegnungsstätten Ambulante Sozialpsychiatrie",

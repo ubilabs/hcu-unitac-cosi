@@ -1,0 +1,22 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "featuresList": {
+                    "title": "Einrichtungsübersicht",
+                    "help": "Listet alle geladenen Einrichtungen für die ausgewählten Gebiete",
+                    "layerFilter": "Liste nach Thema filtern",
+                    "search": "Liste durchsuchen",
+                    "colIcon": "Icon",
+                    "colFacility": "Einrichtung",
+                    "colDistrict": "Gebiet",
+                    "colLayerName": "Layer",
+                    "colType": "Typ",
+                    "colGroup": "Thema",
+                    "colActions": "Aktionen",
+                    "colToggleEnabled": "Ein-/Ausschalten"
+                }
+            }
+        }
+    }
+}

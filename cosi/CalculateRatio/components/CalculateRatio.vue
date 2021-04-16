@@ -3,12 +3,9 @@ import Tool from "../../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCalculateRatio";
 import mutations from "../store/mutationsCalculateRatio";
-import MappingJsonFacilities from "../mapping.json";
-import MappingJsonFeatures from "../../assets/mapping.json";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
 import JsonExcel from "vue-json-excel";
-import store from "../../../../src/app-store";
 
 export default {
     name: "CalculateRatio",
@@ -19,7 +16,6 @@ export default {
     },
     data () {
         return {
-            featuresStatistics: [],
             layerIdList: [],
             facilityList: [],
             featuresList: [],
@@ -52,7 +48,8 @@ export default {
     computed: {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList"]),
+        ...mapGetters("Tools/DistrictLoader", ["mapping", "selectedDistrictLevel", "currentStatsFeatures"]),
+        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
         resultData () {
             const json = {
@@ -113,8 +110,13 @@ export default {
             this.layerIdList = this.layerList.map(x => x.getProperties().name);
             this.updateFacilities();
         },
-        featureList () {
-            this.updateFeaturesList();
+        selectedDistrictLevel: {
+            deep: true,
+            handler () {
+                if (this.selectedDistrictLevel.features?.length > 0) {
+                    this.updateFeaturesList();
+                }
+            }
         },
         availableYears (newYears) {
             if (newYears.length > 0) {
@@ -158,7 +160,7 @@ export default {
          * @returns {void}
          */
         updateFacilities () {
-            this.facilityList = MappingJsonFacilities.reduce((list, group) => {
+            this.facilityList = this.facilitiesMapping.reduce((list, group) => {
                 const lengthCheck = group.layer.filter(layer => this.layerIdList.includes(layer.id));
 
                 if (lengthCheck.length > 0) {
@@ -185,9 +187,8 @@ export default {
          */
         updateFeaturesList () {
             this.featuresList = [];
-            this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
-            this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
-            MappingJsonFeatures.forEach(attr => {
+            this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
+            this.mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
 
@@ -227,6 +228,7 @@ export default {
         /**
          * @todo todo
          * @description todo
+         * @param {String} letter -
          * @returns {void}
          */
         switchVal (letter) {
@@ -279,7 +281,7 @@ export default {
          */
         checkSumUp (letter) {
             if (!this[letter + "Switch"]) {
-                const checkSumUp = MappingJsonFeatures.find(x => x.value === this["selectedField" + letter].id);
+                const checkSumUp = this.mapping.find(x => x.value === this["selectedField" + letter].id);
 
                 if (!this["sumUpSwitch" + letter]) {
                     if (checkSumUp.summable) {
@@ -511,7 +513,7 @@ export default {
         getFeatureData (districtName, featureName) {
             const featureDataList = [];
 
-            this.featuresStatistics.forEach(feature => {
+            this.currentStatsFeatures.forEach(feature => {
                 if (utils.unifyString(feature.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(districtName) && utils.unifyString(feature.get("kategorie")) === utils.unifyString(featureName)) {
                     Object.entries(feature.getProperties()).forEach(([key, val]) => {
                         if (key.includes(this.yearSelector)) {
@@ -547,7 +549,6 @@ export default {
                 mirroredRelation = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val)) / ((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val)) + Number.EPSILON) * 100) / 100,
                 capacity = Math.round((((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) * (this.faktorf_B / this.faktorf_A)) + Number.EPSILON) * 100) / 100,
                 need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) * (this.faktorf_A / this.faktorf_B)) + Number.EPSILON) * 100) / 100,
-                // need = Math.round((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / capacity) + Number.EPSILON) * 100) / 100, 
                 coverageA = this.fActive_A || this.fActive_B ? Math.round(((((this.paramFieldA.name === "Anzahl" ? calcObj.paramA_count : calcObj.paramA_val) / need) * this.perCalc_B) + Number.EPSILON) * 100) / 100 : Math.round(((this.perCalc_B * relation) + Number.EPSILON) * 100) / 100,
                 coverageB = this.fActive_A || this.fActive_B ? Math.round(((((this.paramFieldB.name === "Anzahl" ? calcObj.paramB_count : calcObj.paramB_val) / need) * this.perCalc_A) + Number.EPSILON) * 100) / 100 : Math.round(((this.perCalc_A * mirroredRelation) + Number.EPSILON) * 100) / 100,
                 weightedRelation = Math.round(((relation * (this.perCalc_A / this.perCalc_B)) + Number.EPSILON) * 100) / 100;

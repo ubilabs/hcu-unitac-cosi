@@ -63,6 +63,90 @@ const getters = {
     },
 
     /**
+     * Returns all laoded stats features filtered by district name.
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters - The DistrictLoader getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @param {String} value - The districtname to filter by.
+     * @returns {module:ol/Feature[]} The stats features.
+     */
+    statsFeaturesByDistrict: (state, {selectedDistrictLevel}) => (value) => {
+        return selectedDistrictLevel.features.filter(function (feature) {
+            return feature.getProperties()[selectedDistrictLevel.keyOfAttrName] === value;
+        });
+    },
+
+    /**
+     * Returns all laoded stats features filtered by district name.
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters - The DistrictLoader getters.
+     * @param {Object} getters.districtLevels - All districtLevels with their loaded stats features.
+     * @param {String} value - The level label to filter by.
+     * @returns {module:ol/Feature[]} The stats features.
+     */
+    statsFeaturesByLevel: (state, {districtLevels}) => (value) => {
+        return districtLevels.find(level => level.label === value)?.features;
+    },
+
+    /**
+     * Returns all loaded stats features filtered by any set of literal key/value pairs.
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters - The DistrictLoader getters.
+     * @param {Object} getters.districtLevels - All districtLevels with their loaded stats features.
+     * @param {Object} getters.selectedDistrictLevel - The currently loaded district level with its stats features.
+     * @param {Object} values - The object with keys and values to filter by, including "level" providing the districtLevel's label.
+     * @returns {module:ol/Feature[]} The stats features.
+     */
+    statsFeaturesByAttributes: (state, {districtLevels, selectedDistrictLevel}) => (values) => {
+        let districtLevel = selectedDistrictLevel;
+
+        if (values.level) {
+            districtLevel = districtLevels.find(level => level.label === values.level) || districtLevel;
+            delete values.level;
+        }
+
+        return districtLevel.features.filter(function (feature) {
+            const props = feature.getProperties();
+
+            for (const prop in values) {
+                if (props[prop] !== values[prop]) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    },
+
+    /**
+     * @description Returns all loaded stats (as objects) filtered by any set of literal key/value pairs.
+     * @param {Object} state - the DistrictLoader store state
+     * @param {Object} getters - the DistrictLoader getters
+     * @param {Function} getters.statsFeaturesByAttributes - the function that returns statFeatures by attributes for a given level
+     * @returns {Object[]} the List of Stats Objects
+     */
+    statsByAttributes: (state, {statsFeaturesByAttributes}) => (values) => {
+        return statsFeaturesByAttributes(values).map(feature => feature.getProperties());
+    },
+
+    /**
+     * @description checks whether there is any feature of the category in all districtLevels
+     * @param {Object} state - the DistrictLoader store state
+     * @param {Object} getters - the DistrictLoader getters
+     * @param {Function} getters.statsFeaturesByAttributes - the function that returns statFeatures by attributes for a given level
+     * @param {Object[]} getters.districtLevels - all districtLevels
+     * @param {String} value - the category to search for
+     * @returns {Boolean} returns whether a feature has been found
+     */
+    anyStatsOfCategory: (state, {statsFeaturesByAttributes, districtLevels}) => (value) => {
+        for (const level of districtLevels) {
+            if (statsFeaturesByAttributes({level: level.label, kategorie: value}).length > 0) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    /**
      * Returns all current loaded stats features of the selected district level.
      * @param {Object} state - The DistrictLoader state.
      * @param {Object} getters - The DistrictLoader getters.
