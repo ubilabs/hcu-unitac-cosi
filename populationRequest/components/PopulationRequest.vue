@@ -35,6 +35,7 @@ export default {
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
         ...mapGetters(["isDefaultStyle"]),
+        ...mapGetters("Language", ["currentLocale"]),
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -80,6 +81,17 @@ export default {
          */
         showMRHSourceAreaOutsideHint: function () {
             return this.sourceMRH === "tlw" && this.sourceFHH === "nein";
+        }
+    },
+    watch: {
+        // language is switched
+        currentLocale: function () {
+            this.$refs.graphicalSelectComponent.options =
+                {
+                    "Box": this.translate("common:snippets.graphicalSelect.selectBySquare"),
+                    "Circle": this.translate("common:snippets.graphicalSelect.selectByCircle"),
+                    "Polygon": this.translate("common:snippets.graphicalSelect.selectByPolygon")
+                };
         }
     },
     /**
@@ -291,7 +303,7 @@ export default {
             });
         },
         /**
-         * Sets the state at the RasterLayer
+         * Sets the state regarding the RasterLayer
          * @param {Boolean} value flag if Raster is to be set
          * @returns {void}
          */
@@ -327,7 +339,7 @@ export default {
             this.setModelAttributesByIdToModelList(layerId, value);
         },
         /**
-         * Sets the state at the alkisAdresses Layer
+         * Sets the state regarding the alkisAdresses Layer
          * @param {Boolean} value flag if alkisAdresses is to be set
          * @returns {void}
          */
@@ -397,7 +409,7 @@ export default {
 
 <template lang="html">
     <Tool
-        :title="translate('additional:modules.tools.populationRequest.title')"
+        :title="translate(name)"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
