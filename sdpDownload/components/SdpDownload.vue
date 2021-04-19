@@ -4,41 +4,48 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersSdpDownload";
 import mutations from "../store/mutationsSdpDownload";
 import actions from "../store/actionsSdpDownload";
-import GraphicalSelectView from "../../../modules/snippets/graphicalSelect/view";
-import GraphicalSelectModel from "../../../modules/snippets/graphicalSelect/model";
+import GraphicalSelect from "../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
 
 export default {
     name: "SdpDownload",
     components: {
-        Tool
+        Tool,
+        GraphicalSelect
+    },
+    data () {
+        return {
+            options_value: {
+                "Box": this.$t("common:snippets.graphicalSelect.selectBySquare"),
+                "Circle": this.$t("common:snippets.graphicalSelect.selectByCircle"),
+                "Polygon": this.$t("common:snippets.graphicalSelect.selectByPolygon")
+            }
+        };
     },
     computed: {
         ...mapGetters("Tools/SdpDownload", Object.keys(getters))
     },
     watch: {
         /**
-         * Starts the action for processes, if the tool is activated (active === true).
-         * @param {Boolean} value Value deciding whether the tool gets activated or deactivated.
+         * Starts the action for processes and adds layers if the tool is activated (active === true).
+         * @param {Boolean} value value deciding whether the tool gets activated or deactivated.
          * @returns {void}
          */
         active (value) {
             this.$nextTick(() => {
-                if (value && this.$refs.drawSelection) {
-                    // Fills the dropdown with the elements from the snippet
-                    this.renderDrawSelection();
-                    this.setInitLanguage();
-                    // Adds the WMS overview to the map
+                if (value) {
                     this.toggleRasterLayer();
                     this.loadWfsRaster();
-                    this.changeGraphicalSelectStatus(value);
-                    Radio.trigger("GraphicalSelect", "resetGeographicSelection");
+                    this.$refs.graphicalSelection.setStatus(value);
+                    this.$refs.graphicalSelection.resetGeographicSelection();
                 }
                 else {
                     this.toggleRasterLayer();
-                    this.changeGraphicalSelectStatus(value);
-                    this.resetView();
                 }
             });
+        },
+        graphicalSelectStatus (value) {
+            this.$refs.graphicalSelection.setStatus(value);
+            this.$refs.graphicalSelection.resetView(value);
         }
     },
     created () {
@@ -50,11 +57,23 @@ export default {
      */
     mounted () {
         this.applyTranslationKey(this.name);
-
     },
     methods: {
         ...mapMutations("Tools/SdpDownload", Object.keys(mutations)),
         ...mapActions("Tools/SdpDownload", Object.keys(actions)),
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+            return this.$t(key, options);
+        },
 
         /**
          * Closes this tool window by setting active to false
@@ -62,6 +81,8 @@ export default {
          */
         close () {
             this.setActive(false);
+            this.$refs.graphicalSelection.setStatus(false);
+            this.$refs.graphicalSelection.resetView();
 
             // TODO replace trigger when Menu is migrated
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
@@ -71,16 +92,6 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
-        },
-        /**
-         * Creates new graphicalSelectView instance and adds the divs to the template with drawing selections: circle|rectangle|polygon
-         * @returns {void}
-         */
-        renderDrawSelection: function () {
-            this.graphicalSelectView = {};
-            this.setGraphicalSelectModel(new GraphicalSelectModel({id: this.id}));
-            this.graphicalSelectView = new GraphicalSelectView({model: this.graphicalSelectModel});
-            this.$refs.drawSelection.appendChild(this.graphicalSelectView.render().el);
         }
     }
 };
@@ -104,7 +115,7 @@ export default {
             </div>
             <div class="content">
                 <div class="form-group col-xs-12 first">
-                    <span>{{ selectFormat }}</span>
+                    <span>{{ translate(selectFormat) }}</span>
                 </div>
                 <div class="form-group col-xs-12">
                     <select
@@ -120,22 +131,21 @@ export default {
                             data-toggle="tooltip"
                             :title="format.label"
                         >
-                            {{ $t(`additional:modules.tools.sdpdownload.${format.fileId}Label`) }}
+                            {{ translate(`additional:modules.tools.sdpdownload.${format.fileId}Label`) }}
                         </option>
                     </select>
                 </div>
                 <div class="form-group col-xs-12 first">
-                    <span>{{ howToChooseTiles }}</span>
+                    <span>{{ translate(howToChooseTiles) }}</span>
                 </div>
                 <div class="form-group col-xs-12">
                     <div
                         class="form-group form-group-sm"
                     >
-                        <div
-                            ref="drawSelection"
-                            class="geometric-selection"
+                        <GraphicalSelect
+                            ref="graphicalSelection"
                         >
-                        </div>
+                        </GraphicalSelect>
                     </div>
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
@@ -145,11 +155,11 @@ export default {
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressedData"
                     >
-                        {{ downloadDataPackage }}
+                        {{ translate(downloadDataPackage) }}
                     </button>
                 </div>
                 <div class="form-group col-xs-12">
-                    <span>{{ specialDownloads }}</span>
+                    <span>{{ translate(specialDownloads) }}</span>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button
@@ -158,7 +168,7 @@ export default {
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Neuwerk')"
                     >
-                        {{ neuwerkDataPackage }}
+                        {{ translate(neuwerkDataPackage) }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
@@ -168,7 +178,7 @@ export default {
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Scharhoern')"
                     >
-                        {{ scharhoernDataPackage }}
+                        {{ $t(scharhoernDataPackage) }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
@@ -178,7 +188,7 @@ export default {
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS310')"
                     >
-                        {{ tileOverview310 }}
+                        {{ translate(tileOverview310) }}
                     </button>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
@@ -188,7 +198,7 @@ export default {
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS320')"
                     >
-                        {{ tileOverview320 }}
+                        {{ translate(tileOverview320) }}
                     </button>
                 </div>
             </div>
@@ -197,7 +207,6 @@ export default {
 </template>
 
 <style lang="less" scoped>
-
 /*sdp download*/
     .content {
         width: 350px;
@@ -211,14 +220,15 @@ export default {
             }
         }
     }
+    #bselectedDownload{
+        margin-top: 15px;
+    }
     .btn {
         white-space:initial;
     }
     .formatselect{
-        width: calc(100% - 30px);
+        width: 100%;
         height: 30px;
-        padding-left: 15px;
-        margin-left: 15px;
         margin-right: 15px;
         padding: 5px 5px;
         font-size: 12px;
@@ -233,4 +243,20 @@ export default {
         padding: 10px;
     }
 }
+</style>
+
+<style lang="less">
+@color_1: #fff;
+    #circle-overlay {
+    position: absolute;
+    background: rgba(51, 153, 204, 0.8);
+    color: @color_1;
+    padding: 4px 8px;
+    }
+    #tooltip-overlay {
+        position: absolute;
+        background: rgba(51, 153, 204, 0.8);
+        color: @color_1;
+        padding: 4px 8px;
+    }
 </style>

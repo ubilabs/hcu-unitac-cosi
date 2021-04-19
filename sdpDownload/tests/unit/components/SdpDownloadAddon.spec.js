@@ -82,7 +82,7 @@ describe("SdpDownload.vue", () => {
     it("SDPAddon contains div for graphical selection", () => {
         const wrapper = shallowMount(SDPComponent, {store, localVue});
 
-        expect(wrapper.find(".geometric-selection").exists()).to.be.true;
+        expect(wrapper.find(".form-control").exists()).to.be.true;
 
     });
 

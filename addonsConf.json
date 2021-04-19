@@ -12,7 +12,7 @@
   "populationRequest": {
     "type": "tool"
   },
-  "SdpDownload": {
+  "sdpDownload": {
     "type": "tool"
   },
   "commuterFlows": {

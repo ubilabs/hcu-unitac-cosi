@@ -6,7 +6,7 @@ import sinon from "sinon";
 
 
 describe("addons/SdpDownload/store/actionsSdpDownload", () => {
-    let commit, dispatch, context, getters;
+    let commit, dispatch, context, getters, rootState;
 
     before(() => {
         i18next.init({
@@ -23,33 +23,7 @@ describe("addons/SdpDownload/store/actionsSdpDownload", () => {
 
     afterEach(sinon.restore);
 
-    it("changeGraphicalSelectStatus calls Backbones GraphicalSelect.setStatus", () => {
-        // spy on (object, 'method')
-        const radioTrigger = sinon.spy(Radio, "trigger"),
-            val = true;
 
-        // execute function to test
-        actions.changeGraphicalSelectStatus({getters}, val);
-
-        // check if onced called and has exactly the provided parameters
-        expect(radioTrigger.calledOnceWithExactly("GraphicalSelect", "setStatus", getters.id, true)).to.be.true;
-
-    });
-    it("resetView calls Backbones GraphicalSelect.resetView", () => {
-        const radioTrigger = sinon.spy(Radio, "trigger");
-
-        actions.resetView({getters});
-        expect(radioTrigger.calledOnceWithExactly("GraphicalSelect", "resetView", getters.id)).to.be.true;
-
-    });
-    /* it("addModelsByAttributesToModelList calls Backbones ModelList.addModelsByAttributes", () => {
-        const radioTrigger = sinon.spy(Radio, "trigger");
-
-
-        actions.addModelsByAttributesToModelList(context, "4707")
-        expect(radioTrigger.calledOnceWithExactly("ModelList", "addModelsByAttributes", {id: layerId})).to.be.true;
-
-    });*/
     it("setModelAttributesByIdToModelList calls Backbone ModelList.setModelAttributesById", () => {
         const radioTrigger = sinon.spy(Radio, "trigger"),
             payload = {layerId: "4707", isActive: true};
@@ -115,8 +89,10 @@ describe("addons/SdpDownload/store/actionsSdpDownload", () => {
     it("calculateSelectedRasterNames commits setRasterNames", () => {
         const rasterNames = [];
 
-        getters = {wfsRaster: importedState.wfsRaster, graphicalSelectModel: {attributes: {selectedAreaGeoJson: undefined}}};
-        actions.calculateSelectedRasterNames({getters, dispatch, commit});
+        getters = {wfsRaster: importedState.wfsRaster};
+        rootState = {GraphicalSelect: {selectedAreaGeoJson: undefined}};
+
+        actions.calculateSelectedRasterNames({getters, dispatch, commit, rootState});
 
         // commit mutation
         expect(commit.calledOnceWithExactly("setRasterNames", rasterNames)).to.be.true;

@@ -4,11 +4,11 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
-|SdpDownload|nein|**[SdpDownload](#markdown-header-portalconfigmenutoolsdpdownload)**||Intern in Hamburg genutztes Werkzeug um Standard-Datenpakete herunterzuladen. Die Fläche wird bestimmt durch eine geometrische Auswahl auf der Karte.|true|
+|SdpDownload|nein|**[sdpDownload](#markdown-header-portalconfigmenutoolsdpdownload)**||Intern in Hamburg genutztes Werkzeug um Standard-Datenpakete herunterzuladen. Die Fläche wird bestimmt durch eine geometrische Auswahl auf der Karte.|true|
 
 ***
 
-#### Portalconfig.menu.tool.SdpDownload
+#### Portalconfig.menu.tool.sdpDownload
 
 [inherits]: # (Portalconfig.menu.tool)
 
@@ -27,7 +27,7 @@ Download von Standard-Datenpaketen für Hamburg. Dieses Werkzeug öffnet sich in
 **Beispiel SDP Download**
 ```
 #!json
-"SdpDownload": {
+"sdpDownload": {
                         "name": "SDP Download",
                         "glyphicon": "glyphicon-download"
                 },

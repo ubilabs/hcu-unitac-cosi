@@ -37,11 +37,10 @@ describe("addons/SdpDownload/store/gettersSdpDownload", function () {
         });
         it("returns the formats default value from state", function () {
             expect(stateSdpDownload.formats).to.be.eql([
-                {id: "NAS", label: "", isSelected: true, desc: "", fileId: "nas"},
-                {id: "DWG_310", label: "", isSelected: false, desc: "", fileId: "dwg310"},
-                {id: "DWG_320", label: "", isSelected: false, desc: "", fileId: "dwg320"},
-                {id: "JPG", label: "", isSelected: false, desc: "", fileId: "jpg"}
-            ]);
+                {id: "NAS", label: "additional:modules.tools.sdpdownload.nasLabel", isSelected: true, desc: "additional:modules.tools.sdpdownload.nasDescription", fileId: "nas"},
+                {id: "DWG_310", label: "additional:modules.tools.sdpdownload.dwg310Label", isSelected: false, desc: "additional:modules.tools.sdpdownload.dwg310Description", fileId: "dwg310"},
+                {id: "DWG_320", label: "additional:modules.tools.sdpdownload.dwg320Label", isSelected: false, desc: "additional:modules.tools.sdpdownload.dwg320Description", fileId: "dwg320"},
+                {id: "JPG", label: "additional:modules.tools.sdpdownload.jpgLabel", isSelected: false, desc: "additional:modules.tools.sdpdownload.jpgDescription", fileId: "jpg"}]);
         });
         it("returns the selectedFormat default value from state", function () {
             expect(stateSdpDownload.selectedFormat).to.be.equal("NAS");

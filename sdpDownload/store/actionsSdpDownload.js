@@ -5,25 +5,6 @@ import axios from "axios";
 
 const actions = {
     /**
-     * Sets the state at GraphicalSelect - handles (de-)activation of this Tool
-     * @param {Object} getters of this component
-     * @param {Boolean} val active or not
-     * @fires Snippets.GraphicalSelect#setStatus
-     * @returns {void}
-     */
-    changeGraphicalSelectStatus: function ({getters}, val) {
-        Radio.trigger("GraphicalSelect", "setStatus", getters.id, val);
-    },
-    /**
-     * Resets the GraphicalSelect
-     * @param {Object} getters of this component
-     * @fires Snippets.GraphicalSelect#resetView
-     * @returns {void}
-     */
-    resetView: function ({getters}) {
-        Radio.trigger("GraphicalSelect", "resetView", getters.id);
-    },
-    /**
      * Adds the layer to the modellist
      * @param {Object} context of this component
      * @param {String} layerId id of the layer
@@ -38,7 +19,9 @@ const actions = {
     /**
      * Sets the layer to the modellist
      * @param {Object} context vuex element
-     * @param {Object} payload contains layerId-id of the layer, isActive-Boolean if the layer is selected and is visible in map
+     * @param {Object} payload vuex element
+     * @param {Boolean} payload.isActive true if the layer is selected and is visible in map
+     * @param {String} payload.layerId layerId-id of the layer
      * @fires  Core.ModelList#RadioTriggerModelListSetModelAttributesById
      * @returns {void}
      */
@@ -50,7 +33,7 @@ const actions = {
     },
     /**
      * Shows or hides the raster layer
-     * @param {Object} getters and dispatch - vuex elements
+     * @param {Object} getters dispatch vuex elements
      * @returns {void}
      */
     toggleRasterLayer: function ({getters, dispatch}) {
@@ -63,11 +46,10 @@ const actions = {
     /**
     * Loads the wfs raster with the params stored in property wfsRasterParams.
     * On success the features are read.
-    * @param {Object} getters and dispatch - vuex elements
+    * @param {Object} getters dispatch vuex elements
     * @returns {void}
     */
     loadWfsRaster: function ({getters, dispatch}) {
-
         const params = getters.wfsRasterParams,
             urlParams = {
                 "Service": params.service,
@@ -111,34 +93,35 @@ const actions = {
     /**
      * Calculates the intersection of the graphical selection with the raster. The names of the intersected raster squares are then commited to the state.
      * @see {@link https://turfjs.org/docs/#intersect}
-     * @param {Object} vuex getters, dispatch and commit
+     * @param {Object} getters dispatch, rootState, commit vuex elements
      * @returns {void}
      */
-    calculateSelectedRasterNames: function ({getters, dispatch, commit}) {
+    calculateSelectedRasterNames: async function ({getters, dispatch, commit, rootState}) {
         const rasterLayerFeatures = getters.wfsRaster,
-            selectedAreaGeoJson = getters.graphicalSelectModel.attributes.selectedAreaGeoJson,
+            selectedAreaGeoJson = rootState.GraphicalSelect.selectedAreaGeoJson,
             rasterNames = [];
 
         if (selectedAreaGeoJson && selectedAreaGeoJson.coordinates) {
             const turfGeoSelection = turf.polygon([selectedAreaGeoJson.coordinates[0]]);
 
-            rasterLayerFeatures.forEach(feature => {
-                const featureGeojson = Radio.request("GraphicalSelect", "featureToGeoJson", feature),
+            rasterLayerFeatures.forEach(async feature => {
+                const featureGeojson = await dispatch("GraphicalSelect/featureToGeoJson", feature, {root: true}),
                     turfRaster = turf.polygon([featureGeojson.coordinates[0]]);
 
                 if (turf.intersect(turfGeoSelection, turfRaster)) {
-                    dispatch("addFeaturenameToRasternames", {feature: feature, rasterNames: rasterNames});
+                    await dispatch("addFeaturenameToRasternames", {feature: feature, rasterNames: rasterNames});
                 }
             });
         }
-
         commit("setRasterNames", rasterNames);
 
     },
     /**
      * Adds the name of the features tile to the given list of rasterNames.
      * @param {Object} context vuex element
-     * @param {Object} payload payload.feature-to get the name of the tile from, payload.rasterNames-array to fill with unique names
+     * @param {Object} payload vuex element
+     * @param {Object} payload.feature to get the name of the tile from
+     * @param {Object} payload.rasterNames array to fill with unique names
      * @returns {void}
      */
     addFeaturenameToRasternames: function (context, payload) {
@@ -153,7 +136,7 @@ const actions = {
     },
     /**
      * Collects the params to request the WMS for "Kacheln" and triggers the request.
-     * @param {Object} getters, dispatch - vuex elements
+     * @param {Object} getters dispatch vuex elements
      * @returns {void}
      */
     requestCompressedData: async function ({getters, dispatch}) {
@@ -178,8 +161,7 @@ const actions = {
      * Checks the models "rasterNames":
      * If there are more than 9 tiles selected, the user is warned to reduce the selection.
      * If there are no tiles selected, the user is informed to select some.
-     * @param {Object} getters - vuex element
-     * @param {Object} dispatch - vuex element
+     * @param {Object} getters dispatch vuex elements
      * @returns {Booelan} if check is okay to request server
      */
     checkRasterNamesAmount: function ({getters, dispatch}) {
@@ -211,7 +193,7 @@ const actions = {
     },
     /**
      * Collects the params to request the WMS for island data.Params have to look like: "insel=Neuwerk&type=JPG"
-     * @param {Object} getters, dispatch - vuex elements
+     * @param {Object} getters dispatch vuex elements
      * @param {String} islandName name of the island
      * @returns {void}
      */
@@ -234,13 +216,12 @@ const actions = {
     },
     /**
      * Requests the WFS and loads the data down.
-     * @param {Object} getters, dispatch and commit - vuex elements
+     * @param {Object} getters dispatch, commit, rootState vuex elements
      * @param {String} params to specify the request
      * @returns {void}
      */
-    doRequest: function ({getters, dispatch, commit}, params) {
+    doRequest: function ({getters, dispatch, commit, rootState}, params) {
         const url = Radio.request("RestReader", "getServiceById", getters.compressDataId).get("url"),
-            // dataZip as axios instance to add specific interceptors
             dataZip = axios.create();
 
         let alertingFailedToDownload = {},
@@ -262,8 +243,7 @@ const actions = {
             timeout: 15000
         })
             .then(resp => {
-                dispatch("resetView");
-                dispatch("changeGraphicalSelectStatus", true);
+                commit("setGraphicalSelectStatus", true);
                 if (resp.data.indexOf("Fehler") > -1) {
                     alertingFailedToDownload = {
                         "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
@@ -273,9 +253,8 @@ const actions = {
                     dispatch("Alerting/addSingleAlert", alertingFailedToDownload, {root: true});
                 }
                 else {
-                    // download zip-file
                     window.location.href = Radio.request("RestReader", "getServiceById", getters.compressedFileId).get("url") + "?name=" + resp.data;
-                    commit("setSelectedAreaGeoJson", {});
+                    rootState.GraphicalSelect.selectedAreaGeoJson = {};
                 }
             })
             .catch(() => {
@@ -284,8 +263,7 @@ const actions = {
                     "content": "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + getters.serviceNotResponding + "</small>",
                     "displayClass": "error"
                 };
-                dispatch("resetView");
-                dispatch("changeGraphicalSelectStatus", false);
+                commit("setGraphicalSelectStatus", false);
                 dispatch("Alerting/addSingleAlert", alertingServiceNotresponding, {root: true});
             });
     }
