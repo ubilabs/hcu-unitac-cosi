@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "scenarioBuilder": {
+                    "title": "ScenarioBuilder",
+                    "help": "Lorem Ipsum dolor sit amet"
+                }
+            }
+        }
+    }
+}

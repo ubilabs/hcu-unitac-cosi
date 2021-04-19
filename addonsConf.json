@@ -46,6 +46,10 @@
     "path":"cosi/FeaturesList",
     "type": "tool"
   },
+  "ScenarioBuilder": {
+    "path": "cosi/ScenarioBuilder",
+    "type": "tool"
+  },
   "FileImportAddon": {
     "type": "tool"
   },
