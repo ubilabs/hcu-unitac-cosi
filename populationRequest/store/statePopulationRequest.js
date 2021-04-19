@@ -16,6 +16,7 @@ const state = {
     active: false,
     id: "populationRequest",
     // defaults for config.json parameters
+    name: "translate#additional:modules.tools.populationRequest.title",
     glyphicon: "glyphicon-wrench",
     renderToWindow: true,
     resizableWindow: true,

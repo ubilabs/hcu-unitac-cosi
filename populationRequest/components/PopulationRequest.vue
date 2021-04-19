@@ -3,7 +3,6 @@ import Tool from "../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
-import state from "../store/statePopulationRequest";
 import GraphicalSelect from "../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
 import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
@@ -35,7 +34,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
-        ...mapGetters(["isTableStyle", "isDefaultStyle"]),
+        ...mapGetters(["isDefaultStyle"]),
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -274,7 +273,7 @@ export default {
                 }
 
                 this.addSingleAlert({
-                    "content": this.translate("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedPrefix") + layerId + this.translate("additional:modules.tools.populationRequest.errors.layerIdCantBeLoadedSuffix")
+                    "content": this.translate("additional:modules.tools.populationRequest.errors.layerIdCantBeLoaded", {layerId: layerId})
                 });
             }
         },
@@ -300,8 +299,11 @@ export default {
             const rasterCheckBox = this.$refs.rasterCheckBox,
                 layerId = this.rasterLayerId;
 
+            if (rasterCheckBox !== undefined) {
+                rasterCheckBox.setActive(value);
+            }
             if (value) {
-                const scale = this.$store.state.Map.scale; // Radio.request("MapView", "getOptions").scale
+                const scale = this.$store.state.Map.scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 100000) {
@@ -333,8 +335,11 @@ export default {
             const alkisAdressesCheckBox = this.$refs.alkisAdressesCheckBox,
                 layerId = this.alkisAdressLayerId;
 
+            if (alkisAdressesCheckBox !== undefined) {
+                alkisAdressesCheckBox.setActive(value);
+            }
             if (value) {
-                const scale = this.$store.state.Map.scale; // Radio.request("MapView", "getOptions").scale;
+                const scale = this.$store.state.Map.scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 10000) {
@@ -501,7 +506,7 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label>{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
+                                <label @click="triggerRaster(!rasterActive)">{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
                                     ref="rasterCheckBox"
                                     :defaultState="isRasterVisibleInMap"
@@ -516,7 +521,7 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label>{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
+                                <label @click="triggerAlkisAdresses(!alkisAdressesActive)">{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
                                 <ToggleCheckbox
                                     ref="alkisAdressesCheckBox"
                                     :defaultState="isAlkisAdressesVisibleInMap"
@@ -562,5 +567,24 @@ export default {
     .checkbox-container .form-inline .title-checkbox label {
         white-space: normal;
         padding-left:5px;
+    }
+</style>
+
+<style lang="less">
+    #tooltip-overlay {
+        position: relative;
+        background: rgba(51, 153, 204, 0.8);
+        color: #fff;
+        max-width: 200px;
+        padding: 4px 8px;
+    }
+
+    #circle-overlay {
+        position: relative;
+        top: -20px;
+        background: rgba(51, 153, 204, 0.8);
+        color: #fff;
+        max-width: 70px;
+        padding: 4px 8px;
     }
 </style>
