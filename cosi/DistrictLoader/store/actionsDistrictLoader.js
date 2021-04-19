@@ -19,6 +19,7 @@ const actions = {
      */
     loadDistricts ({commit, dispatch, getters}, payload) {
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
+        dispatch("resetMapping");
         const {selectedDistrictLevel, districtLevels} = getters,
             {extent, districtNameList, districtLevel, subDistrictNameList} = payload,
             level = typeof districtLevel === "undefined" ? selectedDistrictLevel : districtLevel,
@@ -38,8 +39,11 @@ const actions = {
                 // mapping feature kategorie value
                 .then(features => {
                     features.forEach(function (feature) {
+                        const mappingObject = findMappingObjectByCategory(feature.get("kategorie"));
+
                         feature.unset("geom"); // fallback for accidentially loaded geometries
-                        feature.set("kategorie", findMappingObjectByCategory(feature.get("kategorie")).value);
+                        feature.set("kategorie", mappingObject.value);
+                        feature.set("group", mappingObject.group);
                     });
                     if (features.length > 0) {
                         layer.category = features[0].get("kategorie");
@@ -108,6 +112,102 @@ const actions = {
             content: "Datensätze konnten nicht geladen werden. Vermutlich liegt ein Verbindungsproblem zum Server vor. Bestätigen Sie die Auswahl erneut oder laden Sie CoSI neu.",
             displayClass: "warning"
         }, {root: true});
+    },
+
+    /**
+     * @description Appends the stats features to the selected district feature objects. Uses references.
+     * @todo This is preliminary! It's not clear yet whether it's useful.
+     * @param {Object} context - the store's context arguments
+     * @param {Object} context.getters - the modules store getters
+     * @param {String} context.getters.keyOfAttrName - the key for the attribute "name" of the stats features' districts
+     * @param {Object} context.rootGetters - the root store's getters
+     * @param {Object} context.rootGetters.keyOfAttrName - the key for the attribute "name" of the districts in the map
+     * @param {Object} context.rootGetters.selectedFeatures - the currently selected map features
+     * @param {Object[]} statsFeatures - the loaded stats features for the current districtLevel
+     * @returns {void}
+     */
+    appendStatsToDistricts ({getters, rootGetters}, statsFeatures) {
+        const keyOfAttrNameStats = getters.selectedDistrictLevel.keyOfAttrName,
+            keyOfAttrName = rootGetters["Tools/DistrictSelector/keyOfAttrName"],
+            districtFeatures = rootGetters["Tools/DistrictSelector/selectedFeatures"];
+
+        statsFeatures.forEach(feature => {
+            const district = districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
+
+            if (district) {
+                district.set("stats", {...district.get("stats") || {}, [feature.get("kategorie")]: feature});
+            }
+        });
+    },
+    /**
+     * @description sets a set of stats features for a given district level
+     * @param {*} state - the District Loaders store state
+     * @param {*} payload - the data to set
+     * @param {String} payload.label - the district level to set the features to
+     * @param {module:ol/Feature[]} payload.features - the features to set on the provided district level
+     * @returns {void}
+     */
+    setDistrictLevelFeatures ({state}, payload) {
+        const {label, features} = payload,
+            districtLevel = state.districtLevels.find(level => unifyString(level.label) === unifyString(label));
+
+        if (districtLevel) {
+            districtLevel.features = features;
+        }
+    },
+    /**
+     * @description adds a stat feature to a given district level, extends the mapping object if necessary
+     * @param {Object} context - the store's context arguments
+     * @param {Object} context.state - the District Loaders store state
+     * @param {Function} context.commit - Function to commit a mutation.
+     * @param {Object} payload - the data to add
+     * @param {String} payload.label - the district level to set the features to
+     * @param {module:ol/Feature[]} payload.features - the feature to add to the provided district level
+     * @returns {void}
+     */
+    addDistrictLevelFeature ({state, commit}, payload) {
+        const {label, feature} = payload,
+            districtLevel = state.districtLevels.find(level => unifyString(level.label) === unifyString(label));
+
+        commit("addCategoryToMapping", feature);
+
+        if (districtLevel) {
+            districtLevel.features = [...districtLevel.features, feature];
+        }
+    },
+    /**
+     * @description removes a stat feature from a given district level, adjusts the mapping if necessary
+     * @todo not implemented atm
+     * @param {Object} context - the store's context arguments
+     * @param {Object} context.state - the District Loader's store state
+     * @param {Function} context.commit - Function to commit a mutation.
+     * @param {Function} context.getters - the District Loader's getters.
+     * @param {Object} payload - the data to remove
+     * @param {String} payload.label - the district level to remove the feature from
+     * @param {module:ol/Feature[]} payload.features - the feature to be removed from the provided district level
+     * @returns {void}
+     */
+    removeDistrictLevelFeature ({state, commit, getters}, payload) {
+        const {label, feature} = payload,
+            districtLevel = state.districtLevels.find(level => unifyString(level.label) === unifyString(label));
+
+        /** @todo find better, more performant solution */
+        if (!getters.anyStatsOfCategory(feature.get("kategorie"))) {
+            commit("removeCategoryFromMapping", feature);
+        }
+
+        if (districtLevel) {
+            districtLevel.features = districtLevel.filter(_feature => _feature !== feature);
+        }
+    },
+
+    /**
+     * @description resets the mapping to the original json
+     * @param {Object} state - the DistrictLoader store state
+     * @returns {void}
+     */
+    resetMapping ({state}) {
+        state.mapping = MappingJson;
     }
 };
 
