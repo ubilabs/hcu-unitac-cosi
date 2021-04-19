@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "chartGenerator": {
+                    "title": "CharGenerator",
+                    "description": "Creates chars to visualize data."
+                }
+            }
+        }
+    }
+}

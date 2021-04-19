@@ -50,9 +50,9 @@ export default {
             // Selected value for Field B (it's an object because it can carry more information like values or properties, depending on the data set)
             selectedFieldB: {id: ""},
             // Selected property for Field A (facility only)
-            paramFieldA: "",
+            paramFieldA: {name: "", id: ""},
             // Selected property for Field B (facility only)
-            paramFieldB: "",
+            paramFieldB: {name: "", id: ""},
             // "Faktor F" has been entered by the user for Field A
             fActive_A: false,
             // "Faktor F" has been entered by the user for Field B
@@ -349,8 +349,8 @@ export default {
         clearAllValues () {
             this.selectedFieldA = {id: ""};
             this.selectedFieldB = {id: ""};
-            this.paramFieldA = "";
-            this.paramFieldB = "";
+            this.paramFieldA = {name: "", id: ""};
+            this.paramFieldB = {name: "", id: ""};
             this.fActive_A = false;
             this.fActive_B = false;
             this.faktorf_A = 1;
@@ -476,6 +476,7 @@ export default {
                     }
 
                     this.calcHelper.paramA_val = this.featureVals;
+                    this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
                 }
 
                 if (this.BSwitch) {
@@ -549,6 +550,7 @@ export default {
                     }
 
                     this.calcHelper.paramB_val = this.featureVals;
+                    this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
                 }
 
                 dataArray.push(this.calcHelper);
@@ -618,6 +620,41 @@ export default {
                 this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
                 this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
             }
+        },
+        loadToCG () {
+            const graphObj = {
+                id: "calcratio-test",
+                name: "Versorgungsanalyse - Visualisierung",
+                type: "Bar",
+                color: "blue",
+                data: {
+                    labels: [],
+                    dataSets: []
+                }
+            };
+
+            this.results.forEach(result => {
+                graphObj.data.labels.push(result.scope);
+
+                Object.entries(result).forEach(([key, val]) => {
+                    const checkExisting = graphObj.data.dataSets.find(set => set.label === key);
+
+                    if (checkExisting) {
+                        checkExisting.data.push(val);
+                    }
+                    else {
+                        const obj = {
+                            label: key,
+                            data: [val]
+                        };
+
+                        graphObj.data.datasets.push(obj);
+                    }
+                });
+            });
+
+            this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
+            console.log(graphObj);
         }
     }
 };
@@ -982,6 +1019,14 @@ export default {
                                     class="glyphicon glyphicon-eye-close"
                                 ></span>
                             </button>
+                            <button
+                                class="cg"
+                                @click="loadToCG()"
+                            >
+                                <span
+                                    class="glyphicon glyphicon-stats"
+                                ></span>
+                            </button>
                             <div
                                 v-if="!ASwitch || !BSwitch"
                                 class="year_selector"
@@ -1262,7 +1307,7 @@ export default {
                             }
                         }
 
-                        button.ccm {
+                        button.ccm button.cg {
                             height:40px;
                             width:40px;
                             margin:5px 10px 5px 5px;

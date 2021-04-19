@@ -37,6 +37,11 @@
 */
 
 /**
+* @namespace ChartGenerator
+* @description renders map features in the manner of color-code according to feature values
+*/
+
+/**
 * @namespace LayerFilterSelector
 * @memberof Tools.CompareDistricts
 * @description selector of data layer to filter districts through

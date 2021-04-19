@@ -26,6 +26,10 @@
     "path": "cosi/CalculateRatio",
     "type": "tool"
   },
+  "ChartGenerator": {
+    "path": "cosi/ChartGenerator",
+    "type": "tool"
+  },
   "DistrictSelector": {
     "path":"cosi/DistrictSelector",
     "type": "tool"

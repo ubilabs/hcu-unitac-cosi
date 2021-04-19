@@ -45,6 +45,8 @@ export default {
             playState: false,
             // Playback speed of the animation
             playSpeed: 1,
+            // State of names of districts visible on map
+            showMapNames: false,
             // Helper Variable to force Legend Markers to rerender
             updateLegendList: 1
         };
@@ -81,6 +83,9 @@ export default {
             if (stateChange) {
                 this.animationOverYears(this.playSpeed);
             }
+        },
+        showMapNames () {
+            this.renderVisualization();
         },
         dataToCCM (newState) {
             if (newState) {
@@ -181,6 +186,8 @@ export default {
                             this.originalStyling = getStyling;
                         }
 
+                        const styleArray = [];
+
                         getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
@@ -194,13 +201,14 @@ export default {
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
                         });
+                        styleArray.push(new Style(getStyling));
                         if (this.lastYear) {
                             const additionalText = new Style({
                                 zIndex: 2,
                                 text: new Text({
                                     font: "13px Calibri, sans-serif",
                                     fill: new Fill({
-                                        color: [20, 20, 20]
+                                        color: [0, 0, 0]
                                     }),
                                     stroke: new Stroke({
                                         color: [240, 240, 240],
@@ -211,11 +219,30 @@ export default {
                                 })
                             });
 
-                            district.setStyle([new Style(getStyling), additionalText]);
+                            styleArray.push(additionalText);
                         }
-                        else {
-                            district.setStyle(new Style(getStyling));
+                        if (this.showMapNames) {
+                            const headText = new Style({
+                                zIndex: 100,
+                                text: new Text({
+                                    font: "16px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [0, 0, 0]
+                                    }),
+                                    placement: "point",
+                                    backgroundFill: new Fill({
+                                        color: [255, 255, 255]
+                                    }),
+                                    padding: [5, 10, 5, 10],
+                                    text: matchResults.getProperties()[this.keyOfAttrNameStats],
+                                    offsetY: -35
+                                })
+                            });
+
+                            styleArray.push(headText);
                         }
+
+                        district.setStyle(styleArray);
                     }
                 });
             }
@@ -293,7 +320,6 @@ export default {
                         });
                     });
 
-                console.log(matchResults);
                 colorScale.legend.values.forEach((value, index) => {
                     if (value === "Keine Daten") {
                         colorScale.legend.colors.splice(index, 1);
@@ -367,6 +393,7 @@ export default {
 <template lang="html">
     <div
         v-if="featuresStatistics.length"
+        id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
     >
@@ -456,6 +483,13 @@ export default {
                     @click="playState = !playState"
                 >
                     <span class="glyphicon glyphicon-play"></span>
+                </button>
+                <button
+                    v-if="visualizationState"
+                    class="map_button"
+                    @click="showMapNames = !showMapNames"
+                >
+                    <span class="glyphicon glyphicon-map-marker"></span>
                 </button>
                 <Multiselect
                     v-if="featuresList.length"

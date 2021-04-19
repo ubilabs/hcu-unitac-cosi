@@ -7,6 +7,8 @@ export default function calculateRatio (dataArray, year) {
     const results = [];
 
     dataArray.forEach(dataSet => {
+        
+        console.log("wie sieht es hier aus? calc1", dataSet);
         const calcObj = {
                 scope: dataSet.name,
                 paramA_val: typeof dataSet.paramA_calc === "object" ? dataSet.paramA_calc[year] : dataSet.paramA_calc,
@@ -57,13 +59,13 @@ function calculateTotals (results) {
         resultsTotal = {
             scope: "Gesamt",
             paramA_val: results.reduce((total, district) => total + district.paramA_val, 0),
-            paramB_val: this.results.reduce((total, district) => total + district.paramB_val, 0)
+            paramB_val: results.reduce((total, district) => total + district.paramB_val, 0)
         },
 
         resultsAverage = {
             scope: "Durchschnitt",
-            paramA_val: resultsTotal.paramA_val / this.results.length,
-            paramB_val: resultsTotal.paramB_val / this.results.length
+            paramA_val: resultsTotal.paramA_val / results.length,
+            paramB_val: resultsTotal.paramB_val / results.length
         },
 
         total = calculateSingle(resultsTotal, dataHelpers),
