@@ -38,7 +38,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
             setDrawInteractionListener: sinon.stub(),
             setDefaultSelection: sinon.stub()
         },
-        mocklGraphicalSelectMutations = {
+        mockGraphicalSelectMutations = {
             setCurrentValue: sinon.stub(),
             setDrawInteraction: sinon.stub(),
             setDefaultSelection: sinon.stub()
@@ -68,7 +68,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
                     namespaced: true,
                     getters: mockGraphicalSelectGetters,
                     actions: mockGraphicalSelectActions,
-                    mutations: mocklGraphicalSelectMutations
+                    mutations: mockGraphicalSelectMutations
                 }
             },
             getters: {
