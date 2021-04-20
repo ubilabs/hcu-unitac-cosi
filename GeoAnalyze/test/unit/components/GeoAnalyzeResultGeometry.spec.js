@@ -4,7 +4,7 @@ import GeoAnalyzeResultGeometry from "../../../components/GeoAnalyzeResultGeomet
 
 const localVue = createLocalVue();
 
-describe("addons/geoAnalyze/components/GeoAnalyzeResultGeometry.vue", () => {
+describe("addons/GeoAnalyze/components/GeoAnalyzeResultGeometry.vue", () => {
     const results = {
         "ew": [{
             "sum_ew_haupt": "871",

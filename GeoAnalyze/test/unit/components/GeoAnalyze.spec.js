@@ -4,7 +4,7 @@ import GeoAnalyze from "../../../components/GeoAnalyze.vue";
 config.mocks.$t = key => key;
 import sinon from "sinon";
 
-describe("addons/geoAnalyze/components/GeoAnalyze.vue", () => {
+describe("addons/GeoAnalyze/components/GeoAnalyze.vue", () => {
     let spyToggleInteraction,
         spyGetData;
 

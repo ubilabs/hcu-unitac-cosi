@@ -2,7 +2,7 @@
 import testAction from "../../../../../test/unittests/VueTestUtils";
 import actions from "../../../store/actionsFileImportAddon";
 import importedState from "../../../store/stateFileImportAddon";
-import rawSources from "../../resources/rawSources.js";
+import rawSources from "../../ressources/rawSources.js";
 import * as crs from "masterportalAPI/src/crs";
 
 const
@@ -23,7 +23,7 @@ before(() => {
     });
 });
 
-describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
+describe("addons/FileImportAddon/store/actionsFileImportAddon.js", () => {
     describe("file import - file should add some features to the current draw layer", () => {
         const
             checkSameLayer = true,
@@ -56,7 +56,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });
@@ -68,7 +68,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.missingFormat")
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.missingFormat")
                 },
                 dispatch: true
             }], {}, done);
@@ -81,7 +81,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.missingFileContent")
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.missingFileContent")
                 },
                 dispatch: true
             }], {}, done);
@@ -94,7 +94,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.missingFileContent")
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.missingFileContent")
                 },
                 dispatch: true
             }], {}, done);
@@ -107,7 +107,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });
@@ -119,7 +119,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });
@@ -133,7 +133,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.missingFileContent")},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.missingFileContent")},
                 dispatch: true
             }], {}, done);
         });
@@ -145,7 +145,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });
@@ -157,7 +157,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });
@@ -169,7 +169,7 @@ describe("addons/fileImportAddon/store/actionsFileImportAddon.js", () => {
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: payload.filename})},
+                    content: i18next.t("additional:modules.tools.FileImportAddon.alertingMessages.success", {filename: payload.filename})},
                 dispatch: true
             }], {}, done);
         });

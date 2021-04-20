@@ -10,7 +10,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("addons/fileImportAddon/components/FileImportAddon.vue", () => {
+describe("addons/FileImportAddon/components/FileImportAddon.vue", () => {
     const
         mockConfigJson = {
             Portalconfig: {
@@ -19,7 +19,7 @@ describe("addons/fileImportAddon/components/FileImportAddon.vue", () => {
                         children: {
                             FileImportAddon:
                             {
-                                "title": "translate#addtional:menu.tools.fileImportAddon",
+                                "title": "translate#addtional:menu.tools.FileImportAddon",
                                 "glyphicon": "glyphicon-resize-full",
                                 "renderToWindow": true
                             }

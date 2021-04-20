@@ -8,7 +8,7 @@ const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
-describe("addons/geoAnalyze/components/GeoAnalyzeResultBuilding.vue", () => {
+describe("addons/GeoAnalyze/components/GeoAnalyzeResultBuilding.vue", () => {
     const results = [{
             "adresse": "Felix-Dahn-Straße 2",
             "ew_haupt": 38,
