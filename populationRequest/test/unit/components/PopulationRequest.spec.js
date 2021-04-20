@@ -4,6 +4,8 @@ import {expect} from "chai";
 import sinon from "sinon";
 
 import Component from "../../../components/PopulationRequest.vue";
+import GraphicalSelectComponent from "../../../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
+import ToggleCheckboxComponent from "../../../../../src/share-components/ToggleCheckbox.vue";
 import Module from "../../../store/indexPopulationRequest";
 
 const localVue = createLocalVue();
@@ -12,26 +14,64 @@ localVue.use(Vuex);
 config.mocks.$t = key => key;
 
 describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
+    const geographicValues = ["Box", "Circle", "Polygon"],
+        selectionElements = ["Dropdown"],
+        mockMapMutations = {
+            addLayerToMap: sinon.stub(),
+            removeLayerFromMap: sinon.stub()
+        },
+        mockMapActions = {
+            addInteraction: sinon.stub()
+        },
+        mockLanguageGetters = {
+            currentLocale: sinon.stub()
+        },
+        mockGraphicalSelectGetters = {
+            circleOverlay: sinon.stub(),
+            tooltipOverlay: sinon.stub(),
+            geographicValues: () => geographicValues,
+            selectionElements: () => selectionElements
+        },
+        mockGraphicalSelectActions = {
+            createDomOverlay: sinon.stub(),
+            toggleOverlay: sinon.stub(),
+            setDrawInteractionListener: sinon.stub(),
+            setDefaultSelection: sinon.stub()
+        },
+        mocklGraphicalSelectMutations = {
+            setCurrentValue: sinon.stub(),
+            setDrawInteraction: sinon.stub(),
+            setDefaultSelection: sinon.stub()
+        };
     let store;
 
     beforeEach(() => {
         store = new Vuex.Store({
-            namespaces: true,
+            namespaced: true,
             modules: {
-                Map: {
-                    namespaced: true,
-                    getters: {
-                    }
-                },
                 Tools: {
                     namespaced: true,
                     modules: {
                         PopulationRequest: Module
                     }
+                },
+                Map: {
+                    namespaced: true,
+                    mutations: mockMapMutations,
+                    actions: mockMapActions
+                },
+                Language: {
+                    namespaced: true,
+                    getters: mockLanguageGetters
+                },
+                GraphicalSelect: {
+                    namespaced: true,
+                    getters: mockGraphicalSelectGetters,
+                    actions: mockGraphicalSelectActions,
+                    mutations: mocklGraphicalSelectMutations
                 }
             },
             getters: {
-                isTableStyle: () => false,
                 isDefaultStyle: () => true
             }
         });
@@ -75,7 +115,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
 
     it("should call toggleRasterLayer if Raster Checkbox is changed", async () => {
         const spyRaster = sinon.spy(Component.methods, "triggerRaster"),
-            wrapper = shallowMount(Component, {store, localVue}),
+            wrapper = shallowMount(Component, {store, localVue, stubs: {"ToggleCheckbox": ToggleCheckboxComponent, "GraphicalSelect": GraphicalSelectComponent}}),
             rasterComponent = wrapper.findComponent({ref: "rasterCheckBox"});
 
         await rasterComponent.vm.$emit("change");
@@ -86,7 +126,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
 
     it("should call toggleAlkisAdresses if alkisAdresses Checkbox is changed", async () => {
         const spyAlkisAdresses = sinon.spy(Component.methods, "triggerAlkisAdresses"),
-            wrapper = shallowMount(Component, {store, localVue}),
+            wrapper = shallowMount(Component, {store, localVue, stubs: {"ToggleCheckbox": ToggleCheckboxComponent, "GraphicalSelect": GraphicalSelectComponent}}),
             alkisAdressesComponent = wrapper.findComponent({ref: "alkisAdressesCheckBox"});
 
         await alkisAdressesComponent.vm.$emit("change");
