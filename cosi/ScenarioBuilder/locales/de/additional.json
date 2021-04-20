@@ -3,9 +3,10 @@
         "tools": {
             "cosi": {
                 "scenarioBuilder": {
-                    "header": "Sneha's Tool",
-                    "title": "ScenarioBuilder",
-                    "help": "Lorem Ipsum dolor sit amet"
+                    "title": "Scenario Builder",
+                    "help": "Lorem Ipsum dolor sit amet",
+                    "layerSelector": "Thema auswählen",
+                    "chooseLocation": "Ort wählen"
                 }
             }
         }

@@ -3,8 +3,10 @@
         "tools": {
             "cosi": {
                 "scenarioBuilder": {
-                    "title": "ScenarioBuilder",
-                    "help": "Lorem Ipsum dolor sit amet"
+                    "title": "Scenario Builder",
+                    "help": "Lorem Ipsum dolor sit amet",
+                    "layerSelector": "Select topic",
+                    "chooseLocation": "Choose Location"
                 }
             }
         }

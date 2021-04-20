@@ -269,7 +269,7 @@ export default {
                     <form class="form-inline features-list-controls">
                         <div class="form-group">
                             <Multiselect
-                                v-if="mapping.length > 0"
+                                v-if="activeLayerMapping.length > 0"
                                 v-model="layerFilter"
                                 class="layer_selection selection"
                                 :options="activeLayerMapping"
