@@ -11,8 +11,7 @@ Video of the protoype
 
 ![CoSI Video](https://drive.google.com/uc?export=view&id=1ABGo_bBoE5uny4XcFliBhZcMwl8oUy8z)
 
-Alternative link to video:
-https://drive.google.com/file/d/id=1ABGo_bBoE5uny4XcFliBhZcMwl8oUy8z/view?usp=sharing
+[Clicke here](https://drive.google.com/file/d/id=1ABGo_bBoE5uny4XcFliBhZcMwl8oUy8z/view?usp=sharing) if the video doesn't load.
 
 CoSI Publications :
 https://www.researchgate.net/publication/344340813_Cockpit_Social_Infrastructure_-_Developing_a_planning_support_system_in_Hamburg
