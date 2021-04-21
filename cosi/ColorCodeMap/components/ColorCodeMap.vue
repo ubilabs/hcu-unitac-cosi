@@ -61,10 +61,10 @@ export default {
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         dataToCCM () {
-            return this.$store.state.Tools.CalculateRatio.dataToCCM;
+            return this.$store.state.Tools.CalculateRatio?.dataToCCM;
         },
         ccmDataSet () {
-            return this.$store.state.Tools.CalculateRatio.ccmDataSet;
+            return this.$store.state.Tools.CalculateRatio?.ccmDataSet;
         }
     },
     watch: {
