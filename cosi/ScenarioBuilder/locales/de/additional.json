@@ -6,7 +6,15 @@
                     "title": "Scenario Builder",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
-                    "chooseLocation": "Ort wählen"
+                    "chooseLocation": "Ort wählen",
+                    "resetLocation": "Zurücksetzen",
+                    "createFeature": "Neue Einrichtung erstellen",
+                    "helpCreateFeature": "Neue Einrichtung erstellen",
+                    "resetFeature": "Zurücksetzen",
+                    "restoreAllFeatures": "Alle wiederherstellen",
+                    "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
+                    "pruneAllFeatures": "Alle löschen",
+                    "helpPllFeatures": "Alle erstellten Features löschen"
                 }
             }
         }

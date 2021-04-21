@@ -6,13 +6,14 @@
  */
 const state = {
     active: false,
-    deactivateGFI: true,
+    deactivateGFI: false,
     glyphicon: "glyphicon-screenshot",
     id: "ScenarioBuilder",
     name: "ScenarioBuilder",
     isVisibleInMenu: true,
     renderToWindow: true,
-    resizableWindow: false
+    resizableWindow: false,
+    scenario: []
 };
 
 export default state;

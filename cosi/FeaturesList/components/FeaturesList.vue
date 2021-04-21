@@ -31,6 +31,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
+        ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
         ...mapState(["configJson"]),
         columns () {
@@ -119,6 +120,10 @@ export default {
 
         selected () {
             console.log(this.selected);
+        },
+
+        scenario () {
+            this.updateFeaturesList();
         }
     },
     created () {

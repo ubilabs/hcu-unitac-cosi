@@ -10,6 +10,11 @@ import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
+import getOlGeomByGmlType from "../utils/getOlGeomByGmlType";
+import getClusterSource from "../../utils/getClusterSource";
+import Feature from 'ol/Feature';
+import Polygon from 'ol/geom/Polygon';
+import Point from 'ol/geom/Point';
 
 export default {
     name: "ScenarioBuilder",
@@ -22,15 +27,19 @@ export default {
             workingLayer: {},
             featureTypeDesc: [],
             featureProperties: {},
-            feature: null,
             beautifyKey: beautifyKey,
-            typesMapping: TypesMapping
+            typesMapping: TypesMapping,
+            locationPickerActive: false,
+            geometry: {
+                Constructor: null,
+                value: null
+            }
         };
     },
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["map", "visibleLayerList"]),
+        ...mapGetters("Map", ["map", "layerById", "visibleLayerList"]),
         validateProp: () => field => validateProp(field)
     },
 
@@ -58,6 +67,10 @@ export default {
                 if (model) {
                     model.set("isActive", false);
                 }
+
+                this.locationPickerActive = false;
+                this.unlisten();
+                this.removePointMarker();
             }
         }
     },
@@ -72,15 +85,60 @@ export default {
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
-        ...mapActions("MapMarker", ["placingPointMarker"]),
+        ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         resetFeature () {
-            this.feature = null;
             this.featureProperties = {};
+            this.geometry.value = null;
         },
-        toggleLocationPicker () {
+        toggleLocationPicker (type) {
             console.log("toggle");
-            // store.dispatch("MapMarker/placingPointMarker", evt.coordinate);
-            // this.model.set("coordinate", coordinate);
+            console.log(this.map);
+            console.log(type);
+            this.locationPickerActive = !this.locationPickerActive;
+            this.geometry.Constructor = getOlGeomByGmlType(type);
+
+            if (this.locationPickerActive) {
+                this.listen();
+            }
+            else {
+                this.unlisten();
+            }
+        },
+        listen () {
+            if (this.geometry.Constructor === Point) {
+                this.map.addEventListener("click", this.pickLocation);
+            }
+        },
+        unlisten () {
+            if (this.geometry.Constructor === Point) {
+                this.map.removeEventListener("click", this.pickLocation);
+            }
+        },
+        pickLocation (evt) {
+            this.geometry.value = evt.coordinate;
+            this.placingPointMarker(evt.coordinate);
+        },
+
+        resetLocation () {
+            this.geometry.value = null;
+            this.removePointMarker();
+        },
+
+        createFeature () {
+            const layer = this.layerById(this.workingLayer.layerId).olLayer,
+                geom = this.generateGeometry(),
+                feature = new Feature({geometry: geom});
+
+            console.log(feature, layer);
+            feature.setProperties(this.featureProperties);
+
+            this.addFeatureToScenario({feature, layer});
+            this.unlisten();
+            this.locationPickerActive = false;
+        },
+
+        generateGeometry () {
+            return new this.geometry.Constructor(this.geometry.value);
         }
     }
 };
@@ -95,6 +153,7 @@ export default {
         :resizable-window="resizableWindow"
         :deactivateGFI="deactivateGFI"
         :initial-width="0.4"
+        :initial-height="0.4"
     >
         <template
             v-if="active"
@@ -148,7 +207,7 @@ export default {
                                     />
                                     <v-text-field
                                         v-else
-                                        v-model="featureProperties[field.name]"
+                                        v-model="geometry.value"
                                         :name="field.name"
                                         :label="field.type"
                                         dense
@@ -158,12 +217,61 @@ export default {
                                                 tile
                                                 depressed
                                                 small
-                                                @click="toggleLocationPicker"
+                                                :color="locationPickerActive ? 'warning' : ''"
+                                                @click="toggleLocationPicker(field.type)"
                                             >
                                                 {{ $t('additional:modules.tools.cosi.scenarioBuilder.chooseLocation') }}
                                             </v-btn>
+                                            <v-btn
+                                                tile
+                                                depressed
+                                                small
+                                                :disabled="geometry.value === null"
+                                                @click="resetLocation"
+                                            >
+                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetLocation') }}
+                                            </v-btn>
                                         </template>
                                     </v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        :disabled="!(geometry.value !== null && geometry.type !== null)"
+                                        @click="createFeature"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
+                                    </v-btn>
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        @click="resetFeature"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        color="success"
+                                        @click="restoreScenario"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures') }}
+                                    </v-btn>
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        color="warning"
+                                        @click="pruneScenario"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures') }}
+                                    </v-btn>
                                 </v-col>
                             </v-row>
                         </div>
