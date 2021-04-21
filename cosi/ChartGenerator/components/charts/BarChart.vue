@@ -10,6 +10,17 @@ export default {
         default: null
     }},
     data () {
+        return {
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        };
     },
     computed: {
         chartData () {
@@ -21,12 +32,13 @@ export default {
     },
     watch: {
         chartData (newData) {
-            console.log(newData);
-            this.renderChart(newData);
+            this.renderChart(newData, this.options);
         }
     },
     mounted () {
-        this.renderChart(this.chartData);
+        this.$nextTick(function () {
+            this.renderChart(this.chartData, this.options);
+        });
     }
 };
 </script>

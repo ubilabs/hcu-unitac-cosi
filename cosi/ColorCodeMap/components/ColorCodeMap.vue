@@ -1,11 +1,12 @@
 <script>
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import store from "../../../../src/app-store";
+import Info from "text-loader!./info.html";
 
 export default {
     name: "ColorCodeMap",
@@ -47,18 +48,18 @@ export default {
             // State of names of districts visible on map
             showMapNames: false,
             // Helper Variable to force Legend Markers to rerender
-            updateLegendList: 1
+            updateLegendList: 1,
+            // Helper to pass data to the graph generator
+            graphData: [],
+            // Helper to store type of feature dataSet
+            dataCategory: ""
         };
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-<<<<<<< HEAD
-        ...mapGetters("Tools/DistrictLoader", ["featureList"]),
-=======
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
->>>>>>> cosi/dev
         dataToCCM () {
             return this.$store.state.Tools.CalculateRatio.dataToCCM;
         },
@@ -68,6 +69,7 @@ export default {
     },
     watch: {
         selectedFeatures () {
+            this.graphData = [];
             this.updateLegendList += 1;
             if (this.visualizationState) {
                 this.$nextTick(function () {
@@ -112,12 +114,14 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         /**
          * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
          */
         updateSelectedDistricts () {
             this.featuresList = [];
+            this.graphData = [];
             this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
                 this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
@@ -181,6 +185,7 @@ export default {
          */
         renderVisualization () {
             if (this.visualizationState) {
+                this.graphData = [];
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
@@ -197,6 +202,7 @@ export default {
 
                         const styleArray = [];
 
+                        this.prepareGraphData(matchResults);
                         getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
@@ -394,6 +400,49 @@ export default {
                 this.selectedFeature = this.mapping[index].value;
             }
             this.renderVisualization();
+        },
+        showInfo () {
+            this.addSingleAlert({
+                category: "Info",
+                content: Info
+            });
+        },
+        prepareGraphData (dataSet) {
+            const newDataSet = {
+                label: dataSet.getProperties()[this.keyOfAttrNameStats],
+                data: []
+            };
+
+            this.dataCategory = dataSet.getProperties().kategorie;
+            this.availableYears.forEach(year => {
+                newDataSet.data.push(dataSet.getProperties()[this.yearSelector + year]);
+            });
+
+            this.graphData.push(newDataSet);
+        },
+        loadToCg () {
+            const graphObj = {
+                id: "ccm",
+                name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
+                type: ["LineChart", "BarChart"],
+                color: "blue",
+                source: "ColorCodeMap",
+                data: {
+                    labels: [],
+                    dataSets: []
+                }
+            };
+
+            this.availableYears.forEach(year => {
+                graphObj.data.labels.unshift(year);
+            });
+
+            this.graphData.forEach(dataSet => {
+                graphObj.data.dataSets.unshift(dataSet);
+            });
+
+            this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
+            this.graphData = [];
         }
     }
 };
@@ -486,20 +535,6 @@ export default {
                         </template>
                     </Multiselect>
                 </div>
-                <button
-                    v-if="visualizationState"
-                    class="play_button"
-                    @click="playState = !playState"
-                >
-                    <span class="glyphicon glyphicon-play"></span>
-                </button>
-                <button
-                    v-if="visualizationState"
-                    class="map_button"
-                    @click="showMapNames = !showMapNames"
-                >
-                    <span class="glyphicon glyphicon-map-marker"></span>
-                </button>
                 <Multiselect
                     v-if="featuresList.length"
                     v-model="selectedFeature"
@@ -551,6 +586,51 @@ export default {
                 </div>
             </div>
         </div>
+        <div class="hovermenu">
+            <div class="btn_grp">
+                <button
+                    class="info_button>"
+                    @click="showInfo()"
+                >
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+                <div
+                    v-if="visualizationState && !minimize"
+                    class="field"
+                >
+                    <button
+                        class="play_button"
+                        :class="{highlight: playState}"
+                        @click="playState = !playState"
+                    >
+                        <template v-if="!playState">
+                            <span class="glyphicon glyphicon-play"></span>
+                        </template>
+                        <template v-else>
+                            <span class="glyphicon glyphicon-pause"></span>
+                        </template>
+                    </button>
+                    <input
+                        v-model="playSpeed"
+                        class="mini_input"
+                    />
+                </div>
+                <button
+                    v-if="visualizationState && !minimize"
+                    class="graph_button"
+                    @click="loadToCg()"
+                >
+                    <span class="glyphicon glyphicon-stats"></span>
+                </button>
+                <button
+                    v-if="visualizationState && !minimize"
+                    class="map_button"
+                    @click="showMapNames = !showMapNames"
+                >
+                    <span class="glyphicon glyphicon-map-marker"></span>
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -566,6 +646,77 @@ export default {
         width:460px;
         height:auto;
 
+        .hovermenu {
+            position:absolute;
+            left:calc(100% - 5px);
+            top:5px;
+            padding:10px;
+            width:auto;
+            height:auto;
+            transform:translateX(-100%);
+            background:rgba(255,255,255,0.9);
+            opacity:0;
+            pointer-events:none;
+            z-index:-1;
+            .drop_shadow();
+
+            .btn_grp {
+
+                button {
+                    width:26px;
+                    height:26px;
+                    background:#eee;
+                    border:1px solid #ccc;
+                    margin:2px 20px 2px 0px;
+
+                    span {
+                        top:0px;
+                        line-height:26px;
+                    }
+                }
+
+                .field {
+                    display:flex;
+                    flex-flow:row wrap;
+                    justify-content:flex-start;
+                    width:54px;
+                    height:26px;
+                    margin:2px 0px;
+
+                    button {
+                        flex:0 0 26px;
+                        height:26px;
+                        margin:0px 2px 0px 0px;
+
+                        &.highlight {
+                            color:white;
+                            background:@brightblue;
+                        }
+                    }
+
+                    input {
+                        width:26px;
+                        text-align:center;
+                        font-size:90%;
+                        font-weight:700;
+                        height:26px;
+                        line-height:26px;
+                        border:1px solid #888;
+                    }
+                }
+            }
+        }
+
+        &:hover {
+            outline:1px solid #ccc;
+            .hovermenu {
+                transform:translateX(0);
+                opacity:1;
+                pointer-events:all;
+                transition:0.3s;
+            }
+        }
+
         &:after {
             .fullsize_bg_pseudo(white, 0.95);
             .drop_shadow();
@@ -577,6 +728,7 @@ export default {
             height:100%;
             padding:10px;
             box-sizing: border-box;
+            z-index:3;
 
             .select_wrapper {
                 display:flex;

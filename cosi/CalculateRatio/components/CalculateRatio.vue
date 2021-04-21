@@ -627,17 +627,16 @@ export default {
             const graphObj = {
                 id: "calcratio-test",
                 name: "Versorgungsanalyse - Visualisierung",
-                type: "Bar",
-                color: "blue",
+                type: "BarChart",
+                color: "red",
+                source: "CalculateRatio",
                 data: {
-                    labels: [],
+                    labels: [...this.availabeYears],
                     dataSets: []
                 }
             };
 
             this.results.forEach(result => {
-                graphObj.data.labels.push(result.scope);
-
                 Object.entries(result).forEach(([key, val]) => {
                     const checkExisting = graphObj.data.dataSets.find(set => set.label === key);
 
@@ -650,13 +649,12 @@ export default {
                             data: [val]
                         };
 
-                        graphObj.data.datasets.push(obj);
+                        graphObj.data.dataSets.push(obj);
                     }
                 });
             });
 
             this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
-            console.log(graphObj);
         }
     }
 };
@@ -1102,32 +1100,32 @@ export default {
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ paramFieldA.name === "Anzahl" ? result.paramA_count : result.paramA_val }}
+                                        {{ result.paramA_val.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ paramFieldB.name === "Anzahl" ? result.paramB_count : result.paramB_val }}
+                                        {{ result.paramB_val.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td v-if="fActive_A || fActive_B">
                                     <div class="styling_helper">
-                                        {{ result.capacity }}
+                                        {{ result.capacity.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td v-if="fActive_A || fActive_B">
                                     <div class="styling_helper">
-                                        {{ result.need }}
+                                        {{ result.need.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ result.relation.toFixed(2) }}
+                                        {{ result.relation.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="styling_helper">
-                                        {{ result.coverage }}
+                                        {{ result.coverage.toLocaleString('de-DE') }}
                                     </div>
                                 </td>
                             </tr>

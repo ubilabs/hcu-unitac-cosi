@@ -30,7 +30,7 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    newDataSet: []
+    newDataSet: null
 };
 
 export default state;

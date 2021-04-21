@@ -3,7 +3,6 @@
 * @returns {Array} Array of complete/fixed Data.
 */
 export default function compensateLackingData (dataArray) {
-    console.log(dataArray);
     const completeData = [],
         incompleteData = [];
 
@@ -20,11 +19,13 @@ export default function compensateLackingData (dataArray) {
         return "error";
     }
 
-    incompleteData.forEach(dataSet => {
+    if (incompleteData.length > 0) {
         const fixData = completeData.reduce((total, data) => total + data, 0) / completeData.length;
 
-        completeData.push(fixData);
-    });
+        for (let i = 0; i < incompleteData.length; i++) {
+            completeData.push(fixData);
+        }
+    }
 
     return completeData;
 }

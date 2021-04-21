@@ -7,8 +7,6 @@ export default function calculateRatio (dataArray, year) {
     const results = [];
 
     dataArray.forEach(dataSet => {
-        
-        console.log("wie sieht es hier aus? calc1", dataSet);
         const calcObj = {
                 scope: dataSet.name,
                 paramA_val: typeof dataSet.paramA_calc === "object" ? dataSet.paramA_calc[year] : dataSet.paramA_calc,
