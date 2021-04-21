@@ -9,6 +9,7 @@ import VectorLayer from "ol/layer/Vector.js";
 import VectorSource from "ol/source/Vector.js";
 import GeoJSON from "ol/format/GeoJSON";
 import Point from "ol/geom/Point";
+import SimpleGeometry from "ol/geom/SimpleGeometry";
 import {fromCircle} from "ol/geom/Polygon";
 import {requestAnalyze} from "../api/analyze";
 import GeoAnalyzeResultBuilding from "./GeoAnalyzeResultBuilding.vue";
@@ -138,6 +139,9 @@ export default {
          * @returns {void}
          */
         getAnalyzeData (geometry, getExcel = false) {
+            if (!(geometry instanceof SimpleGeometry)) {
+                return;
+            }
             const geojsonFormat = new GeoJSON(),
                 payload = {
                     geom: geojsonFormat.writeGeometryObject(geometry),

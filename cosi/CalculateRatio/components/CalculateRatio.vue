@@ -611,7 +611,7 @@ export default {
          * @returns {void}
          */
         loadToCCM () {
-            const switchVar = this.$store.state.dataToCCM;
+            const switchVar = this.dataToCCM;
 
             if (!switchVar) {
                 const prepareData = [];

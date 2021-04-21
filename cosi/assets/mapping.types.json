@@ -1,0 +1,13 @@
+{
+    "decimal": "number",
+    "long": "number",
+    "double": "number",
+    "float": "number",
+    "integer": "number",
+    "string": "string",
+    "data": "date",
+    "gml:PointPropertyType": "geom",
+    "gml:LinePropertyType": "geom",
+    "gml:PolygontPropertyType": "geom",
+    "gml:MultiPolygonPropertyType": "geom"
+}

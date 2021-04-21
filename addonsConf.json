@@ -15,6 +15,9 @@
   "geoAnalyze": {
     "type": "tool"
   },
+  "commuterFlows": {
+    "type": "tool"
+  },
   "tacticalMark": {
     "type": "tool"
   },
@@ -44,6 +47,10 @@
   },
   "FeaturesList": {
     "path":"cosi/FeaturesList",
+    "type": "tool"
+  },
+  "ScenarioBuilder": {
+    "path": "cosi/ScenarioBuilder",
     "type": "tool"
   },
   "FileImportAddon": {

@@ -31,6 +31,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
+        ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
         ...mapState(["configJson"]),
         columns () {
@@ -119,6 +120,10 @@ export default {
 
         selected () {
             console.log(this.selected);
+        },
+
+        scenario () {
+            this.updateFeaturesList();
         }
     },
     created () {
@@ -269,7 +274,7 @@ export default {
                     <form class="form-inline features-list-controls">
                         <div class="form-group">
                             <Multiselect
-                                v-if="mapping.length > 0"
+                                v-if="activeLayerMapping.length > 0"
                                 v-model="layerFilter"
                                 class="layer_selection selection"
                                 :options="activeLayerMapping"
