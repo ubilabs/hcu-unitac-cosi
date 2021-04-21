@@ -35,7 +35,6 @@ export default {
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
         ...mapGetters(["isDefaultStyle"]),
-        ...mapGetters("Language", ["currentLocale"]),
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -81,17 +80,6 @@ export default {
          */
         showMRHSourceAreaOutsideHint: function () {
             return this.sourceMRH === "tlw" && this.sourceFHH === "nein";
-        }
-    },
-    watch: {
-        // language is switched
-        currentLocale: function () {
-            this.$refs.graphicalSelectComponent.options =
-                {
-                    "Box": this.translate("common:snippets.graphicalSelect.selectBySquare"),
-                    "Circle": this.translate("common:snippets.graphicalSelect.selectByCircle"),
-                    "Polygon": this.translate("common:snippets.graphicalSelect.selectByPolygon")
-                };
         }
     },
     /**

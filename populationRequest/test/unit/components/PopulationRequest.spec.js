@@ -23,9 +23,6 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
         mockMapActions = {
             addInteraction: sinon.stub()
         },
-        mockLanguageGetters = {
-            currentLocale: sinon.stub()
-        },
         mockGraphicalSelectGetters = {
             circleOverlay: sinon.stub(),
             tooltipOverlay: sinon.stub(),
@@ -59,10 +56,6 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
                     namespaced: true,
                     mutations: mockMapMutations,
                     actions: mockMapActions
-                },
-                Language: {
-                    namespaced: true,
-                    getters: mockLanguageGetters
                 },
                 GraphicalSelect: {
                     namespaced: true,
