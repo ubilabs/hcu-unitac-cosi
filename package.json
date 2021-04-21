@@ -11,10 +11,6 @@
     "versionHotfix": "npm version patch && git push --tags",
     "versionMinor": "npm version minor && git push --tags",
     "versionMajor": "npm version major && git push --tags"
-<<<<<<< HEAD
-  }
-=======
   },
   "dependencies": {}
->>>>>>> cosi/dev
 }
