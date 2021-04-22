@@ -194,7 +194,8 @@ export default {
                     fill: false,
                     borderWidth: 1,
                     pointRadius: 2,
-                    pointHoverRadius: 2
+                    pointHoverRadius: 2,
+                    datetimes
                 });
             });
 
@@ -261,7 +262,20 @@ export default {
                         },
                         callbacks: {
                             // use label callback to return the desired label
-                            label: (tooltipItem) => {
+                            label: (tooltipItem, chartJsData) => {
+                                if (
+                                    typeof chartJsData === "object"
+                                    && Array.isArray(chartJsData.datasets)
+                                    && typeof chartJsData.datasets[tooltipItem.datasetIndex] === "object"
+                                    && Array.isArray(chartJsData.datasets[tooltipItem.datasetIndex].datetimes)
+                                    && chartJsData.datasets[tooltipItem.datasetIndex].datetimes[tooltipItem.index]
+                                ) {
+                                    tooltipItem.datetime = chartJsData.datasets[tooltipItem.datasetIndex].datetimes[tooltipItem.index];
+                                }
+                                else if (typeof tooltipItem === "object") {
+                                    tooltipItem.datetime = tooltipItem.label;
+                                }
+
                                 return options.setTooltipValue(tooltipItem);
                             },
                             // remove title
