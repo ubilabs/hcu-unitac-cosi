@@ -82,7 +82,7 @@ export default {
 
                 // add overlay if no districts are selected at this point
                 if (this.selectedNames.length === 0) {
-                    styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
                 }
             }
             else {
@@ -144,7 +144,7 @@ export default {
          */
         Radio.on("VectorLayer", "featuresLoaded", (layerId) => {
             if (!this.districtLevelLayersLoaded && this.selectedLevelId === layerId) {
-                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId);
+                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
                 this.districtLevelLayersLoaded = true;
             }
         });
@@ -172,7 +172,7 @@ export default {
             const districtLevel = this.getDistrictLevelById(id);
 
             this.setSelectedDistrictLevel(districtLevel);
-            styleSelectedDistrictLevels(this.districtLevels, id);
+            styleSelectedDistrictLevels(this.districtLevels, id, 0.6, districtLevel.activeStyle);
         },
 
         /**
