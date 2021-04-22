@@ -1,11 +1,12 @@
 <script>
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import store from "../../../../src/app-store";
+import Info from "text-loader!./info.html";
 
 export default {
     name: "ColorCodeMap",
@@ -14,22 +15,44 @@ export default {
     },
     data () {
         return {
+            // All available features
             featuresStatistics: [],
-            featureCategories: [],
+            // Selected Feature
             selectedFeature: "",
+            // List of available features for selected Districts
             featuresList: [],
+            // Array of all available years
             availableYears: [],
+            // Selected Year
             selectedYear: null,
+            // Results for generating the CCM legend including colorscale values
             legendResults: [],
+            // Values displayed in CCM legend
             legendValues: [],
+            // Saves the last year when user changes year manually.
             lastYear: null,
+            // Index in Array of selected Feature
             selectorPosition: 0,
+            // Saves riginal Map Styling before ColorCodeMap changes styling
             originalStyling: null,
+            // Highest Value of selected feature among all selected districts
             hiVal: null,
+            // Lowest Value of selected feature among all selected districts
             loVal: null,
+            // Triggers classes for minimized view
             minimize: false,
+            // State of animation playing
             playState: false,
-            playSpeed: 1
+            // Playback speed of the animation
+            playSpeed: 1,
+            // State of names of districts visible on map
+            showMapNames: false,
+            // Helper Variable to force Legend Markers to rerender
+            updateLegendList: 1,
+            // Helper to pass data to the graph generator
+            graphData: [],
+            // Helper to store type of feature dataSet
+            dataCategory: ""
         };
     },
     computed: {
@@ -38,14 +61,16 @@ export default {
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         dataToCCM () {
-            return this.$store.state.Tools.CalculateRatio.dataToCCM;
+            return this.$store.state.Tools.CalculateRatio?.dataToCCM;
         },
         ccmDataSet () {
-            return this.$store.state.Tools.CalculateRatio.ccmDataSet;
+            return this.$store.state.Tools.CalculateRatio?.ccmDataSet;
         }
     },
     watch: {
         selectedFeatures () {
+            this.graphData = [];
+            this.updateLegendList += 1;
             if (this.visualizationState) {
                 this.$nextTick(function () {
                     this.updateSelectedDistricts();
@@ -70,44 +95,42 @@ export default {
                 this.animationOverYears(this.playSpeed);
             }
         },
+        showMapNames () {
+            this.renderVisualization();
+        },
         dataToCCM (newState) {
             if (newState) {
-                this.renderCCMData();
+                this.renderCCData();
             }
         },
         ccmDataSet () {
             if (this.dataToCCM) {
-                this.renderCCMData();
+                this.renderCCData();
             }
         }
     },
-    /**
-     * Put initialize here if mounting occurs after config parsing
-     * @returns {void}
-     */
     mounted () {
         this.applyTranslationKey(this.name);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         /**
-         * @todo todo
-         * @description todo
+         * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
          */
         updateSelectedDistricts () {
             this.featuresList = [];
+            this.graphData = [];
             this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
             if (this.featuresStatistics.length) {
                 this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
-
                 this.updateFeaturesList();
             }
         },
 
         /**
-         * @todo todo
-         * @description todo
+         * @description Gets relevant features based on MappingJson and triggers visualization.
          * @returns {void}
          */
         updateFeaturesList () {
@@ -134,12 +157,17 @@ export default {
 
             this.renderVisualization();
         },
+        /**
+         * @description Animates data for selected feature on the map over the available years.
+         * @param {String} tempo Value for animation playback speed in seconds.
+         * @returns {void}
+         */
         animationOverYears (tempo) {
             if (this.playState) {
-                let current = this.availableYears.indexOf(this.selectedYear) - 1;
+                let current = this.availableYears.indexOf(this.selectedYear) + 1;
 
-                if (current < 0) {
-                    current = this.availableYears.length - 1;
+                if (current >= this.availableYears.length) {
+                    current = 0;
                 }
 
                 setTimeout(() => {
@@ -151,15 +179,13 @@ export default {
                 }, tempo * 1000);
             }
         },
-
         /**
-         * @todo todo
-         * @description todo
-         * @param {Boolean} [state] todo
+         * @description Changes map styling based on selected feature data.
          * @returns {void}
          */
         renderVisualization () {
             if (this.visualizationState) {
+                this.graphData = [];
                 const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
@@ -174,6 +200,9 @@ export default {
                             this.originalStyling = getStyling;
                         }
 
+                        const styleArray = [];
+
+                        this.prepareGraphData(matchResults);
                         getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
@@ -187,13 +216,14 @@ export default {
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
                         });
+                        styleArray.push(new Style(getStyling));
                         if (this.lastYear) {
                             const additionalText = new Style({
                                 zIndex: 2,
                                 text: new Text({
                                     font: "13px Calibri, sans-serif",
                                     fill: new Fill({
-                                        color: [20, 20, 20]
+                                        color: [0, 0, 0]
                                     }),
                                     stroke: new Stroke({
                                         color: [240, 240, 240],
@@ -204,11 +234,30 @@ export default {
                                 })
                             });
 
-                            district.setStyle([new Style(getStyling), additionalText]);
+                            styleArray.push(additionalText);
                         }
-                        else {
-                            district.setStyle(new Style(getStyling));
+                        if (this.showMapNames) {
+                            const headText = new Style({
+                                zIndex: 100,
+                                text: new Text({
+                                    font: "16px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [0, 0, 0]
+                                    }),
+                                    placement: "point",
+                                    backgroundFill: new Fill({
+                                        color: [255, 255, 255]
+                                    }),
+                                    padding: [5, 10, 5, 10],
+                                    text: matchResults.getProperties()[this.keyOfAttrNameStats],
+                                    offsetY: -35
+                                })
+                            });
+
+                            styleArray.push(headText);
                         }
+
+                        district.setStyle(styleArray);
                     }
                 });
             }
@@ -223,7 +272,12 @@ export default {
                 });
             }
         },
-        renderCCMData () {
+        /**
+         * @todo Generate Dynamic Legend for incoming data from CalculateRatio Component.
+         * @description Renders data on map from CalculateRatio Component.
+         * @returns {void}
+         */
+        renderCCData () {
             if (!this.visualizationState) {
                 this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
             }
@@ -233,7 +287,7 @@ export default {
                 }),
                 colorScale = this.getColorsByValues(resultValues);
 
-            // this.generateDynamicLegend(results, colorScale);
+            // todo generate Legend for CC Data
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.ccmDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
@@ -265,9 +319,9 @@ export default {
 
         /**
          * @todo todo
-         * @description todo
-         * @param {*} results todo
-         * @param {*} colorScale todo
+         * @description Generates dynamic Legend in CCM based on selected feature values.
+         * @param {*} results Values calculated in renderVisualization() function.
+         * @param {*} colorScale color range for values from getColorsByValues() function.
          * @returns {void}
          */
         generateDynamicLegend (results, colorScale) {
@@ -292,8 +346,9 @@ export default {
 
                 legendDiv.setAttribute("style", "background:linear-gradient(90deg," + this.legendValues[0] + "," + this.legendValues[1] + "," + this.legendValues[2] + ")");
 
+
                 legendMarksArray.forEach((mark, index) => {
-                    if (index > matchResults.length - 1) {
+                    if (index > matchResults.length) {
                         mark.remove();
                     }
                     else {
@@ -319,9 +374,8 @@ export default {
         },
 
         /**
-         * @todo todo
-         * @description todo
-         * @param {*} values todo
+         * @description Calculate dynamic colors for Array based on its values.
+         * @param {*} values Array of ints.
          * @returns {Object} the colorScale function(value) and the n-step legend color/value pairs.
          */
         getColorsByValues (values) {
@@ -329,9 +383,8 @@ export default {
         },
 
         /**
-         * @todo todo
-         * @description todo
-         * @param {*} value todo
+         * @description Changes selected feature with arrow buttons.
+         * @param {*} value 1 or -1 for next or prev.
          * @returns {void}
          */
         changeSelector (value) {
@@ -347,6 +400,49 @@ export default {
                 this.selectedFeature = this.mapping[index].value;
             }
             this.renderVisualization();
+        },
+        showInfo () {
+            this.addSingleAlert({
+                category: "Info",
+                content: Info
+            });
+        },
+        prepareGraphData (dataSet) {
+            const newDataSet = {
+                label: dataSet.getProperties()[this.keyOfAttrNameStats],
+                data: []
+            };
+
+            this.dataCategory = dataSet.getProperties().kategorie;
+            this.availableYears.forEach(year => {
+                newDataSet.data.push(dataSet.getProperties()[this.yearSelector + year]);
+            });
+
+            this.graphData.push(newDataSet);
+        },
+        loadToCg () {
+            const graphObj = {
+                id: "ccm",
+                name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
+                type: ["LineChart", "BarChart"],
+                color: "blue",
+                source: "ColorCodeMap",
+                data: {
+                    labels: [],
+                    dataSets: []
+                }
+            };
+
+            this.availableYears.forEach(year => {
+                graphObj.data.labels.unshift(year);
+            });
+
+            this.graphData.forEach(dataSet => {
+                graphObj.data.dataSets.unshift(dataSet);
+            });
+
+            this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
+            this.graphData = [];
         }
     }
 };
@@ -354,7 +450,8 @@ export default {
 
 <template lang="html">
     <div
-        v-if="featuresStatistics.length && !dashboardOpen"
+        v-if="featuresStatistics.length"
+        id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
     >
@@ -438,17 +535,6 @@ export default {
                         </template>
                     </Multiselect>
                 </div>
-                <div
-                    v-if="visualizationState"
-                    class="btn_group"
-                >
-                    <button
-                        class="play_button btn btn-default btn-sm prev"
-                        @click="playState = !playState"
-                    >
-                        <span class="glyphicon glyphicon-play"></span>
-                    </button>
-                </div>
                 <Multiselect
                     v-if="featuresList.length"
                     v-model="selectedFeature"
@@ -476,10 +562,13 @@ export default {
                 class="legend"
                 :class="{ active: visualizationState && legendValues && selectedFeatures.length > 1 }"
             >
-                <div id="legend_wrapper">
+                <div
+                    id="legend_wrapper"
+                    :key="updateLegendList"
+                >
                     <div
-                        v-for="(value, i) in selectedFeatures"
-                        :key="i"
+                        v-for="feature in selectedFeatures"
+                        :key="feature.id"
                         class="legend_mark"
                     >
                         <div class="mark_tip"></div>
@@ -497,6 +586,51 @@ export default {
                 </div>
             </div>
         </div>
+        <div class="hovermenu">
+            <div class="btn_grp">
+                <button
+                    class="info_button>"
+                    @click="showInfo()"
+                >
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+                <div
+                    v-if="visualizationState && !minimize"
+                    class="field"
+                >
+                    <button
+                        class="play_button"
+                        :class="{highlight: playState}"
+                        @click="playState = !playState"
+                    >
+                        <template v-if="!playState">
+                            <span class="glyphicon glyphicon-play"></span>
+                        </template>
+                        <template v-else>
+                            <span class="glyphicon glyphicon-pause"></span>
+                        </template>
+                    </button>
+                    <input
+                        v-model="playSpeed"
+                        class="mini_input"
+                    />
+                </div>
+                <button
+                    v-if="visualizationState && !minimize"
+                    class="graph_button"
+                    @click="loadToCg()"
+                >
+                    <span class="glyphicon glyphicon-stats"></span>
+                </button>
+                <button
+                    v-if="visualizationState && !minimize"
+                    class="map_button"
+                    @click="showMapNames = !showMapNames"
+                >
+                    <span class="glyphicon glyphicon-map-marker"></span>
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -512,6 +646,77 @@ export default {
         width:460px;
         height:auto;
 
+        .hovermenu {
+            position:absolute;
+            left:calc(100% - 5px);
+            top:5px;
+            padding:10px;
+            width:auto;
+            height:auto;
+            transform:translateX(-100%);
+            background:rgba(255,255,255,0.9);
+            opacity:0;
+            pointer-events:none;
+            z-index:-1;
+            .drop_shadow();
+
+            .btn_grp {
+
+                button {
+                    width:26px;
+                    height:26px;
+                    background:#eee;
+                    border:1px solid #ccc;
+                    margin:2px 20px 2px 0px;
+
+                    span {
+                        top:0px;
+                        line-height:26px;
+                    }
+                }
+
+                .field {
+                    display:flex;
+                    flex-flow:row wrap;
+                    justify-content:flex-start;
+                    width:54px;
+                    height:26px;
+                    margin:2px 0px;
+
+                    button {
+                        flex:0 0 26px;
+                        height:26px;
+                        margin:0px 2px 0px 0px;
+
+                        &.highlight {
+                            color:white;
+                            background:@brightblue;
+                        }
+                    }
+
+                    input {
+                        width:26px;
+                        text-align:center;
+                        font-size:90%;
+                        font-weight:700;
+                        height:26px;
+                        line-height:26px;
+                        border:1px solid #888;
+                    }
+                }
+            }
+        }
+
+        &:hover {
+            outline:1px solid #ccc;
+            .hovermenu {
+                transform:translateX(0);
+                opacity:1;
+                pointer-events:all;
+                transition:0.3s;
+            }
+        }
+
         &:after {
             .fullsize_bg_pseudo(white, 0.95);
             .drop_shadow();
@@ -523,6 +728,7 @@ export default {
             height:100%;
             padding:10px;
             box-sizing: border-box;
+            z-index:3;
 
             .select_wrapper {
                 display:flex;

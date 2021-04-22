@@ -15,6 +15,9 @@
   "geoAnalyze": {
     "type": "tool"
   },
+  "commuterFlows": {
+    "type": "tool"
+  },
   "tacticalMark": {
     "type": "tool"
   },
@@ -24,6 +27,10 @@
   },
   "CalculateRatio": {
     "path": "cosi/CalculateRatio",
+    "type": "tool"
+  },
+  "ChartGenerator": {
+    "path": "cosi/ChartGenerator",
     "type": "tool"
   },
   "DistrictSelector": {
@@ -44,6 +51,10 @@
   },
   "FeaturesList": {
     "path":"cosi/FeaturesList",
+    "type": "tool"
+  },
+  "ScenarioBuilder": {
+    "path": "cosi/ScenarioBuilder",
     "type": "tool"
   },
   "FileImportAddon": {

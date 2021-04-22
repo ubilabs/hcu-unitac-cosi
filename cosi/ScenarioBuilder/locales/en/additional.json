@@ -1,0 +1,18 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "scenarioBuilder": {
+                    "title": "Scenario Builder",
+                    "help": "Lorem Ipsum dolor sit amet",
+                    "layerSelector": "Select topic",
+                    "chooseLocation": "Choose Location",
+                    "resetLocation": "Reset",
+                    "createFeature": "Create Facility",
+                    "restoreAllFeatures": "Restore",
+                    "pruneAllFeatures": "Prune"
+                }
+            }
+        }
+    }
+}

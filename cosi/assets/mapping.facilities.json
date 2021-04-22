@@ -277,16 +277,11 @@
         ]
     },
     {
-        "group": "Corona Testzentren",
+        "group": "Gesundheit",
         "layer": [
             {
                 "id": "Corona Testzentren",
-                "numericalValues": [
-                    {
-                        "id": "taegliche_kapazitaet",
-                        "name": "Kapazität"
-                    }
-                ]
+                "numericalValues": []
             }
         ]
     }
