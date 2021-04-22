@@ -164,10 +164,10 @@ export default {
          */
         animationOverYears (tempo) {
             if (this.playState) {
-                let current = this.availableYears.indexOf(this.selectedYear) + 1;
+                let current = this.availableYears.indexOf(this.selectedYear) - 1;
 
-                if (current >= this.availableYears.length) {
-                    current = 0;
+                if (current < 0) {
+                    current = this.availableYears.length - 1;
                 }
 
                 setTimeout(() => {
