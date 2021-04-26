@@ -3,7 +3,7 @@
         "tools": {
             "cosi": {
                 "chartGenerator": {
-                    "title": "CharGenerator",
+                    "title": "Chart Generator",
                     "description": "Creates chars to visualize data."
                 }
             }

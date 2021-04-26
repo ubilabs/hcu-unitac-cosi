@@ -101,6 +101,32 @@
                     padding:0px 10px !important;
                     height:40px;
                 }
+
+                .hover_helper {
+                    opacity:0;
+                    pointer-events: none;
+                    position:absolute;
+                    right:20px;
+                    top:50%;background:whitesmoke;
+                    color:#222;
+                    padding:0px 10px;
+                    height:30px;
+                    line-height:30px;
+                    font-size:80%;
+                    transform:translateY(-50%);
+                    z-index:5;
+                    .drop_shadow();
+                }
+
+                &:hover {
+                    cursor: pointer;
+
+                    .hover_helper {
+                        opacity:1;
+                        transform: translateX(50px) translateY(-50%);
+                        transition:0.3s;
+                    }
+                }
             }
             
             &:first-child {

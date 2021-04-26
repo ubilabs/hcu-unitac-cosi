@@ -58,12 +58,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        dataToCCM () {
-            return this.$store.state.Tools.CalculateRatio?.dataToCCM;
-        },
-        ccmDataSet () {
-            return this.$store.state.Tools.CalculateRatio?.ccmDataSet;
-        }
+        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"]),
     },
     watch: {
         selectedFeatures () {
@@ -99,6 +94,8 @@ export default {
         dataToCCM (newState) {
             if (newState) {
                 this.renderCCData();
+            } else {
+                this.$store.commit("Tools/ColorCodeMap/setVisualizationState", false);
             }
         },
         ccmDataSet () {
@@ -380,7 +377,6 @@ export default {
         getColorsByValues (values) {
             return Radio.request("ColorScale", "getColorScaleByValues", values, this.colorScheme);
         },
-
         /**
          * @description Changes selected feature with arrow buttons.
          * @param {*} value 1 or -1 for next or prev.
@@ -400,12 +396,21 @@ export default {
             }
             this.renderVisualization();
         },
+        /**
+         * @description Shows component info as popup.
+         * @returns {Void}
+         */
         showInfo () {
             this.addSingleAlert({
                 category: "Info",
                 content: Info
             });
         },
+        /**
+         * @description Adjusting CCM data for Graph Generator Tool.
+         * @param {Object} dataSet dataSet from renderVisualization function.
+         * @returns {void}
+         */
         prepareGraphData (dataSet) {
             const newDataSet = {
                 label: dataSet.getProperties()[this.keyOfAttrNameStats],
@@ -419,6 +424,10 @@ export default {
 
             this.graphData.push(newDataSet);
         },
+        /**
+         * @description Passes data to the Chart Generator Tool.
+         * @returns {Void}
+         */
         loadToCg () {
             const graphObj = {
                 id: "ccm",
@@ -440,7 +449,6 @@ export default {
                 graphObj.data.dataSets.unshift(dataSet);
             });
 
-            // this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
             this.setNewChartDataSet(graphObj);
             this.graphData = [];
         }

@@ -17,6 +17,11 @@ export default {
                         ticks: {
                             beginAtZero: true
                         }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
                     }]
                 }
             }

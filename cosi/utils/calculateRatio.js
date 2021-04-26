@@ -1,11 +1,10 @@
 /** Calculates the ratio of a set of features.
-* @param {Array} dataArray Of Objects containing data to be calculated.
+* @param {Object[]} dataArray Of Objects containing data to be calculated.
 * @param {String} year Year from which data is to be selected.
-* @returns {Array} Array of calculated Data.
+* @returns {Object[]} Array of calculated Data.
 */
 export default function calculateRatio (dataArray, year) {
     const results = [];
-
     dataArray.forEach(dataSet => {
         const calcObj = {
                 scope: dataSet.name,
@@ -25,7 +24,6 @@ export default function calculateRatio (dataArray, year) {
 * @returns {Object} calculated single dataset.
 */
 function calculateSingle (calcObj, dataSet) {
-
     const relation = calcObj.paramA_val / calcObj.paramB_val,
         capacity = calcObj.paramA_val * (dataSet.faktorF_B / dataSet.faktorF_A),
         need = calcObj.paramB_val * (dataSet.faktorF_A / dataSet.faktorF_B),
@@ -48,26 +46,38 @@ function calculateSingle (calcObj, dataSet) {
 * @returns {Array} Updated Array.
 */
 function calculateTotals (results) {
-    const dataHelpers = {
+    const dataHelpers_total = {
             faktorF_A: results[0].data.faktorF_A,
             faktorF_B: results[0].data.faktorF_B,
             perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalcB
+            perCalc_B: results[0].data.perCalc_B,
+            incompleteDataSets_A: results.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
+            incompleteDataSets_B: results.reduce((total, district) => total + district.data.incompleteDataSets_B, 0),
+            dataSets_A: results.reduce((total, district) => total + district.data.dataSets_A, 0),
+            dataSets_B: results.reduce((total, district) => total + district.data.dataSets_B, 0)
         },
         resultsTotal = {
             scope: "Gesamt",
             paramA_val: results.reduce((total, district) => total + district.paramA_val, 0),
             paramB_val: results.reduce((total, district) => total + district.paramB_val, 0)
         },
-
+        total = calculateSingle(resultsTotal, dataHelpers_total),
+        dataHelpers_avg = {
+            faktorF_A: results[0].data.faktorF_A,
+            faktorF_B: results[0].data.faktorF_B,
+            perCalc_A: results[0].data.perCalc_A,
+            perCalc_B: results[0].data.perCalc_B,
+            incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / results.length,
+            incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / results.length,
+            dataSets_A: resultsTotal.data.dataSets_A / results.length,
+            dataSets_B: resultsTotal.data.dataSets_B / results.length,
+        },
         resultsAverage = {
             scope: "Durchschnitt",
             paramA_val: resultsTotal.paramA_val / results.length,
-            paramB_val: resultsTotal.paramB_val / results.length
+            paramB_val: resultsTotal.paramB_val / results.length,
         },
-
-        total = calculateSingle(resultsTotal, dataHelpers),
-        avg = calculateSingle(resultsAverage, dataHelpers);
+        avg = calculateSingle(resultsAverage, dataHelpers_avg);
 
     results.push(total, avg);
     return results;

@@ -7,6 +7,7 @@ import setBBoxToGeom from "./setBBoxToGeom";
 import downloadBlobToFile from "./downloadBlobToFile";
 import exportXlsx from "./exportXlsx";
 import getAvailableYears from "./getAvailableYears";
+import compensateLackingData from "./compensateLackingData";
 
 /**
  * @description Bundles the CoSI Utils into one export
@@ -15,6 +16,7 @@ export default {
     unifyString,
     getRgbArray,
     getBoundingGeometry,
+    compensateLackingData,
     calculateExtent,
     calculateRatio,
     setBBoxToGeom,

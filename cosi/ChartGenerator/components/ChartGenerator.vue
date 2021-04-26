@@ -19,10 +19,13 @@ export default {
     },
     data () {
         return {
-            test: 0,
+            // All dataSets that have been passed to the component
             dataSets: [],
+            // The ID of the active Graph in the ChartGenerator Tool Winodw
             activeGraph: 0,
+            // Type Of The Graph to render
             newType: "BarChart",
+            // UpdateHelper to force rerender of the DOM
             forceGraphUpdate: 1
         };
     },
@@ -45,7 +48,7 @@ export default {
                 this.dataSets.push(dataSet);
             }
             if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
-                this.$store.commit("Tools/ChartGenerator/setActive", true);
+                this.setActive(true);
             }
 
             if (Array.isArray(dataSet.type)) {
@@ -79,12 +82,17 @@ export default {
             // TODO replace trigger when Menu is migrated
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.$store.state.Tools.ChartGenerator.id});
+            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.id});
 
             if (model) {
                 model.set("isActive", false);
             }
         },
+        /**
+         * @description Function that handles the graphgeneration when multiple graph types has been passed.
+         * @param {Object} dataSet dataSet containing the data and an array for type property.
+         * @returns {void}
+         */
         prepareMultiple (dataSet) {
             dataSet.type.forEach((type, i) => {
                 const dataClone = JSON.parse(JSON.stringify(dataSet));
@@ -97,6 +105,11 @@ export default {
                 this.generateGraphComponent(dataClone);
             });
         },
+        /**
+         * @description Generates the graph component and passes the data dynamically.
+         * @param {Object} dataSet dataSet containing the data and a String for type property.
+         * @returns {void}
+         */
         generateGraphComponent (dataSet) {
             if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
                 this.newType = "BarChart";
@@ -149,20 +162,45 @@ export default {
                 });
             }
         },
+        /**
+         * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
+         * @param {Object} dataSet dataSet containing the data to be rendered as graph.
+         * @returns {Array}
+         */
         generateColorScale (dataSet) {
             const range = ["light" + dataSet.color, dataSet.color];
 
             return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
         },
+        /**
+         * @description Activates the tool window of the chartgenerator.
+         * @returns {Void}
+         */
         activatePanel () {
-            this.$store.commit("Tools/ChartGenerator/setActive", true);
+            this.setActive(true);
         },
+        /**
+         * @description Select graph to be displayed in tool window.
+         * * @param {Integer} value Index of the dataset in this.dataSets array.
+         * @returns {Void}
+         */
         selectGraph (value) {
             this.activeGraph = value;
         },
+        /**
+         * @description Changes between the styles if a dataSet has multiple graph types.
+         * * @param {Object} graph Data of the graph.
+         * * @param {Integer} index Subindex of the type of the graph.
+         * @returns {Void}
+         */
         changeGraph (graph, index) {
             this.$set(graph, "sub_graph", index);
         },
+        /**
+         * @description Selects the next or the previous graph in the Tool Window.
+         * * @param {Integer} value +1 or -1.
+         * @returns {Void}
+         */
         graphPrevNext (value) {
             if (this.activeGraph + value < 0) {
                 this.activeGraph = this.dataSets.length;
@@ -176,6 +214,11 @@ export default {
                 this.activeGraph = this.activeGraph + value;
             }
         },
+        /**
+         * @description Deletes a graph from the Tool Window.
+         * * @param {Integer} index Index of the graph to be deleted in the this.dataSets Array.
+         * @returns {Void}
+         */
         removeGraph (index) {
             this.dataSets.splice(index, 1);
             if (this.activeGraph !== 0) {
@@ -183,7 +226,7 @@ export default {
             }
 
             if (this.dataSets.length === 0) {
-                this.$store.commit("Tools/ChartGenerator/setActive", false);
+                this.setActive(false)
             }
         }
     }

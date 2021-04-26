@@ -1,4 +1,4 @@
-import MappingJson from "../assets/mapping.json";
+import MappingJson from "../../assets/mapping.json";
 
 /**
  * User type definition

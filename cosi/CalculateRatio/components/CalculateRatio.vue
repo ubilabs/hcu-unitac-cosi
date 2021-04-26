@@ -80,6 +80,7 @@ export default {
         ...mapGetters("Tools/DistrictLoader", ["mapping", "selectedDistrictLevel", "currentStatsFeatures"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
+        ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         // Transforming results data for excel export
         resultData () {
             const json = {
@@ -164,6 +165,11 @@ export default {
                     newClone.splice(index, 1);
                 }
             });
+        },
+        visualizationState (newState) {
+            if(!newState) {
+                this.$store.commit("Tools/CalculateRatio/setDataToCCM", false);
+            }
         }
     },
     created () {
@@ -180,6 +186,7 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @returns {void}
@@ -290,7 +297,7 @@ export default {
             // TODO replace trigger when Menu is migrated
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.$store.state.Tools.CalculateRatio.id});
+            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.id});
 
             if (model) {
                 model.set("isActive", false);
@@ -435,8 +442,17 @@ export default {
                         }
                     });
 
+                    const checkForLackingData = utils.compensateLackingData(this.featureVals);
+
+                    if(checkForLackingData === "error"){
+                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                        return;
+                    }
+
                     this.calcHelper.paramA_count = this.featureVals.length;
-                    this.calcHelper.paramA_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.paramA_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.incompleteDataSets_A = checkForLackingData.incompleteDataSets;
+                    this.calcHelper.dataSets_A = checkForLackingData.totalDataSets;
                     if (this.paramFieldA.name === "Anzahl") {
                         this.calcHelper.paramA_calc = this.calcHelper.paramA_count;
                     }
@@ -479,6 +495,7 @@ export default {
 
                     this.calcHelper.paramA_val = this.featureVals;
                     this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
+                    this.calcHelper.incompleteDataSets_B = 0;
                 }
 
                 if (this.BSwitch) {
@@ -507,9 +524,18 @@ export default {
                             }
                         }
                     });
+                    
+                    const checkForLackingData = utils.compensateLackingData(this.featureVals);
+
+                    if(checkForLackingData === "error"){
+                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                        return;
+                    }
 
                     this.calcHelper.paramB_count = this.featureVals.length;
-                    this.calcHelper.paramB_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.paramB_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.incompleteDataSets_B = checkForLackingData.incompleteDataSets;
+                    this.calcHelper.dataSets_B = checkForLackingData.totalDataSets;
                     if (this.paramFieldB.name === "Anzahl") {
                         this.calcHelper.paramB_calc = this.calcHelper.paramB_count;
                     }
@@ -553,6 +579,7 @@ export default {
 
                     this.calcHelper.paramB_val = this.featureVals;
                     this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
+                    this.calcHelper.incompleteDataSets_B = 0;
                 }
 
                 dataArray.push(this.calcHelper);
@@ -592,11 +619,14 @@ export default {
          * @returns {void}
          */
         recalcData () {
+            const dataArray = [];
             this.results = [];
 
             this.resultsClone.forEach(result => {
-                utils.calculateRatio(result.scope, result.data);
+                dataArray.push(result.data);
             });
+
+            this.results = utils.calculateRatio(dataArray, this.selectedYear);
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -619,42 +649,70 @@ export default {
                     }
                 });
 
-                this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
-                this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+                //this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
+                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+
+                this.setCcmDataSet(prepareData);
+                this.setDataToCCM(!switchVar);
+            } else {
+                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+                
+                this.setDataToCCM(!switchVar);
             }
         },
+        /**
+         * @description Passes data to the Chart Generator Tool.
+         * @returns {Void}
+         */
         loadToCG () {
             const graphObj = {
                 id: "calcratio-test",
-                name: "Versorgungsanalyse - Visualisierung",
+                name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
                 type: "BarChart",
-                color: "red",
+                color: "green",
                 source: "CalculateRatio",
                 data: {
-                    labels: [...this.availabeYears],
+                    labels: [...this.availableYears],
                     dataSets: []
                 }
             };
 
-            this.results.forEach(result => {
-                Object.entries(result).forEach(([key, val]) => {
-                    const checkExisting = graphObj.data.dataSets.find(set => set.label === key);
+            console.log("look here", graphObj);
 
-                    if (checkExisting) {
-                        checkExisting.data.push(val);
-                    }
-                    else {
+            const dataArray = [];
+            this.resultsClone.forEach(result => {
+                dataArray.push(result.data);        
+            });
+
+            
+            console.log("look here #2", dataArray);
+
+            this.availableYears.forEach(year => {
+                const dataPerYear = utils.calculateRatio(dataArray, year);
+
+                dataPerYear.forEach(dataSet => {
+                    console.log("look here #3", dataSet);
+                    const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
+
+                    if(checkExisting){
+                        checkExisting.data.push(dataSet[this.columnSelector.key]);
+                    } else {
                         const obj = {
-                            label: key,
-                            data: [val]
-                        };
+                            label: dataSet.scope,
+                            data: [dataSet[this.columnSelector.key]]
+                        }
 
                         graphObj.data.dataSets.push(obj);
                     }
-                });
+                })
+            })
+            
+            graphObj.data.labels.reverse();
+            graphObj.data.dataSets.forEach(dataSet => {
+                dataSet.data.reverse();
             });
 
-            this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
+            this.setNewDataSet(graphObj);
         }
     }
 };
@@ -988,6 +1046,15 @@ export default {
                             >
                                 <span class="glyphicon glyphicon-download"></span>Download XSL
                             </JsonExcel>
+                            
+                            <button
+                                class="cg"
+                                @click="loadToCG()"
+                            >
+                                <span
+                                    class="glyphicon glyphicon-stats"
+                                ></span>
+                            </button>
                             <Multiselect
                                 v-model="columnSelector"
                                 track-by="name"
@@ -1017,14 +1084,6 @@ export default {
                                 <span
                                     v-else
                                     class="glyphicon glyphicon-eye-close"
-                                ></span>
-                            </button>
-                            <button
-                                class="cg"
-                                @click="loadToCG()"
-                            >
-                                <span
-                                    class="glyphicon glyphicon-stats"
                                 ></span>
                             </button>
                             <div
@@ -1099,13 +1158,25 @@ export default {
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="styling_helper">
+                                    <div
+                                        class="styling_helper"
+                                    >
                                         {{ result.paramA_val.toLocaleString('de-DE') }}
+                                        <span v-if="result.data.incompleteDataSets_A > 0">*</span>
+                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
+                                            {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="styling_helper">
+                                    <div
+                                        class="styling_helper"
+                                    >
                                         {{ result.paramB_val.toLocaleString('de-DE') }}
+                                        <span v-if="result.data.incompleteDataSets_B > 0">*</span>
+                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
+                                            {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
+                                        </div>
                                     </div>
                                 </td>
                                 <td v-if="fActive_A || fActive_B">
@@ -1296,7 +1367,7 @@ export default {
                             background:#57A845;
                             color:white;
                             padding: 0px 10px;
-                            margin:5px auto 5px 0;
+                            margin:5px 0px;
 
                             span {
                                 margin-right:10px;
@@ -1307,16 +1378,26 @@ export default {
                             }
                         }
 
-                        button.ccm button.cg {
+                        button.ccm, button.cg {
                             height:40px;
                             width:40px;
-                            margin:5px 10px 5px 5px;
+                            margin:5px;
+                            background:#eee;
+                            border:1px solid #eee;
+
+                            &:hover {
+                                border:1px solid #aaa;
+                            }
 
                             &.highlight {
                                 color:white;
-                                border:none;
+                                border:1px solid @brightblue;
                                 background:@brightblue;
                             }
+                        }
+
+                        button.cg {
+                            margin:5px auto 5px 5px;
                         }
 
                         .column_selection {
