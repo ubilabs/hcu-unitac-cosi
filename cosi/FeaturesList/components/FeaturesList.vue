@@ -173,7 +173,8 @@ export default {
                             layerId: layerMap.layerId,
                             type: feature.get(layerMap.categoryField),
                             feature: feature,
-                            enabled: true
+                            enabled: true,
+                            isSimulation: feature.get("isSimulation")
                         };
                     })];
                 }, []);
