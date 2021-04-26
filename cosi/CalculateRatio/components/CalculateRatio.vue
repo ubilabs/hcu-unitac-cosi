@@ -80,6 +80,7 @@ export default {
         ...mapGetters("Tools/DistrictLoader", ["mapping", "selectedDistrictLevel", "currentStatsFeatures"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
+        ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         // Transforming results data for excel export
         resultData () {
             const json = {
@@ -164,6 +165,11 @@ export default {
                     newClone.splice(index, 1);
                 }
             });
+        },
+        visualizationState (newState) {
+            if(!newState) {
+                this.$store.commit("Tools/CalculateRatio/setDataToCCM", false);
+            }
         }
     },
     created () {
@@ -641,6 +647,8 @@ export default {
 
                 this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
                 this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+            } else {
+                this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
             }
         },
         loadToCG () {
@@ -1008,6 +1016,15 @@ export default {
                             >
                                 <span class="glyphicon glyphicon-download"></span>Download XSL
                             </JsonExcel>
+                            
+                            <button
+                                class="cg"
+                                @click="loadToCG()"
+                            >
+                                <span
+                                    class="glyphicon glyphicon-stats"
+                                ></span>
+                            </button>
                             <Multiselect
                                 v-model="columnSelector"
                                 track-by="name"
@@ -1037,14 +1054,6 @@ export default {
                                 <span
                                     v-else
                                     class="glyphicon glyphicon-eye-close"
-                                ></span>
-                            </button>
-                            <button
-                                class="cg"
-                                @click="loadToCG()"
-                            >
-                                <span
-                                    class="glyphicon glyphicon-stats"
                                 ></span>
                             </button>
                             <div
@@ -1328,7 +1337,7 @@ export default {
                             background:#57A845;
                             color:white;
                             padding: 0px 10px;
-                            margin:5px auto 5px 0;
+                            margin:5px 0px;
 
                             span {
                                 margin-right:10px;
@@ -1339,16 +1348,26 @@ export default {
                             }
                         }
 
-                        button.ccm button.cg {
+                        button.ccm, button.cg {
                             height:40px;
                             width:40px;
-                            margin:5px 10px 5px 5px;
+                            margin:5px;
+                            background:#eee;
+                            border:1px solid #eee;
+
+                            &:hover {
+                                border:1px solid #aaa;
+                            }
 
                             &.highlight {
                                 color:white;
-                                border:none;
+                                border:1px solid @brightblue;
                                 background:@brightblue;
                             }
+                        }
+
+                        button.cg {
+                            margin:5px auto 5px 5px;
                         }
 
                         .column_selection {

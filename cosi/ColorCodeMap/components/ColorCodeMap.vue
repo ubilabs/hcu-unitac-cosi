@@ -60,12 +60,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        dataToCCM () {
-            return this.$store.state.Tools.CalculateRatio?.dataToCCM;
-        },
-        ccmDataSet () {
-            return this.$store.state.Tools.CalculateRatio?.ccmDataSet;
-        }
+        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"])
     },
     watch: {
         selectedFeatures () {
@@ -101,6 +96,8 @@ export default {
         dataToCCM (newState) {
             if (newState) {
                 this.renderCCData();
+            } else {
+                this.$store.commit("Tools/ColorCodeMap/setVisualizationState", false);
             }
         },
         ccmDataSet () {
