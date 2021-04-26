@@ -11,7 +11,8 @@
                     "noFeaturesWarning": "You have not selected any areas as a basis for statistical data. Please load some areas first via the area selection.",
                     "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
                     "placeholderA": "Select (counter) parameter",
-                    "placeholderB": "Select (denominator) reference value"
+                    "placeholderB": "Select (denominator) reference value",
+                    "noData": "No data was found for the selected facility parameter in the search radius. Please change the parameter or expand your area selection"
                 }
             }
         }

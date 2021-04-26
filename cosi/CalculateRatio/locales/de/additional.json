@@ -11,7 +11,8 @@
                     "noFeaturesWarning": "Sie haben keine Gebiete als Grundlage für statistische Daten ausgewählt. Bitte laden Sie zuerst einige Gebiete über die Gebietsauswahl.",
                     "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
                     "placeholderA": "Paramenter (Zähler) auswählen",
-                    "placeholderB": "Referenzwert (Nenner) auswählen"
+                    "placeholderB": "Referenzwert (Nenner) auswählen",
+                    "noData": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl."
                 }
             }
         }

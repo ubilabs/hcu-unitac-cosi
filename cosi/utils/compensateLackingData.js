@@ -35,8 +35,9 @@ export default function compensateLackingData (dataArray) {
         }
     }
 
-    return obj = {
+    return {
         data: completeData,
         incompleteDataSets: incompleteData.length,
+        totalDataSets: completeData.length
     }
 }

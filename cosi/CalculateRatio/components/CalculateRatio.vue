@@ -435,8 +435,17 @@ export default {
                         }
                     });
 
+                    const checkForLackingData = utils.compensateLackingData(this.featureVals);
+
+                    if(checkForLackingData === "error"){
+                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                        return;
+                    }
+
                     this.calcHelper.paramA_count = this.featureVals.length;
-                    this.calcHelper.paramA_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.paramA_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.incompleteDataSets_A = checkForLackingData.incompleteDataSets;
+                    this.calcHelper.dataSets_A = checkForLackingData.totalDataSets;
                     if (this.paramFieldA.name === "Anzahl") {
                         this.calcHelper.paramA_calc = this.calcHelper.paramA_count;
                     }
@@ -479,6 +488,7 @@ export default {
 
                     this.calcHelper.paramA_val = this.featureVals;
                     this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
+                    this.calcHelper.incompleteDataSets_B = 0;
                 }
 
                 if (this.BSwitch) {
@@ -507,9 +517,18 @@ export default {
                             }
                         }
                     });
+                    
+                    const checkForLackingData = utils.compensateLackingData(this.featureVals);
+
+                    if(checkForLackingData === "error"){
+                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                        return;
+                    }
 
                     this.calcHelper.paramB_count = this.featureVals.length;
-                    this.calcHelper.paramB_val = this.featureVals.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.paramB_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper.incompleteDataSets_B = checkForLackingData.incompleteDataSets;
+                    this.calcHelper.dataSets_B = checkForLackingData.totalDataSets;
                     if (this.paramFieldB.name === "Anzahl") {
                         this.calcHelper.paramB_calc = this.calcHelper.paramB_count;
                     }
@@ -553,6 +572,7 @@ export default {
 
                     this.calcHelper.paramB_val = this.featureVals;
                     this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
+                    this.calcHelper.incompleteDataSets_B = 0;
                 }
 
                 dataArray.push(this.calcHelper);
@@ -1099,13 +1119,25 @@ export default {
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="styling_helper">
+                                    <div
+                                        class="styling_helper"
+                                    >
                                         {{ result.paramA_val.toLocaleString('de-DE') }}
+                                        <span v-if="result.data.incompleteDataSets_A > 0">*</span>
+                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
+                                            {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="styling_helper">
+                                    <div
+                                        class="styling_helper"
+                                    >
                                         {{ result.paramB_val.toLocaleString('de-DE') }}
+                                        <span v-if="result.data.incompleteDataSets_B > 0">*</span>
+                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
+                                            {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
+                                        </div>
                                     </div>
                                 </td>
                                 <td v-if="fActive_A || fActive_B">

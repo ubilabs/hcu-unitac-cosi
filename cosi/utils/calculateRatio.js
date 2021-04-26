@@ -48,26 +48,38 @@ function calculateSingle (calcObj, dataSet) {
 * @returns {Array} Updated Array.
 */
 function calculateTotals (results) {
-    const dataHelpers = {
+    const dataHelpers_total = {
             faktorF_A: results[0].data.faktorF_A,
             faktorF_B: results[0].data.faktorF_B,
             perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalcB
+            perCalc_B: results[0].data.perCalcB,
+            incompleteDataSets_A: results.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
+            incompleteDataSets_B: results.reduce((total, district) => total + district.data.incompleteDataSets_B, 0),
+            dataSets_A: results.reduce((total, district) => total + district.data.dataSets_A, 0),
+            dataSets_B: results.reduce((total, district) => total + district.data.dataSets_B, 0)
         },
         resultsTotal = {
             scope: "Gesamt",
             paramA_val: results.reduce((total, district) => total + district.paramA_val, 0),
             paramB_val: results.reduce((total, district) => total + district.paramB_val, 0)
         },
-
+        total = calculateSingle(resultsTotal, dataHelpers_total),
+        dataHelpers_avg = {
+            faktorF_A: results[0].data.faktorF_A,
+            faktorF_B: results[0].data.faktorF_B,
+            perCalc_A: results[0].data.perCalc_A,
+            perCalc_B: results[0].data.perCalcB,
+            incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / results.length,
+            incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / results.length,
+            dataSets_A: resultsTotal.data.dataSets_A / results.length,
+            dataSets_B: resultsTotal.data.dataSets_B / results.length,
+        },
         resultsAverage = {
             scope: "Durchschnitt",
             paramA_val: resultsTotal.paramA_val / results.length,
-            paramB_val: resultsTotal.paramB_val / results.length
+            paramB_val: resultsTotal.paramB_val / results.length,
         },
-
-        total = calculateSingle(resultsTotal, dataHelpers),
-        avg = calculateSingle(resultsAverage, dataHelpers);
+        avg = calculateSingle(resultsAverage, dataHelpers_avg);
 
     results.push(total, avg);
     return results;

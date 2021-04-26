@@ -281,7 +281,11 @@
         "layer": [
             {
                 "id": "Corona Testzentren",
-                "numericalValues": []
+                "numericalValues": [
+                    { "id": "taegliche_kapazitaet",
+                        "name": "Kapazität"
+                    }
+                ]
             }
         ]
     }
