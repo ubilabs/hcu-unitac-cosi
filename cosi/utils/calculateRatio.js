@@ -25,7 +25,7 @@ export default function calculateRatio (dataArray, year) {
 * @returns {Object} calculated single dataset.
 */
 function calculateSingle (calcObj, dataSet) {
-
+    console.log("check me out", calcObj, dataSet);
     const relation = calcObj.paramA_val / calcObj.paramB_val,
         capacity = calcObj.paramA_val * (dataSet.faktorF_B / dataSet.faktorF_A),
         need = calcObj.paramB_val * (dataSet.faktorF_A / dataSet.faktorF_B),
@@ -52,7 +52,7 @@ function calculateTotals (results) {
             faktorF_A: results[0].data.faktorF_A,
             faktorF_B: results[0].data.faktorF_B,
             perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalcB,
+            perCalc_B: results[0].data.perCalc_B,
             incompleteDataSets_A: results.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
             incompleteDataSets_B: results.reduce((total, district) => total + district.data.incompleteDataSets_B, 0),
             dataSets_A: results.reduce((total, district) => total + district.data.dataSets_A, 0),
@@ -68,7 +68,7 @@ function calculateTotals (results) {
             faktorF_A: results[0].data.faktorF_A,
             faktorF_B: results[0].data.faktorF_B,
             perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalcB,
+            perCalc_B: results[0].data.perCalc_B,
             incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / results.length,
             incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / results.length,
             dataSets_A: resultsTotal.data.dataSets_A / results.length,
