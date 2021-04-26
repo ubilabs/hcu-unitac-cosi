@@ -20,12 +20,23 @@ export default function compensateLackingData (dataArray) {
     }
 
     if (incompleteData.length > 0) {
-        const fixData = completeData.reduce((total, data) => total + data, 0) / completeData.length;
+        // Old attempt: Calculating average value
+        // const fixData = completeData.reduce((total, data) => total + data, 0) / completeData.length;
 
+        //New attemplt: Getting Median value
+        const sortData = completeData.sort();
+        const mid = Math.ceil(sortData.length / 2);
+
+        const median =
+        sortData.length % 2 == 0 ? (sortData[mid] + sortData[mid - 1]) / 2 : sortData[mid - 1];
+        
         for (let i = 0; i < incompleteData.length; i++) {
-            completeData.push(fixData);
+            completeData.push(median);
         }
     }
 
-    return completeData;
+    return obj = {
+        data: completeData,
+        incompleteDataSets: incompleteData.length,
+    }
 }
