@@ -1,7 +1,7 @@
 
 import {generateSimpleGetters} from "../../../../src/app-store/utils/generators";
 import districtSelectorState from "./stateDistrictLoader";
-import MappingJson from "../assets/mapping.json";
+import MappingJson from "../../assets/mapping.json";
 import {WFS} from "ol/format.js";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import {getFeature} from "../../../../src/api/wfs/getFeature.js";

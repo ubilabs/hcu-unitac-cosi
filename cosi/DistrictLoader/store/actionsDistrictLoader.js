@@ -1,7 +1,7 @@
 import {WFS} from "ol/format.js";
 import {getLayerList} from "masterportalAPI/src/rawLayerList";
 import unifyString from "../../utils/unifyString";
-import MappingJson from "../assets/mapping.json";
+import MappingJson from "../../assets/mapping.json";
 import {getFeature} from "../../../../src/api/wfs/getFeature.js";
 
 const actions = {
