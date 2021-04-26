@@ -11,9 +11,9 @@ import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import getOlGeomByGmlType from "../utils/getOlGeomByGmlType";
-import Feature from 'ol/Feature';
-import Polygon from 'ol/geom/Polygon';
-import Point from 'ol/geom/Point';
+import Feature from "ol/Feature";
+import Polygon from "ol/geom/Polygon";
+import Point from "ol/geom/Point";
 
 export default {
     name: "ScenarioBuilder",
@@ -130,6 +130,7 @@ export default {
 
             console.log(feature, layer);
             feature.setProperties(this.featureProperties);
+            feature.set("isSimulation", true);
 
             this.addFeatureToScenario({feature, layer});
             this.unlisten();

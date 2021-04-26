@@ -5,7 +5,7 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-import store from "../../../../src/app-store";
+// import store from "../../../../src/app-store";
 import Info from "text-loader!./info.html";
 
 export default {
@@ -15,8 +15,6 @@ export default {
     },
     data () {
         return {
-            // All available features
-            featuresStatistics: [],
             // Selected Feature
             selectedFeature: "",
             // List of available features for selected Districts
@@ -58,7 +56,7 @@ export default {
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping"]),
+        ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"]),
     },
@@ -111,8 +109,8 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
+        ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
@@ -120,9 +118,8 @@ export default {
         updateSelectedDistricts () {
             this.featuresList = [];
             this.graphData = [];
-            this.featuresStatistics = store.getters["Tools/DistrictLoader/currentStatsFeatures"];
-            if (this.featuresStatistics.length) {
-                this.availableYears = utils.getAvailableYears(this.featuresStatistics, this.yearSelector);
+            if (this.currentStatsFeatures.length) {
+                this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
                 this.updateFeaturesList();
             }
         },
@@ -162,10 +159,10 @@ export default {
          */
         animationOverYears (tempo) {
             if (this.playState) {
-                let current = this.availableYears.indexOf(this.selectedYear) + 1;
+                let current = this.availableYears.indexOf(this.selectedYear) - 1;
 
-                if (current >= this.availableYears.length) {
-                    current = 0;
+                if (current < 0) {
+                    current = this.availableYears.length - 1;
                 }
 
                 setTimeout(() => {
@@ -184,7 +181,7 @@ export default {
         renderVisualization () {
             if (this.visualizationState) {
                 this.graphData = [];
-                const results = this.featuresStatistics.filter(x => x.getProperties().kategorie === this.selectedFeature),
+                const results = this.currentStatsFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
 
@@ -277,7 +274,8 @@ export default {
          */
         renderCCData () {
             if (!this.visualizationState) {
-                this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
+                // this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
+                this.setVisualizationState(true);
             }
 
             const resultValues = this.ccmDataSet.map(x => {
@@ -450,8 +448,8 @@ export default {
             this.graphData.forEach(dataSet => {
                 graphObj.data.dataSets.unshift(dataSet);
             });
-            
-            this.setNewDataSet(graphObj);
+
+            this.setNewChartDataSet(graphObj);
             this.graphData = [];
         }
     }
@@ -460,7 +458,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="featuresStatistics.length"
+        v-if="currentStatsFeatures.length"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
@@ -510,7 +508,7 @@ export default {
                     </button>
 
                     <Multiselect
-                        v-if="featuresStatistics.length"
+                        v-if="currentStatsFeatures.length"
                         v-model="selectedYear"
                         class="year_selection selection"
                         :allow-empty="false"
@@ -527,7 +525,7 @@ export default {
                         </template>
                     </Multiselect>
                     <Multiselect
-                        v-if="featuresStatistics.length"
+                        v-if="currentStatsFeatures.length"
                         v-model="lastYear"
                         class="year_selection selection"
                         :class="{disable: !selectedYear}"
