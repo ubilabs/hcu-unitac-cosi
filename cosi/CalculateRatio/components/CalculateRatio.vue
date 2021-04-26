@@ -186,6 +186,7 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @returns {void}
@@ -296,7 +297,7 @@ export default {
             // TODO replace trigger when Menu is migrated
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.$store.state.Tools.CalculateRatio.id});
+            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.id});
 
             if (model) {
                 model.set("isActive", false);
@@ -618,11 +619,14 @@ export default {
          * @returns {void}
          */
         recalcData () {
+            const dataArray = [];
             this.results = [];
 
             this.resultsClone.forEach(result => {
-                utils.calculateRatio(result.scope, result.data);
+                dataArray.push(result.data);
             });
+
+            this.results = utils.calculateRatio(dataArray, this.selectedYear);
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -645,44 +649,70 @@ export default {
                     }
                 });
 
-                this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
-                this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+                //this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
+                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+
+                this.setCcmDataSet(prepareData);
+                this.setDataToCCM(!switchVar);
             } else {
-                this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+                
+                this.setDataToCCM(!switchVar);
             }
         },
+        /**
+         * @description Passes data to the Chart Generator Tool.
+         * @returns {Void}
+         */
         loadToCG () {
             const graphObj = {
                 id: "calcratio-test",
-                name: "Versorgungsanalyse - Visualisierung",
+                name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
                 type: "BarChart",
-                color: "red",
+                color: "green",
                 source: "CalculateRatio",
                 data: {
-                    labels: [...this.availabeYears],
+                    labels: [...this.availableYears],
                     dataSets: []
                 }
             };
 
-            this.results.forEach(result => {
-                Object.entries(result).forEach(([key, val]) => {
-                    const checkExisting = graphObj.data.dataSets.find(set => set.label === key);
+            console.log("look here", graphObj);
 
-                    if (checkExisting) {
-                        checkExisting.data.push(val);
-                    }
-                    else {
+            const dataArray = [];
+            this.resultsClone.forEach(result => {
+                dataArray.push(result.data);        
+            });
+
+            
+            console.log("look here #2", dataArray);
+
+            this.availableYears.forEach(year => {
+                const dataPerYear = utils.calculateRatio(dataArray, year);
+
+                dataPerYear.forEach(dataSet => {
+                    console.log("look here #3", dataSet);
+                    const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
+
+                    if(checkExisting){
+                        checkExisting.data.push(dataSet[this.columnSelector.key]);
+                    } else {
                         const obj = {
-                            label: key,
-                            data: [val]
-                        };
+                            label: dataSet.scope,
+                            data: [dataSet[this.columnSelector.key]]
+                        }
 
                         graphObj.data.dataSets.push(obj);
                     }
-                });
+                })
+            })
+            
+            graphObj.data.labels.reverse();
+            graphObj.data.dataSets.forEach(dataSet => {
+                dataSet.data.reverse();
             });
 
-            this.$store.commit("Tools/ChartGenerator/setNewDataSet", graphObj);
+            this.setNewDataSet(graphObj);
         }
     }
 };

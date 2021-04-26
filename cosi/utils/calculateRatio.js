@@ -1,11 +1,10 @@
 /** Calculates the ratio of a set of features.
-* @param {Array} dataArray Of Objects containing data to be calculated.
+* @param {Object[]} dataArray Of Objects containing data to be calculated.
 * @param {String} year Year from which data is to be selected.
-* @returns {Array} Array of calculated Data.
+* @returns {Object[]} Array of calculated Data.
 */
 export default function calculateRatio (dataArray, year) {
     const results = [];
-
     dataArray.forEach(dataSet => {
         const calcObj = {
                 scope: dataSet.name,
@@ -25,7 +24,6 @@ export default function calculateRatio (dataArray, year) {
 * @returns {Object} calculated single dataset.
 */
 function calculateSingle (calcObj, dataSet) {
-    console.log("check me out", calcObj, dataSet);
     const relation = calcObj.paramA_val / calcObj.paramB_val,
         capacity = calcObj.paramA_val * (dataSet.faktorF_B / dataSet.faktorF_A),
         need = calcObj.paramB_val * (dataSet.faktorF_A / dataSet.faktorF_B),

@@ -1,8 +1,8 @@
 /**
  * Gets all available Years from array of features.
- * @param {Array} features Array Of Features.
+ * @param {Object[]} features Array Of Features.
  * @param {String} year_selector The identifier for year data (usually "jahr_").
- * @returns {Array} The Array of all available Years in the data set.
+ * @returns {String[]} The Array of all available Years in the data set.
  */
 export default function getAvailableYears (features, year_selector) {
     const availableYears = [];
