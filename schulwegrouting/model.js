@@ -274,21 +274,18 @@ const Schulwegrouting = Tool.extend(/** @lends Schulwegrouting.prototype */{
      * @returns {void}
      */
     findRegionalSchool: function (address) {
-        console.log(address);
         const gazAddress = {};
 
         if (address.length !== 0) {
             gazAddress.streetname = address.street;
             gazAddress.housenumber = address.number;
             gazAddress.affix = address.affix;
-            console.log(gazAddress);
             Radio.trigger("Gaz", "adressSearch", gazAddress);
         }
     },
 
     parseRegionalSchool: function (xml) {
         const primarySchool = $(xml).find("gages\\:grundschulnr,grundschulnr");
-console.log(primarySchool);
         let schoolId,
             school,
             schoolWithAdress;

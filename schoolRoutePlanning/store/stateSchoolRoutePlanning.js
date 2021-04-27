@@ -16,17 +16,30 @@ const state = {
     glyphicon: "glyphicon-filter",
     layerId: "8712",
     wpsId: "1001",
+    fmwProcess: "schulwegrouting_wps.fmw",
     renderToWindow: false,
     resizableWindow: true,
     deactivateGFI: true,
 
     inputAddress: "",
     schools: [],
+    selectedSchool: null,
     streetNames: [],
     houseNumbers: [],
     filteredHouseNumbers: [],
+
     regionalPrimarySchoolNumber: null,
-    regionalPrimarySchoolName: null
+    regionalPrimarySchoolName: null,
+
+    routeDescription: [],
+    routeElements: {},
+    routeGeometry: null,
+    routeLength: "",
+
+    printDpi: "200",
+    printLayout: "A4 Hochformat",
+    printOutputFormat: "pdf",
+    printTitle: "Schulwegrouting"
 };
 
 export default state;

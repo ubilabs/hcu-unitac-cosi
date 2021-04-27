@@ -1,8 +1,8 @@
 #### Portalconfig.menu.tools.children
 
-Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdown-header-portalconfigmenutool)** und kann/muss somit auch die dort angegebenen attribute konfiguiert bekommen.
+List of all configurable tools. Each tool inherits from **[tool](#markdown-header-portalconfigmenutool)** and thus can/must also have the attributes specified there configured.
 
-|Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
+|Name|Required|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
 |schulwegrouting|nein|**[schulwegrouting](#markdown-header-portalconfigmenutoolschulwegrouting)**||Schulwegrouting.|true|
 
@@ -10,16 +10,17 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 
 #### Portalconfig.menu.tool.schulwegrouting
 
-Mit diesem hamburgspezifischen Tool kann von jeder hamburgischen Addresse zu jeder hamburgischen Schule die Route berechnet werden. Dabei werden auch die offiziellen Schuleingänge betrachtet.
+With this Hamburg-specific tool, the route can be calculated from any Hamburg address to any Hamburg school. The official school entrances are also considered.
 
-**ACHTUNG: Backend notwendig!**
+**ATTENTION: Backend necessary!**
 
-**Es wird über einen WPS eine FME-Workbench angesprochen, welche das Routing berechnet.**
+**An FME workbench is addressed via a WPS, which calculates the routing.**
 
-|Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
+|Name|Required|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
-|layerId|ja|String||Id des Layers der de Schulen enthält. Dieser Layer muss auch in den **[Themenconfig](#markdown-header-themenconfig)** konfiguriert sein.|false|
-|wpsId|nein|String|"1001"|Id des WPS aus der rest-services.json, der den FME-Prozess "schulwegrouting_wps.fmw" triggert.|true|
+|layerId|nein|String|"8712"|Id of the layer that contains the schools. This layer must also be configured in the **[themeconfig](#markdown-header-themeconfig)**.|true|
+|wpsId|nein|String|"1001"|Id of the WPS from the rest-services.json that triggers the configured FME process.|true|
+|fmwProcess|nein|String|"schulwegrouting_wps.fmw"|FME process that calculates a school route.|true|
 
 **Beispiel**
 ```
@@ -28,7 +29,8 @@ Mit diesem hamburgspezifischen Tool kann von jeder hamburgischen Addresse zu jed
     "name": "Schulweg-Routing",
     "glyphicon": "glyphicon-filter",
     "layerId": "8712",
-    "wpsId: "1001"
+    "wpsId: "1001",
+    "fmwProcess": "schulwegrouting_wps.fmw"
 }
 ```
 

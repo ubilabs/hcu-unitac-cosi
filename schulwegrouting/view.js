@@ -259,6 +259,7 @@ const SchulwegroutingView = Backbone.View.extend(/** @lends SchulwegroutingView.
     },
 
     selectSchool: function (evt) {
+        console.log(evt);
         const schoolname = evt.target.value;
 
         this.model.selectSchool(this.model.get("schoolList"), schoolname);

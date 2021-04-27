@@ -43,12 +43,40 @@ export default {
             set (value) {
                 this.setInputAddress(value);
             }
+        },
+
+        /**
+         * Checks if a route is calculated.
+         * @returns {Boolean} Route is calculated.
+         */
+        routeIsCalculated () {
+            return Object.keys(this.routeElements).length <= 0;
         }
     },
     watch: {
+        /**
+         * Sets the active property of the state to the given value.
+         * @param {Boolean} value Value deciding whether the tool gets activated or deactivated.
+         * @returns {void}
+         */
         active (value) {
             if (value) {
                 this.initializeSelectpicker();
+            }
+        },
+
+        /**
+         * Shows the route in the map.
+         * @param {ol/MultiLineString|null} value The geometry of the route.
+         * @returns {void}
+         */
+        routeGeometry (value) {
+            if (value !== null) {
+                this.setGeometryByFeatureId({
+                    id: "route",
+                    source: this.layer.getSource(),
+                    geometry: value
+                });
             }
         }
     },
@@ -57,11 +85,16 @@ export default {
 
         this.addSchools();
         this.initializeSelectpicker();
+        this.inizializeLayer();
     },
     methods: {
         ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
         ...mapActions("Tools/SchoolRoutePlanning", Object.keys(actions)),
 
+        /**
+         * Closes this tool window by setting active to false.
+         * @returns {void}
+         */
         close () {
             this.setActive(false);
 
@@ -73,6 +106,24 @@ export default {
             }
         },
 
+        /**
+         * Listens for the WFS to be loaded with the schools.
+         * @returns {void}
+         */
+        addSchools () {
+            Backbone.Events.listenTo(Radio.channel("VectorLayer"), {
+                "featuresLoaded": (layerId, features) => {
+                    if (layerId === this.layerId) {
+                        this.setSchools(features);
+                    }
+                }
+            });
+        },
+
+        /**
+         * Initialize the selectpicker.
+         * @returns {void}
+         */
         initializeSelectpicker () {
             this.$nextTick(() => $(".selectpicker").selectpicker({
                 width: "100%",
@@ -81,22 +132,19 @@ export default {
             }));
         },
 
-        addSchools () {
-            Backbone.Events.listenTo(Radio.channel("VectorLayer"), {
-                "featuresLoaded": (layerId, features) => {
-                    if (layerId === this.layerId) {
-                        this.layer = Radio.request("Map", "createLayerIfNotExists", "school_route_layer");
-                        this.addRouteFeatures(this.layer.getSource());
-                        this.layer.setStyle(this.routeStyle);
-                        this.setSchools(features);
-                    }
-                }
-            });
+        /**
+         * Initialize a layer with features and styles.
+         * @returns {void}
+         */
+        inizializeLayer () {
+            this.layer = Radio.request("Map", "createLayerIfNotExists", "school_route_layer");
+            this.addRouteFeatures(this.layer.getSource());
+            this.layer.setStyle(this.routeStyle);
         },
 
         /**
-         * add features with an id to the route layer
-         * @param {ol.source} source - vector source of the route layer
+         * Add features with an id to the route layer.
+         * @param {ol/Source} source Vector source of the route layer.
          * @returns {void}
          */
         addRouteFeatures (source) {
@@ -145,6 +193,16 @@ export default {
                     width: 6
                 })
             });
+        },
+
+        resetRoute () {
+            this.layer.getSource().getFeatures().forEach(feature => feature.unset("geometry"));
+            this.resetStateElements();
+            // console.log(this.$el);
+            // console.log(this.$el.querySelector(".selectpicker"));
+            // console.log($(".selectpicker"));
+            // $(".selectpicker").selectpicker("val", "");
+            this.school = "";
         }
     }
 };
@@ -208,7 +266,9 @@ export default {
                         <span class="regionalPrimarySchool">
                             {{ $t("additional:modules.tools.routingToSchool.regionalPrimarySchool") }}
                         </span>
-                        <a id="regional-school">
+                        <a
+                            id="regional-school"
+                        >
                             {{ $t(regionalPrimarySchoolName) }}
                         </a>
                     </span>
@@ -219,12 +279,13 @@ export default {
                         class="selectpicker"
                         :title="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
                         data-live-search="true"
+                        @change="event => selectSchool({event, layer})"
                     >
                         <option
                             v-for="school in getSchools"
                             :id="school.get('schul_id')"
                             :key="`schools-'${school.get('schul_id')}`"
-                            :value="`${school.get('schul_id')}-${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}`"
+                            :value="school.get('schul_id')"
                         >
                             {{ `${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}` }}
                         </option>
@@ -235,14 +296,16 @@ export default {
                     <button
                         type="button"
                         class="btn btn-default btn-sm print-route pull-left"
-                        disabled
+                        :disabled="routeIsCalculated"
+                        @click="printRoute"
                     >
                         {{ $t("additional:modules.tools.schoolRoutePlanning.printRouteName") }}
                     </button>
                     <button
                         type="button"
                         class="btn btn-default btn-sm delete-route pull-right"
-                        disabled
+                        :disabled="routeIsCalculated"
+                        @click="resetRoute"
                     >
                         {{ $t("additional:modules.tools.schoolRoutePlanning.deleteRoute") }}
                     </button>
