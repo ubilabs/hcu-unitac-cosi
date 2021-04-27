@@ -20,6 +20,7 @@ const state = {
     renderToWindow: false,
     resizableWindow: true,
     deactivateGFI: true,
+    initialWidth: 500,
 
     inputAddress: "",
     schools: [],

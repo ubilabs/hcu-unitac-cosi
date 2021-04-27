@@ -232,9 +232,10 @@ export default {
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivateGFI="deactivateGFI"
+        :initialWidth="initialWidth"
     >
         <template v-slot:toolBody>
-            <div class="content">
+            <div class="content-school-route-planning">
                 <div class="form-group col-xs-12 test">
                     <div class="input-group">
                         <input
@@ -355,7 +356,7 @@ export default {
 @background_color_1: #e3e3e3;
 @background_color_2: rgb(229, 229, 229);
 
-    .content {
+    .content-school-route-planning {
         padding-top: 20px;
         .input-group {
             width: 100%
@@ -379,16 +380,11 @@ export default {
             }
         }
     }
+
     #regional-school {
         cursor: pointer;
     }
-    .bootstrap-select {
-        .dropdown-menu {
-            right: 0;
-            left: null;
-            width: 80%;
-        }
-    }
+
     .hit-list {
         z-index: 3;
         padding-left: 15px;
@@ -402,11 +398,13 @@ export default {
             }
         }
     }
+
     .description {
         button {
             margin: 20px 0;
         }
     }
+
     .result {
         background-color: @background_color_2;
         p {
@@ -418,20 +416,25 @@ export default {
             }
         }
     }
-    .route-container {
-        span {
-            font-family: @font_family_1;
-            font-size: 15px;
+
+    .content-school-route-planning {
+        .route-container {
+            span {
+                font-family: @font_family_1;
+                font-size: 15px;
+            }
         }
     }
+
     .description {
-    ol {
-        padding-left: 15px;
+        ol {
+            padding-left: 15px;
+        }
+        li {
+            padding-bottom: 5px;
+        }
     }
-    li {
-        padding-bottom: 5px;
-    }
-    }
+
     @media (max-width: 767px) {
         .schulweg-routing {
             ol {
@@ -439,6 +442,17 @@ export default {
             }
             label {
                 font-size: 14px;
+            }
+        }
+    }
+</style>
+
+<style lang="less">
+    .content-school-route-planning {
+        .bootstrap-select {
+            .dropdown-menu {
+                right: 0;
+                left: null;
             }
         }
     }
