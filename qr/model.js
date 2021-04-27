@@ -107,19 +107,29 @@ const QRModel = Tool.extend(/** @lends QRModel.prototype */{
      * @return {Promise<string>} A promise resolving with the data url as string
      */
     generateQRCodeDataURL (coordinates) {
+        const url = this.replaceDataInURLSchema(coordinates);
+
+        return QRCode.toDataURL(url);
+    },
+
+    /**
+     * Replaces the placeholders in the configured url schema with the given coordinates
+     * @param {Array} coordinates An array with two entries for longitude and latitude coordinates in EPSG:25832
+     * @return {string} The data url as string
+     */
+    replaceDataInURLSchema (coordinates) {
         const transformedCoords = this.transformCoords(coordinates),
             lat = transformedCoords[1],
             lon = transformedCoords[0],
             url = this.get("urlSchema").replace("{{LAT}}", lat).replace("{{LON}}", lon);
 
-        return QRCode.toDataURL(url);
+        return url;
     },
 
     /**
      * Transform the coordinates to the specified target projection
      *
      * @param {number[]} coordinates The coordinates to transform
-     *
      * @return {number[]} The transformed coordinates
      */
     transformCoords (coordinates) {
