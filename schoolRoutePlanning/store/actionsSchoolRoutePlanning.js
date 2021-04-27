@@ -304,7 +304,6 @@ export default {
      * @returns {void}
      */
     printRoute ({state, rootState}) {
-        console.log(rootState.Map);
         const routeElements = state.routeElements,
             visibleLayerList = rootState.Map.layerList.filter(layer => layer.getVisible() === true),
             attributes = {

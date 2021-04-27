@@ -39,7 +39,14 @@ const state = {
     printDpi: "200",
     printLayout: "A4 Hochformat",
     printOutputFormat: "pdf",
-    printTitle: "Schulwegrouting"
+    printTitle: "Schulwegrouting",
+    toggleLayers: [
+        "1935geofox-bus",
+        "1935geofox_BusName",
+        "1935geofox-bahn",
+        "1935geofox_Faehre",
+        "1933geofox_stations"
+    ]
 };
 
 export default state;

@@ -1,6 +1,7 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../src/modules/tools/Tool.vue";
+import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import getComponent from "../../../src/utils/getComponent";
 import getters from "../store/gettersSchoolRoutePlanning";
 import mutations from "../store/mutationsSchoolRoutePlanning";
@@ -14,7 +15,8 @@ import {Point} from "ol/geom.js";
 export default {
     name: "SchoolRoutePlanning",
     components: {
-        Tool
+        Tool,
+        ToggleCheckbox
     },
     data () {
         return {
@@ -203,6 +205,20 @@ export default {
             // console.log($(".selectpicker"));
             // $(".selectpicker").selectpicker("val", "");
             this.school = "";
+        },
+
+        /**
+         * Toggles the visibility of the toggle layers.
+         * @param {Boolean} visible The visibility to be set.
+         * @returns {void}
+         */
+        toggleLayer (visible) {
+            this.toggleLayers.forEach(layer => {
+                Radio.trigger("ModelList", "setModelAttributesById", layer, {
+                    isSelected: visible,
+                    isVisibleInMap: visible
+                });
+            });
         }
     }
 };
@@ -291,7 +307,21 @@ export default {
                         </option>
                     </select>
                 </div>
-                <div class="routing-checkbox"></div>
+                <div class="routing-checkbox-container col-md-12 col-xs-12">
+                    <label
+                        class="routing-checkbox-label"
+                        @click="toggleLayer"
+                    >
+                        {{ $t("additional:modules.tools.schoolRoutePlanning.transportNetwork") }}
+                    </label>
+                    <ToggleCheckbox
+                        ref="rasterCheckBox"
+                        class="routing-checkbox-toggle-checkbox"
+                        :textOn="$t('common:snippets.checkbox.on')"
+                        :textOff="$t('common:snippets.checkbox.off')"
+                        @change="toggleLayer"
+                    />
+                </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button
                         type="button"
@@ -337,8 +367,16 @@ export default {
                 width: 75%;
             }
         }
-        .checkbox-container {
-            margin-bottom: 20px;
+        .routing-checkbox-container {
+            margin-bottom: 33px;
+            width: 100%;
+            .routing-checkbox-label {
+                padding: 9px, 0;
+            }
+            .routing-checkbox-toggle-checkbox {
+                position: absolute;
+                right: 15px;
+            }
         }
     }
     #regional-school {
