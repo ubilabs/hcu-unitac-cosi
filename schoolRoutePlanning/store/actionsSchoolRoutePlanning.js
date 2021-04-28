@@ -277,7 +277,7 @@ export default {
 
         commit("setRouteElements", routeElements);
         commit("setRouteDescription", Array.isArray(routeDescription) ? routeDescription : [routeDescription]);
-        commit("setRouteLength", thousandsSeparator(routeElements.kuerzesteStrecke));
+        commit("setRouteLength", thousandsSeparator(routeElements.kuerzesteStrecke) + "m");
         dispatch("parseRoute", Array.isArray(routeEdges) ? routeEdges : [routeEdges]);
     },
 

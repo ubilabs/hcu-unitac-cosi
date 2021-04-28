@@ -35,7 +35,7 @@ const state = {
     routeDescription: [],
     routeElements: {},
     routeGeometry: null,
-    routeLength: "",
+    routeLength: null,
 
     printDpi: "200",
     printLayout: "A4 Hochformat",

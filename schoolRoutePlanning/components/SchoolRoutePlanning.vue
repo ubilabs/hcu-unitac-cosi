@@ -1,6 +1,8 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../src/modules/tools/Tool.vue";
+import RouteInformation from "./SchoolRoutePlanningRouteInformation.vue";
+
 import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
 import getComponent from "../../../src/utils/getComponent";
 import getters from "../store/gettersSchoolRoutePlanning";
@@ -16,6 +18,7 @@ export default {
     name: "SchoolRoutePlanning",
     components: {
         Tool,
+        RouteInformation,
         ToggleCheckbox
     },
     data () {
@@ -341,20 +344,15 @@ export default {
                         {{ $t("additional:modules.tools.schoolRoutePlanning.deleteRoute") }}
                     </button>
                 </div>
-                <div class="route-container">
-                    <div class="result col-xs-12"></div>
-                    <div class="description col-xs-12"></div>
-                </div>
             </div>
+            <RouteInformation />
         </template>
     </Tool>
 </template>
 
 <style lang="less" scoped>
 @import "~variables";
-@font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
 @background_color_1: #e3e3e3;
-@background_color_2: rgb(229, 229, 229);
 
     .content-school-route-planning {
         padding-top: 20px;
@@ -372,7 +370,7 @@ export default {
             margin-bottom: 33px;
             width: 100%;
             .routing-checkbox-label {
-                padding: 9px, 0;
+                padding-top: 9px;
             }
             .routing-checkbox-toggle-checkbox {
                 position: absolute;
@@ -395,53 +393,6 @@ export default {
             &:hover {
                 cursor: pointer;
                 background-color: @background_color_1;
-            }
-        }
-    }
-
-    .description {
-        button {
-            margin: 20px 0;
-        }
-    }
-
-    .result {
-        background-color: @background_color_2;
-        p {
-            &:first-child {
-                padding-top: 20px;
-            }
-            &:last-child {
-                padding-bottom: 20px;
-            }
-        }
-    }
-
-    .content-school-route-planning {
-        .route-container {
-            span {
-                font-family: @font_family_1;
-                font-size: 15px;
-            }
-        }
-    }
-
-    .description {
-        ol {
-            padding-left: 15px;
-        }
-        li {
-            padding-bottom: 5px;
-        }
-    }
-
-    @media (max-width: 767px) {
-        .schulweg-routing {
-            ol {
-                font-size: 14px;
-            }
-            label {
-                font-size: 14px;
             }
         }
     }
