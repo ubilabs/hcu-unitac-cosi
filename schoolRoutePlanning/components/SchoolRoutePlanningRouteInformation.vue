@@ -18,7 +18,7 @@ export default {
     >
         <div class="result col-xs-12">
             <p>
-                {{ $t("additional:modules.tools.routingToSchool.totalLength") }}
+                {{ $t("additional:modules.tools.schoolRoutePlanning.totalLength") }}
                 <span>
                     {{ routeLength }}
                 </span>
@@ -26,18 +26,18 @@ export default {
             <br>
             <p>
                 <small>
-                    {{ $t("additional:modules.tools.routingToSchool.from") }}
+                    {{ $t("additional:modules.tools.schoolRoutePlanning.from") }}
                 </small>
             </p>
             <p>
                 <span>
-                    {{ inputAddress }}
+                    {{ selectedAddress }}
                 </span>
             </p>
             <br>
             <p>
                 <small>
-                    {{ $t("additional:modules.tools.routingToSchool.to") }}
+                    {{ $t("additional:modules.tools.schoolRoutePlanning.to") }}
                 </small>
             </p>
             <p>
@@ -53,7 +53,7 @@ export default {
                 data-toggle="collapse"
                 data-target="#route-description"
             >
-                {{ $t("additional:modules.tools.routingToSchool.showRouteDescription") }}
+                {{ $t("additional:modules.tools.schoolRoutePlanning.showRouteDescription") }}
             </button>
             <ol
                 id="route-description"

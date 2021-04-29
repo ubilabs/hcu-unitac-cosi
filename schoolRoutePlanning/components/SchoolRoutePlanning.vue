@@ -49,7 +49,7 @@ export default {
             },
             /**
              * Sets the input address to the vuex state.
-             * @param {String} value The input address
+             * @param {String} value The input address.
              * @returns {void}
              */
             set (value) {
@@ -63,6 +63,14 @@ export default {
          */
         routeIsCalculated () {
             return Object.keys(this.routeElements).length <= 0;
+        },
+
+        /**
+         * Checks if a school or address has been inputed.
+         * @returns {Boolean} Input exist.
+         */
+        inputExists () {
+            return !(this.selectedSchoolNumber !== "" || this.inputAddress !== "");
         }
     },
     watch: {
@@ -125,7 +133,7 @@ export default {
          * @returns {void}
          */
         inizializeLayer () {
-            this.layer = Radio.request("Map", "createLayerIfNotExists", "school_route_layer");
+            this.layer = Radio.request("Map", "createLayerIfNotExists", this.layerName);
             addRouteFeatures(this.layer.getSource());
             this.layer.setStyle(routeStyle);
         },
@@ -207,7 +215,7 @@ export default {
                     <button
                         type="button"
                         class="btn btn-default btn-sm delete-route pull-right"
-                        :disabled="routeIsCalculated"
+                        :disabled="inputExists"
                         @click="resetLayerUserInterface"
                     >
                         {{ $t("additional:modules.tools.schoolRoutePlanning.deleteRoute") }}

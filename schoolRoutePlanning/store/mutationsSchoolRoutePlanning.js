@@ -17,7 +17,7 @@ const mutations = {
      * @returns {void}
      */
     setRegionalPrimarySchool (state, regionalPrimarySchoolNumber) {
-        const regionalPrimarySchoolName = state.schools.find(school => school.get("schul_id") === regionalPrimarySchoolNumber + "-0");
+        const regionalPrimarySchoolName = state.schools.find(school => school.get("schul_id") === regionalPrimarySchoolNumber);
 
         state.regionalPrimarySchoolNumber = regionalPrimarySchoolNumber;
 
@@ -42,6 +42,9 @@ const mutations = {
 
         state.regionalPrimarySchoolNumber = null;
         state.regionalPrimarySchoolName = null;
+        state.selectedSchool = null;
+        state.selectedSchoolNumber = "";
+        state.selectedAddress = "";
 
         state.routeDescription = [];
         state.routeElements = {};

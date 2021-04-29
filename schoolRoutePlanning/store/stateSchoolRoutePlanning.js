@@ -7,7 +7,31 @@
  * @property {String} glyphicon Icon next to the title.
  * @property {String} layerId The if of the wfs service that contains the schools.
  * @property {String} wpsId The id of the used web processing service.
+ * @property {String} fmwProcess FME process triggered via the WPS.
  * @property {Boolean} renderToWindow If true, tool is rendered in a window, else in the sidebar.
+ * @property {Boolean} resizableWindow Specifies whether the window should be resizable.
+ * @property {Boolean} deactivateGFI Specifies whether the gfi should be disabled when this tool is opened.
+ * @property {Number} initialWidth Size of the sidebar when opening.
+ * @property {String} layerName Name of the VectorLayer for the route elements.
+ * @property {Number} printDpi The dpi for the printing.
+ * @property {String} printLayout Layout for printing.
+ * @property {String} printOutputFormat Format for the printing.
+ * @property {String} printTitle Title for the printing.
+ * @property {String[]} toggleLayers Layers that can be switched on and off via the toggle button.
+ * @property {String} inputAddress The input address.
+ * @property {Object[]} schools The available schools.
+ * @property {String[]} streetNames The searched street names
+ * @property {Object[]} houseNumbers The house numbers for the searched streets.
+ * @property {Object[]} filteredHouseNumbers The filtered house numbers for the input address.
+ * @property {String} regionalPrimarySchoolNumber The number of the regional primary school.
+ * @property {String} regionalPrimarySchoolName The name of the regional primary school.
+ * @property {ol/Feature} selectedSchool The selected school as feature.
+ * @property {String} selectedSchoolNumber The number of selected school.
+ * @property {String} selectedAddress The selected address.
+ * @property {String[]} routeDescription The route description.
+ * @property {ol/Geometry} routeGeometry The geometry of the route.
+ * @property {Object} routeElements the route elements.
+ * @property {String} routeLength The route length in meter.
  */
 const state = {
     id: "schoolRoutePlanning",
@@ -21,23 +45,8 @@ const state = {
     resizableWindow: true,
     deactivateGFI: true,
     initialWidth: 500,
-
-    inputAddress: "",
-    schools: [],
-    selectedSchool: null,
-    streetNames: [],
-    houseNumbers: [],
-    filteredHouseNumbers: [],
-
-    regionalPrimarySchoolNumber: null,
-    regionalPrimarySchoolName: null,
-
-    routeDescription: [],
-    routeElements: {},
-    routeGeometry: null,
-    routeLength: null,
-
-    printDpi: "200",
+    layerName: "school_route_layer",
+    printDpi: 200,
     printLayout: "A4 Hochformat",
     printOutputFormat: "pdf",
     printTitle: "Schulwegrouting",
@@ -47,7 +56,24 @@ const state = {
         "1935geofox-bahn",
         "1935geofox_Faehre",
         "1933geofox_stations"
-    ]
+    ],
+
+    inputAddress: "",
+    schools: [],
+    streetNames: [],
+    houseNumbers: [],
+    filteredHouseNumbers: [],
+
+    regionalPrimarySchoolNumber: null,
+    regionalPrimarySchoolName: null,
+    selectedSchool: null,
+    selectedSchoolNumber: "",
+    selectedAddress: "",
+
+    routeDescription: [],
+    routeElements: {},
+    routeGeometry: null,
+    routeLength: null
 };
 
 export default state;

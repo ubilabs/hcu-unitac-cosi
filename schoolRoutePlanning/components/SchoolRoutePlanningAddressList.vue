@@ -23,7 +23,7 @@ export default {
 
 <template>
     <div
-        v-if="streetNames.length > 0"
+        v-if="streetNames.length > 0 && inputAddress !== ''"
         class="row"
     >
         <ul
@@ -34,7 +34,7 @@ export default {
                     v-for="streetName in streetNames.slice(0, 5)"
                     :key="streetName"
                     class="list-group-item street"
-                    @click="searchHousenumbers(streetName)"
+                    @click="searchHousenumbers({streetName, eventType: 'click'})"
                 >
                     {{ streetName }}
                 </li>

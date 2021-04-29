@@ -2,9 +2,9 @@
     "modules": {
         "tools": {
             "schoolRoutePlanning": {
-                "title": "Schulwegrouting",
+                "title": "Schulweg",
                 "inputPlaceHolder": "Startadresse",
-                "regionalPrimarySchool": "Regional zuständige Schule: ",
+                "regionalPrimarySchool": "Regional zuständige Grundschule: ",
                 "selectSchool": "Schule auswählen",
                 "printRouteName": "Route drucken",
                 "deleteRoute": "Route löschen",

@@ -1,6 +1,7 @@
 <script>
-import {mapGetters, mapActions} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersSchoolRoutePlanning";
+import mutations from "../store/mutationsSchoolRoutePlanning";
 import actions from "../store/actionsSchoolRoutePlanning";
 
 import "bootstrap-select";
@@ -17,13 +18,24 @@ export default {
         ...mapGetters("Tools/SchoolRoutePlanning", Object.keys(getters)),
 
         /**
-         * Gets the sorted list of school and update the selectpicker.
-         * @returns {Object[]} the sorted schools
+         * Getter and setter for the selected school number.
          */
-        getSchools () {
-            this.$nextTick(() => $(".selectpicker").selectpicker("refresh"));
-
-            return this.sortedSchools;
+        selectedSchoolNumber: {
+            /**
+             * Gets the selected school number from the vuex state.
+             * @returns {String} The selected school number.
+             */
+            get () {
+                return this.$store.state.Tools.SchoolRoutePlanning.selectedSchoolNumber;
+            },
+            /**
+             * Sets the selected school number to the vuex state.
+             * @param {String} value The selected school number.
+             * @returns {void}
+             */
+            set (value) {
+                this.setSelectedSchoolNumber(value);
+            }
         }
     },
     watch: {
@@ -41,7 +53,11 @@ export default {
     created () {
         this.initializeSelectpicker();
     },
+    updated () {
+        this.$nextTick(() => $(".selectpicker").selectpicker("refresh"));
+    },
     methods: {
+        ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
         ...mapActions("Tools/SchoolRoutePlanning", Object.keys(actions)),
 
         /**
@@ -54,6 +70,18 @@ export default {
                 selectedTextFormat: "value",
                 size: 6
             }));
+        },
+
+        /**
+         * Sets the selected regional primary school to dropdown.
+         * @returns {void}
+         */
+        selectRegionalPrimarySchoolNumber () {
+            this.setSelectedSchoolNumber(this.regionalPrimarySchoolNumber);
+            this.selectSchool({
+                selectedSchoolId: this.regionalPrimarySchoolNumber,
+                layer: this.layer
+            });
         }
     }
 
@@ -65,10 +93,11 @@ export default {
         <div class="form-group col-xs-12">
             <span>
                 <span class="regionalPrimarySchool">
-                    {{ $t("additional:modules.tools.routingToSchool.regionalPrimarySchool") }}
+                    {{ $t("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool") }}
                 </span>
                 <a
                     id="regional-school"
+                    @click="selectRegionalPrimarySchoolNumber"
                 >
                     {{ $t(regionalPrimarySchoolName) }}
                 </a>
@@ -77,15 +106,15 @@ export default {
         <div class="form-group col-xs-12">
             <select
                 id="tool-schoolRoutePlanning-schools"
+                v-model="selectedSchoolNumber"
                 class="selectpicker"
                 :title="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
                 data-live-search="true"
-                @change="event => selectSchool({event, layer})"
+                @change="event => selectSchool({selectedSchoolId: event.target.value, layer})"
             >
                 <option
-                    v-for="school in getSchools"
-                    :id="school.get('schul_id')"
-                    :key="`schools-'${school.get('schul_id')}`"
+                    v-for="school in sortedSchools"
+                    :key="school.get('schul_id')"
                     :value="school.get('schul_id')"
                 >
                     {{ `${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}` }}

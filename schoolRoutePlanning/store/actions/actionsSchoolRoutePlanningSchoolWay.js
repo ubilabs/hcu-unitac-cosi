@@ -9,15 +9,13 @@ export default {
     /** Select the school from school list and adds to the schoolway vector layer.
      * @param {Object} context The vuex context.
      * @param {Object} payload The payload for select school.
-     * @param {Object} payload.event The click event.
-     * @param {Object} payload.event.target The targets of click event.
-     * @param {Object} payload.event.target.value The selected school id.
+     * @param {Object} payload.selectedSchoolId The selected school id.
      * @param {ol/vectorLayer} payload.layer The vector layer for schoolway features.
      * @returns {void}
      */
     selectSchool ({state, commit, dispatch}, payload) {
         const selectedHouseNumber = state.houseNumbers.find(houseNumber => houseNumber.name === state.inputAddress),
-            selectedSchoolId = payload.event.target.value;
+            selectedSchoolId = payload.selectedSchoolId;
 
         if (selectedHouseNumber && selectedSchoolId) {
             const selectedSchool = state.schools.find(school => school.get("schul_id") === selectedSchoolId);
@@ -40,7 +38,7 @@ export default {
      * @param {Object} payload.selectedSchoolId The selected school id.
      * @returns {void}
      */
-    prepareWayToSchoolRequest ({state, dispatch}, payload) {
+    prepareWayToSchoolRequest ({state, commit, dispatch}, payload) {
         const wpsPayload = {
             "Schul-ID": {
                 "dataType": "string",
@@ -68,6 +66,7 @@ export default {
             }
         };
 
+        commit("setSelectedAddress", state.inputAddress);
         dispatch("requestWayToSchool", wpsPayload);
     },
 

@@ -2,9 +2,9 @@
     "modules": {
         "tools": {
             "schoolRoutePlanning": {
-                "title": "School route planning",
+                "title": "School route",
                 "inputPlaceHolder": "Start address",
-                "regionalPrimarySchool": "Regional primary school: ",
+                "regionalPrimarySchool": "Regionally responsible primary school: ",
                 "selectSchool": "Select school",
                 "printRouteName": "Print route",
                 "deleteRoute": "Delete route",

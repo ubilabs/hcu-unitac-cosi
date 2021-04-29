@@ -29,27 +29,44 @@ export default {
      * @param {String} input The inout part of a streetname.
      * @returns {void}
      */
-    searchStreets ({commit}, input) {
+    searchStreets ({rootGetters, commit, dispatch}, input) {
+        commit("setHouseNumbers", []);
+        commit("setFilteredHouseNumbers", []);
+
         search(input, {
-            map: Radio.request("Map", "getMap"),
+            map: rootGetters["Map/map"],
             searchStreets: true
         }).then(streets => {
-            commit("setStreetNames", streets.map(street => street.name).sort());
+            const sortedStreetNames = streets.map(street => street.name).sort();
+
+            commit("setStreetNames", sortedStreetNames);
+            if (sortedStreetNames.length === 1) {
+                dispatch("searchHousenumbers", {
+                    streetName: sortedStreetNames[0],
+                    eventType: "input"
+                });
+            }
         });
     },
 
     /**
      * Search house number for a street name.
      * @param {Object} context The vuex context.
-     * @param {String} streetName The streetname to search for housenumbers.
+     * @param {Object} payload The payload.
+     * @param {String} payload.streetName The streetname to search for housenumbers.
+     * @param {String} payload.eventType The event type by means of which the input was made.
      * @returns {void}
      */
-    searchHousenumbers ({commit}, streetName) {
-        commit("setStreetNames", [streetName]);
-        commit("setInputAddress", streetName);
+    searchHousenumbers ({rootGetters, commit}, payload) {
+        const streetName = payload.streetName;
+
+        if (payload?.eventType === "click") {
+            commit("setStreetNames", [streetName]);
+            commit("setInputAddress", streetName);
+        }
 
         search(streetName, {
-            map: Radio.request("Map", "getMap"),
+            map: rootGetters["Map/map"],
             searchStreets: true,
             searchHouseNumbers: true
         }).then(response => {
@@ -79,7 +96,7 @@ export default {
             dispatch("setGeometryByFeatureId", {
                 id: "startPoint",
                 source: inputs.layer.getSource(),
-                geometry: new Point(filteredHouseNumbers[0].geometry.coordinates)
+                geometry: new Point(filteredHouseNumbers[0].geometry.coordinates.map(coord => parseInt(coord, 10)))
             });
             dispatch("searchRegionalPrimarySchool", filteredHouseNumbers[0].name);
         }
@@ -101,13 +118,16 @@ export default {
             foundHouseNumber = state.houseNumbers.find(houseNumber => houseNumber.name === input);
 
         commit("setInputAddress", input);
-
         dispatch("setGeometryByFeatureId", {
             id: "startPoint",
             source: inputs.layer.getSource(),
-            geometry: new Point(foundHouseNumber.geometry.coordinates)
+            geometry: new Point(foundHouseNumber.geometry.coordinates.map(coord => parseInt(coord, 10)))
         });
         dispatch("searchRegionalPrimarySchool", foundHouseNumber.name);
+        dispatch("selectSchool", {
+            selectedSchoolId: state.selectedSchoolNumber,
+            layer: inputs.layer
+        });
     },
 
     /**
@@ -121,7 +141,7 @@ export default {
             map: Radio.request("Map", "getMap"),
             searchAddress: true
         }).then(response => {
-            commit("setRegionalPrimarySchool", response[0].properties.grundschulnr);
+            commit("setRegionalPrimarySchool", response[0].properties.grundschulnr + "-0");
         });
     }
 };

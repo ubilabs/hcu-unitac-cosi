@@ -22,14 +22,13 @@ export default {
             geometry = targetElement.geometry;
 
         commit("setFilteredHouseNumbers", []);
-
         source.getFeatureById(featureId).setGeometry(geometry);
+
         if (geometry.getType() === "Point") {
-            Radio.trigger("MapView", "setCenter", geometry.getCoordinates(), 6);
+            Radio.trigger("MapView", "setCenter", geometry.getCoordinates(), 5);
         }
         else {
             Radio.trigger("Map", "zoomToExtent", source.getExtent());
         }
-        Radio.trigger("MapView", "setZoomLevelDown");
     }
 };
