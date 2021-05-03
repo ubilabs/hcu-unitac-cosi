@@ -38,9 +38,10 @@ describe("addons/dipas/components/Dipas.vue", () => {
                     getMappedProperties () {
                         return {
                             "Kategorie": "Value Kategorie",
-                            "link": "Value link",
+                            "link": "/drupal/de/node/5",
                             "name": "Value name",
-                            "description": "Value description"
+                            "description": "Value description",
+                            "nid": "5"
                         };
                     }
                 }
@@ -152,6 +153,27 @@ describe("addons/dipas/components/Dipas.vue", () => {
             }];
 
             expect(wrapper.vm.calculateIconPath(valueStyle)).to.equal(iconPath);
+        });
+    });
+
+    describe("method: modifyContributionLink -> the contribution link should show the right path", function () {
+        it("should show path of property 'link' when table = true", function () {
+            createWrapper(true);
+
+            const ret = wrapper.vm.modifyContributionLink(wrapper.vm.feature.getMappedProperties().link, wrapper.vm.feature.getMappedProperties().nid);
+
+            expect(ret).to.equal("/drupal/de/node/5");
+        });
+
+        it("should show path to dipas frontend contribution when table = true", function () {
+            Object.defineProperty(document, "referrer", {value: "https://localhost:9001/portalconfigs/dipas/#/projektinfo", configurable: true});
+
+            createWrapper(false);
+
+            const path = "https://localhost:9001/portalconfigs/dipas/#/contribution/5",
+                ret = wrapper.vm.modifyContributionLink(wrapper.vm.feature.getMappedProperties().link, wrapper.vm.feature.getMappedProperties().nid);
+
+            expect(ret).to.equal(path);
         });
     });
 });

@@ -63,8 +63,28 @@ export default {
                 finalIconPath = valueStyle[0].style.imageName;
             }
             return finalIconPath;
-        }
+        },
 
+        /**
+         * Generates the valid link to the contribution, depending on the environment.
+         * @param  {String} link - gfi feature attribute value for 'link'
+         * @param  {String} nid - gfi feature attribute value for 'nid'
+         * @fires StyleList#RadioRequestStyleListReturnModeById
+         * @returns {String} the link to the contribution
+         */
+        modifyContributionLink (link, nid) {
+            let parentLocation = "",
+                contributionLink = "";
+
+            if (!this.isTable) {
+                parentLocation = document.referrer;
+                contributionLink = parentLocation.split("#")[0] + "#/contribution/" + nid;
+            }
+            else {
+                contributionLink = link;
+            }
+            return contributionLink;
+        }
     }
 };
 </script>
@@ -83,7 +103,7 @@ export default {
             class="dipas-gfi-name"
         >
             <a
-                :href="feature.getMappedProperties().link"
+                :href="modifyContributionLink(feature.getMappedProperties().link, feature.getMappedProperties().nid)"
                 target="_top"
             >{{ feature.getMappedProperties().name }}</a>
         </div>
@@ -102,7 +122,7 @@ export default {
         <a
             v-if="!isTable && feature.getMappedProperties().link"
             class="dipas-gfi-more"
-            :href="feature.getMappedProperties().link"
+            :href="modifyContributionLink(feature.getMappedProperties().link, feature.getMappedProperties().nid)"
             target="_top"
         >mehr</a>
     </div>
