@@ -95,7 +95,7 @@ export default {
          * @returns {void}
          */
         lastDataset (newLastDataset) {
-            if (Array.isArray(newLastDataset?.featureList)) {
+            if (Array.isArray(newLastDataset?.featureList) && Array.isArray(newLastDataset?.coordinate)) {
                 this.refreshCaptions();
                 this.refreshBeams();
                 this.refreshAnimation();
@@ -243,7 +243,7 @@ export default {
          * @post the map is zoomed into the extent of this.lastDataset.featureList
          */
         zoomIntoExtent () {
-            if (typeof this.olZoomOptions === "object" && this.olZoomOptions !== null && Array.isArray(this.lastDataset?.featureList)) {
+            if (typeof this.olZoomOptions === "object" && this.olZoomOptions !== null && Array.isArray(this.lastDataset?.featureList) && Array.isArray(this.lastDataset?.coordinate)) {
                 this.olApi.zoomToExtent(this.lastDataset.featureList);
             }
         },
@@ -314,7 +314,7 @@ export default {
          * @returns {void}
          */
         refreshCaptions () {
-            if (Array.isArray(this.lastDataset?.featureList)) {
+            if (Array.isArray(this.lastDataset?.featureList) && Array.isArray(this.lastDataset?.coordinate)) {
                 this.olApi.addCaptions(
                     this.lastDataset.caption,
                     this.lastDataset.coordinate,
@@ -332,7 +332,7 @@ export default {
          * @returns {void}
          */
         refreshBeams () {
-            if (this.beamsChecked && Array.isArray(this.lastDataset?.featureList)) {
+            if (this.beamsChecked && Array.isArray(this.lastDataset?.featureList) && Array.isArray(this.lastDataset?.coordinate)) {
                 this.olApi.addBeams(this.lastDataset.featureList);
             }
             else {
@@ -344,7 +344,7 @@ export default {
          * @returns {void}
          */
         refreshAnimation () {
-            if (this.animationChecked && Array.isArray(this.lastDataset?.featureList)) {
+            if (this.animationChecked && Array.isArray(this.lastDataset?.featureList) && Array.isArray(this.lastDataset?.coordinate)) {
                 this.olApi.initAnimation(this.lastDataset.featureList, this.lastDataset.totalMax, this.olBubbleAlgorithm);
             }
             else {
@@ -433,19 +433,25 @@ export default {
         resetAll () {
             // note: remember to check behavior of watch:active -> use of resetAll, when changing this function
             this.listCities = [];
-            this.currentDistrict = "";
             this.currentCity = "";
-            this.lastDataset = null;
-            if (typeof this.onstart === "object") {
-                this.captionsChecked = this.onstart.captionsChecked;
-                this.numbersChecked = this.onstart.numbersChecked;
-                this.beamsChecked = this.onstart.beamsChecked;
-                this.animationChecked = this.onstart.animationChecked;
-                this.currentDirection = this.onstart.direction;
-            }
-            this.toggleMarker(null);
 
-            this.olApi.clearLayers();
+            // note: the watcher on currentCity already resets the currentDistrict
+            // to avoid a mixup within vue (leading to a bug) the following resets may be put into $nextTick
+            this.$nextTick(() => {
+                this.currentDistrict = "";
+
+                this.lastDataset = null;
+                if (typeof this.onstart === "object") {
+                    this.captionsChecked = this.onstart.captionsChecked;
+                    this.numbersChecked = this.onstart.numbersChecked;
+                    this.beamsChecked = this.onstart.beamsChecked;
+                    this.animationChecked = this.onstart.animationChecked;
+                    this.currentDirection = this.onstart.direction;
+                }
+                this.toggleMarker(null);
+
+                this.olApi.clearLayers();
+            });
         },
         /**
          * starts the animation
@@ -735,6 +741,12 @@ export default {
                                 </tbody>
                             </table>
                         </div>
+                        <div
+                            v-else
+                            class="col-sm-12 noDataset"
+                        >
+                            {{ translate("additional:modules.tools.CommuterFlows.noDataset") }}
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col">
@@ -833,6 +845,10 @@ export default {
     }
     .animationButton {
         width: 80px;
+    }
+    .noDataset {
+        margin-top: 10px;
+        text-align: center;
     }
     .featureList {
         height: 200px;

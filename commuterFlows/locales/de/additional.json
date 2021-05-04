@@ -20,7 +20,8 @@
                 "buttonAll": "Alle laden",
                 "linkMoreInfo": "Weitere Informationen",
                 "buttonReset": "$t(additional:modules.tools.CommuterFlows.title) zurücksetzen",
-                "labelPeople": "Personen"
+                "labelPeople": "Personen",
+                "noDataset": "Keine pendelnden Personen bekannt!"
             }
         }
     }

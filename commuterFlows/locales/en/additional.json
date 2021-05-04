@@ -20,7 +20,8 @@
                 "buttonAll": "Load all",
                 "linkMoreInfo": "More information",
                 "buttonReset": "Reset $t(additional:modules.tools.CommuterFlows.title)",
-                "labelPeople": "people"
+                "labelPeople": "people",
+                "noDataset": "No known commuting persons!"
             }
         }
     }
