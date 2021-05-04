@@ -14,7 +14,8 @@
                     "colType": "Typ",
                     "colGroup": "Thema",
                     "colActions": "Aktionen",
-                    "colToggleEnabled": "Ein-/Ausschalten"
+                    "colToggleEnabled": "Ein-/Ausschalten",
+                    "colAddress": "Adresse"
                 }
             }
         }

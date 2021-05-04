@@ -6,7 +6,7 @@ import prepareDistrictLevels from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
-import {mapGetters, mapActions, mapMutations} from "vuex";
+import {mapGetters, mapActions, mapMutations, mapState} from "vuex";
 import getters from "../store/gettersDistrictSelector";
 import mutations from "../store/mutationsDistrictSelector";
 import {DragBox, Select} from "ol/interaction";
@@ -41,6 +41,7 @@ export default {
     computed: {
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
         ...mapGetters("Map", ["layerList", "visibleLayerList"]),
+        ...mapState(["easyReadMode"]),
 
         /**
          * Gets the options for the dropdown. The layerId for the value and the label for the text content.
@@ -125,6 +126,16 @@ export default {
          */
         visibleLayerList () {
             this.checkAdditionalLayers();
+        },
+
+        /**
+         * When the easyReadMode on the map is toggled on/off the overlay is removed and has to be refreshed
+         * @returns {void}
+         */
+        easyReadMode () {
+            if (this.selectedNames.length !== 0 || this.active) {
+                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
+            }
         }
     },
     created () {

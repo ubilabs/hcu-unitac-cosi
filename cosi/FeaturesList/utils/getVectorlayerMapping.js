@@ -13,6 +13,10 @@ function mapVectorLayersInFolder (layers, condition) {
                 layerId: layer.id,
                 id: layer.name,
                 numericalValues: layer.numericalValues || [],
+                addressField: Array.isArray(layer.addressField) // the address can be a single or multiple fields that will be combined for the table view
+                    ? layer.addressField
+                    : [layer.addressField]
+                    || ["address"],
                 categoryField: Array.isArray(layer.searchField) // last search field, must be set in config.json
                     ? layer.searchField[layer.searchField.length - 1]
                     : layer.searchField,

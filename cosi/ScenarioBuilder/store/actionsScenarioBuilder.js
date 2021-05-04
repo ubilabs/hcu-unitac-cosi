@@ -1,4 +1,5 @@
 import getClusterSource from "../../utils/getClusterSource";
+import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
 
 const actions = {
     /**
@@ -12,6 +13,8 @@ const actions = {
 
             if (!source.getFeatures().find(feature => feature === item.feature)) {
                 source.addFeature(item.feature);
+
+                addSimulationTag(item.feature, getters.guideLayer);
             }
         });
     },
@@ -25,10 +28,8 @@ const actions = {
         getters.scenario.forEach(item => {
             const source = getClusterSource(item.layer);
 
+            removeSimulationTag(item.feature, getters.guideLayer);
             source.removeFeature(item.feature);
-            // if (source.getFeatures().find(feature => feature === item.feature)) {
-            //     source.
-            // }
         });
 
         commit("setScenario", []);
@@ -36,14 +37,19 @@ const actions = {
     /**
      * Adds a feature to the current scenario
      * @param {Function} store.commit the stores commit function
+     * @param {Function} store.getters scenario builder getters
      * @param {Object} payload - {feature, layer} to commit
      * @param {Object} payload.feature - feature to commit
      * @param {Object} payload.layer - layer the feature belongs to
      * @returns {void}
      */
-    addFeatureToScenario ({commit}, payload) {
+    addFeatureToScenario ({commit, getters}, payload) {
         getClusterSource(payload.layer).addFeature(payload.feature);
 
+        console.log(payload.layer);
+        console.log(payload.feature);
+
+        addSimulationTag(payload.feature, getters.guideLayer);
         commit("storeScenarioFeature", payload);
     }
 };

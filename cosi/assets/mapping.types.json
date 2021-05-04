@@ -6,6 +6,7 @@
     "integer": "number",
     "string": "string",
     "data": "date",
+    "boolean": "boolean",
     "gml:PointPropertyType": "geom",
     "gml:LinePropertyType": "geom",
     "gml:PolygontPropertyType": "geom",

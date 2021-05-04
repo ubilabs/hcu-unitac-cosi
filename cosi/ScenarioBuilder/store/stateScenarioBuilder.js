@@ -13,7 +13,8 @@ const state = {
     isVisibleInMenu: true,
     renderToWindow: true,
     resizableWindow: false,
-    scenario: []
+    scenario: [],
+    guideLayer: null
 };
 
 export default state;

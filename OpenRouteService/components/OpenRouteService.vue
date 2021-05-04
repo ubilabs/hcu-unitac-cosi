@@ -10,13 +10,15 @@ import getRgbArray from "../../cosi/utils/getRgbArray";
 
 /**
  * Routing, Isochrones and Matrix Requests through OpenRouteService API
- * @vue-data {Object} parser - GeoJSON
- * @vue-data {Object} layer - OpenLayers Layer
+ * @vue-data {module:ol/Format/GeoJSON} parser - GeoJSON
+ * @vue-data {module:ol/layer/Vector} layer - OpenLayers Layer
+ * @vue-computed {Object} (mapGetters) Tools/OpenRouteService
+ * @vue-computed {Object} (mapGetters) Map
+ * @vue-watch {Object} requestData
+ * @vue-watch {Object} geoJson
  */
 export default {
     name: "OpenRouteService",
-    components: {
-    },
     data () {
         return {
             parser: new GeoJSON(),
@@ -31,12 +33,25 @@ export default {
         ])
     },
     watch: {
+        /**
+         * Triggers a new Request Execution depending on the provided request-service name
+         * @param {Object} newRequest - the request params
+         * @listens store#Tools/OpenRouteService/requestData
+         * @returns {void}
+         */
         requestData (newRequest) {
             switch (this.service(newRequest.service)) {
                 default:
                     this.requestIsochrone(newRequest);
             }
         },
+
+        /**
+         * Draws a new geojson to the map after response was receive
+         * @todo add switch depending on request type
+         * @listens store#Tools/OpenRouteService/geoJson
+         * @returns {void}
+         */
         geoJson () {
             if (this.geoJson.length > 0) {
                 this.drawIsochrones();
@@ -98,8 +113,6 @@ export default {
 
             newLayer.setVisible(true);
             this.setDrawingLayer(newLayer);
-
-            return newLayer;
         },
         /**
          * @description Unionizes overlapping geojson polygons of the same distance hierarchy
@@ -144,6 +157,7 @@ export default {
                 features = this.parser.readFeatures(item);
                 // transform feature geom to portal crs
                 this.transformFeatures(features);
+                // style the polygons
                 this.styleFeatures(features);
 
                 source.addFeatures(features);
@@ -169,7 +183,7 @@ export default {
         },
         /**
          * @description listen for the events on the map
-         * @param {number} i index
+         * @param {Number} i index
          * @param {Object} colorScale The ColorScale from ColorScale Radio Request
          * @returns {void}
          */
@@ -197,9 +211,9 @@ export default {
         }
     },
     /**
-         * @description override render function for Renderless Component
-         * @returns {void}
-         */
+     * @description override render function for Renderless Component
+     * @returns {void}
+     */
     render () {
         return null;
     }

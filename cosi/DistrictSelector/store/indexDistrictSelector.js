@@ -4,7 +4,7 @@ import state from "./stateDistrictSelector";
 
 export default {
     namespaced: true,
-    state: {...state},
+    state,
     mutations,
     getters
 };

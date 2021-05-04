@@ -14,6 +14,9 @@ import getOlGeomByGmlType from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
+import {featureTagStyle} from "../utils/guideLayer";
+import getValuesForField from "../utils/getValuesForField";
+import hash from "object-hash";
 
 export default {
     name: "ScenarioBuilder",
@@ -32,14 +35,15 @@ export default {
             geometry: {
                 Constructor: null,
                 value: null
-            }
+            },
+            valuesForFields: {}
         };
     },
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["map", "layerById", "visibleLayerList"]),
-        validateProp: () => field => validateProp(field)
+        ...mapGetters("Map", ["map", "layerById"])
+        // validateProp: () => field => validateProp(field)
     },
 
     watch: {
@@ -49,7 +53,7 @@ export default {
             describeFeatureTypeByLayerId(layer.layerId)
                 .then(desc => {
                     this.featureTypeDesc = desc;
-                    console.log(desc);
+                    this.asyncGetValuesForField(desc);
                 });
         },
         /**
@@ -77,6 +81,7 @@ export default {
         this.$on("close", () => {
             this.setActive(false);
         });
+        this.createGuideLayer();
     },
     mounted () {
         console.log(this.activeLayerMapping);
@@ -85,6 +90,23 @@ export default {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
+
+        // getValuesForField, // the utils function returning all possible values for a field
+        validateProp, // the utils function validating the type of props and returning the relevant rules
+
+        /**
+         * @description create a guide layer used for additional info to display on the map
+         * @returns {void}
+         */
+        createGuideLayer () {
+            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id);
+
+            newLayer.setVisible(true);
+            newLayer.setStyle(featureTagStyle);
+            this.setGuideLayer(newLayer);
+
+            return newLayer;
+        },
         resetFeature () {
             this.featureProperties = {};
             this.geometry.value = null;
@@ -123,22 +145,47 @@ export default {
             this.removePointMarker();
         },
 
+        /**
+         * Creates a new simulated feature and adds it to the map
+         * @returns {void}
+         */
         createFeature () {
             const layer = this.layerById(this.workingLayer.layerId).olLayer,
                 geom = this.generateGeometry(),
                 feature = new Feature({geometry: geom});
 
-            console.log(feature, layer);
+            // set properties
             feature.setProperties(this.featureProperties);
+            // flag as simulated
             feature.set("isSimulation", true);
+            // create unique hash as ID
+            feature.setId(hash({...this.featureProperties, geom: this.geometry}));
 
             this.addFeatureToScenario({feature, layer});
             this.unlisten();
             this.locationPickerActive = false;
         },
 
+        /**
+         * Generates a OL geometry of the specified type
+         * @returns {module:ol/geom/Geometry} the generated geometry
+         */
         generateGeometry () {
             return new this.geometry.Constructor(this.geometry.value);
+        },
+
+        asyncGetValuesForField (desc) {
+            this.valuesForFields = {};
+
+            desc.forEach(field => {
+                getValuesForField(field.name, this.workingLayer.layerId)
+                    .then(items => {
+                        this.valuesForFields = {
+                            ...this.valuesForFields,
+                            [field.name]: items
+                        };
+                    });
+            });
         }
     }
 };
@@ -197,9 +244,16 @@ export default {
                                     <v-subheader>{{ beautifyKey(field.name) }}</v-subheader>
                                 </v-col>
                                 <v-col cols="9">
-                                    <v-text-field
-                                        v-if="typesMapping[field.type] !== 'geom'"
+                                    <v-switch
+                                        v-if="typesMapping[field.type] === 'boolean'"
                                         v-model="featureProperties[field.name]"
+                                        :label="field.type"
+                                        dense
+                                    />
+                                    <v-combobox
+                                        v-else-if="typesMapping[field.type] !== 'geom'"
+                                        v-model="featureProperties[field.name]"
+                                        :items="valuesForFields[field.name]"
                                         :name="field.name"
                                         :label="field.type"
                                         :rules="validateProp(field)"
@@ -240,6 +294,7 @@ export default {
                                     <v-btn
                                         tile
                                         depressed
+                                        color="primary"
                                         :disabled="!(geometry.value !== null && geometry.type !== null)"
                                         @click="createFeature"
                                     >
@@ -259,7 +314,6 @@ export default {
                                     <v-btn
                                         tile
                                         depressed
-                                        color="success"
                                         @click="restoreScenario"
                                     >
                                         {{ $t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures') }}
@@ -267,7 +321,6 @@ export default {
                                     <v-btn
                                         tile
                                         depressed
-                                        color="warning"
                                         @click="pruneScenario"
                                     >
                                         {{ $t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures') }}

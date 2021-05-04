@@ -3,8 +3,8 @@ import * as Proj from "ol/proj";
 export default {
     /**
      * @description Starts a new OpenRouteService request
-     * @param {*} ctx - the store context
-     * @param {*} payload - the request options, incl. service and profile for the URL params
+     * @param {Object} ctx - the store context
+     * @param {Object} payload - the request options, incl. service and profile for the URL params
      * @returns {void}
      */
     newRequest ({commit, state}, payload) {
@@ -17,8 +17,8 @@ export default {
 
     /**
      * @description toggles or sets the visibility of the drawing layer of the module
-     * @param {*} ctx - ctx - the store context
-     * @param {*} [isActive=undefined] - the new state of the drawing layer
+     * @param {Object} ctx - ctx - the store context
+     * @param {Boolean} [isActive=undefined] - the new state of the drawing layer
      * @returns {void}
      */
     toggleIsochroneView ({state}, isActive = undefined) {

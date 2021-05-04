@@ -9,7 +9,10 @@ const rules = {
     ],
     string: [],
     date: [],
-    geom: []
+    geom: [],
+    boolean: [
+        value => typeof JSON.parse(value) === "boolean" || "Wert muss 'true' oder 'false' sein."
+    ]
 };
 
 /**

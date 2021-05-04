@@ -12,7 +12,6 @@ import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import getClusterSource from "../../utils/getClusterSource";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
-import {Stroke} from "ol/style.js";
 
 export default {
     name: "FeaturesList",
@@ -26,13 +25,15 @@ export default {
         return {
             search: "",
             layerFilter: [],
-            expanded: []
+            expanded: [],
+            filterProps: {}
         };
     },
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
+        ...mapGetters("Map", ["layerById", "visibleLayerList"]),
         ...mapState(["configJson"]),
         columns () {
             return [
@@ -48,7 +49,11 @@ export default {
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colDistrict"),
-                    value: "district",
+                    value: "district"
+                },
+                {
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colAddress"),
+                    value: "address",
                     divider: true
                 },
                 {
@@ -115,18 +120,46 @@ export default {
                 if (model) {
                     model.set("isActive", false);
                 }
+
+                this.removeHighlightFeature();
             }
         },
 
+        /**
+         * Updates the feature highlighting on selection change
+         * @listens #change:this.$data.selected
+         * @returns {void}
+         */
         selected () {
-            console.log(this.selected);
+            this.removeHighlightFeature();
+            this.selected.forEach(item => this.highlightVectorFeatures(item));
         },
 
+        /**
+         * Updates the list on added/removed scenario features
+         * @listens #change:Tools/ScenarioBuilder/scenario
+         * @returns {void}
+         */
         scenario () {
             this.updateFeaturesList();
+        },
+
+        /**
+         * Listens to the layers change on the map to refresh the table
+         * @listens #change:Map/visibleLayerList
+         * @returns {void}
+         */
+        visibleLayerList () {
+            this.$nextTick(() => {
+                this.updateFeaturesList();
+            });
         }
     },
     created () {
+        /**
+         * listens to the close event of the Tool Component
+         * @listens #close
+         */
         this.$on("close", () => {
             this.setActive(false);
         });
@@ -137,6 +170,7 @@ export default {
 
         /**
          * @description Listen to newly loaded VectorLayer Features to update the FeaturesList
+         * Doubles execution from the visibleLayerList listener, but necessary due to delay in features loaded
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
          * @deprecated
          */
@@ -172,6 +206,7 @@ export default {
                             layerName: layerMap.id,
                             layerId: layerMap.layerId,
                             type: feature.get(layerMap.categoryField),
+                            address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,
                             enabled: true,
                             isSimulation: feature.get("isSimulation")
@@ -185,63 +220,60 @@ export default {
         },
 
         /**
-         * Get a feature's properties, sanitized of blacklisted attributes
-         * @param {Object} tableItem - the table item containing the feature
-         * @returns {Object} the properties as dictionary
+         * Checks each table item for values to set specific css-classes for the row
+         * @param {Object} item - the table item to check
+         * @returns {String[]} an array of css-classes
          */
-        getFeatureProperties (tableItem) {
-            const _propBlacklist = this.propBlacklist,
-                props = tableItem.feature.getProperties(),
-                filteredProps = Object.entries(props).filter(prop => !_propBlacklist.includes(prop[0]));
+        getRowClasses (item) {
+            const classes = [];
 
-            return Object.fromEntries(filteredProps);
-        },
-        getFeatureTypeFields (tableItem) {
-            const _propBlacklist = this.propBlacklist,
-                props = tableItem.feature.getProperties();
+            if (item.isSimulation) {
+                classes.push("light-green", "lighten-4");
+            }
+            // potentially add more conditionals here
 
-            return Object.keys(props).reduce((fields, field) => {
-                if (!_propBlacklist.includes(field)) {
-                    return [...fields, {
-                        text: field,
-                        value: field
-                    }];
-                }
-                return fields;
-            }, []);
+            return classes;
         },
+
+        handleClickRow (item) {
+            // this.removeHighlighting(item);
+            this.removeHighlightFeature();
+            this.highlightVectorFeatures(item);
+        },
+
         /**
          * Highlights a vector feature
          * @param {Object} item the table item
          * @returns {void}
          */
         highlightVectorFeatures (item) {
-            this.removeHighlighting();
-            if (item.feature.getGeometry()?.getType() === "Point") {
+            const geomType = item.feature.getGeometry()?.getType();
+
+            if (geomType === "Point") {
                 this.highlightFeature({
-                    feature: item.feature,
+                    id: item.feature.getId(),
                     type: "increase",
-                    scale: 1.2,
+                    scale: 1.4,
                     layer: {id: item.layerId}
                 });
             }
-            else if (item.feature.getGeometry()?.getType() === "Polygon") {
+            else if (geomType === "Polygon" || geomType === "MultiPolygon") {
                 this.highlightFeature({
                     feature: item.feature,
                     type: "highlightPolygon",
                     highlightStyle: {
-                        stroke: new Stroke({color: "#3399CC", width: 5})
+                        stroke: {color: "#F0E455", width: 5}
                     },
                     layer: {id: item.layerId}
                 });
             }
         },
-        /**
-         * Removes the feature highlighting
-         * @returns {void}
-         */
-        removeHighlighting () {
-            this.removeHighlightFeature();
+
+        updateFilterProps (newFilterProps) {
+            this.filterProps = {
+                ...this.filterProps,
+                ...newFilterProps
+            };
         },
 
         editFeature (item) {
@@ -317,13 +349,20 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="20"
+                                :item-class="getRowClasses"
+                                @click:row="handleClickRow"
                             >
                                 <template v-slot:expanded-item="{ headers, item }">
                                     <td
                                         class="detail-view"
                                         :colspan="headers.length"
                                     >
-                                        <DetailView :items="getFeatureProperties(item)" />
+                                        <DetailView
+                                            :item="item"
+                                            :propBlacklist="propBlacklist"
+                                            :filterProps="filterProps"
+                                            @filterProps="updateFilterProps"
+                                        />
                                     </td>
                                 </template>
                                 <template v-slot:item.style="{ item }">
