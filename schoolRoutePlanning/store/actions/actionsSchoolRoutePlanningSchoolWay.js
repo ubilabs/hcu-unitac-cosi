@@ -113,7 +113,7 @@ export default {
     },
 
     /**
-     * Parse the route elments and start parse route.
+     * Parse the route elements and start parse route.
      * @param {Object} context The vuex context.
      * @param {Object} routeElements The route elements of the schoolway.
      * @returns {void}

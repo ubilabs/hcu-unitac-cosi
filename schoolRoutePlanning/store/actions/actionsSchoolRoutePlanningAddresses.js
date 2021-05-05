@@ -101,7 +101,7 @@ export default {
             dispatch("searchRegionalPrimarySchool", filteredHouseNumbers[0].name);
         }
         else {
-            commit("setFilteredHouseNumbers", state.houseNumbers.filter(houseNumber => houseNumber.name.search(input) !== -1));
+            commit("setFilteredHouseNumbers", filteredHouseNumbers);
         }
     },
 
@@ -136,9 +136,9 @@ export default {
      * @param {String} address The address to search the regional primary school
      * @returns {void}
      */
-    searchRegionalPrimarySchool ({commit}, address) {
+    searchRegionalPrimarySchool ({commit, rootGetters}, address) {
         search(address, {
-            map: Radio.request("Map", "getMap"),
+            map: rootGetters["Map/map"],
             searchAddress: true
         }).then(response => {
             commit("setRegionalPrimarySchool", response[0].properties.grundschulnr + "-0");
