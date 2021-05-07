@@ -109,5 +109,9 @@
   },
   "OpenRouteService": {
     "type": "tool"
+  },
+  "AccessibilityAnalysis": {
+    "path": "cosi/AccessibilityAnalysis",
+    "type": "tool"
   }
 }
