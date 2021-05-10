@@ -2,7 +2,7 @@ import testAction from "../../../../../test/unittests/VueTestUtils";
 import actions from "../../../store/actionsSchoolRoutePlanning";
 
 const {
-    setGeometryByFeatureId,
+    setGeometryByFeatureId
 } = actions;
 
 
