@@ -2,11 +2,11 @@ import BuildSpecModel from "../../../../modules/tools/print/buildSpec";
 
 /**
  * Setes the school route layer to end of the visible vector layer list.
- * @param {ol/VectorLayer[]} visibleLayerList The visible vector layers.
+ * @param {ol/VectorLayer[]} [visibleLayerList=[]] The visible vector layers.
  * @param {String} layerName The name of the school route layer.
  * @returns {ol/VectorLayer[]} The sorted vector layer list.
  */
-function sortVisibleLayerList (visibleLayerList, layerName) {
+function sortVisibleLayerList (visibleLayerList = [], layerName) {
     const sortedVisibleLayerList = [];
     let schoolRouteLayer = null;
 
@@ -41,12 +41,12 @@ export default {
                     "title": state.printTitle,
                     "length": `${routeElements.kuerzesteStrecke}m`,
                     "address": state.selectedAddress,
-                    "school": `${state.selectedSchool.get("schulname")}, ${routeElements.SchuleingangTyp} (${routeElements.SchuleingangAdresse})`,
+                    "school": `${state.selectedSchool?.get("schulname")}, ${routeElements.SchuleingangTyp} (${routeElements.SchuleingangAdresse})`,
                     "map": {
                         "dpi": state.printDpi,
-                        "projection": Radio.request("MapView", "getProjection").getCode(),
+                        "projection": Radio.request("MapView", "getProjection")?.getCode(),
                         "center": Radio.request("MapView", "getCenter"),
-                        "scale": Radio.request("MapView", "getOptions").scale
+                        "scale": Radio.request("MapView", "getOptions")?.scale
                     },
                     "datasource": [{
                         "table": {

@@ -133,7 +133,9 @@ export default {
          * @returns {void}
          */
         inizializeLayer () {
-            this.layer = Radio.request("Map", "createLayerIfNotExists", this.layerName);
+            if (this.layer === null) {
+                this.layer = Radio.request("Map", "createLayerIfNotExists", this.layerName);
+            }
             addRouteFeatures(this.layer.getSource());
             this.layer.setStyle(routeStyle);
         },
@@ -175,7 +177,10 @@ export default {
         :initialWidth="initialWidth"
     >
         <template v-slot:toolBody>
-            <div class="content-school-route-planning">
+            <div
+                v-if="active"
+                class="content-school-route-planning"
+            >
                 <div class="form-group col-xs-12 test">
                     <div class="input-group">
                         <input

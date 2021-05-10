@@ -6,11 +6,15 @@ const getters = {
 
     /**
      * Gets the schools sorted by schoolname.
+     * A clone is necessary because the schools in the state are permanently changed
+     * by the sorting and thus this getter is endlessly activated.
      * @param {Object} state The state of school route planning.
      * @returns {ol/Feature[]} the sorted schools.
      */
     sortedSchools: (state) => {
-        return state.schools.sort((featureA, featureB) => {
+        const sortedSchools = [...state.schools];
+
+        return sortedSchools.sort((featureA, featureB) => {
             const schulnameA = featureA.get("schulname").toUpperCase(),
                 schulnameB = featureB.get("schulname").toUpperCase();
 

@@ -35,7 +35,7 @@ const mutations = {
      * @returns {void}
      */
     resetStateElements (state) {
-        state.inputAddress = [];
+        state.inputAddress = "";
         state.streetNames = [];
         state.houseNumbers = [];
         state.filteredHouseNumbers = [];

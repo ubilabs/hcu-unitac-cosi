@@ -61,7 +61,7 @@ export default {
             >
                 <li
                     v-for="routePart in routeDescription"
-                    :key="routePart.id"
+                    :key="routePart[0]"
                 >
                     {{ routePart[1] }}
                 </li>

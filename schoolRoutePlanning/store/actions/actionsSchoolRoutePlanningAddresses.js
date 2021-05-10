@@ -118,16 +118,18 @@ export default {
             foundHouseNumber = state.houseNumbers.find(houseNumber => houseNumber.name === input);
 
         commit("setInputAddress", input);
-        dispatch("setGeometryByFeatureId", {
-            id: "startPoint",
-            source: inputs.layer.getSource(),
-            geometry: new Point(foundHouseNumber.geometry.coordinates.map(coord => parseInt(coord, 10)))
-        });
-        dispatch("searchRegionalPrimarySchool", foundHouseNumber.name);
-        dispatch("selectSchool", {
-            selectedSchoolId: state.selectedSchoolNumber,
-            layer: inputs.layer
-        });
+        if (foundHouseNumber) {
+            dispatch("setGeometryByFeatureId", {
+                id: "startPoint",
+                source: inputs.layer.getSource(),
+                geometry: new Point(foundHouseNumber.geometry.coordinates.map(coord => parseInt(coord, 10)))
+            });
+            dispatch("searchRegionalPrimarySchool", foundHouseNumber.name);
+            dispatch("selectSchool", {
+                selectedSchoolId: state.selectedSchoolNumber,
+                layer: inputs.layer
+            });
+        }
     },
 
     /**

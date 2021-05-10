@@ -27,7 +27,7 @@ describe("addons/schoolRoutePlanning/store/mutationsSchoolRoutePlanning.js", () 
     describe("resetStateElements", () => {
         it("Should set many attributes to default value", () => {
             const state = {
-                inputAddress: [123],
+                inputAddress: "123",
                 streetNames: ["xyz"],
                 houseNumbers: ["def"],
                 filteredHouseNumbers: ["abc"],
@@ -43,7 +43,7 @@ describe("addons/schoolRoutePlanning/store/mutationsSchoolRoutePlanning.js", () 
             };
 
             resetStateElements(state);
-            expect(state.inputAddress).to.be.an("array").that.is.empty;
+            expect(state.inputAddress).to.equals("");
             expect(state.streetNames).to.be.an("array").that.is.empty;
             expect(state.houseNumbers).to.be.an("array").that.is.empty;
             expect(state.filteredHouseNumbers).to.be.an("array").that.is.empty;
