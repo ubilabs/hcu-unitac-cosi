@@ -2,7 +2,8 @@ import testAction from "../../../../../test/unittests/VueTestUtils";
 import actions from "../../../store/actionsSchoolRoutePlanning";
 
 const {
-    setGeometryByFeatureId
+    setGeometryByFeatureId,
+    selectInitializeSchoolNumber
 } = actions;
 
 
@@ -21,6 +22,16 @@ describe("addons/schoolRoutePlanning/store/actionsSchoolRoutePlanning.js", () =>
 
             testAction(setGeometryByFeatureId, targetElement, {}, {}, [
                 {type: "setFilteredHouseNumbers", payload: []}
+            ], {}, done);
+        });
+    });
+
+    describe("selectInitializeSchoolNumber", () => {
+        it("Sets the initialize school number", done => {
+            const schoolNumber = "5810-1";
+
+            testAction(selectInitializeSchoolNumber, schoolNumber, {}, {}, [
+                {type: "setInitialSelectedSchoolNumber", payload: "5810-1"}
             ], {}, done);
         });
     });

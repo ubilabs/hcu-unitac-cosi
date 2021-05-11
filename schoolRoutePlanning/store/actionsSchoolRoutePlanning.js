@@ -22,7 +22,9 @@ export default {
             geometry = targetElement.geometry;
 
         commit("setFilteredHouseNumbers", []);
-        source.getFeatureById(featureId).setGeometry(geometry);
+        if (source.getFeatureById(featureId)) {
+            source.getFeatureById(featureId).setGeometry(geometry);
+        }
 
         if (geometry.getType() === "Point") {
             Radio.trigger("MapView", "setCenter", geometry.getCoordinates(), 5);
@@ -30,5 +32,15 @@ export default {
         else {
             Radio.trigger("Map", "zoomToExtent", source.getExtent());
         }
+    },
+
+    /**
+     * Sets the initialize school number.
+     * @param {Object} context The vuex context.
+     * @param {String} schoolNumber The number of the school.
+     * @returns {void}
+     */
+    selectInitializeSchoolNumber ({commit}, schoolNumber) {
+        commit("setInitialSelectedSchoolNumber", schoolNumber);
     }
 };

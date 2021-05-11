@@ -40,18 +40,23 @@ export default {
     },
     watch: {
         /**
-         * Sets the active property of the state to the given value.
-         * @param {Boolean} value Value deciding whether the tool gets activated or deactivated.
+         * Select a school, if this tool is already open.
+         * @param {String} value The number of the school.
          * @returns {void}
          */
-        active (value) {
-            if (value) {
-                this.initializeSelectpicker();
-            }
+        initialSelectedSchoolNumber (value) {
+            this.selectSchoolNumber(value);
         }
     },
     created () {
         this.initializeSelectpicker();
+    },
+    mounted () {
+        if (this.initialSelectedSchoolNumber !== "") {
+            this.$nextTick(() => {
+                this.selectSchoolNumber(this.initialSelectedSchoolNumber);
+            });
+        }
     },
     updated () {
         this.$nextTick(() => $(".selectpicker").selectpicker("refresh"));
@@ -73,13 +78,14 @@ export default {
         },
 
         /**
-         * Sets the selected regional primary school to dropdown.
+         * Sets the school number to dropdown.
+         * @param {String} schoolNumber The number of the selected school.
          * @returns {void}
          */
-        selectRegionalPrimarySchoolNumber () {
-            this.setSelectedSchoolNumber(this.regionalPrimarySchoolNumber);
+        selectSchoolNumber (schoolNumber) {
+            this.setSelectedSchoolNumber(schoolNumber);
             this.selectSchool({
-                selectedSchoolId: this.regionalPrimarySchoolNumber,
+                selectedSchoolId: schoolNumber,
                 layer: this.layer
             });
         }
@@ -97,7 +103,7 @@ export default {
                 </span>
                 <a
                     id="regional-school"
-                    @click="selectRegionalPrimarySchoolNumber"
+                    @click="selectSchoolNumber(regionalPrimarySchoolNumber)"
                 >
                     {{ $t(regionalPrimarySchoolName) }}
                 </a>

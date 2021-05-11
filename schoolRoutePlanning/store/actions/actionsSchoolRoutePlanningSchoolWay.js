@@ -17,16 +17,19 @@ export default {
         const selectedHouseNumber = state.houseNumbers.find(houseNumber => houseNumber.name === state.inputAddress),
             selectedSchoolId = payload.selectedSchoolId;
 
-        if (selectedHouseNumber && selectedSchoolId) {
+        if (selectedSchoolId) {
             const selectedSchool = state.schools.find(school => school.get("schul_id") === selectedSchoolId);
 
             commit("setSelectedSchool", selectedSchool);
             dispatch("setGeometryByFeatureId", {
                 id: "endPoint",
                 source: payload.layer.getSource(),
-                geometry: selectedSchool.getGeometry()
+                geometry: selectedSchool?.getGeometry() || []
             });
-            dispatch("prepareWayToSchoolRequest", {selectedHouseNumber, selectedSchoolId});
+
+            if (selectedHouseNumber) {
+                dispatch("prepareWayToSchoolRequest", {selectedHouseNumber, selectedSchoolId});
+            }
         }
     },
 

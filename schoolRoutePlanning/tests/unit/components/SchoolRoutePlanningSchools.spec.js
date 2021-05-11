@@ -8,6 +8,8 @@ import SchoolRoutePlanning from "../../../store/indexSchoolRoutePlanning";
 
 import VectorLayer from "ol/layer/Vector.js";
 import VectorSource from "ol/source/Vector.js";
+import Feature from "ol/Feature.js";
+import Point from "ol/geom/Point";
 
 const localVue = createLocalVue();
 
@@ -48,10 +50,25 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
             localVue,
             propsData: {
                 layer: new VectorLayer({
-                    source: new VectorSource()
+                    source: new VectorSource({
+                        feature: new Feature({
+                            id: "endPoint"
+                        })
+                    })
                 })
             }
         };
+
+        const feature = new Feature({
+            id: "Thor",
+            schul_id: "1000-0"
+        });
+
+        feature.setGeometry(new Point(100, 200));
+
+        store.commit("Tools/SchoolRoutePlanning/setSchools", [feature]);
+        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolName", "Thor");
+        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolNumber", "1000-0");
     });
 
     it("Renders the SchoolRoutePlanningSchoolsComponent", () => {
@@ -61,28 +78,20 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
     });
 
     it("renders the regionalPrimarySchool", () => {
-        let wrapper = null;
-
-        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolName", "Thor");
-        wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
+        const wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
         expect(wrapper.find(".regionalPrimarySchool").exists()).to.be.true;
         expect(wrapper.find(".regionalPrimarySchool").text()).to.equals("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool");
         expect(wrapper.find("#regional-school").text()).to.equals("Thor");
-
     });
 
     it("renders the SchoolRoutePlanningSchoolsComponent", async () => {
-        const spySelectRegionalPrimarySchoolNumber = sinon.spy(SchoolRoutePlanningSchoolsComponent.methods, "selectRegionalPrimarySchoolNumber");
-        let wrapper = null;
-
-        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolName", "Thor");
-        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolNumber", "1000-0");
-        wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
+        const spySelectSchoolNumber = sinon.spy(SchoolRoutePlanningSchoolsComponent.methods, "selectSchoolNumber"),
+            wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
         await wrapper.find("#regional-school").trigger("click");
 
-        expect(spySelectRegionalPrimarySchoolNumber.calledOnce).to.be.true;
+        expect(spySelectSchoolNumber.calledOnce).to.be.true;
         expect(wrapper.vm.selectedSchoolNumber).to.equals("1000-0");
     });
 
@@ -90,6 +99,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
         const schools = [
             {
                 id: "school1",
+                getGeometry: () => [100, 100],
                 get: (attribute) => {
                     const attributes = {
                         schul_id: "1000-0",
@@ -102,6 +112,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
             },
             {
                 id: "school3",
+                getGeometry: () => [300, 300],
                 get: (attribute) => {
                     const attributes = {
                         schul_id: "3000-0",
@@ -114,6 +125,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
             },
             {
                 id: "school2",
+                getGeometry: () => [200, 200],
                 get: (attribute) => {
                     const attributes = {
                         schul_id: "2000-0",

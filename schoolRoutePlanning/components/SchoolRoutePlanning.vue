@@ -191,6 +191,7 @@ export default {
                             class="form-control address-search"
                             :placeholder="$t('additional:modules.tools.schoolRoutePlanning.inputPlaceHolder')"
                             @keyup="(evt) => processInput({evt, layer})"
+                            @keyup.enter="searchHousenumbers({streetName, eventType: 'click'})"
                         >
                     </div>
                     <AddressList :layer="layer" />

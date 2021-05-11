@@ -28,6 +28,7 @@
  * @property {ol/Feature} selectedSchool The selected school as feature.
  * @property {String} selectedSchoolNumber The number of selected school.
  * @property {String} selectedAddress The selected address.
+ * @property {String} initialSelectedSchoolNumber The number of initialize selected school.
  * @property {String[]} routeDescription The route description.
  * @property {ol/Geometry} routeGeometry The geometry of the route.
  * @property {Object} routeElements the route elements.
@@ -43,7 +44,7 @@ const state = {
     fmwProcess: "schulwegrouting_wps.fmw",
     renderToWindow: false,
     resizableWindow: true,
-    deactivateGFI: true,
+    deactivateGFI: false,
     initialWidth: 500,
     layerName: "school_route_layer",
     printDpi: 200,
@@ -69,6 +70,7 @@ const state = {
     selectedSchool: null,
     selectedSchoolNumber: "",
     selectedAddress: "",
+    initialSelectedSchoolNumber: "",
 
     routeDescription: [],
     routeElements: {},
