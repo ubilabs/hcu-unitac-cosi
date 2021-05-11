@@ -1,5 +1,5 @@
 <script>
-import {mapGetters, mapActions} from "vuex";
+import {mapActions} from "vuex";
 import componentExists from "../../../../../src/utils/componentExists.js";
 
 export default {
@@ -10,8 +10,10 @@ export default {
             required: true
         }
     },
-    computed: {
-        ...mapGetters("Tools/SchoolRoutePlanning", ["id"])
+    data () {
+        return {
+            id: "schoolRoutePlanning"
+        };
     },
     methods: {
         ...mapActions("Tools", ["setToolActive"]),
@@ -24,7 +26,7 @@ export default {
          * @returns {void}
          */
         takeRoute: function () {
-            Radio.trigger("ModelList", "setModelAttributesById", "schoolRoutePlanning", {isActive: true});
+            Radio.trigger("ModelList", "setModelAttributesById", this.id, {isActive: true});
             this.setToolActive({id: this.id, active: true});
             this.selectInitializeSchoolNumber(this.feature.getProperties().schul_id);
             this.$parent.$parent.close();

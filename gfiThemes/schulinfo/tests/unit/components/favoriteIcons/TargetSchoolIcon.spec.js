@@ -58,9 +58,6 @@ describe("addons/gfiThemes/schulinfo/components/favoriteIcons/TargetSchoolIcon.v
                         modules: {
                             SchoolRoutePlanning: {
                                 namespaced: true,
-                                getters: {
-                                    id: () => "schoolRoutePlanning"
-                                },
                                 actions: {
                                     selectInitializeSchoolNumber: () => sinon.stub()
                                 }
