@@ -1,4 +1,27 @@
 import {convertColor} from "../../src/utils/convertColor";
+import moment from "moment";
+
+/**
+ * ComplexTypes are invented by the LGV to represent wfs array structures.
+ * This is a collection of functions to use, handeling ComplexTypes.
+ */
+
+/**
+ * a complex type is an object to represent a wfs array
+ * @typedef {Object} ComplexType
+ * @property {Object} metadata the metadata to describe the content of the array
+ * @property {String} metadata.type the type e.g. "timeseries"
+ * @property {String} metadata.format the format of the keys e.g. "DD.MM.YYYY"
+ * @property {String} metadata.description the description of the values
+ * @property {ComplexTypeValue[]} values an array of values
+ */
+
+/**
+ * a set of data in a complex type is an object with key and value params
+ * @typedef {Object} ComplexTypeValue
+ * @property {String|Number} key the key of the array entry
+ * @property {*} value the value for the key
+ */
 
 /**
  * This function converts complex data to pie chartJs Data
@@ -104,7 +127,79 @@ function isComplexType (data) {
         && Array.isArray(data.values);
 }
 
+
+/**
+ * sorts a complexType with the given compare function or ascending by its keys by default
+ * @param {ComplexType} complexData the complex type to sort
+ * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
+ * @see sort https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+ * @returns {ComplexType} the complex type with sorted values
+ */
+function sortComplexType (complexData, compareFunction = false) {
+    if (!isComplexType(complexData)) {
+        return false;
+    }
+    else if (typeof compareFunction === "function") {
+        complexData.values.sort(compareFunction);
+        return complexData;
+    }
+
+    if (complexData.metadata.type === "timeseries") {
+        sortComplexTypeTimeseries(complexData, complexData.metadata.format);
+        return complexData;
+    }
+
+    sortComplexTypeDefault(complexData);
+    return complexData;
+}
+
+
+/** private */
+
+/**
+ * private function of complexType.js - sorts the given complexType (must be valid) plain by its keys
+ * @param {ComplexType} complexData the complex type to sort
+ * @returns {ComplexType} the sorted complex type
+ */
+function sortComplexTypeDefault (complexData) {
+    return complexData.values.sort((firstEl, secondEl) => {
+        if (typeof firstEl !== "object" || firstEl === null || !firstEl.hasOwnProperty("key")) {
+            return 1;
+        }
+        else if (typeof secondEl !== "object" || secondEl === null || !secondEl.hasOwnProperty("key")) {
+            return -1;
+        }
+        else if (firstEl.key < secondEl.key) {
+            return -1;
+        }
+        else if (firstEl.key > secondEl.key) {
+            return 1;
+        }
+        return 0;
+    });
+}
+
+/**
+ * private function of complexType.js - sorts the given complexType by keys with the given moment format
+ * @param {ComplexType} complexData the complex type to sort
+ * @param {String} format the format to sort with
+ * @returns {ComplexType} the sorted complex type
+ */
+function sortComplexTypeTimeseries (complexData, format) {
+    return complexData.values.sort((firstEl, secondEl) => {
+        if (typeof firstEl !== "object" || firstEl === null || !firstEl.hasOwnProperty("key")) {
+            return 1;
+        }
+        else if (typeof secondEl !== "object" || secondEl === null || !secondEl.hasOwnProperty("key")) {
+            return -1;
+        }
+        return moment(firstEl.key, format).diff(moment(secondEl.key, format));
+    });
+}
+
+
 export {
     convertComplexTypeToPiechart,
-    isComplexType
+    isComplexType,
+    sortComplexType
 };

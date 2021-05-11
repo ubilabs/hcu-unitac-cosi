@@ -1,7 +1,11 @@
 import {expect} from "chai";
-import {convertComplexTypeToPiechart, isComplexType} from "../../../utils/complexType.js";
+import {
+    convertComplexTypeToPiechart,
+    isComplexType,
+    sortComplexType
+} from "../../../utils/complexType.js";
 
-describe("addons/utils/convertComplexTypeToPiechart.js", () => {
+describe("addons/utils/complexType.js", () => {
     describe("convertComplexTypeToPiechart", () => {
         it("should convert complex data to chartJS data", () => {
             const complexData =
@@ -374,6 +378,151 @@ describe("addons/utils/convertComplexTypeToPiechart.js", () => {
                 },
                 values: []
             })).to.be.true;
+        });
+    });
+
+    describe("sortComplexType", () => {
+        it("should return false if the given complex type is not a complex type", () => {
+            expect(sortComplexType(undefined)).to.be.false;
+            expect(sortComplexType(null)).to.be.false;
+            expect(sortComplexType("string")).to.be.false;
+            expect(sortComplexType(1)).to.be.false;
+            expect(sortComplexType(true)).to.be.false;
+            expect(sortComplexType(false)).to.be.false;
+            expect(sortComplexType([])).to.be.false;
+            expect(sortComplexType({})).to.be.false;
+            expect(sortComplexType({
+                metadata: {}, values: []
+            })).to.be.false;
+        });
+        it("should sort the given complex type by key ascending by default for a timeseries", () => {
+            const complexType = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "DD.MM.YYYY, HH:mm",
+                        description: ""
+                    },
+                    values: [
+                        {key: "11.05.2021, 17:00", value: 1},
+                        {key: "12.04.2021, 18:00", value: 2},
+                        {key: "10.06.2021, 17:48", value: 3}
+                    ]
+                },
+                expected = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "DD.MM.YYYY, HH:mm",
+                        description: ""
+                    },
+                    values: [
+                        {key: "12.04.2021, 18:00", value: 2},
+                        {key: "11.05.2021, 17:00", value: 1},
+                        {key: "10.06.2021, 17:48", value: 3}
+                    ]
+                };
+
+            expect(sortComplexType(complexType)).to.deep.equal(expected);
+        });
+        it("should sort the given complex type by key ascending by default for an unknown type", () => {
+            const complexType = {
+                    metadata: {
+                        type: "unknownType",
+                        format: "DD.MM.YYYY, HH:mm",
+                        description: ""
+                    },
+                    values: [
+                        {key: "11.05.2021, 17:00", value: 1},
+                        {key: "12.04.2021, 18:00", value: 2},
+                        {key: "10.06.2021, 17:48", value: 3}
+                    ]
+                },
+                expected = {
+                    metadata: {
+                        type: "unknownType",
+                        format: "DD.MM.YYYY, HH:mm",
+                        description: ""
+                    },
+                    values: [
+                        {key: "10.06.2021, 17:48", value: 3},
+                        {key: "11.05.2021, 17:00", value: 1},
+                        {key: "12.04.2021, 18:00", value: 2}
+                    ]
+                };
+
+            expect(sortComplexType(complexType)).to.deep.equal(expected);
+        });
+        it("should sort the given complex type with the given compare function", () => {
+            const complexType = {
+                    metadata: {
+                        type: "something",
+                        format: "someFormat",
+                        description: ""
+                    },
+                    values: [
+                        {key: "high", value: 2},
+                        {key: "low", value: 1},
+                        {key: "mid", value: 3}
+                    ]
+                },
+                expected = {
+                    metadata: {
+                        type: "something",
+                        format: "someFormat",
+                        description: ""
+                    },
+                    values: [
+                        {key: "low", value: 1},
+                        {key: "mid", value: 3},
+                        {key: "high", value: 2}
+                    ]
+                },
+                functionHelper = {
+                    compareFunction: (a, b) => {
+                        if (a.key === "low" && b.key !== "low") {
+                            return -1;
+                        }
+                        else if (b.key === "low" && a.key !== "low") {
+                            return 1;
+                        }
+                        else if (a.key === "mid" && b.key !== "mid") {
+                            return -1;
+                        }
+                        else if (b.key === "mid" && a.key !== "mid") {
+                            return 1;
+                        }
+                        return 1;
+                    }
+                };
+
+            expect(sortComplexType(complexType, functionHelper.compareFunction)).to.deep.equal(expected);
+        });
+        it("should put an unknown key into the list as the lowest entry", () => {
+            const complexType = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "DD.MM.YYYY, HH:mm",
+                        description: ""
+                    },
+                    values: [
+                        {key: undefined, value: 1},
+                        {key: "12.04.2021, 18:00", value: 2},
+                        {key: "10.06.2021, 17:48", value: 3}
+                    ]
+                },
+                expected = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "DD.MM.YYYY, HH:mm",
+                        description: ""
+                    },
+                    values: [
+                        {key: undefined, value: 1},
+                        {key: "12.04.2021, 18:00", value: 2},
+                        {key: "10.06.2021, 17:48", value: 3}
+                    ]
+                };
+
+            expect(sortComplexType(complexType)).to.deep.equal(expected);
         });
     });
 });
