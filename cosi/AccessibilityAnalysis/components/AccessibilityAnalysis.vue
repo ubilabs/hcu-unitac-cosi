@@ -16,7 +16,8 @@ export default {
   data() {
     return {
       // The selected mode for accessibility analysis
-      selectedMode: null,
+      // selectedMode: null,
+      selectedMode: 'point',
     };
   },
   computed: {

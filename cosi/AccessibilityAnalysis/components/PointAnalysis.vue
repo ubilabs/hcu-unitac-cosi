@@ -6,12 +6,14 @@ import * as Extent from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import setBBoxToGeom from "../../utils/setBBoxToGeom";
-import {Fill, Stroke, Style} from "ol/style.js";
+import { Fill, Stroke, Style } from "ol/style.js";
+import ReachabilityResult from "./ReachabilityResult.vue";
 
 export default {
   name: "PointAnalysis",
   components: {
     Dropdown,
+    ReachabilityResult,
   },
   data() {
     return {
@@ -39,6 +41,8 @@ export default {
       showRequestButton: false,
       isochroneFeatures: [],
       steps: 3,
+      layers: null,
+      // layers: [{"layerName":"Öffentliche Bibliotheken","layerId":"19574","features":[[1,[570824.297,5936699.183]],[2,[563727.906,5939460.024]],[3,[569135.925,5937984.32]],[4,[566215.467,5938851.577]],[5,[569951.144,5941128.675]],[6,[571364.041,5940805.339]],[7,[569049.021,5936960.341]],[8,[565395.821,5930338.883]],[9,[566866.781,5928072.595]],[10,[573382.404,5932829.053]],[11,[566851.562,5933894.162]],[12,[571664.534,5934430.264]],[13,[563080.846,5934655.51]],[14,[563375.559,5936312.499]]]}]
     };
   },
   watch: {
@@ -275,6 +279,106 @@ export default {
 
       setBBoxToGeom(geometryCollection);
     },
+    /**
+     * updates facilitie's name within the isochrone results
+     * @returns {void}
+     */
+    updateResult: function () {
+      //TODO
+      const visibleLayerModels = Radio.request(
+        "ModelList",
+        "getModelsByAttributes",
+        { typ: "WFS", isBaseLayer: false, isSelected: true }
+      );
+
+      this.layers = [];
+      if (visibleLayerModels.length > 0) {
+        Radio.trigger("Alert", "alert:remove");
+        visibleLayerModels.forEach((layerModel) => {
+          const features = layerModel.get("layer").getSource().getFeatures();
+          let idSelector;
+
+          /**
+           * hard coded id selector for facility layers
+           */
+          if (features[0].getProperties().schul_id) {
+            idSelector = features[0].getProperties().schulname
+              ? "schulname"
+              : "schul_id";
+          } else if (features[0].getProperties().einrichtung) {
+            idSelector = features[0].getProperties().name
+              ? "name"
+              : "einrichtung";
+          } else if (features[0].getProperties().Einrichtungsnummer) {
+            idSelector = features[0].getProperties().Name_normalisiert
+              ? "Name_normalisiert"
+              : "Einrichtungsnummer";
+          } else if (features[0].getProperties().identnummer) {
+            idSelector = features[0].getProperties().belegenheit
+              ? "belegenheit"
+              : "identnummer";
+          } else if (features[0].getProperties().hauptklasse) {
+            idSelector = features[0].getProperties().anbietername
+              ? "anbietername"
+              : "strasse";
+          }
+          // inscribe the coordinate to the feature for rendering to the resultView DOM Element
+          // for zooming to feature by click
+          const sfeatures = features.map((feature, i) => {
+            const geometry = feature.getGeometry();
+            const coord =
+              geometry.getType() === "Point"
+                ? geometry.getCoordinates().splice(0, 2)
+                : Extent.getCenter(geometry.getExtent());
+
+            let label = feature.getProperties()[idSelector];
+            if (!label) label = i + 1;
+            return [label, coord];
+          });
+
+          this.layers.push({
+            layerName: layerModel.get("name"),
+            layerId: layerModel.get("id"),
+            features: sfeatures,
+          });
+        });
+        // dataObj.coordinate = Proj.transform(
+        //   this.coordinate,
+        //   "EPSG:4326",
+        //   "EPSG:25832"
+        // );
+
+        console.log(this.layers);
+
+        // this.model.set("dataObj", dataObj);
+        // this.resultView = new ReachabilityResultView({ model: this.model });
+        // this.$el.find("#result").html(this.resultView.render().$el);
+        // this.$el.find("#show-in-dashboard").show();
+      } else {
+        this.selectionReminder();
+      }
+    },
+    /**
+     * reminds user to select facility layers
+     * @returns {void}
+     */
+    selectionReminder: function () {
+      Radio.trigger("Alert", "alert", {
+        text:
+          '<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel "Sportstätten".</strong>',
+        kategorie: "alert-warning",
+      });
+    },
+    resetMarkerAndZoom: function () {
+      const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
+      this.placingPointMarker(icoord);
+      Radio.trigger("MapView", "setCenter", icoord);
+    },
+    showInDashboard: function () {
+      console.log(this.$el)
+      const resultsClone = this.$el.find("#results").clone();
+      console.log(resultsClone)
+    },
   },
 };
 </script>
@@ -363,10 +467,35 @@ export default {
       type="button"
       class="btn btn-lgv-grey measure-delete"
       id="show-result"
+      @click="updateResult"
     >
       <span class="glyphicon glyphicon-th-list"></span>Einrichtungsabdeckung
     </button>
     <div id="result"></div>
+    <template v-if="layers != null">
+      <ReachabilityResult :layers="layers" />
+      <table>
+        <tr>
+          <td>
+            <button
+              @click="resetMarkerAndZoom"
+              class="btn btn-lgv-grey measure-delete isochrone-origin"
+            >
+              zoom
+            </button>
+          </td>
+          <td>
+            <button
+              @click="showInDashboard"
+              type="button"
+              class="btn btn-lgv-grey measure-delete"
+            >
+              Im Dashboard anzeigen
+            </button>
+          </td>
+        </tr>
+      </table>
+    </template>
 
     <button
       v-if="showRequestButton"
