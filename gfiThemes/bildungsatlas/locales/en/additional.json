@@ -1,0 +1,9 @@
+{
+    "addons": {
+        "gfiThemes": {
+            "bildungsatlas": {
+                "searchbarPlaceholder": "Search address, district, School, topics"
+            }
+        }
+    }
+}
