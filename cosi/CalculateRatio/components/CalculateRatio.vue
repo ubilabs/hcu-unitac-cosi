@@ -167,7 +167,7 @@ export default {
             });
         },
         visualizationState (newState) {
-            if(!newState) {
+            if (!newState) {
                 this.$store.commit("Tools/CalculateRatio/setDataToCCM", false);
             }
         }
@@ -186,7 +186,7 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
+        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @returns {void}
@@ -442,9 +442,11 @@ export default {
                         }
                     });
 
+
+                    // eslint-disable-next-line one-var
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
-                    if(checkForLackingData === "error"){
+                    if (checkForLackingData === "error") {
                         this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
                         return;
                     }
@@ -524,10 +526,11 @@ export default {
                             }
                         }
                     });
-                    
+
+                    // eslint-disable-next-line one-var
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
-                    if(checkForLackingData === "error"){
+                    if (checkForLackingData === "error") {
                         this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
                         return;
                     }
@@ -620,8 +623,8 @@ export default {
          */
         recalcData () {
             const dataArray = [];
-            this.results = [];
 
+            this.results = [];
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);
             });
@@ -649,64 +652,55 @@ export default {
                     }
                 });
 
-                //this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
-                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
-
                 this.setCcmDataSet(prepareData);
                 this.setDataToCCM(!switchVar);
-            } else {
-                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
-                
+            }
+            else {
                 this.setDataToCCM(!switchVar);
             }
         },
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void}
+         * @returns {void}
          */
         loadToCG () {
-            const graphObj = {
-                id: "calcratio-test",
-                name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                type: "BarChart",
-                color: "green",
-                source: "CalculateRatio",
-                data: {
-                    labels: [...this.availableYears],
-                    dataSets: []
-                }
-            };
+            const dataArray = [],
+                graphObj = {
+                    id: "calcratio-test",
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    type: "BarChart",
+                    color: "green",
+                    source: "CalculateRatio",
+                    data: {
+                        labels: [...this.availableYears],
+                        dataSets: []
+                    }
+                };
 
-            console.log("look here", graphObj);
-
-            const dataArray = [];
             this.resultsClone.forEach(result => {
-                dataArray.push(result.data);        
+                dataArray.push(result.data);
             });
-
-            
-            console.log("look here #2", dataArray);
 
             this.availableYears.forEach(year => {
                 const dataPerYear = utils.calculateRatio(dataArray, year);
 
                 dataPerYear.forEach(dataSet => {
-                    console.log("look here #3", dataSet);
                     const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
 
-                    if(checkExisting){
+                    if (checkExisting) {
                         checkExisting.data.push(dataSet[this.columnSelector.key]);
-                    } else {
+                    }
+                    else {
                         const obj = {
                             label: dataSet.scope,
                             data: [dataSet[this.columnSelector.key]]
-                        }
+                        };
 
                         graphObj.data.dataSets.push(obj);
                     }
-                })
-            })
-            
+                });
+            });
+
             graphObj.data.labels.reverse();
             graphObj.data.dataSets.forEach(dataSet => {
                 dataSet.data.reverse();
@@ -1044,9 +1038,10 @@ export default {
                                 worksheet="Versorgungsanalyse"
                                 :name="selectedYear + '_versorgungsanalyse.xls'"
                             >
-                                <span class="glyphicon glyphicon-download"></span>Download XSL
+                                <span class="glyphicon glyphicon-download"></span>
+                                Download XSL
                             </JsonExcel>
-                            
+
                             <button
                                 class="cg"
                                 @click="loadToCG()"
@@ -1069,7 +1064,7 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
-                                    <span><strong>{{ columnSelector.name }}</strong></span>
+                                    <strong>{{ columnSelector.name }}</strong>
                                 </template>
                             </Multiselect>
                             <button
@@ -1163,7 +1158,10 @@ export default {
                                     >
                                         {{ result.paramA_val.toLocaleString('de-DE') }}
                                         <span v-if="result.data.incompleteDataSets_A > 0">*</span>
-                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
+                                        <div
+                                            v-if="result.data.incompleteDataSets_A > 0"
+                                            class="hover_helper"
+                                        >
                                             {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
                                         </div>
                                     </div>
@@ -1173,8 +1171,15 @@ export default {
                                         class="styling_helper"
                                     >
                                         {{ result.paramB_val.toLocaleString('de-DE') }}
-                                        <span v-if="result.data.incompleteDataSets_B > 0">*</span>
-                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
+                                        <span
+                                            v-if="result.data.incompleteDataSets_B > 0"
+                                        >
+                                            *
+                                        </span>
+                                        <div
+                                            v-if="result.data.incompleteDataSets_B > 0"
+                                            class="hover_helper"
+                                        >
                                             {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
                                         </div>
                                     </div>

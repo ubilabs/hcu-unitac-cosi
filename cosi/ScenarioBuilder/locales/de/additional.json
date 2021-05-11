@@ -6,6 +6,7 @@
                     "title": "Scenario Builder",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
+                    "pickReference": "Referenzeinrichtung wählen",
                     "chooseLocation": "Ort wählen",
                     "resetLocation": "Zurücksetzen",
                     "createFeature": "Neue Einrichtung erstellen",
@@ -14,7 +15,20 @@
                     "restoreAllFeatures": "Alle wiederherstellen",
                     "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
                     "pruneAllFeatures": "Alle löschen",
-                    "helpPllFeatures": "Alle erstellten Features löschen"
+                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
+                    "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
+                    "moveFeatures": "Einrichtungen verschieben",
+                    "toggleOnlySimulated": "Nur Simulierte",
+                    "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
+                    "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen werden sind nur temporär und werden nach der Sitzung nicht gespeichert.",
+                    "resetFeatureLocations": "Zurücksetzen"
+                },
+                "moveFeatures": {
+                    "moveFeatures": "Einrichtungen verschieben",
+                    "toggleOnlySimulated": "Nur Simulierte",
+                    "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
+                    "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen werden sind nur temporär und werden nach der Sitzung nicht gespeichert.",
+                    "resetFeatureLocations": "Zurücksetzen"
                 }
             }
         }

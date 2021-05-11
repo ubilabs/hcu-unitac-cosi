@@ -1,6 +1,7 @@
 import {Stroke, Style, Text} from "ol/style.js";
 import Feature from "ol/Feature";
 import VectorLayer from "ol/layer/Vector";
+// import {unpackCluster, isCluster} from "../../utils/getClusterSource";
 
 /**
  * Style function for the guide layer
@@ -37,6 +38,11 @@ export function addSimulationTag (feature, layer) {
     const source = layer.getSource(),
         clonedFeature = feature.clone();
 
+    // give the simulation tag the identical ID as the referenced feature for retrieval
+    clonedFeature.setId(feature.getId());
+    // link their geometries (works only if the original layer is NOT clustered)
+    clonedFeature.setGeometry(feature.getGeometry());
+
     source.addFeature(clonedFeature);
 }
 
@@ -51,8 +57,6 @@ export function removeSimulationTag (feature, layer) {
         console.warn(`removeSimulationTag: Layer must be of type "ol/Layer/Vector", got ${layer.constructor}. Feature must be of type "ol/Feature, got ${feature.constructor}`);
         return;
     }
-    console.log(feature.getId(), feature);
-    console.log(layer.getSource());
     const source = layer.getSource(),
         clonedFeature = source.getFeatureById(feature?.getId());
 
@@ -60,6 +64,32 @@ export function removeSimulationTag (feature, layer) {
         source.removeFeature(clonedFeature);
     }
 }
+
+// /**
+//  * Updates the position of any tags linked to features
+//  * Compensates for missing geom references in clustered layers
+//  * @deprecated
+//  * @param {module:ol/Feature} originalFeature the feature moved or changed
+//  * @param {module:ol/layer/Vector} layer the guide layer
+//  * @returns {void}
+//  */
+// export function updateSimulationTags (originalFeature, layer) {
+//     if (!isCluster(originalFeature)) {
+//         return; // if the original feature is not a cluster no action is necessary
+//     }
+//     const cluster = unpackCluster(originalFeature),
+//         source = layer.getSource();
+//     let feature, featureId, boundFeature;
+
+//     for (feature of cluster) {
+//         featureId = feature.getId();
+//         boundFeature = featureId ? source.getFeatureById(featureId) : undefined;
+
+//         if (boundFeature) {
+//             boundFeature.setGeometry(originalFeature.getGeometry());
+//         }
+//     }
+// }
 
 /**
  * Clears all features from the guide layer

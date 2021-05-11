@@ -15,7 +15,8 @@
                     "colGroup": "Topic",
                     "colActions": "Actions",
                     "colToggleEnabled": "Enable/Disable",
-                    "colAddress": "Address"
+                    "colAddress": "Address",
+                    "inactiveFeature": "The selected facility ist currently set to 'inactive'."
                 }
             }
         }

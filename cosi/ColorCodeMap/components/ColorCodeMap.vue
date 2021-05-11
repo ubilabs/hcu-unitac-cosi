@@ -5,7 +5,6 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-// import store from "../../../../src/app-store";
 import Info from "text-loader!./info.html";
 
 export default {
@@ -58,7 +57,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"]),
+        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"])
     },
     watch: {
         selectedFeatures () {
@@ -94,7 +93,8 @@ export default {
         dataToCCM (newState) {
             if (newState) {
                 this.renderCCData();
-            } else {
+            }
+            else {
                 this.$store.commit("Tools/ColorCodeMap/setVisualizationState", false);
             }
         },
@@ -396,9 +396,10 @@ export default {
             }
             this.renderVisualization();
         },
+
         /**
          * @description Shows component info as popup.
-         * @returns {Void}
+         * @returns {void}
          */
         showInfo () {
             this.addSingleAlert({
@@ -424,9 +425,10 @@ export default {
 
             this.graphData.push(newDataSet);
         },
+
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void}
+         * @returns {void}
          */
         loadToCg () {
             const graphObj = {

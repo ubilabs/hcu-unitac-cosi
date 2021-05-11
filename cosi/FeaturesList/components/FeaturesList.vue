@@ -10,6 +10,7 @@ import getVectorlayerMapping from "../utils/getVectorlayerMapping";
 import Multiselect from "vue-multiselect";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import getClusterSource from "../../utils/getClusterSource";
+import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
 
@@ -32,7 +33,7 @@ export default {
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapGetters("Map", ["layerById", "visibleLayerList"]),
         ...mapState(["configJson"]),
         columns () {
@@ -88,7 +89,9 @@ export default {
             ];
         },
         districtFeatures () {
-            return this.selectedDistrictFeatures.length > 0 ? this.selectedDistrictFeatures : this.districtLayer.getSource().getFeatures();
+            return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
+                ? this.selectedDistrictFeatures
+                : this.districtLayer.getSource().getFeatures();
         },
         selected: {
             get () {
@@ -132,7 +135,7 @@ export default {
          */
         selected () {
             this.removeHighlightFeature();
-            this.selected.forEach(item => this.highlightVectorFeatures(item));
+            this.selected.forEach(item => highlightVectorFeature(item.feature, item.layerId));
         },
 
         /**
@@ -181,7 +184,7 @@ export default {
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
-        ...mapActions("Map", ["highlightFeature", "removeHighlightFeature"]),
+        ...mapActions("Map", ["removeHighlightFeature"]),
 
         /**
          * Reads the active vector layers, constructs the list of table items and writes them to the store.
@@ -236,36 +239,9 @@ export default {
         },
 
         handleClickRow (item) {
-            // this.removeHighlighting(item);
-            this.removeHighlightFeature();
-            this.highlightVectorFeatures(item);
-        },
-
-        /**
-         * Highlights a vector feature
-         * @param {Object} item the table item
-         * @returns {void}
-         */
-        highlightVectorFeatures (item) {
-            const geomType = item.feature.getGeometry()?.getType();
-
-            if (geomType === "Point") {
-                this.highlightFeature({
-                    id: item.feature.getId(),
-                    type: "increase",
-                    scale: 1.4,
-                    layer: {id: item.layerId}
-                });
-            }
-            else if (geomType === "Polygon" || geomType === "MultiPolygon") {
-                this.highlightFeature({
-                    feature: item.feature,
-                    type: "highlightPolygon",
-                    highlightStyle: {
-                        stroke: {color: "#F0E455", width: 5}
-                    },
-                    layer: {id: item.layerId}
-                });
+            if (item.enabled) {
+                this.removeHighlightFeature();
+                highlightVectorFeature(item.feature, item.layerId);
             }
         },
 
@@ -371,13 +347,18 @@ export default {
                                 <template v-slot:item.actions="{ item }">
                                     <v-icon
                                         small
-                                        class="mr-2"
+                                        disabled
+                                        class="mr-2 not-implemented"
+                                        title="Noch nicht implementiert"
                                         @click="editFeature(item)"
                                     >
                                         mdi-pencil
                                     </v-icon>
                                     <v-icon
                                         small
+                                        disabled
+                                        class="mr-2 not-implemented"
+                                        title="Noch nicht implementiert"
                                         @click="deleteFeature(item)"
                                     >
                                         mdi-delete
