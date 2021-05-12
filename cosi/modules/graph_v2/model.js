@@ -122,7 +122,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createValues: function (data, attrToShowArray, dynamicAxisStart = false, axisTicks, yAxisMaxValue) {
         const valueObj = {};
 
-        if (axisTicks && axisTicks.hasOwnProperty("start") && axisTicks.hasOwnProperty("end")) {
+        if (axisTicks && axisTicks?.start && axisTicks?.end) {
             valueObj.minValue = axisTicks.start;
             valueObj.maxValue = axisTicks.end;
         }
@@ -243,20 +243,20 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - axisBottom
      */
     createAxisBottom: function (scale, xAxisTicks) {
-        const unit = !xAxisTicks.hasOwnProperty("unit") ? "" : " " + xAxisTicks.unit;
+        const unit = !xAxisTicks?.unit ? "" : " " + xAxisTicks.unit;
         let d3Object;
 
         if (xAxisTicks === undefined) {
             d3Object = axisBottom(scale);
         }
-        else if (xAxisTicks.hasOwnProperty("values") && !xAxisTicks.hasOwnProperty("factor")) {
+        else if (xAxisTicks?.values && !xAxisTicks?.factor) {
             d3Object = axisBottom(scale)
                 .tickValues(xAxisTicks.values)
                 .tickFormat(function (d) {
                     return d + unit;
                 });
         }
-        else if (xAxisTicks.hasOwnProperty("values") && xAxisTicks.hasOwnProperty("factor")) {
+        else if (xAxisTicks?.values && xAxisTicks?.factor) {
             d3Object = axisBottom(scale)
                 .ticks(xAxisTicks.values, xAxisTicks.factor)
                 .tickFormat(function (d) {
@@ -276,7 +276,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createAxisLeft: function (scale, yAxisTicks) {
         let d3Object;
 
-        if (yAxisTicks === undefined && !yAxisTicks.hasOwnProperty("ticks")) {
+        if (yAxisTicks === undefined && !yAxisTicks?.ticks) {
             d3Object = axisLeft(scale)
                 .tickFormat(function (d) {
                     if (d % 1 === 0) {
@@ -857,7 +857,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             attribution = graphConfig.attribution || {};
         let valueLine;
 
-        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
+        if (graphConfig && graphConfig?.legendData) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         attrToShowArray.forEach(function (yAttrToShow, i) {
@@ -951,7 +951,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             tooltipDiv = select(graphConfig.selectorTooltip),
             attribution = graphConfig.attribution || {};
 
-        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
+        if (graphConfig && graphConfig?.legendData) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         this.drawBars(svg, data, scaleX, scaleY, height, selector, barWidth, xAttr, attrToShowArray, tooltipDiv);
@@ -1131,7 +1131,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             dotSize = graphConfig.dotSize || 5,
             attribution = graphConfig.attribution || {};
 
-        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
+        if (graphConfig && graphConfig?.legendData) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         attrToShowArray.forEach(function (yAttrToShow) {

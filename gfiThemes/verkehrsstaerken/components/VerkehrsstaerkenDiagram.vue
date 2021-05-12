@@ -44,8 +44,8 @@ export default {
          */
         createD3Document (category) {
             const tabContentHeight = document.getElementById(
-                "verkehrsstaerken-tab-content"
-            )?.clientHeight,
+                    "verkehrsstaerken-tab-content"
+                )?.clientHeight,
                 legendData = createLegendData(category),
                 graphConfig = {
                     legendData: legendData,

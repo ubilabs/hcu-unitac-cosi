@@ -53,7 +53,7 @@ export default {
 
         // The Properties of current layer
         getProperties () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getProperties")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getProperties) {
                 return this.feature.getProperties();
             }
 
@@ -62,7 +62,7 @@ export default {
 
         // The Theme of current layer
         getGfiTheme () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getTheme")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getTheme) {
                 return this.feature.getTheme();
             }
 
@@ -71,7 +71,7 @@ export default {
 
         // The id of current layer
         getGfiId () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getId")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getId) {
                 return this.feature.getId();
             }
 
@@ -80,7 +80,7 @@ export default {
 
         // The title/name of current layer
         getName () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getTitle")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getTitle) {
                 return this.feature.getTitle();
             }
 
@@ -287,10 +287,10 @@ export default {
                 gfiName = this.getName;
 
             if (feature && typeof feature === "object") {
-                if (feature.hasOwnProperty("getTheme")) {
+                if (feature?.getTheme) {
                     gfiTheme = feature.getTheme();
                 }
-                if (feature.hasOwnProperty("getTitle")) {
+                if (feature?.getTitle) {
                     gfiName = feature.getTitle();
                 }
             }

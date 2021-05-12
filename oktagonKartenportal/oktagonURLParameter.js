@@ -51,7 +51,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         if (rueckURLParameter.length > 0) {
             this.setRueckURL(rueckURLParameter.slice(rueckURLParameter.indexOf("=") + 1));
         }
-        if (result.hasOwnProperty("BEZIRK")) {
+        if (result?.BEZIRK) {
             const districtFromUrl = this.getParameterValue(result, "BEZIRK");
             let districtNameToZoom = "";
 
@@ -68,7 +68,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
                 Radio.trigger("ZoomToGeometry", "zoomToGeometry", districtNameToZoom, Config.zoomToGeometry.layerId, Config.zoomToGeometry.attribute);
             }
         }
-        else if (result.hasOwnProperty("STRASSE")) {
+        else if (result?.STRASSE) {
             const address = this.createAddress(result);
 
             this.setAddress(address);
@@ -87,11 +87,11 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
             searchType: "streetsWithoutHouseNumberSearch"
         };
 
-        if (result.hasOwnProperty("HAUSNUMMER") && result.HAUSNUMMER.length > 0) {
+        if (result?.HAUSNUMMER && result.HAUSNUMMER.length > 0) {
             address.housenumber = this.getParameterValue(result, "HAUSNUMMER");
             address.searchType = "adressSearch";
 
-            if (result.hasOwnProperty("ZUSATZ")) {
+            if (result?.ZUSATZ) {
                 address.affix = this.getParameterValue(result, "ZUSATZ");
             }
         }
@@ -108,7 +108,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         let geometries,
             districtNameToZoom = "";
 
-        if (Config.hasOwnProperty("zoomToGeometry") && Config.zoomToGeometry.hasOwnProperty("geometries")) {
+        if (Object.prototype.hasOwnProperty.call(Config, "zoomToGeometry") && Config.zoomToGeometry?.geometries) {
             geometries = Config.zoomToGeometry.geometries;
 
             if (geometries.includes(districtFromUrl.toUpperCase())) {

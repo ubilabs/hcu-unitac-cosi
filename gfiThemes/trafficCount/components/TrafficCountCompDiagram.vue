@@ -180,7 +180,7 @@ export default {
             });
 
             apiData.forEach((dataObj, idx) => {
-                if (!dataObj.hasOwnProperty(meansOfTransportKey)) {
+                if (!Object.prototype.hasOwnProperty.call(dataObj, meansOfTransportKey)) {
                     return;
                 }
                 const datetimes = Object.keys(dataObj[meansOfTransportKey]);

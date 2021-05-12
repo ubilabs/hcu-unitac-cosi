@@ -172,7 +172,7 @@ export default {
             for (i in datastreams) {
                 datastream = datastreams[i];
 
-                if (!datastream || typeof datastream !== "object" || !datastream.hasOwnProperty("properties") || !datastream.properties.hasOwnProperty("layerName")) {
+                if (!datastream || typeof datastream !== "object" || !datastream?.properties || !datastream.properties?.layerName) {
                     continue;
                 }
 
@@ -226,7 +226,7 @@ export default {
             });
 
             // type
-            if (meansOfTransport && this.typeAssoc.hasOwnProperty(meansOfTransport)) {
+            if (meansOfTransport && Object.prototype.hasOwnProperty.call(this.typeAssoc, meansOfTransport)) {
                 this.type = this.typeAssoc[meansOfTransport];
             }
             else {
@@ -234,7 +234,7 @@ export default {
             }
 
             // means of transport
-            if (meansOfTransport && this.meansOfTransportAssoc.hasOwnProperty(meansOfTransport)) {
+            if (meansOfTransport && Object.prototype.hasOwnProperty.call(this.meansOfTransportAssoc, meansOfTransport)) {
                 this.meansOfTransport = this.meansOfTransportAssoc[meansOfTransport];
             }
             else {
