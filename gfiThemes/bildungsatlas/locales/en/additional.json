@@ -2,7 +2,13 @@
     "addons": {
         "gfiThemes": {
             "bildungsatlas": {
-                "searchbarPlaceholder": "Search address, district, School, topics"
+                "searchbarPlaceholder": "Search address, district, School, topics",
+                "general": {
+                    "tabData": "Data",
+                    "tabInfo": "Info",
+                    "disclaimer": "*g.F: low case numbers. The values could not be shown for data protection reasons or the area is uninhabited.",
+                    "hint": "You can change the position of the window by drag & drop."
+                }
             }
         }
     }
