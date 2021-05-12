@@ -60,8 +60,7 @@ export default {
                     <iframe
                         :src="feature.getGfiUrl()"
                         class="gfi-iFrame"
-                    >
-                    </iframe>
+                    />
                 </td>
             </tr>
         </tbody>

@@ -225,7 +225,7 @@ export default {
                 type="button"
                 @click="onClick"
             >
-                <span class="glyphicon glyphicon-download"></span>{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.download") }}
+                <span class="glyphicon glyphicon-download" />{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.download") }}
             </button>
         </div>
     </div>

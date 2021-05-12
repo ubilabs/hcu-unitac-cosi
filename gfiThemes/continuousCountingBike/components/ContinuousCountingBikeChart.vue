@@ -101,7 +101,7 @@ export default {
                 v-model="chartVisible"
                 type="checkbox"
                 class="chartCheckbox form-check-input"
-            />
+            >
             <label
                 class="form-check-label"
                 for="chartCheck"
@@ -119,7 +119,7 @@ export default {
                 :id="`graph-${type}`"
                 class="graph"
             >
-                <div class="graph-tooltip-div"></div>
+                <div class="graph-tooltip-div" />
             </div>
         </div>
         <div>
@@ -128,7 +128,7 @@ export default {
                 v-model="tableVisible"
                 type="checkbox"
                 class="tableCheckbox form-check-input"
-            />
+            >
             <label
                 class="form-check-label"
                 for="tableCheck"

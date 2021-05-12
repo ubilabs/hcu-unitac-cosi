@@ -186,7 +186,7 @@ export default {
             :id="'d3-div-' + category"
             class="graph"
         >
-            <div class="graph-tooltip-div"></div>
+            <div class="graph-tooltip-div" />
         </div>
     </div>
 </template>

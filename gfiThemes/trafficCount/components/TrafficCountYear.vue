@@ -221,35 +221,35 @@ export default {
                         <span
                             class="glyphicon glyphicon-th"
                             aria-hidden="true"
-                        ></span>
+                        />
                     </button>
                 </span>
             </div>
         </div>
         <TrafficCountCheckbox
-            :tableDiagramId="diagramYear"
+            :table-diagram-id="diagramYear"
         />
         <div id="diagramYear">
             <TrafficCountCompDiagram
-                :apiData="apiData"
-                :setTooltipValue="setTooltipValue"
-                :yAxisTicks="yAxisTicks"
-                :renderLabelXAxis="renderLabelXAxis"
-                :renderLabelYAxis="renderLabelYAxis"
-                :descriptionYAxis="descriptionYAxis"
-                :renderLabelLegend="renderLabelLegend"
+                :api-data="apiData"
+                :set-tooltip-value="setTooltipValue"
+                :y-axis-ticks="yAxisTicks"
+                :render-label-x-axis="renderLabelXAxis"
+                :render-label-y-axis="renderLabelYAxis"
+                :description-y-axis="descriptionYAxis"
+                :render-label-legend="renderLabelLegend"
             />
         </div>
         <TrafficCountCheckbox
-            :tableDiagramId="tableYear"
+            :table-diagram-id="tableYear"
         />
         <div id="tableYear">
             <TrafficCountCompTable
-                :apiData="apiData"
-                :tableTitle="tableTitle"
-                :setColTitle="setColTitle"
-                :setRowTitle="setRowTitle"
-                :setFieldValue="setFieldValue"
+                :api-data="apiData"
+                :table-title="tableTitle"
+                :set-col-title="setColTitle"
+                :set-row-title="setRowTitle"
+                :set-field-value="setFieldValue"
             />
         </div>
     </div>

@@ -175,7 +175,7 @@ export default {
                     <tr>
                         <td colspan="2">
                             <span>{{ schoolStreet }}</span>
-                            <br />
+                            <br>
                             <span>{{ schoolPostalcode }}</span>
                         </td>
                     </tr>
@@ -186,7 +186,7 @@ export default {
                         <td
                             :class="{ 'sublist': obj.sublist }"
                             v-html="obj.key"
-                        ></td>
+                        />
                         <td>{{ obj.value }}</td>
                     </tr>
                     <tr>

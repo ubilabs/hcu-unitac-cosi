@@ -350,41 +350,41 @@ export default {
                     :key="keyInfo"
                     class="tab-pane fade in active"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountDay
                     id="day"
                     :key="keyDay"
                     class="tab-pane fade"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountWeek
                     id="week"
                     :key="keyWeek"
                     class="tab-pane fade"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountYear
                     id="year"
                     :key="keyYear"
                     class="tab-pane fade"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
             </div>
         </div>
         <TrafficCountFooter
             class="footer"
-            :currentTabId="currentTabId"
+            :current-tab-id="currentTabId"
             :api="api"
-            :thingId="propThingId"
-            :meansOfTransport="propMeansOfTransport"
+            :thing-id="propThingId"
+            :means-of-transport="propMeansOfTransport"
         />
     </div>
 </template>

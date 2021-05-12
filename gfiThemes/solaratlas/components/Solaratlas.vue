@@ -29,8 +29,7 @@ export default {
                 area_st_1a: parseFloat(feature.getMappedProperties().area_st_1a),
                 p_st_mwh_a: parseFloat(feature.getMappedProperties().p_st_mwh_a)
             })"
-        >
-        </p>
+        />
         <p
             v-else
             v-html="$t('additional:modules.tools.gfi.themes.solaratlas.buildingUnsuitable', {
@@ -38,7 +37,6 @@ export default {
                 area_st_1a: parseFloat(feature.getMappedProperties().area_st_1a),
                 p_st_mwh_a: parseFloat(feature.getMappedProperties().p_st_mwh_a)
             })"
-        >
-        </p>
+        />
     </div>
 </template>

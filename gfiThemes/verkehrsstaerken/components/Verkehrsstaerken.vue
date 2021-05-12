@@ -136,7 +136,7 @@ export default {
     <div class="verkehrsstaerken">
         <div class="panel header">
             <strong>{{ feature.getMappedProperties().Zählstelle +": "+feature.getMappedProperties().Bezeichnung }}</strong>
-            <br />
+            <br>
             <small>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.kind", {kind: feature.getMappedProperties().Art}) }}</small>
         </div>
         <ul class="nav nav-pills">
@@ -172,7 +172,7 @@ export default {
             <VerkehrsstaerkenTable
                 :show="isActiveTab('table')"
                 :class="getTabPaneClasses('table')"
-                :rowNames="rowNames"
+                :row-names="rowNames"
                 :years="years"
                 :dataset="dataset"
                 :type="String('table')"
@@ -193,7 +193,7 @@ export default {
                 type="button"
                 @click="onClick"
             >
-                <span class="glyphicon glyphicon-download"></span>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.download") }}
+                <span class="glyphicon glyphicon-download" />{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.download") }}
             </button>
         </div>
     </div>
