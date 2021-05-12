@@ -6,13 +6,16 @@ import mutations from "../store/mutationsCalculateRatio";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
 import JsonExcel from "vue-json-excel";
+import DataTable from "./DataTable.vue";
+import Info from "text-loader!./info.html";
 
 export default {
     name: "CalculateRatio",
     components: {
         Tool,
         Multiselect,
-        JsonExcel
+        JsonExcel,
+        DataTable
     },
     data () {
         return {
@@ -304,6 +307,16 @@ export default {
             }
         },
         /**
+         * @description Shows component info as popup.
+         * @returns {Void}
+         */
+        showInfo () {
+            this.addSingleAlert({
+                category: "Info",
+                content: Info
+            });
+        },
+        /**
          * @description Checks if the user selected a summable statistical data set (feature).
          * @param {String} letter String that determines which field is to be modified (A or B for FieldA or FieldB).
          * @returns {void}
@@ -421,13 +434,13 @@ export default {
 
                     this.calcHelper.type_A = "facility";
                     this.featureVals = [];
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const layerGeometry = feature.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldA.id]) {
-                                    const value = layer.getProperties()[this.paramFieldA.id],
+                                if (feature.getProperties()[this.paramFieldA.id]) {
+                                    const value = feature.getProperties()[this.paramFieldA.id],
                                         valueTransformed = parseFloat(value.replace(/\D/g, ""));
 
                                     this.featureVals.push(valueTransformed);
@@ -504,13 +517,13 @@ export default {
 
                     this.featureVals = [];
                     this.calcHelper.type_B = "facility";
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const layerGeometry = feature.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldB.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldB.id]) {
-                                    const value = layer.getProperties()[this.paramFieldB.id],
+                                if (feature.getProperties()[this.paramFieldB.id]) {
+                                    const value = feature.getProperties()[this.paramFieldB.id],
                                         valueTransformed = parseFloat(value.replace(/\D/g, ""));
 
                                     this.featureVals.push(valueTransformed);
@@ -649,13 +662,9 @@ export default {
                     }
                 });
 
-                //this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
-                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
-
                 this.setCcmDataSet(prepareData);
                 this.setDataToCCM(!switchVar);
             } else {
-                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
                 
                 this.setDataToCCM(!switchVar);
             }
@@ -677,21 +686,15 @@ export default {
                 }
             };
 
-            console.log("look here", graphObj);
-
             const dataArray = [];
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);        
             });
 
-            
-            console.log("look here #2", dataArray);
-
             this.availableYears.forEach(year => {
                 const dataPerYear = utils.calculateRatio(dataArray, year);
 
                 dataPerYear.forEach(dataSet => {
-                    console.log("look here #3", dataSet);
                     const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
 
                     if(checkExisting){
@@ -734,6 +737,11 @@ export default {
                 :class="{ expanded: results.length > 0 }"
             >
                 <div class="addon_wrapper">
+                    <button class="info_button"
+                    @click="showInfo()"
+                    >
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                    </button>
                     <p class="section intro">
                         {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
                     </p>
@@ -1110,7 +1118,8 @@ export default {
                                 </Multiselect>
                             </div>
                         </div>
-                        <table class="forged_table">
+                        <DataTable :dataSet="results" :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id" :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id" :fActive="fActive_A || fActive_B ? true : false"></DataTable>
+                        <!--<table class="forged_table">
                             <tr class="head_row">
                                 <th>
                                     <div class="styling_helper head_scope">
@@ -1200,7 +1209,7 @@ export default {
                                     </div>
                                 </td>
                             </tr>
-                        </table>
+                        </table>-->
                     </div>
                 </div>
             </div>
@@ -1218,7 +1227,20 @@ export default {
         width:400px;
         height:60vh;
 
+        .info_button {
+            display:block;
+            width:30px;
+            height:30px;
+            background:#eee;
+            margin:0px 0px 0px auto;
+        }
+
         .section {
+            &.intro {
+                border-top:1px solid #ccc;
+                padding-top:30px;
+            }
+
             &.third {
                     border:1px solid #ddd;
                 }
