@@ -113,6 +113,83 @@ function convertComplexTypeToPiechart (complexData, backgroundColors = false) {
     };
 }
 
+/**
+ * This function converts complex data to Barchart Data
+ * Example complex data:
+ *  complexData =
+ *       {
+ *           metadata: {
+ *               type: "timeseries",
+ *               format: "YYYY/YY",
+ *               description: "Anzahl"
+ *           },
+ *           values: [
+ *               {key: "2019/20", value: 372},
+ *               {key: "2018/19", value: 392},
+ *               {key: "2017/18", value: 398},
+ *               {key: "2016/17", value: 381},
+ *               {key: "2015/16", value: 384}
+ *           ]
+ *       },
+ *
+ * Example ChartJs Data:
+ *  barchartJSData =
+ *      {
+ *          datasets: [
+ *               {
+ *                   label: "Anzahl",
+ *                   data: [
+ *                       372,
+ *                       392,
+ *                       398,
+ *                       381,
+ *                       384
+ *                   ],
+ *                    backgroundColor: "rgba(0, 92, 169, 1)",
+ *                    hoverBackgroundColor: "rgba(255, 0, 25, 1)",
+ *                   borderWidth: 1
+ *               }
+ *          ],
+ *               labels: [
+ *                   "2019/20",
+ *                   "2018/19",
+ *                   "2017/18",
+ *                   "2016/17",
+ *                   "2015/16"
+ *               ]
+ *       };
+ * @param {ComplexType} complexData a wfs complexType
+ * @param {Array[]|boolean} [backgroundColor=false] the array of colors that overwrite default background colors
+ * @param {Array[]|boolean} [hoverBackgroundColor=false] the array of colors that overwrite default background hover colors
+ * @return {Object|boolean} an object following chartJS Dataset Configuration (see https://www.chartjs.org/docs/master/general/data-structures.html)
+ */
+function convertComplexTypeToBarchart (complexData, backgroundColor = false, hoverBackgroundColor = false) {
+    const data = [],
+        labels = [],
+        defaultBgColor = backgroundColor ? backgroundColor : "#005ca9",
+        defaultHvColor = hoverBackgroundColor ? hoverBackgroundColor : "#e10019";
+
+    if (!isComplexType(complexData)) {
+        return false;
+    }
+    complexData.values.forEach(elem => {
+        if (typeof elem === "object" && elem !== null && elem?.key) {
+            data.push(elem.value);
+            labels.push(elem.key);
+        }
+    });
+
+    return {
+        datasets: [{
+            label: complexData.metadata.description ? complexData.metadata.description : "",
+            data,
+            backgroundColor: convertColor(defaultBgColor, "rgbaString"),
+            hoverBackgroundColor: convertColor(defaultHvColor, "rgbaString"),
+            borderWidth: 1
+        }],
+        labels: labels
+    };
+}
 
 /**
  * returns true if data is a complextype, or false if not
@@ -201,5 +278,6 @@ function sortComplexTypeTimeseries (complexData, format) {
 export {
     convertComplexTypeToPiechart,
     isComplexType,
-    sortComplexType
+    sortComplexType,
+    convertComplexTypeToBarchart
 };

@@ -1,6 +1,7 @@
 import {expect} from "chai";
 import {
     convertComplexTypeToPiechart,
+    convertComplexTypeToBarchart,
     isComplexType,
     sortComplexType
 } from "../../../utils/complexType.js";
@@ -261,20 +262,20 @@ describe("addons/utils/complexType.js", () => {
                     }
                 };
 
-            expect(convertComplexTypeToPiechart(complexData)).to.deep.equal(false);
+            expect(convertComplexTypeToPiechart(complexData)).to.be.false;
         });
 
-        it("should return a empty object, if complex data is a empty object", () => {
-            expect(convertComplexTypeToPiechart({})).to.deep.equal(false);
+        it("should return false, if complex data is a empty object", () => {
+            expect(convertComplexTypeToPiechart({})).to.be.false;
         });
 
-        it("should return an empty object, if complexData is anything but an object", () => {
-            expect(convertComplexTypeToPiechart(undefined)).to.deep.equal(false);
-            expect(convertComplexTypeToPiechart(null)).to.deep.equal(false);
-            expect(convertComplexTypeToPiechart(1)).to.deep.equal(false);
-            expect(convertComplexTypeToPiechart("string")).to.deep.equal(false);
-            expect(convertComplexTypeToPiechart(false)).to.deep.equal(false);
-            expect(convertComplexTypeToPiechart([])).to.deep.equal(false);
+        it("should return false, if complexData is anything but an object", () => {
+            expect(convertComplexTypeToPiechart(undefined)).to.be.false;
+            expect(convertComplexTypeToPiechart(null)).to.be.false;
+            expect(convertComplexTypeToPiechart(1)).to.be.false;
+            expect(convertComplexTypeToPiechart("string")).to.be.false;
+            expect(convertComplexTypeToPiechart(false)).to.be.false;
+            expect(convertComplexTypeToPiechart([])).to.be.false;
         });
 
         it("should convert complex data to chartJS data with given background colors, if backgroundColors are given", () => {
@@ -322,6 +323,298 @@ describe("addons/utils/complexType.js", () => {
                     };
 
             expect(convertComplexTypeToPiechart(complexData, givenBackgroundColors)).to.deep.equal(chartJSData);
+        });
+    });
+
+    describe("convertComplexTypeToBarchart", () => {
+        it("should convert complex data to bar chartJS data", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Anzahl"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2015/16", value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Anzahl",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    384
+                                ],
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                                borderWidth: 1
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2015/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToBarchart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data with a gap in the dataset, if one value is undefined", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Anzahl"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2015/16", value: undefined}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Anzahl",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    undefined
+                                ],
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                                borderWidth: 1
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2015/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToBarchart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data, if one key is undefined", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Anzahl"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: undefined, value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Anzahl",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381
+                                ],
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                                borderWidth: 1
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17"
+                        ]
+                    };
+
+            expect(convertComplexTypeToBarchart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data, if label is empty", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: ""
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2016/16", value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    384
+                                ],
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                                borderWidth: 1
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2016/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToBarchart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data, if description is undefined", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: undefined
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2016/16", value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    384
+                                ],
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                                borderWidth: 1
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2016/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToBarchart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should return false, if complex data is not complete", () => {
+            const complexData =
+                {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    }
+                };
+
+            expect(convertComplexTypeToBarchart(complexData)).to.be.false;
+        });
+
+        it("should return false, if complex data is a empty object", () => {
+            expect(convertComplexTypeToBarchart({})).to.be.false;
+        });
+
+        it("should return an empty object, if complexData is anything but an object", () => {
+            expect(convertComplexTypeToBarchart(undefined)).to.be.false;
+            expect(convertComplexTypeToBarchart(null)).to.be.false;
+            expect(convertComplexTypeToBarchart(1)).to.be.false;
+            expect(convertComplexTypeToBarchart("string")).to.be.false;
+            expect(convertComplexTypeToBarchart(false)).to.be.false;
+            expect(convertComplexTypeToBarchart([])).to.be.false;
+        });
+
+        it("should convert complex data to chartJS data with given background colors, if backgroundColors are given", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Beschreibung"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398}
+                        ]
+                    },
+                givenBackgroundColor = [210, 220, 0, 1],
+                givenHoverBackgroundColor = [0, 92, 255, 1],
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Beschreibung",
+                                data: [
+                                    372,
+                                    392,
+                                    398
+                                ],
+                                backgroundColor: "rgba(210, 220, 0, 1)",
+                                hoverBackgroundColor: "rgba(0, 92, 255, 1)",
+                                borderWidth: 1
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18"
+                        ]
+                    };
+
+            expect(convertComplexTypeToBarchart(complexData, givenBackgroundColor, givenHoverBackgroundColor)).to.deep.equal(chartJSData);
         });
     });
 
