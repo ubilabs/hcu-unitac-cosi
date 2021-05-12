@@ -114,6 +114,92 @@ function convertComplexTypeToPiechart (complexData, backgroundColors = false) {
 }
 
 /**
+ * This function converts complex data to Linechart Data
+ * Example complex data:
+ *  complexData =
+ *       {
+ *           metadata: {
+ *               type: "timeseries",
+ *               format: "YYYY/YY",
+ *               description: "Anzahl"
+ *           },
+ *           values: [
+ *               {key: "2019/20", value: 372},
+ *               {key: "2018/19", value: 392},
+ *               {key: "2017/18", value: 398},
+ *               {key: "2016/17", value: 381},
+ *               {key: "2015/16", value: 384}
+ *           ]
+ *       },
+ *
+ * Example ChartJs Data:
+ *  linechartJSData =
+ *      {
+ *          datasets: [
+ *               {
+ *                   label: "Anzahl",
+ *                   data: [
+ *                       372,
+ *                       392,
+ *                       398,
+ *                       381,
+ *                       384
+ *                   ],
+ *                   backgroundColor: "rgba(0, 92, 169, 1)",
+ *                   borderColor: "rgba(0, 92, 169, 1)",
+ *                   borderWidth: 2,
+ *                   fill: false,
+ *                   lineTension: 0,
+ *                   pointRadius: 4,
+ *                   pointHoverRadius: 4,
+ *                   spanGaps: false
+ *               }
+ *          ],
+ *               labels: [
+ *                   "2019/20",
+ *                   "2018/19",
+ *                   "2017/18",
+ *                   "2016/17",
+ *                   "2015/16"
+ *               ]
+ *       };
+ * @param {ComplexType} complexData a wfs complexType
+ * @param {Array[]|boolean} [borderColor=false] the array of colors that overwrite default borderColor color
+ * @return {Object|boolean} an object following chartJS Dataset Configuration (see https://www.chartjs.org/docs/master/general/data-structures.html)
+ */
+function convertComplexTypeToLinechart (complexData, borderColor = false) {
+    const data = [],
+        labels = [],
+        defaultBorderColor = borderColor ? borderColor : "#005ca9";
+
+    if (!isComplexType(complexData)) {
+        return false;
+    }
+    complexData.values.forEach(elem => {
+        if (typeof elem === "object" && elem?.key) {
+            data.push(elem.value);
+            labels.push(elem.key);
+        }
+    });
+
+    return {
+        datasets: [{
+            label: complexData.metadata.description ? complexData.metadata.description : "",
+            data,
+            borderColor: convertColor(defaultBorderColor, "rgbaString"),
+            backgroundColor: convertColor(defaultBorderColor, "rgbaString"),
+            spanGaps: false,
+            fill: false,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 4,
+            lineTension: 0
+        }],
+        labels: labels
+    };
+}
+
+/**
  * This function converts complex data to Barchart Data
  * Example complex data:
  *  complexData =
@@ -274,10 +360,10 @@ function sortComplexTypeTimeseries (complexData, format) {
     });
 }
 
-
 export {
     convertComplexTypeToPiechart,
+    convertComplexTypeToLinechart,
+    convertComplexTypeToBarchart,
     isComplexType,
-    sortComplexType,
-    convertComplexTypeToBarchart
+    sortComplexType
 };

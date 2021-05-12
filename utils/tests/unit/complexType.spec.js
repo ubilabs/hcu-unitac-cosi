@@ -2,6 +2,7 @@ import {expect} from "chai";
 import {
     convertComplexTypeToPiechart,
     convertComplexTypeToBarchart,
+    convertComplexTypeToLinechart,
     isComplexType,
     sortComplexType
 } from "../../../utils/complexType.js";
@@ -615,6 +616,282 @@ describe("addons/utils/complexType.js", () => {
                     };
 
             expect(convertComplexTypeToBarchart(complexData, givenBackgroundColor, givenHoverBackgroundColor)).to.deep.equal(chartJSData);
+        });
+    });
+
+    describe("convertComplexTypeToLinechart", () => {
+        it("should convert complex data to line chartJS data", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Anzahl"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2015/16", value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Anzahl",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    384
+                                ],
+                                borderColor: "rgba(0, 92, 169, 1)",
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                spanGaps: false,
+                                fill: false,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 4,
+                                lineTension: 0
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2015/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToLinechart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data, if one key is undefined", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Anzahl"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: undefined, value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Anzahl",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381
+                                ],
+                                borderColor: "rgba(0, 92, 169, 1)",
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                spanGaps: false,
+                                fill: false,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 4,
+                                lineTension: 0
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17"
+                        ]
+                    };
+
+            expect(convertComplexTypeToLinechart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data with a gap in the dataset, if one value is undefined", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: "Anzahl"
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2015/16", value: undefined}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "Anzahl",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    undefined
+                                ],
+                                borderColor: "rgba(0, 92, 169, 1)",
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                spanGaps: false,
+                                fill: false,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 4,
+                                lineTension: 0
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2015/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToLinechart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data, if label is empty", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: ""
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2015/16", value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    384
+                                ],
+                                borderColor: "rgba(0, 92, 169, 1)",
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                spanGaps: false,
+                                fill: false,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 4,
+                                lineTension: 0
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2015/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToLinechart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should convert complex data to chartJS data, if description is undefined", () => {
+            const complexData =
+                    {
+                        metadata: {
+                            type: "timeseries",
+                            format: "YYYY/YY",
+                            description: undefined
+                        },
+                        values: [
+                            {key: "2019/20", value: 372},
+                            {key: "2018/19", value: 392},
+                            {key: "2017/18", value: 398},
+                            {key: "2016/17", value: 381},
+                            {key: "2015/16", value: 384}
+                        ]
+                    },
+                chartJSData =
+                    {
+                        datasets: [
+                            {
+                                label: "",
+                                data: [
+                                    372,
+                                    392,
+                                    398,
+                                    381,
+                                    384
+                                ],
+                                borderColor: "rgba(0, 92, 169, 1)",
+                                backgroundColor: "rgba(0, 92, 169, 1)",
+                                spanGaps: false,
+                                fill: false,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 4,
+                                lineTension: 0
+                            }
+                        ],
+                        labels: [
+                            "2019/20",
+                            "2018/19",
+                            "2017/18",
+                            "2016/17",
+                            "2015/16"
+                        ]
+                    };
+
+            expect(convertComplexTypeToLinechart(complexData)).to.deep.equal(chartJSData);
+        });
+
+        it("should return false, if complex data is not complete", () => {
+            const complexData =
+                {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    }
+                };
+
+            expect(convertComplexTypeToLinechart(complexData)).to.be.false;
+        });
+
+        it("should return false, if complex data is a empty object", () => {
+            expect(convertComplexTypeToLinechart({})).to.be.false;
+        });
+
+        it("should return an empty object, if complexData is anything but an object", () => {
+            expect(convertComplexTypeToLinechart(undefined)).to.be.false;
+            expect(convertComplexTypeToLinechart(null)).to.be.false;
+            expect(convertComplexTypeToLinechart(1)).to.be.false;
+            expect(convertComplexTypeToLinechart("string")).to.be.false;
+            expect(convertComplexTypeToLinechart(false)).to.be.false;
+            expect(convertComplexTypeToLinechart([])).to.be.false;
         });
     });
 
