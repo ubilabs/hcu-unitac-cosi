@@ -57,7 +57,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"]),
+        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"])
     },
     watch: {
         selectedFeatures () {
@@ -397,7 +397,7 @@ export default {
         },
         /**
          * @description Shows component info as popup.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         showInfo () {
             this.addSingleAlert({
@@ -425,7 +425,7 @@ export default {
         },
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         loadToCg () {
             const graphObj = {
@@ -441,12 +441,15 @@ export default {
             };
 
             this.availableYears.forEach(year => {
-                graphObj.data.labels.unshift(year);
+                graphObj.data.labels.push(year);
             });
 
             this.graphData.forEach(dataSet => {
-                graphObj.data.dataSets.unshift(dataSet);
+                dataSet.data.reverse();
+                graphObj.data.dataSets.push(dataSet);
             });
+
+            graphObj.data.labels.reverse();
 
             this.setNewChartDataSet(graphObj);
             this.graphData = [];

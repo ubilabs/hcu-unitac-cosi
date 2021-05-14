@@ -170,7 +170,7 @@ export default {
             });
         },
         visualizationState (newState) {
-            if(!newState) {
+            if (!newState) {
                 this.$store.commit("Tools/CalculateRatio/setDataToCCM", false);
             }
         }
@@ -189,7 +189,7 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
+        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @returns {void}
@@ -454,11 +454,11 @@ export default {
                             }
                         }
                     });
-
+                    console.log(this.featureVals);
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
-
-                    if(checkForLackingData === "error"){
-                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                    
+                    if (checkForLackingData === "error") {
+                        this.showAlert("Warnung für das Gebiet: " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
                         return;
                     }
 
@@ -537,11 +537,11 @@ export default {
                             }
                         }
                     });
-                    
+
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
-                    if(checkForLackingData === "error"){
-                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                    if (checkForLackingData === "error") {
+                        this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
                         return;
                     }
 
@@ -633,6 +633,7 @@ export default {
          */
         recalcData () {
             const dataArray = [];
+
             this.results = [];
 
             this.resultsClone.forEach(result => {
@@ -664,8 +665,9 @@ export default {
 
                 this.setCcmDataSet(prepareData);
                 this.setDataToCCM(!switchVar);
-            } else {
-                
+            }
+            else {
+
                 this.setDataToCCM(!switchVar);
             }
         },
@@ -675,20 +677,21 @@ export default {
          */
         loadToCG () {
             const graphObj = {
-                id: "calcratio-test",
-                name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                type: "BarChart",
-                color: "green",
-                source: "CalculateRatio",
-                data: {
-                    labels: [...this.availableYears],
-                    dataSets: []
-                }
-            };
+                    id: "calcratio-test",
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    type: "BarChart",
+                    color: "green",
+                    source: "CalculateRatio",
+                    data: {
+                        labels: [...this.availableYears],
+                        dataSets: []
+                    }
+                },
 
-            const dataArray = [];
+                dataArray = [];
+
             this.resultsClone.forEach(result => {
-                dataArray.push(result.data);        
+                dataArray.push(result.data);
             });
 
             this.availableYears.forEach(year => {
@@ -697,19 +700,20 @@ export default {
                 dataPerYear.forEach(dataSet => {
                     const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
 
-                    if(checkExisting){
+                    if (checkExisting) {
                         checkExisting.data.push(dataSet[this.columnSelector.key]);
-                    } else {
+                    }
+                    else {
                         const obj = {
                             label: dataSet.scope,
                             data: [dataSet[this.columnSelector.key]]
-                        }
+                        };
 
                         graphObj.data.dataSets.push(obj);
                     }
-                })
-            })
-            
+                });
+            });
+
             graphObj.data.labels.reverse();
             graphObj.data.dataSets.forEach(dataSet => {
                 dataSet.data.reverse();
@@ -737,8 +741,9 @@ export default {
                 :class="{ expanded: results.length > 0 }"
             >
                 <div class="addon_wrapper">
-                    <button class="info_button"
-                    @click="showInfo()"
+                    <button
+                        class="info_button"
+                        @click="showInfo()"
                     >
                         <span class="glyphicon glyphicon-question-sign"></span>
                     </button>
@@ -1054,7 +1059,7 @@ export default {
                             >
                                 <span class="glyphicon glyphicon-download"></span>Download XSL
                             </JsonExcel>
-                            
+
                             <button
                                 class="cg"
                                 @click="loadToCG()"
@@ -1118,7 +1123,12 @@ export default {
                                 </Multiselect>
                             </div>
                         </div>
-                        <DataTable :dataSet="results" :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id" :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id" :fActive="fActive_A || fActive_B ? true : false"></DataTable>
+                        <DataTable
+                            :dataSet="results"
+                            :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
+                            :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
+                            :fActive="fActive_A || fActive_B ? true : false"
+                        ></DataTable>
                         <!--<table class="forged_table">
                             <tr class="head_row">
                                 <th>

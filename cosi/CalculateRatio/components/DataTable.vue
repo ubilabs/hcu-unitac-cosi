@@ -6,19 +6,19 @@ export default {
     props: {
         dataSet: {
             type: Array,
-            default:null,
+            default: null
         },
         typeA: {
             type: String,
-            default:null,
+            default: null
         },
         typeB: {
             type: String,
-            default:null,
+            default: null
         },
         fActive: {
-            type:Boolean,
-            default:false,
+            type: Boolean,
+            default: false
         }
     },
     data () {
@@ -26,52 +26,52 @@ export default {
         };
     },
     computed: {
-        headers() {
-            const head =[
+        headers () {
+            const head = [
                 {
                     text: "Gebiet",
                     value: "scope",
                     sortable: false,
-                    show:true,
+                    show: true
                 },
                 {
                     text: this.typeA,
                     value: "paramA_val",
-                    show:true
+                    show: true
                 },
                 {
                     text: this.typeB,
                     value: "paramB_val",
-                    show:true
+                    show: true
                 },
                 {
                     text: this.typeA + " / " + this.typeB,
                     value: "relation",
-                    show:true
+                    show: true
                 },
                 {
                     text: "Kapazität",
                     value: "capacity",
-                    show:this.fActive,
+                    show: this.fActive
                 },
                 {
                     text: "Bedarf",
                     value: "need",
-                    show:this.fActive,
+                    show: this.fActive
                 },
                 {
                     text: "Bedarfsdeckung (1,0 ~ 100%)",
                     value: "coverage",
-                    show:true,
-                },
+                    show: true
+                }
             ];
 
-            return head.filter(x=>x.show)
+            return head.filter(x=>x.show);
         }
     },
     watch: {
-      	dataSet() { 
-          this.formatData();
+        dataSet () {
+            this.formatData();
         }
     },
     created () {
@@ -80,18 +80,15 @@ export default {
         this.formatData();
     },
     methods: {
-        formatData(){
+        formatData () {
             this.dataSet.forEach(scope => {
-              scope.paramA_val = scope.paramA_val.toLocaleString("de-DE");
-              scope.paramB_val = scope.paramB_val.toLocaleString("de-DE");
-              scope.relation = scope.relation.toLocaleString("de-DE");
-              scope.coverage = scope.coverage.toLocaleString("de-DE");
-              scope.capacity = scope.capacity.toLocaleString("de-DE");
-              scope.need = scope.need.toLocaleString("de-DE");
-          });
-
-          
-            console.log(this.dataSet);
+                scope.paramA_val = scope.paramA_val.toLocaleString("de-DE");
+                scope.paramB_val = scope.paramB_val.toLocaleString("de-DE");
+                scope.relation = scope.relation.toLocaleString("de-DE");
+                scope.coverage = scope.coverage.toLocaleString("de-DE");
+                scope.capacity = scope.capacity.toLocaleString("de-DE");
+                scope.need = scope.need.toLocaleString("de-DE");
+            });
         }
     }
 };
@@ -112,7 +109,10 @@ export default {
                     {{ item.paramA_val }}
 
                     <span v-if="item.data.incompleteDataSets_A > 0">*</span>
-                    <div class="hover_helper" v-if="item.data.incompleteDataSets_A > 0">
+                    <div
+                        v-if="item.data.incompleteDataSets_A > 0"
+                        class="hover_helper"
+                    >
                         {{ item.data.incompleteDataSets_A.toLocaleString("de-DE") }} / {{ item.data.dataSets_A }}
                     </div>
                 </div>
@@ -122,9 +122,12 @@ export default {
             >
                 <div class="table_cell">
                     {{ item.paramB_val }}
-                    
+
                     <span v-if="item.data.incompleteDataSets_B > 0">*</span>
-                    <div class="hover_helper" v-if="item.data.incompleteDataSets_B > 0">
+                    <div
+                        v-if="item.data.incompleteDataSets_B > 0"
+                        class="hover_helper"
+                    >
                         {{ item.data.incompleteDataSets_B.toLocaleString("de-DE") }} / {{ item.data.dataSets_B }}
                     </div>
                 </div>
@@ -155,7 +158,7 @@ export default {
             position: absolute;
             opacity: 0;
             top: 50%;
-            left: calc(100% - 15px);
+            left: calc(100% - 25px);
             transform: translateY(-50%);
             width: 75px;
             text-align: center;

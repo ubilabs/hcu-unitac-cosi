@@ -6,6 +6,14 @@ export default function compensateLackingData (dataArray) {
     const completeData = [],
         incompleteData = [];
 
+    if (dataArray.length === 0) {
+        return {
+            data: [],
+            incompleteDataSets: 0,
+            totalDataSets: 0
+        };
+    }
+
     dataArray.forEach(dataSet => {
         if (dataSet !== "avg") {
             completeData.push(dataSet);
@@ -23,13 +31,13 @@ export default function compensateLackingData (dataArray) {
         // Old attempt: Calculating average value
         // const fixData = completeData.reduce((total, data) => total + data, 0) / completeData.length;
 
-        //New attemplt: Getting Median value
-        const sortData = completeData.sort();
-        const mid = Math.ceil(sortData.length / 2);
+        // New attempt: Getting Median value
+        const sortData = completeData.sort(),
+            mid = Math.ceil(sortData.length / 2),
 
-        const median =
-        sortData.length % 2 == 0 ? (sortData[mid] + sortData[mid - 1]) / 2 : sortData[mid - 1];
-        
+            median =
+            sortData.length % 2 === 0 ? (sortData[mid] + sortData[mid - 1]) / 2 : sortData[mid - 1];
+
         for (let i = 0; i < incompleteData.length; i++) {
             completeData.push(median);
         }
@@ -39,5 +47,5 @@ export default function compensateLackingData (dataArray) {
         data: completeData,
         incompleteDataSets: incompleteData.length,
         totalDataSets: completeData.length
-    }
+    };
 }

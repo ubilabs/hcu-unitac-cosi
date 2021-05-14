@@ -28,7 +28,7 @@ export default {
             // UpdateHelper to force rerender of the DOM
             forceGraphUpdate: 1,
             // DowlLoad Object
-            downloadHelper:{}
+            downloadHelper: {}
         };
     },
     computed: {
@@ -221,16 +221,15 @@ export default {
          * @returns {Void}
          */
         downloadGraph (event) {
-            console.log(event.target);
-            const canvasContainer = event.target.parentNode.previousElementSibling;
-            const canvas = canvasContainer.lastChild;
-            const canvasPNG = canvas.toDataURL('image/png');;
+            const canvasContainer = event.target.parentNode.previousElementSibling,
+                canvas = canvasContainer.lastChild,
+                canvasPNG = canvas.toDataURL("image/png"),
+                vLink = document.createElement("a");
 
-            const vLink = document.createElement('a');
             vLink.href = canvasPNG;
             vLink.download = "cosi_chart.png";
 
-            vLink.click()
+            vLink.click();
         },
         /**
          * @description Deletes a graph from the Tool Window.
@@ -244,7 +243,7 @@ export default {
             }
 
             if (this.dataSets.length === 0) {
-                this.setActive(false)
+                this.setActive(false);
             }
         }
     }
@@ -325,15 +324,19 @@ export default {
                                                 ></div>
                                             </div>
                                             <div class="graph_functions">
-                                                <button @click="downloadGraph($event)">Download</button>
+                                                <button @click="downloadGraph($event)">
+                                                    Download
+                                                </button>
                                             </div>
                                         </div>
                                     </template>
                                 </div>
-                                
+
                                 <template v-if="!Array.isArray(graph.type)">
                                     <div class="graph_functions">
-                                        <button @click="downloadGraph($event)">Download</button>
+                                        <button @click="downloadGraph($event)">
+                                            Download
+                                        </button>
                                     </div>
                                 </template>
                             </div>
