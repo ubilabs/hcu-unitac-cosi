@@ -26,7 +26,9 @@ export default {
             // Type Of The Graph to render
             newType: "BarChart",
             // UpdateHelper to force rerender of the DOM
-            forceGraphUpdate: 1
+            forceGraphUpdate: 1,
+            // DowlLoad Object
+            downloadHelper:{}
         };
     },
     computed: {
@@ -168,7 +170,7 @@ export default {
          * @returns {Array}
          */
         generateColorScale (dataSet) {
-            const range = ["light" + dataSet.color, dataSet.color];
+            const range = ["light" + dataSet.color, "dark" + dataSet.color];
 
             return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
         },
@@ -213,6 +215,22 @@ export default {
             else {
                 this.activeGraph = this.activeGraph + value;
             }
+        },
+        /**
+         * @description Downloads closest graph from the Tool Window.
+         * @returns {Void}
+         */
+        downloadGraph (event) {
+            console.log(event.target);
+            const canvasContainer = event.target.parentNode.previousElementSibling;
+            const canvas = canvasContainer.lastChild;
+            const canvasPNG = canvas.toDataURL('image/png');;
+
+            const vLink = document.createElement('a');
+            vLink.href = canvasPNG;
+            vLink.download = "cosi_chart.png";
+
+            vLink.click()
         },
         /**
          * @description Deletes a graph from the Tool Window.
@@ -306,9 +324,18 @@ export default {
                                                     :id="`graph-${index}-${i}`"
                                                 ></div>
                                             </div>
+                                            <div class="graph_functions">
+                                                <button @click="downloadGraph($event)">Download</button>
+                                            </div>
                                         </div>
                                     </template>
                                 </div>
+                                
+                                <template v-if="!Array.isArray(graph.type)">
+                                    <div class="graph_functions">
+                                        <button @click="downloadGraph($event)">Download</button>
+                                    </div>
+                                </template>
                             </div>
                             <div class="graph_footer">
                                 <template v-if="dataSets.length > 1">

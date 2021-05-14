@@ -5,7 +5,6 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-// import store from "../../../../src/app-store";
 import Info from "text-loader!./info.html";
 
 export default {
@@ -597,7 +596,7 @@ export default {
         <div class="hovermenu">
             <div class="btn_grp">
                 <button
-                    class="info_button>"
+                    class="info_button"
                     @click="showInfo()"
                 >
                     <span class="glyphicon glyphicon-question-sign"></span>
