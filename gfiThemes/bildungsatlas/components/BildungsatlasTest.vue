@@ -1,5 +1,5 @@
 <script>
-import {convertComplexTypeToPiechart} from "../../../utils/complexType.js";
+import {convertComplexTypeToPiechart, sortComplexType} from "../../../utils/complexType.js";
 import Piechart from "../../../../src/share-components/charts/components/Piechart.vue";
 
 export default {
@@ -36,13 +36,13 @@ export default {
         return {
             bezirk_name: "",
             stadtteil_name: "",
-            chartData: false
+            piechartData: false
         };
     },
     mounted () {
         this.bezirk_name = this.properties?.bezirk_name ? this.properties.bezirk_name : "";
         this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
-        this.chartData = convertComplexTypeToPiechart(this.properties?.anzahl_sus_primarstufe);
+        this.piechartData = convertComplexTypeToPiechart(sortComplexType(this.properties?.anzahl_sus_primarstufe));
     }
 };
 </script>
@@ -56,10 +56,10 @@ export default {
             <p>{{ bezirk_name }}</p>
             <p>{{ stadtteil_name }}</p>
             <Piechart
-                v-if="chartData"
+                v-if="piechartData"
                 diagramType="doughnut"
                 :givenOptions="{}"
-                :data="chartData"
+                :data="piechartData"
             />
             <p>{{ $t("additional:addons.gfiThemes.bildungsatlas.general.disclaimer") }}</p>
             <p>{{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}</p>
