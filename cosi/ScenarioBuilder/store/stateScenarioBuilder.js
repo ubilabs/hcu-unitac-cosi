@@ -15,6 +15,8 @@ const state = {
     renderToWindow: true,
     resizableWindow: false,
     scenario: [],
+    scenarios: [],
+    activeScenario: null,
     guideLayer: null
 };
 

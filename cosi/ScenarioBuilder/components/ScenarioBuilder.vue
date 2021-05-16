@@ -19,6 +19,8 @@ import getValuesForField from "../utils/getValuesForField";
 import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
+import ScenarioManager from "./ScenarioManager.vue";
+import ScenarioFeature from "../classes/ScenarioFeature";
 
 export default {
     name: "ScenarioBuilder",
@@ -26,11 +28,12 @@ export default {
         Tool,
         Multiselect,
         ReferencePicker,
-        MoveFeatures
+        MoveFeatures,
+        ScenarioManager
     },
     data () {
         return {
-            workingLayer: {},
+            workingLayer: null,
             featureTypeDesc: [],
             featureProperties: {},
             beautifyKey: beautifyKey,
@@ -145,6 +148,7 @@ export default {
 
         /**
          * Creates a new simulated feature and adds it to the map
+         * @todo move to the scenarioFeature constructor?
          * @returns {void}
          */
         createFeature () {
@@ -159,7 +163,10 @@ export default {
             // create unique hash as ID
             feature.setId(hash({...this.featureProperties, geom: this.geometry}));
 
-            this.addFeatureToScenario({feature, layer});
+            // this.addFeatureToScenario({feature, layer});
+            this.activeScenario.addFeature(
+                new ScenarioFeature(feature, layer)
+            );
             this.unlisten();
             this.locationPickerActive = false;
         },
@@ -196,6 +203,13 @@ export default {
             }
 
             this.featureProperties = referenceProps;
+        },
+
+        pruneActiveScenario () {
+            // eslint-disable-next-line no-alert
+            if (confirm(this.$t("additional:modules.tools.cosi.scenarioBuilder.pruneAllFeaturesWarning"))) {
+                this.activeScenario.prune();
+            }
         }
     }
 };
@@ -231,6 +245,12 @@ export default {
                 >
                     <form class="form-inline features-list-controls">
                         <div class="form-group">
+                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
+                            <ScenarioManager />
+                        </div>
+                        <v-divider />
+                        <div class="form-group">
+                            <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>
                             <Multiselect
                                 v-model="workingLayer"
                                 class="layer_selection selection"
@@ -247,7 +267,7 @@ export default {
                                 :placeholder="$t('additional:modules.tools.cosi.scenarioBuilder.layerSelector')"
                             >
                                 <template slot="singleLabel">
-                                    <strong>{{ workingLayer.id }}</strong>
+                                    <strong v-if="workingLayer">{{ workingLayer.id }}</strong>
                                 </template>
                             </Multiselect>
                         </div>
@@ -274,6 +294,7 @@ export default {
                                 <v-divider />
                             </div>
                             <div class="form-group">
+                                <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.defineFeature') }} </label>
                                 <v-row
                                     v-for="field in featureTypeDesc"
                                     :key="field.name"
@@ -366,17 +387,24 @@ export default {
                                         <v-btn
                                             tile
                                             depressed
-                                            @click="restoreScenario"
+                                            :disabled="!activeScenario"
+                                            :title="$t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures')"
+                                            @click="activeScenario.restore()"
                                         >
                                             {{ $t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures') }}
                                         </v-btn>
                                         <v-btn
                                             tile
                                             depressed
-                                            @click="pruneScenario"
+                                            :disabled="!activeScenario"
+                                            :title="$t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures')"
+                                            @click="pruneActiveScenario"
                                         >
                                             {{ $t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures') }}
                                         </v-btn>
+                                        <label v-if="!activeScenario">
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.noActiveScenario') }}
+                                        </label>
                                     </v-col>
                                 </v-row>
                             </div>
