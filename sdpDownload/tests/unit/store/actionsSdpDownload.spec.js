@@ -5,7 +5,7 @@ import axios from "axios";
 import sinon from "sinon";
 
 
-describe("addons/SdpDownload/store/actionsSdpDownload", () => {
+describe("addons/sdpdownload/store/actionsSdpDownload", () => {
     let commit, dispatch, context, getters, rootState;
 
     before(() => {
@@ -104,12 +104,6 @@ describe("addons/SdpDownload/store/actionsSdpDownload", () => {
         actions.addFeaturenameToRasternames(context, payload);
         expect(payload.rasterNames).to.have.members(["123"]);
     });
-    it("requestCompressedData dispatch calculateSelectedRasterNames", () => {
-        actions.requestCompressedData({getters, dispatch});
-        // dispatches actions
-        expect(dispatch.called).to.be.true;
-        expect(dispatch.args[0]).to.eql(["calculateSelectedRasterNames"]);
-    });
     it("checkRasterNamesAmount returns true with rasternames < selectedRasterLimit", () => {
         getters = {rasterNames: ["650330", "650331"], selectedRasterLimit: 3};
         actions.checkRasterNamesAmount({getters, dispatch});
@@ -121,15 +115,18 @@ describe("addons/SdpDownload/store/actionsSdpDownload", () => {
         expect(actions.checkRasterNamesAmount({getters, dispatch})).to.be.false;
     });
     it("requestCompressIslandData dispatch doRequest", () => {
-        const islandName = "Neuwerk",
-            params = "insel=Neuwerk&type=JPG";
-
         getters = {selectedFormat: "JPG"};
+        const islandName = "Neuwerk",
+            params = {
+                "downloadName": "zip_" + getters.selectedFormat + "_" + islandName + ".zip",
+                "query": "insel=" + islandName + "&type=" + getters.selectedFormat
+            };
+
         actions.requestCompressIslandData({getters, dispatch}, islandName);
 
         // dispatches actions
         expect(dispatch.called).to.be.true;
         expect(dispatch.calledOnceWithExactly("doRequest", params)).to.be.true;
-        expect(typeof dispatch.args[0][1]).to.eql("string");
+        expect(typeof dispatch.args[0][1]).to.equal("object");
     });
 });

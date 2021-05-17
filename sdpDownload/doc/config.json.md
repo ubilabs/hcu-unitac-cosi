@@ -4,7 +4,7 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
-|SdpDownload|nein|**[sdpDownload](#markdown-header-portalconfigmenutoolsdpdownload)**||Intern in Hamburg genutztes Werkzeug um Standard-Datenpakete herunterzuladen. Die Fläche wird bestimmt durch eine geometrische Auswahl auf der Karte.|true|
+|sdpDownload|nein|**[sdpDownload](#markdown-header-portalconfigmenutoolsdpdownload)**||Intern in Hamburg genutztes Werkzeug um Standard-Datenpakete herunterzuladen. Die Fläche wird bestimmt durch eine geometrische Auswahl auf der Karte.|true|
 
 ***
 
@@ -15,7 +15,15 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 Download von Standard-Datenpaketen für Hamburg. Dieses Werkzeug öffnet sich in der Sidebar, rechts von der Karte.
 
 **ACHTUNG: Es ist ein Backend notwendig, das die Datenpakete liefert!**
-
+```
+#!json
+{
+    "id": "compressData_nodejs",
+    "name": "compress data",
+     "url": "https://test-geofos.fhhnet.stadt.hamburg.de/sdp_download/backend/downloadsdp",
+     "typ": "Node"
+}
+```
 
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|

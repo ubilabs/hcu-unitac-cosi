@@ -46,10 +46,7 @@ describe("addons/SdpDownload/store/gettersSdpDownload", function () {
             expect(stateSdpDownload.selectedFormat).to.be.equal("NAS");
         });
         it("returns the compressDataId default value from state", function () {
-            expect(stateSdpDownload.compressDataId).to.be.equal("compressData");
-        });
-        it("returns the compressedFileId default value from state", function () {
-            expect(stateSdpDownload.compressedFileId).to.be.equal("compressedFile");
+            expect(stateSdpDownload.compressDataId).to.be.equal("compressData_nodejs");
         });
         it("returns the wfsRasterParams default value from state", function () {
             expect(stateSdpDownload.wfsRasterParams).to.be.eql({
@@ -59,9 +56,6 @@ describe("addons/SdpDownload/store/gettersSdpDownload", function () {
                 version: "1.1.0",
                 typename: "app:lgv_kachel_dk5_1km_utm"
             });
-        });
-        it("returns the overviewDownloadLocation default value from state", function () {
-            expect(stateSdpDownload.overviewDownloadLocation).to.be.equal("U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_");
         });
         it("returns the wfsRaster default value from state", function () {
             expect(stateSdpDownload.wfsRaster).to.be.eql({});

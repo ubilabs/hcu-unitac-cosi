@@ -12,15 +12,13 @@
  * @property {String} wmsRasterLayerId= "4707" id of the Layer utm_dk5_1km (WMS Uebersicht Kachelbezeichnungen)
  * @property {String[]} formats= [] provided formats of data to download
  * @property {String} selectedFormat= "NAS" is the preselected format
- * @property {String} compressDataId= "compressData" name of the  data service configured in the rest-service.json
- * @property {String} compressedFileId= "compressedFile" name of the  data service configured in the rest-service.json
+ * @property {String} compressDataId= "compressData" name of the  data service configured in the rest-service.json that delivers dwg and zips
  * @property {Object} wfsRasterParams= connection parameters
  * @property {String} wfsRasterParams.url= "https://geodienste.hamburg.de/HH_WFS_Uebersicht_Kachelbezeichnungen"
  * @property {String} wfsRasterParams.request= "GetFeature" Request type
  * @property {String} wfsRasterParams.service= "WFS" Service type
  * @property {String} wfsRasterParams.version= "1.1.0" Version from services
  * @property {String} wfsRasterParams.typename= "app:lgv_kachel_dk5_1km_utm" Type in service
- * @property {String} overviewDownloadLocation= "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_" location of the files to download
  * @property {Object} wfsRaster= {} contains wfs raster features after loading them
  * @property {Object} graphicalSelectModel= {} model for graphical selection
  * @property {Boolean} graphicalSelectStatus= {} status for graphical selection
@@ -37,15 +35,17 @@
  * @property {String} pleaseSelectTiles= "additional:modules.tools.sdpdownload.pleaseSelectTiles" contains the translated text
  * @property {String} failedToDownload= "additional:modules.tools.sdpdownload.failedToDownload" contains the translated text
  * @property {String} details= "additional:modules.tools.sdpdownload.details" contains the translated text
- * @property {String} serviceNotResponding= "additional:modules.tools.sdpdownload.serviceNotResponding" contains the translated text
+ * @property {String} error= "additional:modules.tools.sdpdownload.alerts.error" contains the translated text
+ * @property {String} info= "additional:modules.tools.sdpdownload.alerts.info" contains the translated text
+ * @property {String} tooManyTilesSelected= "additional:modules.tools.sdpdownload.tooManyTilesSelected" contains the translated text
  */
 
 const state = {
     active: false,
     id: "SdpAddon",
     // defaults for config.json parameters
-    name: "SDP Download", // must be here although it is in the config.json, else it is lost
-    glyphicon: "glyphicon-download", // must be here although it is in the config.json, else it is lost
+    name: "SDP Download",
+    glyphicon: "glyphicon-download",
     isVisibleInMenu: true,
     deactivateGFI: true,
     renderToSidebar: true,
@@ -58,8 +58,7 @@ const state = {
         {id: "DWG_320", label: "additional:modules.tools.sdpdownload.dwg320Label", isSelected: false, desc: "additional:modules.tools.sdpdownload.dwg320Description", fileId: "dwg320"},
         {id: "JPG", label: "additional:modules.tools.sdpdownload.jpgLabel", isSelected: false, desc: "additional:modules.tools.sdpdownload.jpgDescription", fileId: "jpg"}],
     selectedFormat: "NAS", // is preselected
-    compressDataId: "compressData",
-    compressedFileId: "compressedFile",
+    compressDataId: "compressData_nodejs",
     wfsRasterParams: {
         url: "https://geodienste.hamburg.de/HH_WFS_Uebersicht_Kachelbezeichnungen",
         request: "GetFeature",
@@ -67,7 +66,6 @@ const state = {
         version: "1.1.0",
         typename: "app:lgv_kachel_dk5_1km_utm"
     },
-    overviewDownloadLocation: "U:\\Kachel_Uebersichten\\UTM_Kachel_1KM_",
     wfsRaster: {},
     graphicalSelectModel: {},
     graphicalSelectStatus: true,
@@ -84,7 +82,10 @@ const state = {
     pleaseSelectTiles: "additional:modules.tools.sdpdownload.pleaseSelectTiles",
     failedToDownload: "additional:modules.tools.sdpdownload.failedToDownload",
     details: "additional:modules.tools.sdpdownload.details",
-    serviceNotResponding: "additional:modules.tools.sdpdownload.serviceNotResponding"
+    serviceNotResponding: "additional:modules.tools.sdpdownload.serviceNotResponding",
+    error: "additional:modules.tools.sdpdownload.alerts.error",
+    info: "additional:modules.tools.sdpdownload.alerts.info",
+    tooManyTilesSelected: "additional:modules.tools.sdpdownload.tooManyTilesSelected"
 };
 
 export default state;

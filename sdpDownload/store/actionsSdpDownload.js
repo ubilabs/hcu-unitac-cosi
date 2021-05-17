@@ -21,7 +21,7 @@ const actions = {
      * @param {Object} context vuex element
      * @param {Object} payload vuex element
      * @param {Boolean} payload.isActive true if the layer is selected and is visible in map
-     * @param {String} payload.layerId layerId-id of the layer
+     * @param {String} payload.layerId id of the layer
      * @fires  Core.ModelList#RadioTriggerModelListSetModelAttributesById
      * @returns {void}
      */
@@ -33,7 +33,8 @@ const actions = {
     },
     /**
      * Shows or hides the raster layer
-     * @param {Object} getters dispatch vuex elements
+     * @param {Object} getters vuex element
+     * @param {Object} dispatch vuex element
      * @returns {void}
      */
     toggleRasterLayer: function ({getters, dispatch}) {
@@ -44,9 +45,10 @@ const actions = {
         dispatch("setModelAttributesByIdToModelList", {layerId: layerId, isActive: isActive});
     },
     /**
-    * Loads the wfs raster with the params stored in property wfsRasterParams.
+    * Loads the WFS raster with the params stored in property wfsRasterParams.
     * On success the features are read.
-    * @param {Object} getters dispatch vuex elements
+    * @param {Object} getters vuex element
+    * @param {Object} dispatch vuex element
     * @returns {void}
     */
     loadWfsRaster: function ({getters, dispatch}) {
@@ -71,7 +73,7 @@ const actions = {
             })
             .catch(error => {
                 alertingFailedToDownload = {
-                    "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
+                    "category": i18next.t(getters.error),
                     "content": "<strong>" + error.response + "</strong>",
                     "displayClass": "error"
                 };
@@ -93,7 +95,9 @@ const actions = {
     /**
      * Calculates the intersection of the graphical selection with the raster. The names of the intersected raster squares are then commited to the state.
      * @see {@link https://turfjs.org/docs/#intersect}
-     * @param {Object} getters dispatch, rootState, commit vuex elements
+     * @param {Object} getters vuex element
+     * @param {Object} dispatch vuex element
+     * @param {Object} rootState vuex element
      * @returns {void}
      */
     calculateSelectedRasterNames: async function ({getters, dispatch, commit, rootState}) {
@@ -120,7 +124,7 @@ const actions = {
      * Adds the name of the features tile to the given list of rasterNames.
      * @param {Object} context vuex element
      * @param {Object} payload vuex element
-     * @param {Object} payload.feature to get the name of the tile from
+     * @param {Object} payload.feature to get the name of the tile
      * @param {Object} payload.rasterNames array to fill with unique names
      * @returns {void}
      */
@@ -136,10 +140,12 @@ const actions = {
     },
     /**
      * Collects the params to request the WMS for "Kacheln" and triggers the request.
-     * @param {Object} getters dispatch vuex elements
+     * @param {Object} getters vuex element
+     * @param {Object} dispatch vuex element
      * @returns {void}
      */
     requestCompressedData: async function ({getters, dispatch}) {
+        const params = {};
 
         dispatch("calculateSelectedRasterNames").then(() =>dispatch("checkRasterNamesAmount").then(response => {
             if (response === true) {
@@ -152,17 +158,21 @@ const actions = {
                     adaptedNames.push(adaptedName);
                 });
 
-                // params have to look like: "kacheln=650330§650340&type=JPG"
-                dispatch("doRequest", "kacheln=" + adaptedNames.join("§") + "&type=" + getters.selectedFormat);
+                // params.query has to look like: "kacheln=650330§650340&type=JPG"
+                params.query = "kacheln=" + adaptedNames.join("§") + "&type=" + getters.selectedFormat;
+                params.downloadName = "zip_" + getters.selectedFormat + "_" + adaptedNames.sort()[0] + ".zip";
+
+                dispatch("doRequest", params);
             }
         }));
     },
     /**
      * Checks the models "rasterNames":
-     * If there are more than 9 tiles selected, the user is warned to reduce the selection.
+     * If there are more than the number of state.selectedRasterLimit tiles selected, the user is warned to reduce the selection.
      * If there are no tiles selected, the user is informed to select some.
-     * @param {Object} getters dispatch vuex elements
-     * @returns {Booelan} if check is okay to request server
+     * @param {Object} getters vuex element
+     * @param {Object} dispatch vuex element
+     * @returns {Booelan} true if check is okay to request server
      */
     checkRasterNamesAmount: function ({getters, dispatch}) {
         const selectedRasterNames = getters.rasterNames;
@@ -172,8 +182,8 @@ const actions = {
 
         if (selectedRasterNames.length > getters.selectedRasterLimit) {
             alertingTilesAmount = {
-                "category": i18next.t("additional:modules.tools.sdpdownload.alerts.info"),
-                "content": i18next.t("additional:modules.tools.sdpdownload.tooManyTilesSelected", {tilesCount: selectedRasterNames.length, maxTiles: getters.selectedRasterLimit}),
+                "category": i18next.t(getters.info),
+                "content": i18next.t(getters.tooManyTilesSelected, {tilesCount: selectedRasterNames.length, maxTiles: getters.selectedRasterLimit}),
                 "displayClass": "info"
             };
             dispatch("Alerting/addSingleAlert", alertingTilesAmount, {root: true});
@@ -182,7 +192,7 @@ const actions = {
         }
         else if (selectedRasterNames.length === 0) {
             alertingNoTiles = {
-                "category": i18next.t("additional:modules.tools.sdpdownload.alerts.info"),
+                "category": i18next.t(getters.info),
                 "content": "<strong>" + getters.pleaseSelectTiles + "</strong>",
                 "displayClass": "info"
             };
@@ -193,34 +203,42 @@ const actions = {
     },
     /**
      * Collects the params to request the WMS for island data.Params have to look like: "insel=Neuwerk&type=JPG"
-     * @param {Object} getters dispatch vuex elements
+     * @param {Object} getters vuex element
      * @param {String} islandName name of the island
+     * @param {Object} dispatch vuex element
      * @returns {void}
      */
     requestCompressIslandData: function ({getters, dispatch}, islandName) {
-        const params = "insel=" + islandName + "&type=" + getters.selectedFormat;
+        const params = {
+            "downloadName": "zip_" + getters.selectedFormat + "_" + islandName + ".zip",
+            "query": "insel=" + islandName + "&type=" + getters.selectedFormat
+        };
 
         dispatch("doRequest", params);
     },
     /**
      * Collects the params to load an overview.
-     * @param {Object} getters vuex element
+     * @param {Object} dispatch vuex element
      * @param {String} format the LS state
      * @returns {void}
      */
-    requestCompressRasterOverviewData: function ({getters}, format) {
-        const temp = getters.overviewDownloadLocation + format + ".dwg",
-            url = Radio.request("RestReader", "getServiceById", getters.compressedFileId).get("url");
+    requestCompressRasterOverviewData: function ({dispatch}, format) {
+        const params = {
+            "downloadName": "U__Kachel_Uebersichten_UTM_Kachel_1KM_" + format + ".dwg",
+            "query": "system=utm&type=" + format
+        };
 
-        window.location.href = url + "?no_delete=1&mt=dwg&name=" + temp;
+        dispatch("doRequest", params);
     },
     /**
-     * Requests the WFS and loads the data down.
-     * @param {Object} getters dispatch, commit, rootState vuex elements
+     * Requests the rest-service and loads the data e.g. dwg, xml,jpg as zip-file down.
+     * @param {Object} getters vuex element
      * @param {String} params to specify the request
+     * @param {Object} dispatch vuex element
+     * @param {Object} commit vuex element
      * @returns {void}
      */
-    doRequest: function ({getters, dispatch, commit, rootState}, params) {
+    doRequest: function ({getters, dispatch, commit}, params) {
         const url = Radio.request("RestReader", "getServiceById", getters.compressDataId).get("url"),
             dataZip = axios.create();
 
@@ -239,28 +257,43 @@ const actions = {
             return response;
         });
 
-        dataZip.post(url, params, {
-            timeout: 15000
+        dataZip.post(url, params.query, {
+            timeout: 15000,
+            responseType: "blob"
         })
             .then(resp => {
                 commit("setGraphicalSelectStatus", true);
-                if (resp.data.indexOf("Fehler") > -1) {
+                if (resp.status !== 200) {
                     alertingFailedToDownload = {
-                        "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
-                        "content": "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + resp.data + "</small>",
+                        "category": i18next.t(getters.error),
+                        "content": "<strong>" + i18next.t(getters.failedToDownload) + "</strong> <br> <small>" + i18next.t(getters.details) + " " + resp.data + "</small>",
                         "displayClass": "error"
                     };
                     dispatch("Alerting/addSingleAlert", alertingFailedToDownload, {root: true});
                 }
                 else {
-                    window.location.href = Radio.request("RestReader", "getServiceById", getters.compressedFileId).get("url") + "?name=" + resp.data;
-                    rootState.GraphicalSelect.selectedAreaGeoJson = {};
+                    const blob = new Blob([resp.data]),
+                        downloadUrl = window.URL.createObjectURL(blob),
+                        link = document.createElement("a");
+
+                    // IE11
+                    if (window.navigator.msSaveOrOpenBlob) {
+                        window.navigator.msSaveOrOpenBlob(blob, params.downloadName);
+                    }
+                    else { // Chrome, FF
+                        link.href = downloadUrl;
+                        link.setAttribute("download", params.downloadName);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    }
+
                 }
             })
             .catch(() => {
                 alertingServiceNotresponding = {
-                    "category": i18next.t("additional:modules.tools.sdpdownload.alerts.error"),
-                    "content": "<strong>" + getters.failedToDownload + "</strong> <br> <small>" + getters.details + " " + getters.serviceNotResponding + "</small>",
+                    "category": i18next.t(getters.error),
+                    "content": "<strong>" + i18next.t(getters.failedToDownload) + "</strong> <br> <small>" + i18next.t(getters.details) + " " + getters.serviceNotResponding + "</small>",
                     "displayClass": "error"
                 };
                 commit("setGraphicalSelectStatus", false);

@@ -15,9 +15,9 @@ export default {
     data () {
         return {
             options_value: {
-                "Box": this.$t("common:snippets.graphicalSelect.selectBySquare"),
-                "Circle": this.$t("common:snippets.graphicalSelect.selectByCircle"),
-                "Polygon": this.$t("common:snippets.graphicalSelect.selectByPolygon")
+                "Box": this.translate("common:snippets.graphicalSelect.selectBySquare"),
+                "Circle": this.translate("common:snippets.graphicalSelect.selectByCircle"),
+                "Polygon": this.translate("common:snippets.graphicalSelect.selectByPolygon")
             }
         };
     },
@@ -26,8 +26,8 @@ export default {
     },
     watch: {
         /**
-         * Starts the action for processes and adds layers if the tool is activated (active === true).
-         * @param {Boolean} value value deciding whether the tool gets activated or deactivated.
+         * Starts the action for processes and adds layers if the tool is activated (active === true)
+         * @param {Boolean} value value deciding whether the tool gets activated or deactivated
          * @returns {void}
          */
         active (value) {
@@ -43,16 +43,25 @@ export default {
                 }
             });
         },
+        /**
+         * Sets the graphicalSelection active or not
+         * @param {Boolean} value value deciding whether the graphicalSelection gets activated or deactivated
+         * @returns {void}
+         */
         graphicalSelectStatus (value) {
             this.$refs.graphicalSelection.setStatus(value);
             this.$refs.graphicalSelection.resetView(value);
         }
     },
+    /**
+     * Initialize the closing of the tool window after created
+     * @returns {void}
+     */
     created () {
         this.$on("close", this.close);
     },
     /**
-     * Put initialize here if mounting occurs after config parsing
+     * Put initialize functions here after mounting
      * @returns {void}
      */
     mounted () {
@@ -63,14 +72,17 @@ export default {
         ...mapActions("Tools/SdpDownload", Object.keys(actions)),
 
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
+         * Translates the given key, checkes if the key exists and throws a console warning if not
          * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
+         * @param {Object} [options=null] for interpolation, formatting and plurals
+         * @returns {String} the translation or the key itself
          */
         translate (key, options = null) {
             if (key === "additional:" + this.$t(key)) {
                 console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+            if (key === "common:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the common translation");
             }
             return this.$t(key, options);
         },
@@ -211,7 +223,7 @@ export default {
     .content {
         width: 350px;
         .first{
-            padding-top: 20px;
+            padding-top: 5px;
         }
         .form-group {
             >label {
@@ -240,7 +252,7 @@ export default {
     }
 @media (min-width: 768px) {
     .header {
-        padding: 10px;
+        padding: 5px;
     }
 }
 </style>
