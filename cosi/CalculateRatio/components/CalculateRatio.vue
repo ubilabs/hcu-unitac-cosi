@@ -1424,7 +1424,7 @@ export default {
                             line-height:40px;
                             width:auto;
                             opacity:0.75;
-                            background:#57A845;
+                            background:@green;
                             color:white;
                             padding: 0px 10px;
                             margin:5px 0px;

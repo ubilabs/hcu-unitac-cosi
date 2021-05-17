@@ -246,6 +246,13 @@ export default {
             if (this.dataSets.length === 0) {
                 this.setActive(false);
             }
+        },
+        /**
+         * @description Clears dataSets Array and thus deleting all graphs from Chart Generator.
+         * @returns {Void} Function returns nothing.
+         */
+        removeAll () {
+            this.dataSets = [];
         }
     }
 };
@@ -324,10 +331,14 @@ export default {
                                                     :id="`graph-${index}-${i}`"
                                                 ></div>
                                                 <div class="graph_functions">
-                                                <button @click="downloadGraph($event)">
-                                                    Download
-                                                </button>
-                                            </div>
+                                                    <button
+                                                        class="dl"
+                                                        @click="downloadGraph($event)"
+                                                    >
+                                                        PNG
+                                                        <span class="glyphicon glyphicon-download-alt"></span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
@@ -335,8 +346,12 @@ export default {
 
                                 <template v-if="!Array.isArray(graph.type)">
                                     <div class="graph_functions">
-                                        <button @click="downloadGraph($event)">
-                                            Download
+                                        <button
+                                            class="dl right"
+                                            @click="downloadGraph($event)"
+                                        >
+                                            PNG
+                                            <span class="glyphicon glyphicon-download-alt"></span>
                                         </button>
                                     </div>
                                 </template>
@@ -360,11 +375,24 @@ export default {
                                             @click="graphPrevNext(-1)"
                                         >
                                             <span class="glyphicon glyphicon-chevron-left"></span>
-                                        </button><button
+                                        </button>
+                                        <button
                                             class="nxt"
                                             @click="graphPrevNext(+1)"
                                         >
                                             <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </button>
+                                        <button
+                                            class="dl"
+                                            @click="downloadAll()"
+                                        >
+                                            <span class="glyphicon glyphicon-download-alt"></span>
+                                        </button>
+                                        <button
+                                            class="rm"
+                                            @click="removeAll()"
+                                        >
+                                            <span class="glyphicon glyphicon-remove"></span>
                                         </button>
                                     </div>
                                 </template>
@@ -472,6 +500,21 @@ export default {
                                 display:block;
                             }
                         }
+
+                        .graph_functions {
+                            margin-bottom:10px;
+                            .dl {
+                                display:block;
+                                margin:5px 0px 5px auto;
+                                height:26px;
+                                padding:0px 10px;
+                                border:1px solid #888;
+
+                                span {
+                                    margin-left:5px;
+                                }
+                            }
+                        }
                     }
                     .graph_footer {
                         width:100%;
@@ -493,8 +536,8 @@ export default {
                                 color:#222;
                                 font-weight:700;
                                 background: #eee;
-                                    border:1px solid #eee;
-                                margin: 0px 2px;
+                                border:1px solid #eee;
+                                margin: 0px 1px;
 
                                 &.highlight {
                                     background:white;
@@ -506,6 +549,25 @@ export default {
                                     width:36px;
                                     border:1px solid #888;
                                     background:white;
+                                    margin:0px;
+                                }
+
+                                &.dl, &.rm {
+                                    height:36px;
+                                    width:36px;
+                                    color:whitesmoke;
+                                    opacity:0.85;
+                                    margin:0px;
+                                }
+
+                                &.dl {
+                                    background:@green;
+                                    border:1px solid @green;
+                                }
+
+                                &.rm {
+                                    background:@error_red;
+                                    border:1px solid @error_red;
                                 }
                             }
                         }
