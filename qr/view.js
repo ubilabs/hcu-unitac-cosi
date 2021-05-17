@@ -44,7 +44,7 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
     /**
      * Render or remove the tool window based on the active state
      * @param {QRModel} model The current model
-     * @param {boolean} isActive Whether or not the tool is active
+     * @param {Boolean} isActive Whether or not the tool is active
      * @return {QRView} self
      */
     render (model, isActive) {
@@ -62,9 +62,7 @@ const QRView = Backbone.View.extend(/** @lends QRView.prototype */{
     /**
      * Render the new popup window on a click event
      * @param {QRModel} model The current model
-     * @param {object} clickEvent The latest click event with the coordinates of the click on the map
-     *
-     *
+     * @param {Object} clickEvent The latest click event with the coordinates of the click on the map
      * @return {void}
      */
     renderQRPopup (model, clickEvent) {
