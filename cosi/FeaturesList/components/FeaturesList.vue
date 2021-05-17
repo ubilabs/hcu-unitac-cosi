@@ -22,7 +22,7 @@ export default {
         Tool,
         Multiselect,
         DetailView,
-        FeatureIcon,
+        FeatureIcon
     },
     data () {
         return {
@@ -269,8 +269,7 @@ export default {
          * @returns {void}
          */
         editFeature (item) {
-            console.log(item);
-            console.warn("not implemented");
+            console.warn(item, "not implemented");
         },
 
         /**
@@ -279,8 +278,7 @@ export default {
          * @returns {void}
          */
         deleteFeature (item) {
-            console.log(item);
-            console.warn("not implemented");
+            console.warn(item, "not implemented");
         },
 
         setFilteredItems (items) {
