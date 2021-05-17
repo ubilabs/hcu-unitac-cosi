@@ -116,6 +116,13 @@ export default {
             if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
                 this.newType = "BarChart";
             }
+            else if (dataSet.type === "PieChart") {
+                const pieChartData = this.createPieChartData(dataSet);
+
+                this.newType = "PieChart";
+                this.createPieChart(pieChartData);
+                return;
+            }
             else {
                 this.newType = dataSet.type;
             }
@@ -163,6 +170,38 @@ export default {
                     this.activeGraph = index;
                 });
             }
+        },
+        /**
+         * @description Modifies the dataSet to match chart.js requirements for PieCharts.
+         * @param {Object} dataSet dataSet containing the data to be rendered as graph.
+         * @returns {Array} Transformed Dataset.
+         */
+        createPieChartData (dataSet) {
+            const newPieChartData = [];
+
+            dataSet.data.labels.forEach((label, i) => {
+                const obj = {
+                    group: label,
+                    label: [],
+                    data: [],
+                    index: i
+                };
+
+                dataSet.data.dataSets.forEach((set) => {
+                    const labelScope = set.label,
+                        labelVal = set.data[i];
+
+                    obj[label].label.push(labelScope);
+                    obj[label].data.push(labelVal);
+                });
+
+                newPieChartData.push(obj);
+            });
+
+            return newPieChartData;
+        },
+        createPieChart (dataSets) {
+            console.log("noch nicht fertig", dataSets);
         },
         /**
          * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
@@ -217,17 +256,39 @@ export default {
             }
         },
         /**
-         * @description Downloads closest graph from the Tool Window.
+         * @description Turns closest Canvas to PNG and passes it the download function.
          * @param {$event} event Click event handler.
          * @returns {Void} Function returns nothing.
          */
         downloadGraph (event) {
             const canvasContainer = event.target.parentNode.previousElementSibling,
                 canvas = canvasContainer.lastChild,
-                canvasPNG = canvas.toDataURL("image/png"),
-                vLink = document.createElement("a");
+                canvasPNG = canvas.toDataURL("image/png");
 
-            vLink.href = canvasPNG;
+            this.downloadFile(canvasPNG);
+        },
+        /**
+         * @description Triggers Download function for every Chart Canvas available.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadAll () {
+            const chartBox = document.getElementById("chart_panel").querySelectorAll("canvas");
+
+            chartBox.forEach(canvas => {
+                const canvasPNG = canvas.toDataURL("image/png");
+
+                this.downloadFile(canvasPNG);
+            });
+        },
+        /**
+         * @description Downloads File.
+         * @param {Object} img Image to be downloaded.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadFile (img) {
+            const vLink = document.createElement("a");
+
+            vLink.href = img;
             vLink.download = "cosi_chart.png";
 
             vLink.click();
@@ -333,7 +394,7 @@ export default {
                                                 ></div>
                                                 <div class="graph_functions">
                                                     <button
-                                                        class="dl"
+                                                        class="dl right"
                                                         @click="downloadGraph($event)"
                                                     >
                                                         PNG

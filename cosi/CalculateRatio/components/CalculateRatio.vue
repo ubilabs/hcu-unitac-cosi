@@ -319,7 +319,7 @@ export default {
         /**
          * @description Checks if the user selected a summable statistical data set (feature).
          * @param {String} letter String that determines which field is to be modified (A or B for FieldA or FieldB).
-         * @returns {void}
+         * @returns {void} Function returns nothing.
          */
         checkSumUp (letter) {
             if (!this[letter + "Switch"]) {
@@ -680,7 +680,7 @@ export default {
             const graphObj = {
                     id: "calcratio-test",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                    type: "BarChart",
+                    type: "PieChart",
                     color: "green",
                     source: "CalculateRatio",
                     data: {
