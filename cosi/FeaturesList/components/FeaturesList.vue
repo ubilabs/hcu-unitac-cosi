@@ -281,6 +281,11 @@ export default {
             console.warn(item, "not implemented");
         },
 
+        /**
+         * Sets the filteredItems for export
+         * @param {Object[]} items - the table items visible
+         * @returns {void}
+         */
         setFilteredItems (items) {
             this.filteredItems = items;
         },
