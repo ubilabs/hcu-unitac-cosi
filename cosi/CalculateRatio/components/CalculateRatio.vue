@@ -1097,12 +1097,8 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
-<<<<<<< HEAD
                                     <!--eslint-disable-next-line-->
                                     <span><strong>{{ columnSelector.name }}</strong></span>
-=======
-                                    <strong>{{ columnSelector.name }}</strong>
->>>>>>> cosi/dev
                                 </template>
                             </Multiselect>
                             <button
