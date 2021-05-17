@@ -6,6 +6,7 @@
                     "title": "Scenario Builder",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
+                    "pickReference": "Referenzeinrichtung wählen",
                     "chooseLocation": "Ort wählen",
                     "resetLocation": "Zurücksetzen",
                     "createFeature": "Neue Einrichtung erstellen",
@@ -14,7 +15,30 @@
                     "restoreAllFeatures": "Alle wiederherstellen",
                     "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
                     "pruneAllFeatures": "Alle löschen",
-                    "helpPllFeatures": "Alle erstellten Features löschen"
+                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
+                    "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
+                    "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
+                    "required": "Erforderlich",
+                    "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie eins an.",
+                    "defineFeature": "Neue Einrichtung definieren"
+                },
+                "moveFeatures": {
+                    "title": "Einrichtungen verschieben",
+                    "toggleOnlySimulated": "Nur Simulierte",
+                    "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
+                    "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen werden sind nur temporär und werden nach der Sitzung nicht gespeichert.",
+                    "resetFeatureLocations": "Zurücksetzen"
+                },
+                "scenarioManager": {
+                    "title": "Szenariomanager",
+                    "createNewTitle": "Neues Szenario anlegen",
+                    "createNewSubmit": "Anlegen",
+                    "dublicateName": "Bitte wählen Sie einen anderen Namen",
+                    "scenarioName": "Name des Szenarios",
+                    "deleteScenario": "Szenario löschen",
+                    "deleteScenarioWarning": "Möchten Sie das aktive Szenario wirklich löschen? Alle Inhalte gehen verloren.",
+                    "noScenarios": "Bislang sind keine Szenarien vorhanden",
+                    "selectScenarios": "Szenario auswählen"
                 }
             }
         }

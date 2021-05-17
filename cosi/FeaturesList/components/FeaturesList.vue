@@ -10,8 +10,11 @@ import getVectorlayerMapping from "../utils/getVectorlayerMapping";
 import Multiselect from "vue-multiselect";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import getClusterSource from "../../utils/getClusterSource";
+import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
+import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
+import exportXlsx from "../../utils/exportXlsx";
 
 export default {
     name: "FeaturesList",
@@ -19,20 +22,29 @@ export default {
         Tool,
         Multiselect,
         DetailView,
-        FeatureIcon
+        FeatureIcon,
     },
     data () {
         return {
             search: "",
             layerFilter: [],
             expanded: [],
-            filterProps: {}
+            filterProps: {},
+            filteredItems: [],
+            excludedPropsForExport: [
+                "Icon",
+                "Aktionen",
+                "Ein-/Ausschalten",
+                "layerId",
+                "feature",
+                "key"
+            ]
         };
     },
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer"}),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapGetters("Map", ["layerById", "visibleLayerList"]),
         ...mapState(["configJson"]),
         columns () {
@@ -88,7 +100,9 @@ export default {
             ];
         },
         districtFeatures () {
-            return this.selectedDistrictFeatures.length > 0 ? this.selectedDistrictFeatures : this.districtLayer.getSource().getFeatures();
+            return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
+                ? this.selectedDistrictFeatures
+                : this.districtLayer.getSource().getFeatures();
         },
         selected: {
             get () {
@@ -132,7 +146,7 @@ export default {
          */
         selected () {
             this.removeHighlightFeature();
-            this.selected.forEach(item => this.highlightVectorFeatures(item));
+            this.selected.forEach(item => highlightVectorFeature(item.feature, item.layerId));
         },
 
         /**
@@ -181,7 +195,7 @@ export default {
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
-        ...mapActions("Map", ["highlightFeature", "removeHighlightFeature"]),
+        ...mapActions("Map", ["removeHighlightFeature"]),
 
         /**
          * Reads the active vector layers, constructs the list of table items and writes them to the store.
@@ -209,7 +223,7 @@ export default {
                             address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,
                             enabled: true,
-                            isSimulation: feature.get("isSimulation")
+                            isSimulation: feature.get("isSimulation") || false
                         };
                     })];
                 }, []);
@@ -236,36 +250,9 @@ export default {
         },
 
         handleClickRow (item) {
-            // this.removeHighlighting(item);
-            this.removeHighlightFeature();
-            this.highlightVectorFeatures(item);
-        },
-
-        /**
-         * Highlights a vector feature
-         * @param {Object} item the table item
-         * @returns {void}
-         */
-        highlightVectorFeatures (item) {
-            const geomType = item.feature.getGeometry()?.getType();
-
-            if (geomType === "Point") {
-                this.highlightFeature({
-                    id: item.feature.getId(),
-                    type: "increase",
-                    scale: 1.4,
-                    layer: {id: item.layerId}
-                });
-            }
-            else if (geomType === "Polygon" || geomType === "MultiPolygon") {
-                this.highlightFeature({
-                    feature: item.feature,
-                    type: "highlightPolygon",
-                    highlightStyle: {
-                        stroke: {color: "#F0E455", width: 5}
-                    },
-                    layer: {id: item.layerId}
-                });
+            if (item.enabled) {
+                this.removeHighlightFeature();
+                highlightVectorFeature(item.feature, item.layerId);
             }
         },
 
@@ -276,13 +263,42 @@ export default {
             };
         },
 
+        /**
+         * @todo
+         * @param {Object} item - the table item clicked
+         * @returns {void}
+         */
         editFeature (item) {
             console.log(item);
             console.warn("not implemented");
         },
+
+        /**
+         * @todo
+         * @param {Object} item - the table item clicked
+         * @returns {void}
+         */
         deleteFeature (item) {
             console.log(item);
             console.warn("not implemented");
+        },
+
+        setFilteredItems (items) {
+            this.filteredItems = items;
+        },
+
+        /**
+         * Export the table as XLSX
+         * Either the simple view or incl. details
+         * @param {Boolean} exportDetails - whether to include the detailed feature data
+         * @returns {void}
+         */
+        exportTable (exportDetails = false) {
+            const data = this.search ? this.filteredItems : this.items,
+                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
+
+            exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         }
     }
 };
@@ -351,6 +367,7 @@ export default {
                                 :items-per-page="20"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
+                                @current-items="setFilteredItems"
                             >
                                 <template v-slot:expanded-item="{ headers, item }">
                                     <td
@@ -371,13 +388,18 @@ export default {
                                 <template v-slot:item.actions="{ item }">
                                     <v-icon
                                         small
-                                        class="mr-2"
+                                        disabled
+                                        class="mr-2 not-implemented"
+                                        title="Noch nicht implementiert"
                                         @click="editFeature(item)"
                                     >
                                         mdi-pencil
                                     </v-icon>
                                     <v-icon
                                         small
+                                        disabled
+                                        class="mr-2 not-implemented"
+                                        title="Noch nicht implementiert"
                                         @click="deleteFeature(item)"
                                     >
                                         mdi-delete
@@ -391,6 +413,28 @@ export default {
                                     />
                                 </template>
                             </v-data-table>
+                        </div>
+                        <div class="form-group">
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
+                                        @click="exportTable(false)"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
+                                    </v-btn>
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
+                                        @click="exportTable(true)"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
                         </div>
                     </form>
                 </div>

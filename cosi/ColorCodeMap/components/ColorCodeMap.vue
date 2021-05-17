@@ -396,9 +396,10 @@ export default {
             }
             this.renderVisualization();
         },
+
         /**
          * @description Shows component info as popup.
-         * @returns {Void} Function returns nothing.
+         * @returns {void}
          */
         showInfo () {
             this.addSingleAlert({
@@ -424,9 +425,10 @@ export default {
 
             this.graphData.push(newDataSet);
         },
+
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void} Function returns nothing.
+         * @returns {void}
          */
         loadToCg () {
             const graphObj = {

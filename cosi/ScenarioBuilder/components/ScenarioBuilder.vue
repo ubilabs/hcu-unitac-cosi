@@ -8,25 +8,32 @@ import actions from "../store/actionsScenarioBuilder";
 import Multiselect from "vue-multiselect";
 import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 import beautifyKey from "../../../../src/utils/beautifyKey";
-import validateProp from "../utils/validateProp";
+import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import getOlGeomByGmlType from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
-import Polygon from "ol/geom/Polygon";
+// import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import {featureTagStyle} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
 import hash from "object-hash";
+import ReferencePicker from "./ReferencePicker.vue";
+import MoveFeatures from "./MoveFeatures.vue";
+import ScenarioManager from "./ScenarioManager.vue";
+import ScenarioFeature from "../classes/ScenarioFeature";
 
 export default {
     name: "ScenarioBuilder",
     components: {
         Tool,
-        Multiselect
+        Multiselect,
+        ReferencePicker,
+        MoveFeatures,
+        ScenarioManager
     },
     data () {
         return {
-            workingLayer: {},
+            workingLayer: null,
             featureTypeDesc: [],
             featureProperties: {},
             beautifyKey: beautifyKey,
@@ -41,16 +48,16 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
-        ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping", "activeVectorLayerList"]),
+        ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping"]),
         ...mapGetters("Map", ["map", "layerById"])
-        // validateProp: () => field => validateProp(field)
     },
 
     watch: {
-        workingLayer (layer) {
+        workingLayer (layerMap) {
+            Radio.trigger("Util", "showLoader");
             this.resetFeature();
 
-            describeFeatureTypeByLayerId(layer.layerId)
+            describeFeatureTypeByLayerId(layerMap.layerId)
                 .then(desc => {
                     this.featureTypeDesc = desc;
                     this.asyncGetValuesForField(desc);
@@ -73,7 +80,6 @@ export default {
 
                 this.locationPickerActive = false;
                 this.unlisten();
-                this.removePointMarker();
             }
         }
     },
@@ -83,15 +89,12 @@ export default {
         });
         this.createGuideLayer();
     },
-    mounted () {
-        console.log(this.activeLayerMapping);
-    },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 
-        // getValuesForField, // the utils function returning all possible values for a field
+        compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules
 
         /**
@@ -112,9 +115,6 @@ export default {
             this.geometry.value = null;
         },
         toggleLocationPicker (type) {
-            console.log("toggle");
-            console.log(this.map);
-            console.log(type);
             this.locationPickerActive = !this.locationPickerActive;
             this.geometry.Constructor = getOlGeomByGmlType(type);
 
@@ -131,6 +131,7 @@ export default {
             }
         },
         unlisten () {
+            this.removePointMarker();
             if (this.geometry.Constructor === Point) {
                 this.map.removeEventListener("click", this.pickLocation);
             }
@@ -147,6 +148,7 @@ export default {
 
         /**
          * Creates a new simulated feature and adds it to the map
+         * @todo move to the scenarioFeature constructor?
          * @returns {void}
          */
         createFeature () {
@@ -161,7 +163,10 @@ export default {
             // create unique hash as ID
             feature.setId(hash({...this.featureProperties, geom: this.geometry}));
 
-            this.addFeatureToScenario({feature, layer});
+            // this.addFeatureToScenario({feature, layer});
+            this.activeScenario.addFeature(
+                new ScenarioFeature(feature, layer)
+            );
             this.unlisten();
             this.locationPickerActive = false;
         },
@@ -177,7 +182,7 @@ export default {
         asyncGetValuesForField (desc) {
             this.valuesForFields = {};
 
-            desc.forEach(field => {
+            for (const field of desc) {
                 getValuesForField(field.name, this.workingLayer.layerId)
                     .then(items => {
                         this.valuesForFields = {
@@ -185,7 +190,26 @@ export default {
                             [field.name]: items
                         };
                     });
-            });
+            }
+
+            Radio.trigger("Util", "hideLoader");
+        },
+
+        getDataFromReferenceFeature (feature) {
+            const referenceProps = feature.getProperties();
+
+            if (referenceProps.hasOwnProperty("geom")) {
+                delete referenceProps.geom;
+            }
+
+            this.featureProperties = referenceProps;
+        },
+
+        pruneActiveScenario () {
+            // eslint-disable-next-line no-alert
+            if (confirm(this.$t("additional:modules.tools.cosi.scenarioBuilder.pruneAllFeaturesWarning"))) {
+                this.activeScenario.prune();
+            }
         }
     }
 };
@@ -207,11 +231,27 @@ export default {
             v-slot:toolBody
         >
             <v-app>
-                <div id="scenario-builder">
+                <div
+                    v-if="activeLayerMapping.length === 0"
+                    class="warning_wrapper section"
+                >
+                    <p class="warning">
+                        <span>{{ $t("additional:modules.tools.cosi.scenarioBuilder.warningNoData") }}</span>
+                    </p>
+                </div>
+                <div
+                    v-else
+                    id="scenario-builder"
+                >
                     <form class="form-inline features-list-controls">
                         <div class="form-group">
+                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
+                            <ScenarioManager />
+                        </div>
+                        <v-divider />
+                        <div class="form-group">
+                            <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>
                             <Multiselect
-                                v-if="activeLayerMapping.length > 0"
                                 v-model="workingLayer"
                                 class="layer_selection selection"
                                 :options="activeLayerMapping"
@@ -227,107 +267,150 @@ export default {
                                 :placeholder="$t('additional:modules.tools.cosi.scenarioBuilder.layerSelector')"
                             >
                                 <template slot="singleLabel">
-                                    <strong>{{ workingLayer.id }}</strong>
+                                    <strong v-if="workingLayer">{{ workingLayer.id }}</strong>
                                 </template>
                             </Multiselect>
                         </div>
-                        <div
-                            v-if="featureTypeDesc.length > 0"
-                            class="form-group"
-                        >
-                            <v-row
-                                v-for="field in featureTypeDesc"
-                                :key="field.name"
-                                dense
-                            >
-                                <v-col cols="3">
-                                    <v-subheader>{{ beautifyKey(field.name) }}</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-switch
-                                        v-if="typesMapping[field.type] === 'boolean'"
-                                        v-model="featureProperties[field.name]"
-                                        :label="field.type"
-                                        dense
-                                    />
-                                    <v-combobox
-                                        v-else-if="typesMapping[field.type] !== 'geom'"
-                                        v-model="featureProperties[field.name]"
-                                        :items="valuesForFields[field.name]"
-                                        :name="field.name"
-                                        :label="field.type"
-                                        :rules="validateProp(field)"
-                                        dense
-                                    />
-                                    <v-text-field
-                                        v-else
-                                        v-model="geometry.value"
-                                        :name="field.name"
-                                        :label="field.type"
-                                        dense
-                                    >
-                                        <template v-slot:append>
-                                            <v-btn
-                                                tile
-                                                depressed
-                                                small
-                                                :color="locationPickerActive ? 'warning' : ''"
-                                                @click="toggleLocationPicker(field.type)"
-                                            >
-                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.chooseLocation') }}
-                                            </v-btn>
-                                            <v-btn
-                                                tile
-                                                depressed
-                                                small
-                                                :disabled="geometry.value === null"
-                                                @click="resetLocation"
-                                            >
-                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetLocation') }}
-                                            </v-btn>
-                                        </template>
-                                    </v-text-field>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        color="primary"
-                                        :disabled="!(geometry.value !== null && geometry.type !== null)"
-                                        @click="createFeature"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
-                                    </v-btn>
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        @click="resetFeature"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        @click="restoreScenario"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures') }}
-                                    </v-btn>
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        @click="pruneScenario"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures') }}
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                        </div>
+                        <template v-if="featureTypeDesc.length > 0">
+                            <div class="form-group">
+                                <v-row>
+                                    <v-col cols="4">
+                                        <ReferencePicker
+                                            :workingLayer="workingLayer"
+                                            :active="active"
+                                            :useIcons="useIcons"
+                                            @pickReference="getDataFromReferenceFeature"
+                                        />
+                                    </v-col>
+                                    <v-col cols="8">
+                                        <MoveFeatures
+                                            :activeScenario="activeScenario"
+                                            :workingLayer="workingLayer"
+                                            :active="active"
+                                            :useIcons="useIcons"
+                                            :guideLayer="guideLayer"
+                                        />
+                                    </v-col>
+                                </v-row>
+                                <v-divider />
+                            </div>
+                            <div class="form-group">
+                                <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.defineFeature') }} </label>
+                                <v-row
+                                    v-for="field in featureTypeDesc"
+                                    :key="field.name"
+                                    :class="compareLayerMapping(field, workingLayer) ? 'primary lighten-2' : ''"
+                                    dense
+                                >
+                                    <v-col cols="3">
+                                        <v-subheader>{{ beautifyKey(field.name) }}</v-subheader>
+                                    </v-col>
+                                    <v-col cols="9">
+                                        <v-switch
+                                            v-if="typesMapping[field.type] === 'boolean'"
+                                            v-model="featureProperties[field.name]"
+                                            :label="field.type"
+                                            dense
+                                        />
+                                        <v-combobox
+                                            v-else-if="typesMapping[field.type] !== 'geom'"
+                                            v-model="featureProperties[field.name]"
+                                            :items="valuesForFields[field.name]"
+                                            :name="field.name"
+                                            :label="field.type"
+                                            :rules="validateProp(field, workingLayer)"
+                                            dense
+                                        />
+                                        <v-text-field
+                                            v-else
+                                            v-model="geometry.value"
+                                            :name="field.name"
+                                            :label="field.type"
+                                            dense
+                                        >
+                                            <template v-slot:append>
+                                                <v-btn
+                                                    tile
+                                                    depressed
+                                                    small
+                                                    :color="locationPickerActive ? 'warning' : ''"
+                                                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.chooseLocation')"
+                                                    @click="toggleLocationPicker(field.type)"
+                                                >
+                                                    <span v-if="useIcons">
+                                                        <v-icon>mdi-map-marker</v-icon>
+                                                    </span>
+                                                    <span v-else>
+                                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.chooseLocation') }}
+                                                    </span>
+                                                </v-btn>
+                                                <v-btn
+                                                    tile
+                                                    depressed
+                                                    small
+                                                    :disabled="geometry.value === null"
+                                                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.resetLocation')"
+                                                    @click="resetLocation"
+                                                >
+                                                    <span v-if="useIcons">
+                                                        <v-icon>mdi-map-marker-off</v-icon>
+                                                    </span>
+                                                    <span v-else>
+                                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetLocation') }}
+                                                    </span>
+                                                </v-btn>
+                                            </template>
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-btn
+                                            tile
+                                            depressed
+                                            color="primary"
+                                            :disabled="!activeScenario || geometry.value === null || geometry.type === null"
+                                            @click="createFeature"
+                                        >
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
+                                        </v-btn>
+                                        <v-btn
+                                            tile
+                                            depressed
+                                            :disabled="!activeScenario"
+                                            @click="resetFeature"
+                                        >
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-btn
+                                            tile
+                                            depressed
+                                            :disabled="!activeScenario"
+                                            :title="$t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures')"
+                                            @click="activeScenario.restore()"
+                                        >
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.restoreAllFeatures') }}
+                                        </v-btn>
+                                        <v-btn
+                                            tile
+                                            depressed
+                                            :disabled="!activeScenario"
+                                            :title="$t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures')"
+                                            @click="pruneActiveScenario"
+                                        >
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.pruneAllFeatures') }}
+                                        </v-btn>
+                                        <label v-if="!activeScenario">
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.noActiveScenario') }}
+                                        </label>
+                                    </v-col>
+                                </v-row>
+                            </div>
+                        </template>
                     </form>
                 </div>
             </v-app>
@@ -336,6 +419,8 @@ export default {
 </template>
 
 <style lang="less">
+    @import "../../utils/variables.less";
+
     #scenario-builder {
         .form-group {
             width: 100%;
@@ -345,8 +430,3 @@ export default {
         }
     }
 </style>
-
-<style src="vue-select/dist/vue-select.css">
-</style>
-
-

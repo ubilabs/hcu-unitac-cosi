@@ -7,16 +7,16 @@
 function mapVectorLayersInFolder (layers, condition) {
     return layers.reduce((layerlist, layer) => {
         if (layer[condition]) {
-            const keyOfAttrName = layer.mouseHoverField || "name";
+            const keyOfAttrName = layer.mouseHoverField || "name",
+                addressField = layer.addressField || "adresse";
 
             layerlist.push({
                 layerId: layer.id,
                 id: layer.name,
                 numericalValues: layer.numericalValues || [],
-                addressField: Array.isArray(layer.addressField) // the address can be a single or multiple fields that will be combined for the table view
-                    ? layer.addressField
-                    : [layer.addressField]
-                    || ["address"],
+                addressField: Array.isArray(addressField) // the address can be a single or multiple fields that will be combined for the table view
+                    ? addressField
+                    : [addressField],
                 categoryField: Array.isArray(layer.searchField) // last search field, must be set in config.json
                     ? layer.searchField[layer.searchField.length - 1]
                     : layer.searchField,

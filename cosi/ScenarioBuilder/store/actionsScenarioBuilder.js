@@ -46,9 +46,6 @@ const actions = {
     addFeatureToScenario ({commit, getters}, payload) {
         getClusterSource(payload.layer).addFeature(payload.feature);
 
-        console.log(payload.layer);
-        console.log(payload.feature);
-
         addSimulationTag(payload.feature, getters.guideLayer);
         commit("storeScenarioFeature", payload);
     }

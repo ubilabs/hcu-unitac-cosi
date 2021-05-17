@@ -29,7 +29,7 @@ export default {
             // The current names of the selected districts
             selectedNames: [],
             // A buffer for the extent of the selected district(s)
-            bufferValue: 0,
+            bufferVal: 0,
             // css class for the drag box button
             dragBoxButtonClass: "btn-lgv-grey",
             // display additional info layers by key true/false
@@ -315,10 +315,11 @@ export default {
          * @returns {void}
          */
         updateExtent () {
-            const extent = calculateExtent(this.selectedFeatures, this.bufferValue),
-                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferValue);
+            const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
+                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal);
 
             if (extent) {
+                this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
                 this.zoomTo(extent);
                 this.setBoundingGeometry(bboxGeom);
@@ -456,7 +457,7 @@ export default {
                 <div class="form-group">
                     <label>{{ $t('additional:modules.tools.cosi.districtSelector.inputLabel') }}</label>
                     <input
-                        v-model="bufferValue"
+                        v-model="bufferVal"
                         class="form-control"
                         type="number"
                         step="250"

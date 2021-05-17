@@ -636,7 +636,6 @@ export default {
             const dataArray = [];
 
             this.results = [];
-
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);
             });
@@ -668,7 +667,6 @@ export default {
                 this.setDataToCCM(!switchVar);
             }
             else {
-
                 this.setDataToCCM(!switchVar);
             }
         },
@@ -1072,7 +1070,8 @@ export default {
                                 worksheet="Versorgungsanalyse"
                                 :name="selectedYear + '_versorgungsanalyse.xls'"
                             >
-                                <span class="glyphicon glyphicon-download"></span>Download XSL
+                                <span class="glyphicon glyphicon-download"></span>
+                                Download XSL
                             </JsonExcel>
 
                             <button
@@ -1098,8 +1097,12 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
+<<<<<<< HEAD
                                     <!--eslint-disable-next-line-->
                                     <span><strong>{{ columnSelector.name }}</strong></span>
+=======
+                                    <strong>{{ columnSelector.name }}</strong>
+>>>>>>> cosi/dev
                                 </template>
                             </Multiselect>
                             <button
@@ -1200,7 +1203,10 @@ export default {
                                     >
                                         {{ result.paramA_val.toLocaleString('de-DE') }}
                                         <span v-if="result.data.incompleteDataSets_A > 0">*</span>
-                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
+                                        <div
+                                            v-if="result.data.incompleteDataSets_A > 0"
+                                            class="hover_helper"
+                                        >
                                             {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
                                         </div>
                                     </div>
@@ -1210,8 +1216,15 @@ export default {
                                         class="styling_helper"
                                     >
                                         {{ result.paramB_val.toLocaleString('de-DE') }}
-                                        <span v-if="result.data.incompleteDataSets_B > 0">*</span>
-                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
+                                        <span
+                                            v-if="result.data.incompleteDataSets_B > 0"
+                                        >
+                                            *
+                                        </span>
+                                        <div
+                                            v-if="result.data.incompleteDataSets_B > 0"
+                                            class="hover_helper"
+                                        >
                                             {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
                                         </div>
                                     </div>
