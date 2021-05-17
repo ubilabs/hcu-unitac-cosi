@@ -8,6 +8,7 @@ import GeometryCollection from "ol/geom/GeometryCollection";
 import setBBoxToGeom from "../../utils/setBBoxToGeom";
 import { Fill, Stroke, Style } from "ol/style.js";
 import ReachabilityResult from "./ReachabilityResult.vue";
+import InfoTemplate from "text-loader!./info.html";
 
 export default {
   name: "PointAnalysis",
@@ -40,9 +41,40 @@ export default {
       rawGeoJson: null,
       showRequestButton: false,
       isochroneFeatures: [],
-      steps: 3,
+      steps: [0, 0, 0],
+      legendColors: [
+        "rgba(0, 200, 3, 0.6)",
+        "rgba(100, 100, 3, 0.4)",
+        "rgba(200, 0, 3, 0.4)",
+      ],
+      featureColors: [
+        "rgba(200, 0, 3, 0.1)",
+        "rgba(100, 100, 3, 0.15)",
+        "rgba(0, 200, 3, 0.2)",
+      ],
       layers: null,
-      // layers: [{"layerName":"Öffentliche Bibliotheken","layerId":"19574","features":[[1,[570824.297,5936699.183]],[2,[563727.906,5939460.024]],[3,[569135.925,5937984.32]],[4,[566215.467,5938851.577]],[5,[569951.144,5941128.675]],[6,[571364.041,5940805.339]],[7,[569049.021,5936960.341]],[8,[565395.821,5930338.883]],[9,[566866.781,5928072.595]],[10,[573382.404,5932829.053]],[11,[566851.562,5933894.162]],[12,[571664.534,5934430.264]],[13,[563080.846,5934655.51]],[14,[563375.559,5936312.499]]]}]
+      // layers: [
+      //   {
+      //     layerName: "Öffentliche Bibliotheken",
+      //     layerId: "19574",
+      //     features: [
+      //       [1, [570824.297, 5936699.183]],
+      //       [2, [563727.906, 5939460.024]],
+      //       [3, [569135.925, 5937984.32]],
+      //       [4, [566215.467, 5938851.577]],
+      //       [5, [569951.144, 5941128.675]],
+      //       [6, [571364.041, 5940805.339]],
+      //       [7, [569049.021, 5936960.341]],
+      //       [8, [565395.821, 5930338.883]],
+      //       [9, [566866.781, 5928072.595]],
+      //       [10, [573382.404, 5932829.053]],
+      //       [11, [566851.562, 5933894.162]],
+      //       [12, [571664.534, 5934430.264]],
+      //       [13, [563080.846, 5934655.51]],
+      //       [14, [563375.559, 5936312.499]],
+      //     ],
+      //   },
+      // ],
     };
   },
   watch: {
@@ -72,9 +104,11 @@ export default {
   computed: {
     ...mapGetters("Map", ["map", "getOverlayById", "createLayerIfNotExists"]),
     ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
+    ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
   },
   methods: {
     ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
+    ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
     setCoordinateFromClick: function (evt) {
       const coordinate = Proj.transform(
         evt.coordinate,
@@ -122,8 +156,6 @@ export default {
       const range =
         this.scaleUnit === "time" ? this.distance * 60 : this.distance;
 
-      console.log(this, range);
-
       if (
         this.coordinate != null &&
         this.transportType !== "" &&
@@ -139,6 +171,12 @@ export default {
             this.scaleUnit,
             [range * 0.33, range * 0.67, range]
           );
+
+          const distance = parseFloat(this.distance);
+          this.steps = [distance * 0.33, distance * 0.67, distance].map((n) =>
+            Number.isInteger(n) ? n.toString() : n.toFixed(2)
+          );
+
           // reverse JSON object sequence to render the isochrones in the correct order
           const json = JSON.parse(res);
           const reversedFeatures = [...json.features].reverse();
@@ -155,11 +193,8 @@ export default {
             feature.set("featureType", this.featureType);
           });
 
-          this.rawGeoJson = Radio.request(
-            "GraphicalSelect",
-            "featureToGeoJson",
-            newFeatures[0]
-          );
+          this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
+          console.log(this.rawGeoJson);
 
           this.styleFeatures(newFeatures, [coordinate]);
 
@@ -167,10 +202,7 @@ export default {
           this.mapLayer.getSource().addFeatures(newFeatures.reverse());
           this.isochroneFeatures = newFeatures;
           this.setIsochroneAsBbox();
-          // this.clearResult();
-          // this.$el.find("#show-in-dashboard").hide();
-          //   this.$el.find("#hh-request").show();
-          //   this.showRequestButton = true;
+          this.showRequestButton = true;
           Radio.trigger("Alert", "alert:remove");
         } catch (err) {
           console.error(err);
@@ -221,13 +253,9 @@ export default {
      * clears the list of facilities within the isochrones
      * @returns {void}
      */
-    clearResult: function () {
-      this.$el.find("#result").empty();
-    },
     // hideDashboardButton: function () {
     //   this.$el.find("#show-in-dashboard").hide();
     //   //   this.$el.find("#hh-request").hide();
-    //   this.showRequestButton = false;
     // },
     /**
      * Transforms features between CRS
@@ -248,14 +276,16 @@ export default {
     /**
      * style isochrone features
      * @param {ol.Feature} features isochone features (polygons)
+     * @param {array} coordinate todo
      * @returns {void}
      */
-    styleFeatures: function (features) {
-      for (let i = features.length - 1; i >= 0; i--) {
+    styleFeatures: function (features, coordinate) {
+      for (let i = 0; i < features.length; i++) {
+        features[i].setProperties({ coordinate });
         features[i].setStyle(
           new Style({
             fill: new Fill({
-              color: `rgba(200 , 3, 3, ${0.05 * i + 0.1})`,
+              color: this.featureColors[i],
             }),
             stroke: new Stroke({
               color: "white",
@@ -273,7 +303,7 @@ export default {
      */
     setIsochroneAsBbox: function () {
       const polygonGeometry = this.isochroneFeatures[
-          this.steps - 1
+          this.steps.length - 1
         ].getGeometry(),
         geometryCollection = new GeometryCollection([polygonGeometry]);
 
@@ -291,8 +321,8 @@ export default {
         { typ: "WFS", isBaseLayer: false, isSelected: true }
       );
 
-      this.layers = [];
       if (visibleLayerModels.length > 0) {
+        this.layers = [];
         Radio.trigger("Alert", "alert:remove");
         visibleLayerModels.forEach((layerModel) => {
           const features = layerModel.get("layer").getSource().getFeatures();
@@ -375,9 +405,59 @@ export default {
       Radio.trigger("MapView", "setCenter", icoord);
     },
     showInDashboard: function () {
-      console.log(this.$el)
-      const resultsClone = this.$el.find("#results").clone();
-      console.log(resultsClone)
+      //TODO
+      Radio.trigger("Dashboard", "append", this.$el, "#dashboard-containers", {
+        id: "reachability",
+        name: "Erreichbarkeit ab einem Referenzpunkt",
+        glyphicon: "glyphicon-road",
+        scalable: true,
+      });
+      // this.$el.find("#dashboard-container").empty();
+    },
+    /**
+     * shows help window
+     * @returns {void}
+     */
+    showHelp: function () {
+      Radio.trigger("Alert", "alert:remove");
+      Radio.trigger("Alert", "alert", {
+        text: InfoTemplate,
+        kategorie: "alert-info",
+        position: "center-center",
+      });
+    },
+    /**
+     * clears the component
+     * @returns {void}
+     */
+    clear: function () {
+      this.layers = null;
+      this.showRequestButton = false;
+      this.steps = [0, 0, 0];
+      this.rawGeoJson = null;
+
+      if (this.mapLayer.getSource().getFeatures().length > 0) {
+        this.mapLayer.getSource().clear();
+        this.model.isochroneFeatures = [];
+        //TODO
+        if (this.extent.length > 0) {
+          setBBoxToGeom(this.boundingGeometry);
+        }
+      }
+    },
+    /**
+     * requests inhabitant calculation function
+     * @returns {void}
+     */
+    requestInhabitants: function () {
+      //TODO
+      Radio.trigger(
+        "GraphicalSelect",
+        "onDrawEnd",
+        this.rawGeoJson,
+        "einwohnerabfrage",
+        true
+      );
     },
   },
 };
@@ -443,16 +523,11 @@ export default {
           </button>
         </div>
         <div class="col-sm-1">
-          <div id="help">
+          <div id="help" @click="showHelp()">
             <span class="glyphicon glyphicon-question-sign"></span>
           </div>
         </div>
-        <div class="col-sm-1">
-          <div id="backward" title="Zurück zur Erreichbarkeitsanalyse">
-            <span class="glyphicon glyphicon-arrow-left"></span>
-          </div>
-        </div>
-        <div class="col-sm-1">
+        <div class="col-sm-1" @click="clear()">
           <div id="clear" title="Lösche aktuelles Ergebnis">
             <span class="glyphicon glyphicon-trash"></span>
           </div>
@@ -461,7 +536,21 @@ export default {
     </form>
     <hr />
     <h5><strong>Legende: </strong></h5>
-    <div id="legend"></div>
+    <div id="legend">
+      <template v-for="(j, i) in steps">
+        <svg :key="i" width="15" height="15">
+          <circle
+            cx="7.5"
+            cy="7.5"
+            r="7.5"
+            :style="`fill: ${legendColors[i]}; stroke-width: 0.5; stroke: #e3e3e3;`"
+          />
+        </svg>
+        <span :key="i * 2 + steps.length">
+          {{ j }}
+        </span>
+      </template>
+    </div>
     <br />
     <button
       type="button"
@@ -472,7 +561,7 @@ export default {
       <span class="glyphicon glyphicon-th-list"></span>Einrichtungsabdeckung
     </button>
     <div id="result"></div>
-    <template v-if="layers != null">
+    <template v-if="layers">
       <ReachabilityResult :layers="layers" />
       <table>
         <tr>
@@ -500,7 +589,7 @@ export default {
     <button
       v-if="showRequestButton"
       class="btn btn-lgv-grey measure-delete"
-      id="hh-request"
+      @click="requestInhabitants"
     >
       <span class="glyphicon glyphicon-user"></span>Einwohnerabfrage für den
       Bereich
