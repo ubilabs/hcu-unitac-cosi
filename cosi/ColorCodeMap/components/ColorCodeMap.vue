@@ -444,12 +444,15 @@ export default {
             };
 
             this.availableYears.forEach(year => {
-                graphObj.data.labels.unshift(year);
+                graphObj.data.labels.push(year);
             });
 
             this.graphData.forEach(dataSet => {
-                graphObj.data.dataSets.unshift(dataSet);
+                dataSet.data.reverse();
+                graphObj.data.dataSets.push(dataSet);
             });
+
+            graphObj.data.labels.reverse();
 
             this.setNewChartDataSet(graphObj);
             this.graphData = [];
@@ -473,6 +476,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
+                        title="Maximieren/ Minimieren"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
@@ -485,6 +489,7 @@ export default {
                     <button
                         class="switch"
                         :class="{ highlight: !visualizationState }"
+                        title="Visualisierung an/ aus"
                         @click="toggleVisualizationState()"
                     >
                         <span
@@ -498,12 +503,14 @@ export default {
                     </button>
                     <button
                         class="prev btn btn-default btn-sm"
+                        title="Vorherigen Datensatz auswählen"
                         @click="changeSelector(-1)"
                     >
                         <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
                     <button
                         class="next btn btn-default btn-sm"
+                        title="Nächsten Datensatz auswählen"
                         @click="changeSelector(1)"
                     >
                         <span class="glyphicon glyphicon-chevron-right"></span>
@@ -599,7 +606,8 @@ export default {
         <div class="hovermenu">
             <div class="btn_grp">
                 <button
-                    class="info_button>"
+                    class="info_button"
+                    title="Werkzeuginformationen"
                     @click="showInfo()"
                 >
                     <span class="glyphicon glyphicon-question-sign"></span>
@@ -611,6 +619,7 @@ export default {
                     <button
                         class="play_button"
                         :class="{highlight: playState}"
+                        title="Visualisierung über die Jahre animieren"
                         @click="playState = !playState"
                     >
                         <template v-if="!playState">
@@ -628,6 +637,7 @@ export default {
                 <button
                     v-if="visualizationState && !minimize"
                     class="graph_button"
+                    title="Graph aus Datensatz erzeugen"
                     @click="loadToCg()"
                 >
                     <span class="glyphicon glyphicon-stats"></span>
@@ -635,6 +645,7 @@ export default {
                 <button
                     v-if="visualizationState && !minimize"
                     class="map_button"
+                    title="Gebietsnamen ein-/ ausblenden"
                     @click="showMapNames = !showMapNames"
                 >
                     <span class="glyphicon glyphicon-map-marker"></span>

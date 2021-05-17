@@ -29,6 +29,14 @@ export default function compensateLackingData (dataArray, strategy = "median") {
         incompleteData = [];
     let avg;
 
+    if (dataArray.length === 0) {
+        return {
+            data: [],
+            incompleteDataSets: 0,
+            totalDataSets: 0
+        };
+    }
+
     dataArray.forEach(dataSet => {
         /**
          * @todo this should not only work with a precurated dataset

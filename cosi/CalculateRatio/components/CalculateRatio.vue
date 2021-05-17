@@ -6,13 +6,16 @@ import mutations from "../store/mutationsCalculateRatio";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
 import JsonExcel from "vue-json-excel";
+import DataTable from "./DataTable.vue";
+import Info from "text-loader!./info.html";
 
 export default {
     name: "CalculateRatio",
     components: {
         Tool,
         Multiselect,
-        JsonExcel
+        JsonExcel,
+        DataTable
     },
     data () {
         return {
@@ -304,9 +307,19 @@ export default {
             }
         },
         /**
+         * @description Shows component info as popup.
+         * @returns {Void} Function returns nothing.
+         */
+        showInfo () {
+            this.addSingleAlert({
+                category: "Info",
+                content: Info
+            });
+        },
+        /**
          * @description Checks if the user selected a summable statistical data set (feature).
          * @param {String} letter String that determines which field is to be modified (A or B for FieldA or FieldB).
-         * @returns {void}
+         * @returns {void} Function returns nothing.
          */
         checkSumUp (letter) {
             if (!this[letter + "Switch"]) {
@@ -421,13 +434,13 @@ export default {
 
                     this.calcHelper.type_A = "facility";
                     this.featureVals = [];
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const layerGeometry = feature.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldA.id]) {
-                                    const value = layer.getProperties()[this.paramFieldA.id],
+                                if (feature.getProperties()[this.paramFieldA.id]) {
+                                    const value = feature.getProperties()[this.paramFieldA.id],
                                         valueTransformed = parseFloat(value.replace(/\D/g, ""));
 
                                     this.featureVals.push(valueTransformed);
@@ -442,12 +455,11 @@ export default {
                         }
                     });
 
-
-                    // eslint-disable-next-line one-var
+                    // eslint-disable-next-line
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
                     if (checkForLackingData === "error") {
-                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                        this.showAlert("Warnung für das Gebiet: " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
                         return;
                     }
 
@@ -506,13 +518,13 @@ export default {
 
                     this.featureVals = [];
                     this.calcHelper.type_B = "facility";
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const layerGeometry = feature.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldB.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldB.id]) {
-                                    const value = layer.getProperties()[this.paramFieldB.id],
+                                if (feature.getProperties()[this.paramFieldB.id]) {
+                                    const value = feature.getProperties()[this.paramFieldB.id],
                                         valueTransformed = parseFloat(value.replace(/\D/g, ""));
 
                                     this.featureVals.push(valueTransformed);
@@ -527,11 +539,11 @@ export default {
                         }
                     });
 
-                    // eslint-disable-next-line one-var
+                    // eslint-disable-next-line
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
                     if (checkForLackingData === "error") {
-                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                        this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
                         return;
                     }
 
@@ -589,7 +601,6 @@ export default {
             });
 
             this.results = utils.calculateRatio(dataArray, this.selectedYear);
-            console.log(this.results);
         },
         /**
          * @description Gets Data for the selected statistical data (features)
@@ -661,21 +672,22 @@ export default {
         },
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {void}
+         * @returns {Void} Function returns nothing.
          */
         loadToCG () {
-            const dataArray = [],
-                graphObj = {
+            const graphObj = {
                     id: "calcratio-test",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                    type: "BarChart",
+                    type: "PieChart",
                     color: "green",
                     source: "CalculateRatio",
                     data: {
                         labels: [...this.availableYears],
                         dataSets: []
                     }
-                };
+                },
+
+                dataArray = [];
 
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);
@@ -728,6 +740,13 @@ export default {
                 :class="{ expanded: results.length > 0 }"
             >
                 <div class="addon_wrapper">
+                    <button
+                        class="info_button"
+                        title="Werkzeuginformationen"
+                        @click="showInfo()"
+                    >
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                    </button>
                     <p class="section intro">
                         {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
                     </p>
@@ -744,7 +763,10 @@ export default {
                         class="select_wrapper section first"
                         :class="{ grouped: selectedFieldA.id }"
                     >
-                        <div class="button switch">
+                        <div
+                            class="button switch"
+                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                        >
                             <button
                                 @click="switchVal('A')"
                             >
@@ -815,6 +837,7 @@ export default {
                                     >
                                         <div
                                             class="btn"
+                                            title="Fügen Sie einen Verrechnungsfaktor hinzu"
                                             :class="{ reduced: fActive_A }"
                                         >
                                             <button @click="fActive_A = !fActive_A">
@@ -875,7 +898,10 @@ export default {
                         class="select_wrapper section second"
                         :class="{ grouped: selectedFieldB.id }"
                     >
-                        <div class="button switch">
+                        <div
+                            class="button switch"
+                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                        >
                             <button
                                 @click="switchVal('B')"
                             >
@@ -945,7 +971,10 @@ export default {
                                             class="btn"
                                             :class="{ reduced: fActive_B }"
                                         >
-                                            <button @click="fActive_B = !fActive_B">
+                                            <button
+                                                title="Fügen Sie einen Verrechnungsfaktor hinzu"
+                                                @click="fActive_B = !fActive_B"
+                                            >
                                                 <span
                                                     v-if="fActive_B"
                                                     class="glyphicon glyphicon-remove"
@@ -1005,12 +1034,14 @@ export default {
                         <div class="btn_grp finalization">
                             <button
                                 class="switch"
+                                title="Datenfelder A und B tauschen"
                                 @click="switchSelection"
                             >
                                 <span class="glyphicon glyphicon-retweet"></span>
                             </button>
                             <button
                                 class="cancel"
+                                title="Alle Eingaben zurücksetzen"
                                 @click="clearAllValues"
                             >
                                 <span class="glyphicon glyphicon-remove-circle"></span>
@@ -1018,6 +1049,7 @@ export default {
                             </button>
                             <button
                                 class="confirm"
+                                title="Datensätze berechnen"
                                 @click="prepareCoverage"
                             >
                                 <span class="glyphicon glyphicon-ok-circle"></span>
@@ -1044,6 +1076,7 @@ export default {
 
                             <button
                                 class="cg"
+                                title="Graph aus Datensatz erzeugen"
                                 @click="loadToCG()"
                             >
                                 <span
@@ -1064,12 +1097,14 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
-                                    <strong>{{ columnSelector.name }}</strong>
+                                    <!--eslint-disable-next-line-->
+                                    <span><strong>{{ columnSelector.name }}</strong></span>
                                 </template>
                             </Multiselect>
                             <button
                                 class="ccm"
                                 :class="{ highlight: !dataToCCM}"
+                                title="Ausgewählten Datensatz auf Karte visualisieren"
                                 @click="loadToCCM()"
                             >
                                 <span
@@ -1105,7 +1140,13 @@ export default {
                                 </Multiselect>
                             </div>
                         </div>
-                        <table class="forged_table">
+                        <DataTable
+                            :dataSet="results"
+                            :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
+                            :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
+                            :fActive="fActive_A || fActive_B ? true : false"
+                        ></DataTable>
+                        <!--<table class="forged_table">
                             <tr class="head_row">
                                 <th>
                                     <div class="styling_helper head_scope">
@@ -1205,7 +1246,7 @@ export default {
                                     </div>
                                 </td>
                             </tr>
-                        </table>
+                        </table>-->
                     </div>
                 </div>
             </div>
@@ -1223,7 +1264,20 @@ export default {
         width:400px;
         height:60vh;
 
+        .info_button {
+            display:block;
+            width:30px;
+            height:30px;
+            background:#eee;
+            margin:0px 0px 0px auto;
+        }
+
         .section {
+            &.intro {
+                border-top:1px solid #ccc;
+                padding-top:30px;
+            }
+
             &.third {
                     border:1px solid #ddd;
                 }
@@ -1340,6 +1394,12 @@ export default {
         &.expanded {
             width:780px;
 
+            .info_button {
+                position:absolute;
+                top:10px;
+                right:25px;
+            }
+
             .addon_wrapper {
                 display:flex;
                 flex-flow: row wrap;
@@ -1352,6 +1412,10 @@ export default {
                 .section {
                     flex:1 0 45%;
                     margin:5px;
+
+                    &.grouped {
+                        margin-top:30px;
+                    }
                 }
 
                 .data_table {
@@ -1369,7 +1433,7 @@ export default {
                             line-height:40px;
                             width:auto;
                             opacity:0.75;
-                            background:#57A845;
+                            background:@green;
                             color:white;
                             padding: 0px 10px;
                             margin:5px 0px;
