@@ -253,6 +253,7 @@ export default {
          */
         removeAll () {
             this.dataSets = [];
+            this.setActive(false);
         }
     }
 };
@@ -522,6 +523,8 @@ export default {
                         flex-flow:row wrap;
                         justify-content:flex-end;
                         margin:5px auto;
+                        padding-top: 10px;
+                        border-top: 1px solid #ccc;
 
                         .btn_grp {
                             &.main {
