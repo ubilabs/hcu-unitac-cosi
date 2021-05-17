@@ -74,8 +74,6 @@ export default {
             this.formatData();
         }
     },
-    created () {
-    },
     mounted () {
         this.formatData();
     },

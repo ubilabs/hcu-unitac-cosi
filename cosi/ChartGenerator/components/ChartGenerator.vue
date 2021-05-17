@@ -167,7 +167,7 @@ export default {
         /**
          * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
          * @param {Object} dataSet dataSet containing the data to be rendered as graph.
-         * @returns {Array}
+         * @returns {Array} ColorScale Array.
          */
         generateColorScale (dataSet) {
             const range = ["light" + dataSet.color, "dark" + dataSet.color];
@@ -176,32 +176,32 @@ export default {
         },
         /**
          * @description Activates the tool window of the chartgenerator.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         activatePanel () {
             this.setActive(true);
         },
         /**
          * @description Select graph to be displayed in tool window.
-         * * @param {Integer} value Index of the dataset in this.dataSets array.
-         * @returns {Void}
+         * @param {Integer} value Index of the dataset in this.dataSets array.
+         * @returns {Void} Function returns nothing.
          */
         selectGraph (value) {
             this.activeGraph = value;
         },
         /**
          * @description Changes between the styles if a dataSet has multiple graph types.
-         * * @param {Object} graph Data of the graph.
-         * * @param {Integer} index Subindex of the type of the graph.
-         * @returns {Void}
+         * @param {Object} graph Data of the graph.
+         * @param {Integer} index Subindex of the type of the graph.
+         * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
             this.$set(graph, "sub_graph", index);
         },
         /**
          * @description Selects the next or the previous graph in the Tool Window.
-         * * @param {Integer} value +1 or -1.
-         * @returns {Void}
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
          */
         graphPrevNext (value) {
             if (this.activeGraph + value < 0) {
@@ -218,7 +218,8 @@ export default {
         },
         /**
          * @description Downloads closest graph from the Tool Window.
-         * @returns {Void}
+         * @param {$event} event Click event handler.
+         * @returns {Void} Function returns nothing.
          */
         downloadGraph (event) {
             const canvasContainer = event.target.parentNode.previousElementSibling,
@@ -233,8 +234,8 @@ export default {
         },
         /**
          * @description Deletes a graph from the Tool Window.
-         * * @param {Integer} index Index of the graph to be deleted in the this.dataSets Array.
-         * @returns {Void}
+         * @param {Integer} index Index of the graph to be deleted in the this.dataSets Array.
+         * @returns {Void} Function returns nothing.
          */
         removeGraph (index) {
             this.dataSets.splice(index, 1);
@@ -322,11 +323,11 @@ export default {
                                                 <div
                                                     :id="`graph-${index}-${i}`"
                                                 ></div>
-                                            </div>
-                                            <div class="graph_functions">
+                                                <div class="graph_functions">
                                                 <button @click="downloadGraph($event)">
                                                     Download
                                                 </button>
+                                            </div>
                                             </div>
                                         </div>
                                     </template>

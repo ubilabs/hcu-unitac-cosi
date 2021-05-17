@@ -308,7 +308,7 @@ export default {
         },
         /**
          * @description Shows component info as popup.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         showInfo () {
             this.addSingleAlert({
@@ -454,9 +454,10 @@ export default {
                             }
                         }
                     });
-                    console.log(this.featureVals);
+
+                    // eslint-disable-next-line
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
-                    
+
                     if (checkForLackingData === "error") {
                         this.showAlert("Warnung für das Gebiet: " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
                         return;
@@ -538,6 +539,7 @@ export default {
                         }
                     });
 
+                    // eslint-disable-next-line
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
                     if (checkForLackingData === "error") {
@@ -599,7 +601,6 @@ export default {
             });
 
             this.results = utils.calculateRatio(dataArray, this.selectedYear);
-            console.log(this.results);
         },
         /**
          * @description Gets Data for the selected statistical data (features)
@@ -673,7 +674,7 @@ export default {
         },
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         loadToCG () {
             const graphObj = {
@@ -743,6 +744,7 @@ export default {
                 <div class="addon_wrapper">
                     <button
                         class="info_button"
+                        title="Werkzeuginformationen"
                         @click="showInfo()"
                     >
                         <span class="glyphicon glyphicon-question-sign"></span>
@@ -763,7 +765,10 @@ export default {
                         class="select_wrapper section first"
                         :class="{ grouped: selectedFieldA.id }"
                     >
-                        <div class="button switch">
+                        <div
+                            class="button switch"
+                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                        >
                             <button
                                 @click="switchVal('A')"
                             >
@@ -834,6 +839,7 @@ export default {
                                     >
                                         <div
                                             class="btn"
+                                            title="Fügen Sie einen Verrechnungsfaktor hinzu"
                                             :class="{ reduced: fActive_A }"
                                         >
                                             <button @click="fActive_A = !fActive_A">
@@ -894,7 +900,10 @@ export default {
                         class="select_wrapper section second"
                         :class="{ grouped: selectedFieldB.id }"
                     >
-                        <div class="button switch">
+                        <div
+                            class="button switch"
+                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                        >
                             <button
                                 @click="switchVal('B')"
                             >
@@ -964,7 +973,10 @@ export default {
                                             class="btn"
                                             :class="{ reduced: fActive_B }"
                                         >
-                                            <button @click="fActive_B = !fActive_B">
+                                            <button
+                                                title="Fügen Sie einen Verrechnungsfaktor hinzu"
+                                                @click="fActive_B = !fActive_B"
+                                            >
                                                 <span
                                                     v-if="fActive_B"
                                                     class="glyphicon glyphicon-remove"
@@ -1024,12 +1036,14 @@ export default {
                         <div class="btn_grp finalization">
                             <button
                                 class="switch"
+                                title="Datenfelder A und B tauschen"
                                 @click="switchSelection"
                             >
                                 <span class="glyphicon glyphicon-retweet"></span>
                             </button>
                             <button
                                 class="cancel"
+                                title="Alle Eingaben zurücksetzen"
                                 @click="clearAllValues"
                             >
                                 <span class="glyphicon glyphicon-remove-circle"></span>
@@ -1037,6 +1051,7 @@ export default {
                             </button>
                             <button
                                 class="confirm"
+                                title="Datensätze berechnen"
                                 @click="prepareCoverage"
                             >
                                 <span class="glyphicon glyphicon-ok-circle"></span>
@@ -1062,6 +1077,7 @@ export default {
 
                             <button
                                 class="cg"
+                                title="Graph aus Datensatz erzeugen"
                                 @click="loadToCG()"
                             >
                                 <span
@@ -1082,12 +1098,14 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
+                                    <!--eslint-disable-next-line-->
                                     <span><strong>{{ columnSelector.name }}</strong></span>
                                 </template>
                             </Multiselect>
                             <button
                                 class="ccm"
                                 :class="{ highlight: !dataToCCM}"
+                                title="Ausgewählten Datensatz auf Karte visualisieren"
                                 @click="loadToCCM()"
                             >
                                 <span
@@ -1367,6 +1385,12 @@ export default {
         &.expanded {
             width:780px;
 
+            .info_button {
+                position:absolute;
+                top:10px;
+                right:25px;
+            }
+
             .addon_wrapper {
                 display:flex;
                 flex-flow: row wrap;
@@ -1379,6 +1403,10 @@ export default {
                 .section {
                     flex:1 0 45%;
                     margin:5px;
+
+                    &.grouped {
+                        margin-top:30px;
+                    }
                 }
 
                 .data_table {
