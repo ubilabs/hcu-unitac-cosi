@@ -7,3 +7,6 @@ cosi/node_modules/*
 OpenRouteService/node_modules/*
 
 .vscode
+
+node_modules
+yarn.lock
