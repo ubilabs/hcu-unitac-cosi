@@ -3,7 +3,10 @@ import getClusterSource from "../../utils/getClusterSource";
 import Feature from "ol/Feature";
 
 /**
+ * @description Class storing all information about a created scenario
  * @class Scenario
+ * @todo Refactor! It's just a prototype!
+ * @todo join modifiedFeatures and simulatedFeatures (?) is there a reason to separate them?
  */
 export default class Scenario {
     /**
@@ -20,14 +23,15 @@ export default class Scenario {
 
     /**
      * Adds a feature to the scenario
+     * @todo use OL feature as input
      * @param {ScenarioFeature} scenarioFeature - the scenariofeature to add to the scenario
      * @param {Boolean} renderFeature - whether to render the feature on add
-     * @returns {void}
+     * @returns {ScenarioFeature} the scenario Feature added
      */
     addFeature (scenarioFeature, renderFeature = true) {
-        if (scenarioFeature.constructor !== ScenarioFeature) {
-            console.error(`Scenario.addFeature: feature must be of Type ScenarioFeature. Got ${scenarioFeature.constructor} instead.`);
-            return;
+        if (scenarioFeature?.constructor !== ScenarioFeature) {
+            console.error(`Scenario.addFeature: feature must be of Type ScenarioFeature. Got ${scenarioFeature?.constructor} instead.`);
+            return null;
         }
         if (!this.simulatedFeatures.find(item => item === scenarioFeature)) {
             this.simulatedFeatures.push(scenarioFeature);
@@ -35,33 +39,99 @@ export default class Scenario {
         if (renderFeature) {
             scenarioFeature.renderFeature(this.guideLayer);
         }
+
+        return scenarioFeature;
+    }
+
+    /**
+     * Modifies a given feature's properties and stores the changes on the scenario
+     * @param {module:ol/Feature} feature - the feature to modify
+     * @param {module:ol/layer/Vector} layer - the layer the feature is on
+     * @returns {ScenarioFeature} the created Scenario Feature
+     */
+    addModifiedFeature (feature, layer) {
+        if (feature?.constructor !== Feature) {
+            console.error(`Scenario.addModifiedFeature: feature must be of Type Feature. Got ${feature?.constructor} instead.`);
+            return null;
+        }
+        const scenarioFeature = new ScenarioFeature(feature, layer);
+
+        this.modifiedFeatures.push(scenarioFeature);
+
+        return scenarioFeature;
     }
 
     /**
      * Modifies a given feature's properties and stores the changes on the scenario
      * @param {module:ol/Feature} feature - the feature to modify
      * @param {Object} properties - the properties to change and store
-     * @param {module:ol/layer/Vector} layer - the layer the feature is on
+     * @param {module:ol/layer/Vector} [layer] - the layer the feature is on
      * @returns {void}
      */
     modifyFeature (feature, properties, layer) {
-        if (feature.constructor !== Feature) {
-            console.error(`Scenario.addFeature: feature must be of Type ScenarioFeature. Got ${feature.constructor} instead.`);
+        if (feature?.constructor !== Feature) {
+            console.error(`Scenario.modifyFeature: feature must be of Type Feature. Got ${feature?.constructor} instead.`);
             return;
         }
-        let scenarioFeature = this.modifiedFeatures.find(item => item.feature === feature);
+        if (properties?.constructor !== Object) {
+            console.error(`Scenario.modifyFeature: properties must be of Type Object. Got ${properties?.constructor} instead.`);
+            return;
+        }
+        let scenarioFeature = this.getScenarioFeature(feature);
 
         if (!scenarioFeature) {
             if (!layer) {
                 return;
             }
-            scenarioFeature = new ScenarioFeature(feature, layer);
-            this.modifiedFeatures.push(scenarioFeature);
+            scenarioFeature = this.addModifiedFeature(feature, layer);
         }
 
+        // store the altered properties in the scenario
         for (const prop in properties) {
+            // store the scenario specific value for a prop on the scenario
             scenarioFeature.scenarioData[prop] = properties[prop];
-            scenarioFeature.feature.set("prop", properties[prop]);
+            // store the currently active values on the feature
+            scenarioFeature.feature.set(prop, properties[prop]);
+        }
+    }
+
+    /**
+     * Resets a modified feature to its original properties
+     * @param {module:ol/Feature} feature - the feature from the map to reset
+     * @param {String[]} [props] - the props to reset, resets all if none are provided
+     * @returns {void}
+     */
+    resetFeature (feature, props) {
+        const scenarioFeature = this.getScenarioFeature(feature);
+
+        if (scenarioFeature) {
+            scenarioFeature.resetProperties(props);
+        }
+    }
+
+    /**
+     * Resets all modified features to their original state
+     * @returns {void}
+     */
+    resetAllFeatures () {
+        let item;
+
+        for (item of this.getAllFeatures()) {
+            item.resetProperties();
+        }
+    }
+
+    /**
+     * Resets all modified features of a layer to their original state
+     * @param {module:ol/layer/Vector} layer - the layer to reset
+     * @returns {void}
+     */
+    resetFeaturesByLayer (layer) {
+        const scenarioFeatures = this.getScenarioFeaturesByLayer(layer);
+        let item;
+
+        for (item of scenarioFeatures) {
+            item.resetProperties();
         }
     }
 
@@ -75,6 +145,8 @@ export default class Scenario {
         for (item of this.simulatedFeatures) {
             item.hideFeature();
         }
+
+        this.resetAllFeatures();
     }
 
     /**
@@ -83,7 +155,9 @@ export default class Scenario {
      */
     prune () {
         this.hideScenario();
+        this.resetAllFeatures();
         this.simulatedFeatures = [];
+        this.modifiedFeatures = [];
     }
 
     /**
@@ -97,6 +171,7 @@ export default class Scenario {
                 .find(feature => feature === item.feature)) {
                 item.renderFeature();
             }
+            item.restoreScenarioProperties();
         }
         for (const item of this.modifiedFeatures) {
             item.restoreScenarioProperties();
@@ -112,5 +187,78 @@ export default class Scenario {
             ...this.simulatedFeatures,
             ...this.modifiedFeatures
         ];
+    }
+
+    /**
+     * Returns the ScenarioFeature for a given map feature
+     * @param {module:ol/Feature} feature - the OL map feature
+     * @param {String} [type] - "simulated" or "modified" or undefined
+     * @returns {ScenarioFeature} the scenarioFeature and its scenario specific properties
+     */
+    getScenarioFeature (feature, type) {
+        if (type === "simulated") {
+            return this.getSimulatedScenarioFeature(feature);
+        }
+        if (type === "modified") {
+            return this.getModifiedScenarioFeature(feature);
+        }
+
+        return this.simulatedFeatures.find(item => item.feature === feature) || this.modifiedFeatures.find(item => item.feature === feature);
+    }
+
+    /**
+     * Returns the simulated ScenarioFeature for a given map feature
+     * @param {module:ol/Feature} feature - the OL map feature
+     * @returns {ScenarioFeature} the scenarioFeature and its scenario specific properties
+     */
+    getSimulatedScenarioFeature (feature) {
+        return this.simulatedFeatures.find(item => item.feature === feature);
+    }
+
+    /**
+     * Returns the modified ScenarioFeature for a given map feature
+     * @param {module:ol/Feature} feature - the OL map feature
+     * @returns {ScenarioFeature} the scenarioFeature and its scenario specific properties
+     */
+    getModifiedScenarioFeature (feature) {
+        return this.modifiedFeatures.find(item => item.feature === feature);
+    }
+
+    /**
+     * Returns all ScenarioFeatures belonging to a specified layer
+     * @param {module:ol/layer/Vector} layer - the layer to check
+     * @param {String} [type] - "simulated" or "modified" or undefined
+     * @returns {ScenarioFeature[]} the scenarioFeatures of a layer
+     */
+    getScenarioFeaturesByLayer (layer, type) {
+        if (type === "simulated") {
+            return this.getSimulatedScenarioFeaturesByLayer(layer);
+        }
+        if (type === "modified") {
+            return this.getModifiedScenarioFeaturesByLayer(layer);
+        }
+
+        return [
+            ...this.simulatedFeatures.filter(item => item.layer === layer),
+            ...this.modifiedFeatures.filter(item => item.layer === layer)
+        ];
+    }
+
+    /**
+     * Returns all simulated ScenarioFeatures belonging to a specified layer
+     * @param {module:ol/layer/Vector} layer - the layer to check
+     * @returns {ScenarioFeature[]} the scenarioFeatures of a layer
+     */
+    getSimulatedScenarioFeaturesByLayer (layer) {
+        return this.simulatedFeatures.filter(item => item.layer === layer);
+    }
+
+    /**
+     * Returns all modified ScenarioFeatures belonging to a specified layer
+     * @param {module:ol/layer/Vector} layer - the layer to check
+     * @returns {ScenarioFeature[]} the scenarioFeatures of a layer
+     */
+    getModifiedScenarioFeaturesByLayer (layer) {
+        return this.modifiedFeatures.filter(item => item.layer === layer);
     }
 }

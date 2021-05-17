@@ -10,7 +10,7 @@ import VectorLayer from "ol/layer/Vector";
 export function featureTagStyle (feature) {
     return new Style({
         text: new Text({
-            font: "18px bold sans-serif",
+            font: "21px bold sans-serif",
             stroke: new Stroke({
                 width: 3,
                 color: "#fff"

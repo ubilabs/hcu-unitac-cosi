@@ -12,7 +12,7 @@ import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import getOlGeomByGmlType from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
-import Polygon from "ol/geom/Polygon";
+// import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import {featureTagStyle} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
@@ -284,6 +284,7 @@ export default {
                                     </v-col>
                                     <v-col cols="8">
                                         <MoveFeatures
+                                            :activeScenario="activeScenario"
                                             :workingLayer="workingLayer"
                                             :active="active"
                                             :useIcons="useIcons"
@@ -368,7 +369,7 @@ export default {
                                             tile
                                             depressed
                                             color="primary"
-                                            :disabled="!(geometry.value !== null && geometry.type !== null)"
+                                            :disabled="!activeScenario || geometry.value === null || geometry.type === null"
                                             @click="createFeature"
                                         >
                                             {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
@@ -376,6 +377,7 @@ export default {
                                         <v-btn
                                             tile
                                             depressed
+                                            :disabled="!activeScenario"
                                             @click="resetFeature"
                                         >
                                             {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}

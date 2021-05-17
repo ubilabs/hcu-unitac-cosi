@@ -49,12 +49,13 @@ export default {
     },
     watch: {
         activeScenario (newActiveScenario, oldActiveScenario) {
-            console.log(newActiveScenario);
             if (oldActiveScenario) {
                 oldActiveScenario.hideScenario();
+                oldActiveScenario.resetAllFeatures();
             }
-            newActiveScenario.restore();
-
+            if (newActiveScenario) {
+                newActiveScenario.restore();
+            }
         }
     },
     methods: {
@@ -73,12 +74,11 @@ export default {
 
             // set the new scenario active, if no other scenario is selected
             if (!this.activeScenario) {
-                this.activeScenario = newScenario;
+                this.setActiveScenario(newScenario);
             }
         },
 
         deleteScenario () {
-            console.warn("not implemented");
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.deleteScenarioWarning"))) {
                 this.activeScenario.prune();
@@ -101,6 +101,7 @@ export default {
                     track-by="name"
                     label="name"
                     :multiple="false"
+                    :allowEmpty="false"
                     selectedLabel=""
                     selectLabel=""
                     deselectLabel=""

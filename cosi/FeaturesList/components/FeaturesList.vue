@@ -13,6 +13,8 @@ import getClusterSource from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
+import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
+import exportXlsx from "../../utils/exportXlsx";
 
 export default {
     name: "FeaturesList",
@@ -20,14 +22,23 @@ export default {
         Tool,
         Multiselect,
         DetailView,
-        FeatureIcon
+        FeatureIcon,
     },
     data () {
         return {
             search: "",
             layerFilter: [],
             expanded: [],
-            filterProps: {}
+            filterProps: {},
+            filteredItems: [],
+            excludedPropsForExport: [
+                "Icon",
+                "Aktionen",
+                "Ein-/Ausschalten",
+                "layerId",
+                "feature",
+                "key"
+            ]
         };
     },
     computed: {
@@ -212,7 +223,7 @@ export default {
                             address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,
                             enabled: true,
-                            isSimulation: feature.get("isSimulation")
+                            isSimulation: feature.get("isSimulation") || false
                         };
                     })];
                 }, []);
@@ -252,13 +263,42 @@ export default {
             };
         },
 
+        /**
+         * @todo
+         * @param {Object} item - the table item clicked
+         * @returns {void}
+         */
         editFeature (item) {
             console.log(item);
             console.warn("not implemented");
         },
+
+        /**
+         * @todo
+         * @param {Object} item - the table item clicked
+         * @returns {void}
+         */
         deleteFeature (item) {
             console.log(item);
             console.warn("not implemented");
+        },
+
+        setFilteredItems (items) {
+            this.filteredItems = items;
+        },
+
+        /**
+         * Export the table as XLSX
+         * Either the simple view or incl. details
+         * @param {Boolean} exportDetails - whether to include the detailed feature data
+         * @returns {void}
+         */
+        exportTable (exportDetails = false) {
+            const data = this.search ? this.filteredItems : this.items,
+                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
+
+            exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         }
     }
 };
@@ -327,6 +367,7 @@ export default {
                                 :items-per-page="20"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
+                                @current-items="setFilteredItems"
                             >
                                 <template v-slot:expanded-item="{ headers, item }">
                                     <td
@@ -372,6 +413,28 @@ export default {
                                     />
                                 </template>
                             </v-data-table>
+                        </div>
+                        <div class="form-group">
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
+                                        @click="exportTable(false)"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
+                                    </v-btn>
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
+                                        @click="exportTable(true)"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
                         </div>
                     </form>
                 </div>

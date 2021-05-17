@@ -1,10 +1,8 @@
 <script>
 import {Select, Translate} from "ol/interaction";
 import {mapGetters, mapActions} from "vuex";
-import {unpackCluster, isCluster} from "../../utils/getClusterSource";
+import {unpackCluster} from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
-import getters from "../store/gettersScenarioBuilder";
-import ScenarioFeature from "../classes/ScenarioFeature";
 
 export default {
     name: "MoveFeatures",
@@ -12,6 +10,11 @@ export default {
         active: {
             type: Boolean,
             required: true
+        },
+        activeScenario: {
+            type: Object,
+            required: false,
+            default: null
         },
         workingLayer: {
             type: Object,
@@ -36,7 +39,6 @@ export default {
         select: null
     }),
     computed: {
-        ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Map", ["map", "layerById"]),
 
         /**
@@ -167,21 +169,12 @@ export default {
          */
         onTranslateStart (evt) {
             const feature = evt.features.item(0);
+            let originalFeature;
 
-            for (const originalFeature of unpackCluster(feature)) {
+            for (originalFeature of unpackCluster(feature)) {
                 // Set the feature on the scenario as modified
                 this.activeScenario.modifyFeature(originalFeature, {}, this.layer);
             }
-
-            // if (!feature.get("originalData")) {
-            //     feature.set("originalData", {
-            //         ...feature.getProperties(),
-            //         location: evt.startCoordinate
-            //     });
-            // }
-            // else if (!feature.get("originalData").location) {
-            //     feature.get("originalData").location = evt.startCoordinate;
-            // }
         },
 
         /**
@@ -192,16 +185,13 @@ export default {
          */
         onTranslateEnd (evt) {
             const feature = evt.features.item(0);
+            let originalFeature;
 
-            if (isCluster(feature) && feature.getGeometry().getType() === "Point") {
-                let originalFeature;
+            for (originalFeature of unpackCluster(feature)) {
+                originalFeature.getGeometry().setCoordinates(evt.coordinate);
 
-                for (originalFeature of unpackCluster(feature)) {
-                    originalFeature.getGeometry().setCoordinates(evt.coordinate);
-
-                    // modify the feature on the scenario. Update features already stored in the scenario
-                    this.activeScenario.modifyFeature(originalFeature, {location: evt.coordinate}, this.layer);
-                }
+                // modify the feature on the scenario. Update features already stored in the scenario
+                this.activeScenario.modifyFeature(originalFeature, {location: evt.coordinate});
             }
         },
 
@@ -210,18 +200,7 @@ export default {
          * @returns {void}
          */
         resetFeatureLocations () {
-            const features = this.layer.getSource().getFeatures();
-            let feature;
-
-            for (feature of features) {
-                if (feature.get("originalData")?.location) {
-                    const geom = feature.getGeometry();
-
-                    if (geom.getType() === "Point") {
-                        geom.setCoordinates(feature.get("originalData").location);
-                    }
-                }
-            }
+            this.activeScenario.resetFeaturesByLayer(this.layer);
         },
 
         /**
@@ -252,6 +231,7 @@ export default {
             tile
             depressed
             :color="moveFeaturesActive ? 'warning' : ''"
+            :disabled="!activeScenario"
             @click="moveFeaturesActive = !moveFeaturesActive"
         >
             <span v-if="useIcons">
@@ -266,6 +246,7 @@ export default {
             tile
             depressed
             :color="onlyEditSimulated ? 'warning' : ''"
+            :disabled="!activeScenario"
             @click="toggleOnlySimulated"
         >
             <span v-if="useIcons">
@@ -279,6 +260,7 @@ export default {
             :title="$t('additional:modules.tools.cosi.moveFeatures.resetFeatureLocations')"
             tile
             depressed
+            :disabled="!activeScenario"
             @click="resetFeatureLocations"
         >
             <span v-if="useIcons">
