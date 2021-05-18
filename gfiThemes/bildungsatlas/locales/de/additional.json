@@ -1,0 +1,15 @@
+{
+    "addons": {
+        "gfiThemes": {
+            "bildungsatlas": {
+                "searchbarPlaceholder": "Suche nach Adresse, Bezirk, Schule, Stadtteil, Thema",
+                "general": {
+                    "tabData": "Daten",
+                    "tabInfo": "Info",
+                    "disclaimer": "*g.F: geringe Fallzahlen. Die Werte konnten aus datenschutzrechtlichen Gründen nicht ausgewiesen werden oder das Gebiet ist unbewohnt.",
+                    "hint": "Sie können die Position des Fensters durch Drag & Drop ändern."
+                }
+            }
+        }
+    }
+}
