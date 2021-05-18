@@ -29,6 +29,7 @@ export default {
       isochroneFeatures: [],
       steps: [0, 0, 0],
       layers: null,
+      selectedFacilityName: null,
       // layers: [
       //   {
       //     layerName: "Öffentliche Bibliotheken",
@@ -51,7 +52,6 @@ export default {
       //     ],
       //   },
       // ],
-      selectedFacilityName: null,
     };
   },
   mounted() {

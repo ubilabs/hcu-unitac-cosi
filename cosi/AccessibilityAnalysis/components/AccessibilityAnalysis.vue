@@ -1,10 +1,13 @@
 <script>
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import Dropdown from "../../../../src/share-components/dropdowns/DropdownSimple.vue";
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
+import ReachabilityResult from "./ReachabilityResult.vue";
+import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import PointAnalsysis from "./PointAnalysis.vue";
+import methods from "./methodsPointAnalysis";
 
 export default {
   name: "AccessibilityAnalysis",
@@ -12,17 +15,32 @@ export default {
     Tool,
     Dropdown,
     PointAnalsysis,
+    ReachabilityResult,
+    VueSelect,
   },
   data() {
     return {
-      // The selected mode for accessibility analysis
-      // selectedMode: null,
-      selectedMode: "point",
+      mode: "point",
       facilityNames: [],
+      mapLayer: null,
+      coordinate: null,
+      setBySearch: false,
+      transportType: "",
+      scaleUnit: "",
+      distance: "",
+      rawGeoJson: null,
+      showRequestButton: false,
+      isochroneFeatures: [],
+      steps: [0, 0, 0],
+      layers: null,
+      selectedFacilityName: null,
     };
   },
   computed: {
     ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
+    ...mapGetters("Map", ["map", "getOverlayById", "createLayerIfNotExists"]),
+    ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
+    ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
   },
   created() {
     this.$on("close", this.close);
@@ -38,10 +56,28 @@ export default {
    * @returns {void}
    */
   mounted() {
-    this.applyTranslationKey(this.name);
+    // this.applyTranslationKey(this.name);
+
+    // TODO
+    //this.mapLayer = this.createLayerIfNotExists("reachability-from-point");
+    this.mapLayer = Radio.request(
+      "Map",
+      "createLayerIfNotExists",
+      "reachability-from-point"
+    );
+    this.mapLayer.setVisible(true);
+    this.map.addEventListener("click", this.setCoordinateFromClick);
+
+    // TODO: use Radio/Backbone?
+    Backbone.Events.listenTo(Radio.channel("Searchbar"), {
+      hit: this.setSearchResultToOrigin,
+    });
   },
   methods: {
     ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
+    ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
+    ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
+    ...methods,
 
     /**
      * Closes this tool window by setting active to false
@@ -77,6 +113,32 @@ export default {
       );
       this.facilityNames = facilityNames;
     },
+    //TODO: int
+    getTransportTypes: function () {
+      return {
+        "": "-Leeren-",
+        "driving-car": "Auto",
+        "cycling-regular": "Rad",
+        "cycling-electric": "Rad (elektrisch)",
+        "foot-walking": "Gehen",
+        wheelchair: "Rollstuhl",
+      };
+    },
+    getLegendColors: function () {
+      return [
+        "rgba(0, 200, 3, 0.6)",
+        "rgba(100, 100, 3, 0.4)",
+        "rgba(200, 0, 3, 0.4)",
+      ];
+    },
+    //TODO: int
+    getScaleUnits: function () {
+      return {
+        "": "-Leeren-",
+        time: "Zeit (in min)",
+        distance: "Entfernung (in m)",
+      };
+    },
   },
 };
 </script>
@@ -97,7 +159,7 @@ export default {
             >
                 <p>Bitte wählen Sie den Modus, in dem Sie arbeiten möchten: </p>
                 <Dropdown
-                    v-model="selectedMode"
+                    v-model="mode"
                     :options="availableModes"
                 />
                 <p><strong>1) Erreichbarkeit ab einem Referenzpunkt</strong>: Zeigt ein Gebiet an, welches von einem vom Nutzer
@@ -110,10 +172,152 @@ export default {
                     Einzugsbereich ist die Entfernung von der jeweiligen Einrichtung und kann angegeben werden in Zeit oder in
                     Metern. Die Erreichbarkeit wird berechnet abhängig von dem vom Nutzer festgelegten Verkehrsmittel.
                 </p>
-                <PointAnalsysis
-                    :facilityNames="facilityNames"
-                    :mode="selectedMode"
-                />
+          <div v-if="mode!=null" class="isochrones">
+            <form class="form-horizontal">
+              <div v-if="mode == 'point'" class="form-group">
+                <label class="col-sm-3">Referenzpunkt</label>
+                <div class="col-sm-9">
+                  <input
+                    class="form-control input-sm"
+                    title="Referenzpunkt"
+                    id="coordinate"
+                    type="text"
+                    min="0"
+                    v-model="coordinate"
+                  />
+                </div>
+              </div>
+              <div v-if="mode == 'region'" class="form-group">
+                <label class="col-sm-3">Thema</label>
+                <div class="col-sm-9">
+                  <VueSelect
+                    class="style-chooser"
+                    placeholder="Keine Auswahl"
+                    v-model="selectedFacilityName"
+                    :options="facilityNames"
+                    :clearable="false"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3">Verkehrsmittel</label>
+                <div class="col-sm-9">
+                  <Dropdown
+                    title="Verkehrsmittel"
+                    v-model="transportType"
+                    :options="getTransportTypes()"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3">Maßeinheit der Entfernung</label>
+                <div class="col-sm-9">
+                  <Dropdown
+                    title="Maßeinheit der Entfernung"
+                    v-model="scaleUnit"
+                    :options="getScaleUnits()"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3">Entfernung</label>
+                <div class="col-sm-9">
+                  <input
+                    class="form-control input-sm"
+                    title="Entfernung"
+                    id="range"
+                    type="number"
+                    min="0"
+                    v-model="distance"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-5">
+                  <button
+                    type="button"
+                    class="btn btn-lgv-grey"
+                    id="create-isochrones"
+                    @click="createIsochrones()"
+                  >
+                    Berechnen
+                  </button>
+                </div>
+                <div class="col-sm-1">
+                  <div id="help" @click="showHelp()">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </div>
+                </div>
+                <div class="col-sm-1" @click="clear()">
+                  <div id="clear" title="Lösche aktuelles Ergebnis">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <hr />
+            <h5><strong>Legende: </strong></h5>
+            <div id="legend">
+              <template v-for="(j, i) in steps">
+                <svg :key="i" width="15" height="15">
+                  <circle
+                    cx="7.5"
+                    cy="7.5"
+                    r="7.5"
+                    :style="`fill: ${
+                      getLegendColors()[i]
+                    }; stroke-width: 0.5; stroke: #e3e3e3;`"
+                  />
+                </svg>
+                <span :key="i * 2 + steps.length">
+                  {{ j }}
+                </span>
+              </template>
+            </div>
+            <br />
+            <button
+              type="button"
+              class="btn btn-lgv-grey measure-delete"
+              id="show-result"
+              @click="updateResult"
+            >
+              <span class="glyphicon glyphicon-th-list"></span>Einrichtungsabdeckung
+            </button>
+            <div id="result"></div>
+            <template v-if="layers">
+              <ReachabilityResult :layers="layers" />
+              <table>
+                <tr>
+                  <td>
+                    <button
+                      @click="resetMarkerAndZoom"
+                      class="btn btn-lgv-grey measure-delete isochrone-origin"
+                    >
+                      zoom
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      @click="showInDashboard"
+                      type="button"
+                      class="btn btn-lgv-grey measure-delete"
+                    >
+                      Im Dashboard anzeigen
+                    </button>
+                  </td>
+                </tr>
+              </table>
+            </template>
+
+            <button
+              v-if="showRequestButton"
+              class="btn btn-lgv-grey measure-delete"
+              @click="requestInhabitants"
+            >
+              <span class="glyphicon glyphicon-user"></span>Einwohnerabfrage für den
+              Bereich
+            </button>
+          </div>
             </div>
         </template>
     </Tool>

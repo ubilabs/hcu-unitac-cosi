@@ -135,9 +135,8 @@ export default {
                 });
 
                 this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
-                console.log(this.rawGeoJson);
 
-                this.styleFeatures(newFeatures, [coordinate]);
+                this.styleFeatures(newFeatures, [this.coordinate]);
 
                 this.mapLayer.getSource().clear(); // Persistence of more than one isochrones?
                 this.mapLayer.getSource().addFeatures(newFeatures.reverse());

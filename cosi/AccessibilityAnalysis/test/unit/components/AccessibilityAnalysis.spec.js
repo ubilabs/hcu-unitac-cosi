@@ -1,142 +1,156 @@
-import {config, shallowMount} from "@vue/test-utils";
-import {expect} from "chai";
-import AccessibilityAnalysis from "../../../components/AccessibilityAnalysis.vue";
-config.mocks.$t = key => key;
+import Vuex from "vuex";
+import {
+    config,
+    shallowMount,
+    createLocalVue
+} from "@vue/test-utils";
+import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
+import AccessibilityAnalysis from "../../../store/index";
+import {
+    expect
+} from "chai";
 import sinon from "sinon";
+import data from "./isochrones.json";
+import {
+    registerProjections
+} from './util.js'
 
-describe("addons/AccessibilityAnalysis/components/AccessibilityAnalysis.vue", () => {
-    // let spyToggleInteraction,
-    //     spyGetData;
+const localVue = createLocalVue();
 
-    const factory = {
-        getShallowMount: (values = {}, isActive = false) => {
-            return shallowMount(AccessibilityAnalysis, {
-                data () {
-                    return {
-                        ...values
-                    };
-                },
-                computed: {
-                    renderToWindow: () => true,
-                    resizableWindow: () => false,
-                    deactivateGFI: () => true,
-                    active: () => isActive,
-                    glyphicon: () => "glyphicon-map"
+localVue.use(Vuex);
+config.mocks.$t = key => key;
+
+before(() => {
+    registerProjections();
+});
+
+describe("AccessibilityAnalysis.vue", () => {
+    const mockConfigJson = {
+        Portalconfig: {
+            menu: {
+                tools: {
+                    children: {
+                        AccessibilityAnalysis: {
+                            "name": "translate#additional:modules.tools.vueAddon.title",
+                            "glyphicon": "glyphicon-th-list"
+                        }
+                    }
                 }
-            });
+            }
         }
     };
 
-    before(() => {
-        // spyToggleInteraction = sinon.spy(GeoAnalyze.methods, "toggleInteraction");
-        // spyGetData = sinon.spy(GeoAnalyze.methods, "getAnalyzeData");
+    let store, requestStub, sandbox, sourceStub;
+
+    beforeEach(() => {
+        store = new Vuex.Store({
+            namespaces: true,
+            modules: {
+                Tools: {
+                    namespaced: true,
+                    modules: {
+                        AccessibilityAnalysis
+                    }
+                },
+                Map: {
+                    namespaced: true,
+                    getters: {
+                        map: () => ({
+                            addEventListener: () => sinon.stub()
+                        })
+                    },
+                    // mutations: mockMapMutations,
+                    // actions: mockMapActions
+                }
+            },
+            state: {
+                configJson: mockConfigJson
+            }
+        });
+        store.commit("Tools/AccessibilityAnalysis/setActive", true);
+
+        // if (stub)
+        //     stub.restore();
+
+        sandbox = sinon.createSandbox()
+        sourceStub = {
+            clear: sinon.stub(),
+            addFeatures: sinon.stub()
+        }
+        requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
+            if (a1 == 'Map')
+                return {
+                    setVisible: sinon.stub(),
+                    addEventListener: sinon.stub(),
+                    getSource: () => (sourceStub)
+                }
+            if (a1 == "OpenRoute" && a2 == "requestIsochrones") {
+                return new Promise(function (resolve, reject) {
+                    resolve(JSON.stringify(data));
+                });
+            }
+            if (a1 == "Parser" && a2 == "getItemsByAttributes")
+                return []
+        });
+        // requestMock = {
+        //     setVisible: sinon.stub(),
+        //     addEventListener: sinon.stub()
+        // }
+        // stub = sinon.stub(Radio, "request").callsFake(() => requestMock);
     });
 
-    it("should exist", () => {
-        const wrapper = factory.getShallowMount();
-
-        expect(wrapper.exists()).to.be.true;
+    afterEach(function () {
+        sandbox.restore();
     });
 
-    // it("should find Tool component", () => {
-    //     const wrapper = factory.getShallowMount(),
-    //         toolWrapper = wrapper.findComponent({name: "Tool"});
+    function mount() {
 
-    //     expect(toolWrapper.exists()).to.be.true;
-    // });
+        return shallowMount(AccessibilityAnalysisComponent, {
+            store,
+            localVue
+        });
+    }
 
-    // it("should not render if active is false", () => {
-    //     const wrapper = factory.getShallowMount();
+    it("renders Component", () => {
+        const wrapper = mount()
+        expect(wrapper.find("#accessibilityanalysis").exists()).to.be.true;
+    });
 
-    //     expect(wrapper.find("form").exists()).to.be.false;
-    // });
+    it("contains correct html", () => {
+        const wrapper = mount()
+        // expect(wrapper.find("#accessibilityanalysis").html()).to.be.equals('')
+        expect(wrapper.find("#accessibilityanalysis").html()).to.not.be.empty
+    });
 
-    // it("should render if active is true", () => {
-    //     const wrapper = factory.getShallowMount({}, true);
+    it("trigger button without user input", async () => {
+        const stub = sandbox.stub(Radio, "trigger")
+        const wrapper = mount()
+        await wrapper.find("#create-isochrones").trigger("click");
+        sinon.assert.calledWith(stub,
+            "Alert", "alert", {
+                text: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
+                kategorie: "alert-warning",
+            });
+    });
 
-    //     expect(wrapper.find("form").exists()).to.be.true;
-    // });
+    it("trigger button with user input", async () => {
+        sandbox.stub(Radio, "trigger")
+        const wrapper = mount()
 
-    // it("should activate the draw interaction initially", () => {
-    //     const wrapper = factory.getShallowMount({}, true);
+        // const input = wrapper.find('#coordinate')
+        // input.element.value = 
+        // input.trigger('keyup')
+        // await wrapper.vm.$nextTick();
+        await wrapper.setData({
+            coordinate: "10.155828082155567, 53.60323024735499",
+            transportType: "Auto",
+            scaleUnit: "time",
+            distance: 10
+        });
 
-    //     expect(wrapper.vm.draw.getActive()).to.be.true;
-    // });
+        await wrapper.find("#create-isochrones").trigger("click");
 
-    // it("should call toggleInteraction if data 'selectedOption' is changed", async () => {
-    //     const wrapper = factory.getShallowMount();
-
-    //     await wrapper.setData({
-    //         selectedOption: "select"
-    //     });
-    //     expect(spyToggleInteraction.calledOnce).to.be.true;
-    // });
-
-    // it("should activate select interaction if data 'selectedOption' is set to 'select'", async () => {
-    //     const wrapper = factory.getShallowMount();
-
-    //     await wrapper.setData({
-    //         selectedOption: "select"
-    //     });
-    //     expect(wrapper.vm.select.getActive()).to.be.true;
-    // });
-
-    // it("should deactivate draw interaction if data 'selectedOption' is set to 'select'", async () => {
-    //     const wrapper = factory.getShallowMount();
-
-    //     await wrapper.setData({
-    //         selectedOption: "select"
-    //     });
-    //     expect(wrapper.vm.draw.getActive()).to.be.false;
-    // });
-
-    // it("should set currentResultComponent to 'GeoAnalyzeResultGeometry' if data 'selectedOption' is set to 'select'", async () => {
-    //     const wrapper = factory.getShallowMount();
-
-    //     await wrapper.setData({
-    //         selectedOption: "select"
-    //     });
-    //     expect(wrapper.vm.currentResultComponent).to.equal("GeoAnalyzeResultGeometry");
-    // });
-
-    // it("should set currentResultComponent to 'GeoAnalyzeResultGeometry' if data 'selectedOption' is set to 'click'", async () => {
-    //     const wrapper = factory.getShallowMount();
-
-    //     await wrapper.setData({
-    //         selectedOption: "click"
-    //     });
-    //     expect(wrapper.vm.currentResultComponent).to.equal("GeoAnalyzeResultBuilding");
-    // });
-
-    // it("should find child component GeoAnalyzeResultGeometry", () => {
-    //     const wrapper = factory.getShallowMount({
-    //         result: {
-    //             test: "Test"
-    //         }
-    //     }, true);
-
-    //     expect(wrapper.findComponent({name: "GeoAnalyzeResultGeometry"}).exists()).to.be.true;
-    // });
-
-    // it("should find child component GeoAnalyzeResultBuilding", () => {
-    //     const wrapper = factory.getShallowMount({
-    //         result: ["Test"],
-    //         selectedOption: "click"
-    //     }, true);
-
-    //     expect(wrapper.findComponent({name: "GeoAnalyzeResultBuilding"}).exists()).to.be.true;
-    // });
-
-    // it("should call getAnalyzeData if button is clicked", async () => {
-    //     const wrapper = factory.getShallowMount({
-    //             result: {
-    //                 test: "Test"
-    //             }
-    //         }, true),
-    //         button = wrapper.find("button");
-
-    //     await button.trigger("click");
-    //     expect(spyGetData.calledOnce).to.be.true;
-    // });
-
+        sinon.assert.callCount(sourceStub.clear, 1)
+        sinon.assert.callCount(sourceStub.addFeatures, 1)
+    });
 });
