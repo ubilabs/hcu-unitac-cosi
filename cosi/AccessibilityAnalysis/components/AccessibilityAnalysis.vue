@@ -17,19 +17,21 @@ export default {
     return {
       // The selected mode for accessibility analysis
       // selectedMode: null,
-      selectedMode: 'point',
+      selectedMode: "point",
+      facilityNames: [],
     };
   },
   computed: {
     ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
   },
-  watch: {
-    selectedMode() {
-      console.log(this.selectedMode);
-    },
-  },
   created() {
     this.$on("close", this.close);
+    const that = this;
+    Backbone.Events.listenTo(Radio.channel("ModelList"), {
+      updatedSelectedLayerList: function (models) {
+        that.setFacilityLayers(models);
+      },
+    });
   },
   /**
    * Put initialize here if mounting occurs after config parsing
@@ -58,6 +60,22 @@ export default {
       if (model) {
         model.set("isActive", false);
       }
+    },
+    /**
+     * set facilityNames in model, trigger renderDropDownView
+     * @param {Object} models layer models of updated selected layer
+     * @returns {void}
+     */
+    setFacilityLayers: function (models) {
+      console.log("models");
+      console.log(models);
+      const facilityLayerModels = models.filter(
+        (model) => model.get("isFacility") === true
+      );
+      const facilityNames = facilityLayerModels.map((model) =>
+        model.get("name").trim()
+      );
+      this.facilityNames = facilityNames;
     },
   },
 };
@@ -93,13 +111,9 @@ export default {
                     Metern. Die Erreichbarkeit wird berechnet abhängig von dem vom Nutzer festgelegten Verkehrsmittel.
                 </p>
                 <PointAnalsysis
-                    v-if="selectedMode == 'point'"
+                    :facilityNames="facilityNames"
+                    :mode="selectedMode"
                 />
-                <div
-                    v-if="selectedMode == 'region'"
-                >
-                    region
-                </div>
             </div>
         </template>
     </Tool>

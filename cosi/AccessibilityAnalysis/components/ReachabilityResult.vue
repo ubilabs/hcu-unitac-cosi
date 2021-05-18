@@ -29,7 +29,7 @@ export default {
      * @return {void}
      */
     zoomToOrigin: function (coord) {
-      this.placingPointMarker(coord)
+      this.placingPointMarker(coord);
       Radio.trigger("MapView", "setCenter", coord);
     },
   },

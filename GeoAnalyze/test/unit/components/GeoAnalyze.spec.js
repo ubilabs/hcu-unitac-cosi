@@ -1,6 +1,6 @@
 import {config, shallowMount} from "@vue/test-utils";
 import {expect} from "chai";
-import GeoAnalyze from "../../../components/GeoAnalyze.vue";
+import GeoAnalyze from "../../../../geoAnalyze/components/GeoAnalyze.vue";
 config.mocks.$t = key => key;
 import sinon from "sinon";
 
