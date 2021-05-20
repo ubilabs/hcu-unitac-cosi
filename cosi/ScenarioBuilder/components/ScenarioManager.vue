@@ -153,22 +153,25 @@ export default {
         >
             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
             <v-form
+                id="new-scenario-form"
                 v-model="newScenarioValid"
-                class="new-scenario-form"
+                @submit="createNewScenario"
             >
                 <v-row>
                     <v-col cols="12">
                         <v-text-field
                             v-model="newScenarioName"
+                            required
                             :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
                         />
                         <v-btn
                             tile
                             depressed
+                            type="submit"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                             :rules="newScenarioRules"
                             :disabled="!newScenarioValid"
-                            @click="createNewScenario"
+                            form="new-scenario-form"
                         >
                             {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
                         </v-btn>
@@ -180,7 +183,7 @@ export default {
 </template>
 
 <style lang="less" scoped>
-    .new-scenario-form {
+    #new-scenario-form {
         width: 40vw;
     }
 </style>

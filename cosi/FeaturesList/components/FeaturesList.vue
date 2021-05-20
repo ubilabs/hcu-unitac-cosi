@@ -15,6 +15,7 @@ import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
+import arrayIsEqual from "../../utils/arrayIsEqual";
 
 export default {
     name: "FeaturesList",
@@ -160,14 +161,18 @@ export default {
 
         /**
          * Listens to the layers change on the map to refresh the table
-         * @listens #change:Map/visibleLayerList
+         * @listens #change:FeaturesList/activeVectorLayerList
+         * @param {module:ol/layer/Vector[]} newList - the new activeVectorLayerList
+         * @param {module:ol/layer/Vector[]} oldList - the old activeVectorLayerList
          * @returns {void}
          */
-        visibleLayerList () {
-            this.$nextTick(() => {
-                this.updateFeaturesList();
-            });
-        }
+        activeVectorLayerList (newList, oldList) {
+            if (!arrayIsEqual(newList, oldList)) {
+                this.$nextTick(() => {
+                    this.updateFeaturesList();
+                });
+            }
+        },
     },
     created () {
         /**

@@ -163,7 +163,6 @@ export default {
             // create unique hash as ID
             feature.setId(hash({...this.featureProperties, geom: this.geometry}));
 
-            // this.addFeatureToScenario({feature, layer});
             this.activeScenario.addFeature(
                 new ScenarioFeature(feature, layer)
             );
@@ -299,7 +298,8 @@ export default {
                                 <v-row
                                     v-for="field in featureTypeDesc"
                                     :key="field.name"
-                                    :class="compareLayerMapping(field, workingLayer) ? 'primary lighten-2' : ''"
+                                    :class="compareLayerMapping(field, workingLayer) ? 'essential-field elevation-5' : ''"
+                                    :title="compareLayerMapping(field, workingLayer) ? $t('additional:modules.tools.cosi.scenarioBuilder.essentiallField') : ''"
                                     dense
                                 >
                                     <v-col cols="3">

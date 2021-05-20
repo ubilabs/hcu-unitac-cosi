@@ -19,6 +19,7 @@
                     "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
                     "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
                     "required": "Erforderlich",
+                    "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
                     "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie eins an.",
                     "defineFeature": "Neue Einrichtung definieren"
                 },
