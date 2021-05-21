@@ -1,11 +1,13 @@
 import Vuex from "vuex";
-import {shallowMount, createLocalVue} from "@vue/test-utils";
+import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
 import Bildungsatlas from "../../../components/Bildungsatlas.vue";
 
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
+
+config.mocks.$t = key => key;
 
 describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
     let wrapper;

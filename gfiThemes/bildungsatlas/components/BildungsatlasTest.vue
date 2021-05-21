@@ -1,11 +1,15 @@
 <script>
-import {convertComplexTypeToPiechart, sortComplexType} from "../../../utils/complexType.js";
+import {optimizeComplexTypeValues, convertComplexTypeToPiechart, convertComplexTypeToBarchart, convertComplexTypeToLinechart, convertComplexTypesToMultilinechart, sortComplexType} from "../../../utils/complexType.js";
 import Piechart from "../../../../src/share-components/charts/components/Piechart.vue";
+import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
+import Linechart from "../../../../src/share-components/charts/components/Linechart.vue";
 
 export default {
     name: "BildungsatlasTest",
     components: {
-        Piechart
+        Piechart,
+        Barchart,
+        Linechart
     },
     props: {
         /**
@@ -36,13 +40,28 @@ export default {
         return {
             bezirk_name: "",
             stadtteil_name: "",
-            piechartData: false
+            piechartData: false,
+            barchartData: false,
+            linechartData: false,
+            multiLinechartData: false,
+            multiLinechartData2: false
         };
     },
     mounted () {
         this.bezirk_name = this.properties?.bezirk_name ? this.properties.bezirk_name : "";
         this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
-        this.piechartData = convertComplexTypeToPiechart(sortComplexType(this.properties?.anzahl_sus_primarstufe));
+        this.piechartData = convertComplexTypeToPiechart(sortComplexType(optimizeComplexTypeValues(this.properties?.anzahl_sus_primarstufe, 2)));
+        this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties?.anzahl_sus_primarstufe, 2)));
+        this.linechartData = convertComplexTypeToLinechart(sortComplexType(optimizeComplexTypeValues(this.properties?.anzahl_sus_primarstufe, 2)));
+        this.multiLinechartData = convertComplexTypesToMultilinechart([
+            sortComplexType(optimizeComplexTypeValues(this.properties?.anzahl_sus_primarstufe, 2)),
+            sortComplexType(optimizeComplexTypeValues(this.properties?.anzahl_sus_sekundarstufe, 2))
+        ]);
+        this.multiLinechartData2 = convertComplexTypesToMultilinechart([
+            sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_stadtteilschulen, 2)),
+            sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_gymnasien, 2)),
+            sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_sonderschulen, 2))
+        ]);
     }
 };
 </script>
@@ -53,16 +72,78 @@ export default {
             class="tab-panel gfi-data"
             :class="{ 'hidden': !isActiveTab('data') }"
         >
-            <p>{{ bezirk_name }}</p>
-            <p>{{ stadtteil_name }}</p>
+            <p>
+                Bezirk: {{ bezirk_name }}
+            </p>
+            <p>
+                Stadtteil: {{ stadtteil_name }}
+            </p>
+            <hr>
+            <p class="diagram_title">
+                Beispiel Kuchendiagramm: Anzahl der Schülerinnen und Schüler an Grundschulen
+            </p>
+            <Piechart
+                v-if="piechartData"
+                diagramType="pie"
+                :givenOptions="{}"
+                :data="piechartData"
+            />
+            <hr>
+            <p class="diagram_title">
+                Beispiel Doughnut-Diagram: Anzahl der Schülerinnen und Schüler an Grundschulen
+            </p>
             <Piechart
                 v-if="piechartData"
                 diagramType="doughnut"
                 :givenOptions="{}"
                 :data="piechartData"
             />
-            <p>{{ $t("additional:addons.gfiThemes.bildungsatlas.general.disclaimer") }}</p>
-            <p>{{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}</p>
+            <hr>
+            <p class="diagram_title">
+                Beispiel Balkendiagramm: Anzahl der Schülerinnen und Schüler an Grundschulen
+            </p>
+            <Barchart
+                v-if="barchartData"
+                :givenOptions="{}"
+                :data="barchartData"
+            />
+            <hr>
+            <p class="diagram_title">
+                Beispiel Liniendiagramm: Anzahl der Schülerinnen und Schüler an Grundschulen
+            </p>
+            <Linechart
+                v-if="linechartData"
+                :givenOptions="{}"
+                :data="linechartData"
+            />
+            <hr>
+            <p class="diagram_title">
+                Beispiel Multi-Liniendiagramm: Anzahl der Schülerinnen und Schüler an Primar- und Sekundarstufen
+            </p>
+            <Linechart
+                v-if="multiLinechartData"
+                :givenOptions="{}"
+                :data="multiLinechartData"
+            />
+            <hr>
+            <p class="diagram_title">
+                Beispiel Multi-Liniendiagramm: Verschiedene Anteile
+            </p>
+            <Linechart
+                v-if="multiLinechartData2"
+                :givenOptions="{}"
+                :data="multiLinechartData2"
+            />
+            <hr>
+            <p class="diagram_title">
+                Beispiel Footer:
+            </p>
+            <p>
+                {{ $t("additional:addons.gfiThemes.bildungsatlas.general.disclaimer") }}
+            </p>
+            <p>
+                {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
+            </p>
         </div>
         <div
             class="tab-panel gfi-info"
@@ -89,6 +170,9 @@ export default {
         padding: 0 10px 10px;
     }
 
+    .diagram_title {
+        margin-top: 50px;
+    }
     .hidden {
         display: none;
     }
