@@ -11,10 +11,13 @@ import {
     expect
 } from "chai";
 import sinon from "sinon";
-import data from "./isochrones.json";
+import data from "./isochrones1.json";
+import features from "./features1.json";
+import featuresRegion from "./featuresRegion.json";
 import {
     registerProjections
 } from './util.js'
+import GeoJSON from "ol/format/GeoJSON";
 
 const localVue = createLocalVue();
 
@@ -40,6 +43,29 @@ describe("AccessibilityAnalysis.vue", () => {
             }
         }
     };
+
+    const layersMock = [{
+        get: (id) => {
+            if (id == 'name') return 'LayerName'
+            if (id == 'id') return 'LayerId'
+            if (id == 'layer') {
+                return {
+                    getSource: () => ({
+                        getFeatures: sinon.stub().returns([{
+                            style_: null,
+                            getProperties: sinon.stub().returns({
+                                id: 'label'
+                            }),
+                            getGeometry: sinon.stub().returns({
+                                getType: () => 'Point',
+                                getCoordinates: () => ([0, 0])
+                            })
+                        }])
+                    })
+                }
+            }
+        },
+    }]
 
     let store, requestStub, sandbox, sourceStub;
 
@@ -104,6 +130,9 @@ describe("AccessibilityAnalysis.vue", () => {
             if (a1 == "ModelList" && a2 == "getModelsByAttributes") {
                 return layersMock
             }
+            if (a1 == "ModelList" && a2 == "getModelByAttributes") {
+                return layersMock[0]
+            }
         });
         return shallowMount(AccessibilityAnalysisComponent, {
             store,
@@ -147,7 +176,8 @@ describe("AccessibilityAnalysis.vue", () => {
 
         sinon.assert.callCount(sourceStub.clear, 1)
         sinon.assert.callCount(sourceStub.addFeatures, 1)
-
+        expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
+            JSON.stringify(features))
         await wrapper.find("#show-result").trigger("click");
         sinon.assert.calledWith(stub,
             "Alert", "alert", {
@@ -156,28 +186,26 @@ describe("AccessibilityAnalysis.vue", () => {
             });
     });
 
+    it("trigger button with user input and region selected", async () => {
+        const wrapper = mount(layersMock)
+        const stub = sandbox.stub(Radio, "trigger")
+        await wrapper.setData({
+            mode: 'region',
+            transportType: "Auto",
+            scaleUnit: "time",
+            distance: 10,
+            selectedFacilityName: 'familyName'
+        });
+
+        await wrapper.find("#create-isochrones").trigger("click");
+
+        sinon.assert.callCount(sourceStub.clear, 1)
+        sinon.assert.callCount(sourceStub.addFeatures, 1)
+        expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
+            JSON.stringify(featuresRegion))
+    });
+
     it("trigger button with user input and selected layer", async () => {
-        const layersMock = [{
-            get: (id) => {
-                if (id == 'name') return 'LayerName'
-                if (id == 'id') return 'LayerId'
-                if (id == 'layer') {
-                    return {
-                        getSource: () => ({
-                            getFeatures: sinon.stub().returns([{
-                                getProperties: sinon.stub().returns({
-                                    id: 'label'
-                                }),
-                                getGeometry: sinon.stub().returns({
-                                    getType: () => 'Point',
-                                    getCoordinates: () => ([0, 0])
-                                })
-                            }])
-                        })
-                    }
-                }
-            },
-        }]
 
         const wrapper = mount(layersMock)
         const stub = sandbox.stub(Radio, "trigger")

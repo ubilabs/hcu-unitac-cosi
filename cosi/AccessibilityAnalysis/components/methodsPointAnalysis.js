@@ -12,6 +12,13 @@ import InfoTemplate from "text-loader!./info.html";
 import * as turf from "@turf/turf";
 
 export default {
+    createIsochrones: async function () {
+        if (this.mode == 'point') {
+            this.createIsochronesPoint()
+        } else {
+            this.createIsochronesRegion()
+        }
+    },
     /**
      * creates the isochrone features, set the styles, and add them to the map layer
      * @fires Alerting#RadioTriggerAlertAlertRemove
@@ -19,7 +26,7 @@ export default {
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
      * @returns {void}
      */
-    createIsochrones2: function () {
+    createIsochronesRegion: async function () {
         const range =
             this.scaleUnit === "time" ? this.distance * 60 : this.distance;
 
@@ -39,57 +46,55 @@ export default {
                 coordinatesList.push(arrayItem);
             }
             // each group of 5 coordinates
-            const promiseList = [];
-            coordinatesList.forEach(coordinates => {
-                promiseList.push(Radio.request("OpenRoute", "requestIsochrones", this.transportType, coordinates, this.scaleUnit,
-                        [range, range * 0.67, range * 0.33])
-                    .then(res => {
-                        // reverse JSON object sequence to render the isochrones in the correct order
-                        // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
-                        const json = JSON.parse(res),
-                            reversedFeatures = [...json.features].reverse(),
-                            groupedFeatures = [
-                                [],
-                                [],
-                                []
-                            ];
+            const groupedFeaturesList = [];
+            for (const coordinates of coordinatesList) {
+                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coordinates, this.scaleUnit,
+                    [range, range * 0.67, range * 0.33])
+                // reverse JSON object sequence to render the isochrones in the correct order
+                // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
+                const json = JSON.parse(res),
+                    reversedFeatures = [...json.features].reverse(),
+                    groupedFeatures = [
+                        [],
+                        [],
+                        []
+                    ];
 
-                        for (let i = 0; i < reversedFeatures.length; i = i + 3) {
-                            groupedFeatures[i % 3].push(reversedFeatures[i]);
-                            groupedFeatures[(i + 1) % 3].push(reversedFeatures[i + 1]);
-                            groupedFeatures[(i + 2) % 3].push(reversedFeatures[i + 2]);
-                        }
-                        json.features = reversedFeatures;
-                        return groupedFeatures;
-                    }));
-            });
-            Promise.all(promiseList).then((groupedFeaturesList) => {
-                this.mapLayer.getSource().clear();
-                for (let i = 0; i < 3; i++) {
-                    let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]);
-
-                    layeredList = [].concat(...layeredList);
-                    let layerUnion = layeredList[0];
-
-                    for (let j = 0; j < layeredList.length; j++) {
-                        layerUnion = turf.union(layerUnion, layeredList[j]);
-                    }
-                    let layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
-                    layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
-
-                    const featureType = "Erreichbarkeit im Gebiet"
-                    layerUnionFeatures.forEach(feature => {
-                        feature.set("featureType", featureType)
-                    });
-                    this.styleFeatures(layerUnionFeatures);
-                    this.mapLayer.getSource().addFeatures(layerUnionFeatures);
+                for (let i = 0; i < reversedFeatures.length; i = i + 3) {
+                    groupedFeatures[i % 3].push(reversedFeatures[i]);
+                    groupedFeatures[(i + 1) % 3].push(reversedFeatures[i + 1]);
+                    groupedFeatures[(i + 2) % 3].push(reversedFeatures[i + 2]);
                 }
-            });
+                json.features = reversedFeatures;
+                groupedFeaturesList.push(groupedFeatures);
+            };
+            this.mapLayer.getSource().clear();
+            let features = []
+            for (let i = 0; i < 3; i++) {
+                let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]);
+
+                layeredList = [].concat(...layeredList);
+                let layerUnion = layeredList[0];
+
+                for (let j = 0; j < layeredList.length; j++) {
+                    layerUnion = turf.union(layerUnion, layeredList[j]);
+                }
+                let layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
+                layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
+
+                const featureType = "Erreichbarkeit im Gebiet"
+                layerUnionFeatures.forEach(feature => {
+                    feature.set("featureType", featureType)
+                });
+                this.styleFeatures(layerUnionFeatures);
+                features = features.concat(layerUnionFeatures)
+            }
+            this.mapLayer.getSource().addFeatures(features);
         } else {
             this.inputReminder();
         }
     },
-    createIsochrones: async function () {
+    createIsochronesPoint: async function () {
         // coordinate has to be in the format of [[lat,lon]] for the request
         const range =
             this.scaleUnit === "time" ? this.distance * 60 : this.distance;
@@ -109,6 +114,7 @@ export default {
                     this.scaleUnit,
                     [range * 0.33, range * 0.67, range]
                 );
+
 
                 const distance = parseFloat(this.distance);
                 this.steps = [distance * 0.33, distance * 0.67, distance].map((n) =>
@@ -442,7 +448,6 @@ export default {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
             name: name
         });
-
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
                 .getSource().getFeatures().filter(f => typeof f.style_ === "object" || f.style_ === null);

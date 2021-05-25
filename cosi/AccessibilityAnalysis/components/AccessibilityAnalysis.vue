@@ -6,7 +6,6 @@ import ReachabilityResult from "./ReachabilityResult.vue";
 import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
-import PointAnalsysis from "./PointAnalysis.vue";
 import methods from "./methodsPointAnalysis";
 
 export default {
@@ -14,7 +13,6 @@ export default {
   components: {
     Tool,
     Dropdown,
-    PointAnalsysis,
     ReachabilityResult,
     VueSelect,
   },
