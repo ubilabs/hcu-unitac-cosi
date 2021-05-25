@@ -46,8 +46,6 @@ export default {
                     .then(res => {
                         // reverse JSON object sequence to render the isochrones in the correct order
                         // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
-                        console.log("res")
-                        console.log(res)
                         const json = JSON.parse(res),
                             reversedFeatures = [...json.features].reverse(),
                             groupedFeatures = [
@@ -297,7 +295,6 @@ export default {
      * @returns {void}
      */
     updateResult: function () {
-        //TODO
         const visibleLayerModels = Radio.request(
             "ModelList",
             "getModelsByAttributes", {
@@ -312,64 +309,54 @@ export default {
             Radio.trigger("Alert", "alert:remove");
             visibleLayerModels.forEach((layerModel) => {
                 const features = layerModel.get("layer").getSource().getFeatures();
-                let idSelector;
+                if (features && features.length) {
+                    const props = features[0].getProperties()
+                    let idSelector;
+                    /**
+                     * hard coded id selector for facility layers
+                     */
+                    if (props.schul_id) {
+                        idSelector = props.schulname ?
+                            "schulname" :
+                            "schul_id";
+                    } else if (props.einrichtung) {
+                        idSelector = props.name ?
+                            "name" :
+                            "einrichtung";
+                    } else if (props.Einrichtungsnummer) {
+                        idSelector = props.Name_normalisiert ?
+                            "Name_normalisiert" :
+                            "Einrichtungsnummer";
+                    } else if (props.identnummer) {
+                        idSelector = props.belegenheit ?
+                            "belegenheit" :
+                            "identnummer";
+                    } else if (props.hauptklasse) {
+                        idSelector = props.anbietername ?
+                            "anbietername" :
+                            "strasse";
+                    }
+                    // inscribe the coordinate to the feature for rendering to the resultView DOM Element
+                    // for zooming to feature by click
+                    const sfeatures = features.map((feature, i) => {
+                        const geometry = feature.getGeometry();
+                        const coord =
+                            geometry.getType() === "Point" ?
+                            geometry.getCoordinates().splice(0, 2) :
+                            Extent.getCenter(geometry.getExtent());
 
-                /**
-                 * hard coded id selector for facility layers
-                 */
-                if (features[0].getProperties().schul_id) {
-                    idSelector = features[0].getProperties().schulname ?
-                        "schulname" :
-                        "schul_id";
-                } else if (features[0].getProperties().einrichtung) {
-                    idSelector = features[0].getProperties().name ?
-                        "name" :
-                        "einrichtung";
-                } else if (features[0].getProperties().Einrichtungsnummer) {
-                    idSelector = features[0].getProperties().Name_normalisiert ?
-                        "Name_normalisiert" :
-                        "Einrichtungsnummer";
-                } else if (features[0].getProperties().identnummer) {
-                    idSelector = features[0].getProperties().belegenheit ?
-                        "belegenheit" :
-                        "identnummer";
-                } else if (features[0].getProperties().hauptklasse) {
-                    idSelector = features[0].getProperties().anbietername ?
-                        "anbietername" :
-                        "strasse";
+                        let label = feature.getProperties()[idSelector];
+                        if (!label) label = i + 1;
+                        return [label, coord];
+                    });
+
+                    this.layers.push({
+                        layerName: layerModel.get("name"),
+                        layerId: layerModel.get("id"),
+                        features: sfeatures,
+                    });
                 }
-                // inscribe the coordinate to the feature for rendering to the resultView DOM Element
-                // for zooming to feature by click
-                const sfeatures = features.map((feature, i) => {
-                    const geometry = feature.getGeometry();
-                    const coord =
-                        geometry.getType() === "Point" ?
-                        geometry.getCoordinates().splice(0, 2) :
-                        Extent.getCenter(geometry.getExtent());
-
-                    let label = feature.getProperties()[idSelector];
-                    if (!label) label = i + 1;
-                    return [label, coord];
-                });
-
-                this.layers.push({
-                    layerName: layerModel.get("name"),
-                    layerId: layerModel.get("id"),
-                    features: sfeatures,
-                });
             });
-            // dataObj.coordinate = Proj.transform(
-            //   this.coordinate,
-            //   "EPSG:4326",
-            //   "EPSG:25832"
-            // );
-
-            console.log(this.layers);
-
-            // this.model.set("dataObj", dataObj);
-            // this.resultView = new ReachabilityResultView({ model: this.model });
-            // this.$el.find("#result").html(this.resultView.render().$el);
-            // this.$el.find("#show-in-dashboard").show();
         } else {
             this.selectionReminder();
         }
@@ -390,14 +377,14 @@ export default {
         Radio.trigger("MapView", "setCenter", icoord);
     },
     showInDashboard: function () {
-        //TODO
-        Radio.trigger("Dashboard", "append", this.$el, "#dashboard-containers", {
+        const el = $(this.$refs.result)
+        Radio.trigger("Dashboard", "append", el, "#dashboard-containers", {
             id: "reachability",
             name: "Erreichbarkeit ab einem Referenzpunkt",
             glyphicon: "glyphicon-road",
             scalable: true,
         });
-        // this.$el.find("#dashboard-container").empty();
+        el.find("#dashboard-container").empty();
     },
     /**
      * shows help window

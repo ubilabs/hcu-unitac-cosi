@@ -56,10 +56,8 @@ export default {
    * @returns {void}
    */
   mounted() {
-    // this.applyTranslationKey(this.name);
+    this.applyTranslationKey(this.name);
 
-    // TODO
-    //this.mapLayer = this.createLayerIfNotExists("reachability-from-point");
     this.mapLayer = Radio.request(
       "Map",
       "createLayerIfNotExists",
@@ -68,7 +66,6 @@ export default {
     this.mapLayer.setVisible(true);
     this.map.addEventListener("click", this.setCoordinateFromClick);
 
-    // TODO: use Radio/Backbone?
     Backbone.Events.listenTo(Radio.channel("Searchbar"), {
       hit: this.setSearchResultToOrigin,
     });
@@ -86,13 +83,11 @@ export default {
     close() {
       this.setActive(false);
 
-      // TODO replace trigger when Menu is migrated
       // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
       // else the menu-entry for this tool is always highlighted
       const model = Radio.request("ModelList", "getModelByAttributes", {
         id: this.$store.state.Tools.AccessibilityAnalysis.id,
       });
-
       if (model) {
         model.set("isActive", false);
       }
@@ -103,8 +98,6 @@ export default {
      * @returns {void}
      */
     setFacilityLayers: function (models) {
-      console.log("models");
-      console.log(models);
       const facilityLayerModels = models.filter(
         (model) => model.get("isFacility") === true
       );
@@ -157,12 +150,12 @@ export default {
                 v-if="active"
                 id="accessibilityanalysis"
             >
-                <p>Bitte wählen Sie den Modus, in dem Sie arbeiten möchten: </p>
+                <p class="dropdown-info">Bitte wählen Sie den Modus, in dem Sie arbeiten möchten: </p>
                 <Dropdown
                     v-model="mode"
                     :options="availableModes"
                 />
-                <p><strong>1) Erreichbarkeit ab einem Referenzpunkt</strong>: Zeigt ein Gebiet an, welches von einem vom Nutzer
+                <!-- <p><strong>1) Erreichbarkeit ab einem Referenzpunkt</strong>: Zeigt ein Gebiet an, welches von einem vom Nutzer
                     gewählten Punkt auf der Karte innerhalb einer vom Nutzer festgelegten Entfernung erreichbar ist. Die Entfernung
                     kann in Zeit oder in Metern angegeben werden. Die Erreichbarkeit wird berechnet abhängig von dem vom Nutzer
                     festgelegten Verkehrsmittel.
@@ -171,7 +164,7 @@ export default {
                     festgelegten Einrichtungsart (z.B. Kindergärten) in dem von dem Nutzer festgelegten Einzugsbereich. Der
                     Einzugsbereich ist die Entfernung von der jeweiligen Einrichtung und kann angegeben werden in Zeit oder in
                     Metern. Die Erreichbarkeit wird berechnet abhängig von dem vom Nutzer festgelegten Verkehrsmittel.
-                </p>
+                </p> -->
           <div v-if="mode!=null" class="isochrones">
             <form class="form-horizontal">
               <div v-if="mode == 'point'" class="form-group">
@@ -274,49 +267,50 @@ export default {
                 </span>
               </template>
             </div>
-            <br />
-            <button
-              type="button"
-              class="btn btn-lgv-grey measure-delete"
-              id="show-result"
-              @click="updateResult"
-            >
-              <span class="glyphicon glyphicon-th-list"></span>Einrichtungsabdeckung
-            </button>
-            <div id="result"></div>
-            <template v-if="layers">
-              <ReachabilityResult :layers="layers" />
-              <table>
-                <tr>
-                  <td>
-                    <button
-                      @click="resetMarkerAndZoom"
-                      class="btn btn-lgv-grey measure-delete isochrone-origin"
-                    >
-                      zoom
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      @click="showInDashboard"
-                      type="button"
-                      class="btn btn-lgv-grey measure-delete"
-                    >
-                      Im Dashboard anzeigen
-                    </button>
-                  </td>
-                </tr>
-              </table>
-            </template>
+            <div v-if="mode=='point'">
+              <button
+                type="button"
+                class="btn btn-lgv-grey measure-delete update-result-button"
+                id="show-result"
+                @click="updateResult"
+              >
+                <span class="glyphicon glyphicon-th-list"></span>Einrichtungsabdeckung
+              </button>
+              <div v-if="layers" ref="result" id="result">
+                <ReachabilityResult  :layers="layers" />
+                <table>
+                  <tr>
+                    <td>
+                      <button
+                        @click="resetMarkerAndZoom"
+                        class="btn btn-lgv-grey measure-delete isochrone-origin"
+                      >
+                        zoom
+                      </button>
+                    </td>
+                    <td id="dashboard-container">
+                      <button
+                        @click="showInDashboard"
+                        type="button"
+                        class="btn btn-lgv-grey measure-delete"
+                        id="show-in-dashboard"
+                      >
+                        Im Dashboard anzeigen
+                      </button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
 
-            <button
-              v-if="showRequestButton"
-              class="btn btn-lgv-grey measure-delete"
-              @click="requestInhabitants"
-            >
-              <span class="glyphicon glyphicon-user"></span>Einwohnerabfrage für den
-              Bereich
-            </button>
+              <button
+                v-if="showRequestButton"
+                class="btn btn-lgv-grey measure-delete"
+                @click="requestInhabitants"
+              >
+                <span class="glyphicon glyphicon-user"></span>Einwohnerabfrage für den
+                Bereich
+              </button>
+            </div>
           </div>
             </div>
         </template>
@@ -325,8 +319,16 @@ export default {
 
 <style lang="less">
 #accessibilityanalysis {
-  min-width: 300px;
-  max-width: 500px;
+  width: 400px;
   min-height: 100px;
+}
+.isochrones {
+  margin-top: 10px;
+}
+.dropdown-info {
+  margin-bottom: 5px;
+}
+.update-result-button {
+  margin-top: 10px;
 }
 </style>

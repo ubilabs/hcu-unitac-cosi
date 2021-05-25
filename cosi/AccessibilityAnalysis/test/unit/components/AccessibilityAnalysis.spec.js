@@ -5,6 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
+import ReachabilityResult from "../../../components/ReachabilityResult.vue";
 import AccessibilityAnalysis from "../../../store/index";
 import {
     expect
@@ -69,9 +70,18 @@ describe("AccessibilityAnalysis.vue", () => {
         });
         store.commit("Tools/AccessibilityAnalysis/setActive", true);
 
-        // if (stub)
-        //     stub.restore();
+        // requestMock = {
+        //     setVisible: sinon.stub(),
+        //     addEventListener: sinon.stub()
+        // }
+        // stub = sinon.stub(Radio, "request").callsFake(() => requestMock);
+    });
 
+    afterEach(function () {
+        sandbox.restore();
+    });
+
+    function mount(layersMock) {
         sandbox = sinon.createSandbox()
         sourceStub = {
             clear: sinon.stub(),
@@ -91,20 +101,10 @@ describe("AccessibilityAnalysis.vue", () => {
             }
             if (a1 == "Parser" && a2 == "getItemsByAttributes")
                 return []
+            if (a1 == "ModelList" && a2 == "getModelsByAttributes") {
+                return layersMock
+            }
         });
-        // requestMock = {
-        //     setVisible: sinon.stub(),
-        //     addEventListener: sinon.stub()
-        // }
-        // stub = sinon.stub(Radio, "request").callsFake(() => requestMock);
-    });
-
-    afterEach(function () {
-        sandbox.restore();
-    });
-
-    function mount() {
-
         return shallowMount(AccessibilityAnalysisComponent, {
             store,
             localVue
@@ -123,8 +123,8 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button without user input", async () => {
-        const stub = sandbox.stub(Radio, "trigger")
         const wrapper = mount()
+        const stub = sandbox.stub(Radio, "trigger")
         await wrapper.find("#create-isochrones").trigger("click");
         sinon.assert.calledWith(stub,
             "Alert", "alert", {
@@ -133,14 +133,9 @@ describe("AccessibilityAnalysis.vue", () => {
             });
     });
 
-    it("trigger button with user input", async () => {
-        sandbox.stub(Radio, "trigger")
-        const wrapper = mount()
-
-        // const input = wrapper.find('#coordinate')
-        // input.element.value = 
-        // input.trigger('keyup')
-        // await wrapper.vm.$nextTick();
+    it("trigger button with user input no layer selected", async () => {
+        const wrapper = mount([])
+        const stub = sandbox.stub(Radio, "trigger")
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
             transportType: "Auto",
@@ -152,5 +147,59 @@ describe("AccessibilityAnalysis.vue", () => {
 
         sinon.assert.callCount(sourceStub.clear, 1)
         sinon.assert.callCount(sourceStub.addFeatures, 1)
+
+        await wrapper.find("#show-result").trigger("click");
+        sinon.assert.calledWith(stub,
+            "Alert", "alert", {
+                text: '<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel "Sportstätten".</strong>',
+                kategorie: "alert-warning",
+            });
     });
+
+    it("trigger button with user input and selected layer", async () => {
+        const layersMock = [{
+            get: (id) => {
+                if (id == 'name') return 'LayerName'
+                if (id == 'id') return 'LayerId'
+                if (id == 'layer') {
+                    return {
+                        getSource: () => ({
+                            getFeatures: sinon.stub().returns([{
+                                getProperties: sinon.stub().returns({
+                                    id: 'label'
+                                }),
+                                getGeometry: sinon.stub().returns({
+                                    getType: () => 'Point',
+                                    getCoordinates: () => ([0, 0])
+                                })
+                            }])
+                        })
+                    }
+                }
+            },
+        }]
+
+        const wrapper = mount(layersMock)
+        const stub = sandbox.stub(Radio, "trigger")
+        await wrapper.setData({
+            coordinate: "10.155828082155567, 53.60323024735499",
+            transportType: "Auto",
+            scaleUnit: "time",
+            distance: 10
+        });
+
+        await wrapper.find("#create-isochrones").trigger("click");
+
+        sinon.assert.callCount(sourceStub.clear, 1)
+        sinon.assert.callCount(sourceStub.addFeatures, 1)
+
+        await wrapper.find("#show-result").trigger("click");
+
+        const result = wrapper.findComponent(ReachabilityResult).props()
+        expect(result['layers']).to.not.be.empty
+
+        await wrapper.find("#show-in-dashboard").trigger("click");
+        sinon.assert.calledWith(stub, "Dashboard", "append")
+    });
+
 });
