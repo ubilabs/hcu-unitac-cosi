@@ -11,8 +11,8 @@ import {
     expect
 } from "chai";
 import sinon from "sinon";
-import data from "./isochrones1.json";
-import features from "./features1.json";
+import data from "./isochronesPoint.json";
+import features from "./featuresPoint.json";
 import featuresRegion from "./featuresRegion.json";
 import {
     registerProjections
