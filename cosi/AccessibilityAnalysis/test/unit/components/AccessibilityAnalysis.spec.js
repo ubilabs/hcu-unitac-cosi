@@ -86,8 +86,6 @@ describe("AccessibilityAnalysis.vue", () => {
                             addEventListener: () => sinon.stub()
                         })
                     },
-                    // mutations: mockMapMutations,
-                    // actions: mockMapActions
                 }
             },
             state: {
@@ -95,12 +93,6 @@ describe("AccessibilityAnalysis.vue", () => {
             }
         });
         store.commit("Tools/AccessibilityAnalysis/setActive", true);
-
-        // requestMock = {
-        //     setVisible: sinon.stub(),
-        //     addEventListener: sinon.stub()
-        // }
-        // stub = sinon.stub(Radio, "request").callsFake(() => requestMock);
     });
 
     afterEach(function () {
@@ -111,7 +103,8 @@ describe("AccessibilityAnalysis.vue", () => {
         sandbox = sinon.createSandbox()
         sourceStub = {
             clear: sinon.stub(),
-            addFeatures: sinon.stub()
+            addFeatures: sinon.stub(),
+            getFeatures: sinon.stub().returns([[]])
         }
         requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 == 'Map')
@@ -143,11 +136,6 @@ describe("AccessibilityAnalysis.vue", () => {
     it("renders Component", () => {
         const wrapper = mount()
         expect(wrapper.find("#accessibilityanalysis").exists()).to.be.true;
-    });
-
-    it("contains correct html", () => {
-        const wrapper = mount()
-        // expect(wrapper.find("#accessibilityanalysis").html()).to.be.equals('')
         expect(wrapper.find("#accessibilityanalysis").html()).to.not.be.empty
     });
 
@@ -174,16 +162,22 @@ describe("AccessibilityAnalysis.vue", () => {
 
         await wrapper.find("#create-isochrones").trigger("click");
 
-        sinon.assert.callCount(sourceStub.clear, 1)
         sinon.assert.callCount(sourceStub.addFeatures, 1)
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
             JSON.stringify(features))
+
+        expect(wrapper.find('#legend').text().replace(/\s/g, '')).to.equal('3.306.7010')
+
         await wrapper.find("#show-result").trigger("click");
         sinon.assert.calledWith(stub,
             "Alert", "alert", {
                 text: '<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel "Sportstätten".</strong>',
                 kategorie: "alert-warning",
             });
+
+        await wrapper.find("#clear").trigger("click");
+        sinon.assert.callCount(sourceStub.clear, 1)
+        expect(wrapper.find('#legend').text().replace(/\s/g, '')).to.equal('000')
     });
 
     it("trigger button with user input and region selected", async () => {
@@ -199,10 +193,11 @@ describe("AccessibilityAnalysis.vue", () => {
 
         await wrapper.find("#create-isochrones").trigger("click");
 
-        sinon.assert.callCount(sourceStub.clear, 1)
         sinon.assert.callCount(sourceStub.addFeatures, 1)
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
             JSON.stringify(featuresRegion))
+
+        expect(wrapper.find('#legend').text().replace(/\s/g, '')).to.equal('3.306.7010')
     });
 
     it("trigger button with user input and selected layer", async () => {
@@ -218,7 +213,6 @@ describe("AccessibilityAnalysis.vue", () => {
 
         await wrapper.find("#create-isochrones").trigger("click");
 
-        sinon.assert.callCount(sourceStub.clear, 1)
         sinon.assert.callCount(sourceStub.addFeatures, 1)
 
         await wrapper.find("#show-result").trigger("click");
@@ -230,4 +224,20 @@ describe("AccessibilityAnalysis.vue", () => {
         sinon.assert.calledWith(stub, "Dashboard", "append")
     });
 
+    it("show help for selectedmode", async () =>
+    { 
+        const stub = sandbox.stub(Radio, "trigger")
+        const wrapper = mount([])
+        await wrapper.find("#help").trigger("click");
+
+        expect(stub.getCall(0).args[1]).to.equal('alert:remove')
+        expect(stub.getCall(1).args[2]['text']).to.contain('Erreichbarkeit ab einem Referenzpunkt')
+
+        await wrapper.setData({
+            mode: 'region'
+        });
+
+        await wrapper.find("#help").trigger("click");
+        expect(stub.getCall(3).args[2]['text']).to.contain('Erreichbarkeit im Gebiet')
+    })
 });

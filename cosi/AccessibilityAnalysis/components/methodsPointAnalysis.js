@@ -8,10 +8,15 @@ import {
     Stroke,
     Style
 } from "ol/style.js";
-import InfoTemplate from "text-loader!./info.html";
+import InfoTemplatePoint from "text-loader!./info_point.html";
+import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 
 export default {
+    /**
+     * create isochrones features
+     * @returns {void}
+     */
     createIsochrones: async function () {
         if (this.mode == 'point') {
             this.createIsochronesPoint()
@@ -20,7 +25,7 @@ export default {
         }
     },
     /**
-     * creates the isochrone features, set the styles, and add them to the map layer
+     * create isochrones features for selected several coordiantes
      * @fires Alerting#RadioTriggerAlertAlertRemove
      * @fires Core#RadioRequestMapGetLayerByName
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
@@ -68,7 +73,6 @@ export default {
                 json.features = reversedFeatures;
                 groupedFeaturesList.push(groupedFeatures);
             };
-            this.mapLayer.getSource().clear();
             let features = []
             for (let i = 0; i < 3; i++) {
                 let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]);
@@ -86,16 +90,23 @@ export default {
                 layerUnionFeatures.forEach(feature => {
                     feature.set("featureType", featureType)
                 });
-                this.styleFeatures(layerUnionFeatures);
                 features = features.concat(layerUnionFeatures)
             }
+            this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
+            const distance = parseFloat(this.distance);
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) =>
+                Number.isInteger(n) ? n.toString() : n.toFixed(2)
+            );
         } else {
             this.inputReminder();
         }
     },
+    /**
+     * create isochrones features for selected several coordiantes
+     * @returns {void}
+     */
     createIsochronesPoint: async function () {
-        // coordinate has to be in the format of [[lat,lon]] for the request
         const range =
             this.scaleUnit === "time" ? this.distance * 60 : this.distance;
 
@@ -142,7 +153,6 @@ export default {
 
                 this.styleFeatures(newFeatures, [this.coordinate]);
 
-                this.mapLayer.getSource().clear(); // Persistence of more than one isochrones?
                 this.mapLayer.getSource().addFeatures(newFeatures.reverse());
                 this.isochroneFeatures = newFeatures;
                 this.setIsochroneAsBbox();
@@ -191,6 +201,10 @@ export default {
         });
         return features;
     },
+    /**
+     * add coordinate after user click
+     * @param  {} evt Event from User click
+     */
     setCoordinateFromClick: function (evt) {
         const coordinate = Proj.transform(
             evt.coordinate,
@@ -202,6 +216,8 @@ export default {
         this.placingPointMarker(evt.coordinate);
         this.setBySearch = false;
     },
+    /**
+     */
     setSearchResultToOrigin: function () {
         let features = this.markerPoint.getSource().getFeatures();
         if (features.length == 1) {
@@ -250,14 +266,6 @@ export default {
             kategorie: "alert-danger",
         });
     },
-    /**
-     * clears the list of facilities within the isochrones
-     * @returns {void}
-     */
-    // hideDashboardButton: function () {
-    //   this.$el.find("#show-in-dashboard").hide();
-    //   //   this.$el.find("#hh-request").hide();
-    // },
     /**
      * style isochrone features
      * @param {ol.Feature} features isochone features (polygons)
@@ -399,7 +407,7 @@ export default {
     showHelp: function () {
         Radio.trigger("Alert", "alert:remove");
         Radio.trigger("Alert", "alert", {
-            text: InfoTemplate,
+            text: this.mode == 'point' ? InfoTemplatePoint : InfoTemplateRegion,
             kategorie: "alert-info",
             position: "center-center",
         });
@@ -417,8 +425,7 @@ export default {
 
         if (this.mapLayer.getSource().getFeatures().length > 0) {
             this.mapLayer.getSource().clear();
-            //TODO
-            if (this.extent.length > 0) {
+            if (this.extent?.length > 0) {
                 setBBoxToGeom(this.boundingGeometry);
             }
         }
