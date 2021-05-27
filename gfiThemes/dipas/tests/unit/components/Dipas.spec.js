@@ -175,5 +175,16 @@ describe("addons/dipas/components/Dipas.vue", () => {
 
             expect(ret).to.equal(path);
         });
+
+        it("should show path to dipas frontend contribution when table = true and filter = visible", function () {
+            Object.defineProperty(document, "referrer", {value: "https://localhost:9001/portalconfigs/dipas/#/projektinfo?filter=open&test=true", configurable: true});
+
+            createWrapper(false);
+
+            const path = "https://localhost:9001/portalconfigs/dipas/#/contribution/5",
+                ret = wrapper.vm.modifyContributionLink(wrapper.vm.feature.getMappedProperties().link, wrapper.vm.feature.getMappedProperties().nid);
+
+            expect(ret).to.equal(path);
+        });
     });
 });

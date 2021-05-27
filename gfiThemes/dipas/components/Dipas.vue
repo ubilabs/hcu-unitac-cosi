@@ -69,7 +69,6 @@ export default {
          * Generates the valid link to the contribution, depending on the environment.
          * @param  {String} link - gfi feature attribute value for 'link'
          * @param  {String} nid - gfi feature attribute value for 'nid'
-         * @fires StyleList#RadioRequestStyleListReturnModeById
          * @returns {String} the link to the contribution
          */
         modifyContributionLink (link, nid) {
@@ -77,7 +76,7 @@ export default {
                 contributionLink = "";
 
             if (!this.isTable) {
-                parentLocation = document.referrer;
+                parentLocation = document.referrer.split("?")[0];
                 contributionLink = parentLocation.split("#")[0] + "#/contribution/" + nid;
             }
             else {
@@ -124,7 +123,7 @@ export default {
             class="dipas-gfi-more"
             :href="modifyContributionLink(feature.getMappedProperties().link, feature.getMappedProperties().nid)"
             target="_top"
-        >mehr</a>
+        >{{ $t("additional:addons.gfiThemes.dipas.moreLink") }}</a>
     </div>
 </template>
 
