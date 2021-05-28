@@ -13,40 +13,55 @@ export default {
         const input = inputs.evt.target.value,
             layer = inputs.layer;
 
-        if (input.slice(-1) !== " ") {
-            if (!isNaN(input.slice(-1))) {
-                dispatch("filterHouseNumbers", {input, layer});
-            }
-            else if (input.length > 2) {
-                dispatch("searchStreets", input);
-            }
+        if (input.slice(-1) !== " " && input.length > 2) {
+            dispatch("searchStreets", {input, layer});
         }
     },
 
     /**
      * Search for streets that contains the input.
      * @param {Object} context The vuex context.
-     * @param {String} input The inout part of a streetname.
+     * @param {String} input The input part of a streetname.
      * @returns {void}
      */
-    searchStreets ({rootGetters, commit, dispatch}, input) {
-        commit("setHouseNumbers", []);
-        commit("setFilteredHouseNumbers", []);
-
+    searchStreets ({rootGetters, dispatch}, {input, layer}) {
         search(input, {
             map: rootGetters["Map/map"],
             searchStreets: true
         }).then(streets => {
             const sortedStreetNames = streets.map(street => street.name).sort();
 
-            commit("setStreetNames", sortedStreetNames);
-            if (sortedStreetNames.length === 1) {
-                dispatch("searchHousenumbers", {
-                    streetName: sortedStreetNames[0],
-                    eventType: "input"
-                });
-            }
+            dispatch("processStreetNames", {input, layer, sortedStreetNames});
         });
+    },
+
+    /**
+     * Depending on the number of street names,
+     * a distinction is made between searching for house numbers,
+     * filtering or resetting everything.
+     * @param {Object} context The vuex context.
+     * @param {String} payload The payload.
+     * @param {String} payload.input The input address.
+     * @param {ol/Source} payload.layer Vector source of the route layer.
+     * @param {String[]} payload.sortedStreetNames The sorted street names.
+     * @returns {void}
+     */
+    processStreetNames ({commit, dispatch}, {input, layer, sortedStreetNames}) {
+        if (sortedStreetNames.length === 1) {
+            commit("setStreetNames", sortedStreetNames);
+            dispatch("searchHousenumbers", {
+                streetName: sortedStreetNames[0],
+                eventType: "input"
+            });
+        }
+        else if (sortedStreetNames.length > 0) {
+            commit("setStreetNames", sortedStreetNames);
+            commit("setHouseNumbers", []);
+            commit("setFilteredHouseNumbers", []);
+        }
+        else {
+            dispatch("filterHouseNumbers", {input, layer});
+        }
     },
 
     /**
@@ -88,7 +103,7 @@ export default {
      */
     filterHouseNumbers ({state, commit, dispatch}, inputs) {
         const input = inputs.input,
-            filteredHouseNumbers = state.houseNumbers.filter(houseNumber => houseNumber.name.search(input) !== -1);
+            filteredHouseNumbers = state.houseNumbers.filter(houseNumber => houseNumber.name.toLowerCase().includes(input.toLowerCase()));
 
         commit("setInputAddress", input);
 

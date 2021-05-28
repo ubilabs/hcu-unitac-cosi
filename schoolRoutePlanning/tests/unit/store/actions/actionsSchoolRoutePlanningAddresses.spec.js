@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 const {
     processInput,
-    searchStreets,
+    processStreetNames,
     searchHousenumbers,
     filterHouseNumbers,
     findHouseNumber
@@ -25,11 +25,14 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningAdd
             };
 
             testAction(processInput, payload, {}, {}, [
-                {type: "searchStreets", payload: "Mickey-Mouse-Street", dispatch: true}
+                {type: "searchStreets", payload: {
+                    input: "Mickey-Mouse-Street",
+                    layer: "The layer"
+                }, dispatch: true}
             ], {}, done);
         });
 
-        it("processInput start filter housenumbers", done => {
+        it("processInput start searchStreets for streetname with housenumber", done => {
             const payload = {
                 evt: {
                     target: {
@@ -40,7 +43,7 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningAdd
             };
 
             testAction(processInput, payload, {}, {}, [
-                {type: "filterHouseNumbers", payload: {
+                {type: "searchStreets", payload: {
                     input: "Mickey-Mouse-Street 1",
                     layer: "The layer"
                 }, dispatch: true}
@@ -49,12 +52,47 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningAdd
     });
 
     describe("searchStreets", () => {
-        it("searchStreets and set housenumbers empty", done => {
-            const payload = "Mickey-Mouse-Street";
+        it("searchHousenumbers id sortedStreetNames length === 1", done => {
+            const payload = {
+                input: "Mickey-Mouse-Street",
+                layer: "The layer",
+                sortedStreetNames: ["StreetA"]
+            };
 
-            testAction(searchStreets, payload, {}, {}, [
+            testAction(processStreetNames, payload, {}, {}, [
+                {type: "setStreetNames", payload: ["StreetA"]},
+                {type: "searchHousenumbers", payload: {
+                    streetName: "StreetA",
+                    eventType: "input"
+                }, dispatch: true}
+            ], {}, done);
+        });
+
+        it("searchHousenumbers id sortedStreetNames length > 1", done => {
+            const payload = {
+                input: "Mickey-Mouse-Street",
+                layer: "The layer",
+                sortedStreetNames: ["StreetA", "StreetB", "StreetC"]
+            };
+
+            testAction(processStreetNames, payload, {}, {}, [
+                {type: "setStreetNames", payload: ["StreetA", "StreetB", "StreetC"]},
                 {type: "setHouseNumbers", payload: []},
                 {type: "setFilteredHouseNumbers", payload: []}
+            ], {}, done);
+        });
+
+        it("searchHousenumbers id sortedStreetNames length === 0", done => {
+            const payload = {
+                input: "Mickey-Mouse-Street",
+                layer: "The layer",
+                sortedStreetNames: []
+            };
+
+            testAction(processStreetNames, payload, {}, {}, [
+                {type: "filterHouseNumbers", payload: {
+                    input: "Mickey-Mouse-Street",
+                    layer: "The layer"}, dispatch: true}
             ], {}, done);
         });
     });

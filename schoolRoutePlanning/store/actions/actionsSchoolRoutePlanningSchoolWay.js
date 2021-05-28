@@ -14,7 +14,7 @@ export default {
      * @returns {void}
      */
     selectSchool ({state, commit, dispatch}, payload) {
-        const selectedHouseNumber = state.houseNumbers.find(houseNumber => houseNumber.name === state.inputAddress),
+        const selectedHouseNumber = state.houseNumbers.find(houseNumber => houseNumber.name.toLowerCase() === state.inputAddress.toLowerCase()),
             selectedSchoolId = payload.selectedSchoolId;
 
         if (selectedSchoolId) {
