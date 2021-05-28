@@ -34,17 +34,27 @@ export default {
         properties: {
             type: Object,
             required: true
+        },
+        /**
+         * the BildungsatlasApi to access data via wfs with
+         */
+        api: {
+            type: Object,
+            required: true
         }
     },
     data () {
         return {
             bezirk_name: "",
+            bezirk_value: "",
             stadtteil_name: "",
+            stadtteil_value: "",
             piechartData: false,
             barchartData: false,
             linechartData: false,
             multiLinechartData: false,
-            multiLinechartData2: false
+            multiLinechartData2: false,
+            anzahl_sus_primarstufe_stadt: false
         };
     },
     mounted () {
@@ -62,6 +72,25 @@ export default {
             sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_gymnasien, 2)),
             sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_sonderschulen, 2))
         ]);
+
+        // api test values
+        this.api.getValueBezirk("anzahl_sus_primarstufe", this.properties?.bezirk_id, value => {
+            this.bezirk_value = value;
+        }, error => {
+            console.error(error);
+        });
+        this.api.getValueStadtteil("anzahl_sus_primarstufe", this.properties?.stadtteil_id, value => {
+            this.stadtteil_value = value;
+        }, error => {
+            console.error(error);
+        });
+
+        // api test complexType
+        this.api.getComplexTypeStadt("anzahl_sus_primarstufe", complexType => {
+            this.anzahl_sus_primarstufe_stadt = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType)));
+        }, error => {
+            console.error(error);
+        });
     }
 };
 </script>
@@ -76,8 +105,24 @@ export default {
                 Bezirk: {{ bezirk_name }}
             </p>
             <p>
+                Grundschüler im Bezirk (API-Test): {{ bezirk_value }}
+            </p>
+            <hr>
+            <p>
                 Stadtteil: {{ stadtteil_name }}
             </p>
+            <p>
+                Grundschüler im Stadtteil (API-Test): {{ stadtteil_value }}
+            </p>
+            <hr>
+            <p class="diagram_title">
+                Beispiel Balkendiagramm (API-Test): Anzahl der Schülerinnen und Schüler an Grundschulen in Hamburg
+            </p>
+            <Barchart
+                v-if="anzahl_sus_primarstufe_stadt"
+                :givenOptions="{}"
+                :data="anzahl_sus_primarstufe_stadt"
+            />
             <hr>
             <p class="diagram_title">
                 Beispiel Kuchendiagramm: Anzahl der Schülerinnen und Schüler an Grundschulen

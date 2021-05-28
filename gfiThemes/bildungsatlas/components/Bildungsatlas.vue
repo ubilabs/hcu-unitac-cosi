@@ -1,5 +1,6 @@
 <script>
 import BildungsatlasTest from "./BildungsatlasTest.vue";
+import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
 
 export default {
     name: "Bildungsatlas",
@@ -20,7 +21,9 @@ export default {
             activeTab: "data",
             subTheme: "",
             featureType: "",
-            properties: {}
+            properties: {},
+            api: null,
+            configApiUrl: "config.api.json"
         };
     },
     created () {
@@ -44,6 +47,8 @@ export default {
         }
 
         this.properties = typeof properties === "object" && properties !== null ? properties : {};
+
+        this.api = new BildungsatlasApi(this.configApiUrl);
     },
     methods: {
         /**
@@ -88,6 +93,7 @@ export default {
                 :isActiveTab="isActiveTab"
                 :featureType="featureType"
                 :properties="properties"
+                :api="api"
             />
         </div>
     </div>
