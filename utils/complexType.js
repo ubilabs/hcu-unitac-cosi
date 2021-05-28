@@ -58,7 +58,7 @@ function optimizeComplexTypeValues (complexType, decimals = false) {
  * converter for complexTypes to pie chart data for ChartJS
  * @param {ComplexType} complexType the complexType to convert - sort complexTypes beforehand with sortComplexType
  * @param {Object} [options=null] options to apply to each pice of pie
- * @param {*[]|boolean} [pieColors=false] the array of colors (everything converColor accepts) that overwrites the default colors
+ * @param {String[]|boolean} [pieColors=false] the array of colors (everything convertColor accepts) that overwrites the default colors
  * @see {@link https://jfly.uni-koeln.de/color/}
  * @return {Object|boolean} an object following chartJS dataset configuration or false on failure
  * @see {@link https://www.chartjs.org/docs/master/general/data-structures.html}
@@ -104,7 +104,7 @@ function convertComplexTypeToPiechart (complexType, options = null, pieColors = 
  * converter for complexTypes to line chart data for ChartJS
  * @param {ComplexType} complexType the complexType to convert - sort complexTypes beforehand with sortComplexType
  * @param {Object} [options=null] options to apply to each line
- * @param {*} [lineColor="#005ca9"] the color of the line (everything converColor accepts), the default is masterportal standard blue
+ * @param {*} [lineColor="#005ca9"] the color of the line (everything convertColor accepts), the default is masterportal standard blue
  * @return {Object|boolean} an object following chartJS dataset configuration or false on failure
  * @see {@link https://www.chartjs.org/docs/master/general/data-structures.html}
  */
@@ -119,7 +119,7 @@ function convertComplexTypeToLinechart (complexType, options = null, lineColor =
  * converter for complexTypes to multi line chart data for ChartJS
  * @param {ComplexType[]} complexTypes an array of complexTypes to convert - sort each complexTypes beforehand with sortComplexType
  * @param {Object} [options=null] options to apply to each line
- * @param {*[]|boolean} [lineColors=false] the array of colors (everything converColor accepts) that overwrites the default colors
+ * @param {String[]|boolean} [lineColors=false] the array of colors (everything convertColor accepts) that overwrites the default colors
  * @see {@link https://jfly.uni-koeln.de/color/}
  * @return {Object|boolean} an object following chartJS dataset configuration for multilinecharts or false on failure
  * @see {@link https://www.chartjs.org/docs/master/general/data-structures.html}
