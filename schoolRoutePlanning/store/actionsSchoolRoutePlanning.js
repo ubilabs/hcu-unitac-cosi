@@ -30,7 +30,12 @@ export default {
             Radio.trigger("MapView", "setCenter", geometry.getCoordinates(), 5);
         }
         else {
-            Radio.trigger("Map", "zoomToExtent", source.getExtent());
+            const options = {
+                duration: 0,
+                callback: () => Radio.trigger("MapView", "setZoomLevelDown")
+            };
+
+            Radio.trigger("Map", "zoomToExtent", source.getExtent(), options);
         }
     },
 
