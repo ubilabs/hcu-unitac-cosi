@@ -101,9 +101,12 @@ export default {
 
         /**
          * Closes this tool window by setting active to false.
+         * Save in there current school number as initialSelectedSchoolNumber for reopen this tool.
          * @returns {void}
          */
         close () {
+            this.setInitialSelectedSchoolNumber(this.selectedSchoolNumber);
+            this.setSelectedSchoolNumber("");
             this.setActive(false);
 
             // The value "isActive" of the Backbone model is also set to false to change the CSS class in the menu (menu/desktop/tool/view.toggleIsActiveClass)
