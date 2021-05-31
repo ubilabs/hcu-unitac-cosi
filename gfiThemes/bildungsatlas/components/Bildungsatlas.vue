@@ -1,10 +1,12 @@
 <script>
-import BildungsatlasTest from "./BildungsatlasTest.vue";
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
+import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
+import BildungsatlasTest from "./BildungsatlasTest.vue";
 
 export default {
     name: "Bildungsatlas",
     components: {
+        BildungsatlasOKJA,
         BildungsatlasTest
     },
     props: {
@@ -26,31 +28,57 @@ export default {
             configApiUrl: "config.api.json"
         };
     },
+    computed: {
+        subThemeComponent () {
+            if (this.subTheme !== "") {
+                return this.subTheme;
+            }
+            return "BildungsatlasTest";
+        }
+    },
+    watch: {
+        // When the gfi window switched with arrow, the connection will be refreshed
+        feature: {
+            handler (newVal, oldVal) {
+                if (oldVal) {
+                    this.refreshGfi();
+                }
+            },
+            immediate: true
+        }
+    },
     created () {
-        const gfiTheme = this.feature?.getTheme(),
-            gfiParams = gfiTheme?.params,
-            properties = this.feature?.getProperties();
-
-        if (typeof gfiParams === "object" && gfiParams?.subTheme) {
-            this.subTheme = gfiParams.subTheme;
-        }
-        else {
-            console.error("for Bildungsatlas, the config must include a gfiTheme.params.subTheme (" + this.feature.getTitle() + ")");
-            this.subTheme = "";
-        }
-        if (typeof gfiParams === "object" && gfiParams?.featureType) {
-            this.featureType = gfiParams.featureType;
-        }
-        else {
-            console.error("for Bildungsatlas, the config must include a gfiTheme.params.featureType (" + this.feature.getTitle() + ")");
-            this.featureType = "";
-        }
-
-        this.properties = typeof properties === "object" && properties !== null ? properties : {};
-
-        this.api = new BildungsatlasApi(this.configApiUrl);
+        this.refreshGfi();
     },
     methods: {
+        /**
+         * refreshes the gfi
+         * @returns {void}
+         */
+        refreshGfi () {
+            const gfiTheme = this.feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                properties = this.feature?.getProperties();
+
+            if (typeof gfiParams === "object" && gfiParams?.subTheme) {
+                this.subTheme = gfiParams.subTheme;
+            }
+            else {
+                console.error("for Bildungsatlas, the config must include a gfiTheme.params.subTheme (" + this.feature.getTitle() + ")");
+                this.subTheme = "";
+            }
+            if (typeof gfiParams === "object" && gfiParams?.featureType) {
+                this.featureType = gfiParams.featureType;
+            }
+            else {
+                this.featureType = "";
+            }
+
+            this.properties = typeof properties === "object" && properties !== null ? properties : {};
+
+            // BildungsatlasApi is a singleton
+            this.api = new BildungsatlasApi(this.configApiUrl);
+        },
         /**
          * checks if the given tab name is currently active
          * @param {String} tab the tab name
@@ -73,7 +101,10 @@ export default {
 
 <template>
     <div>
-        <ul class="nav nav-pills">
+        <ul
+            v-if="subTheme !== 'BildungsatlasOKJA'"
+            class="nav nav-pills"
+        >
             <li :class="{ active: isActiveTab('data') }">
                 <a
                     href="#data"
@@ -88,10 +119,9 @@ export default {
             </li>
         </ul>
         <div class="tab-content">
-            <BildungsatlasTest
-                v-if="subTheme === 'BildungsatlasTest'"
+            <component
+                :is="subThemeComponent"
                 :isActiveTab="isActiveTab"
-                :featureType="featureType"
                 :properties="properties"
                 :api="api"
             />

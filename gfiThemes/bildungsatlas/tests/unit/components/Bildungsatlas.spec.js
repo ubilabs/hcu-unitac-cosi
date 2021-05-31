@@ -82,7 +82,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
         });
     });
     describe("components", () => {
-        it("should find the child component BildungsatlasTest", () => {
+        it("should find the child component BildungsatlasOKJA", () => {
             const singleTestWrapper = shallowMount(Bildungsatlas, {
                 propsData: {
                     feature: {
@@ -92,7 +92,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasTest",
+                                    subTheme: "BildungsatlasOKJA",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -102,7 +102,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasTest"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasOKJA"}).exists()).to.be.true;
         });
     });
 });

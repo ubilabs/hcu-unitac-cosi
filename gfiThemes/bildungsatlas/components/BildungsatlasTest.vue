@@ -22,13 +22,6 @@ export default {
             required: true
         },
         /**
-         * the featureType to work with
-         */
-        featureType: {
-            type: String,
-            required: true
-        },
-        /**
          * the properties as a key value object
          */
         properties: {

@@ -8,6 +8,44 @@
                     "tabInfo": "Info",
                     "disclaimer": "*g.F: low case numbers. The values could not be shown for data protection reasons or the area is uninhabited.",
                     "hint": "You can change the position of the window by drag & drop."
+                },
+                "okja": {
+                    "typ_der_einrichtung": "Type of children/youth facility",
+                    "durchsch_stammnutzer": "Average number of regular users",
+                    "angebotsstunden_pro_jahr": "Offer hours per year",
+                    "table": {
+                        "title": "Offerings for target groups",
+                        "kinder_0_bis_unter3_jahre": "Children from 0 to under 3 years",
+                        "kinder_3_bis_unter_6_jahre": "Children from 3 to under 6 years",
+                        "kinder_6_bis_unter_10_jahre": "Children from 6 to under 10 years",
+                        "kinder_10_bis_unter_14_jahre": "Children from 10 to under 14 years",
+                        "jugendliche_14_bis_unter_18_jahre": "Youth from 14 to under 18 years",
+                        "junge_erwachsene_18_bis_unter_27_jahre": "Young adults from 18 to under 27 years",
+                        "Ja": "Yes",
+                        "Nein": "No"
+                    },
+                    "piechart_opening": {
+                        "title": "Distributions of opening hours",
+                        "weekdaysAfternoon": "Weekdays afternoon",
+                        "weekdaysEvening": "Weekdays evening",
+                        "weekendsAfternoon": "Weekends afternoon",
+                        "weekendsEvening": "Weekends evening"
+                    },
+                    "piechart_offers": {
+                        "title": "Distribution of the content of the offer",
+                        "allgemeine_und_soziale_bildung": "General and Social Education",
+                        "politische_bildung": "Civic education",
+                        "kulturelle_bildung": "Arts education",
+                        "naturkundliche_bildung": "Natural history education",
+                        "technische_bildung": "Technical education",
+                        "interkulturelle_arbeit_und_integration": "Intercultural work and integration",
+                        "sport_spiel_geselligkeit": "Sports, games and socializing",
+                        "erzieherischer_kinder_und_jugendschutz": "Educational protection of children and youth",
+                        "jugendsozialarbeit": "Youth social work",
+                        "gesundheitsfoerderung": "Health promotion",
+                        "sonstige_gruppenangebote": "Other group offerings",
+                        "foerderung_der_medienkompetenz": "Promotion of media literacy"
+                    }
                 }
             }
         }

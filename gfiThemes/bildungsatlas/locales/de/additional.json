@@ -8,6 +8,44 @@
                     "tabInfo": "Info",
                     "disclaimer": "*g.F: geringe Fallzahlen. Die Werte konnten aus datenschutzrechtlichen Gründen nicht ausgewiesen werden oder das Gebiet ist unbewohnt.",
                     "hint": "Sie können die Position des Fensters durch Drag & Drop ändern."
+                },
+                "okja": {
+                    "typ_der_einrichtung": "Typ der Einrichtung",
+                    "durchsch_stammnutzer": "Durchschnittliche Anzahl der Stammnutzer",
+                    "angebotsstunden_pro_jahr": "Angebotsstunden pro Jahr",
+                    "table": {
+                        "title": "Angebote für Zielgruppen",
+                        "kinder_0_bis_unter3_jahre": "Kinder von 0 bis unter 3 Jahre",
+                        "kinder_3_bis_unter_6_jahre": "Kinder von 3 bis unter 6 Jahre",
+                        "kinder_6_bis_unter_10_jahre": "Kinder von 6 bis unter 10 Jahre",
+                        "kinder_10_bis_unter_14_jahre": "Kinder von 10 bis unter 14 Jahre",
+                        "jugendliche_14_bis_unter_18_jahre": "Jugendliche von 14 bis unter 18 Jahre",
+                        "junge_erwachsene_18_bis_unter_27_jahre": "Junge Erwachsene von 18 bis unter 27 Jahre",
+                        "Ja": "Ja",
+                        "Nein": "Nein"
+                    },
+                    "piechart_opening": {
+                        "title": "Verteilung der Öffnungszeiten",
+                        "weekdaysAfternoon": "Wochentags Nachmittags",
+                        "weekdaysEvening": "Wochentags Abends",
+                        "weekendsAfternoon": "Wochenende Nachmittags",
+                        "weekendsEvening": "Wochenende Abends"
+                    },
+                    "piechart_offers": {
+                        "title": "Verteilung der inhaltlichen Ausrichtung des Angebots",
+                        "allgemeine_und_soziale_bildung": "Allgemeine und Soziale Bildung",
+                        "politische_bildung": "Politische Bildung",
+                        "kulturelle_bildung": "Kulturelle Bildung",
+                        "naturkundliche_bildung": "Naturkundliche Bildung",
+                        "technische_bildung": "Technische Bildung",
+                        "interkulturelle_arbeit_und_integration": "Interkulturelle Arbeit und Integration",
+                        "sport_spiel_geselligkeit": "Sport, Spiel und Geselligkeit",
+                        "erzieherischer_kinder_und_jugendschutz": "Erzieherischer Kinder- und Jugendschutz",
+                        "jugendsozialarbeit": "Jugendsozialarbeit",
+                        "gesundheitsfoerderung": "Gesundheitsförderung",
+                        "sonstige_gruppenangebote": "Sonstige Gruppenangebote",
+                        "foerderung_der_medienkompetenz": "Förderung der Medienkompetenz"
+                    }
                 }
             }
         }
