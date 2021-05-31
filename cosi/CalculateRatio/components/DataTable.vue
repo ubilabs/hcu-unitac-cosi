@@ -128,7 +128,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
     td {
         text-align:center;
     }
