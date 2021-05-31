@@ -1145,7 +1145,7 @@ export default {
                             :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
                             :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
                             :fActive="fActive_A || fActive_B ? true : false"
-                        ></DataTable>
+                        />
                         <!--<table class="forged_table">
                             <tr class="head_row">
                                 <th>

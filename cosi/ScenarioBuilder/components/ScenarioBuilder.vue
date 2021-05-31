@@ -10,10 +10,11 @@ import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
-import getOlGeomByGmlType from "../utils/getOlGeomByGmlType";
+import {getOlGeomConstructorByGmlType, getOlGeomTypeByGmlType} from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
-// import Polygon from "ol/geom/Polygon";
+import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
+import Draw from "ol/interaction/Draw";
 import {featureTagStyle} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
 import hash from "object-hash";
@@ -40,10 +41,12 @@ export default {
             typesMapping: TypesMapping,
             locationPickerActive: false,
             geometry: {
-                Constructor: null,
+                type: "",
                 value: null
             },
-            valuesForFields: {}
+            valuesForFields: {},
+            drawPolygonInteraction: null,
+            drawLayer: null
         };
     },
     computed: {
@@ -80,6 +83,7 @@ export default {
 
                 this.locationPickerActive = false;
                 this.unlisten();
+                this.clearDrawPolygon();
             }
         }
     },
@@ -88,6 +92,7 @@ export default {
             this.setActive(false);
         });
         this.createGuideLayer();
+        this.createDrawingLayer();
     },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
@@ -110,13 +115,23 @@ export default {
 
             return newLayer;
         },
+        createDrawingLayer () {
+            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id + "_draw");
+
+            newLayer.setVisible(true);
+            this.drawLayer = newLayer;
+
+            return newLayer;
+        },
         resetFeature () {
             this.featureProperties = {};
             this.geometry.value = null;
+            this.clearDrawPolygon();
         },
         toggleLocationPicker (type) {
             this.locationPickerActive = !this.locationPickerActive;
-            this.geometry.Constructor = getOlGeomByGmlType(type);
+            // this.geometry.constructor = getOlGeomConstructorByGmlType(type);
+            this.geometry.type = getOlGeomTypeByGmlType(type);
 
             if (this.locationPickerActive) {
                 this.listen();
@@ -126,24 +141,64 @@ export default {
             }
         },
         listen () {
-            if (this.geometry.Constructor === Point) {
+            if (this.geometry.type === "Point") {
                 this.map.addEventListener("click", this.pickLocation);
+            }
+            else if (this.geometry.type === "Polygon") {
+                this.drawPolygon();
+            }
+            else {
+                // don't toggle location picker active if geom type is not implemented
+                this.locationPickerActive = false;
             }
         },
         unlisten () {
             this.removePointMarker();
-            if (this.geometry.Constructor === Point) {
+            if (this.geometry.type === "Point") {
                 this.map.removeEventListener("click", this.pickLocation);
+            }
+            else if (this.geometry.type === "Polygon") {
+                this.map.removeInteraction(this.drawPolygonInteraction);
+                this.drawPolygonInteraction = null;
             }
         },
         pickLocation (evt) {
-            this.geometry.value = evt.coordinate;
+            console.log(evt);
+            this.geometry.value = new Point(evt.coordinate);
             this.placingPointMarker(evt.coordinate);
         },
-
         resetLocation () {
             this.geometry.value = null;
             this.removePointMarker();
+            this.clearDrawPolygon();
+        },
+        drawPolygon () {
+            this.drawPolygonInteraction = new Draw({
+                source: this.drawLayer.getSource(),
+                type: "Polygon"
+            });
+
+            this.map.addInteraction(this.drawPolygonInteraction);
+
+            this.drawPolygonInteraction.on("drawstart", this.onDrawPolygonStart.bind(this));
+            this.drawPolygonInteraction.on("drawend", this.onDrawPolygonEnd.bind(this));
+        },
+        clearDrawPolygon () {
+            this.drawLayer.getSource().clear();
+            console.log(this.drawPolygonInteraction);
+        },
+        undoDrawPolygonStep () {
+            this.drawPolygonInteraction.removeLastPoint();
+        },
+        onDrawPolygonStart () {
+            this.clearDrawPolygon();
+        },
+        onDrawPolygonEnd (evt) {
+            console.log(evt);
+            const geom = evt.feature.getGeometry();
+
+            console.log(geom);
+            this.geometry.value = geom;
         },
 
         /**
@@ -153,7 +208,7 @@ export default {
          */
         createFeature () {
             const layer = this.layerById(this.workingLayer.layerId).olLayer,
-                geom = this.generateGeometry(),
+                geom = this.geometry.value,
                 feature = new Feature({geometry: geom});
 
             // set properties
@@ -167,16 +222,17 @@ export default {
                 new ScenarioFeature(feature, layer)
             );
             this.unlisten();
+            this.clearDrawPolygon();
             this.locationPickerActive = false;
         },
 
-        /**
-         * Generates a OL geometry of the specified type
-         * @returns {module:ol/geom/Geometry} the generated geometry
-         */
-        generateGeometry () {
-            return new this.geometry.Constructor(this.geometry.value);
-        },
+        // /**
+        //  * Generates a OL geometry of the specified type
+        //  * @returns {module:ol/geom/Geometry} the generated geometry
+        //  */
+        // generateGeometry () {
+        //     return new this.geometry.constructor(this.geometry.value);
+        // },
 
         asyncGetValuesForField (desc) {
             this.valuesForFields = {};
@@ -298,8 +354,8 @@ export default {
                                 <v-row
                                     v-for="field in featureTypeDesc"
                                     :key="field.name"
-                                    :class="compareLayerMapping(field, workingLayer) ? 'essential-field elevation-5' : ''"
-                                    :title="compareLayerMapping(field, workingLayer) ? $t('additional:modules.tools.cosi.scenarioBuilder.essentiallField') : ''"
+                                    :class="compareLayerMapping(field, workingLayer) ? 'essential-field elevation-2 primary lighten-4' : ''"
+                                    :title="compareLayerMapping(field, workingLayer) ? $t('additional:modules.tools.cosi.scenarioBuilder.essentialField') : ''"
                                     dense
                                 >
                                     <v-col cols="3">
@@ -312,6 +368,11 @@ export default {
                                             :label="field.type"
                                             dense
                                         />
+                                        <!-- Add Date Picker for dates -->
+                                        <!-- <v-date-picker
+                                            v-else-if="typesMapping[field.type] !== 'date'"
+                                            v-model="featureProperties[field.name]"
+                                        /> -->
                                         <v-combobox
                                             v-else-if="typesMapping[field.type] !== 'geom'"
                                             v-model="featureProperties[field.name]"
@@ -338,10 +399,26 @@ export default {
                                                     @click="toggleLocationPicker(field.type)"
                                                 >
                                                     <span v-if="useIcons">
-                                                        <v-icon>mdi-map-marker</v-icon>
+                                                        <v-icon>mdi-lead-pencil</v-icon>
+                                                        <!-- <v-icon>{{ geometry.type === 'Polygon' ? 'mdi-lead-pencil' : 'mdi-map-marker' }}</v-icon> -->
                                                     </span>
                                                     <span v-else>
                                                         {{ $t('additional:modules.tools.cosi.scenarioBuilder.chooseLocation') }}
+                                                    </span>
+                                                </v-btn>
+                                                <v-btn
+                                                    v-if="geometry.type === 'Polygon'"
+                                                    tile
+                                                    depressed
+                                                    small
+                                                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.undo')"
+                                                    @click="undoDrawPolygonStep"
+                                                >
+                                                    <span v-if="useIcons">
+                                                        <v-icon>mdi-undo</v-icon>
+                                                    </span>
+                                                    <span v-else>
+                                                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.undo') }}
                                                     </span>
                                                 </v-btn>
                                                 <v-btn
@@ -353,7 +430,8 @@ export default {
                                                     @click="resetLocation"
                                                 >
                                                     <span v-if="useIcons">
-                                                        <v-icon>mdi-map-marker-off</v-icon>
+                                                        <v-icon>mdi-delete-forever</v-icon>
+                                                        <!-- <v-icon>{{ geometry.type === 'Polygon' ? 'mdi-delete-forever' : 'mdi-map-marker-off' }}</v-icon> -->
                                                     </span>
                                                     <span v-else>
                                                         {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetLocation') }}

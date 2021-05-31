@@ -6,7 +6,7 @@ export default {
     props: {
         dataSet: {
             type: Array,
-            default: null
+            default: () => []
         },
         typeA: {
             type: String,
@@ -67,26 +67,18 @@ export default {
             ];
 
             return head.filter(x=>x.show);
-        }
-    },
-    watch: {
-        dataSet () {
-            this.formatData();
-        }
-    },
-    mounted () {
-        this.formatData();
-    },
-    methods: {
+        },
+
         formatData () {
-            this.dataSet.forEach(scope => {
-                scope.paramA_val = scope.paramA_val.toLocaleString("de-DE");
-                scope.paramB_val = scope.paramB_val.toLocaleString("de-DE");
-                scope.relation = scope.relation.toLocaleString("de-DE");
-                scope.coverage = scope.coverage.toLocaleString("de-DE");
-                scope.capacity = scope.capacity.toLocaleString("de-DE");
-                scope.need = scope.need.toLocaleString("de-DE");
-            });
+            return this.dataSet.map(scope => ({
+                ...scope,
+                paramA_val: scope.paramA_val.toLocaleString("de-DE"),
+                paramB_val: scope.paramB_val.toLocaleString("de-DE"),
+                relation: scope.relation.toLocaleString("de-DE"),
+                coverage: scope.coverage.toLocaleString("de-DE"),
+                capacity: scope.capacity.toLocaleString("de-DE"),
+                need: scope.need.toLocaleString("de-DE")
+            }));
         }
     }
 };
@@ -96,7 +88,7 @@ export default {
     <div class="data_table">
         <v-data-table
             :headers="headers"
-            :items="dataSet"
+            :items="formatData"
             :items-per-page="10"
             class="elevation-1"
         >
@@ -105,14 +97,15 @@ export default {
             >
                 <div class="table_cell">
                     {{ item.paramA_val }}
-
-                    <span v-if="item.data.incompleteDataSets_A > 0">*</span>
-                    <div
-                        v-if="item.data.incompleteDataSets_A > 0"
-                        class="hover_helper"
-                    >
-                        {{ item.data.incompleteDataSets_A.toLocaleString("de-DE") }} / {{ item.data.dataSets_A }}
-                    </div>
+                    <span v-if="item.data">
+                        <span v-if="item.data.incompleteDataSets_A > 0">*</span>
+                        <div
+                            v-if="item.data.incompleteDataSets_A > 0"
+                            class="hover_helper"
+                        >
+                            {{ item.data.incompleteDataSets_A.toLocaleString("de-DE") }} / {{ item.data.dataSets_A }}
+                        </div>
+                    </span>
                 </div>
             </template>
             <template
@@ -120,14 +113,15 @@ export default {
             >
                 <div class="table_cell">
                     {{ item.paramB_val }}
-
-                    <span v-if="item.data.incompleteDataSets_B > 0">*</span>
-                    <div
-                        v-if="item.data.incompleteDataSets_B > 0"
-                        class="hover_helper"
-                    >
-                        {{ item.data.incompleteDataSets_B.toLocaleString("de-DE") }} / {{ item.data.dataSets_B }}
-                    </div>
+                    <span v-if="item.data">
+                        <span v-if="item.data.incompleteDataSets_B > 0">*</span>
+                        <div
+                            v-if="item.data.incompleteDataSets_B > 0"
+                            class="hover_helper"
+                        >
+                            {{ item.data.incompleteDataSets_B.toLocaleString("de-DE") }} / {{ item.data.dataSets_B }}
+                        </div>
+                    </span>
                 </div>
             </template>
         </v-data-table>

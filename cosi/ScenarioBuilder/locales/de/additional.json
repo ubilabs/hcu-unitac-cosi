@@ -21,7 +21,8 @@
                     "required": "Erforderlich",
                     "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
                     "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie eins an.",
-                    "defineFeature": "Neue Einrichtung definieren"
+                    "defineFeature": "Neue Einrichtung definieren",
+                    "undo": "Schritt zurück"
                 },
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",

@@ -5,7 +5,7 @@
     "float": "number",
     "integer": "number",
     "string": "string",
-    "data": "date",
+    "date": "date",
     "boolean": "boolean",
     "gml:PointPropertyType": "geom",
     "gml:LinePropertyType": "geom",

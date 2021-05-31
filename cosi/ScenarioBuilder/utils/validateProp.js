@@ -39,8 +39,9 @@ export function compareLayerMapping (field, layerMap) {
  * @returns {Function[]} the rule set for the data type
  */
 export default function validateProp (field, layerMap) {
-    const baseRule = field.minOccurs > 0 || compareLayerMapping(field, layerMap) ? rules.required : [],
-        type = typesMapping[field.type] || [];
+    const baseRule = parseInt(field.minOccurs, 10) > 0 || compareLayerMapping(field, layerMap) ? rules.required : [],
+        type = typesMapping[field.type],
+        typeRules = rules[type] || [];
 
-    return [...baseRule, ...rules[type]];
+    return [...baseRule, ...typeRules];
 }
