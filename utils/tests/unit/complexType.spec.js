@@ -1,6 +1,7 @@
 import {expect} from "chai";
 import {
     optimizeComplexTypeValues,
+    changeMetadata,
     convertComplexTypeToPiechart,
     convertComplexTypeToBarchart,
     convertComplexTypeToLinechart,
@@ -1391,6 +1392,57 @@ describe("addons/utils/complexType.js", () => {
                 };
 
             expect(convertComplexTypesToMultilinechart(complexData, {}, lineColors)).to.deep.equal(expected);
+        });
+    });
+
+    describe("changeMetadata", () => {
+        it("should return false if anything but a complexType is given", () => {
+            expect(changeMetadata(undefined)).to.be.false;
+            expect(changeMetadata(null)).to.be.false;
+            expect(changeMetadata("string")).to.be.false;
+            expect(changeMetadata(1234)).to.be.false;
+            expect(changeMetadata(true)).to.be.false;
+            expect(changeMetadata(false)).to.be.false;
+            expect(changeMetadata([])).to.be.false;
+            expect(changeMetadata({})).to.be.false;
+        });
+        it("should return false if anything but a string is given as key", () => {
+            const complexType = {
+                metadata: {type: "timeseries", format: "format", description: "description"},
+                values: [
+                    {key: "key", value: "value"}
+                ]
+            };
+
+            expect(changeMetadata(complexType, undefined)).to.be.false;
+            expect(changeMetadata(complexType, null)).to.be.false;
+            expect(changeMetadata(complexType, 1234)).to.be.false;
+            expect(changeMetadata(complexType, true)).to.be.false;
+            expect(changeMetadata(complexType, false)).to.be.false;
+            expect(changeMetadata(complexType, [])).to.be.false;
+            expect(changeMetadata(complexType, {})).to.be.false;
+        });
+        it("should change any entry in metadata and return true in doing so", () => {
+            const complexType = {
+                metadata: {type: "timeseries", format: "format", description: "description", anyentry: false},
+                values: [
+                    {key: "key", value: "value"}
+                ]
+            };
+
+            expect(changeMetadata(complexType, "anyentry", true)).to.be.true;
+            expect(complexType?.metadata?.anyentry).to.be.true;
+        });
+        it("should add any entry into metadata and return true in doing so", () => {
+            const complexType = {
+                metadata: {type: "timeseries", format: "format", description: "description"},
+                values: [
+                    {key: "key", value: "value"}
+                ]
+            };
+
+            expect(changeMetadata(complexType, "anyentry", true)).to.be.true;
+            expect(complexType?.metadata?.anyentry).to.be.true;
         });
     });
 });

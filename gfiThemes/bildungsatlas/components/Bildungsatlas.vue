@@ -2,6 +2,7 @@
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
 import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
+import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
 import BildungsatlasTest from "./BildungsatlasTest.vue";
 
 export default {
@@ -9,6 +10,7 @@ export default {
     components: {
         BildungsatlasFluechtlinge,
         BildungsatlasOKJA,
+        BildungsatlasSchulentlassene,
         BildungsatlasTest
     },
     props: {

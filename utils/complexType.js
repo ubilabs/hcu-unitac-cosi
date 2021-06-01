@@ -33,25 +33,54 @@ function optimizeComplexTypeValues (complexType, decimals = false) {
     if (!isComplexType(complexType)) {
         return complexType;
     }
-    const factor = decimals ? Math.pow(10, decimals) : false;
 
     complexType.values.forEach(item => {
-        if (typeof item.value === "number" && factor !== false) {
-            item.value = Math.round(item.value * factor) / factor;
-        }
-        else if (typeof item.value === "string") {
-            if (item.value.indexOf(",") !== -1) {
-                item.value = item.value.replace(/,/, ".");
-            }
-            if (decimals !== false) {
-                item.value = Math.round(parseFloat(item.value) * factor) / factor;
-            }
-            else {
-                item.value = Number(item.value);
-            }
-        }
+        item.value = optimizeValueRootedInComplexType(item.value, decimals);
     });
     return complexType;
+}
+
+/**
+ * tries to optimize the given value under the assumption that is rootes in a values of the ComplexType: cutting down decimal points, converts german numbers to ChartJS standard
+ * @param {String|Number} value the value to optimize
+ * @param {Number|boolean} [decimals=false] the number of decimal points to cut at - or false if no cuts
+ * @returns {String|Number} the same value but optimized
+ */
+function optimizeValueRootedInComplexType (value, decimals = false) {
+    const factor = typeof decimals === "number" ? Math.pow(10, decimals) : false;
+    let result = value;
+
+    if (typeof result === "number" && factor !== false) {
+        result = Math.round(result * factor) / factor;
+    }
+    else if (typeof result === "string") {
+        if (result.indexOf(",") !== -1) {
+            result = result.replace(/,/, ".");
+        }
+        if (decimals !== false) {
+            result = Math.round(parseFloat(result) * factor) / factor;
+        }
+        else {
+            result = Number(result);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * changes values of the metadata of a ComplexType
+ * @param {ComplexType} complexType the ComplexType to change
+ * @param {String} key the key to set/add to the metadata
+ * @param {*} value the data to set/add for the given key in metadata
+ * @returns {boolean} true if the data was set, false if something went wrong
+ */
+function changeMetadata (complexType, key, value) {
+    if (!isComplexType(complexType) || typeof key !== "string") {
+        return false;
+    }
+    complexType.metadata[key] = value;
+    return true;
 }
 
 /**
@@ -336,6 +365,8 @@ function getCompletestLabels (labels) {
 
 export {
     optimizeComplexTypeValues,
+    optimizeValueRootedInComplexType,
+    changeMetadata,
     convertComplexTypeToPiechart,
     convertComplexTypeToLinechart,
     convertComplexTypeToBarchart,
