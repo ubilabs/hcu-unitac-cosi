@@ -398,10 +398,10 @@ function cloneComplexType (complexType) {
  */
 function sortComplexTypeDefault (complexType) {
     return complexType.values.sort((firstEl, secondEl) => {
-        if (typeof firstEl !== "object" || firstEl === null || !firstEl.hasOwnProperty("key")) {
+        if (typeof firstEl !== "object" || firstEl === null || !firstEl?.key) {
             return 1;
         }
-        else if (typeof secondEl !== "object" || secondEl === null || !secondEl.hasOwnProperty("key")) {
+        else if (typeof secondEl !== "object" || secondEl === null || !secondEl?.key) {
             return -1;
         }
         else if (firstEl.key < secondEl.key) {
@@ -425,10 +425,10 @@ function sortComplexTypeDefault (complexType) {
  */
 function sortComplexTypeTimeseries (complexType, format) {
     return complexType.values.sort((firstEl, secondEl) => {
-        if (typeof firstEl !== "object" || firstEl === null || !firstEl.hasOwnProperty("key")) {
+        if (typeof firstEl !== "object" || firstEl === null || !firstEl?.key) {
             return 1;
         }
-        else if (typeof secondEl !== "object" || secondEl === null || !secondEl.hasOwnProperty("key")) {
+        else if (typeof secondEl !== "object" || secondEl === null || !secondEl?.key) {
             return -1;
         }
         return moment(firstEl.key, format).diff(moment(secondEl.key, format));

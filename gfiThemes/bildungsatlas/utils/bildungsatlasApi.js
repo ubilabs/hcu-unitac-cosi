@@ -322,9 +322,9 @@ export class BildungsatlasApi {
      */
     hasFeatureType (key, propertyName) {
         return typeof this.featureTypes === "object" && this.featureTypes !== null
-            && this.featureTypes.hasOwnProperty(key)
+            && this.featureTypes?.key
             && typeof this.featureTypes[key] === "object" && this.featureTypes[key] !== null
-            && this.featureTypes[key].hasOwnProperty(propertyName)
+            && this.featureTypes[key]?.propertyName
             && typeof this.featureTypes[key][propertyName] === "string";
     }
 
@@ -334,7 +334,7 @@ export class BildungsatlasApi {
      * @returns {Boolean} true if it is save to access this.wfsUrls[featureType]; false if not so
      */
     hasWfsUrl (featureType) {
-        return this.wfsUrls.hasOwnProperty(featureType)
+        return this.wfsUrls?.featureType
             && typeof this.wfsUrls[featureType] === "string";
     }
 
@@ -353,7 +353,7 @@ export class BildungsatlasApi {
         }
         const cacheKey = hash.sha1(url + "_" + payload);
 
-        if (this.cache.hasOwnProperty(cacheKey)) {
+        if (this.cache?.cacheKey) {
             onsuccess(this.cache[cacheKey]);
             return;
         }
@@ -471,7 +471,7 @@ export class BildungsatlasApi {
             }
         })
             .then(configData => {
-                if (typeof configData.data !== "object" || configData.data === null || !configData.data.hasOwnProperty("wfsUrls") || !configData.data.hasOwnProperty("featureTypes")) {
+                if (typeof configData.data !== "object" || configData.data === null || !configData.data?.wfsUrls || !configData.data?.featureTypes) {
                     console.error("initConfig: the config data must include wfsUrls and featureTypes, api isn't able to process any data");
                     return;
                 }

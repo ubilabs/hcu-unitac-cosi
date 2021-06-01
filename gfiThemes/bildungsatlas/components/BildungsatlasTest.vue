@@ -113,7 +113,7 @@ export default {
             </p>
             <Barchart
                 v-if="anzahl_sus_primarstufe_stadt"
-                :givenOptions="{}"
+                :given-options="{}"
                 :data="anzahl_sus_primarstufe_stadt"
             />
             <hr>
@@ -122,8 +122,8 @@ export default {
             </p>
             <Piechart
                 v-if="piechartData"
-                diagramType="pie"
-                :givenOptions="{}"
+                diagram-type="pie"
+                :given-options="{}"
                 :data="piechartData"
             />
             <hr>
@@ -132,8 +132,8 @@ export default {
             </p>
             <Piechart
                 v-if="piechartData"
-                diagramType="doughnut"
-                :givenOptions="{}"
+                diagram-type="doughnut"
+                :given-options="{}"
                 :data="piechartData"
             />
             <hr>
@@ -142,7 +142,7 @@ export default {
             </p>
             <Barchart
                 v-if="barchartData"
-                :givenOptions="{}"
+                :given-options="{}"
                 :data="barchartData"
             />
             <hr>
@@ -151,7 +151,7 @@ export default {
             </p>
             <Linechart
                 v-if="linechartData"
-                :givenOptions="{}"
+                :given-options="{}"
                 :data="linechartData"
             />
             <hr>
@@ -160,7 +160,7 @@ export default {
             </p>
             <Linechart
                 v-if="multiLinechartData"
-                :givenOptions="{}"
+                :given-options="{}"
                 :data="multiLinechartData"
             />
             <hr>
@@ -169,7 +169,7 @@ export default {
             </p>
             <Linechart
                 v-if="multiLinechartData2"
-                :givenOptions="{}"
+                :given-options="{}"
                 :data="multiLinechartData2"
             />
             <hr>
