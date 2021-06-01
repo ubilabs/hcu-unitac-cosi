@@ -678,7 +678,7 @@ export default {
             const graphObj = {
                     id: "calcratio-test",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                    type: "PieChart",
+                    type: ["BarChart", "LineChart"],
                     color: "green",
                     source: "CalculateRatio",
                     data: {
@@ -719,6 +719,18 @@ export default {
             });
 
             this.setNewDataSet(graphObj);
+        },
+        exportGeoJson () {
+            console.log(this.results);
+            console.log(this.selectedFeatures);
+            const total = this.results.find(res => res.scope === "Gesamt"),
+                avg = this.results.find(res => res.scope === "Durchschnitt");
+
+            this.selectedFeatures.forEach(feature => {
+                const result = this.results.find(res => res.scope === feature.get(this.keyOfAttrName));
+
+                feature.set("")
+            });
         }
     }
 };
@@ -1064,20 +1076,30 @@ export default {
                     >
                         <div class="head_wrapper">
                             <JsonExcel
+                                title="Ergebnisse als XLSX herunterladen"
                                 class="btn btn-default xl_btn"
                                 :data="resultData.json_data"
                                 :fields="resultData.json_fields"
                                 worksheet="Versorgungsanalyse"
                                 :name="selectedYear + '_versorgungsanalyse.xls'"
                             >
-                                <span class="glyphicon glyphicon-download"></span>
-                                Download XSL
+                                <span class="glyphicon glyphicon-download" />
+                                Download XSLX
                             </JsonExcel>
+
+                            <button
+                                class="btn btn-default xl_btn"
+                                title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                                @click="exportGeoJson"
+                            >
+                                <span class="glyphicon glyphicon-floppy-disk" />
+                                Download GeoJSON
+                            </button>
 
                             <button
                                 class="cg"
                                 title="Graph aus Datensatz erzeugen"
-                                @click="loadToCG()"
+                                @click="loadToCG"
                             >
                                 <span
                                     class="glyphicon glyphicon-stats"
@@ -1146,107 +1168,6 @@ export default {
                             :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
                             :fActive="fActive_A || fActive_B ? true : false"
                         />
-                        <!--<table class="forged_table">
-                            <tr class="head_row">
-                                <th>
-                                    <div class="styling_helper head_scope">
-                                        {{ label }}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
-                                    </div>
-                                </th>
-                                <th v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        Kapazität
-                                    </div>
-                                </th>
-                                <th v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        Bedarf
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }} / {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        Bedarfsdeckung (1,0 ~ 100%)
-                                    </div>
-                                </th>
-                            </tr>
-                            <tr
-                                v-for="result in results"
-                                :key="result.scope"
-                            >
-                                <td class="row_head">
-                                    <div class="styling_helper scope">
-                                        {{ result.scope }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div
-                                        class="styling_helper"
-                                    >
-                                        {{ result.paramA_val.toLocaleString('de-DE') }}
-                                        <span v-if="result.data.incompleteDataSets_A > 0">*</span>
-                                        <div
-                                            v-if="result.data.incompleteDataSets_A > 0"
-                                            class="hover_helper"
-                                        >
-                                            {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div
-                                        class="styling_helper"
-                                    >
-                                        {{ result.paramB_val.toLocaleString('de-DE') }}
-                                        <span
-                                            v-if="result.data.incompleteDataSets_B > 0"
-                                        >
-                                            *
-                                        </span>
-                                        <div
-                                            v-if="result.data.incompleteDataSets_B > 0"
-                                            class="hover_helper"
-                                        >
-                                            {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        {{ result.capacity.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                                <td v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        {{ result.need.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="styling_helper">
-                                        {{ result.relation.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="styling_helper">
-                                        {{ result.coverage.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>-->
                     </div>
                 </div>
             </div>
@@ -1437,6 +1358,7 @@ export default {
                             color:white;
                             padding: 0px 10px;
                             margin:5px 0px;
+                            font-size: 12px;x
 
                             span {
                                 margin-right:10px;
