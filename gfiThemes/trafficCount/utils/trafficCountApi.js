@@ -97,7 +97,7 @@ export class TrafficCountApi {
      * @returns {Boolean}  true/false
      */
     checkForObservations (dataset) {
-        return Array.isArray(dataset) && dataset.length > 0 && dataset[0]?.Datastreams
+        return Array.isArray(dataset) && dataset.length > 0 && Object.prototype.hasOwnProperty.call(dataset[0], "Datastreams")
             && Array.isArray(dataset[0].Datastreams) && dataset[0].Datastreams.length > 0 && Object.prototype.hasOwnProperty.call(dataset[0].Datastreams[0], "@iot.id")
             && Array.isArray(dataset[0].Datastreams[0].Observations);
     }
