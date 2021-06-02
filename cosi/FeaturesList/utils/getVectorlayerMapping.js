@@ -38,7 +38,7 @@ function mapVectorLayersInFolder (layers, condition) {
 function flattenFolderLayers (folder, condition) {
     return (folder.Ordner || []).reduce((layers, subFolder) => {
         return [...layers, ...flattenFolderLayers(subFolder, condition)];
-    }, mapVectorLayersInFolder(folder.Layer, condition));
+    }, mapVectorLayersInFolder(folder.Layer || [], condition));
 }
 
 
