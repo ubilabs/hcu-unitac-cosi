@@ -8,6 +8,7 @@ import Multiselect from "vue-multiselect";
 import JsonExcel from "vue-json-excel";
 import DataTable from "./DataTable.vue";
 import Info from "text-loader!./info.html";
+import {exportAsGeoJson} from "../utils/exportResults";
 
 export default {
     name: "CalculateRatio",
@@ -720,18 +721,9 @@ export default {
 
             this.setNewDataSet(graphObj);
         },
-        exportGeoJson () {
-            console.log(this.results);
-            console.log(this.selectedFeatures);
-            const total = this.results.find(res => res.scope === "Gesamt"),
-                avg = this.results.find(res => res.scope === "Durchschnitt");
 
-            this.selectedFeatures.forEach(feature => {
-                const result = this.results.find(res => res.scope === feature.get(this.keyOfAttrName));
-
-                feature.set("")
-            });
-        }
+        // the export function from utils
+        exportAsGeoJson
     }
 };
 </script>
@@ -1090,7 +1082,7 @@ export default {
                             <button
                                 class="btn btn-default xl_btn"
                                 title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
-                                @click="exportGeoJson"
+                                @click="exportAsGeoJson(results, selectedFeatures)"
                             >
                                 <span class="glyphicon glyphicon-floppy-disk" />
                                 Download GeoJSON

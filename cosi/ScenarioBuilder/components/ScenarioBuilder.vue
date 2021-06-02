@@ -10,7 +10,7 @@ import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
-import {getOlGeomConstructorByGmlType, getOlGeomTypeByGmlType} from "../utils/getOlGeomByGmlType";
+import {getOlGeomTypeByGmlType} from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
