@@ -7,7 +7,8 @@ import {
     convertComplexTypeToLinechart,
     convertComplexTypesToMultilinechart,
     isComplexType,
-    sortComplexType
+    sortComplexType,
+    cloneComplexType
 } from "../../../utils/complexType.js";
 
 describe("addons/utils/complexType.js", () => {
@@ -1443,6 +1444,49 @@ describe("addons/utils/complexType.js", () => {
 
             expect(changeMetadata(complexType, "anyentry", true)).to.be.true;
             expect(complexType?.metadata?.anyentry).to.be.true;
+        });
+    });
+    describe("cloneComplexType", () => {
+        it("should return a complex type", () => {
+            const complexType = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "key", value: 1}
+                    ]
+                },
+                clonedComplexType = cloneComplexType(complexType);
+
+            expect(isComplexType(clonedComplexType)).to.be.true;
+        });
+        it("should clone the complex type", () => {
+            const complexType = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "key", value: 1}
+                    ]
+                },
+                expectedComplexType = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "key", value: 1}
+                    ]
+                },
+                expectedClone = {
+                    metadata: {type: "type_changed", format: "format_changed", description: "description_changed"},
+                    values: [
+                        {key: "key_changed", value: 2}
+                    ]
+                },
+                clonedComplexType = cloneComplexType(complexType);
+
+            clonedComplexType.metadata.type = "type_changed";
+            clonedComplexType.metadata.format = "format_changed";
+            clonedComplexType.metadata.description = "description_changed";
+            clonedComplexType.values[0].key = "key_changed";
+            clonedComplexType.values[0].value = 2;
+
+            expect(clonedComplexType).to.deep.equal(expectedClone);
+            expect(complexType).to.deep.equal(expectedComplexType);
         });
     });
 });

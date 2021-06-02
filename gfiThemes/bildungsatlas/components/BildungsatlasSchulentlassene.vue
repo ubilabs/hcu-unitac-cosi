@@ -27,6 +27,18 @@ export default {
             type: Function,
             required: true
         },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
         /**
          * the properties as a key value object
          */
@@ -34,6 +46,7 @@ export default {
             type: Object,
             required: true
         },
+
         /**
          * the BildungsatlasApi to access data via wfs with
          */
@@ -88,18 +101,6 @@ export default {
     },
     methods: {
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-        /**
          * refreshes the gfi
          * @returns {void}
          */
@@ -121,6 +122,7 @@ export default {
 
             this.refreshLinechart();
         },
+
         /**
          * refreshes the data that is equal for anteil_sub_abi and anteil_sub_ohneabschluss
          * @returns {void}
@@ -171,6 +173,7 @@ export default {
                 console.error(error);
             });
         },
+
         /**
          * refreshes the data anteil_sub_abi only
          * @returns {void}
@@ -201,6 +204,7 @@ export default {
                 console.error(error);
             });
         },
+
         /**
          * refreshes the data anteil_sub_ohneabschluss only
          * @returns {void}
@@ -231,6 +235,7 @@ export default {
                 console.error(error);
             });
         },
+
         /**
          * a callback for the api to simplify the code of refreshLinechart
          * @param {String} propertyName the name of the property
@@ -246,6 +251,7 @@ export default {
                 this.api.getComplexTypeSozialraum(propertyName, this.properties?.sozialraum_id, onsuccess, onerror);
             }
         },
+
         /**
          * refreshes the multilinechart
          * @returns {void}

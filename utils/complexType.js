@@ -27,17 +27,18 @@ import moment from "moment";
  * tries to optimize the values of the ComplexType: cutting down decimal points, converts german numbers to ChartJS standard
  * @param {ComplexType} complexType the ComplexType to optimize
  * @param {Number|boolean} [decimals=false] the number of decimal points to cut at - or false if no cuts
- * @returns {ComplexType} the same complexType with optimized values
+ * @returns {ComplexType} a clone of the complexType with optimized values
  */
 function optimizeComplexTypeValues (complexType, decimals = false) {
     if (!isComplexType(complexType)) {
         return complexType;
     }
+    const result = cloneComplexType(complexType);
 
-    complexType.values.forEach(item => {
+    result.values.forEach(item => {
         item.value = optimizeValueRootedInComplexType(item.value, decimals);
     });
-    return complexType;
+    return result;
 }
 
 /**
@@ -270,26 +271,54 @@ function isComplexType (data) {
  * @param {ComplexType} complexType the complex type to sort
  * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
  * @see sort https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
- * @returns {ComplexType} the complex type with sorted values
+ * @returns {ComplexType} a clone of the complex type with sorted values
  */
 function sortComplexType (complexType, compareFunction = false) {
     if (!isComplexType(complexType)) {
         return false;
     }
-    else if (typeof compareFunction === "function") {
-        complexType.values.sort(compareFunction);
-        return complexType;
+    const result = cloneComplexType(complexType);
+
+    if (typeof compareFunction === "function") {
+        result.values.sort(compareFunction);
+        return result;
     }
 
-    if (complexType.metadata.type === "timeseries") {
-        sortComplexTypeTimeseries(complexType, complexType.metadata.format);
-        return complexType;
+    if (result.metadata.type === "timeseries") {
+        sortComplexTypeTimeseries(result, result.metadata.format);
+        return result;
     }
 
-    sortComplexTypeDefault(complexType);
-    return complexType;
+    sortComplexTypeDefault(result);
+    return result;
 }
 
+/**
+ * clones a complex type - necessary in every function to avoid changing the original
+ * @param {ComplexType} complexType the complex type to sort
+ * @returns {ComplexType} a clone of the given complexType
+ */
+function cloneComplexType (complexType) {
+    if (!isComplexType(complexType)) {
+        return complexType;
+    }
+    const result = {
+        metadata: {
+            type: complexType.metadata.type,
+            format: complexType.metadata.format,
+            description: complexType.metadata.description
+        },
+        values: []
+    };
+
+    complexType.values.forEach(elem => {
+        result.values.push({
+            key: elem.key,
+            value: elem.value
+        });
+    });
+    return result;
+}
 
 /** private */
 
@@ -372,5 +401,6 @@ export {
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
     isComplexType,
-    sortComplexType
+    sortComplexType,
+    cloneComplexType
 };

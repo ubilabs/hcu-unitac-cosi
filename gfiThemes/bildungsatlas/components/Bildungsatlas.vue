@@ -1,5 +1,6 @@
 <script>
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
+import BildungsatlasBalkendiagramm from "./BildungsatlasBalkendiagramm.vue";
 import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
@@ -8,6 +9,7 @@ import BildungsatlasTest from "./BildungsatlasTest.vue";
 export default {
     name: "Bildungsatlas",
     components: {
+        BildungsatlasBalkendiagramm,
         BildungsatlasFluechtlinge,
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
@@ -98,6 +100,18 @@ export default {
          */
         setActiveTab (tab) {
             this.activeTab = tab;
+        },
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+            return this.$t(key, options);
         }
     }
 };
@@ -128,6 +142,7 @@ export default {
                 :properties="properties"
                 :api="api"
                 :featureType="featureType"
+                :translate="translate"
             />
             <div class="gfi-bildungsatlas-footer">
                 <span>

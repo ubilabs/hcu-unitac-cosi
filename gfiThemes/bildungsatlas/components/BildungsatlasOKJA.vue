@@ -18,6 +18,18 @@ export default {
             type: Function,
             required: true
         },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
         /**
          * the properties as a key value object
          */
@@ -84,18 +96,6 @@ export default {
     },
     methods: {
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-        /**
          * refreshes the gfi
          * @returns {void}
          */
@@ -105,6 +105,7 @@ export default {
             this.refreshGfiPiechartOpening();
             this.refreshGfiPiechartOffers();
         },
+
         /**
          * refreshes the okja header of the gfi
          * @returns {void}
@@ -117,6 +118,7 @@ export default {
             this.durchsch_stammnutzer = this.properties?.durchsch_stammnutzer ? thousandsSeparator(this.properties.durchsch_stammnutzer) : "g.F.";
             this.angebotsstunden_pro_jahr = this.properties?.angebotsstunden_pro_jahr ? thousandsSeparator(this.properties.angebotsstunden_pro_jahr) : "g.F.";
         },
+
         /**
          * refreshes the table with offerings for target groups
          * @returns {void}
@@ -129,6 +131,7 @@ export default {
             this.jugendliche_14_bis_unter_18_jahre = this.properties?.jugendliche_14_bis_unter_18_jahre === "Ja" ? "Ja" : "Nein";
             this.junge_erwachsene_18_bis_unter_27_jahre = this.properties?.junge_erwachsene_18_bis_unter_27_jahre === "Ja" ? "Ja" : "Nein";
         },
+
         /**
          * refreshes the piechart with the distributions of opening hours
          * @returns {void}
@@ -164,6 +167,7 @@ export default {
                 };
             }
         },
+
         /**
          * refreshes the piechart with the distribution of the content of the offer
          * @returns {void}

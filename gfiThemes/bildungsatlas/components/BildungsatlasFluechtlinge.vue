@@ -13,6 +13,17 @@ export default {
         },
 
         /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
+        /**
          * the featureType of current layer
          */
         featureType: {
@@ -53,19 +64,6 @@ export default {
     },
     methods: {
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-
-        /**
          * refreshes the gfi
          * @returns {void}
          */
@@ -82,7 +80,7 @@ export default {
         },
 
         /**
-         * Paring the text with Html Tags into Html Format
+         * Parsing the text with Html Tags into Html Format
          * @param {String} str the text
          * @returns {String} html format text
          */

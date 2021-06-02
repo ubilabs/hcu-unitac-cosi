@@ -379,6 +379,23 @@ export class BildungsatlasApi {
     }
 
     /**
+     * helper for use of api functions with not fully loaded api
+     * @info use this if you want to use any function of the api except for value and complexType getters
+     * @param {Function} handler callback function() to be called when api is initialized
+     * @returns {void}
+     */
+    callWhenInitialized (handler) {
+        if (this.wfsUrls !== false && this.featureTypes !== false) {
+            if (typeof handler === "function") {
+                handler();
+            }
+        }
+        else {
+            BildungsatlasApi.startupCallbacks.push(handler);
+        }
+    }
+
+    /**
      * loads the config of the api - will walk through BildungsatlasApi.startupCallbacks afterwards
      * @param {String} configUrl the url to the (local) file (e.g. config.api.json)
      * @pre this.wfsUrls and this.featureTypes are false
