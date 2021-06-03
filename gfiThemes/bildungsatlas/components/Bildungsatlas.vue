@@ -102,7 +102,6 @@ export default {
 <template>
     <div>
         <ul
-            v-if="subTheme !== 'BildungsatlasOKJA'"
             class="nav nav-pills"
         >
             <li :class="{ active: isActiveTab('data') }">

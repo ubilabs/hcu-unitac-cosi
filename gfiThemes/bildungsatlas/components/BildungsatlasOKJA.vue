@@ -395,7 +395,18 @@ export default {
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
         >
-            Info
+            <h5>
+                <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.title") }}</b>
+            </h5>
+            <p>
+                {{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.textA") }}
+            </p>
+            <p>
+                {{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.textB") }}
+            </p>
+            <p>
+                {{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.textC") }}
+            </p>
         </div>
     </div>
 </template>

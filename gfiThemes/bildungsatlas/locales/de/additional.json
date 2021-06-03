@@ -45,6 +45,12 @@
                         "gesundheitsfoerderung": "Gesundheitsförderung",
                         "sonstige_gruppenangebote": "Sonstige Gruppenangebote",
                         "foerderung_der_medienkompetenz": "Förderung der Medienkompetenz"
+                    },
+                    "info": {
+                        "title": "Angebote der offenen Kinder- und Jugendarbeit",
+                        "textA": "Die Offene Kinder- und Jugendarbeit (OKJA) ist ein Teilbereich der Kinder- und Jugendhilfe und umfasst in der Regel kostenfreie, pädagogisch begleitete und offene Angebote für Kinder und Jugendliche und teilweise für junge Erwachsene. Dazu gehören u.a. Interessengruppenangebote, ein offener Bereich für Begegnungen mit Gleichaltrigen, Veranstaltungen, Ferienprogramme und Freizeiten. Inhaltlich orientieren sich die Angebote an den Interessen der jungen Menschen: Sie reichen deshalb beispielsweise von Medienarbeit und musischer Bildung über gemeinsames Kochen, Bewegungsangebote, Spiele bis hin zu Unterstützung bei Problemen in der Familie oder beim Übergang ins Arbeitsleben. Das spezifische Merkmal der OKJA liegt in der Unterstützung eigener Initiativen von jungen Menschen durch Mitbestimmung und Mitgestaltung und darin zur Selbstbestimmung zu befähigen und zur gesellschaftlichen Mitverantwortung und zu sozialem Engagement hinzuführen. Die OKJA hat einen gesetzlich festgehaltenen außerschulischen Bildungsauftrag und bietet vielfältige Lern- und Erfahrungsfelder an, in denen junge Menschen ihre kognitiven, sozialen und emotionalen Fähigkeiten und Stärken erproben und erweitern können.",
+                        "textB": "Die Karte zeigt die Einrichtungen der Offenen Kinder- und Jugendarbeit im Jahr 2015. Beim Klicken auf einen Standort werden im Datenblatt der Name und die Adresse der jeweiligen Einrichtung angezeigt.",
+                        "textC": "Durch die Aktivierung weiterer Kennzahlen und nach Klicken auf einen Standort können im Datenblatt Einzelheiten sichtbar gemacht werden. Abrufbar sind Zielgruppen, Öffnungs- bzw. Angebotszeiten sowie die inhaltliche Ausrichtung (Legende aktivieren!) der Angebote."
                     }
                 }
             }

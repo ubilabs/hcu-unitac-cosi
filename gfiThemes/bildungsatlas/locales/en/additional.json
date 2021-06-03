@@ -45,6 +45,12 @@
                         "gesundheitsfoerderung": "Health promotion",
                         "sonstige_gruppenangebote": "Other group offerings",
                         "foerderung_der_medienkompetenz": "Promotion of media literacy"
+                    },
+                    "info": {
+                        "title": "Offers of the open child and youth work",
+                        "textA": "Open child and youth work (OKJA) is a subarea of child and youth welfare and generally includes free, pedagogically accompanied and open offers for children and adolescents and partly for young adults. This includes, among other things, interest group offers, an open area for meetings with peers, events, vacation programs and free time. The content of the services is geared to the interests of the young people: they therefore range, for example, from media work and music education to cooking together, exercise programs, games, and support with problems in the family or with the transition to working life. The specific characteristic of OKJA is the support of young people's own initiatives through co-determination and co-design and in enabling self-determination and leading to social co-responsibility and social commitment. The OKJA has a legally defined extracurricular educational mandate and offers diverse fields of learning and experience in which young people can test and expand their cognitive, social and emotional abilities and strengths.",
+                        "textB": "The map shows the facilities of the Open Child and Youth Work in 2015. When clicking on a location, the name and address of the respective facility are displayed in the data sheet.",
+                        "textC": "By activating further key figures and clicking on a location, details can be made visible in the data sheet. Target groups, opening hours, and the content of the services (activate legend!) can be viewed."
                     }
                 }
             }
