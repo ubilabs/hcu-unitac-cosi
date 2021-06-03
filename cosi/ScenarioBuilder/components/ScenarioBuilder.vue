@@ -12,11 +12,12 @@ import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import {getOlGeomTypeByGmlType} from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
-import Polygon from "ol/geom/Polygon";
+// import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import Draw from "ol/interaction/Draw";
 import {featureTagStyle} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
+import getSearchResultsCoordinate from "../utils/getSearchResultsCoordinate";
 import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
@@ -52,7 +53,11 @@ export default {
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping"]),
-        ...mapGetters("Map", ["map", "layerById"])
+        ...mapGetters("Map", ["map", "layerById"]),
+
+        geomCoords () {
+            return this.geometry.value?.getCoordinates();
+        }
     },
 
     watch: {
@@ -84,6 +89,7 @@ export default {
                 this.locationPickerActive = false;
                 this.unlisten();
                 this.clearDrawPolygon();
+                this.removePointMarker();
             }
         }
     },
@@ -127,6 +133,8 @@ export default {
             this.featureProperties = {};
             this.geometry.value = null;
             this.clearDrawPolygon();
+            this.unlisten();
+            this.removePointMarker();
         },
         toggleLocationPicker (type) {
             this.locationPickerActive = !this.locationPickerActive;
@@ -143,6 +151,9 @@ export default {
         listen () {
             if (this.geometry.type === "Point") {
                 this.map.addEventListener("click", this.pickLocation);
+
+                // Get coords from searchbar if geom type is "Point"
+                Radio.on("Searchbar", "hit", this.pickLocationBySearchbar.bind(this));
             }
             else if (this.geometry.type === "Polygon") {
                 this.drawPolygon();
@@ -153,9 +164,9 @@ export default {
             }
         },
         unlisten () {
-            this.removePointMarker();
             if (this.geometry.type === "Point") {
                 this.map.removeEventListener("click", this.pickLocation);
+                Radio.off("Searchbar", "hit");
             }
             else if (this.geometry.type === "Polygon") {
                 this.map.removeInteraction(this.drawPolygonInteraction);
@@ -171,6 +182,9 @@ export default {
             this.geometry.value = null;
             this.removePointMarker();
             this.clearDrawPolygon();
+        },
+        pickLocationBySearchbar () {
+            this.geometry.value = new Point(getSearchResultsCoordinate());
         },
         drawPolygon () {
             this.drawPolygonInteraction = new Draw({
@@ -223,16 +237,9 @@ export default {
             );
             this.unlisten();
             this.clearDrawPolygon();
+            this.removePointMarker();
             this.locationPickerActive = false;
         },
-
-        // /**
-        //  * Generates a OL geometry of the specified type
-        //  * @returns {module:ol/geom/Geometry} the generated geometry
-        //  */
-        // generateGeometry () {
-        //     return new this.geometry.constructor(this.geometry.value);
-        // },
 
         asyncGetValuesForField (desc) {
             this.valuesForFields = {};
@@ -335,6 +342,7 @@ export default {
                                             :active="active"
                                             :useIcons="useIcons"
                                             @pickReference="getDataFromReferenceFeature"
+                                            @referencePickerActive="locationPickerActive = false; unlisten();"
                                         />
                                     </v-col>
                                     <v-col cols="8">
@@ -344,6 +352,7 @@ export default {
                                             :active="active"
                                             :useIcons="useIcons"
                                             :guideLayer="guideLayer"
+                                            @moveFeaturesActive="locationPickerActive = false; unlisten();"
                                         />
                                     </v-col>
                                 </v-row>
@@ -384,7 +393,7 @@ export default {
                                         />
                                         <v-text-field
                                             v-else
-                                            v-model="geometry.value"
+                                            v-model="geomCoords"
                                             :name="field.name"
                                             :label="field.type"
                                             dense

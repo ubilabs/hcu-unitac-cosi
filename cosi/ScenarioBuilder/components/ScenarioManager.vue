@@ -155,6 +155,7 @@ export default {
             <v-form
                 id="new-scenario-form"
                 v-model="newScenarioValid"
+                onSubmit="return false;"
                 @submit="createNewScenario"
             >
                 <v-row>

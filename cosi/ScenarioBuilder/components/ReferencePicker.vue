@@ -65,6 +65,7 @@ export default {
         referencePickerActive (state) {
             if (state) {
                 this.listen();
+                this.$emit("referencePickerActive");
             }
             else {
                 this.unlisten();

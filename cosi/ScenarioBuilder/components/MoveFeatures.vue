@@ -70,6 +70,7 @@ export default {
         moveFeaturesActive (state) {
             if (state) {
                 this.listen();
+                this.$emit("moveFeaturesActive");
             }
             else {
                 this.unlisten();

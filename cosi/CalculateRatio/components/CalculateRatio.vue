@@ -440,9 +440,12 @@ export default {
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
-                                if (feature.getProperties()[this.paramFieldA.id]) {
+                                if (
+                                    typeof feature.getProperties()[this.paramFieldA.id] !== "number" ||
+                                    typeof feature.getProperties()[this.paramFieldA.id] !== "string"
+                                ) {
                                     const value = feature.getProperties()[this.paramFieldA.id],
-                                        valueTransformed = parseFloat(value.replace(/\D/g, ""));
+                                        valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
 
                                     this.featureVals.push(valueTransformed);
                                 }
@@ -524,9 +527,12 @@ export default {
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldB.name !== "Anzahl") {
-                                if (feature.getProperties()[this.paramFieldB.id]) {
+                                if (
+                                    typeof feature.getProperties()[this.paramFieldB.id] !== "number" ||
+                                    typeof feature.getProperties()[this.paramFieldB.id] !== "string"
+                                ) {
                                     const value = feature.getProperties()[this.paramFieldB.id],
-                                        valueTransformed = parseFloat(value.replace(/\D/g, ""));
+                                        valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
 
                                     this.featureVals.push(valueTransformed);
                                 }
