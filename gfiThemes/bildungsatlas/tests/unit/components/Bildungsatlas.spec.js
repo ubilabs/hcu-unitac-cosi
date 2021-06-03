@@ -105,4 +105,28 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
             expect(singleTestWrapper.findComponent({name: "BildungsatlasOKJA"}).exists()).to.be.true;
         });
     });
+    describe("components", () => {
+        it("should find the child component BildungsatlasFluechtlinge", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasFluechtlinge",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasFluechtlinge"}).exists()).to.be.true;
+        });
+    });
 });

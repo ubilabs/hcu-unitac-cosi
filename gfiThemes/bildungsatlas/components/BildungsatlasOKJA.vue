@@ -386,9 +386,6 @@ export default {
                 <p>
                     {{ $t("additional:addons.gfiThemes.bildungsatlas.general.disclaimer") }}
                 </p>
-                <p>
-                    {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
-                </p>
             </div>
         </div>
         <div

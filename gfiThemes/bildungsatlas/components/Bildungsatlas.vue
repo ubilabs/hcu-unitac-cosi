@@ -1,11 +1,13 @@
 <script>
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
+import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasTest from "./BildungsatlasTest.vue";
 
 export default {
     name: "Bildungsatlas",
     components: {
+        BildungsatlasFluechtlinge,
         BildungsatlasOKJA,
         BildungsatlasTest
     },
@@ -100,7 +102,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="gfi-bildungsatlas">
         <ul
             class="nav nav-pills"
         >
@@ -123,7 +125,13 @@ export default {
                 :isActiveTab="isActiveTab"
                 :properties="properties"
                 :api="api"
+                :featureType="featureType"
             />
+            <div class="gfi-bildungsatlas-footer">
+                <span>
+                    {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -131,5 +139,20 @@ export default {
 <style lang="less">
     .portal-title a img[alt*="Bildungsatlas"] {
         width: 80px;
+    }
+    .gfi-bildungsatlas {
+        .gfi-info {
+            padding: 0 10px 10px;
+            h5 {
+                font-weight: bold;
+            }
+            p {
+                margin-bottom: 10px;
+            }
+        }
+        .gfi-bildungsatlas-footer {
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
     }
 </style>
