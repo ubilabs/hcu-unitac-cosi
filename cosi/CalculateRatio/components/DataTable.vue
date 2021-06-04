@@ -103,7 +103,7 @@ export default {
                             v-if="item.data.incompleteDataSets_A > 0"
                             class="hover_helper"
                         >
-                            {{ item.data.incompleteDataSets_A }} / {{ item.data.dataSets_A }}
+                            {{ item.data.incompleteDataSets_A.toLocaleString("de-DE") }} / {{ item.data.dataSets_A }}
                         </div>
                     </span>
                 </div>
@@ -119,7 +119,7 @@ export default {
                             v-if="item.data.incompleteDataSets_B > 0"
                             class="hover_helper"
                         >
-                            {{ item.data.incompleteDataSets_B }} / {{ item.data.dataSets_B }}
+                            {{ item.data.incompleteDataSets_B.toLocaleString("de-DE") }} / {{ item.data.dataSets_B }}
                         </div>
                     </span>
                 </div>

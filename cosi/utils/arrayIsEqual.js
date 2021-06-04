@@ -1,7 +1,7 @@
 /**
- * compares to lists for equality
- * @param {*} arr1 - the 1st list to compare
- * @param {*} arr2 - the 2nd list to compare
+ * compares two lists for equality
+ * @param {Array.<any>} arr1 - the 1st list to compare
+ * @param {Array.<any>} arr2 - the 2nd list to compare
  * @param {Boolean} ordered - is the list order important?
  * @returns {Boolean} are the arrays equal?
  */

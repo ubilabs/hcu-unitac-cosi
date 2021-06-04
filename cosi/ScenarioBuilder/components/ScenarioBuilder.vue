@@ -12,7 +12,7 @@ import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import {getOlGeomTypeByGmlType} from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
-// import Polygon from "ol/geom/Polygon";
+import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import Draw from "ol/interaction/Draw";
 import {featureTagStyle} from "../utils/guideLayer";
@@ -55,12 +55,34 @@ export default {
         ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping"]),
         ...mapGetters("Map", ["map", "layerById"]),
 
-        geomCoords () {
-            return this.geometry.value?.getCoordinates();
+        /**
+         * Getter and Setter for the manuel coordinates Input for the geometry
+         */
+        geomCoords: {
+            get () {
+                return this.geometry.value ? JSON.stringify(this.geometry.value.getCoordinates()) : undefined;
+            },
+            set (v) {
+                if (this.geometry.type === "Point") {
+                    this.geometry.value = new Point(v);
+                    this.placingPointMarker(v);
+                }
+                if (this.geometry.type === "Polygon") {
+                    const coords = JSON.parse(v);
+
+                    this.drawPolygonByCoords(coords);
+                }
+            }
         }
     },
 
     watch: {
+        /**
+         * Watcher function for the workingLayer.
+         * Triggers the retrival of the featureType description and the available values.
+         * @param {Object} layerMap - the layerMap of the current working layer.
+         * @returns {void}
+         */
         workingLayer (layerMap) {
             Radio.trigger("Util", "showLoader");
             this.resetFeature();
@@ -93,6 +115,10 @@ export default {
             }
         }
     },
+    /**
+     * Lifecycle function, triggers on component initialize. Creates necessary guide and drawing layers.
+     * @returns {void}
+     */
     created () {
         this.$on("close", () => {
             this.setActive(false);
@@ -199,7 +225,6 @@ export default {
         },
         clearDrawPolygon () {
             this.drawLayer.getSource().clear();
-            console.log(this.drawPolygonInteraction);
         },
         undoDrawPolygonStep () {
             this.drawPolygonInteraction.removeLastPoint();
@@ -213,6 +238,19 @@ export default {
 
             console.log(geom);
             this.geometry.value = geom;
+        },
+        drawPolygonByCoords (coords) {
+            try {
+                const polygon = new Polygon(coords),
+                    feature = new Feature({geometry: this.geometry.value});
+
+                this.clearDrawPolygon();
+                this.geometry.value = polygon;
+                this.drawLayer.getSource().addFeature(feature);
+            }
+            catch (e) {
+                console.warn("ScenarioBuilder: The entered geometry is not a valid Polygon. Please check the List of Coordinates.");
+            }
         },
 
         /**
@@ -368,7 +406,9 @@ export default {
                                     dense
                                 >
                                     <v-col cols="3">
-                                        <v-subheader>{{ beautifyKey(field.name) }}</v-subheader>
+                                        <v-subheader :title="beautifyKey(field.name)">
+                                            {{ beautifyKey(field.name) }}
+                                        </v-subheader>
                                     </v-col>
                                     <v-col cols="9">
                                         <v-switch
@@ -513,6 +553,9 @@ export default {
             width: 100%;
             .row {
                 margin-top: 0px;
+            }
+            .col-3 {
+                overflow: hidden;
             }
         }
     }
