@@ -12,12 +12,13 @@ import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 
+export const methodConfig = {store: null};
 export default {
     /**
      * create isochrones features
      * @returns {void}
      */
-    createIsochrones: async function () {
+    createIsochrones: function () {
         if (this.mode === "point") {
             this.createIsochronesPoint();
         }
@@ -27,6 +28,7 @@ export default {
     },
     /**
      * create isochrones features for selected several coordiantes
+     * TODO: break apart into smaller functions
      * @fires Alerting#RadioTriggerAlertAlertRemove
      * @fires Core#RadioRequestMapGetLayerByName
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
@@ -44,6 +46,7 @@ export default {
             this.scaleUnit !== "" &&
             range !== 0
         ) {
+            // TODO: Use store-method - see DistrictSelector component
             Radio.trigger("Alert", "alert:remove");
             // group coordinates into groups of 5
             const coordinatesList = [],
@@ -57,6 +60,7 @@ export default {
             }
 
             for (const coords of coordinatesList) {
+                // TODO: make use of new OpenRouteService component
                 const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coords, this.scaleUnit,
                         [range, range * 0.67, range * 0.33]),
                     // reverse JSON object sequence to render the isochrones in the correct order
@@ -92,10 +96,12 @@ export default {
                 }
                 layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
 
+                // TODO: get projections via arguments and/or store
                 layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
 
                 const featureType = "Erreichbarkeit im Gebiet";
 
+                // TODO: add props to layers, like type of facility, unit of measured distance
                 layerUnionFeatures.forEach(feature => {
                     feature.set("featureType", featureType);
                 });
@@ -104,7 +110,8 @@ export default {
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
 
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)
+            // TODO: get locale from store
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
             );
         }
         else {
@@ -112,6 +119,7 @@ export default {
         }
     },
     /**
+     * TODO: see TODOs in createIsochronesRegion
      * create isochrones features for selected several coordiantes
      * @returns {void}
      */
@@ -233,6 +241,7 @@ export default {
         this.setBySearch = false;
     },
     /**
+     * TODO: replace calls to this function with /addons/cosi/utils/getSearchResultsCoordinate.js
      * @returns {void}
      */
     setSearchResultToOrigin: function () {
@@ -349,37 +358,8 @@ export default {
                 const features = layerModel.get("layer").getSource().getFeatures();
 
                 if (features && features.length) {
-                    const props = features[0].getProperties();
                     let idSelector;
 
-                    /**
-                     * hard coded id selector for facility layers
-                     */
-                    if (props.schul_id) {
-                        idSelector = props.schulname ?
-                            "schulname" :
-                            "schul_id";
-                    }
-                    else if (props.einrichtung) {
-                        idSelector = props.name ?
-                            "name" :
-                            "einrichtung";
-                    }
-                    else if (props.Einrichtungsnummer) {
-                        idSelector = props.Name_normalisiert ?
-                            "Name_normalisiert" :
-                            "Einrichtungsnummer";
-                    }
-                    else if (props.identnummer) {
-                        idSelector = props.belegenheit ?
-                            "belegenheit" :
-                            "identnummer";
-                    }
-                    else if (props.hauptklasse) {
-                        idSelector = props.anbietername ?
-                            "anbietername" :
-                            "strasse";
-                    }
                     // inscribe the coordinate to the feature for rendering to the resultView DOM Element
                     // for zooming to feature by click
                     // eslint-disable-next-line one-var

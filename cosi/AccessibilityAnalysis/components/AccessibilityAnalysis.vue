@@ -24,14 +24,32 @@ export default {
             coordinate: null,
             setBySearch: false,
             transportType: "",
+            transportTypes: {
+                "": "-Leeren-",
+                "driving-car": "Auto",
+                "cycling-regular": "Rad",
+                "cycling-electric": "Rad (elektrisch)",
+                "foot-walking": "Gehen",
+                wheelchair: "Rollstuhl"
+            },
             scaleUnit: "",
+            scaleUnits: {
+                "": "-Leeren-",
+                time: "Zeit (in min)",
+                distance: "Entfernung (in m)"
+            },
             distance: "",
             rawGeoJson: null,
             showRequestButton: false,
             isochroneFeatures: [],
             steps: [0, 0, 0],
             layers: null,
-            selectedFacilityName: null
+            selectedFacilityName: null,
+            legendColors: [
+                "rgba(0, 200, 3, 0.6)",
+                "rgba(100, 100, 3, 0.4)",
+                "rgba(200, 0, 3, 0.4)"
+            ]
         };
     },
     computed: {
@@ -45,13 +63,7 @@ export default {
      */
     created () {
         this.$on("close", this.close);
-        const that = this;
-
-        Backbone.Events.listenTo(Radio.channel("ModelList"), {
-            updatedSelectedLayerList: function (models) {
-                that.setFacilityLayers(models);
-            }
-        });
+        Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
     },
     /**
    * Put initialize here if mounting occurs after config parsing
@@ -68,9 +80,7 @@ export default {
         this.mapLayer.setVisible(true);
         this.map.addEventListener("click", this.setCoordinateFromClick);
 
-        Backbone.Events.listenTo(Radio.channel("Searchbar"), {
-            hit: this.setSearchResultToOrigin
-        });
+        Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
@@ -108,32 +118,6 @@ export default {
                 );
 
             this.facilityNames = facilityNames;
-        },
-        // TODO: int
-        getTransportTypes: function () {
-            return {
-                "": "-Leeren-",
-                "driving-car": "Auto",
-                "cycling-regular": "Rad",
-                "cycling-electric": "Rad (elektrisch)",
-                "foot-walking": "Gehen",
-                wheelchair: "Rollstuhl"
-            };
-        },
-        getLegendColors: function () {
-            return [
-                "rgba(0, 200, 3, 0.6)",
-                "rgba(100, 100, 3, 0.4)",
-                "rgba(200, 0, 3, 0.4)"
-            ];
-        },
-        // TODO: int
-        getScaleUnits: function () {
-            return {
-                "": "-Leeren-",
-                time: "Zeit (in min)",
-                distance: "Entfernung (in m)"
-            };
         }
     }
 };
@@ -202,7 +186,7 @@ export default {
                                 <Dropdown
                                     v-model="transportType"
                                     title="Verkehrsmittel"
-                                    :options="getTransportTypes()"
+                                    :options="transportTypes"
                                 />
                             </div>
                         </div>
@@ -212,7 +196,7 @@ export default {
                                 <Dropdown
                                     v-model="scaleUnit"
                                     title="Maßeinheit der Entfernung"
-                                    :options="getScaleUnits()"
+                                    :options="scaleUnits"
                                 />
                             </div>
                         </div>
@@ -275,7 +259,7 @@ export default {
                                     cy="7.5"
                                     r="7.5"
                                     :style="`fill: ${
-                                        getLegendColors()[i]
+                                        legendColors[i]
                                     }; stroke-width: 0.5; stroke: #e3e3e3;`"
                                 />
                             </svg>
