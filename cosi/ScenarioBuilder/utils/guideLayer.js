@@ -1,4 +1,4 @@
-import {Stroke, Style, Text} from "ol/style.js";
+import {Stroke, Fill, Style, Text} from "ol/style.js";
 import Feature from "ol/Feature";
 import VectorLayer from "ol/layer/Vector";
 
@@ -10,10 +10,13 @@ import VectorLayer from "ol/layer/Vector";
 export function featureTagStyle (feature) {
     return new Style({
         text: new Text({
-            font: "21px bold sans-serif",
+            font: "32px bold sans-serif",
+            fill: new Fill({
+                color: "#FC176B"
+            }),
             stroke: new Stroke({
-                width: 3,
-                color: "#fff"
+                width: 4,
+                color: "#000"
             }),
             text: "*",
             offsetX: 10,
