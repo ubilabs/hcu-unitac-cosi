@@ -1,7 +1,6 @@
 addons.md
 __example__addonsConf.json
 exampleAddon
-./node_modules/*
 sdpDownload/node_modules/*
 cosi/node_modules/*
 OpenRouteService/node_modules/*
