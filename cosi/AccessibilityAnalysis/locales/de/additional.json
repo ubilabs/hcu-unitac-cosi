@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "accessibilityAnalysis": {
+                    "title": "Erreichbarkeitsanalyse",
+                    "dropdownInfo": "Bitte wählen Sie den Modus, in dem Sie arbeiten möchten:"
+                }
+            }
+        }
+    }
+}

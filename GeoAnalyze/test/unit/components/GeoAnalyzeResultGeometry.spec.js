@@ -1,6 +1,6 @@
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
-import GeoAnalyzeResultGeometry from "../../../components/GeoAnalyzeResultGeometry.vue";
+import GeoAnalyzeResultGeometry from "../../../../geoAnalyze/components/GeoAnalyzeResultBuilding.vue";
 
 const localVue = createLocalVue();
 

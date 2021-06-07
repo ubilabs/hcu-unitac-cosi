@@ -2,7 +2,7 @@ import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
 import Vuex from "vuex";
-import GeoAnalyzeResultGeometry from "../../../components/GeoAnalyzeResultBuilding.vue";
+import GeoAnalyzeResultGeometry from "../../../../geoAnalyze/components/GeoAnalyzeResultBuilding.vue";
 
 const localVue = createLocalVue();
 

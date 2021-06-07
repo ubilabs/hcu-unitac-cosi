@@ -7,3 +7,6 @@ OpenRouteService/node_modules/*
 qr/node_modules/*
 
 .vscode
+
+node_modules
+yarn.lock
