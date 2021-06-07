@@ -1,0 +1,105 @@
+{
+    "addons": {
+        "gfiThemes": {
+            "bildungsatlas": {
+                "searchbarPlaceholder": "Suche nach Adresse, Bezirk, Schule, Stadtteil, Thema",
+                "general": {
+                    "tabData": "Daten",
+                    "tabInfo": "Info",
+                    "disclaimer": "*g.F: geringe Fallzahlen. Die Werte konnten aus datenschutzrechtlichen Gründen nicht ausgewiesen werden oder das Gebiet ist unbewohnt.",
+                    "hint": "Sie können die Position des Fensters durch Drag & Drop ändern.",
+                    "loading": "lädt...",
+                    "loadingError": "Fehler"
+                },
+                "okja": {
+                    "typ_der_einrichtung": "Typ der Einrichtung",
+                    "durchsch_stammnutzer": "Durchschnittliche Anzahl der Stammnutzer",
+                    "angebotsstunden_pro_jahr": "Angebotsstunden pro Jahr",
+                    "table": {
+                        "title": "Angebote für Zielgruppen",
+                        "kinder_0_bis_unter3_jahre": "Kinder von 0 bis unter 3 Jahre",
+                        "kinder_3_bis_unter_6_jahre": "Kinder von 3 bis unter 6 Jahre",
+                        "kinder_6_bis_unter_10_jahre": "Kinder von 6 bis unter 10 Jahre",
+                        "kinder_10_bis_unter_14_jahre": "Kinder von 10 bis unter 14 Jahre",
+                        "jugendliche_14_bis_unter_18_jahre": "Jugendliche von 14 bis unter 18 Jahre",
+                        "junge_erwachsene_18_bis_unter_27_jahre": "Junge Erwachsene von 18 bis unter 27 Jahre",
+                        "Ja": "Ja",
+                        "Nein": "Nein"
+                    },
+                    "piechart_opening": {
+                        "title": "Verteilung der Öffnungszeiten",
+                        "weekdaysAfternoon": "Wochentags Nachmittags",
+                        "weekdaysEvening": "Wochentags Abends",
+                        "weekendsAfternoon": "Wochenende Nachmittags",
+                        "weekendsEvening": "Wochenende Abends"
+                    },
+                    "piechart_offers": {
+                        "title": "Verteilung der inhaltlichen Ausrichtung des Angebots",
+                        "allgemeine_und_soziale_bildung": "Allgemeine und Soziale Bildung",
+                        "politische_bildung": "Politische Bildung",
+                        "kulturelle_bildung": "Kulturelle Bildung",
+                        "naturkundliche_bildung": "Naturkundliche Bildung",
+                        "technische_bildung": "Technische Bildung",
+                        "interkulturelle_arbeit_und_integration": "Interkulturelle Arbeit und Integration",
+                        "sport_spiel_geselligkeit": "Sport, Spiel und Geselligkeit",
+                        "erzieherischer_kinder_und_jugendschutz": "Erzieherischer Kinder- und Jugendschutz",
+                        "jugendsozialarbeit": "Jugendsozialarbeit",
+                        "gesundheitsfoerderung": "Gesundheitsförderung",
+                        "sonstige_gruppenangebote": "Sonstige Gruppenangebote",
+                        "foerderung_der_medienkompetenz": "Förderung der Medienkompetenz"
+                    },
+                    "info": {
+                        "title": "Angebote der offenen Kinder- und Jugendarbeit",
+                        "textA": "Die Offene Kinder- und Jugendarbeit (OKJA) ist ein Teilbereich der Kinder- und Jugendhilfe und umfasst in der Regel kostenfreie, pädagogisch begleitete und offene Angebote für Kinder und Jugendliche und teilweise für junge Erwachsene. Dazu gehören u.a. Interessengruppenangebote, ein offener Bereich für Begegnungen mit Gleichaltrigen, Veranstaltungen, Ferienprogramme und Freizeiten. Inhaltlich orientieren sich die Angebote an den Interessen der jungen Menschen: Sie reichen deshalb beispielsweise von Medienarbeit und musischer Bildung über gemeinsames Kochen, Bewegungsangebote, Spiele bis hin zu Unterstützung bei Problemen in der Familie oder beim Übergang ins Arbeitsleben. Das spezifische Merkmal der OKJA liegt in der Unterstützung eigener Initiativen von jungen Menschen durch Mitbestimmung und Mitgestaltung und darin zur Selbstbestimmung zu befähigen und zur gesellschaftlichen Mitverantwortung und zu sozialem Engagement hinzuführen. Die OKJA hat einen gesetzlich festgehaltenen außerschulischen Bildungsauftrag und bietet vielfältige Lern- und Erfahrungsfelder an, in denen junge Menschen ihre kognitiven, sozialen und emotionalen Fähigkeiten und Stärken erproben und erweitern können.",
+                        "textB": "Die Karte zeigt die Einrichtungen der Offenen Kinder- und Jugendarbeit im Jahr 2015. Beim Klicken auf einen Standort werden im Datenblatt der Name und die Adresse der jeweiligen Einrichtung angezeigt.",
+                        "textC": "Durch die Aktivierung weiterer Kennzahlen und nach Klicken auf einen Standort können im Datenblatt Einzelheiten sichtbar gemacht werden. Abrufbar sind Zielgruppen, Öffnungs- bzw. Angebotszeiten sowie die inhaltliche Ausrichtung (Legende aktivieren!) der Angebote."
+                    }
+                },
+                "fluechtlinge": {
+                    "capacity": "Kapazität",
+                    "place": "Plätze",
+                    "remark": "Bemerkung",
+                    "info": {
+                        "ea_bestehend": "<h5>Zentrale Erstaufnahmestellen (ZEA)</h5>\n<p>Die Länder sind aufgrund bundesrechtlicher Bestimmungen verpflichtet, zentrale Einrichtungen für die Erstaufnahme Asylsuchender vorzuhalten (§ 44 AsylVfG); Asylbewerber sind in der Regel verpflichtet, bis zu längstens sechs Monaten in diesen Einrichtungen zu wohnen (§ 47 AsylVfG). Die Zuständigkeit für die aufenthalts- und die leistungsrechtliche Sachbearbeitung in der Zentralen Erstaufnahmeeinrichtung liegt in Hamburg bei der Behörde für Inneres und Sport.</p>\n<p>Die zentrale Anlaufstelle für die Flüchtlinge befindet seit Juni 2014 in der Harburger Poststraße. Neben weiteren Standorten auf Hamburger Stadtgebiet wird eine Einrichtung des Landes Mecklenburg-Vorpommern in Nostorf/Horst mitgenutzt. Zwischen der Behörde für Inneres und Sport und dem Innenministerium des Landes Mecklenburg-Vorpommern besteht seit 2006 eine Zusammenarbeit in Bezug auf die Erstunterbringung von Asylbewerbern und anderen ausländischen Flüchtlingen.</p>\n<h5>Zum Verfahren:</h5>\n<p>In der Harburger Poststraße verbleiben die Bewohner in der Regel nur für eine kurze Zeit, da es sich hier um die Anlaufstelle handelt. Sie werden zeitnah im Rahmen des bundesweiten Verteilungsverfahrens nach einem Verteilungsschlüssel entweder anderen Bundesländern zugewiesen oder im Falle des Verbleibs in Hamburg an andere Standorte der zentralen Erstaufnahmeeinrichtung weitergeleitet. Sollten die Asylsuchenden einem anderen Bundesland zugewiesen werden, erhalten sie von der Anlaufstelle eine Fahrkarte zur Fahrt zum vorgeschriebenen Zielort.</p>",
+                        "perspektive_wohnen_bestehend": "<h5>Folgeunterbringung</h5>\n<p>Die Länder sind aufgrund bundesrechtlicher Bestimmungen verpflichtet, zentrale Einrichtungen für die Erstaufnahme Asylsuchender vorzuhalten (§ 44 AsylVfG); Asylbewerber sind in der Regel verpflichtet, bis zu längstens sechs Monaten in diesen Einrichtungen zu wohnen (§ 47 AsylVfG). Die Zuständigkeit für die aufenthalts- und die leistungsrechtliche Sachbearbeitung in der Zentralen Erstaufnahmeeinrichtung liegt in Hamburg bei der Behörde für Inneres und Sport.</p>",
+                        "oeru_bestehend": "<h5>Flüchtlingsunterkünfte mit der Perspektive Wohnen</h5>\n<p>Der Senat hat ein Konzept zur Errichtung von Flüchtlingsunterkünften mit der Perspektive Wohnen beschlossen, die im Standard des sozialen Wohnungsbaus errichtet werden sollen.</p>\n<p>Die Wohnungen werden mit eigenen Bädern und Küchen ohne Abstriche vom aktuellen Baustandard errichtet. Maßstab für Wohnungsgrößen und -ausstattung sind die geltenden Standards des öffentlich geförderten Wohnungsbaus, dabei sollen die Wohnungen im 1. Förderweg mit einer Mietpreis- und Belegungsbindung von 15 bis 30 Jahren errichtet werden.</p>\n<p>Ziel ist es, die geplanten öffentlichen Unterkünfte im Standard des öffentlich geförderten Wohnungsbaus grundsätzlich durch private Investoren errichten zu lassen. Die Flächen werden vorrangig an bestandshaltende Investoren vergeben, dazu zählen sowohl Genossenschaften als auch bestandshaltende freie Wohnungsunternehmen. In jedem Fall wird geprüft, ob auch die SAGA GWG die Entwicklung übernehmen kann.</p>\n<p>Vorgesehen sind zwei Nutzungsphasen: Die Wohnungen werden zunächst als Flüchtlingsunterkünfte in der Folgeunterbringung genutzt, d.h. mit deutlich mehr Personen belegt als in regulären Wohnungen üblich. So sind bei bis zu 800 Wohnungen je Fläche und einer sehr engen Belegung mit durchschnittlich mindestens fünf Personen pro Wohnung für die Dauer der öffentlich-rechtlichen Unterbringung jeweils ca. 4.000 Flüchtlingsplätze möglich.</p>\n<p>Genehmigt werden die Flüchtlingsunterkünfte mit der Perspektive Wohnen auf Grundlage der planungsrechtlichen Erleichterungen im Baugesetzbuch für Flüchtlinge und Asylbegehrende. Die Gebäude werden im Rahmen der Genehmigung im vollen Umfang auf alle Standards der Hamburgischen Bauordnung geprüft.</p>\n<p>Fördern und wohnen AöR (f&w) wird mit dem Eigentümer einen Pacht- oder Generalmietvertrag für einen Zeitraum von 15 Jahren abschließen und die errichteten Wohngebäude als öffentliche Unterkunft selbständig betreiben. Nach Ablauf der 15 Jahre stehen die Wohnungen dauerhaft dem Wohnungsmarkt und damit weiten Kreisen der Bevölkerung zur Verfügung. Ab diesem Zeitpunkt werden jeweils ca. 2.000 Bewohnerinnen und Bewohner in den Quartieren wohnen.</p>\n<p>Zudem ist vorgesehen, zügig Planrecht für Wohnungsbau auf den Flächen zu schaffen, damit bereits deutlich vor Ablauf des für die Unterkunft vorgesehenen Zeitraums von 15 Jahren für einzelne Wohnungen oder Baublöcke auch reguläre Mietverträge abgeschlossen werden können. So können sukzessive auch Haushalte integriert werden, die keinen Flüchtlingsstatus haben.</p>"
+                    }
+                },
+                "schulentlassene": {
+                    "title": {
+                        "anteil_sus_abi": "Anteil der Schulentlassenen mit Abitur/Fachhochschulreife, mittlerem Schulabschluss sowie mit erstem allgemeinbildenden Schulabschluss",
+                        "anteil_sus_ohneabschluss": "Anteil der Schulentlassenen ohne ersten allgemeinbildenen Schulabschluss"
+                    },
+                    "general": {
+                        "district": "Bezirk"
+                    },
+                    "barchart": {
+                        "title": {
+                            "anteil_sus_abi": "Anteil \"Abi/FH\" im Zeitverlauf",
+                            "anteil_sus_ohneabschluss": "Anteil \"ohne Abschluss\" im Zeitverlauf"
+                        }
+                    },
+                    "linechart": {
+                        "title": "Anzahl verschiedener Abschlüsse je 1000 unter 18-Jährigen",
+                        "labelABI": "Abi/FH: Abitur/Fachhochschulreife",
+                        "labelMSA": "MSA: mittlerer Schulabschluss",
+                        "labelESA": "ESA: erster allgemeinbildender Schulabschluss",
+                        "labelOSA": "oSA: ohne ersten allgemeinbildenden Schulabschluss",
+                        "labelGesamt": "Anzahl aller Schulentlassenen"
+                    },
+                    "info": {
+                        "titleAbi": "Anteil der Schulentlassenen mit Abitur/Fachhochschulreife",
+                        "textAbi": "Zur Berechnung dieser Kennzahl wurden sowohl die Abiturientinnen und Abiturienten als auch diejenigen Schülerinnen und Schüler berücksichtigt, die den schulischen Teil der Fachhochschulreife erworben haben. Berücksichtigt wurden nur Schülerinnen und Schüler, die diese Abschlüsse an einer allgemeinbildenden Schule* erworben haben. Die Bezugsgröße für die Schülerinnen und Schüler ist jeweils der Wohnort. Die Anteilsberechnung erfolgt auf Grundlage aller Schulentlassenen allgemeinbildender Schulen im jeweiligen Gebiet.",
+                        "titleOsa": "Anteil der Schulentlassenen ohne ersten allgemeinbildenden Schulabschluss*",
+                        "textOsa": "Diese Zahl enthält auch Schülerinnen und Schüler mit sonderpädagogischem Förderbedarf. Ein erheblicher Teil dieser Schülerinnen und Schüler erreicht infolge der jeweiligen Lernbeeinträchtigungen keinen ersten allgemeinbildenden oder höherwertigen Schulabschluss.",
+                        "titleA": "Anzahl verschiedener Abschlüsse je 1000 unter 18-Jährigen",
+                        "textA": "Die Kennzahl gibt die Anzahl aller Schulentlassenen, sowie die erworbenen Abschlussarten auf 1000 unter 18-Jährigen im Stadtteil/Sozialraum an. Diese Darstellung ermöglicht zusätzlich zu den Abschlussquoten eine bessere Vergleichbarkeit der Schulabschlüsse über die Zeit im betreffenden Stadtteil bzw. Sozialraum.",
+                        "titleB": "Keine oder zu geringe Fallzahlen:",
+                        "textB": "Die Kennzahlen werden nur in Gebieten ausgewiesen, in denen mindestens 30 Schulentlassene wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.",
+                        "footer": "*) Allgemeinbildende Schulen vermitteln im Primarbereich die Grundlagen für eine weiterführende Bildung, im Sekundarbereich I und II eine allgemeine Grundbildung bzw. vertiefte Allgemeinbildung. Zu den allgemeinbildenden Schulen der im Bildungsatlas abgebildeten Primarstufe und der Sekundarstufe I gehören in Hamburg Grundschulen, Stadtteilschulen, Gymnasien sowie Sonderschulen."
+                    }
+                }
+            }
+        }
+    }
+}

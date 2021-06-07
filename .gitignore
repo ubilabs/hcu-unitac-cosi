@@ -5,5 +5,6 @@ sdpDownload/node_modules/*
 cosi/node_modules/*
 ./node_modules/*
 OpenRouteService/node_modules/*
+qr/node_modules/*
 
 .vscode

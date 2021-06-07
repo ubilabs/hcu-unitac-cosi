@@ -1,21 +1,22 @@
 <script>
-import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
-import BildungsatlasBalkendiagramm from "./BildungsatlasBalkendiagramm.vue";
-import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
-import BildungsatlasSchulenEinzugsgebiete from "./BildungsatlasSchulenEinzugsgebiete.vue";
+import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
+import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
+import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
-import BildungsatlasStandorte from "./BildungsatlasStandorte.vue";
+import BildungsatlasTest from "./BildungsatlasTest.vue";
 
 export default {
     name: "Bildungsatlas",
     components: {
-        BildungsatlasBalkendiagramm,
-        BildungsatlasSchulenWohnort,
-        BildungsatlasSchulenEinzugsgebiete,
+        BildungsatlasFluechtlinge,
+        BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
-        BildungsatlasStandorte
+        BildungsatlasTest
     },
     props: {
+        /**
+         * the feature as an object{getTheme, getTitle, getAttributesToShow, getProperties, getGfiUrl}
+         */
         feature: {
             type: Object,
             required: true
@@ -24,57 +25,68 @@ export default {
     data () {
         return {
             activeTab: "data",
-            subTheme: ""
+            subTheme: "",
+            featureType: "",
+            properties: {},
+            api: null,
+            configApiUrl: "config.api.json"
         };
     },
+    computed: {
+        subThemeComponent () {
+            if (this.subTheme !== "") {
+                return this.subTheme;
+            }
+            return "BildungsatlasTest";
+        }
+    },
+    watch: {
+        // When the gfi window switched with arrow, the connection will be refreshed
+        feature: {
+            handler (newVal, oldVal) {
+                if (oldVal) {
+                    this.refreshGfi();
+                }
+            },
+            immediate: true
+        }
+    },
     created () {
-        const gfiTheme = this.feature?.getTheme(),
-            gfiParams = gfiTheme?.params;
-
-        this.subTheme = typeof gfiParams === "object" && gfiParams.hasOwnProperty("subTheme") ? gfiParams.subTheme : "";
+        this.refreshGfi();
     },
     methods: {
         /**
-         * checks if a component exists
-         * @param {String} name the name of the component to check
-         * @returns {Boolean}  true if the component is declared in Bildungsatlas.components
+         * refreshes the gfi
+         * @returns {void}
          */
-        componentExists (name) {
-            return this.$options.components[name] !== null && typeof this.$options.components[name] === "object";
-        },
-        /**
-         * fixes the bildungsatlas data bug: any number delivered as -0.0001 should be 0
-         * @param {(String|Number)} value the value to fix
-         * @returns {(String|Number)}  the fixed value
-         */
-        fixDataBug (value) {
-            if (value === "-0.0001" || value === -0.0001) {
-                return 0;
+        refreshGfi () {
+            const gfiTheme = this.feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                properties = this.feature?.getProperties();
+
+            if (typeof gfiParams === "object" && gfiParams?.subTheme) {
+                this.subTheme = gfiParams.subTheme;
             }
-            return value;
-        },
-        /**
-         * any value of the bildungsatlas needs to have a certain format
-         * - a percentage has to have a following %
-         * - a value equaling null must be shown as *g.F.
-         * - any absolute value should have no decimal places
-         * - any relative value should have 2 decimal places
-         * @param {(String|Number)} value the value to transform
-         * @param {Boolean} relative if true, a percent sign will be attached
-         * @param {Number} fixedTo the number of decimal places of the returning value
-         * @returns {String}  the value for the bildungsatlas based on the input
-         */
-        getValueForBildungsatlas (value, relative = false, fixedTo = 2) {
-            if (value === null) {
-                return "*g.F.";
+            else {
+                console.error("for Bildungsatlas, the config must include a gfiTheme.params.subTheme (" + this.feature.getTitle() + ")");
+                this.subTheme = "";
+            }
+            if (typeof gfiParams === "object" && gfiParams?.featureType) {
+                this.featureType = gfiParams.featureType;
+            }
+            else {
+                this.featureType = "";
             }
 
-            return thousandsSeparator(Number(Number(value).toFixed(fixedTo))) + (relative ? "%" : "");
+            this.properties = typeof properties === "object" && properties !== null ? properties : {};
+
+            // BildungsatlasApi is a singleton
+            this.api = new BildungsatlasApi(this.configApiUrl);
         },
         /**
          * checks if the given tab name is currently active
          * @param {String} tab the tab name
-         * @returns {Boolean}  true if the given tab name is active
+         * @returns {boolean} true if the given tab name is active
          */
         isActiveTab (tab) {
             return this.activeTab === tab;
@@ -82,7 +94,7 @@ export default {
         /**
          * sets the active tab by tab name
          * @param {String} tab the tab name
-         * @returns {Void}  -
+         * @returns {void}
          */
         setActiveTab (tab) {
             this.activeTab = tab;
@@ -92,39 +104,57 @@ export default {
 </script>
 
 <template>
-    <div>
-        <ul class="nav nav-pills">
+    <div class="gfi-bildungsatlas">
+        <ul
+            class="nav nav-pills"
+        >
             <li :class="{ active: isActiveTab('data') }">
                 <a
                     href="#data"
                     @click.prevent="setActiveTab('data')"
-                >Daten</a>
+                >{{ $t("additional:addons.gfiThemes.bildungsatlas.general.tabData") }}</a>
             </li>
             <li :class="{ active: isActiveTab('info') }">
                 <a
                     href="#info"
                     @click.prevent="setActiveTab('info')"
-                >Info</a>
+                >{{ $t("additional:addons.gfiThemes.bildungsatlas.general.tabInfo") }}</a>
             </li>
         </ul>
         <div class="tab-content">
             <component
-                :is="subTheme"
-                v-if="componentExists(subTheme)"
-                :feature="feature"
+                :is="subThemeComponent"
                 :isActiveTab="isActiveTab"
-                :getValueForBildungsatlas="getValueForBildungsatlas"
-                :fixDataBug="fixDataBug"
+                :properties="properties"
+                :api="api"
+                :featureType="featureType"
             />
+            <div class="gfi-bildungsatlas-footer">
+                <span>
+                    {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
+                </span>
+            </div>
         </div>
     </div>
 </template>
 
-<style lang="less" scoped>
-</style>
-
 <style lang="less">
     .portal-title a img[alt*="Bildungsatlas"] {
         width: 80px;
+    }
+    .gfi-bildungsatlas {
+        .gfi-info {
+            padding: 0 10px 10px;
+            h5 {
+                font-weight: bold;
+            }
+            p {
+                margin-bottom: 10px;
+            }
+        }
+        .gfi-bildungsatlas-footer {
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
     }
 </style>

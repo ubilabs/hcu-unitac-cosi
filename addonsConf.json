@@ -4,7 +4,6 @@
   "cosi": "modules/loader.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
-  "schulwegrouting": "view.js",
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
@@ -59,6 +58,9 @@
   "FileImportAddon": {
     "type": "tool"
   },
+  "schoolRoutePlanning": {
+    "type": "tool"
+  },
   "activeCityMaps": {
     "path":"gfiThemes/activeCityMaps",
     "type": "gfiTheme"
@@ -109,5 +111,6 @@
   },
   "OpenRouteService": {
     "type": "tool"
-  }
+  },
+  "qr": "view.js"
 }

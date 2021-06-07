@@ -4,12 +4,13 @@ import {isWebLink} from "../../../../src/utils/urlHelper.js";
 import {isPhoneNumber, getPhoneNumberAsWebLink} from "../../../../src/utils/isPhoneNumber.js";
 import {isEmailAddress} from "../../../../src/utils/isEmailAddress.js";
 import CompareFeatureIcon from "../../../../src/modules/tools/gfi/components/favoriteIcons/components/CompareFeatureIcon.vue";
-import componentExists from "../../../../src/utils/componentExists.js";
+import TargetSchoolIcon from "./favoriteIcons/TargetSchoolIcon.vue";
 
 export default {
     name: "Schulinfo",
     components: {
-        CompareFeatureIcon
+        CompareFeatureIcon,
+        TargetSchoolIcon
     },
     props: {
         feature: {
@@ -46,7 +47,6 @@ export default {
         isPhoneNumber,
         getPhoneNumberAsWebLink,
         isEmailAddress,
-        componentExists,
 
         /**
          * Sets the imported components to importedComponents.
@@ -137,17 +137,6 @@ export default {
             });
 
             this.assignedFeatureProperties = [...this.assignedFeatureProperties];
-        },
-
-        /**
-         * Sets the schulwegrouting tool active,
-         * hide the gfi window and takes over the school for the routing.
-         * @returns {void}
-         */
-        changeToSchoolrouting: function () {
-            Radio.trigger("ModelList", "setModelAttributesById", "schulwegrouting", {isActive: true});
-            Radio.trigger("Schulwegrouting", "selectSchool", this.feature.getOlFeature());
-            this.$parent.close();
         }
     }
 };
@@ -169,7 +158,7 @@ export default {
                 >
                     {{ category.name }}
                 </button>
-                <div class="favorite-mapmarker-container">
+                <div class="favorite-container">
                     <template v-for="component in importedComponents">
                         <component
                             :is="component"
@@ -177,12 +166,6 @@ export default {
                             :feature="feature"
                         />
                     </template>
-                    <span
-                        v-if="componentExists('schulwegrouting')"
-                        class="glyphicon glyphicon-map-marker"
-                        :title="$t('additional:modules.tools.gfi.themes.schulinfo.schoolAsDestination')"
-                        @click="changeToSchoolrouting"
-                    ></span>
                 </div>
             </div>
         </div>
@@ -271,7 +254,7 @@ export default {
         }
         padding-right: 64px;
     }
-    .favorite-mapmarker-container {
+    .favorite-container {
         position: absolute;
         right: 0;
         top: 5px;
