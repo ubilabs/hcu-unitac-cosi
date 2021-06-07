@@ -7,7 +7,7 @@ export default {
         // Dataset to be displayed in the table
         dataSet: {
             type: Array,
-            default: null
+            default: () => []
         },
         // Type of field A (facility/feature)
         typeA: {
@@ -24,10 +24,6 @@ export default {
             type: Boolean,
             default: false
         }
-    },
-    data () {
-        return {
-        };
     },
     computed: {
         /**
@@ -82,34 +78,18 @@ export default {
             ];
 
             return head.filter(x=>x.show);
-        }
-    },
-    watch: {
-        dataSet () {
-            this.formatData();
-        }
-    },
-    mounted () {
-        this.formatData();
-    },
-    methods: {
-        /**
-         * @description Formats the data to displayable numbers (two digits after the decimal point).
-         * @returns {void}
-         */
-        formatData () {
-            let index = 0;
-            this.dataSet.forEach(scope => {
-                scope.index = index;
-                scope.paramA_val = scope.paramA_val.toLocaleString("de-DE");
-                scope.paramB_val = scope.paramB_val.toLocaleString("de-DE");
-                scope.relation = scope.relation.toLocaleString("de-DE");
-                scope.coverage = (scope.coverage * 100).toLocaleString("de-DE") + "%";
-                scope.capacity = scope.capacity.toLocaleString("de-DE");
-                scope.need = scope.need.toLocaleString("de-DE");
+        },
 
-                index += 1;
-            });
+        formatData () {
+            return this.dataSet.map(scope => ({
+                ...scope,
+                paramA_val: scope.paramA_val.toLocaleString("de-DE"),
+                paramB_val: scope.paramB_val.toLocaleString("de-DE"),
+                relation: scope.relation.toLocaleString("de-DE"),
+                coverage: scope.coverage.toLocaleString("de-DE"),
+                capacity: scope.capacity.toLocaleString("de-DE"),
+                need: scope.need.toLocaleString("de-DE")
+            }));
         }
     }
 };
@@ -119,7 +99,7 @@ export default {
     <div class="data_table">
         <v-data-table
             :headers="headers"
-            :items="dataSet"
+            :items="formatData"
             :items-per-page="10"
             class="elevation-1"
             hide-default-header
@@ -129,10 +109,13 @@ export default {
             >
                 <thead>
                     <tr>
-                        <th v-for="header in props.headers">
-                            <p><strong>{{header.text}}</strong></p>
+                        <th
+                            v-for="header in props.headers"
+                            :key="header.text"
+                        >
+                            <p><strong>{{ header.text }}</strong></p>
                             <div class="col_info">
-                                <p>{{header.help}}</p>
+                                <p>{{ header.help }}</p>
                             </div>
                         </th>
                     </tr>
@@ -141,7 +124,7 @@ export default {
             <template
                 v-slot:item.paramA_val="{ item }"
             >
-                <div 
+                <div
                     class="table_cell"
                     :class="{ lower: item.index >= dataSet.length/2 }"
                 >
@@ -160,6 +143,7 @@ export default {
             <template
                 v-slot:item.paramB_val="{ item }"
             >
+                <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                 <div class="table_cell">
                     {{ item.paramB_val }}
 
@@ -271,7 +255,7 @@ export default {
                 text-align:left;
             }
         }
-        
+
         &.lower {
             .hover_helper {
                 top:auto;

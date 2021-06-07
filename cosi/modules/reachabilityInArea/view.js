@@ -7,6 +7,8 @@ import GeoJSON from "ol/format/GeoJSON";
 import InfoTemplate from "text-loader!./info.html";
 import * as turf from "@turf/turf";
 import store from "../../../../src/app-store";
+// import {downloadJsonToFile} from "../../utils/download";
+// import {featuresToGeoJsonCollection} from "../../utils/geomUtils";
 
 const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAreaView.prototype */{
     events: {
@@ -175,7 +177,8 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
             });
             Promise.all(promiseList).then((groupedFeaturesList) => {
                 const mapLayer = this.model.get("mapLayer");
-                let layerUnion, layerUnionFeatures;
+                let layerUnion, layerUnionFeatures,
+                    isochroneFeatures = [];
 
                 mapLayer.getSource().clear();
                 for (let i = 0; i < 3; i++) {
@@ -194,8 +197,12 @@ const ReachabilityInAreaView = Backbone.View.extend(/** @lends ReachabilityInAre
                     });
                     this.styleFeatures(layerUnionFeatures);
                     mapLayer.getSource().addFeatures(layerUnionFeatures);
+
+                    isochroneFeatures = [...isochroneFeatures, ...layerUnionFeatures];
                 }
-                // this.model.set("isochroneFeatures", unionList);
+                this.model.set("isochroneFeatures", isochroneFeatures);
+
+                // downloadJsonToFile(featuresToGeoJsonCollection(isochroneFeatures, false, "EPSG:25832"));
             });
         }
         else {

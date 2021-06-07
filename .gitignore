@@ -3,7 +3,10 @@ __example__addonsConf.json
 exampleAddon
 sdpDownload/node_modules/*
 cosi/node_modules/*
+<<<<<<< HEAD
 ./node_modules/*
+=======
+>>>>>>> cosi/dev
 OpenRouteService/node_modules/*
 qr/node_modules/*
 

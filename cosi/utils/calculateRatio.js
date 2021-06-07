@@ -5,6 +5,7 @@
 */
 export default function calculateRatio (dataArray, year) {
     const results = [];
+
     dataArray.forEach(dataSet => {
         const calcObj = {
                 scope: dataSet.name,
@@ -70,12 +71,12 @@ function calculateTotals (results) {
             incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / results.length,
             incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / results.length,
             dataSets_A: resultsTotal.data.dataSets_A / results.length,
-            dataSets_B: resultsTotal.data.dataSets_B / results.length,
+            dataSets_B: resultsTotal.data.dataSets_B / results.length
         },
         resultsAverage = {
             scope: "Durchschnitt",
             paramA_val: resultsTotal.paramA_val / results.length,
-            paramB_val: resultsTotal.paramB_val / results.length,
+            paramB_val: resultsTotal.paramB_val / results.length
         },
         avg = calculateSingle(resultsAverage, dataHelpers_avg);
 

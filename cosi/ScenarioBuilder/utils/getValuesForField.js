@@ -20,7 +20,7 @@ function layerById (layerId) {
  * Gets all possible values for a given field of a featureType
  * @param {String} field - the field's name
  * @param {String} layerId - the layerID of the layer to check
- * @returns {String[]} the list of possible values
+ * @returns {Promise<String[]>} the list of possible values
  */
 export default async function getValuesForField (field, layerId) {
     let allFeatures;

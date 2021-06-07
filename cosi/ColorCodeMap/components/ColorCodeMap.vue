@@ -431,7 +431,7 @@ export default {
             const graphObj = {
                 id: "ccm",
                 name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
-                type: ["LineChart","BarChart"],
+                type: ["LineChart", "BarChart"],
                 color: "blue",
                 source: "Kartenvisualisierungswerkzeug",
                 scaleLabels: [this.selectedFeature, "Jahre"],
@@ -440,7 +440,7 @@ export default {
                     dataSets: []
                 }
             };
-            console.log(this.graphData);
+
             this.availableYears.forEach(year => {
                 graphObj.data.labels.push(year);
             });

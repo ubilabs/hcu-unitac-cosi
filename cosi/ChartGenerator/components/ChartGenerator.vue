@@ -226,7 +226,7 @@ export default {
             return newPieChartData;
         },
         createPieChart (dataSets) {
-            console.log("noch nicht fertig", dataSets);
+            console.warn("PieChart Funktionalität noch nicht vollständig implementiert");
         },
         /**
          * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
