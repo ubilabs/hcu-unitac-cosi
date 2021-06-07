@@ -65,7 +65,12 @@ export default {
         this.createDrawingLayer();
 
         /** @todo JUST FOR TESTING */
-        // this.$store.dispatch("Tools/OpenRouteService/newRequest", {range: [1000], locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]]});
+        // this.$store.dispatch("Tools/OpenRouteService/newRequest", {
+        //     range: [1000],
+        //     locations: [[566811.0675106236, 5948466.003291838], [566511.0675106236, 5948166.003291838], [565511.0675106236, 5946166.003291838]],
+        //     profile: "walking-foot",
+        //     service: "isochrones"
+        // });
     },
     methods: {
         ...mapMutations("Tools/OpenRouteService", Object.keys(mutations)),

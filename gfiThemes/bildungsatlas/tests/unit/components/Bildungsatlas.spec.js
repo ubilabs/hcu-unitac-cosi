@@ -20,7 +20,8 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                     getTheme () {
                         return {
                             params: {
-                                subTheme: "subTheme"
+                                subTheme: "subTheme",
+                                featureType: "someFeatureType"
                             }
                         };
                     }
@@ -29,41 +30,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
             localVue
         });
     });
-
-    describe("fixDataBug", () => {
-        it("should change a value -0.0001 to 0", () => {
-            expect(wrapper.vm.fixDataBug(-0.0001)).to.equal(0);
-            expect(wrapper.vm.fixDataBug("-0.0001")).to.equal(0);
-        });
-        it("should let anything but -0.0001 as it is", () => {
-            expect(wrapper.vm.fixDataBug(0.0001)).to.equal(0.0001);
-            expect(wrapper.vm.fixDataBug("0.0001")).to.equal("0.0001");
-            expect(wrapper.vm.fixDataBug(undefined)).to.equal(undefined);
-            expect(wrapper.vm.fixDataBug(null)).to.equal(null);
-            expect(wrapper.vm.fixDataBug("string")).to.equal("string");
-        });
-    });
-    describe("getValueForBildungsatlas", () => {
-        it("should return *g.F. if the value is null", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(null)).to.equal("*g.F.");
-        });
-        it("should return a number with thousandsSeparator and two decimal places by default", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(123456.789)).to.equal("123.456,79");
-        });
-        it("should return a negative number with thousandsSeparator and two decimal places by default", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(-123456.789)).to.equal("-123.456,79");
-        });
-        it("should return a number with thousandsSeparator and two decimal places followed by a % sign", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(123456.789, true)).to.equal("123.456,79%");
-        });
-        it("should return a number with thousandsSeparator and no decimal places", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(123456.789, false, 0)).to.equal("123.457");
-        });
-        it("should return a number with thousandsSeparator and no decimal places followed by a % sign", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(123456.789, true, 0)).to.equal("123.457%");
-        });
-        it("should remove zeros from the end of the decimal places", () => {
-            expect(wrapper.vm.getValueForBildungsatlas(123456.701, true, 2)).to.equal("123.456,7%");
+    describe("created", () => {
+        it("should set the internal value of subTheme to the value found in the feature", () => {
+            expect(wrapper.vm.subTheme).to.equal("subTheme");
+            expect(wrapper.vm.featureType).to.equal("someFeatureType");
         });
     });
     describe("setActiveTab", () => {
@@ -81,22 +51,16 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
             expect(wrapper.vm.isActiveTab("something else")).to.be.false;
         });
     });
-
-    describe("created", () => {
-        it("should set the internal value of subTheme to the value found in the feature", () => {
-            expect(wrapper.vm.subTheme).to.equal("subTheme");
-        });
-    });
     describe("nav-pills", () => {
         it("should initialize with a nav pill for data", () => {
             const dataTab = wrapper.find(".nav-pills").findAll("li").at(0).find("a");
 
-            expect(dataTab.text()).to.equal("Daten");
+            expect(dataTab.text()).to.equal("additional:addons.gfiThemes.bildungsatlas.general.tabData");
         });
         it("should initialize with a nav pill for info", () => {
             const dataTab = wrapper.find(".nav-pills").findAll("li").at(1).find("a");
 
-            expect(dataTab.text()).to.equal("Info");
+            expect(dataTab.text()).to.equal("additional:addons.gfiThemes.bildungsatlas.general.tabInfo");
         });
         it("should initialize active tab with value 'data'", () => {
             expect(wrapper.vm.activeTab).to.equal("data");
@@ -116,7 +80,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
         });
     });
     describe("components", () => {
-        it("should find the child component BildungsatlasBalkendiagramm", () => {
+        it("should find the child component BildungsatlasTest", () => {
             const singleTestWrapper = shallowMount(Bildungsatlas, {
                 propsData: {
                     feature: {
@@ -126,7 +90,8 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasBalkendiagramm"
+                                    subTheme: "BildungsatlasTest",
+                                    featureType: "someFeatureType"
                                 }
                             };
                         }
@@ -135,91 +100,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasBalkendiagramm"}).exists()).to.be.true;
-        });
-        it("should find the child component BildungsatlasSchulentlassene", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
-                propsData: {
-                    feature: {
-                        getProperties () {
-                            return {};
-                        },
-                        getTheme () {
-                            return {
-                                params: {
-                                    subTheme: "BildungsatlasSchulentlassene"
-                                }
-                            };
-                        }
-                    }
-                },
-                localVue
-            });
-
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulentlassene"}).exists()).to.be.true;
-        });
-        it("should find the child component BildungsatlasSchulenWohnort", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
-                propsData: {
-                    feature: {
-                        getProperties () {
-                            return {};
-                        },
-                        getTheme () {
-                            return {
-                                params: {
-                                    subTheme: "BildungsatlasSchulenWohnort"
-                                }
-                            };
-                        }
-                    }
-                },
-                localVue
-            });
-
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenWohnort"}).exists()).to.be.true;
-        });
-        it("should find the child component BildungsatlasStandorte", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
-                propsData: {
-                    feature: {
-                        getProperties () {
-                            return {};
-                        },
-                        getTheme () {
-                            return {
-                                params: {
-                                    subTheme: "BildungsatlasStandorte"
-                                }
-                            };
-                        }
-                    }
-                },
-                localVue
-            });
-
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasStandorte"}).exists()).to.be.true;
-        });
-        it("should find the child component BildungsatlasSchulenEinzugsgebiete", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
-                propsData: {
-                    feature: {
-                        getProperties () {
-                            return {};
-                        },
-                        getTheme () {
-                            return {
-                                params: {
-                                    subTheme: "BildungsatlasSchulenEinzugsgebiete"
-                                }
-                            };
-                        }
-                    }
-                },
-                localVue
-            });
-
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenEinzugsgebiete"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasTest"}).exists()).to.be.true;
         });
     });
 });

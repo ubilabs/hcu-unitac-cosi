@@ -113,5 +113,6 @@
   "AccessibilityAnalysis": {
     "path": "cosi/AccessibilityAnalysis",
     "type": "tool"
-  }
+  },
+  "qr": "view.js"
 }

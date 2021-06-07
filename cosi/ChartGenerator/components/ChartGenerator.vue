@@ -26,7 +26,9 @@ export default {
             // Type Of The Graph to render
             newType: "BarChart",
             // UpdateHelper to force rerender of the DOM
-            forceGraphUpdate: 1
+            forceGraphUpdate: 1,
+            // DowlLoad Object
+            downloadHelper: {}
         };
     },
     computed: {
@@ -114,6 +116,13 @@ export default {
             if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
                 this.newType = "BarChart";
             }
+            else if (dataSet.type === "PieChart") {
+                const pieChartData = this.createPieChartData(dataSet);
+
+                this.newType = "PieChart";
+                this.createPieChart(pieChartData);
+                return;
+            }
             else {
                 this.newType = dataSet.type;
             }
@@ -163,43 +172,75 @@ export default {
             }
         },
         /**
+         * @description Modifies the dataSet to match chart.js requirements for PieCharts.
+         * @param {Object} dataSet dataSet containing the data to be rendered as graph.
+         * @returns {Array} Transformed Dataset.
+         */
+        createPieChartData (dataSet) {
+            const newPieChartData = [];
+
+            dataSet.data.labels.forEach((label, i) => {
+                const obj = {
+                    group: label,
+                    label: [],
+                    data: [],
+                    index: i
+                };
+
+                dataSet.data.dataSets.forEach((set) => {
+                    const labelScope = set.label,
+                        labelVal = set.data[i];
+
+                    obj[label].label.push(labelScope);
+                    obj[label].data.push(labelVal);
+                });
+
+                newPieChartData.push(obj);
+            });
+
+            return newPieChartData;
+        },
+        createPieChart (dataSets) {
+            console.log("noch nicht fertig", dataSets);
+        },
+        /**
          * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
          * @param {Object} dataSet dataSet containing the data to be rendered as graph.
-         * @returns {Array}
+         * @returns {Array} ColorScale Array.
          */
         generateColorScale (dataSet) {
-            const range = ["light" + dataSet.color, dataSet.color];
+            const range = ["light" + dataSet.color, "dark" + dataSet.color];
 
             return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
         },
         /**
          * @description Activates the tool window of the chartgenerator.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         activatePanel () {
             this.setActive(true);
         },
         /**
          * @description Select graph to be displayed in tool window.
-         * * @param {Integer} value Index of the dataset in this.dataSets array.
-         * @returns {Void}
+         * @param {Integer} value Index of the dataset in this.dataSets array.
+         * @returns {Void} Function returns nothing.
          */
         selectGraph (value) {
             this.activeGraph = value;
         },
         /**
          * @description Changes between the styles if a dataSet has multiple graph types.
-         * * @param {Object} graph Data of the graph.
-         * * @param {Integer} index Subindex of the type of the graph.
-         * @returns {Void}
+         * @param {Object} graph Data of the graph.
+         * @param {Integer} index Subindex of the type of the graph.
+         * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
             this.$set(graph, "sub_graph", index);
         },
         /**
          * @description Selects the next or the previous graph in the Tool Window.
-         * * @param {Integer} value +1 or -1.
-         * @returns {Void}
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
          */
         graphPrevNext (value) {
             if (this.activeGraph + value < 0) {
@@ -215,9 +256,47 @@ export default {
             }
         },
         /**
+         * @description Turns closest Canvas to PNG and passes it the download function.
+         * @param {$event} event Click event handler.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadGraph (event) {
+            const canvasContainer = event.target.parentNode.previousElementSibling,
+                canvas = canvasContainer.lastChild,
+                canvasPNG = canvas.toDataURL("image/png");
+
+            this.downloadFile(canvasPNG);
+        },
+        /**
+         * @description Triggers Download function for every Chart Canvas available.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadAll () {
+            const chartBox = document.getElementById("chart_panel").querySelectorAll("canvas");
+
+            chartBox.forEach(canvas => {
+                const canvasPNG = canvas.toDataURL("image/png");
+
+                this.downloadFile(canvasPNG);
+            });
+        },
+        /**
+         * @description Downloads File.
+         * @param {Object} img Image to be downloaded.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadFile (img) {
+            const vLink = document.createElement("a");
+
+            vLink.href = img;
+            vLink.download = "cosi_chart.png";
+
+            vLink.click();
+        },
+        /**
          * @description Deletes a graph from the Tool Window.
-         * * @param {Integer} index Index of the graph to be deleted in the this.dataSets Array.
-         * @returns {Void}
+         * @param {Integer} index Index of the graph to be deleted in the this.dataSets Array.
+         * @returns {Void} Function returns nothing.
          */
         removeGraph (index) {
             this.dataSets.splice(index, 1);
@@ -226,8 +305,16 @@ export default {
             }
 
             if (this.dataSets.length === 0) {
-                this.setActive(false)
+                this.setActive(false);
             }
+        },
+        /**
+         * @description Clears dataSets Array and thus deleting all graphs from Chart Generator.
+         * @returns {Void} Function returns nothing.
+         */
+        removeAll () {
+            this.dataSets = [];
+            this.setActive(false);
         }
     }
 };
@@ -305,10 +392,31 @@ export default {
                                                 <div
                                                     :id="`graph-${index}-${i}`"
                                                 ></div>
+                                                <div class="graph_functions">
+                                                    <button
+                                                        class="dl right"
+                                                        @click="downloadGraph($event)"
+                                                    >
+                                                        PNG
+                                                        <span class="glyphicon glyphicon-download-alt"></span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
                                 </div>
+
+                                <template v-if="!Array.isArray(graph.type)">
+                                    <div class="graph_functions">
+                                        <button
+                                            class="dl right"
+                                            @click="downloadGraph($event)"
+                                        >
+                                            PNG
+                                            <span class="glyphicon glyphicon-download-alt"></span>
+                                        </button>
+                                    </div>
+                                </template>
                             </div>
                             <div class="graph_footer">
                                 <template v-if="dataSets.length > 1">
@@ -329,11 +437,24 @@ export default {
                                             @click="graphPrevNext(-1)"
                                         >
                                             <span class="glyphicon glyphicon-chevron-left"></span>
-                                        </button><button
+                                        </button>
+                                        <button
                                             class="nxt"
                                             @click="graphPrevNext(+1)"
                                         >
                                             <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </button>
+                                        <button
+                                            class="dl"
+                                            @click="downloadAll()"
+                                        >
+                                            <span class="glyphicon glyphicon-download-alt"></span>
+                                        </button>
+                                        <button
+                                            class="rm"
+                                            @click="removeAll()"
+                                        >
+                                            <span class="glyphicon glyphicon-remove"></span>
                                         </button>
                                     </div>
                                 </template>
@@ -441,6 +562,21 @@ export default {
                                 display:block;
                             }
                         }
+
+                        .graph_functions {
+                            margin-bottom:10px;
+                            .dl {
+                                display:block;
+                                margin:5px 0px 5px auto;
+                                height:26px;
+                                padding:0px 10px;
+                                border:1px solid #888;
+
+                                span {
+                                    margin-left:5px;
+                                }
+                            }
+                        }
                     }
                     .graph_footer {
                         width:100%;
@@ -448,6 +584,8 @@ export default {
                         flex-flow:row wrap;
                         justify-content:flex-end;
                         margin:5px auto;
+                        padding-top: 10px;
+                        border-top: 1px solid #ccc;
 
                         .btn_grp {
                             &.main {
@@ -462,8 +600,8 @@ export default {
                                 color:#222;
                                 font-weight:700;
                                 background: #eee;
-                                    border:1px solid #eee;
-                                margin: 0px 2px;
+                                border:1px solid #eee;
+                                margin: 0px 1px;
 
                                 &.highlight {
                                     background:white;
@@ -475,6 +613,25 @@ export default {
                                     width:36px;
                                     border:1px solid #888;
                                     background:white;
+                                    margin:0px;
+                                }
+
+                                &.dl, &.rm {
+                                    height:36px;
+                                    width:36px;
+                                    color:whitesmoke;
+                                    opacity:0.85;
+                                    margin:0px;
+                                }
+
+                                &.dl {
+                                    background:@green;
+                                    border:1px solid @green;
+                                }
+
+                                &.rm {
+                                    background:@error_red;
+                                    border:1px solid @error_red;
                                 }
                             }
                         }

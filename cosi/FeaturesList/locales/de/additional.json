@@ -15,7 +15,11 @@
                     "colGroup": "Thema",
                     "colActions": "Aktionen",
                     "colToggleEnabled": "Ein-/Ausschalten",
-                    "colAddress": "Adresse"
+                    "colAddress": "Adresse",
+                    "inactiveFeature": "Die ausgewählte Einrichtung ist gegenwärtig inaktiv geschaltet.",
+                    "exportTable": "Tabelle exportieren",
+                    "exportDetails": "Detailansicht exportieren",
+                    "exportFilename": "CoSI_Einrichtungsübersicht"
                 }
             }
         }
