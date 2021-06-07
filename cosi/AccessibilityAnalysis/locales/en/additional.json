@@ -1,8 +1,11 @@
 {
     "modules": {
         "tools": {
-            "accessibilityAnalysis": {
-                "title": "Accessibility Analysis"
+            "cosi": {
+                "accessibilityAnalysis": {
+                    "title": "Accessibility Analysis",
+                    "dropdownInfo": "Please choose the mode you want to work with:"
+                }
             }
         }
     }
