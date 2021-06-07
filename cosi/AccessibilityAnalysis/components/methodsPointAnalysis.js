@@ -46,18 +46,18 @@ export default {
         ) {
             Radio.trigger("Alert", "alert:remove");
             // group coordinates into groups of 5
-            const coordinatesList = [];
+            const coordinatesList = [],
+                groupedFeaturesList = [],
+                distance = parseFloat(this.distance);
 
             for (let i = 0; i < coordinates.length; i += 5) {
                 const arrayItem = coordinates.slice(i, i + 5);
 
                 coordinatesList.push(arrayItem);
             }
-            // each group of 5 coordinates
-            const groupedFeaturesList = [];
 
-            for (const coordinates of coordinatesList) {
-                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coordinates, this.scaleUnit,
+            for (const coords of coordinatesList) {
+                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coords, this.scaleUnit,
                         [range, range * 0.67, range * 0.33]),
                     // reverse JSON object sequence to render the isochrones in the correct order
                     // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
@@ -80,15 +80,17 @@ export default {
             let features = [];
 
             for (let i = 0; i < 3; i++) {
-                let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]);
+                let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
+                    layerUnion,
+                    layerUnionFeatures;
 
                 layeredList = [].concat(...layeredList);
-                let layerUnion = layeredList[0];
+                layerUnion = layeredList[0];
 
                 for (let j = 0; j < layeredList.length; j++) {
                     layerUnion = turf.union(layerUnion, layeredList[j]);
                 }
-                let layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
+                layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
 
                 layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
 
@@ -101,7 +103,6 @@ export default {
             }
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
-            const distance = parseFloat(this.distance);
 
             this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)
             );
@@ -141,8 +142,10 @@ export default {
                 );
 
                 // reverse JSON object sequence to render the isochrones in the correct order
+                // eslint-disable-next-line one-var
                 const json = JSON.parse(res),
-                    reversedFeatures = [...json.features].reverse();
+                    reversedFeatures = [...json.features].reverse(),
+                    featureType = "Erreichbarkeit ab einem Referenzpunkt";
 
                 json.features = reversedFeatures;
                 let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
@@ -152,8 +155,6 @@ export default {
                     "EPSG:4326",
                     "EPSG:25832"
                 );
-
-                const featureType = "Erreichbarkeit ab einem Referenzpunkt";
 
                 newFeatures.forEach((feature) => {
                     feature.set("featureType", featureType);
@@ -381,6 +382,7 @@ export default {
                     }
                     // inscribe the coordinate to the feature for rendering to the resultView DOM Element
                     // for zooming to feature by click
+                    // eslint-disable-next-line one-var
                     const sfeatures = features.map((feature, i) => {
                         const geometry = feature.getGeometry(),
                             coord =
@@ -442,7 +444,7 @@ export default {
     showHelp: function () {
         Radio.trigger("Alert", "alert:remove");
         Radio.trigger("Alert", "alert", {
-            text: this.mode == "point" ? InfoTemplatePoint : InfoTemplateRegion,
+            text: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
             kategorie: "alert-info",
             position: "center-center"
         });
