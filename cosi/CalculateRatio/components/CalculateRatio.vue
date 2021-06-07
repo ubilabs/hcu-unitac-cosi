@@ -412,11 +412,31 @@ export default {
             }
         },
         /**
-         * @description Fires when user hits calulcate button. Prepares data sets for calculation.
+         * @description Fires when user hits calulcate button. Prepares data sets for calculation. Triggers coverageFunction twice.
          * @returns {void}
          */
         prepareCoverage () {
             this.results = [];
+            const allData = [],
+
+                dataArray_A = this.coverageFunction("A"),
+                dataArray_B = this.coverageFunction("B");
+
+            dataArray_A.forEach((obj_A) => {
+                const obj_B = dataArray_B.find(obj => obj.name === obj_A.name),
+                    combined = {...obj_A, ...obj_B};
+
+                allData.push(combined);
+            });
+
+            this.results = utils.calculateRatio(allData, this.selectedYear);
+        },
+        /**
+         * @description Fires when user hits calulcate button. Prepares data sets for calculation.
+         * @param {String} letter "A" or "B" for selectedFieldA or selectedFieldB.
+         * @returns {Array} dataArray -> Array containing all collected data for all selected districts.
+         */
+        coverageFunction (letter) {
             const dataArray = [];
 
             this.selectedFeatures.forEach(district => {
@@ -425,15 +445,13 @@ export default {
 
                 this.calcHelper = {};
                 this.calcHelper.name = name;
-                this.calcHelper.faktorF_A = this.faktorf_A;
-                this.calcHelper.faktorF_B = this.faktorf_B;
-                this.calcHelper.perCalc_A = this.perCalc_A;
-                this.calcHelper.perCalc_B = this.perCalc_B;
-                if (this.ASwitch) {
-                    const findLayer = this.layerList.find(layer => layer.get("name") === this.selectedFieldA.id),
+                this.calcHelper["faktorf_" + letter] = this["faktorf_" + letter];
+                this.calcHelper["perCalc_" + letter] = this["perCalc_" + letter];
+                if (this[letter + "Switch"]) {
+                    const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = findLayer.getSource().getFeatures();
 
-                    this.calcHelper.type_A = "facility";
+                    this.calcHelper["type_" + letter] = "facility";
                     this.featureVals = [];
                     layerFeatures.forEach(feature => {
                         const layerGeometry = feature.getGeometry().getExtent();
@@ -441,16 +459,16 @@ export default {
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
                                 if (
-                                    typeof feature.getProperties()[this.paramFieldA.id] !== "number" ||
-                                    typeof feature.getProperties()[this.paramFieldA.id] !== "string"
+                                    typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
+                                    typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
                                 ) {
-                                    const value = feature.getProperties()[this.paramFieldA.id],
+                                    const value = feature.getProperties()[this["paramField" + letter].id],
                                         valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
 
                                     this.featureVals.push(valueTransformed);
                                 }
                                 else {
-                                    this.featureVals.push("avg");
+                                    this.featureVals.push("");
                                 }
                             }
                             else {
@@ -467,22 +485,22 @@ export default {
                         return;
                     }
 
-                    this.calcHelper.paramA_count = this.featureVals.length;
-                    this.calcHelper.paramA_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
-                    this.calcHelper.incompleteDataSets_A = checkForLackingData.incompleteDataSets;
-                    this.calcHelper.dataSets_A = checkForLackingData.totalDataSets;
-                    if (this.paramFieldA.name === "Anzahl") {
-                        this.calcHelper.paramA_calc = this.calcHelper.paramA_count;
+                    this.calcHelper["param" + letter + "_count"] = this.featureVals.length;
+                    this.calcHelper["param" + letter + "_val"] = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper["incompleteDataSets_" + letter] = checkForLackingData.incompleteDataSets;
+                    this.calcHelper["dataSets_" + letter] = checkForLackingData.totalDataSets;
+                    if (this["paramField" + letter].name === "Anzahl") {
+                        this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_count"];
                     }
                     else {
-                        this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
+                        this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_val"];
                     }
                 }
                 else {
                     this.featureVals = [];
-                    this.calcHelper.type_A = "feature";
-                    if (Array.isArray(this.selectedFieldA.id)) {
-                        this.selectedFieldA.id.forEach(id => {
+                    this.calcHelper["type_" + letter] = "feature";
+                    if (Array.isArray(this["selectedField" + letter].id)) {
+                        this["selectedField" + letter].id.forEach(id => {
                             const featureData = this.getFeatureData(name, id);
 
                             this.featureVals.push(featureData);
@@ -502,7 +520,7 @@ export default {
                         this.featureVals = sumUpYearValues;
                     }
                     else {
-                        const featureData = this.getFeatureData(name, this.selectedFieldA.id),
+                        const featureData = this.getFeatureData(name, this["selectedField" + letter].id),
                             yearValues = {};
 
                         featureData.forEach(year => {
@@ -511,103 +529,17 @@ export default {
                         this.featureVals = yearValues;
                     }
 
-                    this.calcHelper.paramA_val = this.featureVals;
-                    this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
-                    this.calcHelper.incompleteDataSets_B = 0;
-                }
-
-                if (this.BSwitch) {
-                    const findLayer = this.layerList.find(layer => layer.get("name") === this.selectedFieldB.id),
-                        layerFeatures = findLayer.getSource().getFeatures();
-
-                    this.featureVals = [];
-                    this.calcHelper.type_B = "facility";
-                    layerFeatures.forEach(feature => {
-                        const layerGeometry = feature.getGeometry().getExtent();
-
-                        if (geometry.intersectsExtent(layerGeometry)) {
-                            if (this.paramFieldB.name !== "Anzahl") {
-                                if (
-                                    typeof feature.getProperties()[this.paramFieldB.id] !== "number" ||
-                                    typeof feature.getProperties()[this.paramFieldB.id] !== "string"
-                                ) {
-                                    const value = feature.getProperties()[this.paramFieldB.id],
-                                        valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
-
-                                    this.featureVals.push(valueTransformed);
-                                }
-                                else {
-                                    this.featureVals.push("avg");
-                                }
-                            }
-                            else {
-                                this.featureVals.push(0);
-                            }
-                        }
-                    });
-
-                    // eslint-disable-next-line
-                    const checkForLackingData = utils.compensateLackingData(this.featureVals);
-
-                    if (checkForLackingData === "error") {
-                        this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
-                        return;
-                    }
-
-                    this.calcHelper.paramB_count = this.featureVals.length;
-                    this.calcHelper.paramB_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
-                    this.calcHelper.incompleteDataSets_B = checkForLackingData.incompleteDataSets;
-                    this.calcHelper.dataSets_B = checkForLackingData.totalDataSets;
-                    if (this.paramFieldB.name === "Anzahl") {
-                        this.calcHelper.paramB_calc = this.calcHelper.paramB_count;
-                    }
-                    else {
-                        this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
-                    }
-                }
-                else {
-                    this.featureVals = [];
-                    this.calcHelper.type_B = "feature";
-                    if (Array.isArray(this.selectedFieldB.id)) {
-                        this.selectedFieldB.id.forEach(id => {
-                            const featureData = this.getFeatureData(name, id);
-
-                            this.featureVals.push(featureData);
-                        });
-
-                        const sumUpYearValues = {};
-
-                        this.featureVals = [].concat(...this.featureVals);
-                        this.featureVals.forEach(year => {
-                            if (sumUpYearValues[year.jahr]) {
-                                sumUpYearValues[year.jahr] += year.wert;
-                            }
-                            else {
-                                sumUpYearValues[year.jahr] = year.wert;
-                            }
-                        });
-
-                        this.featureVals = sumUpYearValues;
-                    }
-                    else {
-                        const featureData = this.getFeatureData(name, this.selectedFieldB.id),
-                            yearValues = {};
-
-                        featureData.forEach(year => {
-                            yearValues[year.jahr] = year.wert;
-                        });
-                        this.featureVals = yearValues;
-                    }
-
-                    this.calcHelper.paramB_val = this.featureVals;
-                    this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
-                    this.calcHelper.incompleteDataSets_B = 0;
+                    this.calcHelper["param" + letter + "_val"] = this.featureVals;
+                    this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_val"];
+                    this.calcHelper["incompleteDataSets_" + letter] = 0;
                 }
 
                 dataArray.push(this.calcHelper);
             });
 
-            this.results = utils.calculateRatio(dataArray, this.selectedYear);
+            return dataArray;
+
+            // this.results = utils.calculateRatio(dataArray, this.selectedYear);
         },
         /**
          * @description Gets Data for the selected statistical data (features)
@@ -653,7 +585,7 @@ export default {
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
          * @returns {void}
          */
-        loadToCCM () {
+        loadToColorCodeMap () {
             const switchVar = this.dataToCCM;
 
             if (!switchVar) {
@@ -670,24 +602,26 @@ export default {
                     }
                 });
 
-                this.setCcmDataSet(prepareData);
-                this.setDataToCCM(!switchVar);
+                this.setColorCodeMapDataSet(prepareData);
+                this.setDataToColorCodeMap(!switchVar);
             }
             else {
-                this.setDataToCCM(!switchVar);
+
+                this.setDataToColorCodeMap(!switchVar);
             }
         },
         /**
          * @description Passes data to the Chart Generator Tool.
          * @returns {Void} Function returns nothing.
          */
-        loadToCG () {
+        loadToChartGenerator () {
             const graphObj = {
-                    id: "calcratio-test",
+                    id: "calcratio",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                    type: ["BarChart", "LineChart"],
+                    type: ["LineChart", "BarChart"],
                     color: "green",
-                    source: "CalculateRatio",
+                    source: "Versorgungsanalyse",
+                    scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
                         dataSets: []
@@ -964,6 +898,7 @@ export default {
                                 @input="checkSumUp('B')"
                             >
                                 <template slot="singleLabel">
+                                    <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                     <strong>{{ selectedFieldB.id }}</strong>
                                 </template>
                             </Multiselect>
@@ -1097,7 +1032,7 @@ export default {
                             <button
                                 class="cg"
                                 title="Graph aus Datensatz erzeugen"
-                                @click="loadToCG"
+                                @click="loadToChartGenerator()"
                             >
                                 <span
                                     class="glyphicon glyphicon-stats"
@@ -1125,7 +1060,7 @@ export default {
                                 class="ccm"
                                 :class="{ highlight: !dataToCCM}"
                                 title="Ausgewählten Datensatz auf Karte visualisieren"
-                                @click="loadToCCM()"
+                                @click="loadToColorCodeMap()"
                             >
                                 <span
                                     v-if="!dataToCCM"

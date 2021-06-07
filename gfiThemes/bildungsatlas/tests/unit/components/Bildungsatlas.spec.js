@@ -1,11 +1,13 @@
 import Vuex from "vuex";
-import {shallowMount, createLocalVue} from "@vue/test-utils";
+import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
 import Bildungsatlas from "../../../components/Bildungsatlas.vue";
 
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
+
+config.mocks.$t = key => key;
 
 describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
     let wrapper;
@@ -80,7 +82,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
         });
     });
     describe("components", () => {
-        it("should find the child component BildungsatlasTest", () => {
+        it("should find the child component BildungsatlasOKJA", () => {
             const singleTestWrapper = shallowMount(Bildungsatlas, {
                 propsData: {
                     feature: {
@@ -90,7 +92,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasTest",
+                                    subTheme: "BildungsatlasOKJA",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -100,7 +102,31 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasTest"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasOKJA"}).exists()).to.be.true;
+        });
+    });
+    describe("components", () => {
+        it("should find the child component BildungsatlasFluechtlinge", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasFluechtlinge",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasFluechtlinge"}).exists()).to.be.true;
         });
     });
 });

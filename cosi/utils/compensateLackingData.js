@@ -38,14 +38,11 @@ export default function compensateLackingData (dataArray, strategy = "median") {
     }
 
     dataArray.forEach(dataSet => {
-        /**
-         * @todo this should not only work with a precurated dataset
-         */
-        if (dataSet !== "avg") {
-            completeData.push(dataSet);
+        if (dataSet === undefined || dataSet === "") {
+            incompleteData.push(dataSet);
         }
         else {
-            incompleteData.push(dataSet);
+            completeData.push(dataSet);
         }
     });
 

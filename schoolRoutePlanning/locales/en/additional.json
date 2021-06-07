@@ -1,0 +1,23 @@
+{
+    "modules": {
+        "tools": {
+            "schoolRoutePlanning": {
+                "title": "School route",
+                "inputPlaceHolder": "Start address",
+                "regionalPrimarySchool": "Regionally responsible primary school: ",
+                "selectSchool": "Select school",
+                "printRouteName": "Print route",
+                "deleteRoute": "Delete route",
+                "noSchoolFound": "No school found!",
+                "showRouteDescription": "Show route description",
+                "hideRouteDescription": "Hide route description",
+                "totalLength": "The total length is",
+                "from": "from:",
+                "to": "to:",
+                "wpsError": "Unable to route.<br>Please try again later (status: {{status}}).",
+                "responseError":"<b>Sorry</b><br>Routing could not be calculated with the following error message:<br><br><i>{{errorMessage}}</i><br><br>Please contact the administrator with this error message.",
+                "transportNetwork": "HVV transport network"
+            }
+        }
+    }
+}
