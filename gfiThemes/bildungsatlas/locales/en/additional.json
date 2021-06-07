@@ -98,6 +98,19 @@
                         "textB": "The key figures are only shown in areas where at least 30 school leavers live. In areas where there are too few or no cases according to this criterion, no values are shown and the areas are colored gray.",
                         "footer": "*) General education schools provide the foundations for further education at the primary level, and a general basic education or more in-depth general education at the lower and upper secondary levels. In Hamburg, general education schools at the primary and lower secondary levels shown in the Education Atlas include elementary schools, district schools, high schools and special education schools."
                     }
+                },
+                "balkendiagrammwanderungen": {
+                    "title": "Number of in-migrants and out-migrants (+/-) of children under 6 years of age per 100 children under 6 years of age",
+                    "table": {
+                        "statgeb": "In the statistical area",
+                        "sozialraum": "In {{sozialraum_name}}",
+                        "stadtteil": "In {{stadtteil_name}}",
+                        "ausUmland": "Proportion of inward migration from the surrounding area",
+                        "insUmland": "Proportion of departures to the surrounding area"
+                    },
+                    "barchart": {
+                        "title": "Key figure over time"
+                    }
                 }
             }
         }

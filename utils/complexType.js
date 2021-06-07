@@ -392,6 +392,27 @@ function getCompletestLabels (labels) {
     return result;
 }
 
+/**
+ * runs through the values of the given complexType and checks if there is data somewhere
+ * @param {ComplexType} complexType the complex type to check
+ * @returns {boolean} true if there ist data somewhere, false if there is no data (e.g. only undefined values)
+ */
+function hasComplexTypeValues (complexType) {
+    if (!isComplexType(complexType)) {
+        return false;
+    }
+    const len = complexType.values.length;
+    let i = 0;
+
+    for (i = 0; i < len; i++) {
+        if (typeof complexType.values[i].value === "number" || typeof complexType.values[i].value === "string" && complexType.values[i].value) {
+            // a number or a string (not empty)
+            return true;
+        }
+    }
+    return false;
+}
+
 export {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
@@ -402,5 +423,6 @@ export {
     convertComplexTypesToMultilinechart,
     isComplexType,
     sortComplexType,
-    cloneComplexType
+    cloneComplexType,
+    hasComplexTypeValues
 };

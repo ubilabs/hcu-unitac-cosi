@@ -99,6 +99,19 @@
                         "footer": "*) Allgemeinbildende Schulen vermitteln im Primarbereich die Grundlagen für eine weiterführende Bildung, im Sekundarbereich I und II eine allgemeine Grundbildung bzw. vertiefte Allgemeinbildung. Zu den allgemeinbildenden Schulen der im Bildungsatlas abgebildeten Primarstufe und der Sekundarstufe I gehören in Hamburg Grundschulen, Stadtteilschulen, Gymnasien sowie Sonderschulen."
                     }
                 },
+                "balkendiagrammwanderungen": {
+                    "title": "Anzahl der Zu- bzw. Fortzüge (+/-) der unter 6-Jährigen je 100 Kinder unter 6 Jahren",
+                    "table": {
+                        "statgeb": "Im Statistischen Gebiet",
+                        "sozialraum": "In {{sozialraum_name}}",
+                        "stadtteil": "In {{stadtteil_name}}",
+                        "ausUmland": "Anteil der Zuzüge aus dem Umland",
+                        "insUmland": "Anteil der Fortzüge ins Umland"
+                    },
+                    "barchart": {
+                        "title": "Kennzahl im Zeitverlauf"
+                    }
+                },
                 "balkendiagramm": {
                     "title": {
                         "anzahl_sus_primarstufe": "Anzahl der Schülerinnen und Schüler an Grundschulen",

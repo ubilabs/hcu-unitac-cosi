@@ -1,6 +1,7 @@
 <script>
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
 import BildungsatlasBalkendiagramm from "./BildungsatlasBalkendiagramm.vue";
+import BildungsatlasBalkendiagrammWanderungen from "./BildungsatlasBalkendiagrammWanderungen.vue";
 import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
@@ -10,6 +11,7 @@ export default {
     name: "Bildungsatlas",
     components: {
         BildungsatlasBalkendiagramm,
+        BildungsatlasBalkendiagrammWanderungen,
         BildungsatlasFluechtlinge,
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,

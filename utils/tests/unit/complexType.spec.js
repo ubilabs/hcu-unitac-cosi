@@ -8,7 +8,8 @@ import {
     convertComplexTypesToMultilinechart,
     isComplexType,
     sortComplexType,
-    cloneComplexType
+    cloneComplexType,
+    hasComplexTypeValues
 } from "../../../utils/complexType.js";
 
 describe("addons/utils/complexType.js", () => {
@@ -1487,6 +1488,56 @@ describe("addons/utils/complexType.js", () => {
 
             expect(clonedComplexType).to.deep.equal(expectedClone);
             expect(complexType).to.deep.equal(expectedComplexType);
+        });
+    });
+    describe("hasComplexTypeValues", () => {
+        it("should return false if the given complexType is anything but a ComplexType", () => {
+            expect(hasComplexTypeValues(undefined)).to.be.false;
+            expect(hasComplexTypeValues(null)).to.be.false;
+            expect(hasComplexTypeValues("string")).to.be.false;
+            expect(hasComplexTypeValues(1234)).to.be.false;
+            expect(hasComplexTypeValues(true)).to.be.false;
+            expect(hasComplexTypeValues(false)).to.be.false;
+            expect(hasComplexTypeValues([])).to.be.false;
+            expect(hasComplexTypeValues({})).to.be.false;
+        });
+        it("should return false if the given complexType does not include any valid information", () => {
+            const complexType = {
+                metadata: {type: "type", format: "format", description: "description"},
+                values: [
+                    {key: "keyA", value: undefined},
+                    {key: "keyB", value: null},
+                    {key: "keyC", value: ""}
+                ]
+            };
+
+            expect(hasComplexTypeValues(complexType)).to.be.false;
+        });
+        it("should return true if the given complexType does include valid numeric information", () => {
+            const complexType = {
+                metadata: {type: "type", format: "format", description: "description"},
+                values: [
+                    {key: "keyA", value: undefined},
+                    {key: "keyB", value: null},
+                    {key: "keyOK", value: 0},
+                    {key: "keyC", value: ""}
+                ]
+            };
+
+            expect(hasComplexTypeValues(complexType)).to.be.true;
+        });
+        it("should return true if the given complexType does include valid string information", () => {
+            const complexType = {
+                metadata: {type: "type", format: "format", description: "description"},
+                values: [
+                    {key: "keyA", value: undefined},
+                    {key: "keyB", value: null},
+                    {key: "keyOK", value: "0"},
+                    {key: "keyC", value: ""}
+                ]
+            };
+
+            expect(hasComplexTypeValues(complexType)).to.be.true;
         });
     });
 });
