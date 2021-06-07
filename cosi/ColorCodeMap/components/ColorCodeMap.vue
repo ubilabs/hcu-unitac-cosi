@@ -57,7 +57,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"])
+        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"])
     },
     watch: {
         selectedFeatures () {
@@ -70,7 +70,7 @@ export default {
             }
         },
         visualizationState () {
-            if (!this.dataToCCM) {
+            if (!this.dataToColorCodeMap) {
                 this.renderVisualization();
             }
         },
@@ -90,17 +90,17 @@ export default {
         showMapNames () {
             this.renderVisualization();
         },
-        dataToCCM (newState) {
+        dataToColorCodeMap (newState) {
             if (newState) {
-                this.renderCCData();
+                this.renderDataFromCalculateRatio();
             }
             else {
                 this.$store.commit("Tools/ColorCodeMap/setVisualizationState", false);
             }
         },
-        ccmDataSet () {
-            if (this.dataToCCM) {
-                this.renderCCData();
+        colorCodeMapDataSet () {
+            if (this.dataToColorCodeMap) {
+                this.renderDataFromCalculateRatio();
             }
         }
     },
@@ -117,7 +117,6 @@ export default {
          */
         updateSelectedDistricts () {
             this.featuresList = [];
-            this.graphData = [];
             if (this.currentStatsFeatures.length) {
                 this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
                 this.updateFeaturesList();
@@ -179,8 +178,8 @@ export default {
          * @returns {void}
          */
         renderVisualization () {
+            this.graphData = [];
             if (this.visualizationState) {
-                this.graphData = [];
                 const results = this.currentStatsFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
@@ -272,13 +271,13 @@ export default {
          * @description Renders data on map from CalculateRatio Component.
          * @returns {void}
          */
-        renderCCData () {
+        renderDataFromCalculateRatio () {
             if (!this.visualizationState) {
                 // this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
                 this.setVisualizationState(true);
             }
 
-            const resultValues = this.ccmDataSet.map(x => {
+            const resultValues = this.colorCodeMapDataSet.map(x => {
                     return x.data;
                 }),
                 colorScale = this.getColorsByValues(resultValues);
@@ -286,7 +285,7 @@ export default {
             // todo generate Legend for CC Data
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
-                    matchResults = this.ccmDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+                    matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -428,19 +427,20 @@ export default {
          * @description Passes data to the Chart Generator Tool.
          * @returns {Void} Function returns nothing.
          */
-        loadToCg () {
+        loadToChartGenerator () {
             const graphObj = {
                 id: "ccm",
                 name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
-                type: ["LineChart", "BarChart"],
+                type: ["LineChart","BarChart"],
                 color: "blue",
-                source: "ColorCodeMap",
+                source: "Kartenvisualisierungswerkzeug",
+                scaleLabels: [this.selectedFeature, "Jahre"],
                 data: {
                     labels: [],
                     dataSets: []
                 }
             };
-
+            console.log(this.graphData);
             this.availableYears.forEach(year => {
                 graphObj.data.labels.push(year);
             });
@@ -453,7 +453,6 @@ export default {
             graphObj.data.labels.reverse();
 
             this.setNewChartDataSet(graphObj);
-            this.graphData = [];
         }
     }
 };
@@ -633,15 +632,15 @@ export default {
                     />
                 </div>
                 <button
-                    v-if="visualizationState && !minimize"
+                    v-if="visualizationState"
                     class="graph_button"
                     title="Graph aus Datensatz erzeugen"
-                    @click="loadToCg()"
+                    @click="loadToChartGenerator()"
                 >
                     <span class="glyphicon glyphicon-stats"></span>
                 </button>
                 <button
-                    v-if="visualizationState && !minimize"
+                    v-if="visualizationState"
                     class="map_button"
                     title="Gebietsnamen ein-/ ausblenden"
                     @click="showMapNames = !showMapNames"
@@ -973,6 +972,15 @@ export default {
         }
 
         &.minimized {
+            .hovermenu {
+                width:120px;
+                .btn_grp {
+                    button {
+                        margin:2px;
+                    }
+                }
+            }
+
             .legend {
                 margin:0;
                 display:none;

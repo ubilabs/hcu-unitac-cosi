@@ -15,11 +15,11 @@ export default function compensateLackingData (dataArray) {
     }
 
     dataArray.forEach(dataSet => {
-        if (dataSet !== "avg") {
-            completeData.push(dataSet);
+        if (dataSet === undefined || dataSet === "") {
+            incompleteData.push(dataSet);
         }
         else {
-            incompleteData.push(dataSet);
+            completeData.push(dataSet);
         }
     });
 
