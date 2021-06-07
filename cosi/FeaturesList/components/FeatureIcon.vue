@@ -1,6 +1,8 @@
 <script>
 import Icon from "ol/style/Icon";
 import CircleStyle from "ol/style/Circle";
+import {mapActions} from "vuex";
+import {buffer} from "ol/extent";
 
 /**
  * @todo Make a util to read the icon of a feature
@@ -19,6 +21,8 @@ export default {
         }
     },
     methods: {
+        ...mapActions("Map", ["zoomTo"]),
+        ...mapActions("Alerting", ["addSingleAlert"]),
         /**
          * @description
          * @returns {String | undefined} returns the source url of the img
@@ -71,13 +75,30 @@ export default {
          */
         getBorderWidth (style) {
             return style?.getStroke()?.getWidth() + "px" || "0px";
+        },
+
+        zoomToFeature () {
+            const extent = this.item.feature.getGeometry().getExtent(),
+                buffered = buffer(extent, 500);
+
+            this.zoomTo(buffered);
+
+            if (!this.item.enabled) {
+                this.addSingleAlert({
+                    content: this.$t("additional:modules.tools.cosi.featuresList.inactiveFeature"),
+                    category: "Info",
+                    displayClass: "info"
+                });
+            }
         }
     }
 };
 </script>
 
 <template>
-    <span>
+    <span
+        @click="zoomToFeature"
+    >
         <img
             v-if="getIconSrc()"
             class="marker"
@@ -110,6 +131,7 @@ export default {
         width: 30px;
         height: 30px;
         display: block;
+        cursor: zoom-in;
     }
     span.marker {
         border-style: solid;

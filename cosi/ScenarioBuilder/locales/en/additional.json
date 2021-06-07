@@ -6,11 +6,21 @@
                     "title": "Scenario Builder",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Select topic",
+                    "pickReference": "Pick reference facility",
                     "chooseLocation": "Choose Location",
                     "resetLocation": "Reset",
                     "createFeature": "Create Facility",
+                    "helpCreateFeature": "Neue Einrichtung erstellen",
+                    "resetFeature": "Reset",
                     "restoreAllFeatures": "Restore",
-                    "pruneAllFeatures": "Prune"
+                    "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
+                    "pruneAllFeatures": "Prune",
+                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
+                    "warningNoData": "No topics have been activated. Please select at least one analysis layer from the layer tree.",
+                    "moveFeatures": "Move facilities",
+                    "toggleOnlySimulated": "Only edit simulated",
+                    "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen werden sind nur temporär und werden nach der Sitzung nicht gespeichert.",
+                    "resetFeatureLocations": "Reset"
                 }
             }
         }
