@@ -21,10 +21,6 @@ export default {
             default: false
         }
     },
-    data () {
-        return {
-        };
-    },
     computed: {
         headers () {
             const head = [
