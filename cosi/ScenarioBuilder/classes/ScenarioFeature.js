@@ -59,8 +59,8 @@ export default class ScenarioFeature {
         for (const prop in this.scenarioData) {
             this.feature.set(prop, this.scenarioData[prop]);
 
-            if (prop === "location" && this.scenarioData.location) {
-                translateFeature(this.feature, this.scenarioData.location);
+            if (prop === "geometry" && this.scenarioData.geometry) {
+                translateFeature(this.feature, this.scenarioData.geometry);
             }
         }
     }
@@ -77,7 +77,7 @@ export default class ScenarioFeature {
         for (prop of props || Object.keys(originalProperties)) {
             this.feature.set(prop, originalProperties[prop]);
 
-            if (prop === "location") {
+            if (prop === "geometry") {
                 this.resetLocation();
             }
         }
@@ -88,10 +88,10 @@ export default class ScenarioFeature {
      * @returns {void}
      */
     resetLocation () {
-        const location = this.feature.get("originalData").location;
+        const originalGeom = this.feature.get("originalData").geometry;
 
-        if (location) {
-            translateFeature(this.feature, location);
+        if (originalGeom) {
+            translateFeature(this.feature, originalGeom);
         }
     }
 

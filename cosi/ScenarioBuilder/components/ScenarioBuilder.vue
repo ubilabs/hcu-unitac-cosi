@@ -23,6 +23,7 @@ import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
+import arrayIsEqual from "../../utils/arrayIsEqual";
 
 export default {
     name: "ScenarioBuilder",
@@ -63,15 +64,7 @@ export default {
                 return this.geometry.value ? JSON.stringify(this.geometry.value.getCoordinates()) : undefined;
             },
             set (v) {
-                if (this.geometry.type === "Point") {
-                    this.geometry.value = new Point(v);
-                    this.placingPointMarker(v);
-                }
-                if (this.geometry.type === "Polygon") {
-                    const coords = JSON.parse(v);
-
-                    this.drawPolygonByCoords(coords);
-                }
+                this.setGeomByInput(v);
             }
         }
     },
@@ -233,11 +226,7 @@ export default {
             this.clearDrawPolygon();
         },
         onDrawPolygonEnd (evt) {
-            console.log(evt);
-            const geom = evt.feature.getGeometry();
-
-            console.log(geom);
-            this.geometry.value = geom;
+            this.geometry.value = evt.feature.getGeometry();
         },
         drawPolygonByCoords (coords) {
             try {
@@ -250,6 +239,32 @@ export default {
             }
             catch (e) {
                 console.warn("ScenarioBuilder: The entered geometry is not a valid Polygon. Please check the List of Coordinates.");
+            }
+        },
+        drawPointByCoords (coords) {
+            try {
+                this.geometry.value = new Point(coords);
+                this.placingPointMarker(coords);
+            }
+            catch (e) {
+                console.warn("ScenarioBuilder: The entered geometry is not a valid Point. Please check the List of Coordinates.");
+            }
+        },
+        setGeomByInput (value) {
+            let coords;
+
+            try {
+                coords = JSON.parse(value);
+            }
+            catch (e) {
+                coords = value.split(",").map(coord => parseFloat(coord));
+            }
+
+            if (this.geometry.type === "Point") {
+                this.drawPointByCoords(coords);
+            }
+            if (this.geometry.type === "Polygon") {
+                this.drawPolygonByCoords(coords);
             }
         },
 

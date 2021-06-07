@@ -185,14 +185,17 @@ export default {
          * @returns {void}
          */
         onTranslateEnd (evt) {
-            const feature = evt.features.item(0);
+            const feature = evt.features.item(0),
+                targetGeometry = feature.getGeometry().clone();
             let originalFeature;
 
             for (originalFeature of unpackCluster(feature)) {
-                originalFeature.getGeometry().setCoordinates(evt.coordinate);
+                originalFeature.setGeometry(targetGeometry);
 
                 // modify the feature on the scenario. Update features already stored in the scenario
-                this.activeScenario.modifyFeature(originalFeature, {location: evt.coordinate});
+                // use the cloned geometry of the point or polygon as reference
+                this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
+                // this.activeScenario.modifyFeature(originalFeature, {location: originalFeature.getGeometry().getCoordinates()});
             }
         },
 

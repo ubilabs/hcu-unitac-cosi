@@ -12,14 +12,12 @@ export default function storeOriginalFeatureData (feature, storeGeometry = true)
         });
     }
     if (storeGeometry && !feature.get("originalData").location) {
-        const geom = feature.getGeometry();
-
-        if (geom.getType() === "Point") {
-            feature.get("originalData").location = geom.getCoordinates();
-        }
-        else {
-            // implement for none Point data
-        }
+        // const geom = feature.getGeometry();
+        feature.get("originalData").geometry = feature.getGeometry().clone();
+        // feature.get("originalData").location = geom.getCoordinates();
+        // else {
+        //     // implement for none Point data
+        // }
     }
 
 }
