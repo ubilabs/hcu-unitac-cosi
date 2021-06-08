@@ -111,6 +111,16 @@
                     "barchart": {
                         "title": "Key figure over time"
                     }
+                },
+                "schulenWohnort": {
+                    "title": "Anzahl der Schülerinnen und Schüler im statistischen Gebiet in der Primarstufe:",
+                    "statgeb": "Statistisches Gebiet",
+                    "countInArea": "The count of students in statistischen Gebiet in",
+                    "hintMobile": "In the mobile view it is impossible to query the count of students",
+                    "info": {
+                        "primary": "<p><b>Schulwahl am Wohnort :</b></p><p>In der Karte dargestellt sind Schulen mit Primarstufe (Grundschulen, Stadtteilschulen mit integrierter Grundschule und Sonderschulen), die von Schülerinnen und Schülern eines von Ihnen ausgewählten Gebiets besucht werden. Durch Auswahl eines statistischen Gebiets werden die besuchten Schulen größenproportional angezeigt. Die absolute Anzahl an Schülerinnen und Schüler eines Gebietes, die in der Primarstufe sind, wird im Datenblatt durch Klicken auf die Schule angezeigt.</p><p><b>ACHTUNG:</b> Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p><p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Primarstufe wohnen.</p>",
+                        "secondary": "<p><b>Schulwahl am Wohnort :</b></p><p>In der Karte dargestellt sind Schulen mit der Sekundarstufe I (Stadtteilschulen, Gymnasien, Sonderschulen), die von Schülerinnen und Schülern eines von Ihnen ausgewählten Gebiets besucht werden. Durch Auswahl eines statistischen Gebiets werden die besuchten Schulen größenproportional angezeigt. Die absolute Anzahl an Schülerinnen und Schüler eines Gebietes, die in der Sekundarstufe I sind, wird im Datenblatt durch Klicken auf die Schule angezeigt.</p><p><b>ACHTUNG:</b> Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p><p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Sekundarstufe I wohnen.</p>"
+                    }
                 }
             }
         }

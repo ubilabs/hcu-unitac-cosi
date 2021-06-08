@@ -192,5 +192,27 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
 
             expect(singleTestWrapper.findComponent({name: "BildungsatlasBalkendiagrammWanderungen"}).exists()).to.be.true;
         });
+        it("should find the child component BildungsatlasSchulenWohnort", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasSchulenWohnort",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenWohnort"}).exists()).to.be.true;
+        });
     });
 });

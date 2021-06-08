@@ -5,6 +5,7 @@ import BildungsatlasBalkendiagrammWanderungen from "./BildungsatlasBalkendiagram
 import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
+import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
 import BildungsatlasTest from "./BildungsatlasTest.vue";
 
 export default {
@@ -15,6 +16,7 @@ export default {
         BildungsatlasFluechtlinge,
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
+        BildungsatlasSchulenWohnort,
         BildungsatlasTest
     },
     props: {
@@ -141,6 +143,7 @@ export default {
             <component
                 :is="subThemeComponent"
                 :isActiveTab="isActiveTab"
+                :feature="feature"
                 :properties="properties"
                 :api="api"
                 :featureType="featureType"
