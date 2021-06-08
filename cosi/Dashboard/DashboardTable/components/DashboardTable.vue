@@ -8,10 +8,10 @@ import mutations from "../store/mutationsDashboardTable";
 import actions from "../store/actionsDashboardTable";
 import categories from "../../../assets/mapping.json";
 import findDistrictFeatureByName from "../utils/findDistrictFeatureByName";
-import ValueCell from "./ValueCell.vue";
-import YearCell from "./YearCell.vue";
-import MenuCell from "./MenuCell.vue";
-import CategoryCell from "./CategoryCell.vue";
+// import ValueCell from "./ValueCell.vue";
+// import YearCell from "./YearCell.vue";
+// import MenuCell from "./MenuCell.vue";
+// import CategoryCell from "./CategoryCell.vue";
 import {getTimestamps} from "../../../utils/timeline";
 
 export default {

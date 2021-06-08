@@ -1,6 +1,8 @@
 import ScenarioFeature from "./ScenarioFeature";
 import getClusterSource from "../../utils/getClusterSource";
 import Feature from "ol/Feature";
+import {featuresToGeoJsonCollection} from "../../utils/geomUtils";
+import {downloadJsonToFile} from "../../utils/download";
 
 /**
  * @description Class storing all information about a created scenario
@@ -259,5 +261,17 @@ export default class Scenario {
      */
     getModifiedScenarioFeaturesByLayer (layer) {
         return this.modifiedFeatures.filter(item => item.layer === layer);
+    }
+
+    /**
+     * Exports simulated features as geoJson
+     * @returns {void}
+     */
+    exportSzenarioFeatures () {
+        const geojson = featuresToGeoJsonCollection(
+            this.simulatedFeatures.map(scenarioFeature => scenarioFeature.feature)
+        );
+
+        downloadJsonToFile(geojson, this.name + "_Simulierte_Einrichtungen.json");
     }
 }

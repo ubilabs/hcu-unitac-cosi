@@ -197,7 +197,7 @@ export default {
             }
         },
         pickLocation (evt) {
-            console.log(evt);
+            // console.log(evt);
             this.geometry.value = new Point(evt.coordinate);
             this.placingPointMarker(evt.coordinate);
         },

@@ -632,7 +632,6 @@ export default {
                     />
                 </div>
                 <button
-                    v-if="visualizationState"
                     class="graph_button"
                     title="Graph aus Datensatz erzeugen"
                     @click="loadToChartGenerator()"

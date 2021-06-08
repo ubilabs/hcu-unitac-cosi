@@ -142,6 +142,20 @@ export default {
                         {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }}
                     </span>
                 </v-btn>
+                <v-btn
+                    tile
+                    depressed
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
+                    :disabled="!activeScenario || activeScenario.simulatedFeatures.length === 0"
+                    @click="activeScenario ? activeScenario.exportSzenarioFeatures() : null"
+                >
+                    <span v-if="useIcons">
+                        <v-icon>mdi-download</v-icon>
+                    </span>
+                    <span v-else>
+                        {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
+                    </span>
+                </v-btn>
             </v-col>
         </v-row>
         <Modal

@@ -86,7 +86,7 @@ export default {
                 paramA_val: scope.paramA_val.toLocaleString("de-DE"),
                 paramB_val: scope.paramB_val.toLocaleString("de-DE"),
                 relation: scope.relation.toLocaleString("de-DE"),
-                coverage: scope.coverage.toLocaleString("de-DE"),
+                coverage: (scope.coverage * 100).toLocaleString("de-DE") + "%",
                 capacity: scope.capacity.toLocaleString("de-DE"),
                 need: scope.need.toLocaleString("de-DE")
             }));
@@ -161,7 +161,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
     .data_table {
         overflow:visible;
     }

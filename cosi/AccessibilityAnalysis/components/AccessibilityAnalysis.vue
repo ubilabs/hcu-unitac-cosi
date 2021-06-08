@@ -58,6 +58,16 @@ export default {
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"])
     },
+    watch: {
+        active () {
+            if (this.active) {
+                this.map.addEventListener("click", this.setCoordinateFromClick);
+            }
+            else {
+                this.map.removeEventListener("click", this.setCoordinateFromClick);
+            }
+        }
+    },
     /**
      * @returns {void}
      */
@@ -78,7 +88,6 @@ export default {
             "reachability-from-point"
         );
         this.mapLayer.setVisible(true);
-        this.map.addEventListener("click", this.setCoordinateFromClick);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
     },

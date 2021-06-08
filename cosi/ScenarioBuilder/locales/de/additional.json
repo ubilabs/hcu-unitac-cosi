@@ -40,7 +40,8 @@
                     "deleteScenario": "Szenario löschen",
                     "deleteScenarioWarning": "Möchten Sie das aktive Szenario wirklich löschen? Alle Inhalte gehen verloren.",
                     "noScenarios": "Bislang sind keine Szenarien vorhanden",
-                    "selectScenarios": "Szenario auswählen"
+                    "selectScenarios": "Szenario auswählen",
+                    "exportScenario": "Szenario exportieren (GeoJSON)"
                 }
             }
         }
