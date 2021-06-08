@@ -51,7 +51,6 @@ export default {
         activeScenario (newActiveScenario, oldActiveScenario) {
             if (oldActiveScenario) {
                 oldActiveScenario.hideScenario();
-                oldActiveScenario.resetAllFeatures();
             }
             if (newActiveScenario) {
                 newActiveScenario.restore();

@@ -30,9 +30,10 @@ export function featureTagStyle (feature) {
  * adds a new feature to the guidelayer to highlight simulated features
  * @param {module:ol/Feature} feature - the original scenario feature
  * @param {module:ol/Layer/Vector} layer - the drawing layer of the scenario builder
+ * @param {module:ol/Layer/Vector} featureLayer - the layer the original feature belongs to
  * @returns {module:ol/Feature | null} the feature of the tag
  */
-export function addSimulationTag (feature, layer) {
+export function addSimulationTag (feature, layer, featureLayer) {
     if (!(feature.constructor === Feature && layer.constructor === VectorLayer)) {
         console.warn(`addSimulationTag: Layer must be of type "ol/Layer/Vector", got ${layer.constructor}. Feature must be of type "ol/Feature, got ${feature.constructor}`);
         return null;
@@ -44,6 +45,8 @@ export function addSimulationTag (feature, layer) {
     clonedFeature.setId(feature.getId());
     // link their geometries (works only if the original layer is NOT clustered)
     clonedFeature.setGeometry(feature.getGeometry());
+    // link the original layer for later use
+    clonedFeature.set("featureLayer", featureLayer);
 
     source.addFeature(clonedFeature);
 
@@ -80,4 +83,25 @@ export function clearGuideLayer (layer) {
         return;
     }
     layer.getSource().clear();
+}
+
+/**
+ * Shows or hides tags according to layer visibility
+ * @todo refactor
+ * @param {*} guideLayer - the guide layer hosting the tags
+ * @param {*} activeLayers - the active vector layer list of the map
+ * @returns {void}
+ */
+export function toggleTagsOnLayerVisibility (guideLayer, activeLayers) {
+    const tags = guideLayer.getSource().getFeatures(),
+        unsetStyle = new Style();
+
+    for (const tag of tags) {
+        if (activeLayers.includes(tag.get("featureLayer"))) {
+            tag.setStyle();
+        }
+        else {
+            tag.setStyle(unsetStyle);
+        }
+    }
 }

@@ -6,7 +6,6 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDashboardTable";
 import mutations from "../store/mutationsDashboardTable";
 import actions from "../store/actionsDashboardTable";
-import VGrid, {VGridVueTemplate} from "@revolist/vue-datagrid";
 import categories from "../../../assets/mapping.json";
 import findDistrictFeatureByName from "../utils/findDistrictFeatureByName";
 import ValueCell from "./ValueCell.vue";
@@ -18,8 +17,7 @@ import {getTimestamps} from "../../../utils/timeline";
 export default {
     name: "DashboardTable",
     components: {
-        Tool,
-        VGrid
+        Tool
     },
     props: {
         dashboardOpen: {
@@ -31,9 +29,9 @@ export default {
     data () {
         return {
             columnsTemplate: [
-                {prop: "menu", autoSizeColumn: true, cellTemplate: VGridVueTemplate(MenuCell)},
-                {name: "Kategorie", prop: "category", size: 150, cellTemplate: VGridVueTemplate(CategoryCell)},
-                {name: "Jahr", prop: "years", autoSizeColumn: true, size: 40, cellTemplate: VGridVueTemplate(YearCell)}
+                {prop: "menu", autoSizeColumn: true},
+                {name: "Kategorie", prop: "category", size: 150},
+                {name: "Jahr", prop: "years", autoSizeColumn: true, size: 40}
             ],
             rows: [],
             rowDefinitions: [],
@@ -192,7 +190,7 @@ export default {
             return columnNames.map(districtName => ({
                 name: districtName,
                 prop: districtName,
-                cellTemplate: VGridVueTemplate(ValueCell),
+                cellTemplate: null,
                 currentTimeStamp: 2019,
                 timeStampPrefix: this.timeStampPrefix
             }));
@@ -214,7 +212,7 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <VGrid
+            <!-- <VGrid
                 key="dashboard-table"
                 ref="dashboard-table"
                 theme="compact"
@@ -228,30 +226,12 @@ export default {
                 :row-definitions="rowDefinitions"
                 :row-size="40"
                 resize
-            />
+            /> -->
         </template>
     </Tool>
 </template>
 
 <style lang="less">
-    revo-grid {
-        font-size: 10px;
-
-        .row {
-            margin: 0;
-        }
-
-        ul.timestamp-list {
-            padding: 0;
-            li.timestamp-list-item {
-                text-align: right;
-                list-style: none;
-                small {
-                    color: #90c6f5;
-                }
-            }
-        }
-    }
 </style>
 
 

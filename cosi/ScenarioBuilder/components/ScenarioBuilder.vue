@@ -15,7 +15,7 @@ import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import Draw from "ol/interaction/Draw";
-import {featureTagStyle} from "../utils/guideLayer";
+import {featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
 import getSearchResultsCoordinate from "../utils/getSearchResultsCoordinate";
 import hash from "object-hash";
@@ -23,7 +23,7 @@ import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
-import arrayIsEqual from "../../utils/arrayIsEqual";
+// import arrayIsEqual from "../../utils/arrayIsEqual";
 
 export default {
     name: "ScenarioBuilder",
@@ -53,7 +53,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
-        ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping"]),
+        ...mapGetters("Tools/FeaturesList", ["mapping", "activeLayerMapping", "activeVectorLayerList"]),
         ...mapGetters("Map", ["map", "layerById"]),
 
         /**
@@ -82,7 +82,7 @@ export default {
 
             describeFeatureTypeByLayerId(layerMap.layerId)
                 .then(desc => {
-                    this.featureTypeDesc = desc;
+                    this.featureTypeDesc = desc.sort(field => compareLayerMapping(field, layerMap) ? -1 : 1);
                     this.asyncGetValuesForField(desc);
                 });
         },
@@ -106,6 +106,10 @@ export default {
                 this.clearDrawPolygon();
                 this.removePointMarker();
             }
+        },
+
+        activeVectorLayerList (layerList) {
+            toggleTagsOnLayerVisibility(this.guideLayer, layerList);
         }
     },
     /**
@@ -416,7 +420,7 @@ export default {
                                 <v-row
                                     v-for="field in featureTypeDesc"
                                     :key="field.name"
-                                    :class="compareLayerMapping(field, workingLayer) ? 'essential-field elevation-2 primary lighten-4' : ''"
+                                    :class="compareLayerMapping(field, workingLayer) ? 'essential-field primary lighten-4' : ''"
                                     :title="compareLayerMapping(field, workingLayer) ? $t('additional:modules.tools.cosi.scenarioBuilder.essentialField') : ''"
                                     dense
                                 >

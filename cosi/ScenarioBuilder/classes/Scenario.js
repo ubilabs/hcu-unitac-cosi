@@ -142,11 +142,10 @@ export default class Scenario {
     hideScenario () {
         let item;
 
+        this.resetAllFeatures();
         for (item of this.simulatedFeatures) {
             item.hideFeature();
         }
-
-        this.resetAllFeatures();
     }
 
     /**

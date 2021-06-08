@@ -172,7 +172,7 @@ export default {
         },
         visualizationState (newState) {
             if (!newState) {
-                this.$store.commit("Tools/CalculateRatio/setDataToCCM", false);
+                this.$store.commit("Tools/CalculateRatio/setDataToColorCodeMap", false);
             }
         }
     },
@@ -586,7 +586,7 @@ export default {
          * @returns {void}
          */
         loadToColorCodeMap () {
-            const switchVar = this.dataToCCM;
+            const switchVar = this.dataToColorCodeMap;
 
             if (!switchVar) {
                 const prepareData = [];
@@ -1058,12 +1058,12 @@ export default {
                             </Multiselect>
                             <button
                                 class="ccm"
-                                :class="{ highlight: !dataToCCM}"
+                                :class="{ highlight: !dataToColorCodeMap}"
                                 title="Ausgewählten Datensatz auf Karte visualisieren"
                                 @click="loadToColorCodeMap()"
                             >
                                 <span
-                                    v-if="!dataToCCM"
+                                    v-if="!dataToColorCodeMap"
                                     class="glyphicon glyphicon-eye-open"
                                 ></span>
                                 <span

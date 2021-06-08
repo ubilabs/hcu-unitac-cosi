@@ -226,7 +226,7 @@ export default {
             return newPieChartData;
         },
         createPieChart (dataSets) {
-            console.warn("PieChart Funktionalität noch nicht vollständig implementiert");
+            console.warn("PieChart Funktionalität noch nicht vollständig implementiert", dataSets);
         },
         /**
          * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
@@ -260,6 +260,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
+            console.log(graph, index)
             this.$set(graph, "sub_graph", index);
         },
         /**

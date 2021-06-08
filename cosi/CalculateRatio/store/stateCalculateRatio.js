@@ -31,8 +31,8 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: true,
     yearSelector: "jahr_",
-    dataToCCM: false,
-    ccmDataSet: []
+    dataToColorCodeMap: false,
+    colorCodeMapDataSet: []
 };
 
 export default state;

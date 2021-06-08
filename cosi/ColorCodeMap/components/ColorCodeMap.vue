@@ -640,7 +640,6 @@ export default {
                     <span class="glyphicon glyphicon-stats"></span>
                 </button>
                 <button
-                    v-if="visualizationState"
                     class="map_button"
                     title="Gebietsnamen ein-/ ausblenden"
                     @click="showMapNames = !showMapNames"

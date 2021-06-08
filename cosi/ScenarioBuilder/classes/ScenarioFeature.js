@@ -32,7 +32,7 @@ export default class ScenarioFeature {
 
         if (guideLayer || this.guideLayer) {
             this.guideLayer = guideLayer || this.guideLayer;
-            addSimulationTag(this.feature, this.guideLayer);
+            addSimulationTag(this.feature, this.guideLayer, this.layer);
         }
     }
 
@@ -61,6 +61,11 @@ export default class ScenarioFeature {
 
             if (prop === "geometry" && this.scenarioData.geometry) {
                 translateFeature(this.feature, this.scenarioData.geometry);
+
+                if (this.guideLayer) {
+                    removeSimulationTag(this.feature, this.guideLayer);
+                    addSimulationTag(this.feature, this.guideLayer);
+                }
             }
         }
     }
@@ -92,6 +97,11 @@ export default class ScenarioFeature {
 
         if (originalGeom) {
             translateFeature(this.feature, originalGeom);
+
+            if (this.guideLayer) {
+                removeSimulationTag(this.feature, this.guideLayer);
+                addSimulationTag(this.feature, this.guideLayer);
+            }
         }
     }
 
