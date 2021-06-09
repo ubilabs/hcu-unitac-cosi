@@ -1,6 +1,6 @@
 // import FeaturesLoader from "./featuresLoader/model";
 // import BboxSettor from "./bboxSettor/model";
-import ColorCodeMap from "./colorCodeMap/model";
+// import ColorCodeMap from "./colorCodeMap/model";
 import Dashboard from "./dashboard/model";
 import DashboardTable from "./dashboardTable/model";
 import DashboardWidgetHandler from "./dashboardWidget/handler";
@@ -13,11 +13,11 @@ import DashboardWidgetHandler from "./dashboardWidget/handler";
  */
 // import SaveSelectionCosi from "./saveSelection/model";
 import InfoScreenHandler from "./infoScreen/infoScreenHandler/model";
-import ReachabilityFromPoint from "./reachabilityFromPoint/model";
-import ReachabilityInArea from "./reachabilityInArea/model";
+// import ReachabilityFromPoint from "./reachabilityFromPoint/model";
+// import ReachabilityInArea from "./reachabilityInArea/model";
 import OpenRouteService from "./openRouteService/model";
 // import CalculateRatio from "./calculateRatio/model";
-import ReachabilitySelect from "./reachabilitySelect/model";
+// import ReachabilitySelect from "./reachabilitySelect/model";
 import CompareDistricts from "./compareDistricts/model";
 // import Filter from "./filter/model";
 
@@ -203,7 +203,7 @@ const general = {
             name: "Vergleichbare Gebiete ermitteln",
             glyphicon: "glyphicon glyphicon-random",
             resizableWindow: true
-        }),
+        })
         // calculateRatio: new CalculateRatio({
         //     parentId: "tools",
         //     type: "tool",
@@ -212,32 +212,32 @@ const general = {
         //     glyphicon: "glyphicon-tasks",
         //     resizableWindow: true
         // }),
-        reachabilitySelect: new ReachabilitySelect({
-            id: "reachabilitySelect",
-            parentId: "tools",
-            type: "tool",
-            name: "Erreichbarkeitsanalyse",
-            glyphicon: "glyphicon-road"
-        }),
-        reachabilityFromPoint: new ReachabilityFromPoint({
-            id: "reachability",
-            parentId: "tools",
-            type: "tool",
-            isVisibleInMenu: false,
-            name: "Erreichbarkeit ab einem Referenzpunkt",
-            glyphicon: "glyphicon-road",
-            resizableWindow: true
-        }),
-        reachabilityInArea: new ReachabilityInArea({
-            id: "reachabilityInArea",
-            parentId: "tools",
-            type: "tool",
-            name: "Erreichbarkeit im Gebiet",
-            isVisibleInMenu: false,
-            glyphicon: "glyphicon-time",
-            resizableWindow: true
-        }),
-        colorCodeMap: new ColorCodeMap()
+        // reachabilitySelect: new ReachabilitySelect({
+        //     id: "reachabilitySelect",
+        //     parentId: "tools",
+        //     type: "tool",
+        //     name: "Erreichbarkeitsanalyse",
+        //     glyphicon: "glyphicon-road"
+        // }),
+        // reachabilityFromPoint: new ReachabilityFromPoint({
+        //     id: "reachability",
+        //     parentId: "tools",
+        //     type: "tool",
+        //     isVisibleInMenu: false,
+        //     name: "Erreichbarkeit ab einem Referenzpunkt",
+        //     glyphicon: "glyphicon-road",
+        //     resizableWindow: true
+        // }),
+        // reachabilityInArea: new ReachabilityInArea({
+        //     id: "reachabilityInArea",
+        //     parentId: "tools",
+        //     type: "tool",
+        //     name: "Erreichbarkeit im Gebiet",
+        //     isVisibleInMenu: false,
+        //     glyphicon: "glyphicon-time",
+        //     resizableWindow: true
+        // }),
+        // colorCodeMap: new ColorCodeMap()
         // saveSelectionCosi: new SaveSelectionCosi({
         //     parentId: "utilities",
         //     type: "tool",
