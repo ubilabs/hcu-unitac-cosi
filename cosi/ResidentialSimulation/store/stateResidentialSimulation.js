@@ -17,7 +17,10 @@ const state = {
     isVisibleInMenu: true,
     name: "Wohnungsbauquartiere anlegen",
     renderToWindow: true,
-    resizableWindow: false
+    resizableWindow: false,
+
+    // ResidentialSimulation specific state
+    drawingLayer: null
 };
 
 export default state;

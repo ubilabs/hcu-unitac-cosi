@@ -19,7 +19,8 @@
                     "geomFieldHeader": "Geometrie / Ort",
                     "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
                     "defineFeature": "Neue Einrichtung definieren",
-                    "undo": "Schritt zurück"
+                    "undo": "Schritt zurück",
+                    "pick": "Polygon in der Karte wählen"
                 },
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",

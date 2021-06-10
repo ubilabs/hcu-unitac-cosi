@@ -4,18 +4,29 @@ import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
+import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
+import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
 
 export default {
     name: "ResidentialSimulation",
     components: {
-        Tool
+        Tool,
+        ScenarioManager,
+        GeometryPicker
     },
     data () {
         return {
+            geometry: null
         };
     },
     computed: {
-        ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters))
+        ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
+        geomField () {
+            return {
+                name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
+                type: "Polygon"
+            };
+        }
     },
 
     watch: {
@@ -42,7 +53,30 @@ export default {
         });
     },
     methods: {
-        ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations))
+        ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
+
+        /**
+         * @description create a guide layer used for additional info to display on the map
+         * @returns {void}
+         */
+        createDrawingLayer () {
+            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id);
+
+            newLayer.setVisible(true);
+            // newLayer.setStyle(featureTagStyle);
+            this.setDrawingLayer(newLayer);
+
+            return newLayer;
+        },
+
+        /**
+         * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature
+         * @param {module:ol/Geometry} geom the new geometry object
+         * @returns {void}
+         */
+        updateGeometry (geom) {
+            this.geometry = geom;
+        }
     }
 };
 </script>
@@ -60,7 +94,27 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <!-- FOO -->
+            <v-app absolute>
+                <v-main
+                    id="scenario-builder"
+                >
+                    <v-form>
+                        <div class="form-group">
+                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
+                            <ScenarioManager />
+                        </div>
+                        <v-divider />
+                        <div class="form-group">
+                            <GeometryPicker
+                                ref="geometry-picker"
+                                :geomField="geomField"
+                                :isGml="false"
+                                @updateGeometry="updateGeometry"
+                            />
+                        </div>
+                    </v-form>
+                </v-main>
+            </v-app>
         </template>
     </Tool>
 </template>

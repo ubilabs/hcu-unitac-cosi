@@ -4,7 +4,9 @@
             "cosi": {
                 "residentialSimulation": {
                     "title": "Wohnungsbauquartiere anlegen",
-                    "help": "Lorem Ipsum"
+                    "help": "Lorem Ipsum",
+                    "geom": "Geometrie",
+                    "helpDrawGeom": "Polygon zeichnen oder auswählen"
                 }
             }
         }

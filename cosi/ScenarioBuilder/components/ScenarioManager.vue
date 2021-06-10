@@ -13,8 +13,6 @@ export default {
         Modal,
         Multiselect
     },
-    props: {
-    },
     data: () => ({
         newScenarioName: "",
         newScenarioValid: true,
@@ -91,6 +89,10 @@ export default {
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
                 this.activeScenario.prune();
             }
+        },
+
+        validateNewScenario () {
+            this.$refs["new-scenario-form"].validate();
         }
     }
 };
@@ -121,12 +123,16 @@ export default {
                     </template>
                 </Multiselect>
             </v-col>
-            <v-col cols="6">
+            <v-col
+                class="flex"
+                cols="6"
+            >
                 <v-btn
                     tile
                     depressed
                     :disabled="!_activeScenario"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.deleteScenario')"
+                    class="flex-item"
                     @click="deleteScenario"
                 >
                     <span v-if="useIcons">
@@ -140,6 +146,7 @@ export default {
                     tile
                     depressed
                     :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
+                    class="flex-item"
                     @click="createNewScenarioModalOpen = !createNewScenarioModalOpen"
                 >
                     <span v-if="useIcons">
@@ -154,6 +161,7 @@ export default {
                     depressed
                     :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
                     :disabled="!activeScenario || activeScenario.simulatedFeatures.length === 0"
+                    class="flex-item"
                     @click="activeScenario ? activeScenario.exportSzenarioFeatures() : null"
                 >
                     <span v-if="useIcons">
@@ -166,12 +174,16 @@ export default {
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols="12">
+            <v-col
+                class="flex"
+                cols="12"
+            >
                 <v-btn
                     tile
                     depressed
                     :disabled="!activeScenario"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.helpRestoreAllFeatures')"
+                    class="flex-item"
                     @click="activeScenario.restore()"
                 >
                     <v-icon left>
@@ -184,6 +196,7 @@ export default {
                     depressed
                     :disabled="!activeScenario"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
+                    class="flex-item"
                     @click="pruneActiveScenario"
                 >
                     <v-icon left>
@@ -209,6 +222,7 @@ export default {
             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
             <v-form
                 id="new-scenario-form"
+                ref="new-scenario-form"
                 v-model="newScenarioValid"
                 onSubmit="return false;"
                 @submit="createNewScenario"
@@ -218,6 +232,7 @@ export default {
                         <v-text-field
                             v-model="newScenarioName"
                             required
+                            :rules="newScenarioRules"
                             :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
                         />
                         <v-btn
@@ -225,9 +240,9 @@ export default {
                             depressed
                             type="submit"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
-                            :rules="newScenarioRules"
                             :disabled="!newScenarioValid"
                             form="new-scenario-form"
+                            @click="validateNewScenario"
                         >
                             {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
                         </v-btn>
