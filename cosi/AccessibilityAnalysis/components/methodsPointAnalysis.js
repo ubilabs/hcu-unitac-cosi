@@ -19,6 +19,7 @@ export default {
      * @returns {void}
      */
     createIsochrones: function () {
+        this.clear();
         if (this.mode === "point") {
             this.createIsochronesPoint();
         }

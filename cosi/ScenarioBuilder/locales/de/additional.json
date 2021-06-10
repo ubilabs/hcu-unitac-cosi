@@ -12,15 +12,12 @@
                     "createFeature": "Neue Einrichtung erstellen",
                     "helpCreateFeature": "Neue Einrichtung erstellen",
                     "resetFeature": "Zurücksetzen",
-                    "restoreAllFeatures": "Alle wiederherstellen",
-                    "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
-                    "pruneAllFeatures": "Alle löschen",
-                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
-                    "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
                     "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
                     "required": "Erforderlich",
+                    "essentialFieldHeader": "Erforderliche Spalten",
+                    "optionalFieldHeader": "Optionale Spalten",
+                    "geomFieldHeader": "Geometrie / Ort",
                     "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
-                    "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie eins an.",
                     "defineFeature": "Neue Einrichtung definieren",
                     "undo": "Schritt zurück"
                 },
@@ -41,7 +38,13 @@
                     "deleteScenarioWarning": "Möchten Sie das aktive Szenario wirklich löschen? Alle Inhalte gehen verloren.",
                     "noScenarios": "Bislang sind keine Szenarien vorhanden",
                     "selectScenarios": "Szenario auswählen",
-                    "exportScenario": "Szenario exportieren (GeoJSON)"
+                    "exportScenario": "Szenario exportieren (GeoJSON)",
+                    "restoreAllFeatures": "Alle wiederherstellen",
+                    "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
+                    "pruneAllFeatures": "Alle löschen",
+                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
+                    "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
+                    "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie eins an."
                 }
             }
         }

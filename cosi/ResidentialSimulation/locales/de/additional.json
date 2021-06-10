@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "residentialSimulation": {
+                    "title": "Wohnungsbauquartiere anlegen",
+                    "help": "Lorem Ipsum"
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
-import store from "../../../../src/app-store";
+import store from "../../../src/app-store";
 
 /**
  * Returns the center of the extent of a polygonal feature
@@ -28,7 +28,7 @@ function getCenterOfPolygonFeature (feature) {
  * @param {String} [targetCrs] - the optional CRS the result should be returned in, defaults to the portal's CRS
  * @returns {number[]} the coords of the search result
  */
-export default function getSearchResultsCoordinate (targetCrs) {
+export function getSearchResultsCoordinates (targetCrs) {
     const portalCrs = store.getters["Map/projectionCode"],
         markerPoint = store.getters["MapMarker/markerPoint"],
         markerPolygon = store.getters["MapMarker/markerPolygon"];
@@ -52,4 +52,26 @@ export default function getSearchResultsCoordinate (targetCrs) {
     }
 
     return coord;
+}
+
+/**
+ * Gets the geometry of a search result
+ * Needs to be triggered on Backbone Radio channel "Searchbar", event "hit"
+ * @returns {module:ol/Geometry} the geometry of the search result
+ */
+export function getSearchResultsGeometry () {
+    const markerPointFeatures = store.getters["MapMarker/markerPoint"].getSource().getFeatures(),
+        markerPolygonFeatures = store.getters["MapMarker/markerPolygon"].getSource().getFeatures();
+
+    // single point
+    if (markerPointFeatures.length === 1) {
+        return markerPointFeatures[0].getGeometry();
+    }
+
+    // single polygon
+    if (markerPolygonFeatures.length === 1) {
+        return markerPolygonFeatures[0].getGeometry();
+    }
+
+    return null;
 }

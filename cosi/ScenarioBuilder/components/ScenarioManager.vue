@@ -84,6 +84,13 @@ export default {
                 this.setActiveScenario(null);
                 this.setScenarios(this.scenarios.filter(scenario => scenario !== this.activeScenario));
             }
+        },
+
+        pruneActiveScenario () {
+            // eslint-disable-next-line no-alert
+            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
+                this.activeScenario.prune();
+            }
         }
     }
 };
@@ -92,7 +99,7 @@ export default {
 <template>
     <div>
         <v-row>
-            <v-col cols="8">
+            <v-col cols="6">
                 <Multiselect
                     v-model="_activeScenario"
                     class="layer_selection selection"
@@ -114,7 +121,7 @@ export default {
                     </template>
                 </Multiselect>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="6">
                 <v-btn
                     tile
                     depressed
@@ -156,6 +163,41 @@ export default {
                         {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
                     </span>
                 </v-btn>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-btn
+                    tile
+                    depressed
+                    :disabled="!activeScenario"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.helpRestoreAllFeatures')"
+                    @click="activeScenario.restore()"
+                >
+                    <v-icon left>
+                        mdi-cached
+                    </v-icon>
+                    {{ $t('additional:modules.tools.cosi.scenarioManager.restoreAllFeatures') }}
+                </v-btn>
+                <v-btn
+                    tile
+                    depressed
+                    :disabled="!activeScenario"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
+                    @click="pruneActiveScenario"
+                >
+                    <v-icon left>
+                        mdi-backspace
+                    </v-icon>
+                    {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
+                </v-btn>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <label v-if="!activeScenario">
+                    {{ $t('additional:modules.tools.cosi.scenarioManager.noActiveScenario') }}
+                </label>
             </v-col>
         </v-row>
         <Modal
