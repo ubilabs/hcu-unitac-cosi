@@ -61,10 +61,14 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
 
         if (graphConfig.hasContextMenu) {
             const that = this,
-                contextActions = this.addContextMenuEventListeners(svg.select("svg").node(), graphConfig);
+                contextActions = this.addContextMenuEventListeners(svg, svg.select("svg").node(), graphConfig);
 
             svg.on("pointerup", function () {
                 that.appendContextMenu(contextActions, graphConfig.title);
+
+                svg.on("pointerup", function () {
+                    that.appendContextMenu(contextActions, graphConfig.title);
+                }, that);
             }, this);
         }
 
