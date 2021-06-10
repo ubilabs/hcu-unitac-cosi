@@ -46,6 +46,7 @@ const state = {
     resizableWindow: true,
     deactivateGFI: false,
     initialWidth: 500,
+    initialWidthMobile: 300,
     layerName: "school_route_layer",
     printDpi: 200,
     printLayout: "A4 Hochformat",

@@ -178,7 +178,7 @@ export default {
         :resizable-window="resizableWindow"
         :deactivateGFI="deactivateGFI"
         :initialWidth="initialWidth"
-        :initialWidthMobile="300"
+        :initialWidthMobile="initialWidthMobile"
     >
         <template v-slot:toolBody>
             <div
