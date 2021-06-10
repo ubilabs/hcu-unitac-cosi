@@ -7,6 +7,7 @@ import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
+import createLayer from "../../utils/createLayer";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -54,7 +55,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "getOverlayById", "createLayerIfNotExists"]),
+        ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"])
     },
@@ -82,11 +83,7 @@ export default {
     mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = Radio.request(
-            "Map",
-            "createLayerIfNotExists",
-            "reachability-from-point"
-        );
+        this.mapLayer = createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);

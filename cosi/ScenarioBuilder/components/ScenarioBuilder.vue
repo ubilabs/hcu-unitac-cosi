@@ -23,6 +23,7 @@ import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
+import createLayer from "../../utils/createLayer";
 // import arrayIsEqual from "../../utils/arrayIsEqual";
 
 export default {
@@ -136,7 +137,7 @@ export default {
          * @returns {void}
          */
         createGuideLayer () {
-            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id);
+            const newLayer = createLayer(this.id);
 
             newLayer.setVisible(true);
             newLayer.setStyle(featureTagStyle);
@@ -145,7 +146,7 @@ export default {
             return newLayer;
         },
         createDrawingLayer () {
-            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id + "_draw");
+            const newLayer = createLayer(this.id + "_draw");
 
             newLayer.setVisible(true);
             this.drawLayer = newLayer;
