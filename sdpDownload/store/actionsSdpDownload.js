@@ -42,7 +42,7 @@ const actions = {
             isActive = getters.active;
 
         dispatch("addModelsByAttributesToModelList", layerId);
-        dispatch("setModelAttributesByIdToModelList", {layerId: layerId, isActive: isActive});
+        dispatch("setModelAttributesByIdToModelList", {layerId, isActive});
     },
     /**
     * Loads the WFS raster with the params stored in property wfsRasterParams.
@@ -74,10 +74,11 @@ const actions = {
             .catch(error => {
                 alertingFailedToDownload = {
                     "category": i18next.t(getters.error),
-                    "content": "<strong>" + error.response + "</strong>",
+                    "content": i18next.t(getters.downloadError),
                     "displayClass": "error"
                 };
                 dispatch("Alerting/addSingleAlert", alertingFailedToDownload, {root: true});
+                console.error(error.response);
             });
     },
     /**

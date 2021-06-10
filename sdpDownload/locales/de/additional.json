@@ -26,7 +26,8 @@
                 "serviceNotResponding": "Ein benötigter Dienst antwortet nicht.",
                 "alerts":{
                   "info": "Info",
-                  "error": "Fehler"
+                  "error": "Fehler",
+                  "downloadError": "Der Layer: wfsRaster konnte nicht geladen werden, da der Dienst nicht antwortet. Bitte versuchen Sie es zu einem späteren Zeitpunkt erneut. Falls das Problem weiterhin besteht wenden Sie sich bitte an den Betreiber des Dienstes: wfsRaster"
                 }
             }
         }

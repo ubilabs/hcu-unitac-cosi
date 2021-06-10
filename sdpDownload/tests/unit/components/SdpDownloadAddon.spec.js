@@ -80,7 +80,7 @@ describe("SdpDownload.vue", () => {
         // declaration of sinon spy before wrapper otherwise the test fails
         const spyDownload = sinon.stub(SDPComponent.methods, "requestCompressedData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
-            button = wrapper.find("#bselectedDownload");
+            button = wrapper.find("#button-selectedDownload");
 
         await button.trigger("click");
         expect(spyDownload.calledOnce).to.be.true;
@@ -90,7 +90,7 @@ describe("SdpDownload.vue", () => {
     it("should call download function if Neuwerk format button is clicked", async () => {
         const spyDownload = sinon.stub(SDPComponent.methods, "requestCompressIslandData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
-            button = wrapper.find("#bNeuwerk");
+            button = wrapper.find("#button-neuwerk");
 
         await button.trigger("click");
         expect(spyDownload.calledOnce).to.be.true;
@@ -100,7 +100,7 @@ describe("SdpDownload.vue", () => {
     it("should call download function if Scharhoern format button is clicked", async () => {
         const spyDownload = sinon.stub(SDPComponent.methods, "requestCompressIslandData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
-            button = wrapper.find("#bScharhoern");
+            button = wrapper.find("#button-scharhoern");
 
         await button.trigger("click");
         expect(spyDownload.calledOnce).to.be.true;
@@ -110,7 +110,7 @@ describe("SdpDownload.vue", () => {
     it("should call download function if tile overview 310 format button is clicked", async () => {
         const spyDownload = sinon.stub(SDPComponent.methods, "requestCompressRasterOverviewData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
-            button = wrapper.find("#b310");
+            button = wrapper.find("#button-310");
 
         await button.trigger("click");
         expect(spyDownload.calledOnce).to.be.true;
@@ -120,7 +120,7 @@ describe("SdpDownload.vue", () => {
     it("should call download function if tile overview 320 format button is clicked", async () => {
         const spyDownload = sinon.stub(SDPComponent.methods, "requestCompressRasterOverviewData"),
             wrapper = shallowMount(SDPComponent, {store, localVue}),
-            button = wrapper.find("#b320");
+            button = wrapper.find("#button-320");
 
         await button.trigger("click");
         expect(spyDownload.calledOnce).to.be.true;

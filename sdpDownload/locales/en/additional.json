@@ -26,7 +26,8 @@
                 "serviceNotResponding": "A required service is not responding.",
                 "alerts":{
                   "info": "Info",
-                  "error": "Error"
+                  "error": "Error",
+                  "downloadError": "The layer: wfsRaster could not be loaded because the service is not responding. Please try again later. If the problem persists, please contact the operator of the service: wfsRaster"
                 }
             }
         }

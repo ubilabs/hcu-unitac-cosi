@@ -72,7 +72,7 @@ export default {
         ...mapActions("Tools/SdpDownload", Object.keys(actions)),
 
         /**
-         * Translates the given key, checkes if the key exists and throws a console warning if not
+         * Translates the given key, checks if the key exists and throws a console warning if not
          * @param {String} key the key to translate
          * @param {Object} [options=null] for interpolation, formatting and plurals
          * @returns {String} the translation or the key itself
@@ -162,7 +162,7 @@ export default {
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
                     <button
-                        id="bselectedDownload"
+                        id="button-selectedDownload"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressedData"
@@ -175,7 +175,7 @@ export default {
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button
-                        id="bNeuwerk"
+                        id="button-neuwerk"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Neuwerk')"
@@ -185,7 +185,7 @@ export default {
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button
-                        id="bScharhoern"
+                        id="button-scharhoern"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Scharhoern')"
@@ -195,7 +195,7 @@ export default {
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button
-                        id="b310"
+                        id="button-310"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS310')"
@@ -205,7 +205,7 @@ export default {
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
                     <button
-                        id="b320"
+                        id="button-320"
                         type="button"
                         class="btn btn-default btn-sm btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS320')"
@@ -232,7 +232,7 @@ export default {
             }
         }
     }
-    #bselectedDownload{
+    #button-selectedDownload{
         margin-top: 15px;
     }
     .btn {
