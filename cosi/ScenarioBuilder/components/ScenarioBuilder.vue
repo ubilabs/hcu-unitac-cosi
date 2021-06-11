@@ -19,6 +19,7 @@ import MoveFeatures from "./MoveFeatures.vue";
 import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
+import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon} from "../utils/geomPickerHandler";
 
 export default {
     name: "ScenarioBuilder",
@@ -111,9 +112,8 @@ export default {
                     model.set("isActive", false);
                 }
 
-                this.locationPickerActive = false;
-                this.geomPickerUnlisten();
-                this.geomPickerClearDrawPolygon();
+                geomPickerUnlisten(this.$refs["geometry-picker"]);
+                geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
                 this.removePointMarker();
             }
         },
@@ -160,39 +160,9 @@ export default {
          */
         resetFeature () {
             this.featureProperties = {};
-            this.geomPickerResetLocation();
-            this.geomPickerUnlisten();
-        },
-
-        /**
-         * Unlistens the map events to draw / pick a geometry and toggles the button in the geomPicker off
-         * @returns {void}
-         */
-        geomPickerUnlisten () {
-            if (this.$refs["geometry-picker"]) {
-                this.$refs["geometry-picker"].locationPickerActive = false;
-                this.$refs["geometry-picker"].unlisten();
-            }
-        },
-
-        /**
-         * Resets the currently picked location in the geomPicker
-         * @returns {void}
-         */
-        geomPickerResetLocation () {
             this.geometry = null;
-            if (this.$refs["geometry-picker"]) {
-                this.$refs["geometry-picker"].resetLocation();
-            }
-        },
-
-        /**
-         * Clears the drawing source of the geomPicker
-         * Does not remove any picked geometry
-         * @returns {void}
-         */
-        geomPickerClearDrawPolygon () {
-            this.$refs["geometry-picker"].clearDrawPolygon();
+            geomPickerResetLocation(this.$refs["geometry-picker"]);
+            geomPickerUnlisten(this.$refs["geometry-picker"]);
         },
 
         /**
@@ -224,10 +194,9 @@ export default {
             this.activeScenario.addFeature(
                 new ScenarioFeature(feature, layer)
             );
-            this.geomPickerUnlisten();
-            this.geomPickerClearDrawPolygon();
+            geomPickerUnlisten(this.$refs["geometry-picker"]);
+            geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
-            this.locationPickerActive = false;
         },
 
         /**
@@ -336,7 +305,7 @@ export default {
                                             :active="active"
                                             :useIcons="useIcons"
                                             @pickReference="getDataFromReferenceFeature"
-                                            @referencePickerActive="locationPickerActive = false; geomPickerUnlisten();"
+                                            @referencePickerActive="geomPickerUnlisten($refs['geometry-picker'])"
                                         />
                                     </v-col>
                                     <v-col cols="8">
@@ -346,7 +315,7 @@ export default {
                                             :active="active"
                                             :useIcons="useIcons"
                                             :guideLayer="guideLayer"
-                                            @moveFeaturesActive="locationPickerActive = false; geomPickerUnlisten();"
+                                            @moveFeaturesActive="geomPickerUnlisten($refs['geometry-picker'])"
                                         />
                                     </v-col>
                                 </v-row>

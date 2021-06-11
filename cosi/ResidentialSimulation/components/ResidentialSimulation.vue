@@ -6,6 +6,7 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
 
 export default {
     name: "ResidentialSimulation",
@@ -18,11 +19,13 @@ export default {
         return {
             geometry: null,
             residentialProject: {
+                area: 0,
                 residents: 0,
                 avgHouseholdSize: 2.5,
                 housingUnits: 0,
                 gfz: 1.0,
-                populationDensity: 0
+                populationDensity: 2500,
+                livingSpace: 30
             }
         };
     },
@@ -57,7 +60,15 @@ export default {
                 if (model) {
                     model.set("isActive", false);
                 }
+
+                geomPickerUnlisten(this.$refs["geometry-picker"]);
+                geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
+                this.removePointMarker();
             }
+        },
+
+        polygonArea (area) {
+            this.residentialProject.area = area;
         }
     },
     created () {
@@ -89,7 +100,41 @@ export default {
          */
         updateGeometry (geom) {
             this.geometry = geom;
-        }
+        },
+
+        updateUnits (newUnits, oldUnits) {
+            console.log(newUnits);
+            console.log(this.residentialProject);
+            const residents = newUnits * this.residentialProject.avgHouseholdSize,
+                populationDensity = residents * 1000000 / (this.residentialProject.area),
+                bgf = residents * 40,
+                gfz = bgf / this.residentialProject.area,
+                livingSpace = bgf * 0.85 / residents;
+
+            if (
+                populationDensity > 5000 ||
+                gfz > 4.0 ||
+                livingSpace < 10
+            ) {
+                this.residentialProject.housingUnits = oldUnits;
+            }
+            else {
+                this.residentialProject.residents = residents;
+                this.residentialProject.populationDensity = populationDensity;
+                this.residentialProject.bgf = bgf;
+                this.residentialProject.gfz = gfz;
+                this.residentialProject.livingSpace = livingSpace;
+            }
+
+            console.log(residents, populationDensity, bgf, gfz, livingSpace);
+        },
+
+        updateResidents (newResidents, oldResidents) {},
+        updateDensity (newDensity, oldDensity) {},
+        updateLivingSpace (newLivingSpace, oldLivingSpace) {},
+        updateGfz (newGfz, oldGfz) {},
+        updateBgf (newBgf, oldBgf) {},
+        updateHousholdSize (newHouseholdSize, oldHouseholdSize) {}
     }
 };
 </script>
@@ -145,6 +190,7 @@ export default {
                                         v-model="residentialProject.residents"
                                         label="Einwohner gesamt"
                                         suffix="EW"
+                                        @change="updateResidents"
                                     />
                                 </v-col>
                             </v-row>
@@ -158,6 +204,7 @@ export default {
                                         hint="Wohneinheiten"
                                         min="0"
                                         :max="polygonArea / 5"
+                                        @change="updateUnits"
                                     >
                                         <template v-slot:append>
                                             <v-text-field
@@ -166,6 +213,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
+                                                @change="updateUnits"
                                             />
                                         </template>
                                     </v-slider>
@@ -182,6 +230,7 @@ export default {
                                         min="0"
                                         max="5"
                                         step="0.2"
+                                        @change="updateHousholdSize"
                                     >
                                         <template v-slot:append>
                                             <v-text-field
@@ -190,6 +239,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
+                                                @change="updateHousholdSize"
                                             />
                                         </template>
                                     </v-slider>
@@ -206,6 +256,7 @@ export default {
                                         min="0"
                                         max="4"
                                         step="0.1"
+                                        @change="updateGfz"
                                     >
                                         <template v-slot:append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -215,6 +266,59 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
+                                                @change="updateGfz"
+                                            />
+                                        </template>
+                                    </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Bevölkerungsdichte</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-slider
+                                        v-model="residentialProject.populationDensity"
+                                        hint="EW / km²"
+                                        min="0"
+                                        max="5000"
+                                        @change="updateDensity"
+                                    >
+                                        <template v-slot:append>
+                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                            <v-text-field
+                                                v-model="residentialProject.populationDensity"
+                                                class="mt-0 pt-0 slider-val"
+                                                hide-details
+                                                single-line
+                                                type="number"
+                                                @change="updateDensity"
+                                            />
+                                        </template>
+                                    </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Wohnfläche pro Person</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-slider
+                                        v-model="residentialProject.livingSpace"
+                                        hint="m² / EW"
+                                        min="0"
+                                        max="80"
+                                        @change="updateLivingSpace"
+                                    >
+                                        <template v-slot:append>
+                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                            <v-text-field
+                                                v-model="residentialProject.livingSpace"
+                                                class="mt-0 pt-0 slider-val"
+                                                hide-details
+                                                single-line
+                                                type="number"
+                                                @change="updateLivingSpace"
                                             />
                                         </template>
                                     </v-slider>
