@@ -116,5 +116,9 @@
     "path": "cosi/AccessibilityAnalysis",
     "type": "tool"
   },
+  "ResidentialSimulation": {
+    "path": "cosi/ResidentialSimulation",
+    "type": "tool"
+  },
   "qr": "view.js"
 }

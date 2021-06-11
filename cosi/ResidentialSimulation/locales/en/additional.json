@@ -1,0 +1,12 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "residentialSimulation": {
+                    "title": "Create Residential Projects",
+                    "help": "Lorem Ipsum"
+                }
+            }
+        }
+    }
+}

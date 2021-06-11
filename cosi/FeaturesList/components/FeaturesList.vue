@@ -329,11 +329,11 @@ export default {
             <v-app>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
-                        <div class="form-group">
+                        <div class="form-group selection">
                             <Multiselect
                                 v-if="activeLayerMapping.length > 0"
                                 v-model="layerFilter"
-                                class="layer_selection selection"
+                                class="layer_selection"
                                 :options="activeLayerMapping"
                                 group-label="group"
                                 :group-select="false"
@@ -351,10 +351,10 @@ export default {
                                 </template>
                             </Multiselect>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group selection">
                             <input
                                 v-model="search"
-                                class="form-control"
+                                class="form-control search"
                                 type="text"
                                 :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
                             >
@@ -461,6 +461,12 @@ export default {
         }
         .detail-view {
             padding: 0;
+        }
+        .selection {
+            width: 25%;
+            .search {
+                width: 100%;
+            }
         }
     }
 </style>
