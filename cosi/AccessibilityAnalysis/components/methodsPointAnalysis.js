@@ -401,12 +401,6 @@ export default {
             kategorie: "alert-warning"
         });
     },
-    resetMarkerAndZoom: function () {
-        const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
-
-        this.placingPointMarker(icoord);
-        Radio.trigger("MapView", "setCenter", icoord);
-    },
     showInDashboard: function () {
         const el = $(this.$refs.result);
 

@@ -19,6 +19,7 @@ import MoveFeatures from "./MoveFeatures.vue";
 import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
+import createLayer from "../../utils/createLayer";
 
 export default {
     name: "ScenarioBuilder",
@@ -145,7 +146,7 @@ export default {
          * @returns {void}
          */
         createGuideLayer () {
-            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id);
+            const newLayer = createLayer(this.id);
 
             newLayer.setVisible(true);
             newLayer.setStyle(featureTagStyle);

@@ -6,6 +6,7 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
+import createLayer from "../../utils/createLayer";
 
 export default {
     name: "ResidentialSimulation",
@@ -60,7 +61,7 @@ export default {
          * @returns {void}
          */
         createDrawingLayer () {
-            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id);
+            const newLayer = createLayer(this.id);
 
             newLayer.setVisible(true);
             // newLayer.setStyle(featureTagStyle);
