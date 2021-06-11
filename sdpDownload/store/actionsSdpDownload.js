@@ -294,7 +294,7 @@ const actions = {
             .catch(() => {
                 alertingServiceNotresponding = {
                     "category": i18next.t(getters.error),
-                    "content": "<strong>" + i18next.t(getters.failedToDownload) + "</strong> <br> <small>" + i18next.t(getters.details) + " " + getters.serviceNotResponding + "</small>",
+                    "content": "<strong>" + i18next.t(getters.failedToDownload) + "</strong> <br> <small>" + i18next.t(getters.details) + " " + i18next.t(getters.serviceNotResponding) + "</small>",
                     "displayClass": "error"
                 };
                 commit("setGraphicalSelectStatus", false);
