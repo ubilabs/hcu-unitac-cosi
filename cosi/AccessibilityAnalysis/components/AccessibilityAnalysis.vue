@@ -8,6 +8,7 @@ import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
 import createLayer from "../../utils/createLayer";
+import * as Proj from "ol/proj.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -90,9 +91,17 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
+        ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
         ...methods,
+
+        resetMarkerAndZoom: function () {
+            const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
+
+            this.placingPointMarker(icoord);
+            this.setCenter(icoord);
+        },
 
         /**
      * Closes this tool window by setting active to false

@@ -1,6 +1,6 @@
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapMutations} from "vuex";
 
 export default {
     name: "ReachabilityResult",
@@ -14,6 +14,7 @@ export default {
     },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker"]),
+        ...mapMutations("Map", ["setCenter"]),
         /**
      * shows facility group table rows
      * @param {object} name click event
@@ -30,7 +31,7 @@ export default {
      */
         zoomToOrigin: function (coord) {
             this.placingPointMarker(coord);
-            Radio.trigger("MapView", "setCenter", coord);
+            this.setCenter(coord);
         }
     }
 };
