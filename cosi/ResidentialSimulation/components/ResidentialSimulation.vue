@@ -16,7 +16,14 @@ export default {
     },
     data () {
         return {
-            geometry: null
+            geometry: null,
+            residentialProject: {
+                residents: 0,
+                avgHouseholdSize: 2.5,
+                housingUnits: 0,
+                gfz: 1.0,
+                populationDensity: 0
+            }
         };
     },
     computed: {
@@ -26,6 +33,12 @@ export default {
                 name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
                 type: "Polygon"
             };
+        },
+
+        polygonArea () {
+            console.log(this.geometry);
+
+            return this.geometry?.getArea() || 0;
         }
     },
 
@@ -111,6 +124,102 @@ export default {
                                 :isGml="false"
                                 @updateGeometry="updateGeometry"
                             />
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Grundfläche</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-text-field
+                                        v-model="polygonArea"
+                                        label="Fläche"
+                                        suffix="m²"
+                                    />
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Bewohnerzahl insgesamt</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-text-field
+                                        v-model="residentialProject.residents"
+                                        label="Einwohner gesamt"
+                                        suffix="EW"
+                                    />
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Zahl der Wohneinheiten</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-slider
+                                        v-model="residentialProject.housingUnits"
+                                        hint="Wohneinheiten"
+                                        min="0"
+                                        :max="polygonArea / 5"
+                                    >
+                                        <template v-slot:append>
+                                            <v-text-field
+                                                v-model="residentialProject.housingUnits"
+                                                class="mt-0 pt-0 slider-val"
+                                                hide-details
+                                                single-line
+                                                type="number"
+                                            />
+                                        </template>
+                                    </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Ø Haushaltsgröße</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-slider
+                                        v-model="residentialProject.avgHouseholdSize"
+                                        hint="Haushaltsgröße"
+                                        min="0"
+                                        max="5"
+                                        step="0.2"
+                                    >
+                                        <template v-slot:append>
+                                            <v-text-field
+                                                v-model="residentialProject.avgHouseholdSize"
+                                                class="mt-0 pt-0 slider-val"
+                                                hide-details
+                                                single-line
+                                                type="number"
+                                            />
+                                        </template>
+                                    </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>GFZ</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-slider
+                                        v-model="residentialProject.gfz"
+                                        hint="GFZ"
+                                        min="0"
+                                        max="4"
+                                        step="0.1"
+                                    >
+                                        <template v-slot:append>
+                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                            <v-text-field
+                                                v-model="residentialProject.gfz"
+                                                class="mt-0 pt-0 slider-val"
+                                                hide-details
+                                                single-line
+                                                type="number"
+                                            />
+                                        </template>
+                                    </v-slider>
+                                </v-col>
+                            </v-row>
                         </div>
                     </v-form>
                 </v-main>
@@ -119,5 +228,8 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
+    .slider-val {
+        width: 60px;
+    }
 </style>
