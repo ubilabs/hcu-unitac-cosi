@@ -8,7 +8,8 @@ import {
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
     sortComplexType,
-    isComplexType
+    isComplexType,
+    hasComplexTypeValues
 } from "../../../utils/complexType.js";
 
 export default {
@@ -181,10 +182,14 @@ export default {
         refreshAbiData () {
             if (isComplexType(this.properties?.anteil_sus_abi) && typeof this.properties.anteil_sus_abi.values[0].value !== "undefined") {
                 this.anteil_sus_abi = optimizeValueRootedInComplexType(this.properties.anteil_sus_abi.values[0].value, 0) + "%";
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_abi, 2)));
             }
             else {
                 this.anteil_sus_abi = "g.F.";
+            }
+            if (hasComplexTypeValues(this.properties?.anteil_sus_abi)) {
+                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2)));
+            }
+            else {
                 this.barchartData = false;
             }
 
@@ -212,10 +217,14 @@ export default {
         refreshOsaData () {
             if (isComplexType(this.properties?.anteil_sus_ohneabschluss) && typeof this.properties.anteil_sus_ohneabschluss.values[0].value !== "undefined") {
                 this.anteil_sus_ohneabschluss = optimizeValueRootedInComplexType(this.properties.anteil_sus_ohneabschluss.values[0].value, 0) + "%";
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_ohneabschluss, 2)));
             }
             else {
                 this.anteil_sus_ohneabschluss = "g.F.";
+            }
+            if (hasComplexTypeValues(this.properties?.anteil_sus_ohneabschluss)) {
+                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2)));
+            }
+            else {
                 this.barchartData = false;
             }
 
@@ -262,19 +271,30 @@ export default {
                     this.callApiForLinechart("anzahl_abschluss_bezug_esa", complexTypeESA => {
                         this.callApiForLinechart("anzahl_abschluss_bezug_osa", complexTypeOSA => {
                             this.callApiForLinechart("anzahl_abschluss_bezug_gesamt", complexTypeGesamt => {
-                                changeMetadata(complexTypeABI, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelABI"));
-                                changeMetadata(complexTypeMSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelMSA"));
-                                changeMetadata(complexTypeESA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelESA"));
-                                changeMetadata(complexTypeOSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelOSA"));
-                                changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
+                                if (
+                                    hasComplexTypeValues(complexTypeABI)
+                                    || hasComplexTypeValues(complexTypeMSA)
+                                    || hasComplexTypeValues(complexTypeESA)
+                                    || hasComplexTypeValues(complexTypeOSA)
+                                    || hasComplexTypeValues(complexTypeGesamt)
+                                ) {
+                                    changeMetadata(complexTypeABI, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelABI"));
+                                    changeMetadata(complexTypeMSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelMSA"));
+                                    changeMetadata(complexTypeESA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelESA"));
+                                    changeMetadata(complexTypeOSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelOSA"));
+                                    changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
 
-                                this.linechartData = convertComplexTypesToMultilinechart([
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeABI, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeMSA, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeESA, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeOSA, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeGesamt, 2))
-                                ]);
+                                    this.linechartData = convertComplexTypesToMultilinechart([
+                                        sortComplexType(optimizeComplexTypeValues(complexTypeABI, 2)),
+                                        sortComplexType(optimizeComplexTypeValues(complexTypeMSA, 2)),
+                                        sortComplexType(optimizeComplexTypeValues(complexTypeESA, 2)),
+                                        sortComplexType(optimizeComplexTypeValues(complexTypeOSA, 2)),
+                                        sortComplexType(optimizeComplexTypeValues(complexTypeGesamt, 2))
+                                    ]);
+                                }
+                                else {
+                                    this.linechartData = false;
+                                }
                             }, error => {
                                 console.error(error);
                             });

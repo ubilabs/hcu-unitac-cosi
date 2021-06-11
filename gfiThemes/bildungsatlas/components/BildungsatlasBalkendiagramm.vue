@@ -7,7 +7,8 @@ import {
     optimizeValueRootedInComplexType,
     convertComplexTypeToBarchart,
     sortComplexType,
-    isComplexType
+    isComplexType,
+    hasComplexTypeValues
 } from "../../../utils/complexType.js";
 
 /**
@@ -168,7 +169,13 @@ export default {
                 if (this.propertyName) {
                     const complexType = this.properties[this.propertyName];
 
-                    this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
+                    if (hasComplexTypeValues(complexType)) {
+                        this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
+                    }
+                    else {
+                        this.barchartData = false;
+                    }
+
                     this.setValuesBasedOnFeatureTypeKey(featureTypeKey, complexType);
                     this.table_title = this.translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.title." + this.propertyName);
 
@@ -336,7 +343,6 @@ export default {
                     }
                     if (!this.statgeb_value) {
                         this.statgeb_value = "g.F.";
-                        this.barchartData = false;
                     }
                     this.loadValueStadtteil(this.properties?.stadtteil_id, complexType);
                     this.title = this.stadtteil_name + ": " + this.statgeb_id;
@@ -347,7 +353,6 @@ export default {
                     }
                     if (!this.sozialraum_value) {
                         this.sozialraum_value = "g.F.";
-                        this.barchartData = false;
                     }
                     this.loadValueStadtteil(this.properties?.stadtteil_id, complexType);
                     this.title = this.sozialraum_name;
@@ -359,7 +364,6 @@ export default {
                     }
                     if (!this.stadtteil_value) {
                         this.stadtteil_value = "g.F.";
-                        this.barchartData = false;
                     }
                     this.title = this.stadtteil_name;
             }
