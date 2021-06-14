@@ -4,7 +4,32 @@
             "cosi": {
                 "accessibilityAnalysis": {
                     "title": "Erreichbarkeitsanalyse",
-                    "dropdownInfo": "Bitte wählen Sie den Modus, in dem Sie arbeiten möchten:"
+                    "dropdownInfo": "Bitte wählen Sie den Modus, in dem Sie arbeiten möchten:",
+                    "pointOfReference": "Referenzpunkt",
+                    "topic": "Thema",
+                    "transportType": "Verkehrsmittel",
+                    "transportTypes": {
+                        "clear": "-Leeren-",
+                        "driving-car": "Auto",
+                        "cycling-regular": "Rad",
+                        "cycling-electric": "Rad (elektrisch)",
+                        "foot-walking": "Gehen",
+                        "wheelchair": "Rollstuhl"
+                    },
+                    "scaleUnit": "Maßeinheit der Entfernung",
+                    "scaleUnits": {
+                        "clear": "-Leeren-",
+                        "time": "Zeit (in min)",
+                        "distance": "Entfernung (in m)"
+                    },
+                    "distance": "Entfernung",
+                    "calculate": "Berechnen",
+                    "clear": "Lösche aktuelles Ergebnis",
+                    "legend": "Legende:",
+                    "requestInhibitants": "Einwohnerabfrage für den Bereich",
+                    "inputReminder": "Bitte füllen Sie alle Felder aus.",
+                    "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.",
+                    "selectionReminder": "Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\"."
                 }
             }
         }

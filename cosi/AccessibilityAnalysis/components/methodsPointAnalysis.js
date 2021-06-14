@@ -289,14 +289,14 @@ export default {
      */
     inputReminder: function () {
         Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
+            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
             kategorie: "alert-warning"
         });
     },
 
     showError: function () {
         Radio.trigger("Alert", "alert", {
-            text: "<strong>Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.</strong>",
+            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
             kategorie: "alert-danger"
         });
     },
@@ -397,7 +397,7 @@ export default {
      */
     selectionReminder: function () {
         Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\".</strong>",
+            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.selectionReminder") + "</strong>",
             kategorie: "alert-warning"
         });
     },
