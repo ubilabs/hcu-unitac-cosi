@@ -5,7 +5,6 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
-import ReachabilityResult from "../../../components/ReachabilityResult.vue";
 import AccessibilityAnalysis from "../../../store/index";
 import {
     expect
@@ -76,6 +75,15 @@ describe("AccessibilityAnalysis.vue", () => {
     let store, requestStub, sandbox, sourceStub;
 
     beforeEach(() => {
+        sandbox = sinon.createSandbox();
+        sourceStub = {
+            clear: sinon.stub(),
+            addFeatures: sinon.stub(),
+            getFeatures: sinon.stub().returns([
+                []
+            ])
+        };
+
         store = new Vuex.Store({
             namespaces: true,
             modules: {
@@ -91,6 +99,15 @@ describe("AccessibilityAnalysis.vue", () => {
                         map: () => ({
                             addEventListener: () => sinon.stub()
                         })
+                    },
+                    actions: {
+                        createLayer: (state, name) => {
+                            return Promise.resolve({
+                                setVisible: sinon.stub(),
+                                addEventListener: sinon.stub(),
+                                getSource: () => sourceStub
+                            });
+                        }
                     }
                 }
             },
@@ -106,21 +123,8 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
-    function mount (layersMock) {
-        sandbox = sinon.createSandbox();
-        sourceStub = {
-            clear: sinon.stub(),
-            addFeatures: sinon.stub(),
-            getFeatures: sinon.stub().returns([[]])
-        };
+    async function mount(layersMock) {
         requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
-            if (a1 === "Map") {
-                return {
-                    setVisible: sinon.stub(),
-                    addEventListener: sinon.stub(),
-                    getSource: () => sourceStub
-                };
-            }
             if (a1 === "OpenRoute" && a2 === "requestIsochrones") {
                 return new Promise(function (resolve) {
                     resolve(JSON.stringify(data));
@@ -137,33 +141,35 @@ describe("AccessibilityAnalysis.vue", () => {
             }
             return null;
         });
-        return shallowMount(AccessibilityAnalysisComponent, {
+        const ret = shallowMount(AccessibilityAnalysisComponent, {
             store,
             localVue
         });
+        await ret.vm.$nextTick()
+        return ret
     }
 
-    it("renders Component", () => {
-        const wrapper = mount();
+    it("renders Component", async () => {
+        const wrapper = await mount();
 
         expect(wrapper.find("#accessibilityanalysis").exists()).to.be.true;
         expect(wrapper.find("#accessibilityanalysis").html()).to.not.be.empty;
     });
 
     it("trigger button without user input", async () => {
-        const wrapper = mount(),
+        const wrapper = await mount(),
             stub = sandbox.stub(Radio, "trigger");
 
         await wrapper.find("#create-isochrones").trigger("click");
         sinon.assert.calledWith(stub,
             "Alert", "alert", {
-                text: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
+                text: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
                 kategorie: "alert-warning"
             });
     });
 
     it("trigger button with user input no layer selected", async () => {
-        const wrapper = mount([]),
+        const wrapper = await mount([]),
             stub = sandbox.stub(Radio, "trigger");
 
         await wrapper.setData({
@@ -174,6 +180,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick()
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
@@ -181,20 +188,13 @@ describe("AccessibilityAnalysis.vue", () => {
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
 
-        await wrapper.find("#show-result").trigger("click");
-        sinon.assert.calledWith(stub,
-            "Alert", "alert", {
-                text: "<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\".</strong>",
-                kategorie: "alert-warning"
-            });
-
         await wrapper.find("#clear").trigger("click");
-        sinon.assert.callCount(sourceStub.clear, 1);
+        sinon.assert.callCount(sourceStub.clear, 2);
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("000");
     });
 
     it("trigger button with user input and region selected", async () => {
-        const wrapper = mount(layersMock);
+        const wrapper = await mount(layersMock);
 
         await wrapper.setData({
             mode: "region",
@@ -205,6 +205,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick()
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
@@ -213,36 +214,9 @@ describe("AccessibilityAnalysis.vue", () => {
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
     });
 
-    it("trigger button with user input and selected layer", async () => {
-
-        const wrapper = mount(layersMock),
-            stub = sandbox.stub(Radio, "trigger");
-
-        await wrapper.setData({
-            coordinate: "10.155828082155567, 53.60323024735499",
-            transportType: "Auto",
-            scaleUnit: "time",
-            distance: 10
-        });
-
-        await wrapper.find("#create-isochrones").trigger("click");
-
-        sinon.assert.callCount(sourceStub.addFeatures, 1);
-
-        await wrapper.find("#show-result").trigger("click");
-
-        // eslint-disable-next-line one-var
-        const result = wrapper.findComponent(ReachabilityResult).props();
-
-        expect(result.layers).to.not.be.empty;
-
-        await wrapper.find("#show-in-dashboard").trigger("click");
-        sinon.assert.calledWith(stub, "Dashboard", "append");
-    });
-
     it("show help for selectedmode", async () => {
         const stub = sandbox.stub(Radio, "trigger"),
-            wrapper = mount([]);
+            wrapper = await mount([]);
 
         await wrapper.find("#help").trigger("click");
 

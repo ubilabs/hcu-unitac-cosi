@@ -6,7 +6,6 @@ import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
-import createLayer from "../../utils/createLayer";
 import * as Proj from "ol/proj.js";
 
 export default {
@@ -79,10 +78,10 @@ export default {
    * Put initialize here if mounting occurs after config parsing
    * @returns {void}
    */
-    mounted () {
+    async mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = createLayer("reachability-from-point");
+        this.mapLayer = await this.createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
@@ -92,6 +91,7 @@ export default {
         ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
+        ...mapActions("Map", ["createLayer"]),
         ...methods,
 
         resetMarkerAndZoom: function () {
