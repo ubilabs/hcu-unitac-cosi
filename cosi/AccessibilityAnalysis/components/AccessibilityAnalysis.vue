@@ -69,16 +69,16 @@ export default {
         }
     },
     /**
-     * @returns {void}
-     */
+    * @returns {void}
+    */
     created () {
         this.$on("close", this.close);
         Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
     },
     /**
-   * Put initialize here if mounting occurs after config parsing
-   * @returns {void}
-   */
+    * Put initialize here if mounting occurs after config parsing
+    * @returns {void}
+    */
     mounted () {
         this.applyTranslationKey(this.name);
 
@@ -102,9 +102,9 @@ export default {
         },
 
         /**
-     * Closes this tool window by setting active to false
-     * @returns {void}
-     */
+        * Closes this tool window by setting active to false
+        * @returns {void}
+        */
         close () {
             this.setActive(false);
 
@@ -119,10 +119,10 @@ export default {
             }
         },
         /**
-     * set facilityNames in model, trigger renderDropDownView
-     * @param {Object} models layer models of updated selected layer
-     * @returns {void}
-     */
+        * set facilityNames in model, trigger renderDropDownView
+        * @param {Object} models layer models of updated selected layer
+        * @returns {void}
+        */
         setFacilityLayers: function (models) {
             const facilityLayerModels = models.filter(
                     (model) => model.get("isFacility") === true
@@ -131,6 +131,14 @@ export default {
                 );
 
             this.facilityNames = facilityNames;
+        },
+        /**
+        * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
+        * @returns {void}
+        */
+        requestInhabitants: function () {
+            this.close();
+            this.$root.$emit("populationRequest", this.rawGeoJson);
         }
     }
 };
