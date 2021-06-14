@@ -48,7 +48,7 @@ export default {
             range !== 0
         ) {
             // TODO: Use store-method - see DistrictSelector component
-            Radio.trigger("Alert", "alert:remove");
+            this.cleanup();
             // group coordinates into groups of 5
             const coordinatesList = [],
                 groupedFeaturesList = [],
@@ -177,7 +177,7 @@ export default {
                 this.isochroneFeatures = newFeatures;
                 this.setIsochroneAsBbox();
                 this.showRequestButton = true;
-                Radio.trigger("Alert", "alert:remove");
+                this.cleanup();
             }
             catch (err) {
                 console.error(err);
@@ -288,16 +288,18 @@ export default {
      * @returns {void}
      */
     inputReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
-            kategorie: "alert-warning"
+        this.addSingleAlert({
+            category: "Info",
+            content: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
+            displayClass: "info"
         });
     },
 
     showError: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.</strong>",
-            kategorie: "alert-danger"
+        this.addSingleAlert({
+            category: "Fehler",
+            content: "<strong>Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.</strong>",
+            displayClass: "error"
         });
     },
     /**
@@ -354,7 +356,7 @@ export default {
 
         if (visibleLayerModels.length > 0) {
             this.layers = [];
-            Radio.trigger("Alert", "alert:remove");
+            this.cleanup();
             visibleLayerModels.forEach((layerModel) => {
                 const features = layerModel.get("layer").getSource().getFeatures();
 
@@ -396,9 +398,10 @@ export default {
      * @returns {void}
      */
     selectionReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\".</strong>",
-            kategorie: "alert-warning"
+        this.addSingleAlert({
+            category: "Info",
+            content: "<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\".</strong>",
+            displayClass: "Info"
         });
     },
     showInDashboard: function () {
@@ -417,11 +420,11 @@ export default {
      * @returns {void}
      */
     showHelp: function () {
-        Radio.trigger("Alert", "alert:remove");
-        Radio.trigger("Alert", "alert", {
-            text: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
-            kategorie: "alert-info",
-            position: "center-center"
+        this.cleanup();
+        this.addSingleAlert({
+            category: "Info",
+            content: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
+            displayClass: "info"
         });
     },
     /**

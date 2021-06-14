@@ -90,6 +90,7 @@ export default {
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
     },
     methods: {
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
