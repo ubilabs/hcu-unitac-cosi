@@ -1,3 +1,5 @@
+import renameKeys from "../../utils/renameKeys.js";
+
 export const keyMap = {
     name: "Einrichtung",
     address: "Adresse",
@@ -31,7 +33,7 @@ export function prepareTableExport (data) {
         console.error("prepareTableExport: data must be an array");
         return null;
     }
-    const exportData = data.map(item => Radio.request("Util", "renameKeys", keyMap, item));
+    const exportData = data.map(item => renameKeys(keyMap, item));
 
     return exportData;
 }
@@ -49,7 +51,7 @@ export function prepareDetailsExport (data, filterProps) {
     }
 
     const exportData = data.map(item => {
-        const _item = Radio.request("Util", "renameKeys", keyMap, item), // the table item with beautified keys (incl. the feature)
+        const _item = renameKeys(keyMap, item), // the table item with beautified keys (incl. the feature)
             properties = Object.entries(_item.feature.getProperties()) // the feature's properties as tuples
                 .filter(prop => {
                     // return all properties if no filter is set
