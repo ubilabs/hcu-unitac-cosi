@@ -7,6 +7,7 @@ import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import {Draw, Select} from "ol/interaction";
 import {getSearchResultsCoordinates, getSearchResultsGeometry} from "../../utils/getSearchResultsGeom";
+import createLayer from "../../utils/createLayer";
 
 export default {
     name: "GeometryPicker",
@@ -100,7 +101,7 @@ export default {
          * @returns {void}
          */
         createDrawingLayer () {
-            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id + "_draw");
+            const newLayer = createLayer(this.id + "_draw");
 
             newLayer.setVisible(true);
             this.drawLayer = newLayer;

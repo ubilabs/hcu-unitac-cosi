@@ -2,6 +2,7 @@
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import store from "../../../../src/app-store";
+import getColorScale from "../../../utils/colorScale.js";
 
 const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
     /**
@@ -120,7 +121,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
             geomSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"],
             foundDistrictFeatures = [],
             values = features.map(feature => feature.getProperties()[attribute]),
-            colorScale = Radio.request("ColorScale", "getColorScaleByValues", values, "interpolateBlues");
+            colorScale = getColorScale(values, "interpolateBlues");
 
         features.forEach(function (feature) {
             // find the equivalent district feature -> to do for stadtteile

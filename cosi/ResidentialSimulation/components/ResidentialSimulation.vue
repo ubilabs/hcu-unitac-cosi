@@ -8,6 +8,7 @@ import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vu
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
 import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
+import createLayer from "../../utils/createLayer";
 
 export default {
     name: "ResidentialSimulation",
@@ -95,7 +96,7 @@ export default {
          * @returns {void}
          */
         createDrawingLayer () {
-            const newLayer = Radio.request("Map", "createLayerIfNotExists", this.id);
+            const newLayer = createLayer(this.id);
 
             newLayer.setVisible(true);
             // newLayer.setStyle(featureTagStyle);

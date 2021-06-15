@@ -48,7 +48,7 @@ export default {
             range !== 0
         ) {
             // TODO: Use store-method - see DistrictSelector component
-            Radio.trigger("Alert", "alert:remove");
+            this.cleanup();
             // group coordinates into groups of 5
             const coordinatesList = [],
                 groupedFeaturesList = [],
@@ -177,7 +177,7 @@ export default {
                 this.isochroneFeatures = newFeatures;
                 this.setIsochroneAsBbox();
                 this.showRequestButton = true;
-                Radio.trigger("Alert", "alert:remove");
+                this.cleanup();
             }
             catch (err) {
                 console.error(err);
@@ -288,16 +288,18 @@ export default {
      * @returns {void}
      */
     inputReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
-            kategorie: "alert-warning"
+        this.addSingleAlert({
+            category: "Info",
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
+            displayClass: "info"
         });
     },
 
     showError: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.</strong>",
-            kategorie: "alert-danger"
+        this.addSingleAlert({
+            category: "Fehler",
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
+            displayClass: "error"
         });
     },
     /**
@@ -338,75 +340,6 @@ export default {
 
         setBBoxToGeom(geometryCollection);
     },
-    /**
-     * updates facilitie's name within the isochrone results
-     * @returns {void}
-     */
-    updateResult: function () {
-        const visibleLayerModels = Radio.request(
-            "ModelList",
-            "getModelsByAttributes", {
-                typ: "WFS",
-                isBaseLayer: false,
-                isSelected: true
-            }
-        );
-
-        if (visibleLayerModels.length > 0) {
-            this.layers = [];
-            Radio.trigger("Alert", "alert:remove");
-            visibleLayerModels.forEach((layerModel) => {
-                const features = layerModel.get("layer").getSource().getFeatures();
-
-                if (features && features.length) {
-                    let idSelector;
-
-                    // inscribe the coordinate to the feature for rendering to the resultView DOM Element
-                    // for zooming to feature by click
-                    // eslint-disable-next-line one-var
-                    const sfeatures = features.map((feature, i) => {
-                        const geometry = feature.getGeometry(),
-                            coord =
-                            geometry.getType() === "Point" ?
-                                geometry.getCoordinates().splice(0, 2) :
-                                Extent.getCenter(geometry.getExtent());
-
-                        let label = feature.getProperties()[idSelector];
-
-                        if (!label) {
-                            label = i + 1;
-                        }
-                        return [label, coord];
-                    });
-
-                    this.layers.push({
-                        layerName: layerModel.get("name"),
-                        layerId: layerModel.get("id"),
-                        features: sfeatures
-                    });
-                }
-            });
-        }
-        else {
-            this.selectionReminder();
-        }
-    },
-    /**
-     * reminds user to select facility layers
-     * @returns {void}
-     */
-    selectionReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\".</strong>",
-            kategorie: "alert-warning"
-        });
-    },
-    resetMarkerAndZoom: function () {
-        const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
-
-        this.placingPointMarker(icoord);
-        Radio.trigger("MapView", "setCenter", icoord);
-    },
     showInDashboard: function () {
         const el = $(this.$refs.result);
 
@@ -423,11 +356,11 @@ export default {
      * @returns {void}
      */
     showHelp: function () {
-        Radio.trigger("Alert", "alert:remove");
-        Radio.trigger("Alert", "alert", {
-            text: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
-            kategorie: "alert-info",
-            position: "center-center"
+        this.cleanup();
+        this.addSingleAlert({
+            category: "Info",
+            content: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
+            displayClass: "info"
         });
     },
     /**
@@ -441,26 +374,13 @@ export default {
         this.rawGeoJson = null;
         this.isochroneFeatures = [];
 
+
         if (this.mapLayer.getSource().getFeatures().length > 0) {
             this.mapLayer.getSource().clear();
             if (this.extent?.length > 0) {
                 setBBoxToGeom(this.boundingGeometry);
             }
         }
-    },
-    /**
-     * requests inhabitant calculation function
-     * @returns {void}
-     */
-    requestInhabitants: function () {
-        // TODO
-        Radio.trigger(
-            "GraphicalSelect",
-            "onDrawEnd",
-            this.rawGeoJson,
-            "einwohnerabfrage",
-            true
-        );
     },
     getFeatureColors: function () {
         return [

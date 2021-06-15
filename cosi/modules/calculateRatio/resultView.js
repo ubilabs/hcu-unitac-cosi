@@ -3,6 +3,7 @@ import {Fill, Stroke, Style, Text} from "ol/style.js";
 // import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import store from "../../../../src/app-store";
 import exportXlsx from "../../utils/exportXlsx";
+import getColorScale from "../../../utils/colorScale.js";
 
 const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
 
@@ -66,7 +67,7 @@ const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
             values.push(results[district].coverage);
         }
 
-        colorScale = Radio.request("ColorScale", "getColorScaleByValues", values);
+        colorScale = getColorScale(values);
 
         features.forEach((feature) => {
             feature.setStyle(new Style({

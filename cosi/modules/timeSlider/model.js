@@ -1,6 +1,7 @@
 import SliderModel from "../../../../modules/snippets/slider/model";
 import {Fill, Style, Stroke} from "ol/style.js";
 import store from "../../../../src/app-store";
+import getColorScale from "../../../utils/colorScale.js";
 
 const TimeSliderModel = Backbone.Model.extend({
     defaults: {
@@ -119,7 +120,7 @@ const TimeSliderModel = Backbone.Model.extend({
             selector = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"],
             districtSelector = store.getters["Tools/DistrictSelector/keyOfAttrName"],
             foundDistrictFeatures = [],
-            colorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, max]);
+            colorScale = getColorScale([0, max]);
 
         features.forEach(function (feature) {
             // find the equivalent district feature -> to do for stadtteile
