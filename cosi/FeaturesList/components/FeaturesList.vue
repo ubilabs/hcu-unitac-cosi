@@ -307,6 +307,10 @@ export default {
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
+        },
+        toggleFeature (featureItem) {
+            this.toggleFeatureDisabled(featureItem);
+            //this.$root.$emit("updateFeature", featureItem);
         }
     }
 };
@@ -417,7 +421,7 @@ export default {
                                     <v-switch
                                         v-model="item.enabled"
                                         dense
-                                        @change="toggleFeatureDisabled(item)"
+                                        @change="toggleFeature(item)"
                                     />
                                 </template>
                             </v-data-table>
