@@ -73,7 +73,7 @@ describe("AccessibilityAnalysis.vue", () => {
         }];
 
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, sourceStub;
+    let store, sandbox, sourceStub, addSingleAlertStub, cleanupStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -84,6 +84,8 @@ describe("AccessibilityAnalysis.vue", () => {
                 []
             ])
         };
+        addSingleAlertStub = sinon.stub();
+        cleanupStub = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -110,6 +112,13 @@ describe("AccessibilityAnalysis.vue", () => {
                                 getSource: () => sourceStub
                             });
                         }
+                    }
+                },
+                Alerting: {
+                    namespaced: true,
+                    actions: {
+                        addSingleAlert: addSingleAlertStub,
+                        cleanup: cleanupStub
                     }
                 }
             },
@@ -163,20 +172,21 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button without user input", async () => {
-        const wrapper = await mount(),
-            stub = sandbox.stub(Radio, "trigger");
+        const wrapper = await mount();
 
         await wrapper.find("#create-isochrones").trigger("click");
-        sinon.assert.calledWith(stub,
-            "Alert", "alert", {
-                text: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
-                kategorie: "alert-warning"
+        await wrapper.vm.$nextTick();
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1]).to.eql(
+            {
+                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
+                category: "Warning",
+                cssClass: "warning"
             });
     });
 
     it("trigger button with wrong input", async () => {
-        const wrapper = await mount(undefined, {response: JSON.stringify({error: {code: 3002}})}),
-            stub = sandbox.stub(Radio, "trigger");
+        const wrapper = await mount(undefined, {response: JSON.stringify({error: {code: 3002}})});
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -187,10 +197,12 @@ describe("AccessibilityAnalysis.vue", () => {
 
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
-        sinon.assert.calledWith(stub,
-            "Alert", "alert", {
-                kategorie: "alert-danger",
-                text: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>"
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1]).to.eql(
+            {
+                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>",
+                category: "Error",
+                cssClass: "error"
             });
     });
 
@@ -264,20 +276,20 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("show help for selectedmode", async () => {
-        const stub = sandbox.stub(Radio, "trigger"),
-            wrapper = await mount([]);
+        const wrapper = await mount([]);
 
         await wrapper.find("#help").trigger("click");
 
-        expect(stub.getCall(0).args[1]).to.equal("alert:remove");
-        expect(stub.getCall(1).args[2].text).to.contain("Erreichbarkeit ab einem Referenzpunkt");
+        sinon.assert.callCount(cleanupStub, 1);
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1].content).to.contain("Erreichbarkeit ab einem Referenzpunkt");
 
         await wrapper.setData({
             mode: "region"
         });
 
         await wrapper.find("#help").trigger("click");
-        expect(stub.getCall(3).args[2].text).to.contain("Erreichbarkeit im Gebiet");
+        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit im Gebiet");
     });
 
 });

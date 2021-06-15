@@ -92,6 +92,7 @@ export default {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
         ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
         resetMarkerAndZoom: function () {

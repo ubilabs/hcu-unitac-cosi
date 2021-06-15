@@ -50,7 +50,6 @@ export default {
     /**
      * create isochrones features for selected several coordiantes
      * TODO: break apart into smaller functions
-     * @fires Alerting#RadioTriggerAlertAlertRemove
      * @fires Core#RadioRequestMapGetLayerByName
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
      * @returns {void}
@@ -67,8 +66,7 @@ export default {
             this.scaleUnit !== "" &&
             range !== 0
         ) {
-            // TODO: Use store-method - see DistrictSelector component
-            Radio.trigger("Alert", "alert:remove");
+            this.cleanup();
             // group coordinates into groups of 5
             const coordinatesList = [],
                 groupedFeaturesList = [],
@@ -191,7 +189,7 @@ export default {
             this.isochroneFeatures = newFeatures;
             this.setIsochroneAsBbox();
             this.showRequestButton = true;
-            Radio.trigger("Alert", "alert:remove");
+            this.cleanup();
         } else {
             this.inputReminder();
         }
@@ -296,22 +294,25 @@ export default {
      * @returns {void}
      */
     inputReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
-            kategorie: "alert-warning"
+        this.addSingleAlert({
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
+            category: "Warning",
+            cssClass: "warning"
         });
     },
 
     showError: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
-            kategorie: "alert-danger"
+        this.addSingleAlert({
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
+            category: "Error",
+            cssClass: "error"
         });
     },
     showErrorInvalidInput: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
-            kategorie: "alert-danger"
+        this.addSingleAlert({
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
+            category: "Error",
+            cssClass: "error"
         });
     },
     /**
@@ -368,11 +369,12 @@ export default {
      * @returns {void}
      */
     showHelp: function () {
-        Radio.trigger("Alert", "alert:remove");
-        Radio.trigger("Alert", "alert", {
-            text: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
-            kategorie: "alert-info",
-            position: "center-center"
+        this.cleanup();
+        this.addSingleAlert({
+            content: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
+            category: "Info",
+            position: "center-center",
+            cssClass: "info"
         });
     },
     /**
