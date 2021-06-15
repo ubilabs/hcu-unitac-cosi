@@ -12,19 +12,39 @@ import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 
-export const methodConfig = {store: null};
+export const methodConfig = {
+    store: null
+};
 export default {
     /**
      * create isochrones features
      * @returns {void}
      */
-    createIsochrones: function () {
+    createIsochrones: async function () {
         this.clear();
-        if (this.mode === "point") {
-            this.createIsochronesPoint();
+        try {
+            if (this.mode === "point") {
+                await this.createIsochronesPoint();
+            }
+            else {
+                await this.createIsochronesRegion();
+            }
         }
-        else {
-            this.createIsochronesRegion();
+        catch (err) {
+            console.error(err);
+            try {
+                const res = JSON.parse(err.response);
+
+                if (res.error.code === 3002) {
+                    this.showErrorInvalidInput();
+                }
+                else {
+                    this.showError();
+                }
+            }
+            catch (e) {
+                this.showError();
+            }
         }
     },
     /**
@@ -112,10 +132,8 @@ export default {
             this.mapLayer.getSource().addFeatures(features);
 
             // TODO: get locale from store
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
-            );
-        }
-        else {
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
+        } else {
             this.inputReminder();
         }
     },
@@ -134,57 +152,47 @@ export default {
             this.scaleUnit !== "" &&
             range !== 0
         ) {
-            try {
-                const res = await Radio.request(
-                        "OpenRoute",
-                        "requestIsochrones",
-                        this.transportType,
-                        [this.coordinate],
-                        this.scaleUnit,
-                        [range * 0.33, range * 0.67, range]
-                    ),
+            const res = await Radio.request(
+                    "OpenRoute",
+                    "requestIsochrones",
+                    this.transportType,
+                    [this.coordinate],
+                    this.scaleUnit,
+                    [range * 0.33, range * 0.67, range]
+                ),
+                distance = parseFloat(this.distance);
 
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
 
-                    distance = parseFloat(this.distance);
+            // reverse JSON object sequence to render the isochrones in the correct order
+            // eslint-disable-next-line one-var
+            const json = JSON.parse(res),
+                reversedFeatures = [...json.features].reverse(),
+                featureType = "Erreichbarkeit ab einem Referenzpunkt";
 
-                this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)
-                );
+            json.features = reversedFeatures;
+            let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
 
-                // reverse JSON object sequence to render the isochrones in the correct order
-                // eslint-disable-next-line one-var
-                const json = JSON.parse(res),
-                    reversedFeatures = [...json.features].reverse(),
-                    featureType = "Erreichbarkeit ab einem Referenzpunkt";
+            newFeatures = this.transformFeatures(
+                newFeatures,
+                "EPSG:4326",
+                "EPSG:25832"
+            );
 
-                json.features = reversedFeatures;
-                let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
+            newFeatures.forEach((feature) => {
+                feature.set("featureType", featureType);
+            });
 
-                newFeatures = this.transformFeatures(
-                    newFeatures,
-                    "EPSG:4326",
-                    "EPSG:25832"
-                );
+            this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
 
-                newFeatures.forEach((feature) => {
-                    feature.set("featureType", featureType);
-                });
+            this.styleFeatures(newFeatures, [this.coordinate]);
 
-                this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
-
-                this.styleFeatures(newFeatures, [this.coordinate]);
-
-                this.mapLayer.getSource().addFeatures(newFeatures.reverse());
-                this.isochroneFeatures = newFeatures;
-                this.setIsochroneAsBbox();
-                this.showRequestButton = true;
-                Radio.trigger("Alert", "alert:remove");
-            }
-            catch (err) {
-                console.error(err);
-                this.showError();
-            }
-        }
-        else {
+            this.mapLayer.getSource().addFeatures(newFeatures.reverse());
+            this.isochroneFeatures = newFeatures;
+            this.setIsochroneAsBbox();
+            this.showRequestButton = true;
+            Radio.trigger("Alert", "alert:remove");
+        } else {
             this.inputReminder();
         }
     },
@@ -297,6 +305,12 @@ export default {
     showError: function () {
         Radio.trigger("Alert", "alert", {
             text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
+            kategorie: "alert-danger"
+        });
+    },
+    showErrorInvalidInput: function () {
+        Radio.trigger("Alert", "alert", {
+            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
             kategorie: "alert-danger"
         });
     },

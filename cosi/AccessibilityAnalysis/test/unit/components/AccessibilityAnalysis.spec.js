@@ -73,7 +73,7 @@ describe("AccessibilityAnalysis.vue", () => {
         }];
 
     // eslint-disable-next-line no-unused-vars
-    let store, requestStub, sandbox, sourceStub;
+    let store, sandbox, sourceStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -103,7 +103,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         })
                     },
                     actions: {
-                        createLayer: (state, name) => {
+                        createLayer: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 addEventListener: sinon.stub(),
@@ -125,9 +125,12 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
-    async function mount(layersMock) {
-        requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
+    async function mount (layersMock, error = undefined) {
+        sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "OpenRoute" && a2 === "requestIsochrones") {
+                if (error) {
+                    return Promise.reject(error);
+                }
                 return new Promise(function (resolve) {
                     resolve(JSON.stringify(data));
                 });
@@ -147,8 +150,9 @@ describe("AccessibilityAnalysis.vue", () => {
             store,
             localVue
         });
-        await ret.vm.$nextTick()
-        return ret
+
+        await ret.vm.$nextTick();
+        return ret;
     }
 
     it("renders Component", async () => {
@@ -170,8 +174,9 @@ describe("AccessibilityAnalysis.vue", () => {
             });
     });
 
-    it("trigger button with user input and point selected", async () => {
-        const wrapper = await mount([])
+    it("trigger button with wrong input", async () => {
+        const wrapper = await mount(undefined, {response: JSON.stringify({error: {code: 3002}})}),
+            stub = sandbox.stub(Radio, "trigger");
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -181,7 +186,26 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
+        sinon.assert.calledWith(stub,
+            "Alert", "alert", {
+                kategorie: "alert-danger",
+                text: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>"
+            });
+    });
+
+    it("trigger button with user input and point selected", async () => {
+        const wrapper = await mount([]);
+
+        await wrapper.setData({
+            coordinate: "10.155828082155567, 53.60323024735499",
+            transportType: "Auto",
+            scaleUnit: "time",
+            distance: 10
+        });
+
+        await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
@@ -195,8 +219,8 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button requestInhabitants", async () => {
-        const wrapper = await mount([])
-        const rootWrapper = createWrapper(wrapper.vm.$root)
+        const wrapper = await mount([]),
+            rootWrapper = createWrapper(wrapper.vm.$root);
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -208,13 +232,13 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#create-isochrones").trigger("click");
 
         // need two ticks for all changes to propagate
-        await wrapper.vm.$nextTick()
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         await wrapper.find("#requestInhabitants").trigger("click");
 
-        expect(wrapper.vm.active).to.be.false
-        expect(rootWrapper.emitted('populationRequest')).to.exist
+        expect(wrapper.vm.active).to.be.false;
+        expect(rootWrapper.emitted("populationRequest")).to.exist;
     });
 
 
@@ -230,7 +254,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
@@ -255,4 +279,5 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#help").trigger("click");
         expect(stub.getCall(3).args[2].text).to.contain("Erreichbarkeit im Gebiet");
     });
+
 });
