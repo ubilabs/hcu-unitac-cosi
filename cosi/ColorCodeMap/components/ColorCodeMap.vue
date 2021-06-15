@@ -6,6 +6,7 @@ import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import Info from "text-loader!./info.html";
+import getColorScale from "../../../utils/colorScale.js";
 
 export default {
     name: "ColorCodeMap",
@@ -374,7 +375,7 @@ export default {
          * @returns {Object} the colorScale function(value) and the n-step legend color/value pairs.
          */
         getColorsByValues (values) {
-            return Radio.request("ColorScale", "getColorScaleByValues", values, this.colorScheme);
+            return getColorScale(values, this.colorScheme);
         },
         /**
          * @description Changes selected feature with arrow buttons.

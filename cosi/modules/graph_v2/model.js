@@ -7,6 +7,7 @@ import "d3-transition";
 import * as d3 from "d3-array";
 import evaluate from "./eval";
 import ContextActions from "text-loader!./contextActions.html";
+import getColorScale from "../../../utils/colorScale.js";
 
 const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     defaults: {
@@ -852,7 +853,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             xAttr = graphConfig.xAttr,
             xAxisLabel = graphConfig.xAxisLabel,
             yAxisLabel = graphConfig.yAxisLabel,
-            refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", graphConfig.attrToShowArray.length + 1),
+            refColorScale = getColorScale([0, 1], "interpolateSpectral", graphConfig.attrToShowArray.length + 1),
             attrToShowArray = graphConfig.attrToShowArray,
             flatAttrToShowArray = this.flattenAttrToShowArray(attrToShowArray),
             margin = graphConfig.margin,
@@ -996,7 +997,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     drawBars: function (svg, dataToAdd, x, y, height, selector, barWidth, xAttr, attrToShowArray, tooltipDiv) {
-        const refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", attrToShowArray.length + 1);
+        const refColorScale = getColorScale([0, 1], "interpolateSpectral", attrToShowArray.length + 1);
 
         svg.append("g")
             .attr("class", "graph-data")
@@ -1030,7 +1031,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             .attr("class", typeof selector === "string" ? "bar" + selector.split(".")[1] : "bar")
             .attr("fill", function (d, i) {
                 if (attrToShowArray.length <= 1) {
-                    return Radio.request("ColorScale", "getColorScaleByValues", y.domain(), "interpolateBlues").scale(d.val); // change to argument based
+                    return getColorScale(y.domain(), "interpolateBlues").scale(d.val); // change to argument based
                 }
                 return refColorScale.legend.colors[i];
             })
@@ -1350,7 +1351,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         const refValues = data.reduce((res, val) => {
                 return res.includes(val[refAttr]) ? res : [...res, val[refAttr]];
             }, []),
-            refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", refValues.length + 1),
+            refColorScale = getColorScale([0, 1], "interpolateSpectral", refValues.length + 1),
             refColors = Radio.request("Util", "toObject", refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
         let yAttributeToShow,
             xAttributeToShow,
