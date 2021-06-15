@@ -7,13 +7,15 @@ import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
 import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 
 export default {
     name: "ResidentialSimulation",
     components: {
         Tool,
         ScenarioManager,
-        GeometryPicker
+        GeometryPicker,
+        ReferenceDistrictPicker
     },
     data () {
         return {
@@ -24,13 +26,22 @@ export default {
                 avgHouseholdSize: 2.5,
                 housingUnits: 0,
                 gfz: 1.0,
-                populationDensity: 2500,
+                populationDensity: 5000,
+                livingSpace: 30
+            },
+            fallbacks: {
+                residents: 0,
+                avgHouseholdSize: 2.5,
+                housingUnits: 0,
+                gfz: 1.0,
+                populationDensity: 5000,
                 livingSpace: 30
             }
         };
     },
     computed: {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
+        ...mapGetters("Tools/DistrictSelector", ["layer"]),
         geomField () {
             return {
                 name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
@@ -39,8 +50,6 @@ export default {
         },
 
         polygonArea () {
-            console.log(this.geometry);
-
             return this.geometry?.getArea() || 0;
         }
     },
@@ -67,8 +76,9 @@ export default {
             }
         },
 
-        polygonArea (area) {
-            this.residentialProject.area = area;
+        geometry () {
+            this.residentialProject.area = this.polygonArea;
+            this.updateArea(this.polygonArea);
         }
     },
     created () {
@@ -78,6 +88,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
+        ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 
         /**
          * @description create a guide layer used for additional info to display on the map
@@ -102,39 +113,254 @@ export default {
             this.geometry = geom;
         },
 
-        updateUnits (newUnits, oldUnits) {
-            console.log(newUnits);
-            console.log(this.residentialProject);
-            const residents = newUnits * this.residentialProject.avgHouseholdSize,
-                populationDensity = residents * 1000000 / (this.residentialProject.area),
-                bgf = residents * 40,
-                gfz = bgf / this.residentialProject.area,
-                livingSpace = bgf * 0.85 / residents;
+        updateArea (newArea) {
+            const area = newArea,
+                livingSpace = this.residentialProject.livingSpace,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                gfz = this.residentialProject.gfz,
+                bgf = area * gfz,
+                residents = bgf / (livingSpace * 1.25),
+                populationDensity = residents * 1000000 / area,
+                units = residents / householdSize;
 
-            if (
-                populationDensity > 5000 ||
-                gfz > 4.0 ||
-                livingSpace < 10
-            ) {
-                this.residentialProject.housingUnits = oldUnits;
+            this.residentialProject.residents = residents;
+            this.residentialProject.populationDensity = populationDensity;
+            this.residentialProject.bgf = bgf;
+            this.residentialProject.housingUnits = units;
+
+            this.fallbacks.residents = residents;
+            this.fallbacks.populationDensity = populationDensity;
+            this.fallbacks.bgf = bgf;
+            this.fallbacks.housingUnits = units;
+        },
+
+        updateUnits (newUnits) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                livingSpace = this.residentialProject.livingSpace,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                units = newUnits,
+                residents = units * householdSize,
+                populationDensity = residents * 1000000 / area,
+                bgf = residents * livingSpace * 1.25,
+                gfz = bgf / area;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.housingUnits = this.fallbacks.housingUnits;
             }
             else {
                 this.residentialProject.residents = residents;
                 this.residentialProject.populationDensity = populationDensity;
                 this.residentialProject.bgf = bgf;
                 this.residentialProject.gfz = gfz;
-                this.residentialProject.livingSpace = livingSpace;
-            }
 
-            console.log(residents, populationDensity, bgf, gfz, livingSpace);
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.residents = residents;
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.bgf = bgf;
+                this.fallbacks.gfz = gfz;
+            }
         },
 
-        updateResidents (newResidents, oldResidents) {},
-        updateDensity (newDensity, oldDensity) {},
-        updateLivingSpace (newLivingSpace, oldLivingSpace) {},
-        updateGfz (newGfz, oldGfz) {},
-        updateBgf (newBgf, oldBgf) {},
-        updateHousholdSize (newHouseholdSize, oldHouseholdSize) {}
+        updateResidents (newResidents) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                livingSpace = this.residentialProject.livingSpace,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                residents = newResidents,
+                units = newResidents / householdSize,
+                populationDensity = residents * 1000000 / area,
+                bgf = residents * livingSpace * 1.25,
+                gfz = bgf / area;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.residents = this.fallbacks.residents;
+            }
+            else {
+                this.residentialProject.housingUnits = units;
+                this.residentialProject.populationDensity = populationDensity;
+                this.residentialProject.bgf = bgf;
+                this.residentialProject.gfz = gfz;
+
+                this.fallbacks.residents = residents;
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.bgf = bgf;
+                this.fallbacks.gfz = gfz;
+            }
+        },
+
+        updateDensity (newDensity) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                livingSpace = this.residentialProject.livingSpace,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                populationDensity = newDensity,
+                residents = (newDensity * area) / 1000000,
+                units = residents / householdSize,
+                bgf = residents * livingSpace * 1.25,
+                gfz = bgf / area;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.populationDensity = this.fallbacks.populationDensity;
+            }
+            else {
+                this.residentialProject.housingUnits = units;
+                this.residentialProject.residents = residents;
+                this.residentialProject.bgf = bgf;
+                this.residentialProject.gfz = gfz;
+
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.residents = residents;
+                this.fallbacks.bgf = bgf;
+                this.fallbacks.gfz = gfz;
+            }
+        },
+        updateLivingSpace (newLivingSpace) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                gfz = this.residentialProject.gfz,
+                bgf = gfz * area,
+                livingSpace = newLivingSpace,
+                residents = bgf / (livingSpace * 1.25),
+                populationDensity = residents * 1000000 / area,
+                units = residents / householdSize;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.livingSpace = this.fallbacks.livingSpace;
+            }
+            else {
+                this.residentialProject.housingUnits = units;
+                this.residentialProject.residents = residents;
+                this.residentialProject.populationDensity = populationDensity;
+                this.residentialProject.bgf = bgf;
+
+                this.fallbacks.livingSpace = livingSpace;
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.residents = residents;
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.bgf = bgf;
+            }
+        },
+        updateGfz (newGfz) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                livingSpace = this.residentialProject.livingSpace,
+                gfz = newGfz,
+                bgf = gfz * area,
+                residents = bgf / (livingSpace * 1.25),
+                populationDensity = residents * 1000000 / area,
+                units = residents / householdSize;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.gfz = this.fallbacks.gfz;
+            }
+            else {
+                this.residentialProject.housingUnits = units;
+                this.residentialProject.residents = residents;
+                this.residentialProject.populationDensity = populationDensity;
+                this.residentialProject.bgf = bgf;
+
+                this.fallbacks.gfz = gfz;
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.residents = residents;
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.bgf = bgf;
+            }
+        },
+        updateBgf (newBgf) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                householdSize = this.residentialProject.avgHouseholdSize,
+                livingSpace = this.residentialProject.livingSpace,
+                bgf = newBgf,
+                gfz = bgf / area,
+                residents = bgf / (livingSpace * 1.25),
+                populationDensity = residents * 1000000 / area,
+                units = residents / householdSize;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.bgf = this.fallbacks.bgf;
+            }
+            else {
+                this.residentialProject.housingUnits = units;
+                this.residentialProject.residents = residents;
+                this.residentialProject.populationDensity = populationDensity;
+                this.residentialProject.gfz = gfz;
+
+                this.fallbacks.bgf = bgf;
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.residents = residents;
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.gfz = gfz;
+            }
+        },
+        updateHousholdSize (newHouseholdSize) {
+            if (this.polygonArea === 0) {
+                return;
+            }
+            const area = this.residentialProject.area,
+                livingSpace = this.residentialProject.livingSpace,
+                residents = this.residentialProject.residents,
+                gfz = this.residentialProject.gfz,
+                bgf = gfz * area,
+                householdSize = newHouseholdSize,
+                populationDensity = residents * 1000000 / area,
+                units = residents / householdSize;
+
+            if (!this.validateValues(householdSize, populationDensity, gfz, bgf, livingSpace, area)) {
+                this.residentialProject.avgHouseholdSize = this.fallbacks.avgHouseholdSize;
+            }
+            else {
+                this.residentialProject.housingUnits = units;
+                this.residentialProject.populationDensity = populationDensity;
+                this.residentialProject.bgf = bgf;
+
+                this.fallbacks.avgHouseholdSize = householdSize;
+                this.fallbacks.housingUnits = units;
+                this.fallbacks.populationDensity = populationDensity;
+                this.fallbacks.bgf = bgf;
+            }
+        },
+
+        validateValues (householdSize, populationDensity, gfz, bgf, livingSpace, area,
+            lowerBounds = {householdSize: 1.0, populationDensity: 0, gfz: 0, livingSpace: 10},
+            upperBounds = {householdSize: 6.0, populationDensity: 50000, gfz: 4.0, livingSpace: 100}
+        ) {
+            const validHouseholdSize = householdSize >= lowerBounds.householdSize && householdSize <= upperBounds.householdSize,
+                validPopulationDensity = populationDensity >= lowerBounds.populationDensity && populationDensity <= upperBounds.populationDensity,
+                validGfz = gfz >= lowerBounds.gfz && gfz <= upperBounds.gfz,
+                validBgf = bgf >= lowerBounds.gfz * area && bgf <= upperBounds.gfz * area,
+                validLivingSpace = livingSpace >= lowerBounds.livingSpace && livingSpace <= upperBounds.livingSpace;
+
+            return (
+                validHouseholdSize &&
+                validPopulationDensity &&
+                validGfz &&
+                validBgf &&
+                validLivingSpace
+            );
+
+        },
+
+        onReferencePickerActive () {
+            geomPickerUnlisten(this.$refs["geometry-picker"]);
+        }
     }
 };
 </script>
@@ -196,12 +422,12 @@ export default {
                             </v-row>
                             <v-row dense>
                                 <v-col cols="3">
-                                    <v-subheader>Zahl der Wohneinheiten</v-subheader>
+                                    <v-subheader>Wohneinheiten</v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
                                         v-model="residentialProject.housingUnits"
-                                        hint="Wohneinheiten"
+                                        hint="Anzahl der WE"
                                         min="0"
                                         :max="polygonArea / 5"
                                         @change="updateUnits"
@@ -214,6 +440,31 @@ export default {
                                                 single-line
                                                 type="number"
                                                 @change="updateUnits"
+                                            />
+                                        </template>
+                                    </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Bruttogeschossfläche (BGF)</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-slider
+                                        v-model="residentialProject.bgf"
+                                        hint="m²"
+                                        min="0"
+                                        :max="polygonArea * 4"
+                                        @change="updateBgf"
+                                    >
+                                        <template v-slot:append>
+                                            <v-text-field
+                                                v-model="residentialProject.bgf"
+                                                class="mt-0 pt-0 slider-val"
+                                                hide-details
+                                                single-line
+                                                type="number"
+                                                @change="updateBgf"
                                             />
                                         </template>
                                     </v-slider>
@@ -281,7 +532,7 @@ export default {
                                         v-model="residentialProject.populationDensity"
                                         hint="EW / km²"
                                         min="0"
-                                        max="5000"
+                                        max="50000"
                                         @change="updateDensity"
                                     >
                                         <template v-slot:append>
@@ -307,7 +558,7 @@ export default {
                                         v-model="residentialProject.livingSpace"
                                         hint="m² / EW"
                                         min="0"
-                                        max="80"
+                                        max="100"
                                         @change="updateLivingSpace"
                                     >
                                         <template v-slot:append>
@@ -324,6 +575,10 @@ export default {
                                     </v-slider>
                                 </v-col>
                             </v-row>
+                            <v-divider />
+                            <ReferenceDistrictPicker
+                                @referencePickerActive="onReferencePickerActive"
+                            />
                         </div>
                     </v-form>
                 </v-main>

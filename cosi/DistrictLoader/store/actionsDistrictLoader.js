@@ -2,7 +2,10 @@ import {WFS} from "ol/format.js";
 import {getLayerList} from "masterportalAPI/src/rawLayerList";
 import unifyString from "../../utils/unifyString";
 import MappingJson from "../../assets/mapping.json";
-import {getFeature} from "../../../../src/api/wfs/getFeature.js";
+import {getFeature, createFilter} from "../../../../src/api/wfs/getFeature.js";
+import GML3 from "ol/format/GML3";
+import GML32 from "ol/format/GML32";
+import GML2 from "ol/format/GML2";
 
 const actions = {
     /**
@@ -10,6 +13,7 @@ const actions = {
      * @param {Object} store.getters - The DistrictLoader getters.
      * @param {Object} getters.selectedDistrictLevel - The selected district level.
      * @param {Object} getters.districtLevels - All avaiable district levels.
+     * @param {Object} getters.findMappingObjectByCategory - Gets a mapping object by category.
      * @param {Object} payload - The stored features per layer.
      * @param {Number[]} payload.extent - The extent of the selected districts.
      * @param {String[]} payload.districtNameList - A list of the names of the selected districts.
@@ -17,10 +21,10 @@ const actions = {
      * @param {String[]} payload.subDistrictNameList - The district names on the lower level to avoid naming conflicts
      * @returns {module:ol/Feature[]}Returns stats features.
      */
-    loadDistricts ({commit, dispatch, getters}, payload) {
+    loadDistricts ({commit, dispatch, getters, rootGetters}, payload) {
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         dispatch("resetMapping");
-        const {selectedDistrictLevel, districtLevels} = getters,
+        const {selectedDistrictLevel, districtLevels, findMappingObjectByCategory} = getters,
             {extent, districtNameList, districtLevel, subDistrictNameList} = payload,
             level = typeof districtLevel === "undefined" ? selectedDistrictLevel : districtLevel,
             layerList = getLayerList().filter(function (layer) {
@@ -104,6 +108,42 @@ const actions = {
             dispatch("alertError");
             console.error(error);
         });
+    },
+
+    /** */
+    async getStatsByDistrict ({getters}, {districtFeature, districtLevel}) {
+        if (districtFeature.get("stats")) {
+            return districtFeature.get("stats");
+        }
+        const {stats, keyOfAttrName, keyOfAttrNameStats} = districtLevel,
+            url = stats.baseUrl,
+            {districtLevels} = getters,
+            loaderDistrictLevel = districtLevels.find(level => level.label === districtLevel.label),
+            districtName = districtFeature.get(keyOfAttrName),
+            layerList = getLayerList().filter(function (layer) {
+                return layer.url === url;
+            }),
+            filter = createFilter("PropertyIsEqualTo", keyOfAttrNameStats, districtName),
+            statsFeatures = [];
+        let parser, layer, response, statsFeature;
+
+        for (layer of layerList) {
+            parser = new WFS({
+                featureNS: layer.featureNS,
+                version: "2.0.0",
+                gmlFormat: new GML3()
+            });
+            response = await getFeature(url, layer.featureType, "2.0.0", loaderDistrictLevel.propertyNameList, undefined, filter);
+            console.log(parser, response);
+            statsFeature = parser.readFeatures(response);
+            statsFeatures.push(statsFeature);
+            console.log(WFS, GML2, GML3, GML32);
+            console.log(statsFeature);
+        }
+
+        console.log(statsFeatures);
+
+        return statsFeature;
     },
 
     alertError ({dispatch}) {
@@ -210,16 +250,5 @@ const actions = {
         state.mapping = MappingJson;
     }
 };
-
-/**
- * finds a mapping object by its category
- * @param {string} value - category of the mapping object
- * @returns {object} the mapping object
- */
-function findMappingObjectByCategory (value) {
-    return MappingJson.find(obj => {
-        return obj.category === value;
-    });
-}
 
 export default actions;

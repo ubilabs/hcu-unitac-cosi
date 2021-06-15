@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import store from "../../../../src/app-store";
@@ -22,7 +23,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
     initialize: function () {
         store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
             if (extent.length > 0) {
-                this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllCategories"]);
+                this.setDropDownModel(store.getters["Tools/DistrictLoader/"]);
                 this.set("districtFeatures", store.getters["Tools/DistrictSelector/selectedFeatures"]);
             }
             else {
@@ -38,7 +39,7 @@ const LayerModel = Backbone.Model.extend(/** @lends LayerModel.prototype */{
         });
 
         // load list initially for statgebiet and rerender on scope change
-        this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllCategories"]);
+        this.setDropDownModel(store.getters["Tools/DistrictLoader/mapping"]);
     },
 
     /**
