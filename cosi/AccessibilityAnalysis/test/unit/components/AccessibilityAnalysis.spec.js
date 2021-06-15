@@ -2,7 +2,8 @@ import Vuex from "vuex";
 import {
     config,
     shallowMount,
-    createLocalVue
+    createLocalVue,
+    createWrapper
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
 import AccessibilityAnalysis from "../../../store/index";
@@ -97,7 +98,8 @@ describe("AccessibilityAnalysis.vue", () => {
                     namespaced: true,
                     getters: {
                         map: () => ({
-                            addEventListener: () => sinon.stub()
+                            addEventListener: () => sinon.stub(),
+                            removeEventListener: () => sinon.stub()
                         })
                     },
                     actions: {
@@ -168,9 +170,8 @@ describe("AccessibilityAnalysis.vue", () => {
             });
     });
 
-    it("trigger button with user input no layer selected", async () => {
-        const wrapper = await mount([]),
-            stub = sandbox.stub(Radio, "trigger");
+    it("trigger button with user input and point selected", async () => {
+        const wrapper = await mount([])
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -192,6 +193,30 @@ describe("AccessibilityAnalysis.vue", () => {
         sinon.assert.callCount(sourceStub.clear, 2);
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("000");
     });
+
+    it("trigger button requestInhabitants", async () => {
+        const wrapper = await mount([])
+        const rootWrapper = createWrapper(wrapper.vm.$root)
+
+        await wrapper.setData({
+            coordinate: "10.155828082155567, 53.60323024735499",
+            transportType: "Auto",
+            scaleUnit: "time",
+            distance: 10
+        });
+
+        await wrapper.find("#create-isochrones").trigger("click");
+
+        // need two ticks for all changes to propagate
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+        await wrapper.find("#requestInhabitants").trigger("click");
+
+        expect(wrapper.vm.active).to.be.false
+        expect(rootWrapper.emitted('populationRequest')).to.exist
+    });
+
 
     it("trigger button with user input and region selected", async () => {
         const wrapper = await mount(layersMock);

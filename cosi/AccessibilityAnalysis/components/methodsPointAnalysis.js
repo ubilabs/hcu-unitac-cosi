@@ -380,20 +380,6 @@ export default {
             }
         }
     },
-    /**
-     * requests inhabitant calculation function
-     * @returns {void}
-     */
-    requestInhabitants: function () {
-        // TODO
-        Radio.trigger(
-            "GraphicalSelect",
-            "onDrawEnd",
-            this.rawGeoJson,
-            "einwohnerabfrage",
-            true
-        );
-    },
     getFeatureColors: function () {
         return [
             "rgba(200, 0, 3, 0.1)",
