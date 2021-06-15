@@ -47,7 +47,8 @@ const openRouteService = Backbone.Model.extend(/** @lends openRouteService.proto
                 else {
                     reject({
                         status: this.status,
-                        statusText: xhr.statusText
+                        statusText: xhr.statusText,
+                        response: xhr.response
                     });
                 }
             };
