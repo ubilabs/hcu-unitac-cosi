@@ -3,7 +3,7 @@ import {
 } from "chai";
 import OpenRouteService from "../modules/openRouteService/model";
 
-describe("openRouteService.vue", () => {
+describe("openRouteService", () => {
     it("point request within hamburg", async () => {
         new OpenRouteService();
         const res = await Radio.request(

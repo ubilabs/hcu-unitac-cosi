@@ -5,7 +5,7 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
-import methods from "./methodsPointAnalysis";
+import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 
 export default {
