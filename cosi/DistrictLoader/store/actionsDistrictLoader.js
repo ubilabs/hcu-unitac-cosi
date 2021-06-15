@@ -2,10 +2,9 @@ import {WFS} from "ol/format.js";
 import {getLayerList} from "masterportalAPI/src/rawLayerList";
 import unifyString from "../../utils/unifyString";
 import MappingJson from "../../assets/mapping.json";
-import {getFeature, createFilter} from "../../../../src/api/wfs/getFeature.js";
-import GML3 from "ol/format/GML3";
-import GML32 from "ol/format/GML32";
-import GML2 from "ol/format/GML2";
+import {getFeature, getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {equalTo} from "ol/format/filter";
+import prepareStatsFeatures from "../utils/prepareStatsFeatures";
 
 const actions = {
     /**
@@ -21,10 +20,10 @@ const actions = {
      * @param {String[]} payload.subDistrictNameList - The district names on the lower level to avoid naming conflicts
      * @returns {module:ol/Feature[]}Returns stats features.
      */
-    loadDistricts ({commit, dispatch, getters, rootGetters}, payload) {
+    loadDistricts ({commit, dispatch, getters}, payload) {
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         dispatch("resetMapping");
-        const {selectedDistrictLevel, districtLevels, findMappingObjectByCategory} = getters,
+        const {selectedDistrictLevel, districtLevels} = getters,
             {extent, districtNameList, districtLevel, subDistrictNameList} = payload,
             level = typeof districtLevel === "undefined" ? selectedDistrictLevel : districtLevel,
             layerList = getLayerList().filter(function (layer) {
@@ -40,15 +39,10 @@ const actions = {
                 .then(response => {
                     return wfsReader.readFeatures(response);
                 })
-                // mapping feature kategorie value
                 .then(features => {
-                    features.forEach(function (feature) {
-                        const mappingObject = findMappingObjectByCategory(feature.get("kategorie"));
+                    // mapping feature kategorie value
+                    features.forEach(prepareStatsFeatures);
 
-                        feature.unset("geom"); // fallback for accidentially loaded geometries
-                        feature.set("kategorie", mappingObject.value);
-                        feature.set("group", mappingObject.group);
-                    });
                     if (features.length > 0) {
                         layer.category = features[0].get("kategorie");
                     }
@@ -110,40 +104,55 @@ const actions = {
         });
     },
 
-    /** */
-    async getStatsByDistrict ({getters}, {districtFeature, districtLevel}) {
+    /**
+     * @param {Object} store.getters - The DistrictLoader getters.
+     * @param {Function} store.rootGetters - The root store getters.
+     * @param {Function} store.dispatch - Function to dispatch a action.
+     * @param {Object} payload - The stored features per layer.
+     * @param {Number[]} payload.districtFeature - The district to fetch data for.
+     * @param {String[]} payload.districtLevel - The administrative level the district belongs to.
+     * @returns {module:ol/Feature[]} Returns stats features.
+     */
+    async getStatsByDistrict ({getters, rootGetters, dispatch}, {districtFeature, districtLevel}) {
+        // Return stats if already stored
         if (districtFeature.get("stats")) {
             return districtFeature.get("stats");
         }
+        /**
+         * @deprecated
+         * @todo refactor when Radio removed
+        */
+        Radio.trigger("Util", "showLoader");
+
         const {stats, keyOfAttrName, keyOfAttrNameStats} = districtLevel,
-            url = stats.baseUrl,
             {districtLevels} = getters,
+            url = stats.baseUrl,
+            srsName = rootGetters["Map/projectionCode"],
             loaderDistrictLevel = districtLevels.find(level => level.label === districtLevel.label),
             districtName = districtFeature.get(keyOfAttrName),
-            layerList = getLayerList().filter(function (layer) {
-                return layer.url === url;
+            typeNames = getLayerList().reduce((featureTypes, layer) => {
+                return layer.url === url ? [...featureTypes, layer.featureType] : featureTypes;
+            }, []),
+            filter = equalTo(keyOfAttrNameStats, districtName),
+            result = await getFeaturePost(url, {
+                typeNames,
+                srsName,
+                propertyNames: loaderDistrictLevel.propertyNameList.split(","),
+                filter
             }),
-            filter = createFilter("PropertyIsEqualTo", keyOfAttrNameStats, districtName),
-            statsFeatures = [];
-        let parser, layer, response, statsFeature;
+            statsFeatures = new WFS().readFeatures(result);
 
-        for (layer of layerList) {
-            parser = new WFS({
-                featureNS: layer.featureNS,
-                version: "2.0.0",
-                gmlFormat: new GML3()
-            });
-            response = await getFeature(url, layer.featureType, "2.0.0", loaderDistrictLevel.propertyNameList, undefined, filter);
-            console.log(parser, response);
-            statsFeature = parser.readFeatures(response);
-            statsFeatures.push(statsFeature);
-            console.log(WFS, GML2, GML3, GML32);
-            console.log(statsFeature);
-        }
+        // map category names
+        statsFeatures.forEach(prepareStatsFeatures);
+        dispatch("appendStatsToDistricts", {statsFeatures, districtFeatures: districtLevel.layer.getSource().getFeatures()});
 
-        console.log(statsFeatures);
+        /**
+         * @deprecated
+         * @todo refactor when Radio removed
+        */
+        Radio.trigger("Util", "hideLoader");
 
-        return statsFeature;
+        return statsFeatures;
     },
 
     alertError ({dispatch}) {
@@ -163,16 +172,17 @@ const actions = {
      * @param {Object} context.rootGetters - the root store's getters
      * @param {Object} context.rootGetters.keyOfAttrName - the key for the attribute "name" of the districts in the map
      * @param {Object} context.rootGetters.selectedFeatures - the currently selected map features
-     * @param {Object[]} statsFeatures - the loaded stats features for the current districtLevel
+     * @param {module:ol/Feature[]} statsFeatures - the loaded stats features for the current districtLevel
+     * @param {module:ol/Feature[]} [districtFeatures] - the district features in the map, DistrictSelector's selected features if undefined
      * @returns {void}
      */
-    appendStatsToDistricts ({getters, rootGetters}, statsFeatures) {
+    appendStatsToDistricts ({getters, rootGetters}, {statsFeatures, districtFeatures}) {
         const keyOfAttrNameStats = getters.selectedDistrictLevel.keyOfAttrName,
             keyOfAttrName = rootGetters["Tools/DistrictSelector/keyOfAttrName"],
-            districtFeatures = rootGetters["Tools/DistrictSelector/selectedFeatures"];
+            _districtFeatures = districtFeatures || rootGetters["Tools/DistrictSelector/selectedFeatures"];
 
         statsFeatures.forEach(feature => {
-            const district = districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
+            const district = _districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
 
             if (district) {
                 district.set("stats", {...district.get("stats") || {}, [feature.get("kategorie")]: feature});
