@@ -86,6 +86,11 @@ export default {
         this.mapLayer.setVisible(true);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
+
+        this.$root.$on("updateFeature", (featureItem) => {
+            console.log(featureItem);
+            this.createIsochrones();
+        });
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
