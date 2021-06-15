@@ -93,6 +93,11 @@ export default {
             this.makeRequest(geoJson);
         });
 
+        this.$root.$on("populationRequest", (geoJson) => {
+            this.setActive(true);
+            this.makeRequest(geoJson);
+        });
+
         const service = Radio.request("RestReader", "getServiceById", this.populationReqServiceId);
 
         if (service !== undefined) {

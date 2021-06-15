@@ -2,12 +2,10 @@
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import Dropdown from "../../../../src/share-components/dropdowns/DropdownSimple.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
-import ReachabilityResult from "./ReachabilityResult.vue";
 import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
-import createLayer from "../../utils/createLayer";
 import * as Proj from "ol/proj.js";
 
 export default {
@@ -15,7 +13,6 @@ export default {
     components: {
         Tool,
         Dropdown,
-        ReachabilityResult,
         VueSelect
     },
     data () {
@@ -27,18 +24,18 @@ export default {
             setBySearch: false,
             transportType: "",
             transportTypes: {
-                "": "-Leeren-",
-                "driving-car": "Auto",
-                "cycling-regular": "Rad",
-                "cycling-electric": "Rad (elektrisch)",
-                "foot-walking": "Gehen",
-                wheelchair: "Rollstuhl"
+                "": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.clear"),
+                "driving-car": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.driving-car"),
+                "cycling-regular": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular"),
+                "cycling-electric": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric"),
+                "foot-walking": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking"),
+                wheelchair: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.wheelchair")
             },
             scaleUnit: "",
             scaleUnits: {
-                "": "-Leeren-",
-                time: "Zeit (in min)",
-                distance: "Entfernung (in m)"
+                "": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.clear"),
+                time: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.time"),
+                distance: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
             },
             distance: "",
             rawGeoJson: null,
@@ -71,8 +68,8 @@ export default {
         }
     },
     /**
-     * @returns {void}
-     */
+    * @returns {void}
+    */
     created () {
         this.$on("close", this.close);
         Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
@@ -81,10 +78,10 @@ export default {
    * Put initialize here if mounting occurs after config parsing
    * @returns {void}
    */
-    mounted () {
+    async mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = createLayer("reachability-from-point");
+        this.mapLayer = await this.createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
@@ -95,6 +92,7 @@ export default {
         ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
+        ...mapActions("Map", ["createLayer"]),
         ...methods,
 
         resetMarkerAndZoom: function () {
@@ -105,9 +103,9 @@ export default {
         },
 
         /**
-     * Closes this tool window by setting active to false
-     * @returns {void}
-     */
+        * Closes this tool window by setting active to false
+        * @returns {void}
+        */
         close () {
             this.setActive(false);
 
@@ -122,10 +120,10 @@ export default {
             }
         },
         /**
-     * set facilityNames in model, trigger renderDropDownView
-     * @param {Object} models layer models of updated selected layer
-     * @returns {void}
-     */
+        * set facilityNames in model, trigger renderDropDownView
+        * @param {Object} models layer models of updated selected layer
+        * @returns {void}
+        */
         setFacilityLayers: function (models) {
             const facilityLayerModels = models.filter(
                     (model) => model.get("isFacility") === true
@@ -134,6 +132,14 @@ export default {
                 );
 
             this.facilityNames = facilityNames;
+        },
+        /**
+        * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
+        * @returns {void}
+        */
+        requestInhabitants: function () {
+            this.close();
+            this.$root.$emit("populationRequest", this.rawGeoJson);
         }
     }
 };
@@ -169,7 +175,7 @@ export default {
                             v-if="mode === 'point'"
                             class="form-group"
                         >
-                            <label class="col-sm-3">Referenzpunkt</label>
+                            <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference") }}</label>
                             <div class="col-sm-9">
                                 <input
                                     id="coordinate"
@@ -185,7 +191,7 @@ export default {
                             v-if="mode === 'region'"
                             class="form-group"
                         >
-                            <label class="col-sm-3">Thema</label>
+                            <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.topic") }}</label>
                             <div class="col-sm-9">
                                 <VueSelect
                                     v-model="selectedFacilityName"
@@ -197,7 +203,7 @@ export default {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3">Verkehrsmittel</label>
+                            <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.transportType") }}</label>
                             <div class="col-sm-9">
                                 <Dropdown
                                     v-model="transportType"
@@ -207,7 +213,7 @@ export default {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3">Maßeinheit der Entfernung</label>
+                            <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit") }}</label>
                             <div class="col-sm-9">
                                 <Dropdown
                                     v-model="scaleUnit"
@@ -217,7 +223,7 @@ export default {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3">Entfernung</label>
+                            <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.distance") }}</label>
                             <div class="col-sm-9">
                                 <input
                                     id="range"
@@ -237,7 +243,7 @@ export default {
                                     class="btn btn-lgv-grey"
                                     @click="createIsochrones()"
                                 >
-                                    Berechnen
+                                    {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                 </button>
                             </div>
                             <div class="col-sm-1">
@@ -254,7 +260,7 @@ export default {
                             >
                                 <div
                                     id="clear"
-                                    title="Lösche aktuelles Ergebnis"
+                                    :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.clear')"
                                 >
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </div>
@@ -262,7 +268,7 @@ export default {
                         </div>
                     </form>
                     <hr />
-                    <h5><strong>Legende: </strong></h5>
+                    <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
                     <div id="legend">
                         <template v-for="(j, i) in steps">
                             <svg
@@ -286,50 +292,15 @@ export default {
                     </div>
                     <div v-if="mode === 'point'">
                         <button
-                            id="show-result"
-                            type="button"
-                            class="btn btn-lgv-grey measure-delete update-result-button"
-                            @click="updateResult"
-                        >
-                            <span class="glyphicon glyphicon-th-list"></span>Einrichtungsabdeckung
-                        </button>
-                        <div
-                            v-if="layers"
-                            id="result"
-                            ref="result"
-                        >
-                            <ReachabilityResult :layers="layers" />
-                            <table>
-                                <tr>
-                                    <td>
-                                        <button
-                                            class="btn btn-lgv-grey measure-delete isochrone-origin"
-                                            @click="resetMarkerAndZoom"
-                                        >
-                                            zoom
-                                        </button>
-                                    </td>
-                                    <td id="dashboard-container">
-                                        <button
-                                            id="show-in-dashboard"
-                                            type="button"
-                                            class="btn btn-lgv-grey measure-delete"
-                                            @click="showInDashboard"
-                                        >
-                                            Im Dashboard anzeigen
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <button
                             v-if="showRequestButton"
                             class="btn btn-lgv-grey measure-delete"
                             @click="requestInhabitants"
                         >
-                            <span class="glyphicon glyphicon-user"></span>Einwohnerabfrage für den
-                            Bereich
+                            <span
+                                id="requestInhabitants"
+                                class="glyphicon glyphicon-user"
+                            />
+                            {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
                         </button>
                     </div>
                 </div>
@@ -348,8 +319,5 @@ export default {
 }
 .dropdown-info {
   margin-bottom: 5px;
-}
-.update-result-button {
-  margin-top: 10px;
 }
 </style>
