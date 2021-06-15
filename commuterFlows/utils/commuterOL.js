@@ -169,7 +169,9 @@ export class CommuterOL {
         const crnl = "\n";
 
         // add center caption
-        this.ol.addFeature(this.layers.captions, this.getFeatureCaption(centerCaption, centerCoordinate));
+        if (showCaption) {
+            this.ol.addFeature(this.layers.captions, this.getFeatureCaption(centerCaption, centerCoordinate));
+        }
 
         // add leaf captions and numbers
         featureList.forEach(feature => {

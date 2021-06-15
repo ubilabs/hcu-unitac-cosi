@@ -5,7 +5,6 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-// import store from "../../../../src/app-store";
 import Info from "text-loader!./info.html";
 
 export default {
@@ -58,7 +57,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
         ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        ...mapGetters("Tools/CalculateRatio", ["dataToCCM", "ccmDataSet"]),
+        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"])
     },
     watch: {
         selectedFeatures () {
@@ -71,7 +70,7 @@ export default {
             }
         },
         visualizationState () {
-            if (!this.dataToCCM) {
+            if (!this.dataToColorCodeMap) {
                 this.renderVisualization();
             }
         },
@@ -91,16 +90,17 @@ export default {
         showMapNames () {
             this.renderVisualization();
         },
-        dataToCCM (newState) {
+        dataToColorCodeMap (newState) {
             if (newState) {
-                this.renderCCData();
-            } else {
+                this.renderDataFromCalculateRatio();
+            }
+            else {
                 this.$store.commit("Tools/ColorCodeMap/setVisualizationState", false);
             }
         },
-        ccmDataSet () {
-            if (this.dataToCCM) {
-                this.renderCCData();
+        colorCodeMapDataSet () {
+            if (this.dataToColorCodeMap) {
+                this.renderDataFromCalculateRatio();
             }
         }
     },
@@ -117,7 +117,6 @@ export default {
          */
         updateSelectedDistricts () {
             this.featuresList = [];
-            this.graphData = [];
             if (this.currentStatsFeatures.length) {
                 this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
                 this.updateFeaturesList();
@@ -179,8 +178,8 @@ export default {
          * @returns {void}
          */
         renderVisualization () {
+            this.graphData = [];
             if (this.visualizationState) {
-                this.graphData = [];
                 const results = this.currentStatsFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
@@ -272,13 +271,13 @@ export default {
          * @description Renders data on map from CalculateRatio Component.
          * @returns {void}
          */
-        renderCCData () {
+        renderDataFromCalculateRatio () {
             if (!this.visualizationState) {
                 // this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
                 this.setVisualizationState(true);
             }
 
-            const resultValues = this.ccmDataSet.map(x => {
+            const resultValues = this.colorCodeMapDataSet.map(x => {
                     return x.data;
                 }),
                 colorScale = this.getColorsByValues(resultValues);
@@ -286,7 +285,7 @@ export default {
             // todo generate Legend for CC Data
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
-                    matchResults = this.ccmDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+                    matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -398,7 +397,7 @@ export default {
         },
         /**
          * @description Shows component info as popup.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
         showInfo () {
             this.addSingleAlert({
@@ -426,15 +425,16 @@ export default {
         },
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
-        loadToCg () {
+        loadToChartGenerator () {
             const graphObj = {
                 id: "ccm",
                 name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart"],
                 color: "blue",
-                source: "ColorCodeMap",
+                source: "Kartenvisualisierungswerkzeug",
+                scaleLabels: [this.selectedFeature, "Jahre"],
                 data: {
                     labels: [],
                     dataSets: []
@@ -442,15 +442,17 @@ export default {
             };
 
             this.availableYears.forEach(year => {
-                graphObj.data.labels.unshift(year);
+                graphObj.data.labels.push(year);
             });
 
             this.graphData.forEach(dataSet => {
-                graphObj.data.dataSets.unshift(dataSet);
+                dataSet.data.reverse();
+                graphObj.data.dataSets.push(dataSet);
             });
 
+            graphObj.data.labels.reverse();
+
             this.setNewChartDataSet(graphObj);
-            this.graphData = [];
         }
     }
 };
@@ -471,6 +473,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
+                        title="Maximieren/ Minimieren"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
@@ -483,6 +486,7 @@ export default {
                     <button
                         class="switch"
                         :class="{ highlight: !visualizationState }"
+                        title="Visualisierung an/ aus"
                         @click="toggleVisualizationState()"
                     >
                         <span
@@ -496,12 +500,14 @@ export default {
                     </button>
                     <button
                         class="prev btn btn-default btn-sm"
+                        title="Vorherigen Datensatz auswählen"
                         @click="changeSelector(-1)"
                     >
                         <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
                     <button
                         class="next btn btn-default btn-sm"
+                        title="Nächsten Datensatz auswählen"
                         @click="changeSelector(1)"
                     >
                         <span class="glyphicon glyphicon-chevron-right"></span>
@@ -597,7 +603,8 @@ export default {
         <div class="hovermenu">
             <div class="btn_grp">
                 <button
-                    class="info_button>"
+                    class="info_button"
+                    title="Werkzeuginformationen"
                     @click="showInfo()"
                 >
                     <span class="glyphicon glyphicon-question-sign"></span>
@@ -609,6 +616,7 @@ export default {
                     <button
                         class="play_button"
                         :class="{highlight: playState}"
+                        title="Visualisierung über die Jahre animieren"
                         @click="playState = !playState"
                     >
                         <template v-if="!playState">
@@ -624,15 +632,15 @@ export default {
                     />
                 </div>
                 <button
-                    v-if="visualizationState && !minimize"
                     class="graph_button"
-                    @click="loadToCg()"
+                    title="Graph aus Datensatz erzeugen"
+                    @click="loadToChartGenerator()"
                 >
                     <span class="glyphicon glyphicon-stats"></span>
                 </button>
                 <button
-                    v-if="visualizationState && !minimize"
                     class="map_button"
+                    title="Gebietsnamen ein-/ ausblenden"
                     @click="showMapNames = !showMapNames"
                 >
                     <span class="glyphicon glyphicon-map-marker"></span>
@@ -962,6 +970,15 @@ export default {
         }
 
         &.minimized {
+            .hovermenu {
+                width:120px;
+                .btn_grp {
+                    button {
+                        margin:2px;
+                    }
+                }
+            }
+
             .legend {
                 margin:0;
                 display:none;

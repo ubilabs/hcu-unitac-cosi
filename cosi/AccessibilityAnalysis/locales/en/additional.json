@@ -1,8 +1,35 @@
 {
     "modules": {
         "tools": {
-            "accessibilityAnalysis": {
-                "title": "Accessibility Analysis"
+            "cosi": {
+                "accessibilityAnalysis": {
+                    "title": "Accessibility Analysis",
+                    "dropdownInfo": "Please choose the mode you want to work with:",
+                    "pointOfReference": "Point of reference",
+                    "topic": "Topic",
+                    "transportType": "Type of transportation",
+                    "transportTypes": {
+                        "clear": "-clear-",
+                        "driving-car": "Car",
+                        "cycling-regular": "Bicycle",
+                        "cycling-electric": "Bicycle (electric)",
+                        "foot-walking": "Walking",
+                        "wheelchair": "Wheelchair"
+                    },
+                    "scaleUnit": "Unit of distance",
+                    "scaleUnits": {
+                        "clear": "-clear-",
+                        "time": "Time (in min)",
+                        "distance": "Distance (in m)"
+                    },
+                    "distance": "Distance",
+                    "calculate": "Calculate",
+                    "clear": "Clear current result",
+                    "legend": "Legend:",
+                    "requestInhibitants": "Request inhibitants for the area",
+                    "inputReminder": "Please fill out all input fields.",
+                    "showError": "The request could not be executed correctly. Please verify all inputs."
+                }
             }
         }
     }

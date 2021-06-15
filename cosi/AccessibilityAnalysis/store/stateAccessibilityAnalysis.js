@@ -33,7 +33,7 @@ const state = {
     availableModes: {
         point: "Erreichbarkeit ab einem Referenzpunkt",
         region: "Erreichbarkeit im Gebiet"
-    },
+    }
 };
 
 export default state;

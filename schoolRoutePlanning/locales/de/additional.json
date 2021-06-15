@@ -1,0 +1,23 @@
+{
+    "modules": {
+        "tools": {
+            "schoolRoutePlanning": {
+                "title": "Schulweg",
+                "inputPlaceHolder": "Startadresse",
+                "regionalPrimarySchool": "Regional zuständige Grundschule: ",
+                "selectSchool": "Schule auswählen",
+                "printRouteName": "Route drucken",
+                "deleteRoute": "Route löschen",
+                "noSchoolFound": "Keine Schule gefunden!",
+                "showRouteDescription": "Routenbeschreibung einblenden",
+                "hideRouteDescription": "Routenbeschreibung ausblenden",
+                "totalLength": "Die Gesamtlänge beträgt",
+                "from": "von:",
+                "to": "nach:",
+                "wpsError": "Routing kann nicht durchgeführt werden.<br>Bitte versuchen Sie es später erneut (Status: {{status}}).",
+                "responseError": "<b>Entschuldigung</b><br>Routing konnte nicht berechnet werden, mit folgender Fehlermeldung:<br><br><i>{{errorMessage}}</i><br><br>Bitte wenden Sie sich mit dieser Fehlermeldung an den Administrator.",
+                "transportNetwork": "HVV Verkehrsnetz"
+            }
+        }
+    }
+}

@@ -5,6 +5,7 @@
 */
 export default function calculateRatio (dataArray, year) {
     const results = [];
+
     dataArray.forEach(dataSet => {
         const calcObj = {
                 scope: dataSet.name,
@@ -25,8 +26,8 @@ export default function calculateRatio (dataArray, year) {
 */
 function calculateSingle (calcObj, dataSet) {
     const relation = calcObj.paramA_val / calcObj.paramB_val,
-        capacity = calcObj.paramA_val * (dataSet.faktorF_B / dataSet.faktorF_A),
-        need = calcObj.paramB_val * (dataSet.faktorF_A / dataSet.faktorF_B),
+        capacity = calcObj.paramA_val * (dataSet.faktorf_B / dataSet.faktorf_A),
+        need = calcObj.paramB_val * (dataSet.faktorf_A / dataSet.faktorf_B),
         coverageA = (calcObj.paramA_val / need) * dataSet.perCalc_B,
         coverageB = (calcObj.paramB_val / need) * dataSet.perCalc_A,
         weightedRelation = relation * (dataSet.perCalc_A / dataSet.perCalc_B);
@@ -47,8 +48,8 @@ function calculateSingle (calcObj, dataSet) {
 */
 function calculateTotals (results) {
     const dataHelpers_total = {
-            faktorF_A: results[0].data.faktorF_A,
-            faktorF_B: results[0].data.faktorF_B,
+            faktorf_A: results[0].data.faktorf_A,
+            faktorf_B: results[0].data.faktorf_B,
             perCalc_A: results[0].data.perCalc_A,
             perCalc_B: results[0].data.perCalc_B,
             incompleteDataSets_A: results.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
@@ -63,19 +64,19 @@ function calculateTotals (results) {
         },
         total = calculateSingle(resultsTotal, dataHelpers_total),
         dataHelpers_avg = {
-            faktorF_A: results[0].data.faktorF_A,
-            faktorF_B: results[0].data.faktorF_B,
+            faktorf_A: results[0].data.faktorf_A,
+            faktorf_B: results[0].data.faktorf_B,
             perCalc_A: results[0].data.perCalc_A,
             perCalc_B: results[0].data.perCalc_B,
             incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / results.length,
             incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / results.length,
             dataSets_A: resultsTotal.data.dataSets_A / results.length,
-            dataSets_B: resultsTotal.data.dataSets_B / results.length,
+            dataSets_B: resultsTotal.data.dataSets_B / results.length
         },
         resultsAverage = {
             scope: "Durchschnitt",
             paramA_val: resultsTotal.paramA_val / results.length,
-            paramB_val: resultsTotal.paramB_val / results.length,
+            paramB_val: resultsTotal.paramB_val / results.length
         },
         avg = calculateSingle(resultsAverage, dataHelpers_avg);
 

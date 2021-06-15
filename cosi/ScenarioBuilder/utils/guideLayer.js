@@ -1,4 +1,4 @@
-import {Stroke, Style, Text} from "ol/style.js";
+import {Stroke, Fill, Style, Text} from "ol/style.js";
 import Feature from "ol/Feature";
 import VectorLayer from "ol/layer/Vector";
 
@@ -10,10 +10,13 @@ import VectorLayer from "ol/layer/Vector";
 export function featureTagStyle (feature) {
     return new Style({
         text: new Text({
-            font: "18px bold sans-serif",
+            font: "32px bold sans-serif",
+            fill: new Fill({
+                color: "#FC176B"
+            }),
             stroke: new Stroke({
-                width: 3,
-                color: "#fff"
+                width: 4,
+                color: "#000"
             }),
             text: "*",
             offsetX: 10,
@@ -27,17 +30,27 @@ export function featureTagStyle (feature) {
  * adds a new feature to the guidelayer to highlight simulated features
  * @param {module:ol/Feature} feature - the original scenario feature
  * @param {module:ol/Layer/Vector} layer - the drawing layer of the scenario builder
- * @returns {void}
+ * @param {module:ol/Layer/Vector} featureLayer - the layer the original feature belongs to
+ * @returns {module:ol/Feature | null} the feature of the tag
  */
-export function addSimulationTag (feature, layer) {
+export function addSimulationTag (feature, layer, featureLayer) {
     if (!(feature.constructor === Feature && layer.constructor === VectorLayer)) {
         console.warn(`addSimulationTag: Layer must be of type "ol/Layer/Vector", got ${layer.constructor}. Feature must be of type "ol/Feature, got ${feature.constructor}`);
-        return;
+        return null;
     }
     const source = layer.getSource(),
         clonedFeature = feature.clone();
 
+    // give the simulation tag the identical ID as the referenced feature for retrieval
+    clonedFeature.setId(feature.getId());
+    // link their geometries (works only if the original layer is NOT clustered)
+    clonedFeature.setGeometry(feature.getGeometry());
+    // link the original layer for later use
+    clonedFeature.set("featureLayer", featureLayer);
+
     source.addFeature(clonedFeature);
+
+    return clonedFeature;
 }
 
 /**
@@ -51,8 +64,6 @@ export function removeSimulationTag (feature, layer) {
         console.warn(`removeSimulationTag: Layer must be of type "ol/Layer/Vector", got ${layer.constructor}. Feature must be of type "ol/Feature, got ${feature.constructor}`);
         return;
     }
-    console.log(feature.getId(), feature);
-    console.log(layer.getSource());
     const source = layer.getSource(),
         clonedFeature = source.getFeatureById(feature?.getId());
 
@@ -72,4 +83,25 @@ export function clearGuideLayer (layer) {
         return;
     }
     layer.getSource().clear();
+}
+
+/**
+ * Shows or hides tags according to layer visibility
+ * @todo refactor
+ * @param {*} guideLayer - the guide layer hosting the tags
+ * @param {*} activeLayers - the active vector layer list of the map
+ * @returns {void}
+ */
+export function toggleTagsOnLayerVisibility (guideLayer, activeLayers) {
+    const tags = guideLayer.getSource().getFeatures(),
+        unsetStyle = new Style();
+
+    for (const tag of tags) {
+        if (activeLayers.includes(tag.get("featureLayer"))) {
+            tag.setStyle();
+        }
+        else {
+            tag.setStyle(unsetStyle);
+        }
+    }
 }

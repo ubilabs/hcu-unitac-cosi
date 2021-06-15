@@ -6,13 +6,17 @@ import mutations from "../store/mutationsCalculateRatio";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
 import JsonExcel from "vue-json-excel";
+import DataTable from "./DataTable.vue";
+import Info from "text-loader!./info.html";
+import {exportAsGeoJson} from "../utils/exportResults";
 
 export default {
     name: "CalculateRatio",
     components: {
         Tool,
         Multiselect,
-        JsonExcel
+        JsonExcel,
+        DataTable
     },
     data () {
         return {
@@ -167,8 +171,8 @@ export default {
             });
         },
         visualizationState (newState) {
-            if(!newState) {
-                this.$store.commit("Tools/CalculateRatio/setDataToCCM", false);
+            if (!newState) {
+                this.$store.commit("Tools/CalculateRatio/setDataToColorCodeMap", false);
             }
         }
     },
@@ -186,7 +190,7 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
+        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @returns {void}
@@ -304,9 +308,19 @@ export default {
             }
         },
         /**
+         * @description Shows component info as popup.
+         * @returns {Void} Function returns nothing.
+         */
+        showInfo () {
+            this.addSingleAlert({
+                category: "Info",
+                content: Info
+            });
+        },
+        /**
          * @description Checks if the user selected a summable statistical data set (feature).
          * @param {String} letter String that determines which field is to be modified (A or B for FieldA or FieldB).
-         * @returns {void}
+         * @returns {void} Function returns nothing.
          */
         checkSumUp (letter) {
             if (!this[letter + "Switch"]) {
@@ -398,11 +412,31 @@ export default {
             }
         },
         /**
-         * @description Fires when user hits calulcate button. Prepares data sets for calculation.
+         * @description Fires when user hits calulcate button. Prepares data sets for calculation. Triggers coverageFunction twice.
          * @returns {void}
          */
         prepareCoverage () {
             this.results = [];
+            const allData = [],
+
+                dataArray_A = this.coverageFunction("A"),
+                dataArray_B = this.coverageFunction("B");
+
+            dataArray_A.forEach((obj_A) => {
+                const obj_B = dataArray_B.find(obj => obj.name === obj_A.name),
+                    combined = {...obj_A, ...obj_B};
+
+                allData.push(combined);
+            });
+
+            this.results = utils.calculateRatio(allData, this.selectedYear);
+        },
+        /**
+         * @description Fires when user hits calulcate button. Prepares data sets for calculation.
+         * @param {String} letter "A" or "B" for selectedFieldA or selectedFieldB.
+         * @returns {Array} dataArray -> Array containing all collected data for all selected districts.
+         */
+        coverageFunction (letter) {
             const dataArray = [];
 
             this.selectedFeatures.forEach(district => {
@@ -411,29 +445,30 @@ export default {
 
                 this.calcHelper = {};
                 this.calcHelper.name = name;
-                this.calcHelper.faktorF_A = this.faktorf_A;
-                this.calcHelper.faktorF_B = this.faktorf_B;
-                this.calcHelper.perCalc_A = this.perCalc_A;
-                this.calcHelper.perCalc_B = this.perCalc_B;
-                if (this.ASwitch) {
-                    const findLayer = this.layerList.find(layer => layer.get("name") === this.selectedFieldA.id),
+                this.calcHelper["faktorf_" + letter] = this["faktorf_" + letter];
+                this.calcHelper["perCalc_" + letter] = this["perCalc_" + letter];
+                if (this[letter + "Switch"]) {
+                    const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = findLayer.getSource().getFeatures();
 
-                    this.calcHelper.type_A = "facility";
+                    this.calcHelper["type_" + letter] = "facility";
                     this.featureVals = [];
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
+                    layerFeatures.forEach(feature => {
+                        const layerGeometry = feature.getGeometry().getExtent();
 
                         if (geometry.intersectsExtent(layerGeometry)) {
                             if (this.paramFieldA.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldA.id]) {
-                                    const value = layer.getProperties()[this.paramFieldA.id],
-                                        valueTransformed = parseFloat(value.replace(/\D/g, ""));
+                                if (
+                                    typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
+                                    typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
+                                ) {
+                                    const value = feature.getProperties()[this["paramField" + letter].id],
+                                        valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
 
                                     this.featureVals.push(valueTransformed);
                                 }
                                 else {
-                                    this.featureVals.push("avg");
+                                    this.featureVals.push("");
                                 }
                             }
                             else {
@@ -442,29 +477,30 @@ export default {
                         }
                     });
 
+                    // eslint-disable-next-line
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
-                    if(checkForLackingData === "error"){
-                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
+                    if (checkForLackingData === "error") {
+                        this.showAlert("Warnung für das Gebiet: " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
                         return;
                     }
 
-                    this.calcHelper.paramA_count = this.featureVals.length;
-                    this.calcHelper.paramA_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
-                    this.calcHelper.incompleteDataSets_A = checkForLackingData.incompleteDataSets;
-                    this.calcHelper.dataSets_A = checkForLackingData.totalDataSets;
-                    if (this.paramFieldA.name === "Anzahl") {
-                        this.calcHelper.paramA_calc = this.calcHelper.paramA_count;
+                    this.calcHelper["param" + letter + "_count"] = this.featureVals.length;
+                    this.calcHelper["param" + letter + "_val"] = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
+                    this.calcHelper["incompleteDataSets_" + letter] = checkForLackingData.incompleteDataSets;
+                    this.calcHelper["dataSets_" + letter] = checkForLackingData.totalDataSets;
+                    if (this["paramField" + letter].name === "Anzahl") {
+                        this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_count"];
                     }
                     else {
-                        this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
+                        this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_val"];
                     }
                 }
                 else {
                     this.featureVals = [];
-                    this.calcHelper.type_A = "feature";
-                    if (Array.isArray(this.selectedFieldA.id)) {
-                        this.selectedFieldA.id.forEach(id => {
+                    this.calcHelper["type_" + letter] = "feature";
+                    if (Array.isArray(this["selectedField" + letter].id)) {
+                        this["selectedField" + letter].id.forEach(id => {
                             const featureData = this.getFeatureData(name, id);
 
                             this.featureVals.push(featureData);
@@ -484,7 +520,7 @@ export default {
                         this.featureVals = sumUpYearValues;
                     }
                     else {
-                        const featureData = this.getFeatureData(name, this.selectedFieldA.id),
+                        const featureData = this.getFeatureData(name, this["selectedField" + letter].id),
                             yearValues = {};
 
                         featureData.forEach(year => {
@@ -493,100 +529,17 @@ export default {
                         this.featureVals = yearValues;
                     }
 
-                    this.calcHelper.paramA_val = this.featureVals;
-                    this.calcHelper.paramA_calc = this.calcHelper.paramA_val;
-                    this.calcHelper.incompleteDataSets_B = 0;
-                }
-
-                if (this.BSwitch) {
-                    const findLayer = this.layerList.find(layer => layer.get("name") === this.selectedFieldB.id),
-                        layerFeatures = findLayer.getSource().getFeatures();
-
-                    this.featureVals = [];
-                    this.calcHelper.type_B = "facility";
-                    layerFeatures.forEach(layer => {
-                        const layerGeometry = layer.getGeometry().getExtent();
-
-                        if (geometry.intersectsExtent(layerGeometry)) {
-                            if (this.paramFieldB.name !== "Anzahl") {
-                                if (layer.getProperties()[this.paramFieldB.id]) {
-                                    const value = layer.getProperties()[this.paramFieldB.id],
-                                        valueTransformed = parseFloat(value.replace(/\D/g, ""));
-
-                                    this.featureVals.push(valueTransformed);
-                                }
-                                else {
-                                    this.featureVals.push("avg");
-                                }
-                            }
-                            else {
-                                this.featureVals.push(0);
-                            }
-                        }
-                    });
-                    
-                    const checkForLackingData = utils.compensateLackingData(this.featureVals);
-
-                    if(checkForLackingData === "error"){
-                        this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noData')");
-                        return;
-                    }
-
-                    this.calcHelper.paramB_count = this.featureVals.length;
-                    this.calcHelper.paramB_val = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
-                    this.calcHelper.incompleteDataSets_B = checkForLackingData.incompleteDataSets;
-                    this.calcHelper.dataSets_B = checkForLackingData.totalDataSets;
-                    if (this.paramFieldB.name === "Anzahl") {
-                        this.calcHelper.paramB_calc = this.calcHelper.paramB_count;
-                    }
-                    else {
-                        this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
-                    }
-                }
-                else {
-                    this.featureVals = [];
-                    this.calcHelper.type_B = "feature";
-                    if (Array.isArray(this.selectedFieldB.id)) {
-                        this.selectedFieldB.id.forEach(id => {
-                            const featureData = this.getFeatureData(name, id);
-
-                            this.featureVals.push(featureData);
-                        });
-
-                        const sumUpYearValues = {};
-
-                        this.featureVals = [].concat(...this.featureVals);
-                        this.featureVals.forEach(year => {
-                            if (sumUpYearValues[year.jahr]) {
-                                sumUpYearValues[year.jahr] += year.wert;
-                            }
-                            else {
-                                sumUpYearValues[year.jahr] = year.wert;
-                            }
-                        });
-
-                        this.featureVals = sumUpYearValues;
-                    }
-                    else {
-                        const featureData = this.getFeatureData(name, this.selectedFieldB.id),
-                            yearValues = {};
-
-                        featureData.forEach(year => {
-                            yearValues[year.jahr] = year.wert;
-                        });
-                        this.featureVals = yearValues;
-                    }
-
-                    this.calcHelper.paramB_val = this.featureVals;
-                    this.calcHelper.paramB_calc = this.calcHelper.paramB_val;
-                    this.calcHelper.incompleteDataSets_B = 0;
+                    this.calcHelper["param" + letter + "_val"] = this.featureVals;
+                    this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_val"];
+                    this.calcHelper["incompleteDataSets_" + letter] = 0;
                 }
 
                 dataArray.push(this.calcHelper);
             });
 
-            this.results = utils.calculateRatio(dataArray, this.selectedYear);
-            console.log(this.results);
+            return dataArray;
+
+            // this.results = utils.calculateRatio(dataArray, this.selectedYear);
         },
         /**
          * @description Gets Data for the selected statistical data (features)
@@ -620,8 +573,8 @@ export default {
          */
         recalcData () {
             const dataArray = [];
-            this.results = [];
 
+            this.results = [];
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);
             });
@@ -632,8 +585,8 @@ export default {
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
          * @returns {void}
          */
-        loadToCCM () {
-            const switchVar = this.dataToCCM;
+        loadToColorCodeMap () {
+            const switchVar = this.dataToColorCodeMap;
 
             if (!switchVar) {
                 const prepareData = [];
@@ -649,71 +602,68 @@ export default {
                     }
                 });
 
-                //this.$store.commit("Tools/CalculateRatio/setCcmDataSet", prepareData);
-                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
+                this.setColorCodeMapDataSet(prepareData);
+                this.setDataToColorCodeMap(!switchVar);
+            }
+            else {
 
-                this.setCcmDataSet(prepareData);
-                this.setDataToCCM(!switchVar);
-            } else {
-                //this.$store.commit("Tools/CalculateRatio/setDataToCCM", !switchVar);
-                
-                this.setDataToCCM(!switchVar);
+                this.setDataToColorCodeMap(!switchVar);
             }
         },
         /**
          * @description Passes data to the Chart Generator Tool.
-         * @returns {Void}
+         * @returns {Void} Function returns nothing.
          */
-        loadToCG () {
+        loadToChartGenerator () {
             const graphObj = {
-                id: "calcratio-test",
-                name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
-                type: "BarChart",
-                color: "green",
-                source: "CalculateRatio",
-                data: {
-                    labels: [...this.availableYears],
-                    dataSets: []
-                }
-            };
+                    id: "calcratio",
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    type: ["LineChart", "BarChart"],
+                    color: "green",
+                    source: "Versorgungsanalyse",
+                    scaleLabels: [this.columnSelector.name, "Jahre"],
+                    data: {
+                        labels: [...this.availableYears],
+                        dataSets: []
+                    }
+                },
 
-            console.log("look here", graphObj);
+                dataArray = [];
 
-            const dataArray = [];
             this.resultsClone.forEach(result => {
-                dataArray.push(result.data);        
+                dataArray.push(result.data);
             });
-
-            
-            console.log("look here #2", dataArray);
 
             this.availableYears.forEach(year => {
                 const dataPerYear = utils.calculateRatio(dataArray, year);
 
                 dataPerYear.forEach(dataSet => {
-                    console.log("look here #3", dataSet);
                     const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
 
-                    if(checkExisting){
+                    if (checkExisting) {
                         checkExisting.data.push(dataSet[this.columnSelector.key]);
-                    } else {
+                    }
+                    else {
                         const obj = {
                             label: dataSet.scope,
                             data: [dataSet[this.columnSelector.key]]
-                        }
+                        };
 
                         graphObj.data.dataSets.push(obj);
                     }
-                })
-            })
-            
+                });
+            });
+
             graphObj.data.labels.reverse();
             graphObj.data.dataSets.forEach(dataSet => {
                 dataSet.data.reverse();
             });
 
             this.setNewDataSet(graphObj);
-        }
+        },
+
+        // the export function from utils
+        exportAsGeoJson
     }
 };
 </script>
@@ -734,6 +684,13 @@ export default {
                 :class="{ expanded: results.length > 0 }"
             >
                 <div class="addon_wrapper">
+                    <button
+                        class="info_button"
+                        title="Werkzeuginformationen"
+                        @click="showInfo()"
+                    >
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                    </button>
                     <p class="section intro">
                         {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
                     </p>
@@ -750,7 +707,10 @@ export default {
                         class="select_wrapper section first"
                         :class="{ grouped: selectedFieldA.id }"
                     >
-                        <div class="button switch">
+                        <div
+                            class="button switch"
+                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                        >
                             <button
                                 @click="switchVal('A')"
                             >
@@ -821,6 +781,7 @@ export default {
                                     >
                                         <div
                                             class="btn"
+                                            title="Fügen Sie einen Verrechnungsfaktor hinzu"
                                             :class="{ reduced: fActive_A }"
                                         >
                                             <button @click="fActive_A = !fActive_A">
@@ -881,7 +842,10 @@ export default {
                         class="select_wrapper section second"
                         :class="{ grouped: selectedFieldB.id }"
                     >
-                        <div class="button switch">
+                        <div
+                            class="button switch"
+                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                        >
                             <button
                                 @click="switchVal('B')"
                             >
@@ -934,6 +898,7 @@ export default {
                                 @input="checkSumUp('B')"
                             >
                                 <template slot="singleLabel">
+                                    <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                     <strong>{{ selectedFieldB.id }}</strong>
                                 </template>
                             </Multiselect>
@@ -951,7 +916,10 @@ export default {
                                             class="btn"
                                             :class="{ reduced: fActive_B }"
                                         >
-                                            <button @click="fActive_B = !fActive_B">
+                                            <button
+                                                title="Fügen Sie einen Verrechnungsfaktor hinzu"
+                                                @click="fActive_B = !fActive_B"
+                                            >
                                                 <span
                                                     v-if="fActive_B"
                                                     class="glyphicon glyphicon-remove"
@@ -1011,12 +979,14 @@ export default {
                         <div class="btn_grp finalization">
                             <button
                                 class="switch"
+                                title="Datenfelder A und B tauschen"
                                 @click="switchSelection"
                             >
                                 <span class="glyphicon glyphicon-retweet"></span>
                             </button>
                             <button
                                 class="cancel"
+                                title="Alle Eingaben zurücksetzen"
                                 @click="clearAllValues"
                             >
                                 <span class="glyphicon glyphicon-remove-circle"></span>
@@ -1024,6 +994,7 @@ export default {
                             </button>
                             <button
                                 class="confirm"
+                                title="Datensätze berechnen"
                                 @click="prepareCoverage"
                             >
                                 <span class="glyphicon glyphicon-ok-circle"></span>
@@ -1038,18 +1009,30 @@ export default {
                     >
                         <div class="head_wrapper">
                             <JsonExcel
+                                title="Ergebnisse als XLSX herunterladen"
                                 class="btn btn-default xl_btn"
                                 :data="resultData.json_data"
                                 :fields="resultData.json_fields"
                                 worksheet="Versorgungsanalyse"
                                 :name="selectedYear + '_versorgungsanalyse.xls'"
                             >
-                                <span class="glyphicon glyphicon-download"></span>Download XSL
+                                <span class="glyphicon glyphicon-download" />
+                                Download XSLX
                             </JsonExcel>
-                            
+
+                            <button
+                                class="btn btn-default xl_btn"
+                                title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                                @click="exportAsGeoJson(results, selectedFeatures)"
+                            >
+                                <span class="glyphicon glyphicon-floppy-disk" />
+                                Download GeoJSON
+                            </button>
+
                             <button
                                 class="cg"
-                                @click="loadToCG()"
+                                title="Graph aus Datensatz erzeugen"
+                                @click="loadToChartGenerator()"
                             >
                                 <span
                                     class="glyphicon glyphicon-stats"
@@ -1069,16 +1052,18 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
+                                    <!--eslint-disable-next-line-->
                                     <span><strong>{{ columnSelector.name }}</strong></span>
                                 </template>
                             </Multiselect>
                             <button
                                 class="ccm"
-                                :class="{ highlight: !dataToCCM}"
-                                @click="loadToCCM()"
+                                :class="{ highlight: !dataToColorCodeMap}"
+                                title="Ausgewählten Datensatz auf Karte visualisieren"
+                                @click="loadToColorCodeMap()"
                             >
                                 <span
-                                    v-if="!dataToCCM"
+                                    v-if="!dataToColorCodeMap"
                                     class="glyphicon glyphicon-eye-open"
                                 ></span>
                                 <span
@@ -1110,97 +1095,12 @@ export default {
                                 </Multiselect>
                             </div>
                         </div>
-                        <table class="forged_table">
-                            <tr class="head_row">
-                                <th>
-                                    <div class="styling_helper head_scope">
-                                        {{ label }}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
-                                    </div>
-                                </th>
-                                <th v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        Kapazität
-                                    </div>
-                                </th>
-                                <th v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        Bedarf
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }} / {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="styling_helper">
-                                        Bedarfsdeckung (1,0 ~ 100%)
-                                    </div>
-                                </th>
-                            </tr>
-                            <tr
-                                v-for="result in results"
-                                :key="result.scope"
-                            >
-                                <td class="row_head">
-                                    <div class="styling_helper scope">
-                                        {{ result.scope }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div
-                                        class="styling_helper"
-                                    >
-                                        {{ result.paramA_val.toLocaleString('de-DE') }}
-                                        <span v-if="result.data.incompleteDataSets_A > 0">*</span>
-                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
-                                            {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div
-                                        class="styling_helper"
-                                    >
-                                        {{ result.paramB_val.toLocaleString('de-DE') }}
-                                        <span v-if="result.data.incompleteDataSets_B > 0">*</span>
-                                        <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
-                                            {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        {{ result.capacity.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                                <td v-if="fActive_A || fActive_B">
-                                    <div class="styling_helper">
-                                        {{ result.need.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="styling_helper">
-                                        {{ result.relation.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="styling_helper">
-                                        {{ result.coverage.toLocaleString('de-DE') }}
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                        <DataTable
+                            :dataSet="results"
+                            :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
+                            :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
+                            :fActive="fActive_A || fActive_B ? true : false"
+                        />
                     </div>
                 </div>
             </div>
@@ -1218,7 +1118,20 @@ export default {
         width:400px;
         height:60vh;
 
+        .info_button {
+            display:block;
+            width:30px;
+            height:30px;
+            background:#eee;
+            margin:0px 0px 0px auto;
+        }
+
         .section {
+            &.intro {
+                border-top:1px solid #ccc;
+                padding-top:30px;
+            }
+
             &.third {
                     border:1px solid #ddd;
                 }
@@ -1335,6 +1248,12 @@ export default {
         &.expanded {
             width:780px;
 
+            .info_button {
+                position:absolute;
+                top:10px;
+                right:25px;
+            }
+
             .addon_wrapper {
                 display:flex;
                 flex-flow: row wrap;
@@ -1347,6 +1266,10 @@ export default {
                 .section {
                     flex:1 0 45%;
                     margin:5px;
+
+                    &.grouped {
+                        margin-top:30px;
+                    }
                 }
 
                 .data_table {
@@ -1364,10 +1287,11 @@ export default {
                             line-height:40px;
                             width:auto;
                             opacity:0.75;
-                            background:#57A845;
+                            background:@green;
                             color:white;
                             padding: 0px 10px;
                             margin:5px 0px;
+                            font-size: 12px;x
 
                             span {
                                 margin-right:10px;

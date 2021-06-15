@@ -12,20 +12,24 @@ import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 
+export const methodConfig = {store: null};
 export default {
     /**
      * create isochrones features
      * @returns {void}
      */
-    createIsochrones: async function () {
-        if (this.mode == 'point') {
-            this.createIsochronesPoint()
-        } else {
-            this.createIsochronesRegion()
+    createIsochrones: function () {
+        this.clear();
+        if (this.mode === "point") {
+            this.createIsochronesPoint();
+        }
+        else {
+            this.createIsochronesRegion();
         }
     },
     /**
      * create isochrones features for selected several coordiantes
+     * TODO: break apart into smaller functions
      * @fires Alerting#RadioTriggerAlertAlertRemove
      * @fires Core#RadioRequestMapGetLayerByName
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
@@ -33,31 +37,36 @@ export default {
      */
     createIsochronesRegion: async function () {
         const range =
-            this.scaleUnit === "time" ? this.distance * 60 : this.distance;
+            this.scaleUnit === "time" ? this.distance * 60 : this.distance,
 
-        const coordinates = this.getCoordinates(this.selectedFacilityName)
+            coordinates = this.getCoordinates(this.selectedFacilityName);
 
         if (
-            coordinates != null &&
+            coordinates !== null &&
             this.transportType !== "" &&
             this.scaleUnit !== "" &&
             range !== 0
         ) {
+            // TODO: Use store-method - see DistrictSelector component
             Radio.trigger("Alert", "alert:remove");
             // group coordinates into groups of 5
-            const coordinatesList = []
+            const coordinatesList = [],
+                groupedFeaturesList = [],
+                distance = parseFloat(this.distance);
+
             for (let i = 0; i < coordinates.length; i += 5) {
                 const arrayItem = coordinates.slice(i, i + 5);
+
                 coordinatesList.push(arrayItem);
             }
-            // each group of 5 coordinates
-            const groupedFeaturesList = [];
-            for (const coordinates of coordinatesList) {
-                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coordinates, this.scaleUnit,
-                    [range, range * 0.67, range * 0.33])
-                // reverse JSON object sequence to render the isochrones in the correct order
-                // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
-                const json = JSON.parse(res),
+
+            for (const coords of coordinatesList) {
+                // TODO: make use of new OpenRouteService component
+                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coords, this.scaleUnit,
+                        [range, range * 0.67, range * 0.33]),
+                    // reverse JSON object sequence to render the isochrones in the correct order
+                    // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
+                    json = JSON.parse(res),
                     reversedFeatures = [...json.features].reverse(),
                     groupedFeatures = [
                         [],
@@ -72,37 +81,46 @@ export default {
                 }
                 json.features = reversedFeatures;
                 groupedFeaturesList.push(groupedFeatures);
-            };
-            let features = []
+            }
+            let features = [];
+
             for (let i = 0; i < 3; i++) {
-                let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]);
+                let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
+                    layerUnion,
+                    layerUnionFeatures;
 
                 layeredList = [].concat(...layeredList);
-                let layerUnion = layeredList[0];
+                layerUnion = layeredList[0];
 
                 for (let j = 0; j < layeredList.length; j++) {
                     layerUnion = turf.union(layerUnion, layeredList[j]);
                 }
-                let layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
+                layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
+
+                // TODO: get projections via arguments and/or store
                 layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
 
-                const featureType = "Erreichbarkeit im Gebiet"
+                const featureType = "Erreichbarkeit im Gebiet";
+
+                // TODO: add props to layers, like type of facility, unit of measured distance
                 layerUnionFeatures.forEach(feature => {
-                    feature.set("featureType", featureType)
+                    feature.set("featureType", featureType);
                 });
-                features = features.concat(layerUnionFeatures)
+                features = features.concat(layerUnionFeatures);
             }
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
-            const distance = parseFloat(this.distance);
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) =>
-                Number.isInteger(n) ? n.toString() : n.toFixed(2)
+
+            // TODO: get locale from store
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
             );
-        } else {
+        }
+        else {
             this.inputReminder();
         }
     },
     /**
+     * TODO: see TODOs in createIsochronesRegion
      * create isochrones features for selected several coordiantes
      * @returns {void}
      */
@@ -111,30 +129,33 @@ export default {
             this.scaleUnit === "time" ? this.distance * 60 : this.distance;
 
         if (
-            this.coordinate != null &&
+            this.coordinate !== null &&
             this.transportType !== "" &&
             this.scaleUnit !== "" &&
             range !== 0
         ) {
             try {
                 const res = await Radio.request(
-                    "OpenRoute",
-                    "requestIsochrones",
-                    this.transportType,
-                    [this.coordinate],
-                    this.scaleUnit,
-                    [range * 0.33, range * 0.67, range]
-                );
+                        "OpenRoute",
+                        "requestIsochrones",
+                        this.transportType,
+                        [this.coordinate],
+                        this.scaleUnit,
+                        [range * 0.33, range * 0.67, range]
+                    ),
 
 
-                const distance = parseFloat(this.distance);
-                this.steps = [distance * 0.33, distance * 0.67, distance].map((n) =>
-                    Number.isInteger(n) ? n.toString() : n.toFixed(2)
+                    distance = parseFloat(this.distance);
+
+                this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)
                 );
 
                 // reverse JSON object sequence to render the isochrones in the correct order
-                const json = JSON.parse(res);
-                const reversedFeatures = [...json.features].reverse();
+                // eslint-disable-next-line one-var
+                const json = JSON.parse(res),
+                    reversedFeatures = [...json.features].reverse(),
+                    featureType = "Erreichbarkeit ab einem Referenzpunkt";
+
                 json.features = reversedFeatures;
                 let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
 
@@ -144,7 +165,6 @@ export default {
                     "EPSG:25832"
                 );
 
-                const featureType = "Erreichbarkeit ab einem Referenzpunkt"
                 newFeatures.forEach((feature) => {
                     feature.set("featureType", featureType);
                 });
@@ -158,11 +178,13 @@ export default {
                 this.setIsochroneAsBbox();
                 this.showRequestButton = true;
                 Radio.trigger("Alert", "alert:remove");
-            } catch (err) {
+            }
+            catch (err) {
                 console.error(err);
                 this.showError();
             }
-        } else {
+        }
+        else {
             this.inputReminder();
         }
     },
@@ -178,7 +200,8 @@ export default {
 
         try {
             jsonObjects = geojsonReader.readFeatures(data);
-        } catch (err) {
+        }
+        catch (err) {
             console.error(err);
             this.showError();
         }
@@ -195,6 +218,7 @@ export default {
     transformFeatures: function (features, crs, mapCrs) {
         features.forEach(function (feature) {
             const geometry = feature.getGeometry();
+
             if (geometry) {
                 geometry.transform(crs, mapCrs);
             }
@@ -203,7 +227,8 @@ export default {
     },
     /**
      * add coordinate after user click
-     * @param  {} evt Event from User click
+     * @param {event} evt Event from User click
+     * @returns {void}
      */
     setCoordinateFromClick: function (evt) {
         const coordinate = Proj.transform(
@@ -217,32 +242,41 @@ export default {
         this.setBySearch = false;
     },
     /**
+     * TODO: replace calls to this function with /addons/cosi/utils/getSearchResultsCoordinate.js
+     * @returns {void}
      */
     setSearchResultToOrigin: function () {
         let features = this.markerPoint.getSource().getFeatures();
-        if (features.length == 1) {
+
+        if (features.length === 1) {
             // single point
-            const coord = features[0].getGeometry().getCoordinates();
-            const pcoord = Proj.transform(coord, "EPSG:25832", "EPSG:4326");
+            const coord = features[0].getGeometry().getCoordinates(),
+                pcoord = Proj.transform(coord, "EPSG:25832", "EPSG:4326");
+
             this.coordinate = pcoord;
             this.setBySearch = true;
-        } else {
+        }
+        else {
             // single polygon
             features = this.markerPolygon.getSource().getFeatures();
-            if (features.length == 1) {
+            if (features.length === 1) {
                 const pts = features[0].getGeometry().getInteriorPoints();
-                if (pts.getPoints().length == 1) {
+
+                if (pts.getPoints().length === 1) {
                     const pcoord = Proj.transform(
                         pts.getPoints()[0].getCoordinates().slice(0, 2),
                         "EPSG:25832",
                         "EPSG:4326"
                     );
+
                     this.coordinate = pcoord;
                     this.setBySearch = true;
-                } else if (pts.getPoints().length > 1) {
-                    const geo = features[0].getGeometry();
-                    const coords = Extent.getCenter(geo.getExtent());
-                    const pcoord = Proj.transform(coords, "EPSG:25832", "EPSG:4326");
+                }
+                else if (pts.getPoints().length > 1) {
+                    const geo = features[0].getGeometry(),
+                        coords = Extent.getCenter(geo.getExtent()),
+                        pcoord = Proj.transform(coords, "EPSG:25832", "EPSG:4326");
+
                     this.coordinate = pcoord;
                     this.setBySearch = true;
                 }
@@ -255,15 +289,15 @@ export default {
      */
     inputReminder: function () {
         Radio.trigger("Alert", "alert", {
-            text: "<strong>Bitte füllen Sie alle Felder aus.</strong>",
-            kategorie: "alert-warning",
+            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
+            kategorie: "alert-warning"
         });
     },
 
     showError: function () {
         Radio.trigger("Alert", "alert", {
-            text: "<strong>Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.</strong>",
-            kategorie: "alert-danger",
+            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
+            kategorie: "alert-danger"
         });
     },
     /**
@@ -280,12 +314,12 @@ export default {
             features[i].setStyle(
                 new Style({
                     fill: new Fill({
-                        color: this.getFeatureColors()[i],
+                        color: this.getFeatureColors()[i]
                     }),
                     stroke: new Stroke({
                         color: "white",
-                        width: 1,
-                    }),
+                        width: 1
+                    })
                 })
             );
         }
@@ -304,99 +338,14 @@ export default {
 
         setBBoxToGeom(geometryCollection);
     },
-    /**
-     * updates facilitie's name within the isochrone results
-     * @returns {void}
-     */
-    updateResult: function () {
-        const visibleLayerModels = Radio.request(
-            "ModelList",
-            "getModelsByAttributes", {
-                typ: "WFS",
-                isBaseLayer: false,
-                isSelected: true
-            }
-        );
-
-        if (visibleLayerModels.length > 0) {
-            this.layers = [];
-            Radio.trigger("Alert", "alert:remove");
-            visibleLayerModels.forEach((layerModel) => {
-                const features = layerModel.get("layer").getSource().getFeatures();
-                if (features && features.length) {
-                    const props = features[0].getProperties()
-                    let idSelector;
-                    /**
-                     * hard coded id selector for facility layers
-                     */
-                    if (props.schul_id) {
-                        idSelector = props.schulname ?
-                            "schulname" :
-                            "schul_id";
-                    } else if (props.einrichtung) {
-                        idSelector = props.name ?
-                            "name" :
-                            "einrichtung";
-                    } else if (props.Einrichtungsnummer) {
-                        idSelector = props.Name_normalisiert ?
-                            "Name_normalisiert" :
-                            "Einrichtungsnummer";
-                    } else if (props.identnummer) {
-                        idSelector = props.belegenheit ?
-                            "belegenheit" :
-                            "identnummer";
-                    } else if (props.hauptklasse) {
-                        idSelector = props.anbietername ?
-                            "anbietername" :
-                            "strasse";
-                    }
-                    // inscribe the coordinate to the feature for rendering to the resultView DOM Element
-                    // for zooming to feature by click
-                    const sfeatures = features.map((feature, i) => {
-                        const geometry = feature.getGeometry();
-                        const coord =
-                            geometry.getType() === "Point" ?
-                            geometry.getCoordinates().splice(0, 2) :
-                            Extent.getCenter(geometry.getExtent());
-
-                        let label = feature.getProperties()[idSelector];
-                        if (!label) label = i + 1;
-                        return [label, coord];
-                    });
-
-                    this.layers.push({
-                        layerName: layerModel.get("name"),
-                        layerId: layerModel.get("id"),
-                        features: sfeatures,
-                    });
-                }
-            });
-        } else {
-            this.selectionReminder();
-        }
-    },
-    /**
-     * reminds user to select facility layers
-     * @returns {void}
-     */
-    selectionReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: '<strong>Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel "Sportstätten".</strong>',
-            kategorie: "alert-warning",
-        });
-    },
-    resetMarkerAndZoom: function () {
-        const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
-        this.placingPointMarker(icoord);
-        Radio.trigger("MapView", "setCenter", icoord);
-    },
     showInDashboard: function () {
-        const el = $(this.$refs.result)
+        const el = $(this.$refs.result);
+
         Radio.trigger("Dashboard", "append", el, "#dashboard-containers", {
             id: "reachability",
             name: "Erreichbarkeit ab einem Referenzpunkt",
             glyphicon: "glyphicon-road",
-            scalable: true,
+            scalable: true
         });
         el.find("#dashboard-container").empty();
     },
@@ -407,9 +356,9 @@ export default {
     showHelp: function () {
         Radio.trigger("Alert", "alert:remove");
         Radio.trigger("Alert", "alert", {
-            text: this.mode == 'point' ? InfoTemplatePoint : InfoTemplateRegion,
+            text: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
             kategorie: "alert-info",
-            position: "center-center",
+            position: "center-center"
         });
     },
     /**
@@ -423,6 +372,7 @@ export default {
         this.rawGeoJson = null;
         this.isochroneFeatures = [];
 
+
         if (this.mapLayer.getSource().getFeatures().length > 0) {
             this.mapLayer.getSource().clear();
             if (this.extent?.length > 0) {
@@ -430,31 +380,18 @@ export default {
             }
         }
     },
-    /**
-     * requests inhabitant calculation function
-     * @returns {void}
-     */
-    requestInhabitants: function () {
-        //TODO
-        Radio.trigger(
-            "GraphicalSelect",
-            "onDrawEnd",
-            this.rawGeoJson,
-            "einwohnerabfrage",
-            true
-        );
-    },
     getFeatureColors: function () {
         return [
             "rgba(200, 0, 3, 0.1)",
             "rgba(100, 100, 3, 0.15)",
-            "rgba(0, 200, 3, 0.2)",
-        ]
+            "rgba(0, 200, 3, 0.2)"
+        ];
     },
     getCoordinates: function (name) {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
             name: name
         });
+
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
                 .getSource().getFeatures().filter(f => typeof f.style_ === "object" || f.style_ === null);
@@ -462,13 +399,14 @@ export default {
             return features
                 .map((feature) => {
                     const geometry = feature.getGeometry();
+
                     if (geometry.getType() === "Point") {
                         return geometry.getCoordinates().splice(0, 2);
-                    } else {
-                        return Extent.getCenter(geometry.getExtent());
                     }
+                    return Extent.getCenter(geometry.getExtent());
+
                 }).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
         }
-        return null
+        return null;
     }
-}
+};
