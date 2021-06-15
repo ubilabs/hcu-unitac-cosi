@@ -6,7 +6,6 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import createLayer from "../../utils/createLayer";
 
 export default {
     name: "ResidentialSimulation",
@@ -55,13 +54,14 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
+        ...mapActions("Map", ["createLayer"]),
 
         /**
          * @description create a guide layer used for additional info to display on the map
          * @returns {void}
          */
-        createDrawingLayer () {
-            const newLayer = createLayer(this.id);
+        async createDrawingLayer () {
+            const newLayer = await this.createLayer(this.id);
 
             newLayer.setVisible(true);
             // newLayer.setStyle(featureTagStyle);
