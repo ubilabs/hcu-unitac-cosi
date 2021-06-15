@@ -7,7 +7,6 @@ import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import {Draw, Select} from "ol/interaction";
 import {getSearchResultsCoordinates, getSearchResultsGeometry} from "../../utils/getSearchResultsGeom";
-import createLayer from "../../utils/createLayer";
 
 export default {
     name: "GeometryPicker",
@@ -90,14 +89,15 @@ export default {
      * Lifecycle function, triggers on component initialize. Creates necessary drawing layer.
      * @returns {void}
      */
-    created () {
-        this.createDrawingLayer();
+    async created () {
+        await this.createDrawingLayer();
     },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
+        ...mapActions("Map", ["createLayer"]),
 
-        createDrawingLayer () {
-            const newLayer = createLayer(this.id + "_draw");
+        async createDrawingLayer () {
+            const newLayer = await this.createLayer(this.id + "_draw");
 
             newLayer.setVisible(true);
             this.drawLayer = newLayer;

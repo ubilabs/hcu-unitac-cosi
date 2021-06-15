@@ -6,7 +6,6 @@ import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
-import createLayer from "../../utils/createLayer";
 import * as Proj from "ol/proj.js";
 
 export default {
@@ -76,13 +75,13 @@ export default {
         Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
     },
     /**
-    * Put initialize here if mounting occurs after config parsing
-    * @returns {void}
-    */
-    mounted () {
+   * Put initialize here if mounting occurs after config parsing
+   * @returns {void}
+   */
+    async mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = createLayer("reachability-from-point");
+        this.mapLayer = await this.createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
@@ -97,6 +96,7 @@ export default {
         ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
+        ...mapActions("Map", ["createLayer"]),
         ...methods,
 
         resetMarkerAndZoom: function () {
@@ -300,7 +300,7 @@ export default {
                             class="btn btn-lgv-grey measure-delete"
                             @click="requestInhabitants"
                         >
-                            <span class="glyphicon glyphicon-user"></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
+                            <span id="requestInhabitants" class="glyphicon glyphicon-user"></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
                         </button>
                     </div>
                 </div>

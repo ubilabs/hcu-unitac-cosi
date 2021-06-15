@@ -28,8 +28,7 @@
                     "legend": "Legende:",
                     "requestInhibitants": "Einwohnerabfrage für den Bereich",
                     "inputReminder": "Bitte füllen Sie alle Felder aus.",
-                    "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.",
-                    "selectionReminder": "Bitte wählen Sie mindestens ein Thema unter Fachdaten aus, zum Beispiel \"Sportstätten\"."
+                    "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben."
                 }
             }
         }

@@ -28,8 +28,7 @@
                     "legend": "Legend:",
                     "requestInhibitants": "Request inhibitants for the area",
                     "inputReminder": "Please fill out all input fields.",
-                    "showError": "The request could not be executed correctly. Please verify all inputs.",
-                    "selectionReminder": "Please select at least one topic from Fachdaten, for example \"Sportstätten\"."
+                    "showError": "The request could not be executed correctly. Please verify all inputs."
                 }
             }
         }
