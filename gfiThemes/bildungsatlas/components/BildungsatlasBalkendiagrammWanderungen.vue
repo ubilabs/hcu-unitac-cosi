@@ -245,7 +245,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :givenOptions="{}"
+                        :given-options="{}"
                         :data="barchartData"
                     />
                 </div>
@@ -264,7 +264,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :givenOptions="{}"
+                        :given-options="{}"
                         :data="barchartData_aus_umland"
                     />
                 </div>
@@ -280,7 +280,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :givenOptions="{}"
+                        :given-options="{}"
                         :data="barchartData_ins_umland"
                     />
                 </div>
@@ -294,8 +294,7 @@ export default {
         <div
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
-        >
-        </div>
+        />
     </div>
 </template>
 

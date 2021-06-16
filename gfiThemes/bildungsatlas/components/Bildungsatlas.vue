@@ -142,11 +142,11 @@ export default {
         <div class="tab-content">
             <component
                 :is="subThemeComponent"
-                :isActiveTab="isActiveTab"
+                :is-active-tab="isActiveTab"
                 :feature="feature"
                 :properties="properties"
                 :api="api"
-                :featureType="featureType"
+                :feature-type="featureType"
                 :translate="translate"
             />
             <div class="gfi-bildungsatlas-footer">

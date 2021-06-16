@@ -122,8 +122,7 @@ export default {
         <div
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
-        >
-        </div>
+        />
     </div>
 </template>
 

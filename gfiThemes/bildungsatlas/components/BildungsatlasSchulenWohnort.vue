@@ -284,7 +284,7 @@ export default {
                 schools.forEach(school => {
                     const id = school.get("Schul_ID").split("-").shift();
 
-                    if (!schoolAssoc.hasOwnProperty(id)) {
+                    if (!Object.prototype.hasOwnProperty.call(schoolAssoc, id)) {
                         schoolAssoc[id] = [];
                     }
                     schoolAssoc[id].push(school);
@@ -293,7 +293,7 @@ export default {
                     if (Array.isArray(value) && value.length) {
                         value.forEach(data => {
                             const id = data.get("schule_id"),
-                                schoolList = schoolAssoc.hasOwnProperty(id) ? schoolAssoc[id] : false;
+                                schoolList = Object.prototype.hasOwnProperty.call(schoolAssoc, id) ? schoolAssoc[id] : false;
 
                             if (Array.isArray(schoolList)) {
                                 schoolList.forEach(school => {
@@ -427,8 +427,7 @@ export default {
         <div
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
-        >
-        </div>
+        />
     </div>
 </template>
 

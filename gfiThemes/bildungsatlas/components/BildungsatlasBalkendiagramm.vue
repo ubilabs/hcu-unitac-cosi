@@ -453,7 +453,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :givenOptions="{}"
+                        :given-options="{}"
                         :data="barchartData"
                     />
                 </div>

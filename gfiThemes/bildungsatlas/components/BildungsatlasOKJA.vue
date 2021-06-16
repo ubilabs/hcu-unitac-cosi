@@ -251,7 +251,7 @@ export default {
                 </div>
                 <div class="rba_header_text">
                     {{ adresse }}
-                    <br />
+                    <br>
                     {{ ort }}
                 </div>
             </div>
@@ -355,7 +355,7 @@ export default {
                     class="rba_chart_content piechart_opening"
                 >
                     <Piechart
-                        :givenOptions="piechart_opening_options"
+                        :given-options="piechart_opening_options"
                         :data="piechart_opening"
                     />
                 </div>
@@ -375,7 +375,7 @@ export default {
                     class="rba_chart_content piechart_offers"
                 >
                     <Piechart
-                        :givenOptions="piechart_offers_options"
+                        :given-options="piechart_offers_options"
                         :data="piechart_offers"
                     />
                 </div>

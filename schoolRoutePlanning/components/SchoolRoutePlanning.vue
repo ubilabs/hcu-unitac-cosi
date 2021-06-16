@@ -176,9 +176,9 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
-        :initialWidth="initialWidth"
-        :initialWidthMobile="initialWidthMobile"
+        :deactivate-gfi="deactivateGFI"
+        :initial-width="initialWidth"
+        :initial-width-mobile="initialWidthMobile"
     >
         <template #toolBody>
             <div

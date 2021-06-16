@@ -108,7 +108,7 @@ export default {
          * @returns {void}
          */
         refreshGfi () {
-            this.susType = this.properties.hasOwnProperty("anteil_sus_abi") ? "anteil_sus_abi" : "anteil_sus_ohneabschluss";
+            this.susType = Object.prototype.hasOwnProperty.call(this.properties, "anteil_sus_abi") ? "anteil_sus_abi" : "anteil_sus_ohneabschluss";
 
             this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
             this.sozialraum_name = this.properties?.sozialraum_name ? this.properties.sozialraum_name : "";
@@ -342,7 +342,7 @@ export default {
                 <table class="table table-striped">
                     <thead>
                         <tr colspan="4">
-                            <th></th>
+                            <th />
                             <th>Abi/FH</th>
                             <th>MSA</th>
                             <th>ESA</th>
@@ -388,7 +388,7 @@ export default {
                 <table class="table table-striped">
                     <thead>
                         <tr colspan="4">
-                            <th></th>
+                            <th />
                             <th>oSA</th>
                             <th>ESA</th>
                             <th>MSA</th>
@@ -440,7 +440,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :givenOptions="{}"
+                        :given-options="{}"
                         :data="barchartData"
                     />
                 </div>
@@ -458,7 +458,7 @@ export default {
                 >
                     <Linechart
                         v-if="linechartData"
-                        :givenOptions="linechartDataOptions"
+                        :given-options="linechartDataOptions"
                         :data="linechartData"
                     />
                 </div>
