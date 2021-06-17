@@ -130,12 +130,12 @@ const actions = {
             srsName = rootGetters["Map/projectionCode"],
             loaderDistrictLevel = districtLevels.find(level => level.label === districtLevel.label),
             districtName = districtFeature.get(keyOfAttrName),
-            typeNames = getLayerList().reduce((featureTypes, layer) => {
-                return layer.url === url ? [...featureTypes, layer.featureType] : featureTypes;
+            featureTypes = getLayerList().reduce((typeNames, layer) => {
+                return layer.url === url ? [...typeNames, layer.featureType] : typeNames;
             }, []),
             filter = equalTo(keyOfAttrNameStats, districtName),
             result = await getFeaturePost(url, {
-                typeNames,
+                featureTypes,
                 srsName,
                 propertyNames: loaderDistrictLevel.propertyNameList.split(","),
                 filter

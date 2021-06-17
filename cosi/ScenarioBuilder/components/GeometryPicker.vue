@@ -93,6 +93,10 @@ export default {
     created () {
         this.createDrawingLayer();
     },
+    beforeDestroy () {
+        this.unlisten();
+        this.clearDrawPolygon();
+    },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 

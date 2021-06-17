@@ -1,6 +1,8 @@
 <script>
 import {Select} from "ol/interaction";
 import {mapActions, mapGetters} from "vuex";
+import {getTimestamps, getTimestampRange} from "../../utils/timeline";
+import getAvailableYears from "../../utils/getAvailableYears";
 
 export default {
     name: "ReferenceDistrictPicker",
@@ -43,6 +45,10 @@ export default {
          */
         workingDistrictLevel () {
             this.layer = this.layerById(this.workingDistrictLevel?.layerId)?.olLayer;
+            if (this.referencePickerActive) {
+                this.unlisten();
+                this.listen();
+            }
         }
     },
 
@@ -82,8 +88,6 @@ export default {
                 style: null
             });
 
-            console.log(this.layer, this.select);
-
             this.map.addInteraction(this.select);
             this.select.on("select", this.pickReference.bind(this));
         },
@@ -108,15 +112,78 @@ export default {
                 stats = await this.getStatsByDistrict({
                     districtFeature: feature,
                     districtLevel: this.workingDistrictLevel
-                });
-
-            console.log(feature, stats);
+                }),
+                baseStats = this.processStats(
+                    feature.get(this.workingDistrictLevel.keyOfAttrName),
+                    this.workingDistrictLevel.label,
+                    stats,
+                    "Bevölkerung insgesamt"
+                );
 
             if (feature) {
-                this.$emit("pickReference", feature);
+                this.$emit("pickReference", baseStats);
             }
 
             this.referencePickerActive = false;
+        },
+
+        /**
+         * @todo ONLY PROTOTYPE!!!! refactor
+         * @param {String} districtName -
+         * @param {String} districtLevel -
+         * @param {module:ol/Feature[]} statsFeatures -
+         * @param {String} basePopulationProp -
+         * @returns {Object} - the base stats for the picked reference district
+         */
+        processStats (districtName, districtLevel, statsFeatures, basePopulationProp) {
+            const attributeWhiteList = ["Bevölkerung", "Arbeitslose", "Sozialversicherungspflichtige", "SGB II Leistungen", "Verkehr"],
+                stats = statsFeatures.map(feature => feature.getProperties()),
+                years = getAvailableYears(statsFeatures),
+                latestYear = "jahr_" + years[0],
+                populationStats = this.mapping.filter(mappingObj => attributeWhiteList.includes(mappingObj.group)),
+                basePopulationFeature = statsFeatures.find(feature => feature.get("kategorie") === basePopulationProp),
+                basePopulation = parseFloat(basePopulationFeature.get(latestYear)),
+                baseStats = {
+                    reference: {
+                        districtName,
+                        districtLevel
+                    },
+                    absolute: {},
+                    relative: {}
+                };
+
+            for (const mappingObj of populationStats) {
+                const datum = stats.find(d => d.kategorie === mappingObj.value);
+
+                if (mappingObj.valueType === "absolute") {
+                    const refValue = parseFloat(datum[latestYear]);
+
+                    /**
+                     * @todo Das ist sehr unschön... wir müssen uns da was schlaues überlegen,
+                     * aber so hard-coded, reingehackt ist das super statisch und nicht skalierbar
+                     * Eine Idee wäre den Referenzwert auch in der mapping.json zu hinterlegen...
+                     */
+                    if (mappingObj.value.includes("Frauen")) {
+                        const total = stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
+
+                        baseStats.absolute[datum.kategorie] = refValue / total;
+                        continue;
+                    }
+                    else if (mappingObj.value.includes("Männer")) {
+                        const total = stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
+
+                        baseStats.absolute[datum.kategorie] = refValue / total;
+                        continue;
+                    }
+
+                    baseStats.absolute[datum.kategorie] = refValue / basePopulation;
+                }
+                else if (mappingObj.valueType === "relative") {
+                    baseStats.relative[datum.kategorie] = parseFloat(datum[latestYear]);
+                }
+            }
+
+            return baseStats;
         }
     }
 };

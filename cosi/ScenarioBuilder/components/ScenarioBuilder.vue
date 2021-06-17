@@ -112,9 +112,6 @@ export default {
                 if (model) {
                     model.set("isActive", false);
                 }
-
-                geomPickerUnlisten(this.$refs["geometry-picker"]);
-                geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
                 this.removePointMarker();
             }
         },

@@ -103,6 +103,8 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
             layers = this.getRawLayersBySelector(selector),
             layerModel = layers.find(layer => layer.featureType.includes(mappingObj.category.toLowerCase()));
 
+        console.log({layerName: layerModel.name, layerId: layerModel.id, layerText: mappingObj});
+
         this.set("selectedLayer", {layerName: layerModel.name, layerId: layerModel.id, layerText: mappingObj});
     },
 

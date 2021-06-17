@@ -263,6 +263,7 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
         this.layerFilterCollection.each(function (model) {
             layerFilterList.push(model);
         });
+        console.log(layerFilterList);
         this.$el.find("#params").append(this.paramsTemplate({layerFilterList: layerFilterList}));
     },
     /**

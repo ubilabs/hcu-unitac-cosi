@@ -260,7 +260,6 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
-            console.log(graph, index)
             this.$set(graph, "sub_graph", index);
         },
         /**
