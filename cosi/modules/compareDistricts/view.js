@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import template from "text-loader!./template.html";
 import "./style.less";
 import DistrictSelectorView from "./districtSelector/view";
@@ -261,9 +262,12 @@ const CompareDistrictsView = Backbone.View.extend(/** @lends CompareDistrictsVie
         const layerFilterList = [];
 
         this.layerFilterCollection.each(function (model) {
-            layerFilterList.push(model);
+            const json = model.toJSON();
+
+            if (json.filter) {
+                json.filter = JSON.parse(json.filter);
+            }
         });
-        console.log(layerFilterList);
         this.$el.find("#params").append(this.paramsTemplate({layerFilterList: layerFilterList}));
     },
     /**

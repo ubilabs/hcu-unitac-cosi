@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import store from "../../../../../src/app-store";
 
 const LayerFilterModel = Backbone.Model.extend(/** @lends LayerFilterModel.prototype */{
