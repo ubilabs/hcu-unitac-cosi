@@ -1,7 +1,6 @@
 <script>
 import {Select} from "ol/interaction";
 import {mapActions, mapGetters} from "vuex";
-import {getTimestamps, getTimestampRange} from "../../utils/timeline";
 import getAvailableYears from "../../utils/getAvailableYears";
 
 export default {

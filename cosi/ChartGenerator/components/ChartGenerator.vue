@@ -39,7 +39,9 @@ export default {
     },
     watch: {
         newDataSet (dataSet) {
-            dataSet.cgid = dataSet.id + "-" + dataSet.name;
+            if (!dataSet.cgid) {
+                dataSet.cgid = dataSet.id + "-" + dataSet.name;
+            }
             const checkDouble = this.dataSets.find(x => x.cgid === dataSet.cgid);
 
             if (checkDouble) {
@@ -161,12 +163,11 @@ export default {
                 set.borderColor = getColor;
                 set.backgroundColor = d3Color;
             });
-
             // eslint-disable-next-line one-var
             const target = document.getElementById(dataSet.target),
                 // Extend Component dynamically
                 DynamicComponent = Vue.extend(this.$options.components[this.newType]),
-                dynamicComponentInstance = new DynamicComponent({propsData: {dataSets: dataSet}});
+                dynamicComponentInstance = new DynamicComponent({propsData: {dataSets: dataSet, options: dataSet.options}});
 
             if (target !== null) {
                 if (!dataSet.sub) {

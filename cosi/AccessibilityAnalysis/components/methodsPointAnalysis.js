@@ -249,8 +249,6 @@ export default {
     setSearchResultToOrigin: function () {
         const coord = getSearchResultsCoordinates();
 
-        console.log(coord);
-
         if (coord) {
             this.coordinate = coord;
             this.setBySearch = true;

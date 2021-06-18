@@ -131,21 +131,6 @@ export default {
 
         baseStats () {
             this.visualizeDemographics(
-                "age",
-                "Demographie nach Altersgruppen",
-                ["Anteil", "Alterskohorten"],
-                [
-                    "Bevölkerung unter 6 Jahren",
-                    "Bevölkerung 6 bis unter 10 Jahren",
-                    "Bevölkerung 10 bis unter 15 Jahren",
-                    "Bevölkerung 15 bis unter 21 Jahren",
-                    "Bevölkerung 21 bis unter 45 Jahren",
-                    "Bevölkerung 45 bis unter 65 Jahren",
-                    "Bevölkerung ab 65 Jahren"
-                ],
-                "LineChart"
-            );
-            this.visualizeDemographics(
                 "gender",
                 "Demographie nach Gender",
                 ["Anteil", "Gender"],
@@ -158,6 +143,23 @@ export default {
                 ],
                 "BarChart"
             );
+            setTimeout(() => {
+                this.visualizeDemographics(
+                    "age",
+                    "Demographie nach Altersgruppen",
+                    ["Anteil", "Alterskohorten"],
+                    [
+                        "Bevölkerung unter 6 Jahren",
+                        "Bevölkerung 6 bis unter 10 Jahren",
+                        "Bevölkerung 10 bis unter 15 Jahren",
+                        "Bevölkerung 15 bis unter 21 Jahren",
+                        "Bevölkerung 21 bis unter 45 Jahren",
+                        "Bevölkerung 45 bis unter 65 Jahren",
+                        "Bevölkerung ab 65 Jahren"
+                    ],
+                    "LineChart"
+                );
+            }, 250);
             this.extrapolateNeighborhoodStatistics();
         },
 
@@ -172,6 +174,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
+        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 
         /**
@@ -252,10 +255,12 @@ export default {
                     dataSets: [this.getChartDataSet(labels, this.baseStats.reference.districtName)],
                     labels
                 },
-                type
+                type,
+                options: this.baseStatsChartData.options
             });
 
-            this.baseStatsChartData.charts.push(chartData);
+            // this.baseStatsChartData.charts.push(chartData);
+            this.setNewDataSet(chartData);
         },
 
         getChartDataSet (labels, districtName) {

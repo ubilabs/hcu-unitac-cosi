@@ -241,7 +241,7 @@
     "valueType": "absolute"
   },
   {
-    "category": "soz_sozverpflichtig_beschaeftigte_frauen",
+    "category": "soz_sozverpflichtig_beschaeftigte_frauen_15_bis_u65_ant",
     "value": "Anteil der Sozialversicherungspflichtig beschäftigten Frauen 15 bis unter 65 Jahren",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,
@@ -250,7 +250,7 @@
     "valueType": "relative"
   },
   {
-    "category": "soz_sozverpflichtig_beschaeftigte_maenner",
+    "category": "soz_sozverpflichtig_beschaeftigte_maenner_15_bis_u65_ant",
     "value": "Anteil der Sozialversicherungspflichtig beschäftigten Männern 15 bis unter 65 Jahren",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": true,

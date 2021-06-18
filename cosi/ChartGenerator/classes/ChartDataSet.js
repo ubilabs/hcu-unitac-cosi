@@ -18,15 +18,15 @@ export default class ChartDataSet {
      * @param {String} [params.sub_graph] - index of the chart within the sub index, auto-assigned if not provided
      * @param {String} [params.sub_index] - index of the chart group, auto-assigned if not provided
      * @param {String} [params.sub_length] - length of the chart group, auto-assigned if not provided
+     * @param {String} [params.options] - optional chart options to override default
      */
-    constructor ({id = "cg", name, data, type, scaleLabels, color = "blue", source = "", sub = false, sub_graph, sub_index, sub_length}) {
+    constructor ({id = "cg", name, data, type, scaleLabels, color = "blue", source = "", sub = false, sub_graph, sub_index, sub_length, options}) {
         if (!(name && data && type && typeof name === "string" && typeof type === "string" && typeof data === "object")) {
             throw new EvalError(`ChartDataSet: 'name', 'data' and 'type' musst be provided in the options. Got ${name}, ${data} and ${type} insted`);
         }
         this.type = type;
         this.id = id;
         this.name = name;
-        this.cgid = id + "-" + name;
         this.color = color;
         this.data = data;
         this.scaleLabels = scaleLabels;
@@ -36,5 +36,9 @@ export default class ChartDataSet {
         this.sub_graph = sub_graph;
         this.sub_index = sub_index;
         this.sub_length = sub_length;
+        this.options = options;
+
+        // auto generate cgid
+        this.cgid = id + "-" + name;
     }
 }
