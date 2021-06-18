@@ -233,7 +233,7 @@ export default {
     .tab-content {
         overflow: auto;
         width: 100%;
-        height: 250px;
+        height: 32vh;
         padding: 0px 5px 5px 5px;
     }
     .downloadButton{

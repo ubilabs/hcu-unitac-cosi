@@ -1,5 +1,6 @@
 <script>
-import {createLegendData, createYAxisLabel} from "../utils/helpers";
+import Chart from "chart.js";
+
 export default {
     name: "VerkehrsstaerkenDiagram",
     components: {},
@@ -11,7 +12,11 @@ export default {
     },
     data () {
         return {
-            category: "DTV"
+            category: "DTV",
+            chartColorCircle: "rgba(70, 130, 180, 1)",
+            chartRadiusCircle: 5,
+            chartColorRect: "rgba(255, 0, 0, 1)",
+            chartRadiusRect: 6
         };
     },
     watch: {
@@ -28,86 +33,226 @@ export default {
          * @returns {void}
          */
         init () {
-            const evt = {
-                currentTarget: {
-                    id: this.category
+            this.drawChart();
+        },
+
+        /**
+         * Creates the line chart with chartsJs.
+         * If a chart is already drawn, it will be destroyed.
+         * @returns {void}
+         */
+        drawChart: function () {
+            const ctx = this.$el.getElementsByTagName("canvas")[0];
+
+            if (this.chart instanceof Chart) {
+                this.chart.destroy();
+            }
+
+            Chart.defaults.global.defaultFontFamily = "'MasterPortalFont', 'Arial Narrow', 'Arial', 'sans-serif'";
+            Chart.defaults.global.defaultFontColor = "#333333";
+
+            this.chart = new Chart(ctx, {
+                type: "line",
+                data: this.createChartData(),
+                options: {
+                    responsive: true,
+                    legend: this.createChartLegend(),
+                    tooltips: this.createChartTooltip(),
+                    scales: this.createChartScales()
                 }
+            });
+        },
+
+        /**
+         * Creates the data for the chart.
+         * @returns {Object} The chart data.
+         */
+        createChartData: function () {
+            const preparedDataset = this.prepareDataset(this.dataset);
+
+            return {
+                labels: preparedDataset.labels,
+                datasets: [{
+                    borderColor: this.chartColorCircle,
+                    fill: false,
+                    label: this.createDatasetLabel(this.category),
+                    data: preparedDataset.data,
+                    pointBorderColor: preparedDataset.color,
+                    pointBackgroundColor: preparedDataset.color,
+                    pointRadius: preparedDataset.radius,
+                    pointStyle: preparedDataset.pointStyle
+                },
+                {
+                    borderColor: this.chartColorRect,
+                    fill: false,
+                    label: this.$t("additional:modules.tools.gfi.themes.verkehrsstaerken.withConstructionSiteInfluence"),
+                    pointBorderColor: this.chartColorRect,
+                    pointBackgroundColor: this.chartColorRect,
+                    pointRadius: this.chartRadiusRect,
+                    pointStyle: "rect"
+                }]
+            };
+        },
+
+        /**
+         * Prepares the dataset to use in chart.
+         * @param {Object[]} dataset The dataset from service.
+         * @returns {Object} The prepared dataset.
+         */
+        prepareDataset: function (dataset) {
+            const preparedDataset = {
+                labels: [],
+                data: [],
+                pointStyle: [],
+                color: [],
+                radius: []
             };
 
-            this.changeKategory(evt);
-        },
-        /**
-         * Generates the graph config and triggers the Graph-functionality to create the graph
-         * @param {String} category Name of category
-         * @returns {void}
-         * @fires Tools.Graph#RadioTriggerGraphCreateGraph
-         */
-        createD3Document (category) {
-            const tabContentHeight = document.getElementById("verkehrsstaerken-tab-content")?.clientHeight,
-                legendData = createLegendData(category),
-                graphConfig = {
-                    legendData: legendData,
-                    legendHeight: legendData.length * 15,
-                    graphType: "Linegraph",
-                    selector: ".graph",
-                    width: 800,
-                    height: (tabContentHeight ? tabContentHeight : 250) - 60,
-                    margin: {top: 20, right: 20, bottom: 75, left: 70},
-                    svgClass: "graph-svg",
-                    selectorTooltip: ".graph-tooltip-div",
-                    scaleTypeX: "ordinal",
-                    scaleTypeY: "linear",
-                    yAxisTicks: {
-                        ticks: 7,
-                        factor: ",f"
-                    },
-                    data: this.dataset,
-                    xAttr: "year",
-                    xAxisLabel: {
-                        label: this.$t(
-                            "additional:modules.tools.gfi.themes.verkehrsstaerken.year"
-                        ),
-                        translate: 6
-                    },
-                    yAxisLabel: {
-                        label: createYAxisLabel(category),
-                        offset: 60
-                    },
-                    attrToShowArray: [category]
-                };
+            dataset.forEach(data => {
+                preparedDataset.labels.push(data.year);
+                preparedDataset.data.push(data[this.category]);
+                preparedDataset.pointStyle.push(data.style);
+                this.createPointStyle(preparedDataset, data);
+            });
 
-            Radio.trigger("Graph", "createGraph", graphConfig);
+            return preparedDataset;
         },
+
+        /**
+         * Creates the point style for circles and rectangles..
+         * @param {Object[]} preparedDataset The prepared dataset.
+         * @param {Object} data The data from dataset from service.
+         * @returns {void}
+         */
+        createPointStyle: function (preparedDataset, data) {
+            if (data.style === "circle") {
+                preparedDataset.color.push(this.chartColorCircle);
+                preparedDataset.radius.push(this.chartRadiusCircle);
+            }
+            else if (data.style === "rect") {
+                preparedDataset.color.push(this.chartColorRect);
+                preparedDataset.radius.push(this.chartRadiusRect);
+            }
+            else {
+                preparedDataset.color.push(null);
+                preparedDataset.radius.push(null);
+            }
+        },
+
+        /**
+         * Creates the label for the dataset.
+         * @param {String} category The current category.
+         * @returns {String} The choosen label.
+         */
+        createDatasetLabel: function (category) {
+            const categories = {
+                "DTV": this.$t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDay"),
+                "DTVw": this.$t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDayWeekly"),
+                "Schwerverkehrsanteil am DTVw": this.$t("additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeek")
+            };
+
+            return categories[category];
+        },
+
+        /**
+         * Creates the legend for the chart.
+         * @returns {Object} The chart legend.
+         */
+        createChartLegend: function () {
+            return {
+                display: true,
+                position: "top",
+                align: "start",
+                labels: {
+                    usePointStyle: true
+                },
+                onClick: (e) => e.stopPropagation()
+            };
+        },
+
+        /**
+         * Creates the tooltip for the chart.
+         * @returns {Object} The chart tooltip.
+         */
+        createChartTooltip: function () {
+            return {
+                bodyFontColor: "rgba(85, 85, 85, 1)",
+                backgroundColor: "rgba(240, 240, 240, 1)",
+                callbacks: {
+                    label: (tooltipItem) => tooltipItem.value,
+                    title: () => false
+                }
+            };
+        },
+
+        /**
+         * Creates the scales for the chart.
+         * @param {Number} maxValue The max value for the y-axis.
+         * @returns {Object} The chart scales.
+         */
+        createChartScales: function () {
+            const gridLines = {
+                color: "rgba(0, 0, 0, 1)",
+                display: true,
+                drawBorder: true,
+                drawOnChartArea: false
+            };
+
+            return {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: this.$t("additional:modules.tools.gfi.themes.verkehrsstaerken.year")
+                    },
+                    ticks: {
+                        min: this.dataset[0].year,
+                        max: this.dataset[this.dataset.length - 1].year
+                    },
+                    gridLines: gridLines
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: this.createDatasetLabel(this.category)
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    gridLines: gridLines
+                }]
+            };
+        },
+
         /**
          * Changes the category of the graph
          * @param {Event} evt Click event
          * @returns {void}
          */
-        changeKategory (evt) {
-            const graphEls = document.getElementsByClassName("graph"),
-                btnGroupEl = document.getElementById(
+        changeCategory (evt) {
+            const graphElements = document.getElementsByClassName("graph"),
+                buttonGroupElements = document.getElementById(
                     "verkehrsstaerken-btn-group"
                 ),
-                graphElChilds =
-                    graphEls && graphEls.length && graphEls[0]
-                        ? graphEls[0].children
+                graphElementChildren =
+                    graphElements && graphElements.length && graphElements[0]
+                        ? graphElements[0].children
                         : [],
-                btns = btnGroupEl ? btnGroupEl.children : [];
+                buttons = buttonGroupElements ? buttonGroupElements.children : [];
 
             this.category = evt.currentTarget.id;
-            if (graphElChilds.length > 1) {
+            if (graphElementChildren.length > 1) {
                 // remove the graph-svg
-                graphElChilds[1].remove();
+                graphElementChildren[1].remove();
             }
-            btns.forEach((btn) => {
-                if (btn.id !== evt.currentTarget.id) {
-                    btn.className = btn.className.replace("active", "");
+            buttons.forEach((button) => {
+                if (button.id !== evt.currentTarget.id) {
+                    button.className = button.className.replace("active", "");
                 }
                 else {
-                    btn.className += " active";
+                    button.className += " active";
                 }
             });
-            this.createD3Document(evt.currentTarget.id);
+            this.drawChart();
         },
 
         /**
@@ -116,20 +261,13 @@ export default {
          * @returns {String}  the key of the given category in dataset
          */
         getKeyByCategoryFromDataset (category) {
-            switch (category) {
-                case "DTV": {
-                    return "DTV";
-                }
-                case "DTVw": {
-                    return "DTVw";
-                }
-                case "HGVsPerWeek": {
-                    return "Schwerverkehrsanteil am DTVw";
-                }
-                default: {
-                    return "";
-                }
-            }
+            const categories = {
+                DTV: "DTV",
+                DTVw: "DTVw",
+                HGVsPerWeek: "Schwerverkehrsanteil am DTVw"
+            };
+
+            return categories[category];
         }
     }
 };
@@ -151,7 +289,7 @@ export default {
                 type="button"
                 class="btn btn-default kat active"
                 title="Durchschnittliche tägliche Verkehrsstärken (Mo-So)"
-                @click="changeKategory"
+                @click="changeCategory"
             >
                 {{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.DTV") }}
             </button>
@@ -160,7 +298,7 @@ export default {
                 type="button"
                 class="btn btn-default kat"
                 title="Durchschnittliche werktägliche Verkehrsstärken (Mo-Fr)"
-                @click="changeKategory"
+                @click="changeCategory"
             >
                 {{
                     $t("additional:modules.tools.gfi.themes.verkehrsstaerken.DTVw")
@@ -171,7 +309,7 @@ export default {
                 type="button"
                 class="btn btn-default kat"
                 title="Schwerverkehrsanteil am DTVw"
-                @click="changeKategory"
+                @click="changeCategory"
             >
                 {{
                     $t(
@@ -180,11 +318,8 @@ export default {
                 }}
             </button>
         </div>
-        <div
-            :id="'d3-div-' + category"
-            class="graph"
-        >
-            <div class="graph-tooltip-div" />
+        <div id="verkehrsstaerken-chart-container">
+            <canvas />
         </div>
     </div>
 </template>
@@ -197,40 +332,9 @@ export default {
     .btn-group{
         padding: 8px;
     }
-    .data {
-        white-space: nowrap;
-        padding-left: 0px;
-    }
-    .graph {
-        position: relative;
-    }
-    .line {
-        fill: none;
-        stroke: steelblue;
-        stroke-width: 2px;
-    }
-    .dot {
-        cursor: pointer;
-        stroke: none;
-        fill: steelblue;
-    }
-    .dot_visible {
-        cursor: pointer;
-        stroke: none;
-        fill: red;
-    }
-    .dot_invisible {
-        display: none;
-    }
-    .graph-tooltip-div {
-        transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        display: inline-block;
+    #verkehrsstaerken-chart-container {
         position: absolute;
-        color: black;
-        padding: 2px;
-        border: 2px solid white;
+        width: 27vw;
     }
 }
 </style>
