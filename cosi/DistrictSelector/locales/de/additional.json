@@ -5,6 +5,7 @@
                 "districtSelector": {
                     "title": "Gebiet auswählen",
                     "dropdownLabel": "Bitte wählen Sie einen Bezugsrahmen aus:",
+                    "districtLevel": "Bezugsrahmen",
                     "multiDropdownLabel": "Gebiete:",
                     "inputLabel": "Puffer[m] (optional)",
                     "additionalLayer": "Hilfsebenen",

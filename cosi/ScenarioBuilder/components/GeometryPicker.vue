@@ -93,9 +93,17 @@ export default {
     created () {
         this.createDrawingLayer();
     },
+    beforeDestroy () {
+        this.unlisten();
+        this.clearDrawPolygon();
+    },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 
+        /**
+         * todo
+         * @returns {void}
+         */
         createDrawingLayer () {
             const newLayer = createLayer(this.id + "_draw");
 
@@ -104,6 +112,12 @@ export default {
 
             return newLayer;
         },
+
+        /**
+         * todo
+         * @param {String} type - the geom type as GML (e.g. gmlPointGeometryType)
+         * @returns {void}
+         */
         toggleLocationPicker (type) {
             // toggle the button active
             this.locationPickerActive = !this.locationPickerActive;
@@ -118,6 +132,12 @@ export default {
                 this.unlisten();
             }
         },
+
+        /**
+         * Toggles the event listener for drawing / location picking on
+         * Action depends on the set geometry tyoe
+         * @returns {void}
+         */
         listen () {
             if (this.geometry.type === "Point") {
                 this.map.addEventListener("click", this.pickLocation);
@@ -137,6 +157,12 @@ export default {
                 this.locationPickerActive = false;
             }
         },
+
+        /**
+         * Toggles the event listener for drawing / location picking off
+         * Destroys all interactions
+         * @returns {void}
+         */
         unlisten () {
             if (this.geometry.type === "Point") {
                 this.map.removeEventListener("click", this.pickLocation);
@@ -151,18 +177,41 @@ export default {
             // unlisten to the searchbar
             Radio.off("Searchbar", "hit");
         },
+
+        /**
+         * Sets the picked location as new Point geometry
+         * @param {Event} evt - the map click event
+         * @returns {void}
+         */
         pickLocation (evt) {
             this.geometry.value = new Point(evt.coordinate);
             this.placingPointMarker(evt.coordinate);
         },
+
+        /**
+         * Resets the entered location / geometry to null
+         * @returns {void}
+         */
         resetLocation () {
             this.geometry.value = null;
             this.removePointMarker();
             this.clearDrawPolygon();
         },
+
+        /**
+         * Picks the coordinates for a Point geometry from the search results
+         * @listens Searchbar#RadioTriggersHit
+         * @returns {void}
+         */
         pickLocationBySearchbar () {
             this.geometry.value = new Point(getSearchResultsCoordinates());
         },
+
+        /**
+         * Picks a polygon geometry from the search results
+         * @listens Searchbar#RadioTriggersHit
+         * @returns {void}
+         */
         pickPolygonBySearchbar () {
             const geometry = getSearchResultsGeometry(),
                 type = geometry?.getType();
@@ -171,6 +220,12 @@ export default {
                 this.geometry.value = geometry;
             }
         },
+
+        /**
+         * Toggles the selection of polygon features as geometry on/off
+         * Switches back to drawing if off
+         * @returns {void}
+         */
         togglePickPolygon () {
             this.pickPolygonActive = !this.pickPolygonActive;
             this.unlisten();
@@ -183,6 +238,11 @@ export default {
                 this.drawPolygon();
             }
         },
+
+        /**
+         * Sets the Select interaction for picking polygons
+         * @returns {void}
+         */
         pickPolygon () {
             this.polygonSelect = new Select({
                 layers: this.activeVectorLayerList,
@@ -192,6 +252,13 @@ export default {
             this.map.addInteraction(this.polygonSelect);
             this.polygonSelect.on("select", this.onPolygonSelect.bind(this));
         },
+
+        /**
+         * EventHandler for a polygon selection
+         * Sets the geometry value to a clone of the selected polygon, if possible
+         * @param {Event} evt - the selection event
+         * @returns {void}
+         */
         onPolygonSelect (evt) {
             const feature = evt.selected[0],
                 geometry = feature?.getGeometry(),
@@ -201,6 +268,11 @@ export default {
                 this.geometry.value = geometry.clone();
             }
         },
+
+        /**
+         * Sets the Draw interaction for drawing polygons
+         * @returns {void}
+         */
         drawPolygon () {
             this.drawPolygonInteraction = new Draw({
                 source: this.drawLayer.getSource(),
@@ -212,18 +284,49 @@ export default {
             this.drawPolygonInteraction.on("drawstart", this.onDrawPolygonStart.bind(this));
             this.drawPolygonInteraction.on("drawend", this.onDrawPolygonEnd.bind(this));
         },
+
+        /**
+         * Removes any drawn polygons
+         * @returns {void}
+         */
         clearDrawPolygon () {
             this.drawLayer.getSource().clear();
         },
+
+        /**
+         * Undoes the last drawing step from the draw interaction
+         * @returns {void}
+         */
         undoDrawPolygonStep () {
             this.drawPolygonInteraction.removeLastPoint();
         },
+
+        /**
+         * EventHandler for polygon drawing start
+         * Clears possible previous drawings
+         * @param {Event} evt - the drawStart event
+         * @returns {void}
+         */
         onDrawPolygonStart () {
             this.clearDrawPolygon();
         },
+
+        /**
+         * EventHandler for polygon drawing end
+         * Sets the geometry value to a clone of the selected polygon, if possible
+         * and draws the polygon to the drawing layer
+         * @param {Event} evt - the drawStart event
+         * @returns {void}
+         */
         onDrawPolygonEnd (evt) {
             this.geometry.value = evt.feature.getGeometry();
         },
+
+        /**
+         * Tries to generate a new polygon from the text input in the input field
+         * @param {number[]} coords - the provided coord array
+         * @returns {void}
+         */
         drawPolygonByCoords (coords) {
             try {
                 const polygon = new Polygon(coords),
@@ -237,6 +340,12 @@ export default {
                 console.warn("GeometryPicker: The entered geometry is not a valid Polygon. Please check the List of Coordinates.");
             }
         },
+
+        /**
+         * Tries to generate a new point from the text input in the input field
+         * @param {number[]} coords - the provided coords
+         * @returns {void}
+         */
         drawPointByCoords (coords) {
             try {
                 this.geometry.value = new Point(coords);
@@ -246,6 +355,13 @@ export default {
                 console.warn("GeometryPicker: The entered geometry is not a valid Point. Please check the List of Coordinates.");
             }
         },
+
+        /**
+         * Handles manual input in the geom text field
+         * triggers the generation of a geometry from text input
+         * @param {String} value - the provided string value, should be at least a single point [x,y]
+         * @returns {void}
+         */
         setGeomByInput (value) {
             let coords;
 
@@ -305,6 +421,7 @@ export default {
                         depressed
                         small
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.undo')"
+                        :disabled="!locationPickerActive"
                         @click="undoDrawPolygonStep"
                     >
                         <span v-if="useIcons">
@@ -321,6 +438,7 @@ export default {
                         small
                         :color="pickPolygonActive ? 'warning' : ''"
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.pick')"
+                        :disabled="!locationPickerActive"
                         @click="togglePickPolygon"
                     >
                         <span v-if="useIcons">

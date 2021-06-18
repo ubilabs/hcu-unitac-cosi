@@ -11,6 +11,7 @@ import {
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
+import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 
 export const methodConfig = {store: null};
 export default {
@@ -246,41 +247,11 @@ export default {
      * @returns {void}
      */
     setSearchResultToOrigin: function () {
-        let features = this.markerPoint.getSource().getFeatures();
+        const coord = getSearchResultsCoordinates();
 
-        if (features.length === 1) {
-            // single point
-            const coord = features[0].getGeometry().getCoordinates(),
-                pcoord = Proj.transform(coord, "EPSG:25832", "EPSG:4326");
-
-            this.coordinate = pcoord;
+        if (coord) {
+            this.coordinate = coord;
             this.setBySearch = true;
-        }
-        else {
-            // single polygon
-            features = this.markerPolygon.getSource().getFeatures();
-            if (features.length === 1) {
-                const pts = features[0].getGeometry().getInteriorPoints();
-
-                if (pts.getPoints().length === 1) {
-                    const pcoord = Proj.transform(
-                        pts.getPoints()[0].getCoordinates().slice(0, 2),
-                        "EPSG:25832",
-                        "EPSG:4326"
-                    );
-
-                    this.coordinate = pcoord;
-                    this.setBySearch = true;
-                }
-                else if (pts.getPoints().length > 1) {
-                    const geo = features[0].getGeometry(),
-                        coords = Extent.getCenter(geo.getExtent()),
-                        pcoord = Proj.transform(coords, "EPSG:25832", "EPSG:4326");
-
-                    this.coordinate = pcoord;
-                    this.setBySearch = true;
-                }
-            }
         }
     },
     /**

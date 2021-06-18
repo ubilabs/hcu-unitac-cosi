@@ -26,7 +26,7 @@ export default {
             deep: true,
             handler () {
                 if (this.currentStatsFeatures?.length > 0) {
-                    this.appendStatsToDistricts(this.currentStatsFeatures);
+                    this.appendStatsToDistricts({statsFeatures: this.currentStatsFeatures});
                 }
             }
         }

@@ -383,7 +383,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      * @returns {object} the grouped table
      */
     groupTable (table) {
-        const values = store.getters["Tools/DistrictLoader/getAllCategories"],
+        const values = store.getters["Tools/DistrictLoader/mapping"],
             metaInfo = {
                 group: "Gebietsinformation",
                 values: table.reduce((meta, col) => {
@@ -957,7 +957,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
      */
     updateFilter: function () {
         this.get("filterDropdownModel").set("values", [
-            ...store.getters["Tools/DistrictLoader/getAllCategories"],
+            ...store.getters["Tools/DistrictLoader/mapping"],
             ...this.get("customFilters")
         ]);
     },
