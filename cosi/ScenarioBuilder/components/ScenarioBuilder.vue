@@ -146,7 +146,7 @@ export default {
          * @returns {void}
          */
         createGuideLayer () {
-            const newLayer = createLayer(this.id);
+            const newLayer = createLayer(this.id + "_layer");
 
             newLayer.setVisible(true);
             newLayer.setStyle(featureTagStyle);
