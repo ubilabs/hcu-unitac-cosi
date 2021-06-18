@@ -127,7 +127,11 @@ export default {
                 anteil_unter3_fam_proz: ["kita.anteil_unter3_fam_proz", "kita.fallzahlen.anteil_unter3_fam_proz"],
                 kinder_vorschulischer_sf: ["kita.kinder_vorschulischer_sf", "kita.fallzahlen.kinder_vorschulischer_sf", "kita.hint.kinder_vorschulischer_sf"],
                 hoher_anteil_migrhintergrund_u6: ["kita.hoher_anteil_migrhintergrund_u6", "kita.fallzahlen.hoher_anteil_migrhintergrund_u6", "kita.hint.hoher_anteil_migrhintergrund_u6", "kita.hint.hoher_anteil_migrhintergrund_u6_1", "kita.hint.hoher_anteil_migrhintergrund_u6_2", "kita.hint.hoher_anteil_migrhintergrund_u6_3", "kita.hint.hoher_anteil_migrhintergrund_u6_4", "kita.hint.hoher_anteil_migrhintergrund_u6_5"],
-                hoher_anteil_nicht_dt_spr_kl1: ["kita.hoher_anteil_nicht_dt_spr_kl1", "kita.berechnungsgrundlage.hoher_anteil_nicht_dt_spr_kl1", "kita.hint.hoher_anteil_nicht_dt_spr_kl1"]
+                hoher_anteil_nicht_dt_spr_kl1: ["kita.hoher_anteil_nicht_dt_spr_kl1", "kita.berechnungsgrundlage.hoher_anteil_nicht_dt_spr_kl1", "kita.hint.hoher_anteil_nicht_dt_spr_kl1"],
+                anteil_nutzer_bevölkerung_6_9: ["jugendmusikschulen_anteil"],
+                anteil_nutzer_bevölkerung_10_15: ["jugendmusikschulen_anteil"],
+                anzahl_nutzer_6_9: ["jugendmusikschulen_anzahl"],
+                anteil_nutzer_10_15: ["jugendmusikschulen_anzahl"]
             }
         };
     },

@@ -299,12 +299,19 @@ export class BildungsatlasApi {
         if (!Array.isArray(jsonData) || !jsonData.length) {
             return false;
         }
-        const feature = jsonData[0];
+        const feature = jsonData[0],
+            complexType = feature instanceof Feature ? feature.get(propertyName) : false;
 
-        if (!(feature instanceof Feature)) {
-            return false;
+        if (
+            typeof complexType === "object" && complexType !== null
+            && typeof complexType.values === "object" && complexType.values !== null
+            && !Array.isArray(complexType.values)
+        ) {
+            // a complexType with a single value in values is received as single object instead of an array with one item
+            complexType.values = [complexType.values];
         }
-        return feature.get(propertyName);
+
+        return complexType;
     }
 
     /**

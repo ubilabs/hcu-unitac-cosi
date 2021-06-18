@@ -146,7 +146,11 @@
                         "betr_quote_unter3_proz": "Betreuungsquote der unter 3-Jährigen*",
                         "betr_quote_2_proz": "Betreuungsquote der 2-Jährigen*",
                         "anteil_unter3_fam_proz": "Anteil der betreuten unter 3-Jährigen mit nicht-deutscher Familiensprache",
-                        "anteil_3_schuleintritt_fam_proz": "Anteil der betreuten 3- bis 5-Jährigen mit nicht-deutscher Familiensprache"
+                        "anteil_3_schuleintritt_fam_proz": "Anteil der betreuten 3- bis 5-Jährigen mit nicht-deutscher Familiensprache",
+                        "anteil_nutzer_bevölkerung_6_9": "Nutzung der JMS-Angebote der 6- bis 9-Jährigen",
+                        "anteil_nutzer_bevölkerung_10_15": "Nutzung der JMS-Angebote der 10- bis 15-Jährigen",
+                        "anzahl_nutzer_6_9": "Nutzung der JMS-Angebote der 6- bis 9-Jährigen",
+                        "anteil_nutzer_10_15": "Nutzung der JMS-Angebote der 10- bis 15-Jährigen"
                     },
                     "general": {
                         "district": "Bezirk",
@@ -425,6 +429,14 @@
                                     "text": "*) Die Standardabweichung ist ein statistisches Maß für die Streuung der Einzelwerte um ihr gemeinsames arithmetisches Mittel."
                                 }
                             }
+                        },
+                        "jugendmusikschulen_anteil": {
+                            "title": "Anteil der Kinder und Jugendlichen im Stadtteil, die Angebote der Jugendmusikschule nutzen",
+                            "text": "Die Karte bildet den Anteil der Nutzerinnen und Nutzer der Jugendmusikschulen an allen Kindern und Jugendlichen im Stadtteil in der jeweiligen Altersgruppe ab. Dargestellt werden die Nutzerinnen und Nutzer, die den kostenpflichtigen Unterricht der Jugendmusikschule oder die Kooperationsangebote im Vor- und Nachmittagsunterricht nutzen. Die Kennzahl stellt dar, inwieweit Kinder und Jugendliche in den verschiedenen Stadtteilen den gebührenpflichtigen Unterricht der Jugendmusikschule in Anspruch nehmen."
+                        },
+                        "jugendmusikschulen_anzahl": {
+                            "title": "Anzahl der Kinder und Jugendlichen im Stadtteil, die Angebote der Jugendmusikschule nutzen",
+                            "text": "Die Karte bildet die Anzahl der Nutzerinnen und Nutzer der Jugendmusikschulen an allen Kindern und Jugendlichen im Stadtteil in der jeweiligen Altersgruppe ab. Dargestellt werden die Nutzerinnen und Nutzer, die den kostenpflichtigen Unterricht der Jugendmusikschule oder die Kooperationsangebote im Vor- und Nachmittagsunterricht nutzen. Die Kennzahl stellt dar, inwieweit Kinder und Jugendliche in den verschiedenen Stadtteilen den gebührenpflichtigen Unterricht der Jugendmusikschule in Anspruch nehmen."
                         }
                     }
                 },
