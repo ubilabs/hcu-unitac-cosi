@@ -1,14 +1,10 @@
 <script>
 import {mapGetters} from "vuex";
-import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
+import {optimizeValueRootedInComplexType} from "../../../utils/complexType.js";
 
 export default {
     name: "BildungsatlasSchulenEinzugsgebiete",
     props: {
-        feature: {
-            type: Object,
-            required: true
-        },
         /**
          * checks if the given tab name is currently active
          * @param {String} tab the tab name
@@ -17,48 +13,73 @@ export default {
         isActiveTab: {
             type: Function,
             required: true
+        },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
+        /**
+         * Parsing the text with Html Tags into Html Format
+         * @param {String} str the text
+         * @returns {String} html format text
+         */
+        parseTranslationInHtml: {
+            type: Function,
+            required: true
+        },
+
+        feature: {
+            type: Object,
+            required: true
+        },
+
+        /**
+         * the featureType of current layer
+         */
+        featureType: {
+            type: String,
+            required: true
+        },
+
+        /**
+         * the properties as a key value object
+         */
+        properties: {
+            type: Object,
+            required: true
+        },
+        /**
+         * the BildungsatlasApi to access data via wfs with
+         */
+        api: {
+            type: Object,
+            required: true
         }
     },
     data () {
         return {
             name: "",
-            id: "",
             address: "",
             countStudents: "",
             countStudentsPrimary: "",
             countStudentsSecondary: "",
-            socialIndex: "",
-            /**
-             * layer name of internal layer with statistical areas
-             * @type {String}
-             */
-            layernameAreas: "internal Layer for Einzugsgebiete",
-            /**
-             * layer theme to select school layers for Einzugsgebiete
-             * @type {String}
-             */
-            layerTheme: "schulenEinzugsgebiete",
-            /**
-             * kind of Einzugsgebiet delivired by feature primary || secondary
-             * @type {String}
-             */
-            schoolKey: "",
-            hintText: "Zur Abfrage der Schülerzahlen bewegen Sie den Mauszeiger auf ein Gebiet."
+            layernameAreas: "Einzugsgebiete",
+            layerStatistischeGebiete: {},
+            areaInfo: []
         };
     },
     computed: {
         ...mapGetters({
             isMobile: "mobile"
         }),
-
-        // The Properties of current layer
-        getProperties () {
-            if (this.feature && typeof this.feature === "object" && this.feature?.getProperties) {
-                return this.feature.getProperties();
-            }
-
-            return {};
-        },
 
         // The Theme of current layer
         getGfiTheme () {
@@ -85,6 +106,14 @@ export default {
             }
 
             return "";
+        },
+
+        hintText () {
+            if (this.isMobile) {
+                return this.translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.hintMobile");
+            }
+
+            return this.translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.hintText");
         }
     },
     watch: {
@@ -97,17 +126,19 @@ export default {
         feature: function (newVal, oldVal) {
             if (oldVal) {
                 this.reset(oldVal);
-                this.create();
+                this.refreshGfi();
+            }
+        },
+
+        areaInfo: function (newVal) {
+            if (newVal) {
+                this.filterAreasById(this.layerStatistischeGebiete);
             }
         }
     },
-    created: function () {
-        if (this.isMobile) {
-            this.hintText = "In der mobilen Ansicht ist keine Abfrage der Schülerzahlen möglich.";
-        }
-    },
+
     mounted () {
-        this.create();
+        this.refreshGfi();
     },
     beforeDestroy: function () {
         this.reset(null);
@@ -117,64 +148,58 @@ export default {
         /**
          * Sets this GFI
          * @listens Layer#RadioTriggerLayerFeaturesLoaded
-         * @returns {Void} -
+         * @returns {void}
          */
-        create: function () {
-            if (this.parseGfiContent(this.getProperties)) {
-                const layerEinzugsgebiete = this.getEinzugsgebieteLayer(),
-                    layerStatistischeGebiete = this.getStatisticAreasLayer(),
-                    id = this.id,
-                    schoolKey = this.schoolKey,
-                    countStudents = this.countStudents;
-
-                Backbone.Events.listenTo(Radio.channel("VectorLayer"), {
-                    "featuresLoaded": this.onFeaturesLoadedEvent
-                });
-
-                if (layerEinzugsgebiete) {
-                    this.filterFeature(layerEinzugsgebiete, [this.getGfiId]);
-                }
-                else {
-                    console.warn("Missing data for school filter");
-                }
-
-                if (layerStatistischeGebiete && id !== "" && schoolKey !== "" && countStudents !== "") {
-                    this.filterAreasById(layerStatistischeGebiete, id, schoolKey, countStudents);
-                }
-                else {
-                    console.warn("Missing data for area filter");
-                }
+        refreshGfi: function () {
+            if (!this.properties || typeof this.properties !== "object") {
+                return;
             }
+
+            this.getGfiContent(this.properties);
+            this.layerStatistischeGebiete = this.getStatisticAreasLayer();
+
+            const layerEinzugsgebiete = this.getEinzugsgebieteLayer();
+
+            Backbone.Events.listenTo(Radio.channel("VectorLayer"), {
+                "featuresLoaded": this.onFeaturesLoadedEvent
+            });
+
+            if (layerEinzugsgebiete) {
+                this.filterFeature(layerEinzugsgebiete, [this.getGfiId]);
+            }
+            else {
+                console.warn("Missing data for school filter");
+            }
+
+            if (this.layerStatistischeGebiete) {
+                this.filterAreasById(this.layerStatistischeGebiete);
+            }
+            else {
+                console.warn("Missing data for area filter");
+            }
+
+            this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.info"));
         },
 
         /**
          * Filters the areas by schoolId
          * @param   {ol/layer/Layer} layer Layer with statistical areas
-         * @param   {String} id schoolId
-         * @param   {String} schoolKey schoolKey
-         * @param   {String} countStudents countStudents
          * @returns {Void} -
          */
-        filterAreasById: function (layer, id, schoolKey, countStudents) {
+        filterAreasById: function (layer) {
             const areas = layer.get("layer").getSource().getFeatures(),
                 featureIds = [];
 
-            areas.forEach(function (area) {
-                const schools = area.get(schoolKey);
-
-                if (schools) {
-                    schools.forEach(function (school) {
-                        if (school.schulId === id) {
-                            // remember ids of areas with influence of school
-                            featureIds.push(area.getId());
-                            // set styling category to those areas
-                            area.set("styling", this.getCategory(school.anteil));
-                            // set mouse hover field with more informations
-                            area.set("text", this.getText(school.anteil, countStudents));
-                        }
-                    }.bind(this));
-                }
-            }.bind(this));
+            areas.forEach(area => {
+                this.areaInfo.forEach(val => {
+                    if (area.get("statgeb_id") === val.statgeb_id) {
+                        // remember ids of areas with influence of school
+                        featureIds.push(area.getId());
+                        area.set("einzugsgebiete", optimizeValueRootedInComplexType(val.anteil_sus_schule_stageb_an_anzahl_sus_schule));
+                        area.set("einzugsGebieteStatistik", this.getMouseoverText(optimizeValueRootedInComplexType(val.anteil_sus_schule_stageb_an_anzahl_sus_schule), val.anzahl_sus_schule_stageb));
+                    }
+                });
+            });
 
             layer.setIsSelected(true);
             this.filterFeature([layer], featureIds);
@@ -188,13 +213,11 @@ export default {
         onFeaturesLoadedEvent: function (layerId) {
             const conf = this.getStatisticAreasConfig(),
                 layerStatistischeGebiete = this.getStatisticAreasLayer(),
-                id = this.id,
-                schoolKey = this.schoolKey,
                 countStudents = this.countStudents;
 
             if (layerId === conf.id) {
-                if (layerStatistischeGebiete && id !== "" && schoolKey !== "" && countStudents !== "") {
-                    this.filterAreasById(layerStatistischeGebiete, id, schoolKey, countStudents);
+                if (layerStatistischeGebiete && countStudents !== "") {
+                    this.filterAreasById(layerStatistischeGebiete, countStudents);
                 }
                 else {
                     console.warn("Missing data for area filter");
@@ -204,82 +227,79 @@ export default {
 
         /**
          * returns  the text as hover ionformation
-         * @param   {Number} value anteil in %
-         * @param   {Number} countStudents count students
-         * @returns {String} text
+         * @param   {Number} propertion the propertion of students in this area from current school
+         * @param   {String} count the count of students in this area from current school
+         * @returns {String} Mouseover text
          */
-        getText: function (value, countStudents) {
-            const proportion = Math.round(countStudents * value / 100);
-
-            return "Anteil " + String(Math.round(value)) + "% (Anzahl: " + proportion + ")";
-        },
-
-        /**
-         * returns the category to render area features
-         * @param   {Number} value anteil in %
-         * @returns {String} styling
-         */
-        getCategory: function (value) {
-            if (value < 5) {
-                return "<5";
-            }
-            else if (value < 10) {
-                return "<10";
-            }
-            else if (value < 15) {
-                return "<15";
-            }
-            else if (value < 30) {
-                return "<30";
-            }
-            return ">=30";
+        getMouseoverText: function (propertion, count) {
+            return "Anteil " + propertion.toFixed(2) + "% (Anzahl: " + count + ")";
         },
 
         /**
          * parses the gfiContent and sets all variables
-         * @param {Object} attr gfi properties
-         * @returns {Boolean} valid true if gfiContent could be parsed
+         * @param {Object} properties gfi properties
+         * @returns {void}
          */
-        parseGfiContent: function (attr) {
-            if (attr && Object.keys(attr).length !== 0) {
-                if (attr.C_S_Nr) {
-                    this.id = String(attr.C_S_Nr);
-                }
-                if (attr.C_S_Name) {
-                    this.name = attr.C_S_Name;
-                }
-                if (attr.C_S_Str && attr.C_S_HNr && attr.C_S_PLZ && attr.C_S_Ort) {
-                    this.address = attr.C_S_Str + " " + attr.C_S_HNr + ", " + attr.C_S_PLZ + " " + attr.C_S_Ort;
-                }
-                if (attr.C_S_SuS_PS && attr.C_S_SuS_S1) {
-                    this.countStudents = thousandsSeparator(String(parseInt(attr.C_S_SuS_PS, 10) + parseInt(attr.C_S_SuS_S1, 10) + parseInt(attr.C_S_SuS_S2, 10)));
-                }
-                if (attr.C_S_SuS_PS) {
-                    this.countStudentsPrimary = thousandsSeparator(attr.C_S_SuS_PS.toString());
-                }
-                if (attr.C_S_SuS_S1) {
-                    this.countStudentsSecondary = thousandsSeparator(attr.C_S_SuS_S1.toString());
-                }
-                if (attr.C_S_SI) {
-                    this.socialIndex = attr.C_S_SI === "-1" ? "nicht vergeben" : attr.C_S_SI;
-                }
-                if (attr.schoolKey) {
-                    this.schoolKey = attr.schoolKey;
-                }
+        getGfiContent: function (properties) {
+            const schulId = properties.schul_id ? properties.schul_id.split("-").shift() : "",
+                featureTypes = ["de.hh.up:einzug_einzugsgebiete_primarstufe", "de.hh.up:einzug_einzugsgebiete_sekundarstufe"];
 
-                return true;
+            this.name = properties.schulname ? properties.schulname : "";
+            this.address = properties.adresse_strasse_hausnr && properties.adresse_ort ? properties.adresse_strasse_hausnr + ", " + properties.adresse_ort : "";
+            this.countStudents = properties.anzahl_schueler ? properties.anzahl_schueler : "";
+
+            if (schulId === "") {
+                return;
             }
 
-            return false;
+            this.parseEinzugsGebieteLayer(this.featureType, featureTypes, schulId);
+        },
+
+        /**
+         * parses the data from einzugsGebiete Layer
+         * @param {String} currentFeatureType current Feature Type
+         * @param {String[]} featureTypes the two feature types
+         * @param {String} schulId the school Id
+         * @returns {void}
+         */
+        parseEinzugsGebieteLayer: function (currentFeatureType, featureTypes, schulId) {
+            featureTypes.forEach(featureType => {
+                this.api.getEinzugsgebieteValue(featureType, "schule_id", schulId, value => {
+                    if (Array.isArray(value) && value.length) {
+                        value.forEach(data => {
+                            if (featureType === "de.hh.up:einzug_einzugsgebiete_primarstufe") {
+                                this.countStudentsPrimary = data.get("anzahl_sus_schule") ? data.get("anzahl_sus_schule") : 0;
+                            }
+                            else {
+                                this.countStudentsSecondary = data.get("anzahl_sus_schule") ? data.get("anzahl_sus_schule") : 0;
+                            }
+
+                            const areaInfo = {
+                                "statgeb_id": data.get("statgeb_id") ? data.get("statgeb_id") : "",
+                                "anzahl_sus_schule_stageb": data.get("anzahl_sus_schule_stageb") ? data.get("anzahl_sus_schule_stageb") : "",
+                                "anteil_sus_schule_stageb_an_anzahl_sus_schule": data.get("anteil_sus_schule_stageb_an_anzahl_sus_schule") ? data.get("anteil_sus_schule_stageb_an_anzahl_sus_schule") : ""
+                            };
+
+                            this.areaInfo.push(areaInfo);
+                        });
+                    }
+                    else if (featureType === "de.hh.up:einzug_einzugsgebiete_primarstufe") {
+                        this.countStudentsPrimary = 0;
+                    }
+                    else {
+                        this.countStudentsSecondary = 0;
+                    }
+                }, error => {
+                    console.error(error);
+                });
+            });
         },
 
         /**
          * requests the Modellist for all layer of einzugsgebiete
          * @param {Object} feature - the feature to be reset
          * @fires Core.ModelList#RadioRequestModelListGetModelsByAttributes
-         * @returns {(ol/layer/Layer[]|Boolean)}
-
-         layers
+         * @returns {(ol/layer/Layer[]|Boolean)} layers
          */
         getEinzugsgebieteLayer: function (feature) {
             let layers = [],
@@ -298,7 +318,7 @@ export default {
             layers = Radio.request("ModelList", "getModelsByAttributes", {"gfiTheme": gfiTheme, "name": gfiName});
 
             if (!layers || layers.length === 0) {
-                console.warn("No layer configuration with gfiTheme: " + this.layerTheme);
+                console.warn("No layer configuration with gfiTheme: schulenEinzugsgebiete");
 
                 return false;
             }
@@ -428,24 +448,20 @@ export default {
                 </thead>
                 <tbody>
                     <tr colspan="2">
-                        <td>Adresse:</td>
+                        <td>{{ translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.address") }}</td>
                         <td>{{ address }}</td>
                     </tr>
                     <tr colspan="2">
-                        <td>Gesamtzahl der Schüler:</td>
+                        <td>{{ translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.totalCount") }}</td>
                         <td>{{ countStudents }}</td>
                     </tr>
                     <tr colspan="2">
-                        <td>davon in der Primarstufe:</td>
+                        <td>{{ translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.primaryCount") }}</td>
                         <td>{{ countStudentsPrimary }}</td>
                     </tr>
                     <tr colspan="2">
-                        <td>davon in der Sekundarstufe:</td>
+                        <td>{{ translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.secondaryCount") }}</td>
                         <td>{{ countStudentsSecondary }}</td>
-                    </tr>
-                    <tr colspan="2">
-                        <td>Sozialindex:</td>
-                        <td>{{ socialIndex }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -460,23 +476,21 @@ export default {
         <div
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
-        >
-            <h5><b>Einzugsgebiete :</b></h5>
-            <p>Dargestellt werden die Anteile der Schülerinnen und Schüler der angeklickten Schule nach Wohnort. Dabei können Grundschulen, Sonderschulen (Primarstufe) sowie Stadtteilschulen mit integrierter Grundschule angeklickt werden. Ist ein statistisches Gebiet um die angeklickte Schule beispielsweise dunkel eingefärbt, bedeutet dies, dass ein hoher Anteil der Schülerinnen und Schüler dieser Schule in diesem dunkel eingefärbten Gebiet wohnen. Durch Hovern auf ein eingefärbtes statistisches Gebiet wird die Anzahl der Schülerinnen und Schüler angezeigt, die in diesem Gebiet wohnen und die angeklickte Schule besuchen.</p>
-            <p>ACHTUNG: Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p>
-            <p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Primarstufe wohnen.</p>
-        </div>
+        />
     </div>
 </template>
 
 <style lang="less" scoped>
     .gfi-school-catchment-area {
         max-width: 420px;
+
         table {
             &.table {
                 table-layout: fixed;
+                margin-bottom: 0;
+
                 tbody {
-                    tr{
+                    tr {
                         td {
                             &:last-child {
                                 text-align: right;
@@ -486,4 +500,5 @@ export default {
                 }
             }
         }
+    }
 </style>

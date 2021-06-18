@@ -24,6 +24,16 @@ export default {
         },
 
         /**
+         * Parsing the text with Html Tags into Html Format
+         * @param {String} str the text
+         * @returns {String} html format text
+         */
+        parseTranslationInHtml: {
+            type: Function,
+            required: true
+        },
+
+        /**
          * the featureType of current layer
          */
         featureType: {
@@ -77,18 +87,6 @@ export default {
             if (this.infoKey !== "") {
                 this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.fluechtlinge.info." + this.infoKey));
             }
-        },
-
-        /**
-         * Parsing the text with Html Tags into Html Format
-         * @param {String} str the text
-         * @returns {String} html format text
-         */
-        parseTranslationInHtml (str) {
-            const parser = new DOMParser(),
-                doc = parser.parseFromString(str, "text/html");
-
-            return doc.body.innerHTML;
         }
     }
 };

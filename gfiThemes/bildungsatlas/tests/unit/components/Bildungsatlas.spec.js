@@ -214,5 +214,27 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
 
             expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenWohnort"}).exists()).to.be.true;
         });
+        it("should find the child component BildungsatlasSchulenEinzugsgebiete", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasSchulenEinzugsgebiete",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenEinzugsgebiete"}).exists()).to.be.true;
+        });
     });
 });

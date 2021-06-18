@@ -6,7 +6,7 @@ import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
 import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
-import BildungsatlasTest from "./BildungsatlasTest.vue";
+import BildungsatlasSchulenEinzugsgebiete from "./BildungsatlasSchulenEinzugsgebiete.vue";
 
 export default {
     name: "Bildungsatlas",
@@ -17,7 +17,7 @@ export default {
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
         BildungsatlasSchulenWohnort,
-        BildungsatlasTest
+        BildungsatlasSchulenEinzugsgebiete
     },
     props: {
         /**
@@ -116,6 +116,18 @@ export default {
                 console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
             }
             return this.$t(key, options);
+        },
+
+        /**
+         * Parsing the text with Html Tags into Html Format
+         * @param {String} str the text
+         * @returns {String} html format text
+         */
+        parseTranslationInHtml (str) {
+            const parser = new DOMParser(),
+                doc = parser.parseFromString(str, "text/html");
+
+            return doc.body.innerHTML;
         }
     }
 };
@@ -148,6 +160,7 @@ export default {
                 :api="api"
                 :feature-type="featureType"
                 :translate="translate"
+                :parse-translation-in-html="parseTranslationInHtml"
             />
             <div class="gfi-bildungsatlas-footer">
                 <span>

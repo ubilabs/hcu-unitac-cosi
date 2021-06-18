@@ -28,6 +28,16 @@ export default {
             required: true
         },
 
+        /**
+         * Parsing the text with Html Tags into Html Format
+         * @param {String} str the text
+         * @returns {String} html format text
+         */
+        parseTranslationInHtml: {
+            type: Function,
+            required: true
+        },
+
         feature: {
             type: Object,
             required: true
@@ -179,18 +189,6 @@ export default {
                 layerSchools.setIsSelected(false);
             }
             Backbone.Events.stopListening(Radio.channel("VectorLayer"), "featuresLoaded");
-        },
-
-        /**
-         * Parsing the text with Html Tags into Html Format
-         * @param {String} str the text
-         * @returns {String} html format text
-         */
-        parseTranslationInHtml (str) {
-            const parser = new DOMParser(),
-                doc = parser.parseFromString(str, "text/html");
-
-            return doc.body.innerHTML;
         },
 
         /**
