@@ -267,6 +267,75 @@ function isComplexType (data) {
 }
 
 /**
+ * finds gaps in unsorted complex values (comparing with other complex types) and fills them with a neutral value
+ * @param {ComplexType[]} complexTypes a list of complexTypes
+ * @param {*} [fillValue=null] the neutral value to fill gaps with
+ * @returns {ComplexType[]} the same list of complex types with filled gaps, is unsorted, use sortComplexTypes to sort afterwards
+ */
+function compareComplexTypesAndFillDataGaps (complexTypes, fillValue = null) {
+    if (!Array.isArray(complexTypes)) {
+        return complexTypes;
+    }
+    const blueprint = {},
+        assocs = [];
+
+    // generate the blueprint
+    complexTypes.forEach((complexType, idx) => {
+        if (!isComplexType(complexType)) {
+            return;
+        }
+        complexType.values.forEach(item => {
+            if (typeof item === "object" && item !== null && item?.key) {
+                blueprint[item.key] = true;
+                if (!assocs.hasOwnProperty(idx)) {
+                    assocs[idx] = {};
+                }
+                if (item?.value) {
+                    assocs[idx][item.key] = item.value;
+                }
+            }
+        });
+    });
+
+    // apply blueprint
+    complexTypes.forEach((complexType, idx) => {
+        if (!isComplexType(complexType)) {
+            return;
+        }
+
+        complexType.values = [];
+        Object.keys(blueprint).forEach(key => {
+            if (assocs[idx].hasOwnProperty(key)) {
+                complexType.values.push({key, value: assocs[idx][key]});
+            }
+            else {
+                complexType.values.push({key, value: fillValue});
+            }
+        });
+    });
+    return complexTypes;
+}
+
+/**
+ * sorts many complexTypes at once
+ * @info this is necessary after using compareComplexTypesAndFillDataGaps
+ * @param {ComplexType[]} complexTypes the list of complex types to sort at once
+ * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
+ * @returns {ComplexType} a list of clones of the given complex types with sorted values
+ */
+function sortComplexTypes (complexTypes, compareFunction = false) {
+    if (!Array.isArray(complexTypes)) {
+        return complexTypes;
+    }
+    const result = [];
+
+    complexTypes.forEach(complexType => {
+        result.push(sortComplexType(complexType, compareFunction));
+    });
+    return result;
+}
+
+/**
  * sorts a complexType with the given compare function or ascending by its keys by default
  * @param {ComplexType} complexType the complex type to sort
  * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
@@ -422,7 +491,9 @@ export {
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
     isComplexType,
+    compareComplexTypesAndFillDataGaps,
     sortComplexType,
+    sortComplexTypes,
     cloneComplexType,
     hasComplexTypeValues
 };

@@ -7,6 +7,7 @@ import {
     convertComplexTypeToLinechart,
     convertComplexTypesToMultilinechart,
     isComplexType,
+    compareComplexTypesAndFillDataGaps,
     sortComplexType,
     cloneComplexType,
     hasComplexTypeValues
@@ -1538,6 +1539,73 @@ describe("addons/utils/complexType.js", () => {
             };
 
             expect(hasComplexTypeValues(complexType)).to.be.true;
+        });
+    });
+
+    describe("compareComplexTypesAndFillDataGaps", () => {
+        it("should compare complexTypes and fill data gaps", () => {
+            const fillValue = "fillValue",
+                complexTypeA = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "keyA", value: 1},
+                        {key: "keyB", value: 2},
+                        {key: "keyC", value: 3}
+                    ]
+                },
+                complexTypeB = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "keyA", value: 4},
+                        {key: "keyB"},
+                        {key: "keyD", value: 5}
+                    ]
+                },
+                complexTypeC = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "keyB", value: 6},
+                        {key: "keyE", value: 7}
+                    ]
+                },
+                expected = [
+                    {
+                        metadata: {type: "type", format: "format", description: "description"},
+                        values: [
+                            {key: "keyA", value: 1},
+                            {key: "keyB", value: 2},
+                            {key: "keyC", value: 3},
+                            {key: "keyD", value: "fillValue"},
+                            {key: "keyE", value: "fillValue"}
+                        ]
+                    },
+                    {
+                        metadata: {type: "type", format: "format", description: "description"},
+                        values: [
+                            {key: "keyA", value: 4},
+                            {key: "keyB", value: "fillValue"},
+                            {key: "keyC", value: "fillValue"},
+                            {key: "keyD", value: 5},
+                            {key: "keyE", value: "fillValue"}
+                        ]
+                    },
+                    {
+                        metadata: {type: "type", format: "format", description: "description"},
+                        values: [
+                            {key: "keyA", value: "fillValue"},
+                            {key: "keyB", value: 6},
+                            {key: "keyC", value: "fillValue"},
+                            {key: "keyD", value: "fillValue"},
+                            {key: "keyE", value: 7}
+                        ]
+                    }
+                ];
+
+            expect(compareComplexTypesAndFillDataGaps([
+                complexTypeA,
+                complexTypeB,
+                complexTypeC
+            ], fillValue)).to.deep.equal(expected);
         });
     });
 });

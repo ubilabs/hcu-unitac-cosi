@@ -7,6 +7,8 @@ import {
     changeMetadata,
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
+    compareComplexTypesAndFillDataGaps,
+    sortComplexTypes,
     sortComplexType,
     isComplexType,
     hasComplexTypeValues
@@ -284,13 +286,17 @@ export default {
                                     changeMetadata(complexTypeOSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelOSA"));
                                     changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
 
-                                    this.linechartData = convertComplexTypesToMultilinechart([
-                                        sortComplexType(optimizeComplexTypeValues(complexTypeABI, 2)),
-                                        sortComplexType(optimizeComplexTypeValues(complexTypeMSA, 2)),
-                                        sortComplexType(optimizeComplexTypeValues(complexTypeESA, 2)),
-                                        sortComplexType(optimizeComplexTypeValues(complexTypeOSA, 2)),
-                                        sortComplexType(optimizeComplexTypeValues(complexTypeGesamt, 2))
-                                    ]);
+                                    this.linechartData = convertComplexTypesToMultilinechart(
+                                        sortComplexTypes(
+                                            compareComplexTypesAndFillDataGaps([
+                                                optimizeComplexTypeValues(complexTypeABI, 2),
+                                                optimizeComplexTypeValues(complexTypeMSA, 2),
+                                                optimizeComplexTypeValues(complexTypeESA, 2),
+                                                optimizeComplexTypeValues(complexTypeOSA, 2),
+                                                optimizeComplexTypeValues(complexTypeGesamt, 2)
+                                            ])
+                                        )
+                                    );
                                 }
                                 else {
                                     this.linechartData = false;
