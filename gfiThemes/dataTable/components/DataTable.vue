@@ -37,7 +37,7 @@ export default {
     },
     methods: {
         ...mapGetters("Tools/Gfi", Object.keys(getters)),
-        isWebLink,
+        isWebLink
     }
 };
 </script>

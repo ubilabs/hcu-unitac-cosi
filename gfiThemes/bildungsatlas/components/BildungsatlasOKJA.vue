@@ -158,10 +158,10 @@ export default {
                             this.properties?.wochenende_abendoeffnung ? this.properties.wochenende_abendoeffnung : 0
                         ],
                         backgroundColor: [
-                            convertColor([230, 159, 0, 1], "rgbaString"),
-                            convertColor([0, 114, 178, 1], "rgbaString"),
-                            convertColor([240, 228, 66, 1], "rgbaString"),
-                            convertColor([86, 180, 233, 1], "rgbaString")
+                            convertColor([0, 48, 99, 1], "rgbaString"),
+                            convertColor([46, 127, 210, 1], "rgbaString"),
+                            convertColor([255, 130, 102, 1], "rgbaString"),
+                            convertColor([255, 217, 102, 1], "rgbaString")
                         ]
                     }]
                 };
@@ -218,18 +218,18 @@ export default {
                             this.properties?.foerderung_der_medienkompetenz ? this.properties.foerderung_der_medienkompetenz : 0
                         ],
                         backgroundColor: [
-                            convertColor([230, 159, 0, 1], "rgbaString"),
-                            convertColor([86, 180, 233, 1], "rgbaString"),
-                            convertColor([0, 158, 115, 1], "rgbaString"),
-                            convertColor([240, 228, 66, 1], "rgbaString"),
-                            convertColor([0, 114, 178, 1], "rgbaString"),
-                            convertColor([213, 94, 0, 1], "rgbaString"),
-                            convertColor([204, 121, 167, 1], "rgbaString"),
-                            convertColor([230, 159, 0, 1], "rgbaString"),
-                            convertColor([86, 180, 233, 1], "rgbaString"),
-                            convertColor([0, 158, 115, 1], "rgbaString"),
-                            convertColor([240, 228, 66, 1], "rgbaString"),
-                            convertColor([0, 114, 178, 1], "rgbaString")
+                            convertColor([0, 48, 99, 1], "rgbaString"),
+                            convertColor([46, 127, 210, 1], "rgbaString"),
+                            convertColor([255, 88, 51, 1], "rgbaString"),
+                            convertColor([255, 230, 153, 1], "rgbaString"),
+                            convertColor([13, 86, 163, 1], "rgbaString"),
+                            convertColor([255, 172, 153, 1], "rgbaString"),
+                            convertColor([149, 149, 149, 1], "rgbaString"),
+                            convertColor([63, 63, 63, 1], "rgbaString"),
+                            convertColor([255, 217, 102, 1], "rgbaString"),
+                            convertColor([26, 106, 189, 1], "rgbaString"),
+                            convertColor([255, 130, 102, 1], "rgbaString"),
+                            convertColor([4, 66, 132, 1], "rgbaString")
                         ]
                     }]
                 };

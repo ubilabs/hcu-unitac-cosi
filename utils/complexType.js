@@ -162,13 +162,13 @@ function convertComplexTypesToMultilinechart (complexTypes, options = null, line
         datasets = [],
         // default colors - see  https://jfly.uni-koeln.de/color/
         defaultColors = Array.isArray(lineColors) && lineColors.length ? lineColors : [
+            [46, 127, 210, 1],
+            [255, 217, 102, 1],
+            [13, 86, 163, 1],
+            [255, 130, 102, 1],
+            [0, 48, 99, 1],
             [230, 159, 0, 1],
-            [86, 180, 233, 1],
-            [0, 158, 115, 1],
-            [240, 228, 66, 1],
-            [0, 114, 178, 1],
-            [213, 94, 0, 1],
-            [204, 121, 167, 1]
+            [86, 180, 233, 1]
         ];
 
     complexTypes.forEach((complexType, idx) => {
@@ -245,8 +245,8 @@ function convertComplexTypeToBarchart (complexType, options = null) {
             label,
             data,
             // as standard colors we use masterportal standard blue and red
-            backgroundColor: convertColor("#005ca9", "rgbaString"),
-            hoverBackgroundColor: convertColor("#e10019", "rgbaString"),
+            backgroundColor: convertColor("#003063", "rgbaString"),
+            hoverBackgroundColor: convertColor("#B5D8FA", "rgbaString"),
             borderWidth: 1
         }, options)],
         labels

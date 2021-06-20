@@ -409,8 +409,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             384
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -449,8 +449,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             undefined
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -488,8 +488,8 @@ describe("addons/utils/complexType.js", () => {
                             398,
                             381
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -527,8 +527,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             384
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -567,8 +567,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             384
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -1139,8 +1139,8 @@ describe("addons/utils/complexType.js", () => {
                                 381,
                                 384
                             ],
-                            backgroundColor: "rgba(230, 159, 0, 1)",
-                            borderColor: "rgba(230, 159, 0, 1)",
+                            backgroundColor: "rgba(46, 127, 210, 1)",
+                            borderColor: "rgba(46, 127, 210, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1157,8 +1157,8 @@ describe("addons/utils/complexType.js", () => {
                                 81,
                                 84
                             ],
-                            backgroundColor: "rgba(86, 180, 233, 1)",
-                            borderColor: "rgba(86, 180, 233, 1)",
+                            backgroundColor: "rgba(255, 217, 102, 1)",
+                            borderColor: "rgba(255, 217, 102, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1213,8 +1213,8 @@ describe("addons/utils/complexType.js", () => {
                             81,
                             84
                         ],
-                        backgroundColor: "rgba(86, 180, 233, 1)",
-                        borderColor: "rgba(86, 180, 233, 1)",
+                        backgroundColor: "rgba(255, 217, 102, 1)",
+                        borderColor: "rgba(255, 217, 102, 1)",
                         borderWidth: 2,
                         fill: false,
                         lineTension: 0,
@@ -1275,8 +1275,8 @@ describe("addons/utils/complexType.js", () => {
                                 381,
                                 384
                             ],
-                            backgroundColor: "rgba(230, 159, 0, 1)",
-                            borderColor: "rgba(230, 159, 0, 1)",
+                            backgroundColor: "rgba(46, 127, 210, 1)",
+                            borderColor: "rgba(46, 127, 210, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1293,8 +1293,8 @@ describe("addons/utils/complexType.js", () => {
                                 81,
                                 84
                             ],
-                            backgroundColor: "rgba(86, 180, 233, 1)",
-                            borderColor: "rgba(86, 180, 233, 1)",
+                            backgroundColor: "rgba(255, 217, 102, 1)",
+                            borderColor: "rgba(255, 217, 102, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
