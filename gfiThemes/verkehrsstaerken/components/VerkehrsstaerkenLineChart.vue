@@ -2,7 +2,7 @@
 import Chart from "chart.js";
 
 export default {
-    name: "VerkehrsstaerkenDiagram",
+    name: "VerkehrsstaerkenLineChart",
     components: {},
     props: {
         dataset: {
@@ -13,26 +13,53 @@ export default {
     data () {
         return {
             category: "DTV",
+            defaultFontFamily: "'MasterPortalFont', 'Arial Narrow', 'Arial', 'sans-serif'",
+            defaultFontColor: "#333333",
+            chartType: "line",
+
             chartColorCircle: "rgba(70, 130, 180, 1)",
             chartRadiusCircle: 5,
+
             chartColorRect: "rgba(255, 0, 0, 1)",
-            chartRadiusRect: 6
+            chartRadiusRect: 6,
+            chartPointStyleRect: "rect",
+
+            toolTipBodyFontColor: "rgba(85, 85, 85, 1)",
+            toolTipBackgroundColor: "rgba(240, 240, 240, 1)",
+
+            scaleGridLinesColor: "rgba(0, 0, 0, 1)"
         };
     },
     watch: {
         dataset () {
-            this.init();
+            this.drawChart();
         }
     },
     mounted () {
-        this.init();
+        this.drawChart();
     },
     methods: {
         /**
-         * Initalizes the first diagram of kind "DTV"
+         * Changes the category of the graph
+         * @param {Event} evt Click event
          * @returns {void}
          */
-        init () {
+        changeCategory (evt) {
+            const buttonGroupElements = document.getElementById(
+                    "verkehrsstaerken-btn-group"
+                ),
+                buttons = buttonGroupElements ? buttonGroupElements.children : [];
+
+            this.category = evt.currentTarget.id;
+
+            buttons.forEach((button) => {
+                if (button.id !== evt.currentTarget.id) {
+                    button.className = button.className.replace("active", "");
+                }
+                else {
+                    button.className += " active";
+                }
+            });
             this.drawChart();
         },
 
@@ -48,12 +75,12 @@ export default {
                 this.chart.destroy();
             }
 
-            Chart.defaults.global.defaultFontFamily = "'MasterPortalFont', 'Arial Narrow', 'Arial', 'sans-serif'";
-            Chart.defaults.global.defaultFontColor = "#333333";
+            Chart.defaults.global.defaultFontFamily = this.defaultFontFamily;
+            Chart.defaults.global.defaultFontColor = this.defaultFontColor;
 
             this.chart = new Chart(ctx, {
-                type: "line",
-                data: this.createChartData(),
+                type: this.chartType,
+                data: this.createChartData(this.dataset, this.category),
                 options: {
                     responsive: true,
                     legend: this.createChartLegend(),
@@ -65,17 +92,19 @@ export default {
 
         /**
          * Creates the data for the chart.
+         * @param {Object[]} dataset The dataset of traffic data.
+         * @param {String} category The dataset from service.
          * @returns {Object} The chart data.
          */
-        createChartData: function () {
-            const preparedDataset = this.prepareDataset(this.dataset);
+        createChartData: function (dataset, category) {
+            const preparedDataset = this.prepareDataset(dataset, category);
 
             return {
                 labels: preparedDataset.labels,
                 datasets: [{
                     borderColor: this.chartColorCircle,
                     fill: false,
-                    label: this.createDatasetLabel(this.category),
+                    label: this.createDatasetLabel(category),
                     data: preparedDataset.data,
                     pointBorderColor: preparedDataset.color,
                     pointBackgroundColor: preparedDataset.color,
@@ -89,7 +118,7 @@ export default {
                     pointBorderColor: this.chartColorRect,
                     pointBackgroundColor: this.chartColorRect,
                     pointRadius: this.chartRadiusRect,
-                    pointStyle: "rect"
+                    pointStyle: this.chartPointStyleRect
                 }]
             };
         },
@@ -97,9 +126,10 @@ export default {
         /**
          * Prepares the dataset to use in chart.
          * @param {Object[]} dataset The dataset from service.
+         * @param {String} category The category to show.
          * @returns {Object} The prepared dataset.
          */
-        prepareDataset: function (dataset) {
+        prepareDataset: function (dataset, category) {
             const preparedDataset = {
                 labels: [],
                 data: [],
@@ -110,7 +140,7 @@ export default {
 
             dataset.forEach(data => {
                 preparedDataset.labels.push(data.year);
-                preparedDataset.data.push(data[this.category]);
+                preparedDataset.data.push(data[category]);
                 preparedDataset.pointStyle.push(data.style);
                 this.createPointStyle(preparedDataset, data);
             });
@@ -176,8 +206,8 @@ export default {
          */
         createChartTooltip: function () {
             return {
-                bodyFontColor: "rgba(85, 85, 85, 1)",
-                backgroundColor: "rgba(240, 240, 240, 1)",
+                bodyFontColor: this.toolTipBodyFontColor,
+                backgroundColor: this.toolTipBackgroundColor,
                 callbacks: {
                     label: (tooltipItem) => tooltipItem.value,
                     title: () => false
@@ -191,13 +221,6 @@ export default {
          * @returns {Object} The chart scales.
          */
         createChartScales: function () {
-            const gridLines = {
-                color: "rgba(0, 0, 0, 1)",
-                display: true,
-                drawBorder: true,
-                drawOnChartArea: false
-            };
-
             return {
                 xAxes: [{
                     scaleLabel: {
@@ -208,7 +231,7 @@ export default {
                         min: this.dataset[0].year,
                         max: this.dataset[this.dataset.length - 1].year
                     },
-                    gridLines: gridLines
+                    gridLines: this.createGridLines()
                 }],
                 yAxes: [{
                     scaleLabel: {
@@ -218,56 +241,22 @@ export default {
                     ticks: {
                         beginAtZero: true
                     },
-                    gridLines: gridLines
+                    gridLines: this.createGridLines()
                 }]
             };
         },
 
         /**
-         * Changes the category of the graph
-         * @param {Event} evt Click event
-         * @returns {void}
+         * Creates the gridLines for scales of the chart.
+         * @returns {Object} The gridLines.
          */
-        changeCategory (evt) {
-            const graphElements = document.getElementsByClassName("graph"),
-                buttonGroupElements = document.getElementById(
-                    "verkehrsstaerken-btn-group"
-                ),
-                graphElementChildren =
-                    graphElements && graphElements.length && graphElements[0]
-                        ? graphElements[0].children
-                        : [],
-                buttons = buttonGroupElements ? buttonGroupElements.children : [];
-
-            this.category = evt.currentTarget.id;
-            if (graphElementChildren.length > 1) {
-                // remove the graph-svg
-                graphElementChildren[1].remove();
-            }
-            buttons.forEach((button) => {
-                if (button.id !== evt.currentTarget.id) {
-                    button.className = button.className.replace("active", "");
-                }
-                else {
-                    button.className += " active";
-                }
-            });
-            this.drawChart();
-        },
-
-        /**
-         * Returns the key of the given category in dataset.
-         * @param {String} category the category, e.g. "DTV"
-         * @returns {String}  the key of the given category in dataset
-         */
-        getKeyByCategoryFromDataset (category) {
-            const categories = {
-                DTV: "DTV",
-                DTVw: "DTVw",
-                HGVsPerWeek: "Schwerverkehrsanteil am DTVw"
+        createGridLines: function () {
+            return {
+                color: this.scaleGridLinesColor,
+                display: true,
+                drawBorder: true,
+                drawOnChartArea: false
             };
-
-            return categories[category];
         }
     }
 };
@@ -276,7 +265,7 @@ export default {
 <template>
     <div
         v-if="dataset"
-        id="verkehrsstaerken-diagram"
+        id="verkehrsstaerken-line-chart"
         class="tab-pane fade"
     >
         <div
@@ -285,37 +274,31 @@ export default {
             role="group"
         >
             <button
-                :id="getKeyByCategoryFromDataset('DTV')"
+                id="DTV"
                 type="button"
                 class="btn btn-default kat active"
-                title="Durchschnittliche tägliche Verkehrsstärken (Mo-So)"
+                :title="$t('additional:modules.tools.gfi.themes.verkehrsstaerken.DTVTitle')"
                 @click="changeCategory"
             >
                 {{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.DTV") }}
             </button>
             <button
-                :id="getKeyByCategoryFromDataset('DTVw')"
+                id="DTVw"
                 type="button"
                 class="btn btn-default kat"
-                title="Durchschnittliche werktägliche Verkehrsstärken (Mo-Fr)"
+                :title="$t('additional:modules.tools.gfi.themes.verkehrsstaerken.DTVwTitle')"
                 @click="changeCategory"
             >
-                {{
-                    $t("additional:modules.tools.gfi.themes.verkehrsstaerken.DTVw")
-                }}
+                {{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.DTVw") }}
             </button>
             <button
-                :id="getKeyByCategoryFromDataset('HGVsPerWeek')"
+                id="Schwerverkehrsanteil am DTVw"
                 type="button"
                 class="btn btn-default kat"
-                title="Schwerverkehrsanteil am DTVw"
+                :title="$t('additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeekTitle')"
                 @click="changeCategory"
             >
-                {{
-                    $t(
-                        "additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeek"
-                    )
-                }}
+                {{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeek") }}
             </button>
         </div>
         <div id="verkehrsstaerken-chart-container">
@@ -325,7 +308,7 @@ export default {
 </template>
 
 <style lang="less">
-#verkehrsstaerken-diagram {
+#verkehrsstaerken-line-chart {
     button {
         outline: none;
     }
@@ -334,7 +317,7 @@ export default {
     }
     #verkehrsstaerken-chart-container {
         position: absolute;
-        width: 27vw;
+        width: 58vh;
     }
 }
 </style>
