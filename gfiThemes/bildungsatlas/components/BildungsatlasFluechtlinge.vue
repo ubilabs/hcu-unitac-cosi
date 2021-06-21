@@ -131,14 +131,6 @@ export default {
     .gfi-bildungsatlas-fluechtlinge {
         max-width: 445px;
         font-size: 13px;
-
-        .gfi-data {
-            padding: 10px;
-        }
-        .gbf-header {
-            text-align: right;
-            font-weight: bold;
-        }
         .gbf-content {
             margin-top: 15px;
             padding-top: 15px;
@@ -159,11 +151,6 @@ export default {
                     }
                 }
             }
-        }
-        .gfi-bildungsatlas-footer {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
         }
     }
 </style>

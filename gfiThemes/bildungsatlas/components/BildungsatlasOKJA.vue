@@ -416,58 +416,5 @@ export default {
 .gfi-bildungsatlas-okja {
     max-width: 420px;
     font-size: 13px;
-    .panel {
-        &.graphHeader {
-            padding: 0 8px 8px;
-            border-bottom: 2px solid #ddd;
-        }
-    }
-    .gfi-data {
-        padding: 10px;
-    }
-    .gfi-info {
-        padding: 0 10px 10px;
-    }
-
-    .rba_header {
-        text-align: right;
-        .rba_header_title {
-            font-weight: bold;
-        }
-    }
-    .rba_table {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        table {
-            width: 100%;
-        }
-        td {
-            vertical-align: top;
-        }
-        td.rba_table_rightcol {
-            text-align: right;
-        }
-    }
-    .rba_chart {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        .rba_chart_title {
-            font-weight: bold;
-        }
-    }
-    .rba_footer {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-    }
-
-    .hidden {
-        display: none;
-    }
-    .footer {
-        margin: 0 0 10px 10px;
-    }
 }
 </style>

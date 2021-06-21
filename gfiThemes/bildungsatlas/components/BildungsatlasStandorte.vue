@@ -311,16 +311,5 @@ export default {
     td.sublist {
         padding-left: 20px;
     }
-
-    .gfi-info {
-        margin-top: 10px;
-        padding: 0 10px 10px;
-    }
-    .hidden {
-        display: none;
-    }
-    .footer {
-        margin: 0 0 10px 10px;
-    }
 }
 </style>
