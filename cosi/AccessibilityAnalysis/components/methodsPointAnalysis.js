@@ -61,10 +61,13 @@ export default {
                 coordinatesList.push(arrayItem);
             }
 
+            if(this.abortController)
+                this.abortController.abort()
+            this.abortController = this.createAbortController()
             for (const coords of coordinatesList) {
                 // TODO: make use of new OpenRouteService component
-                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coords, this.scaleUnit,
-                        [range, range * 0.67, range * 0.33]),
+                const res = await this.requestIsochrones(this.transportType, coords, this.scaleUnit,
+                        [range, range * 0.67, range * 0.33], this.abortController.signal),
                     // reverse JSON object sequence to render the isochrones in the correct order
                     // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
                     json = JSON.parse(res),
@@ -137,13 +140,15 @@ export default {
             range !== 0
         ) {
             try {
-                const res = await Radio.request(
-                        "OpenRoute",
-                        "requestIsochrones",
+                if(this.abortController)
+                    this.abortController.abort()
+                this.abortController = this.createAbortController()
+                const res = await this.requestIsochrones(
                         this.transportType,
                         [this.coordinate],
                         this.scaleUnit,
-                        [range * 0.33, range * 0.67, range]
+                        [range * 0.33, range * 0.67, range],
+                        this.abortController.signal
                     ),
 
 

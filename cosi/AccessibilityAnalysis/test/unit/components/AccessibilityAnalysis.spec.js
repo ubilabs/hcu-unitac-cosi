@@ -140,11 +140,6 @@ describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line require-jsdoc, no-shadow
     async function mount(layersMock) {
         requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
-            if (a1 === "OpenRoute" && a2 === "requestIsochrones") {
-                return new Promise(function (resolve) {
-                    resolve(JSON.stringify(data));
-                });
-            }
             if (a1 === "Parser" && a2 === "getItemsByAttributes") {
                 return [];
             }
@@ -160,7 +155,16 @@ describe("AccessibilityAnalysis.vue", () => {
             stubs: { Tool },
             store,
             localVue,
-            vuetify
+            vuetify,
+            methods: {
+                requestIsochrones: () =>
+                { 
+                    return new Promise(function (resolve) {
+                        resolve(JSON.stringify(data));
+                    });
+                },
+                createAbortController: () => ({ abort: sinon.stub })
+            }
         });
         await ret.vm.$nextTick()
         return ret

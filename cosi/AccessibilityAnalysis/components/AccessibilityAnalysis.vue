@@ -6,6 +6,7 @@ import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
+import requestIsochrones from "./requestIsochrones"
 import * as Proj from "ol/proj.js";
 
 export default {
@@ -49,7 +50,8 @@ export default {
                 "rgba(100, 100, 3, 0.4)",
                 "rgba(200, 0, 3, 0.4)"
             ],
-            askUpdate:false
+            askUpdate:false,
+            abortController: null
         };
     },
     computed: {
@@ -99,6 +101,9 @@ export default {
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
         ...mapActions("Map", ["createLayer"]),
         ...methods,
+
+        requestIsochrones: requestIsochrones,
+        createAbortController: ()=>new AbortController,
 
         resetMarkerAndZoom: function () {
             const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
