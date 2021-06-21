@@ -3,7 +3,8 @@ import {
     config,
     shallowMount,
     createLocalVue,
-    createWrapper
+    createWrapper, 
+    mount
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
 import AccessibilityAnalysis from "../../../store/index";
@@ -18,10 +19,15 @@ import {
     registerProjections
 } from "./util.js";
 import GeoJSON from "ol/format/GeoJSON";
+import Vuetify from 'vuetify'
+import Vue from 'vue'
+import Tool from "../../../../../../src/modules/tools/Tool.vue";
+
+Vue.use(Vuetify)
 
 const localVue = createLocalVue();
+localVue.use(Vuex)
 
-localVue.use(Vuex);
 config.mocks.$t = key => key;
 
 before(() => {
@@ -73,9 +79,10 @@ describe("AccessibilityAnalysis.vue", () => {
         }];
 
     // eslint-disable-next-line no-unused-vars
-    let store, requestStub, sandbox, sourceStub;
+    let store, requestStub, sandbox, sourceStub, vuetify;
 
     beforeEach(() => {
+        vuetify = new Vuetify()
         sandbox = sinon.createSandbox();
         sourceStub = {
             clear: sinon.stub(),
@@ -91,8 +98,14 @@ describe("AccessibilityAnalysis.vue", () => {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        AccessibilityAnalysis
-                    }
+                        AccessibilityAnalysis,
+                        FeaturesList: {
+                            namespaced: true,
+                            getters: {
+                                isFeatureDisabled: () => sinon.stub()
+                            }
+                        }
+                    },
                 },
                 Map: {
                     namespaced: true,
@@ -110,8 +123,8 @@ describe("AccessibilityAnalysis.vue", () => {
                                 getSource: () => sourceStub
                             });
                         }
-                    }
-                }
+                    },
+                },
             },
             state: {
                 configJson: mockConfigJson
@@ -144,8 +157,10 @@ describe("AccessibilityAnalysis.vue", () => {
             return null;
         });
         const ret = shallowMount(AccessibilityAnalysisComponent, {
+            stubs: { Tool },
             store,
-            localVue
+            localVue,
+            vuetify
         });
         await ret.vm.$nextTick()
         return ret
@@ -192,6 +207,10 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#clear").trigger("click");
         sinon.assert.callCount(sourceStub.clear, 2);
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("000");
+
+        expect(wrapper.vm.askUpdate).to.be.false
+        wrapper.vm.$root.$emit("updateFeature");
+        expect(wrapper.vm.askUpdate).to.be.false
     });
 
     it("trigger button requestInhabitants", async () => {
@@ -237,6 +256,14 @@ describe("AccessibilityAnalysis.vue", () => {
             JSON.stringify(featuresRegion));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+
+        expect(wrapper.vm.askUpdate).to.be.false
+        wrapper.vm.$root.$emit("updateFeature");
+        expect(wrapper.vm.askUpdate).to.be.true
+
+        await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick()
+        expect(wrapper.vm.askUpdate).to.be.false
     });
 
     it("show help for selectedmode", async () => {

@@ -28,7 +28,8 @@
                     "legend": "Legende:",
                     "requestInhibitants": "Einwohnerabfrage für den Bereich",
                     "inputReminder": "Bitte füllen Sie alle Felder aus.",
-                    "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben."
+                    "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.",
+                    "askUpdate": "Möchten Sie die aktive Erreichbarkeitsanalyse aktualisieren?"
                 }
             }
         }

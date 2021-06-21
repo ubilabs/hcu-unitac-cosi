@@ -28,7 +28,8 @@
                     "legend": "Legend:",
                     "requestInhibitants": "Request inhibitants for the area",
                     "inputReminder": "Please fill out all input fields.",
-                    "showError": "The request could not be executed correctly. Please verify all inputs."
+                    "showError": "The request could not be executed correctly. Please verify all inputs.",
+                    "askUpdate": "Do you want to update the current accessibility analysis?"
                 }
             }
         }

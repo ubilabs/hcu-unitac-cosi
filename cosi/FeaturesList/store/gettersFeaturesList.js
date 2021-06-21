@@ -55,7 +55,7 @@ const getters = {
         }, []);
     },
     layerMapById: (state, {flatActiveLayerMapping}) => id => flatActiveLayerMapping.find(l => l.layerId === id),
-    isFeatureDisabled: (state, {disabledFeatureItems}) => featureItem => disabledFeatureItems.includes(featureItem)
+    isFeatureDisabled: (state, {disabledFeatureItems}) => feature => disabledFeatureItems.filter(item => item.feature === feature).length > 0
 };
 
 

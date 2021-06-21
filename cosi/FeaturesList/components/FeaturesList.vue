@@ -310,7 +310,7 @@ export default {
         },
         toggleFeature (featureItem) {
             this.toggleFeatureDisabled(featureItem);
-            //this.$root.$emit("updateFeature", featureItem);
+            this.$root.$emit("updateFeature", featureItem);
         }
     }
 };

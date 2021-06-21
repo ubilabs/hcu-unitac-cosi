@@ -110,6 +110,8 @@ export default {
             }
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
+            this.isochroneFeatures = features;
+            this.askUpdate = false
 
             // TODO: get locale from store
             this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
@@ -394,8 +396,9 @@ export default {
 
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
-                .getSource().getFeatures().filter(f => typeof f.style_ === "object" || f.style_ === null);
-
+                .getSource().getFeatures()
+                .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
+            
             return features
                 .map((feature) => {
                     const geometry = feature.getGeometry();
