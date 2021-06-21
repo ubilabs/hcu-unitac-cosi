@@ -48,6 +48,7 @@ export default {
             range !== 0
         ) {
             // TODO: Use store-method - see DistrictSelector component
+            this.askUpdate = false
             Radio.trigger("Alert", "alert:remove");
             // group coordinates into groups of 5
             const coordinatesList = [],
@@ -111,7 +112,6 @@ export default {
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
             this.isochroneFeatures = features;
-            this.askUpdate = false
 
             // TODO: get locale from store
             this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
@@ -398,6 +398,9 @@ export default {
             const features = selectedLayerModel.get("layer")
                 .getSource().getFeatures()
                 .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
+
+            for (const f of features)
+                console.log(this.isFeatureDisabled(f))
             
             return features
                 .map((feature) => {
