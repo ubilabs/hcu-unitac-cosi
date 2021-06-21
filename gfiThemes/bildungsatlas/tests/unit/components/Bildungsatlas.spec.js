@@ -82,6 +82,50 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
         });
     });
     describe("components", () => {
+        it("should find the child component BildungsatlasBalkendiagramm", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasBalkendiagramm",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasBalkendiagramm"}).exists()).to.be.true;
+        });
+        it("should find the child component BildungsatlasSchulentlassene", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasSchulentlassene",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulentlassene"}).exists()).to.be.true;
+        });
         it("should find the child component BildungsatlasOKJA", () => {
             const singleTestWrapper = shallowMount(Bildungsatlas, {
                 propsData: {
@@ -103,6 +147,72 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
             });
 
             expect(singleTestWrapper.findComponent({name: "BildungsatlasOKJA"}).exists()).to.be.true;
+        });
+        it("should find the child component BildungsatlasFluechtlinge", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasFluechtlinge",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasFluechtlinge"}).exists()).to.be.true;
+        });
+        it("should find the child component BildungsatlasBalkendiagrammWanderungen", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasBalkendiagrammWanderungen",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasBalkendiagrammWanderungen"}).exists()).to.be.true;
+        });
+        it("should find the child component BildungsatlasSchulenWohnort", () => {
+            const singleTestWrapper = shallowMount(Bildungsatlas, {
+                propsData: {
+                    feature: {
+                        getProperties () {
+                            return {};
+                        },
+                        getTheme () {
+                            return {
+                                params: {
+                                    subTheme: "BildungsatlasSchulenWohnort",
+                                    featureType: "someFeatureType"
+                                }
+                            };
+                        }
+                    }
+                },
+                localVue
+            });
+
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenWohnort"}).exists()).to.be.true;
         });
     });
 });

@@ -1,43 +1,26 @@
 <script>
-import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
-import BildungsatlasCompBarchart from "./BildungsatlasCompBarchart.vue";
-import BildungsatlasCompLinechart from "./BildungsatlasCompLinechart.vue";
+import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
+import Linechart from "../../../../src/share-components/charts/components/Linechart.vue";
+import {
+    optimizeComplexTypeValues,
+    optimizeValueRootedInComplexType,
+    changeMetadata,
+    convertComplexTypeToBarchart,
+    convertComplexTypesToMultilinechart,
+    compareComplexTypesAndFillDataGaps,
+    sortComplexTypes,
+    sortComplexType,
+    isComplexType,
+    hasComplexTypeValues
+} from "../../../utils/complexType.js";
 
 export default {
     name: "BildungsatlasSchulentlassene",
     components: {
-        BildungsatlasCompBarchart,
-        BildungsatlasCompLinechart
+        Barchart,
+        Linechart
     },
     props: {
-        feature: {
-            type: Object,
-            required: true
-        },
-        /**
-         * fixes the bildungsatlas data bug: any number delivered as -0.0001 should be 0
-         * @param {(String|Number)} value the value to fix
-         * @returns {(String|Number)}  the fixed value
-         */
-        fixDataBug: {
-            type: Function,
-            required: true
-        },
-        /**
-         * any value of the bildungsatlas needs to have a certain format
-         * - a percentage has to have a following %
-         * - a value equaling null must be shown as *g.F.
-         * - any absolute value should have no decimal places
-         * - any relative value should have 2 decimal places
-         * @param {(String|Number)} value the value to transform
-         * @param {Boolean} relative if true, a percent sign will be attached
-         * @param {Number} fixedTo the number of decimal places of the returning value
-         * @returns {String}  the value for the bildungsatlas based on the input
-         */
-        getValueForBildungsatlas: {
-            type: Function,
-            required: true
-        },
         /**
          * checks if the given tab name is currently active
          * @param {String} tab the tab name
@@ -46,384 +29,446 @@ export default {
         isActiveTab: {
             type: Function,
             required: true
+        },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
+        /**
+         * the properties as a key value object
+         */
+        properties: {
+            type: Object,
+            required: true
+        },
+
+        /**
+         * the BildungsatlasApi to access data via wfs with
+         */
+        api: {
+            type: Object,
+            required: true
         }
     },
     data () {
         return {
-            themeType: "",
-            tableData: [],
+            // anteil_sus_abi or anteil_sus_ohneabschluss
+            susType: "",
 
-            barchartTitle: "",
-            barchartData: "",
-            barchartSetTooltipValue: tooltipItem => {
-                return this.getValueForBildungsatlas(tooltipItem.value, true, 2);
-            },
-            barchartRenderLabelXAxis: year => {
-                return Number(year.slice(-2)).toString().padStart(2, "0") + "/" + (Number(year.slice(-2)) + 1).toString().padStart(2, "0");
-            },
-            barchartRenderLabelYAxis: yValue => {
-                return thousandsSeparator(yValue);
-            },
-            barchartDescriptionXAxis: "Schuljahr",
-            barchartDescriptionYAxis: "Anteil Schüler in Prozent",
-            barchartBarBackgroundColor: "#d76629",
-            barchartBarHoverBackgroundColor: "#337ab7",
+            stadtteil_name: "",
+            sozialraum_name: "",
+            bezirk_name: "",
+            stadt_name: "Hamburg",
 
-            // note: make sure to change the test for createDataLinechart if you change linechartColors
-            // barrier free colors
-            linechartColors: ["#d73027", "#542788", "#fc8d59", "#91bfdb", "#337ab7"],
-            // old colors
-            // linechartColors: ["steelblue", "#d72609", "green", "orange", "gray"],
-            linechartData: "",
-            linechartTitle: "Anzahl verschiedener Abschlüsse je 1000 unter 18-Jährigen",
-            linechartSetTooltipValue: tooltipItem => {
-                return this.getValueForBildungsatlas(tooltipItem.value, false, 2);
-            },
-            linechartRenderLabelXAxis: year => {
-                return Number(year.slice(-2)).toString().padStart(2, "0") + "/" + (Number(year.slice(-2)) + 1).toString().padStart(2, "0");
-            },
-            linechartRenderLabelYAxis: yValue => {
-                return thousandsSeparator(yValue);
-            },
-            linechartDescriptionXAxis: "Schuljahr",
-            linechartDescriptionYAxis: "Abschlüsse je 1000 unter 18-Jährige",
-            linechartBorderWidth: 2,
-            linechartPointRadius: 4
+            anteil_sus_abi: "",
+            anteil_sus_abi_bezirk: "",
+            anteil_sus_abi_stadt: "",
+            anteil_sus_msa: "",
+            anteil_sus_msa_bezirk: "",
+            anteil_sus_msa_stadt: "",
+            anteil_sus_esa: "",
+            anteil_sus_esa_bezirk: "",
+            anteil_sus_esa_stadt: "",
+            anteil_sus_ohneabschluss: "",
+            anteil_sus_ohneabschluss_bezirk: "",
+            anteil_sus_ohneabschluss_stadt: "",
+
+            barchartData: false,
+            linechartData: false,
+            linechartDataOptions: {
+                aspectRatio: 1
+            }
         };
     },
     watch: {
-        feature (feature) {
-            this.refreshGfi(feature);
+        // when the gfi window is switched, the gfi is refreshed
+        properties: {
+            handler (newVal, oldVal) {
+                if (oldVal) {
+                    this.refreshGfi();
+                }
+            },
+            immediate: true
         }
     },
-    created () {
-        this.refreshGfi(this.feature);
+    mounted () {
+        this.refreshGfi();
     },
     methods: {
         /**
-         * creates the data for the table
-         * @param {String} themeType the theme type of the feature ("Abi" or "oHS")
-         * @param {String} layerType the layer type of the feature ("stadtteil" or "sozialraum")
-         * @param {Object} properties the properties of the feature
-         * @returns {Object}  an object {titleRow[], dataRows[[]]} to use for the table
+         * refreshes the gfi
+         * @returns {void}
          */
-        createDataForTable (themeType, layerType, properties) {
-            const colConfig = [
-                    {title: "Abi/FH", desc: "Anteil der Schulentlassenen mit Abitur/Fachhochschulreife"},
-                    {title: "MSA", desc: "Anteil der Schulentlassenen mit mittlerem Schulabschluss"},
-                    {title: "ESA", desc: "Anteil der Schulentlassenen mit erstem allgemeinbildenden Schulabschluss"},
-                    {title: "oSA", desc: "Anteil der Schulentlassenen ohne ersten allgemeinbildenden Schulabschluss"}
-                ],
-                rowTitleConfig = {
-                    stadtteil: "ST_Name", // key eq layerType
-                    sozialraum: "SR_Name", // key eq layerType
-                    bezirk: "B_Name"
-                },
-                dataConfig = [
-                    [ // stadtteil & sozialraum
-                        "C41_Abi", // eq Abi/FH
-                        "C41_RS", // eq MSA
-                        "C41_mHS", // eq ESA
-                        "C41_oHS" // eq oSA
-                    ],
-                    [ // bezirk
-                        "C41_Abi_B", // eq Abi/FH
-                        "C41_RS_B", // eq MSA
-                        "C41_mHS_B", // eq ESA
-                        "C41_oHS_B" // eq oSA
-                    ],
-                    [ // hamburg
-                        "C41_Abi_FHH", // eq Abi/FH
-                        "C41_RS_FHH", // eq MSA
-                        "C41_mHS_FHH", // eq ESA
-                        "C41_oHS_FHH" // eq oSA
-                    ]
-                ],
-                result = {
-                    titleRow: [],
-                    dataRows: []
-                },
-                dataKeys = [],
-                rowTitles = [];
+        refreshGfi () {
+            this.susType = this.properties.hasOwnProperty("anteil_sus_abi") ? "anteil_sus_abi" : "anteil_sus_ohneabschluss";
 
-            // note: dataKeys are put together using dataConfig without loop for a better understanding
-            if (themeType === "Abi") {
-                result.titleRow = [colConfig[0], colConfig[1], colConfig[2]];
-                dataKeys.push([dataConfig[0][0], dataConfig[0][1], dataConfig[0][2]]);
-                dataKeys.push([dataConfig[1][0], dataConfig[1][1], dataConfig[1][2]]);
-                dataKeys.push([dataConfig[2][0], dataConfig[2][1], dataConfig[2][2]]);
+            this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
+            this.sozialraum_name = this.properties?.sozialraum_name ? this.properties.sozialraum_name : "";
+            this.bezirk_name = this.properties?.bezirk_name ? this.properties.bezirk_name : "";
+
+            this.refreshGeneralData();
+
+            if (this.susType === "anteil_sus_abi") {
+                this.refreshAbiData();
             }
             else {
-                result.titleRow = [colConfig[3], colConfig[2], colConfig[1]];
-                dataKeys.push([dataConfig[0][3], dataConfig[0][2], dataConfig[0][1]]);
-                dataKeys.push([dataConfig[1][3], dataConfig[1][2], dataConfig[1][1]]);
-                dataKeys.push([dataConfig[2][3], dataConfig[2][2], dataConfig[2][1]]);
+                this.refreshOsaData();
             }
 
-            // rowTitles are created beforehand
-            rowTitles.push(properties[rowTitleConfig[layerType]]);
-            rowTitles.push(properties[rowTitleConfig.bezirk]);
-            rowTitles.push("Hamburg");
+            this.refreshLinechart();
+        },
 
-            // now the loop will fill result.dataRows with properties using rowTitles and dataKeys
-            dataKeys.forEach((keyset, i) => {
-                const subdata = [];
+        /**
+         * refreshes the data that is equal for anteil_sub_abi and anteil_sub_ohneabschluss
+         * @returns {void}
+         */
+        refreshGeneralData () {
+            if (isComplexType(this.properties?.anteil_sus_msa) && typeof this.properties.anteil_sus_msa.values[0].value !== "undefined") {
+                this.anteil_sus_msa = optimizeValueRootedInComplexType(this.properties.anteil_sus_msa.values[0].value, 0) + "%";
+            }
+            else {
+                this.anteil_sus_msa = "g.F.";
+            }
+            if (isComplexType(this.properties?.anteil_sus_esa) && typeof this.properties.anteil_sus_esa.values[0].value !== "undefined") {
+                this.anteil_sus_esa = optimizeValueRootedInComplexType(this.properties.anteil_sus_esa.values[0].value, 0) + "%";
+            }
+            else {
+                this.anteil_sus_esa = "g.F.";
+            }
 
-                subdata.push(rowTitles[i]);
-                keyset.forEach(key => {
-                    const property = this.getValueForBildungsatlas(properties[key], true, 0);
+            this.anteil_sus_msa_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueBezirk("anteil_sus_msa", this.properties?.bezirk_id, value => {
+                this.anteil_sus_msa_bezirk = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_msa_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
 
-                    subdata.push(property);
+            this.anteil_sus_esa_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueBezirk("anteil_sus_esa", this.properties?.bezirk_id, value => {
+                this.anteil_sus_esa_bezirk = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_esa_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+
+            this.anteil_sus_msa_stadt = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueStadt("anteil_sus_msa", value => {
+                this.anteil_sus_msa_stadt = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_msa_stadt = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+
+            this.anteil_sus_esa_stadt = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueStadt("anteil_sus_esa", value => {
+                this.anteil_sus_esa_stadt = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_esa_stadt = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+        },
+
+        /**
+         * refreshes the data anteil_sub_abi only
+         * @returns {void}
+         */
+        refreshAbiData () {
+            if (isComplexType(this.properties?.anteil_sus_abi) && typeof this.properties.anteil_sus_abi.values[0].value !== "undefined") {
+                this.anteil_sus_abi = optimizeValueRootedInComplexType(this.properties.anteil_sus_abi.values[0].value, 0) + "%";
+            }
+            else {
+                this.anteil_sus_abi = "g.F.";
+            }
+            if (hasComplexTypeValues(this.properties?.anteil_sus_abi)) {
+                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2)));
+            }
+            else {
+                this.barchartData = false;
+            }
+
+            this.anteil_sus_abi_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueBezirk("anteil_sus_abi", this.properties?.bezirk_id, value => {
+                this.anteil_sus_abi_bezirk = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_abi_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+
+            this.anteil_sus_abi_stadt = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueStadt("anteil_sus_abi", value => {
+                this.anteil_sus_abi_stadt = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_abi_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+        },
+
+        /**
+         * refreshes the data anteil_sub_ohneabschluss only
+         * @returns {void}
+         */
+        refreshOsaData () {
+            if (isComplexType(this.properties?.anteil_sus_ohneabschluss) && typeof this.properties.anteil_sus_ohneabschluss.values[0].value !== "undefined") {
+                this.anteil_sus_ohneabschluss = optimizeValueRootedInComplexType(this.properties.anteil_sus_ohneabschluss.values[0].value, 0) + "%";
+            }
+            else {
+                this.anteil_sus_ohneabschluss = "g.F.";
+            }
+            if (hasComplexTypeValues(this.properties?.anteil_sus_ohneabschluss)) {
+                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2)));
+            }
+            else {
+                this.barchartData = false;
+            }
+
+            this.anteil_sus_ohneabschluss_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueBezirk("anteil_sus_ohneabschluss", this.properties?.bezirk_id, value => {
+                this.anteil_sus_ohneabschluss_bezirk = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_ohneabschluss_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+
+            this.anteil_sus_ohneabschluss_stadt = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.api.getValueStadt("anteil_sus_ohneabschluss", value => {
+                this.anteil_sus_ohneabschluss_stadt = optimizeValueRootedInComplexType(value, 0) + "%";
+            }, error => {
+                this.anteil_sus_ohneabschluss_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                console.error(error);
+            });
+        },
+
+        /**
+         * a callback for the api to simplify the code of refreshLinechart
+         * @param {String} propertyName the name of the property
+         * @param {Function} onsuccess the callback on success
+         * @param {Function} onerror the callback on error
+         * @returns {void}
+         */
+        callApiForLinechart (propertyName, onsuccess, onerror) {
+            if (this.stadtteil_name) {
+                this.api.getComplexTypeStadtteil(propertyName, this.properties?.stadtteil_id, onsuccess, onerror);
+            }
+            else {
+                this.api.getComplexTypeSozialraum(propertyName, this.properties?.sozialraum_id, onsuccess, onerror);
+            }
+        },
+
+        /**
+         * refreshes the multilinechart
+         * @returns {void}
+         */
+        refreshLinechart () {
+            this.callApiForLinechart("anzahl_abschluss_bezug_abi", complexTypeABI => {
+                this.callApiForLinechart("anzahl_abschluss_bezug_msa", complexTypeMSA => {
+                    this.callApiForLinechart("anzahl_abschluss_bezug_esa", complexTypeESA => {
+                        this.callApiForLinechart("anzahl_abschluss_bezug_osa", complexTypeOSA => {
+                            this.callApiForLinechart("anzahl_abschluss_bezug_gesamt", complexTypeGesamt => {
+                                if (
+                                    hasComplexTypeValues(complexTypeABI)
+                                    || hasComplexTypeValues(complexTypeMSA)
+                                    || hasComplexTypeValues(complexTypeESA)
+                                    || hasComplexTypeValues(complexTypeOSA)
+                                    || hasComplexTypeValues(complexTypeGesamt)
+                                ) {
+                                    changeMetadata(complexTypeABI, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelABI"));
+                                    changeMetadata(complexTypeMSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelMSA"));
+                                    changeMetadata(complexTypeESA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelESA"));
+                                    changeMetadata(complexTypeOSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelOSA"));
+                                    changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
+
+                                    this.linechartData = convertComplexTypesToMultilinechart(
+                                        sortComplexTypes(
+                                            compareComplexTypesAndFillDataGaps([
+                                                optimizeComplexTypeValues(complexTypeABI, 2),
+                                                optimizeComplexTypeValues(complexTypeMSA, 2),
+                                                optimizeComplexTypeValues(complexTypeESA, 2),
+                                                optimizeComplexTypeValues(complexTypeOSA, 2),
+                                                optimizeComplexTypeValues(complexTypeGesamt, 2)
+                                            ])
+                                        )
+                                    );
+                                }
+                                else {
+                                    this.linechartData = false;
+                                }
+                            }, error => {
+                                console.error(error);
+                            });
+                        }, error => {
+                            console.error(error);
+                        });
+                    }, error => {
+                        console.error(error);
+                    });
+                }, error => {
+                    console.error(error);
                 });
-                result.dataRows.push(subdata);
+            }, error => {
+                console.error(error);
             });
-
-            return result;
-        },
-
-        /**
-         * creates the data for the barchart usable as it is as chartjs data
-         * @param {String} themeType the theme type of the feature ("Abi" or "oHS")
-         * @param {Object} properties the properties of the feature
-         * @returns {Object}  an object {labels, datasets} usable for chartjs data
-         */
-        createDataBarchart (themeType, properties) {
-            const prefix = themeType === "Abi" ? "C41_Abi_" : "C41_oHS_",
-                regEx = new RegExp("^" + prefix + "(\\d{4})$"),
-                labels = [],
-                data = [];
-
-            Object.keys(properties).forEach(key => {
-                const regExResult = regEx.exec(key);
-
-                if (regExResult === null) {
-                    return;
-                }
-
-                labels.push(regExResult[1]);
-                data.push(properties[key]);
-            });
-
-            return {
-                labels,
-                datasets: [{
-                    backgroundColor: this.barchartBarBackgroundColor,
-                    hoverBackgroundColor: this.barchartBarHoverBackgroundColor,
-                    borderWidth: 0,
-                    data
-                }]
-            };
-        },
-
-        /**
-         * creates the data for the line chart
-         * @param {Object} properties the properties of the feature
-         * @returns {Object}  an object {labels, datasets} usable for chartjs data
-         */
-        createDataLinechart (properties) {
-            const totalKey = "__BildungsatlasSchulentlasseneTotal__",
-                prefixConfig = {
-                    "C42_Abi_": {title: "Abi/FH: Abitur/Fachhochschulreife", color: this.linechartColors[0]},
-                    "C42_MSA_": {title: "MSA: mittlerer Schulabschluss", color: this.linechartColors[1]},
-                    "C42_ESA_": {title: "ESA: erster allgemeinbildender Schulabschluss", color: this.linechartColors[2]},
-                    "C42_oSA_": {title: "oSA: ohne ersten allgemeinbildenden Schulabschluss", color: this.linechartColors[3]},
-                    "__BildungsatlasSchulentlasseneTotal__": {title: "Anzahl aller Schulentlassenen", color: this.linechartColors[4]}
-                },
-                datasetsAssoc = {},
-                labelsAssoc = {},
-                datasets = [],
-                totalAssoc = {};
-
-            Object.keys(properties).forEach(key => {
-                const prefix = key.substring(0, 8),
-                    regEx = new RegExp("^" + prefix + "(\\d{4})$"),
-                    regExResult = regEx.exec(key);
-
-                if (!prefixConfig.hasOwnProperty(prefix) || regExResult === null) {
-                    return;
-                }
-
-                labelsAssoc[regExResult[1]] = true;
-
-                if (!totalAssoc.hasOwnProperty(regExResult[1])) {
-                    totalAssoc[regExResult[1]] = 0;
-                }
-
-                // note: this is causing problems with floating point precision in js
-                // (e.g. 28.79 + 7.3 = 36.089999999999996)
-                // it will be dealt with when mapping datasetsAssoc[totalKey].data
-                totalAssoc[regExResult[1]] += Number(this.fixDataBug(properties[key]));
-
-                if (!datasetsAssoc.hasOwnProperty(prefix)) {
-                    datasetsAssoc[prefix] = {
-                        label: prefixConfig[prefix].title,
-                        data: [],
-                        backgroundColor: prefixConfig[prefix].color,
-                        borderColor: prefixConfig[prefix].color,
-                        spanGaps: false,
-                        fill: false,
-                        borderWidth: this.linechartBorderWidth,
-                        pointRadius: this.linechartPointRadius,
-                        pointHoverRadius: this.linechartPointRadius,
-                        lineTension: 0
-                    };
-                }
-                datasetsAssoc[prefix].data.push(this.fixDataBug(properties[key]));
-            });
-
-            // add total to assoc using totalKey (see declaration of prefixConfig)
-            datasetsAssoc[totalKey] = {
-                label: prefixConfig[totalKey].title,
-                data: Object.values(totalAssoc).map(value => {
-                    // there can be floating point precision problems in total
-                    // so this cuts it down to 2 decimal places
-                    return Number(value).toFixed(2);
-                }),
-                backgroundColor: prefixConfig[totalKey].color,
-                borderColor: prefixConfig[totalKey].color,
-                spanGaps: false,
-                fill: false,
-                borderWidth: this.linechartBorderWidth,
-                pointRadius: this.linechartPointRadius,
-                pointHoverRadius: this.linechartPointRadius,
-                lineTension: 0
-            };
-
-            // create datasets with assoc using prefixConfig to order
-            Object.keys(prefixConfig).forEach(prefix => {
-                datasets.push(datasetsAssoc[prefix]);
-            });
-
-            return {
-                labels: Object.keys(labelsAssoc),
-                datasets
-            };
-        },
-
-        /**
-         * refreshes the gfi, recalculates properties
-         * @pre the Gfi shows the data of the former feature or is not initialized yet
-         * @post the Gfi shows the data of the given feature
-         * @param {Object} feature the feature to base the refreshed Gfi on
-         * @returns {Void}  -
-         */
-        refreshGfi (feature) {
-            const gfiTheme = feature?.getTheme(),
-                gfiParams = gfiTheme?.params,
-                format = gfiParams?.gfiBildungsatlasFormat,
-                properties = feature?.getProperties();
-
-            if (typeof properties !== "object" || typeof format !== "object") {
-                return;
-            }
-            // ("Abi" or "oHS")
-            this.themeType = format?.themeType;
-
-            // table
-            this.tableData = this.createDataForTable(format.themeType, format.layerType, properties);
-
-            // barchart
-            if (this.themeType === "Abi") {
-                this.barchartTitle = "Anteil \"Abi/FH\" im Zeitverlauf";
-            }
-            else {
-                this.barchartTitle = "Anteil \"ohne Abschluss\" im Zeitverlauf";
-            }
-            this.barchartData = this.createDataBarchart(this.themeType, properties);
-
-            // linechart
-            this.linechartData = this.createDataLinechart(properties);
         }
     }
 };
 </script>
 
 <template>
-    <div class="schulentlassene-gfi-theme">
+    <div class="gfi-schulentlassene">
         <div
-            class="tab-panel"
+            class="tab-panel gfi-data"
             :class="{ 'hidden': !isActiveTab('data') }"
         >
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th v-if="themeType === 'Abi'">
-                            Anteil der Schulentlassenen mit Abitur/Fachhochschulreife, mittlerem Schulabschluss
-                            sowie mit erstem allgemeinbildenden Schulabschluss
-                        </th>
-                        <th v-else>
-                            Anteil der Schulentlassenen ohne ersten allgemeinbildenen Schulabschluss
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-            <table class="table table-striped">
-                <thead>
-                    <tr colspan="4">
-                        <th></th>
-                        <th
-                            v-for="(titleRow, titleIdx) of tableData.titleRow"
-                            :key="titleIdx"
-                            :title="titleRow.desc"
-                        >
-                            {{ titleRow.title }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="(dataRow, rowIdx) of tableData.dataRows"
-                        :key="rowIdx"
-                        colspan="4"
-                    >
-                        <td
-                            v-for="(data, colIdx) of dataRow"
-                            :key="colIdx"
-                        >
-                            {{ data }}
-                        </td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4">
-                            <i></i>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-            <div class="panel graphHeader barchart">
-                <BildungsatlasCompBarchart
-                    :chartTitle="barchartTitle"
-                    :data="barchartData"
-                    :setTooltipValue="barchartSetTooltipValue"
-                    :renderLabelXAxis="barchartRenderLabelXAxis"
-                    :renderLabelYAxis="barchartRenderLabelYAxis"
-                    :descriptionXAxis="barchartDescriptionXAxis"
-                    :descriptionYAxis="barchartDescriptionYAxis"
-                ></BildungsatlasCompBarchart>
+            <div class="rba_header">
+                <div
+                    v-if="susType"
+                    class="rba_header_title"
+                >
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.title." + susType) }}
+                </div>
             </div>
-            <div class="panel graphHeader linechart">
-                <BildungsatlasCompLinechart
-                    :chartTitle="linechartTitle"
-                    :data="linechartData"
-                    :setTooltipValue="linechartSetTooltipValue"
-                    :renderLabelXAxis="linechartRenderLabelXAxis"
-                    :renderLabelYAxis="linechartRenderLabelYAxis"
-                    :descriptionXAxis="linechartDescriptionXAxis"
-                    :descriptionYAxis="linechartDescriptionYAxis"
-                ></BildungsatlasCompLinechart>
+            <div
+                v-if="susType === 'anteil_sus_abi'"
+                class="rba_table"
+            >
+                <table class="table table-striped">
+                    <thead>
+                        <tr colspan="4">
+                            <th></th>
+                            <th>Abi/FH</th>
+                            <th>MSA</th>
+                            <th>ESA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr colspan="4">
+                            <td v-if="stadtteil_name">
+                                {{ stadtteil_name }}
+                            </td>
+                            <td v-else>
+                                {{ sozialraum_name }}
+                            </td>
+                            <td>{{ anteil_sus_abi }}</td>
+                            <td>{{ anteil_sus_msa }}</td>
+                            <td>{{ anteil_sus_esa }}</td>
+                        </tr>
+                        <tr colspan="4">
+                            <td v-if="stadtteil_name">
+                                {{ bezirk_name }}
+                            </td>
+                            <td v-else>
+                                {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.general.district") }}
+                                {{ bezirk_name }}
+                            </td>
+                            <td>{{ anteil_sus_abi_bezirk }}</td>
+                            <td>{{ anteil_sus_msa_bezirk }}</td>
+                            <td>{{ anteil_sus_esa_bezirk }}</td>
+                        </tr>
+                        <tr colspan="4">
+                            <td>{{ stadt_name }}</td>
+                            <td>{{ anteil_sus_abi_stadt }}</td>
+                            <td>{{ anteil_sus_msa_stadt }}</td>
+                            <td>{{ anteil_sus_esa_stadt }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="footer">
+            <div
+                v-else-if="susType === 'anteil_sus_ohneabschluss'"
+                class="rba_table"
+            >
+                <table class="table table-striped">
+                    <thead>
+                        <tr colspan="4">
+                            <th></th>
+                            <th>oSA</th>
+                            <th>ESA</th>
+                            <th>MSA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr colspan="4">
+                            <td v-if="stadtteil_name">
+                                {{ stadtteil_name }}
+                            </td>
+                            <td v-else>
+                                {{ sozialraum_name }}
+                            </td>
+                            <td>{{ anteil_sus_ohneabschluss }}</td>
+                            <td>{{ anteil_sus_esa }}</td>
+                            <td>{{ anteil_sus_msa }}</td>
+                        </tr>
+                        <tr colspan="4">
+                            <td v-if="stadtteil_name">
+                                {{ bezirk_name }}
+                            </td>
+                            <td v-else>
+                                {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.general.district") }}
+                                {{ bezirk_name }}
+                            </td>
+                            <td>{{ anteil_sus_ohneabschluss_bezirk }}</td>
+                            <td>{{ anteil_sus_esa_bezirk }}</td>
+                            <td>{{ anteil_sus_msa_bezirk }}</td>
+                        </tr>
+                        <tr colspan="4">
+                            <td>{{ stadt_name }}</td>
+                            <td>{{ anteil_sus_ohneabschluss_stadt }}</td>
+                            <td>{{ anteil_sus_esa_stadt }}</td>
+                            <td>{{ anteil_sus_msa_stadt }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="rba_chart">
+                <div
+                    v-if="susType"
+                    class="rba_chart_title"
+                >
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.barchart.title." + susType) }}
+                </div>
+                <div
+                    v-if="barchartData"
+                    class="rba_chart_content"
+                >
+                    <Barchart
+                        v-if="barchartData"
+                        :givenOptions="{}"
+                        :data="barchartData"
+                    />
+                </div>
+                <div v-else>
+                    g.F.
+                </div>
+            </div>
+            <div class="rba_chart">
+                <div class="rba_chart_title">
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.title") }}
+                </div>
+                <div
+                    v-if="linechartData"
+                    class="rba_chart_content"
+                >
+                    <Linechart
+                        v-if="linechartData"
+                        :givenOptions="linechartDataOptions"
+                        :data="linechartData"
+                    />
+                </div>
+                <div v-else>
+                    g.F.
+                </div>
+            </div>
+            <div class="rba_footer">
                 <p>
-                    <i>
-                        *g.F: geringe Fallzahlen.
-                        Die Werte konnten aus datenschutzrechtlichen Gründen nicht ausgewiesen werden
-                        oder das Gebiet ist unbewohnt.
-                    </i>
-                </p>
-                <p>
-                    Sie können die Position des Fensters durch Drag&#38;Drop ändern.
+                    {{ $t("additional:addons.gfiThemes.bildungsatlas.general.disclaimer") }}
                 </p>
             </div>
         </div>
@@ -431,57 +476,38 @@ export default {
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
         >
-            <div v-if="themeType === 'Abi'">
+            <div v-if="susType === 'anteil_sus_abi'">
                 <h5>
-                    <b>Anteil der Schulentlassenen mit Abitur/Fachhochschulreife</b>
+                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleAbi") }}</b>
                 </h5>
                 <p>
-                    Zur Berechnung dieser Kennzahl wurden sowohl die Abiturientinnen und Abiturienten
-                    als auch diejenigen Schülerinnen und Schüler berücksichtigt, die den schulischen
-                    Teil der Fachhochschulreife erworben haben. Berücksichtigt wurden nur Schülerinnen
-                    und Schüler, die diese Abschlüsse an einer allgemeinbildenden Schule* erworben haben.
-                    Die Bezugsgröße für die Schülerinnen und Schüler ist jeweils der Wohnort.
-                    Die Anteilsberechnung erfolgt auf Grundlage aller Schulentlassenen allgemeinbildender
-                    Schulen im jeweiligen Gebiet.
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textAbi") }}
                 </p>
             </div>
             <div v-else>
                 <h5>
-                    <b>Anteil der Schulentlassenen ohne ersten allgemeinbildenden Schulabschluss*</b>
+                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleOsa") }}</b>
                 </h5>
                 <p>
-                    Diese Zahl enthält auch Schülerinnen und Schüler mit sonderpädagogischem Förderbedarf.
-                    Ein erheblicher Teil dieser Schülerinnen und Schüler erreicht infolge der jeweiligen
-                    Lernbeeinträchtigungen keinen ersten allgemeinbildenden oder höherwertigen Schulabschluss.
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textOsa") }}
                 </p>
             </div>
             <div>
                 <h5>
-                    <b>Anzahl verschiedener Abschlüsse je 1000 unter 18-Jährigen</b>
+                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleA") }}</b>
                 </h5>
                 <p>
-                    Die Kennzahl gibt die Anzahl aller Schulentlassenen, sowie die erworbenen Abschlussarten
-                    auf 1000 unter 18-Jährigen im Stadtteil/Sozialraum an. Diese Darstellung ermöglicht
-                    zusätzlich zu den Abschlussquoten eine bessere Vergleichbarkeit der Schulabschlüsse über
-                    die Zeit im betreffenden Stadtteil bzw. Sozialraum.
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textA") }}
                 </p>
-
                 <h5>
-                    <b>Keine oder zu geringe Fallzahlen:</b>
+                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleB") }}</b>
                 </h5>
                 <p>
-                    Die Kennzahlen werden nur in Gebieten ausgewiesen, in denen mindestens 30 Schulentlassene
-                    wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen
-                    gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textB") }}
                 </p>
-
                 <br>
                 <p>
-                    <b>* Allgemeinbildende Schulen</b> vermitteln im Primarbereich die Grundlagen für eine
-                    weiterführende Bildung, im Sekundarbereich I und II eine allgemeine Grundbildung bzw.
-                    vertiefte Allgemeinbildung. Zu den allgemeinbildenden Schulen der im Bildungsatlas
-                    abgebildeten Primarstufe und der Sekundarstufe I gehören in Hamburg Grundschulen,
-                    Stadtteilschulen, Gymnasien sowie Sonderschulen.
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.footer") }}
                 </p>
             </div>
         </div>
@@ -489,23 +515,58 @@ export default {
 </template>
 
 <style lang="less" scoped>
-.schulentlassene-gfi-theme {
+.gfi-schulentlassene {
     max-width: 420px;
-
+    font-size: 13px;
     .panel {
         &.graphHeader {
-            padding: 0 8px 20px;
+            padding: 0 8px 8px;
             border-bottom: 2px solid #ddd;
         }
     }
-
+    .gfi-data {
+        padding: 10px;
+    }
     .gfi-info {
         padding: 0 10px 10px;
     }
-    .linechart {
-        height: 410px;
-        position: relative;
-        margin-bottom: 20px;
+
+    .rba_header {
+        margin-top: 15px;
+        .rba_header_title {
+            font-weight: bold;
+        }
+    }
+    .rba_table {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        table {
+            width: 100%;
+        }
+        td {
+            vertical-align: top;
+        }
+        td.rba_table_rightcol {
+            text-align: right;
+        }
+    }
+    .rba_chart {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        .rba_chart_title {
+            font-weight: bold;
+        }
+    }
+    .rba_footer {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+    }
+
+    .hidden {
+        display: none;
     }
     .footer {
         margin: 0 0 10px 10px;

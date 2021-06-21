@@ -212,6 +212,7 @@ export class BildungsatlasApi {
             }
             return;
         }
+
         const featureType = this.featureTypes[featureTypeKey][propertyName],
             payload = this.getWfsPayload({
                 featureType,
@@ -239,6 +240,56 @@ export class BildungsatlasApi {
     }
 
     /**
+     * returns the value from Einzugsgebiet Dienst
+     * @param {String} featureType the feature type as string from function
+     * @param {String} propertyName the property name to receive the data for
+     * @param {String} literal the value of the attribute to filter for
+     * @param {Function} onsuccess a function(ComplexType) on success
+     * @param {Function} onerror a function(error) with error of type Error
+     * @returns {void}
+     */
+    getEinzugsgebieteValue (featureType, propertyName, literal, onsuccess, onerror) {
+        if (this.wfsUrls === false || this.featureTypes === false) {
+            // config not loaded yet, put on hold until initConfig has finished
+            BildungsatlasApi.startupCallbacks.push(() => {
+                this.getEinzugsgebieteValue(featureType, propertyName, literal, onsuccess, onerror);
+            });
+            return;
+        }
+        const url = this.wfsUrls[featureType],
+            featureNS = "https://registry.gdi-de.org/id/de.hh.up",
+            wfsReader = new WFS({
+                featureNS,
+                featureType: featureType.substr(featureType.indexOf(":") + 1)
+            }),
+            payload = `<?xml version='1.0' encoding='UTF-8' ?>
+<wfs:GetFeature service='WFS' version='1.1.0' xmlns:app='http://www.deegree.org/app' xmlns:wfs='http://www.opengis.net/wfs' xmlns:ogc='http://www.opengis.net/ogc'>
+    <wfs:Query typeName='${featureType}'>
+        <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>${propertyName}</ogc:PropertyName>
+                <ogc:Literal>${literal}</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+        </ogc:Filter>
+    </wfs:Query>
+</wfs:GetFeature>`;
+
+        if (!this.hasWfsUrl(featureType)) {
+            if (typeof onerror === "function") {
+                onerror(new Error("bildungsatlasApi.getEinzugsgebieteValue: featuerType not known by wfs urls " + featureType + " (see: " + propertyName + ")"));
+            }
+            return;
+        }
+
+        this.callWfs(url, payload, xmlData => {
+            const jsonData = wfsReader.readFeatures(xmlData);
+
+            onsuccess(jsonData);
+        }, onerror);
+    }
+
+
+    /**
      * filters the given data and returns the found complex type
      * @param {Object} jsonData the data to parse
      * @param {String} propertyName the propertyName to return the complex type for
@@ -248,12 +299,19 @@ export class BildungsatlasApi {
         if (!Array.isArray(jsonData) || !jsonData.length) {
             return false;
         }
-        const feature = jsonData[0];
+        const feature = jsonData[0],
+            complexType = feature instanceof Feature ? feature.get(propertyName) : false;
 
-        if (!(feature instanceof Feature)) {
-            return false;
+        if (
+            typeof complexType === "object" && complexType !== null
+            && typeof complexType.values === "object" && complexType.values !== null
+            && !Array.isArray(complexType.values)
+        ) {
+            // a complexType with a single value in values is received as single object instead of an array with one item
+            complexType.values = [complexType.values];
         }
-        return feature.get(propertyName);
+
+        return complexType;
     }
 
     /**
@@ -376,6 +434,23 @@ export class BildungsatlasApi {
                 </fes:Filter>
             </Query>
         </GetFeature>`;
+    }
+
+    /**
+     * helper for use of api functions with not fully loaded api
+     * @info use this if you want to use any function of the api except for value and complexType getters
+     * @param {Function} handler callback function() to be called when api is initialized
+     * @returns {void}
+     */
+    callWhenInitialized (handler) {
+        if (this.wfsUrls !== false && this.featureTypes !== false) {
+            if (typeof handler === "function") {
+                handler();
+            }
+        }
+        else {
+            BildungsatlasApi.startupCallbacks.push(handler);
+        }
     }
 
     /**

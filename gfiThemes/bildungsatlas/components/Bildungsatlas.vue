@@ -1,12 +1,22 @@
 <script>
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
+import BildungsatlasBalkendiagramm from "./BildungsatlasBalkendiagramm.vue";
+import BildungsatlasBalkendiagrammWanderungen from "./BildungsatlasBalkendiagrammWanderungen.vue";
+import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
 import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
+import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
+import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
 import BildungsatlasTest from "./BildungsatlasTest.vue";
 
 export default {
     name: "Bildungsatlas",
     components: {
+        BildungsatlasBalkendiagramm,
+        BildungsatlasBalkendiagrammWanderungen,
+        BildungsatlasFluechtlinge,
         BildungsatlasOKJA,
+        BildungsatlasSchulentlassene,
+        BildungsatlasSchulenWohnort,
         BildungsatlasTest
     },
     props: {
@@ -94,15 +104,26 @@ export default {
          */
         setActiveTab (tab) {
             this.activeTab = tab;
+        },
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+            return this.$t(key, options);
         }
     }
 };
 </script>
 
 <template>
-    <div>
+    <div class="gfi-bildungsatlas">
         <ul
-            v-if="subTheme !== 'BildungsatlasOKJA'"
             class="nav nav-pills"
         >
             <li :class="{ active: isActiveTab('data') }">
@@ -122,9 +143,17 @@ export default {
             <component
                 :is="subThemeComponent"
                 :isActiveTab="isActiveTab"
+                :feature="feature"
                 :properties="properties"
                 :api="api"
+                :featureType="featureType"
+                :translate="translate"
             />
+            <div class="gfi-bildungsatlas-footer">
+                <span>
+                    {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -132,5 +161,20 @@ export default {
 <style lang="less">
     .portal-title a img[alt*="Bildungsatlas"] {
         width: 80px;
+    }
+    .gfi-bildungsatlas {
+        .gfi-info {
+            padding: 0 10px 10px;
+            h5 {
+                font-weight: bold;
+            }
+            p {
+                margin-bottom: 10px;
+            }
+        }
+        .gfi-bildungsatlas-footer {
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
     }
 </style>

@@ -27,31 +27,61 @@ import moment from "moment";
  * tries to optimize the values of the ComplexType: cutting down decimal points, converts german numbers to ChartJS standard
  * @param {ComplexType} complexType the ComplexType to optimize
  * @param {Number|boolean} [decimals=false] the number of decimal points to cut at - or false if no cuts
- * @returns {ComplexType} the same complexType with optimized values
+ * @returns {ComplexType} a clone of the complexType with optimized values
  */
 function optimizeComplexTypeValues (complexType, decimals = false) {
     if (!isComplexType(complexType)) {
         return complexType;
     }
-    const factor = decimals ? Math.pow(10, decimals) : false;
+    const result = cloneComplexType(complexType);
 
-    complexType.values.forEach(item => {
-        if (typeof item.value === "number" && factor !== false) {
-            item.value = Math.round(item.value * factor) / factor;
-        }
-        else if (typeof item.value === "string") {
-            if (item.value.indexOf(",") !== -1) {
-                item.value = item.value.replace(/,/, ".");
-            }
-            if (decimals !== false) {
-                item.value = Math.round(parseFloat(item.value) * factor) / factor;
-            }
-            else {
-                item.value = Number(item.value);
-            }
-        }
+    result.values.forEach(item => {
+        item.value = optimizeValueRootedInComplexType(item.value, decimals);
     });
-    return complexType;
+    return result;
+}
+
+/**
+ * tries to optimize the given value under the assumption that is rootes in a values of the ComplexType: cutting down decimal points, converts german numbers to ChartJS standard
+ * @param {String|Number} value the value to optimize
+ * @param {Number|boolean} [decimals=false] the number of decimal points to cut at - or false if no cuts
+ * @returns {String|Number} the same value but optimized
+ */
+function optimizeValueRootedInComplexType (value, decimals = false) {
+    const factor = typeof decimals === "number" ? Math.pow(10, decimals) : false;
+    let result = value;
+
+    if (typeof result === "number" && factor !== false) {
+        result = Math.round(result * factor) / factor;
+    }
+    else if (typeof result === "string") {
+        if (result.indexOf(",") !== -1) {
+            result = result.replace(/,/, ".");
+        }
+        if (decimals !== false) {
+            result = Math.round(parseFloat(result) * factor) / factor;
+        }
+        else {
+            result = Number(result);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * changes values of the metadata of a ComplexType
+ * @param {ComplexType} complexType the ComplexType to change
+ * @param {String} key the key to set/add to the metadata
+ * @param {*} value the data to set/add for the given key in metadata
+ * @returns {boolean} true if the data was set, false if something went wrong
+ */
+function changeMetadata (complexType, key, value) {
+    if (!isComplexType(complexType) || typeof key !== "string") {
+        return false;
+    }
+    complexType.metadata[key] = value;
+    return true;
 }
 
 /**
@@ -237,30 +267,127 @@ function isComplexType (data) {
 }
 
 /**
+ * finds gaps in unsorted complex values (comparing with other complex types) and fills them with a neutral value
+ * @param {ComplexType[]} complexTypes a list of complexTypes
+ * @param {*} [fillValue=null] the neutral value to fill gaps with
+ * @returns {ComplexType[]} the same list of complex types with filled gaps, is unsorted, use sortComplexTypes to sort afterwards
+ */
+function compareComplexTypesAndFillDataGaps (complexTypes, fillValue = null) {
+    if (!Array.isArray(complexTypes)) {
+        return complexTypes;
+    }
+    const blueprint = {},
+        assocs = [];
+
+    // generate the blueprint
+    complexTypes.forEach((complexType, idx) => {
+        if (!isComplexType(complexType)) {
+            return;
+        }
+        complexType.values.forEach(item => {
+            if (typeof item === "object" && item !== null && item?.key) {
+                blueprint[item.key] = true;
+                if (!assocs.hasOwnProperty(idx)) {
+                    assocs[idx] = {};
+                }
+                if (item?.value) {
+                    assocs[idx][item.key] = item.value;
+                }
+            }
+        });
+    });
+
+    // apply blueprint
+    complexTypes.forEach((complexType, idx) => {
+        if (!isComplexType(complexType)) {
+            return;
+        }
+
+        complexType.values = [];
+        Object.keys(blueprint).forEach(key => {
+            if (assocs[idx].hasOwnProperty(key)) {
+                complexType.values.push({key, value: assocs[idx][key]});
+            }
+            else {
+                complexType.values.push({key, value: fillValue});
+            }
+        });
+    });
+    return complexTypes;
+}
+
+/**
+ * sorts many complexTypes at once
+ * @info this is necessary after using compareComplexTypesAndFillDataGaps
+ * @param {ComplexType[]} complexTypes the list of complex types to sort at once
+ * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
+ * @returns {ComplexType} a list of clones of the given complex types with sorted values
+ */
+function sortComplexTypes (complexTypes, compareFunction = false) {
+    if (!Array.isArray(complexTypes)) {
+        return complexTypes;
+    }
+    const result = [];
+
+    complexTypes.forEach(complexType => {
+        result.push(sortComplexType(complexType, compareFunction));
+    });
+    return result;
+}
+
+/**
  * sorts a complexType with the given compare function or ascending by its keys by default
  * @param {ComplexType} complexType the complex type to sort
  * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
  * @see sort https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
- * @returns {ComplexType} the complex type with sorted values
+ * @returns {ComplexType} a clone of the complex type with sorted values
  */
 function sortComplexType (complexType, compareFunction = false) {
     if (!isComplexType(complexType)) {
         return false;
     }
-    else if (typeof compareFunction === "function") {
-        complexType.values.sort(compareFunction);
-        return complexType;
+    const result = cloneComplexType(complexType);
+
+    if (typeof compareFunction === "function") {
+        result.values.sort(compareFunction);
+        return result;
     }
 
-    if (complexType.metadata.type === "timeseries") {
-        sortComplexTypeTimeseries(complexType, complexType.metadata.format);
-        return complexType;
+    if (result.metadata.type === "timeseries") {
+        sortComplexTypeTimeseries(result, result.metadata.format);
+        return result;
     }
 
-    sortComplexTypeDefault(complexType);
-    return complexType;
+    sortComplexTypeDefault(result);
+    return result;
 }
 
+/**
+ * clones a complex type - necessary in every function to avoid changing the original
+ * @param {ComplexType} complexType the complex type to sort
+ * @returns {ComplexType} a clone of the given complexType
+ */
+function cloneComplexType (complexType) {
+    if (!isComplexType(complexType)) {
+        return complexType;
+    }
+    const result = {
+        metadata: {
+            type: complexType.metadata.type,
+            format: complexType.metadata.format,
+            description: complexType.metadata.description
+        },
+        values: []
+    };
+
+    complexType.values.forEach(elem => {
+        result.values.push({
+            key: elem.key,
+            value: elem.value
+        });
+    });
+    return result;
+}
 
 /** private */
 
@@ -334,12 +461,39 @@ function getCompletestLabels (labels) {
     return result;
 }
 
+/**
+ * runs through the values of the given complexType and checks if there is data somewhere
+ * @param {ComplexType} complexType the complex type to check
+ * @returns {boolean} true if there ist data somewhere, false if there is no data (e.g. only undefined values)
+ */
+function hasComplexTypeValues (complexType) {
+    if (!isComplexType(complexType)) {
+        return false;
+    }
+    const len = complexType.values.length;
+    let i = 0;
+
+    for (i = 0; i < len; i++) {
+        if (typeof complexType.values[i].value === "number" || typeof complexType.values[i].value === "string" && complexType.values[i].value) {
+            // a number or a string (not empty)
+            return true;
+        }
+    }
+    return false;
+}
+
 export {
     optimizeComplexTypeValues,
+    optimizeValueRootedInComplexType,
+    changeMetadata,
     convertComplexTypeToPiechart,
     convertComplexTypeToLinechart,
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
     isComplexType,
-    sortComplexType
+    compareComplexTypesAndFillDataGaps,
+    sortComplexType,
+    sortComplexTypes,
+    cloneComplexType,
+    hasComplexTypeValues
 };
