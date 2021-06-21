@@ -228,9 +228,11 @@ export default {
             featureCollection.on("change:length", (evt) => {
                 this.setSelectedDistrictsCollection(evt.target);
 
-                this.selectedNames = evt.target.getArray().map(feature => {
+                const selectedNames = evt.target.getArray().map(feature => {
                     return feature.get(this.keyOfAttrName);
                 });
+
+                this.selectedNames = [...new Set(selectedNames)];
             });
         },
 

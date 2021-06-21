@@ -74,7 +74,7 @@ export function getNameList (layer, keyOfAttrName) {
         }
     });
 
-    return nameList;
+    return [...new Set(nameList)];
 }
 
 /**
