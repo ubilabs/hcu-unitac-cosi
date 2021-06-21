@@ -287,7 +287,7 @@ function compareComplexTypesAndFillDataGaps (complexTypes, fillValue = null) {
         complexType.values.forEach(item => {
             if (typeof item === "object" && item !== null && item?.key) {
                 blueprint[item.key] = true;
-                if (!assocs.hasOwnProperty(idx)) {
+                if (!Object.prototype.hasOwnProperty.call(assocs, idx)) {
                     assocs[idx] = {};
                 }
                 if (item?.value) {
@@ -305,7 +305,7 @@ function compareComplexTypesAndFillDataGaps (complexTypes, fillValue = null) {
 
         complexType.values = [];
         Object.keys(blueprint).forEach(key => {
-            if (assocs[idx].hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(assocs[idx], key)) {
                 complexType.values.push({key, value: assocs[idx][key]});
             }
             else {
