@@ -2,6 +2,7 @@
 
 import {mapGetters} from "vuex";
 import getters from "../../../../src/modules/tools/gfi/store/gettersGfi";
+import {isWebLink} from "../../../../src/utils/urlHelper.js";
 
 export default {
     name: "DataTable",
@@ -35,7 +36,8 @@ export default {
         }
     },
     methods: {
-        ...mapGetters("Tools/Gfi", Object.keys(getters))
+        ...mapGetters("Tools/Gfi", Object.keys(getters)),
+        isWebLink,
     }
 };
 </script>
@@ -64,7 +66,16 @@ export default {
                         v-for="(propKey, index2) in refinedData.head"
                         :key="index2"
                     >
-                        {{ singleRow[propKey] ? singleRow[propKey] : '' }}
+                        <a
+                            v-if="isWebLink(singleRow[propKey])"
+                            :href="singleRow[propKey]"
+                            target="_blank"
+                        >
+                            {{ singleRow[propKey] ? singleRow[propKey] : '' }}
+                        </a>
+                        <span v-else>
+                            {{ singleRow[propKey] ? singleRow[propKey] : '' }}
+                        </span>
                     </td>
                 </tr>
             </tbody>
