@@ -64,6 +64,14 @@ export default {
         },
 
         /**
+         * the chartRange as object to fix min and max values for the chart
+         */
+        chartRange: {
+            type: [Object, Boolean],
+            required: true
+        },
+
+        /**
          * the BildungsatlasApi to access data via wfs with
          */
         api: {
@@ -91,6 +99,7 @@ export default {
             stadt_name: "Hamburg",
 
             barchartData: false,
+            barchartDataOptions: {},
 
             infoMatrix: {
                 anzahl_sus_primarstufe: ["anzahl_sus_primarstufe", "gebiet2011", "fallzahlen.anzahl_sus_primarstufe", "hint.anzahl_sus_primarstufe"],
@@ -175,9 +184,17 @@ export default {
 
                     if (hasComplexTypeValues(complexType)) {
                         this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
+                        this.barchartDataOptions = this.getChartOptions(this.propertyName, this.chartRange);
+                        if (this.barchartDataOptions === false && this.isComplexTypeBasedOnPercentage(complexType)) {
+                            this.barchartDataOptions = this.getChartOptionsForPercentage();
+                        }
+                        else {
+                            this.barchartDataOptions = {};
+                        }
                     }
                     else {
                         this.barchartData = false;
+                        this.barchartDataOptions = {};
                     }
 
                     this.setValuesBasedOnFeatureTypeKey(featureTypeKey, complexType);
@@ -237,15 +254,22 @@ export default {
             if (!value) {
                 return false;
             }
-            else if (!isComplexType(complexType)) {
-                return value;
-            }
-            const description = complexType.metadata.description;
-
-            if (description.indexOf("%") !== -1) {
+            else if (this.isComplexTypeBasedOnPercentage(complexType)) {
                 return Math.round(optimizeValueRootedInComplexType(value)) + "%";
             }
             return thousandsSeparator(optimizeValueRootedInComplexType(value));
+        },
+
+        /**
+         * checks if the given complex type is based on percentages
+         * @param {ComplexType} complexType the ComplexType with metadata to analyse the unit
+         * @returns {boolean} true if it is based on percentages
+         */
+        isComplexTypeBasedOnPercentage (complexType) {
+            if (!isComplexType(complexType)) {
+                return false;
+            }
+            return complexType.metadata.description.indexOf("%") !== -1;
         },
 
         /**
@@ -371,6 +395,50 @@ export default {
                     }
                     this.title = this.stadtteil_name;
             }
+        },
+
+        /**
+         * returns the options for the chart using the chartRange to set min and max for y axis
+         * @param {String} propertyName the property name to lookup in chartRange
+         * @param {Object|boolean} chartRange the given chartRange
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptions (propertyName, chartRange) {
+            if (
+                typeof chartRange !== "object" || chartRange === null
+                || !chartRange.hasOwnProperty(propertyName)
+                || !Array.isArray(chartRange[propertyName])
+                || !chartRange[propertyName].length === 2
+            ) {
+                return false;
+            }
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: chartRange[propertyName][0],
+                            suggestedMax: chartRange[propertyName][1]
+                        }
+                    }]
+                }
+            };
+        },
+
+        /**
+         * returns the options for the chart with unit for percentages
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptionsForPercentage () {
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }]
+                }
+            };
         }
     }
 };
@@ -453,7 +521,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :given-options="{}"
+                        :givenOptions="barchartDataOptions"
                         :data="barchartData"
                     />
                 </div>

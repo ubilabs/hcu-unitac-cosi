@@ -60,6 +60,14 @@ export default {
         properties: {
             type: Object,
             required: true
+        },
+
+        /**
+         * the chartRange as object to fix min and max values for the chart
+         */
+        chartRange: {
+            type: [Object, Boolean],
+            required: true
         }
     },
     data () {
@@ -77,6 +85,7 @@ export default {
             wanderungssaldo_u6_ins_umland: false,
 
             barchartData: false,
+            barchartDataOptions: {},
             barchartData_aus_umland: false,
             barchartData_ins_umland: false
         };
@@ -116,9 +125,14 @@ export default {
 
             if (hasComplexTypeValues(this.wanderungssaldo_u6_complexType)) {
                 this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.wanderungssaldo_u6_complexType, 2)));
+                this.barchartDataOptions = this.getChartOptions("wanderungssaldo_u6", this.chartRange);
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                }
             }
             else {
                 this.barchartData = false;
+                this.barchartDataOptions = {};
             }
             if (hasComplexTypeValues(this.wanderungssaldo_u6_aus_umland_complexType)) {
                 this.barchartData_aus_umland = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.wanderungssaldo_u6_aus_umland_complexType, 2)));
@@ -132,6 +146,50 @@ export default {
             else {
                 this.barchartData_ins_umland = false;
             }
+        },
+
+        /**
+         * returns the options for the chart using the chartRange to set min and max for y axis
+         * @param {String} propertyName the property name to lookup in chartRange
+         * @param {Object|boolean} chartRange the given chartRange
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptions (propertyName, chartRange) {
+            if (
+                typeof chartRange !== "object" || chartRange === null
+                || !chartRange.hasOwnProperty(propertyName)
+                || !Array.isArray(chartRange[propertyName])
+                || !chartRange[propertyName].length === 2
+            ) {
+                return false;
+            }
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: chartRange[propertyName][0],
+                            suggestedMax: chartRange[propertyName][1]
+                        }
+                    }]
+                }
+            };
+        },
+
+        /**
+         * returns the options for the chart with unit for percentages
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptionsForPercentage () {
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }]
+                }
+            };
         }
     }
 };
@@ -245,7 +303,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :given-options="{}"
+                        :givenOptions="barchartDataOptions"
                         :data="barchartData"
                     />
                 </div>
@@ -264,7 +322,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :given-options="{}"
+                        :givenOptions="getChartOptionsForPercentage()"
                         :data="barchartData_aus_umland"
                     />
                 </div>
@@ -280,7 +338,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :given-options="{}"
+                        :givenOptions="getChartOptionsForPercentage()"
                         :data="barchartData_ins_umland"
                     />
                 </div>

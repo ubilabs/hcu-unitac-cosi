@@ -51,6 +51,14 @@ export default {
         },
 
         /**
+         * the chartRange as object to fix min and max values for the chart
+         */
+        chartRange: {
+            type: [Object, Boolean],
+            required: true
+        },
+
+        /**
          * the BildungsatlasApi to access data via wfs with
          */
         api: {
@@ -82,10 +90,10 @@ export default {
             anteil_sus_ohneabschluss_stadt: "",
 
             barchartData: false,
+            barchartDataOptions: false,
+
             linechartData: false,
-            linechartDataOptions: {
-                aspectRatio: 1
-            }
+            linechartDataOptions: false
         };
     },
     watch: {
@@ -190,9 +198,14 @@ export default {
             }
             if (hasComplexTypeValues(this.properties?.anteil_sus_abi)) {
                 this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2)));
+                this.barchartDataOptions = this.getChartOptions("anteil_sus_abi", this.chartRange);
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                }
             }
             else {
                 this.barchartData = false;
+                this.barchartDataOptions = {};
             }
 
             this.anteil_sus_abi_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
@@ -225,9 +238,14 @@ export default {
             }
             if (hasComplexTypeValues(this.properties?.anteil_sus_ohneabschluss)) {
                 this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2)));
+                this.barchartDataOptions = this.getChartOptions("anteil_sus_ohneabschluss", this.chartRange);
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                }
             }
             else {
                 this.barchartData = false;
+                this.barchartDataOptions = {};
             }
 
             this.anteil_sus_ohneabschluss_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
@@ -268,6 +286,10 @@ export default {
          * @returns {void}
          */
         refreshLinechart () {
+            this.linechartDataOptions = Object.assign({
+                aspectRatio: 1
+            }, this.getChartOptions("anzahl_abschluss_bezug_gesamt", this.chartRange));
+
             this.callApiForLinechart("anzahl_abschluss_bezug_abi", complexTypeABI => {
                 this.callApiForLinechart("anzahl_abschluss_bezug_msa", complexTypeMSA => {
                     this.callApiForLinechart("anzahl_abschluss_bezug_esa", complexTypeESA => {
@@ -316,6 +338,50 @@ export default {
             }, error => {
                 console.error(error);
             });
+        },
+
+        /**
+         * returns the options for the chart using the chartRange to set min and max for y axis
+         * @param {String} propertyName the property name to lookup in chartRange
+         * @param {Object|boolean} chartRange the given chartRange
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptions (propertyName, chartRange) {
+            if (
+                typeof chartRange !== "object" || chartRange === null
+                || !chartRange.hasOwnProperty(propertyName)
+                || !Array.isArray(chartRange[propertyName])
+                || !chartRange[propertyName].length === 2
+            ) {
+                return false;
+            }
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: chartRange[propertyName][0],
+                            suggestedMax: chartRange[propertyName][1]
+                        }
+                    }]
+                }
+            };
+        },
+
+        /**
+         * returns the options for the chart with unit for percentages
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptionsForPercentage () {
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }]
+                }
+            };
         }
     }
 };
@@ -440,7 +506,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :given-options="{}"
+                        :givenOptions="barchartDataOptions"
                         :data="barchartData"
                     />
                 </div>

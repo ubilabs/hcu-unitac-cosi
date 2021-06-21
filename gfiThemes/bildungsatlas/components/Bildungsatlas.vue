@@ -32,6 +32,7 @@ export default {
         return {
             activeTab: "data",
             subTheme: "",
+            chartRange: false,
             featureType: "",
             properties: {},
             api: null,
@@ -82,6 +83,12 @@ export default {
             }
             else {
                 this.featureType = "";
+            }
+            if (typeof gfiParams === "object" && gfiParams?.chartRange) {
+                this.chartRange = gfiParams.chartRange;
+            }
+            else {
+                this.chartRange = false;
             }
 
             this.properties = typeof properties === "object" && properties !== null ? properties : {};
@@ -157,6 +164,7 @@ export default {
                 :is-active-tab="isActiveTab"
                 :feature="feature"
                 :properties="properties"
+                :chartRange="chartRange"
                 :api="api"
                 :feature-type="featureType"
                 :translate="translate"
