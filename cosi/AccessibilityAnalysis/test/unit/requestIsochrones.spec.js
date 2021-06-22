@@ -1,16 +1,12 @@
 import {
     expect
 } from "chai";
-import requestIsochrones from "../../components/requestIsochrones"
+import requestIsochrones from "../../components/requestIsochrones";
 // import fetch from 'node-fetch';
-
 
 
 // node-fetch not working: https://notes.alex-miller.co/20210520161027-mocking_fetch_in_a_jsdom_node_environment/
 describe.skip("requestIsochrones", () => {
-    before(() => {
-        global.fetch = fetch
-    });
     it("point request within hamburg", async () => {
         const res = await requestIsochrones(
             "driving-car", [
@@ -27,8 +23,9 @@ describe.skip("requestIsochrones", () => {
                     [9.744273174491198, 53.86052854494209]
                 ],
                 "time", [600 * 0.33, 600 * 0.67, 600]);
-        } catch (e) {
-            console.log(e.response)
+        }
+        catch (e) {
+            // console.log(e.response);
             expect(JSON.parse(e.response).error.code).to.equal(3099);
         }
     });
@@ -39,8 +36,9 @@ describe.skip("requestIsochrones", () => {
                     [9.744273174491198, "b"]
                 ],
                 "time", [600 * 0.33, 600 * 0.67, 600]);
-        } catch (e) {
-            console.log(e.response)
+        }
+        catch (e) {
+            // console.log(e.response);
             expect(JSON.parse(e.response).error.code).to.equal(3002);
         }
     });

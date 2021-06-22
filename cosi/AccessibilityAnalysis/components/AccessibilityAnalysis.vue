@@ -6,9 +6,9 @@ import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
-import requestIsochrones from "./requestIsochrones"
+import requestIsochrones from "./requestIsochrones";
 import * as Proj from "ol/proj.js";
-import deepEqual from "deep-equal"
+import deepEqual from "deep-equal";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -51,7 +51,7 @@ export default {
                 "rgba(100, 100, 3, 0.4)",
                 "rgba(200, 0, 3, 0.4)"
             ],
-            askUpdate:false,
+            askUpdate: false,
             abortController: null,
             currentCoordinates: null
         };
@@ -92,9 +92,9 @@ export default {
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
 
-        this.$root.$on("updateFeature", this.tryUpdateIsochrones)
-        Radio.on("ModelList", "showFeaturesById", this.tryUpdateIsochrones)
-        Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones)
+        this.$root.$on("updateFeature", this.tryUpdateIsochrones);
+        Radio.on("ModelList", "showFeaturesById", this.tryUpdateIsochrones);
+        Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones);
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
@@ -105,14 +105,13 @@ export default {
         ...methods,
 
         requestIsochrones: requestIsochrones,
-        createAbortController: ()=>new AbortController,
-        tryUpdateIsochrones: function() {
-            if(this.mode === "region" && this.currentCoordinates)
-            {
-                const newCoordinates = this.getCoordinates()
-                if(!deepEqual( this.currentCoordinates.map(e=>([e[0], e[1]])), newCoordinates))
-                {
-                    this.askUpdate = true
+        createAbortController: ()=>new AbortController(),
+        tryUpdateIsochrones: function () {
+            if (this.mode === "region" && this.currentCoordinates) {
+                const newCoordinates = this.getCoordinates();
+
+                if (!deepEqual(this.currentCoordinates.map(e=>[e[0], e[1]]), newCoordinates)) {
+                    this.askUpdate = true;
                 }
             }
         },
@@ -168,7 +167,7 @@ export default {
 </script>
 
 <template lang="html">
-    <div id='toolWrap'>
+    <div id="toolWrap">
         <Tool
             :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.title')"
             :icon="glyphicon"
@@ -319,7 +318,10 @@ export default {
                                 class="btn btn-lgv-grey measure-delete"
                                 @click="requestInhabitants"
                             >
-                                <span id="requestInhabitants" class="glyphicon glyphicon-user"></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
+                                <span
+                                    id="requestInhabitants"
+                                    class="glyphicon glyphicon-user"
+                                ></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
                             </button>
                         </div>
                     </div>
@@ -330,15 +332,17 @@ export default {
             v-model="askUpdate"
             class="success"
             :timeout="-1"
-            >
-            {{$t("additional:modules.tools.cosi.accessibilityAnalysis.askUpdate")}}
+        >
+            {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.askUpdate") }}
             <template v-slot:action="{ attrs }">
                 <v-btn
-                color="black"
-                text
-                v-bind="attrs"
-                @click="createIsochrones"
-                > Ok </v-btn>
+                    color="black"
+                    text
+                    v-bind="attrs"
+                    @click="createIsochrones"
+                >
+                    Ok
+                </v-btn>
             </template>
         </v-snackbar>
     </div>

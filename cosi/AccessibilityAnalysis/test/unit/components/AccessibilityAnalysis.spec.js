@@ -3,7 +3,7 @@ import {
     config,
     shallowMount,
     createLocalVue,
-    createWrapper, 
+    createWrapper
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
 import AccessibilityAnalysis from "../../../store/index";
@@ -18,14 +18,15 @@ import {
     registerProjections
 } from "./util.js";
 import GeoJSON from "ol/format/GeoJSON";
-import Vuetify from 'vuetify'
-import Vue from 'vue'
+import Vuetify from "vuetify";
+import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
 
-Vue.use(Vuetify)
+Vue.use(Vuetify);
 
 const localVue = createLocalVue();
-localVue.use(Vuex)
+
+localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
@@ -35,9 +36,9 @@ before(() => {
 
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, requestStub, sandbox, sourceStub, vuetify;
+    let store, requestStub, sandbox, sourceStub, vuetify,
 
-    let coordiantes = [0,0]
+        coordiantes = [0, 0];
 
     const mockConfigJson = {
             Portalconfig: {
@@ -84,7 +85,7 @@ describe("AccessibilityAnalysis.vue", () => {
 
 
     beforeEach(() => {
-        vuetify = new Vuetify()
+        vuetify = new Vuetify();
         sandbox = sinon.createSandbox();
         sourceStub = {
             clear: sinon.stub(),
@@ -107,7 +108,7 @@ describe("AccessibilityAnalysis.vue", () => {
                                 isFeatureDisabled: () => sinon.stub()
                             }
                         }
-                    },
+                    }
                 },
                 Map: {
                     namespaced: true,
@@ -118,15 +119,15 @@ describe("AccessibilityAnalysis.vue", () => {
                         })
                     },
                     actions: {
-                        createLayer: (state, name) => {
+                        createLayer: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 addEventListener: sinon.stub(),
                                 getSource: () => sourceStub
                             });
                         }
-                    },
-                },
+                    }
+                }
             },
             state: {
                 configJson: mockConfigJson
@@ -140,7 +141,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
-    async function mount(layersMock) {
+    async function mount (layersMock) {
         requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "Parser" && a2 === "getItemsByAttributes") {
                 return [];
@@ -154,22 +155,22 @@ describe("AccessibilityAnalysis.vue", () => {
             return null;
         });
         const ret = shallowMount(AccessibilityAnalysisComponent, {
-            stubs: { Tool },
+            stubs: {Tool},
             store,
             localVue,
             vuetify,
             methods: {
-                requestIsochrones: () =>
-                { 
+                requestIsochrones: () => {
                     return new Promise(function (resolve) {
                         resolve(JSON.stringify(data));
                     });
                 },
-                createAbortController: () => ({ abort: sinon.stub })
+                createAbortController: () => ({abort: sinon.stub})
             }
         });
-        await ret.vm.$nextTick()
-        return ret
+
+        await ret.vm.$nextTick();
+        return ret;
     }
 
     it("renders Component", async () => {
@@ -192,7 +193,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button with user input and point selected", async () => {
-        const wrapper = await mount([])
+        const wrapper = await mount([]);
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -202,7 +203,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
@@ -214,14 +215,14 @@ describe("AccessibilityAnalysis.vue", () => {
         sinon.assert.callCount(sourceStub.clear, 2);
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("000");
 
-        expect(wrapper.vm.askUpdate).to.be.false
+        expect(wrapper.vm.askUpdate).to.be.false;
         wrapper.vm.$root.$emit("updateFeature");
-        expect(wrapper.vm.askUpdate).to.be.false
+        expect(wrapper.vm.askUpdate).to.be.false;
     });
 
     it("trigger button requestInhabitants", async () => {
-        const wrapper = await mount([])
-        const rootWrapper = createWrapper(wrapper.vm.$root)
+        const wrapper = await mount([]),
+            rootWrapper = createWrapper(wrapper.vm.$root);
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -233,13 +234,13 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#create-isochrones").trigger("click");
 
         // need two ticks for all changes to propagate
-        await wrapper.vm.$nextTick()
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         await wrapper.find("#requestInhabitants").trigger("click");
 
-        expect(wrapper.vm.active).to.be.false
-        expect(rootWrapper.emitted('populationRequest')).to.exist
+        expect(wrapper.vm.active).to.be.false;
+        expect(rootWrapper.emitted("populationRequest")).to.exist;
     });
 
 
@@ -255,27 +256,27 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
             JSON.stringify(featuresRegion));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
-        expect(wrapper.vm.currentCoordinates).not.to.be.empty
+        expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
         // check no update on equal coordinates
-        expect(wrapper.vm.askUpdate).to.be.false
+        expect(wrapper.vm.askUpdate).to.be.false;
         wrapper.vm.$root.$emit("updateFeature");
-        expect(wrapper.vm.askUpdate).to.be.false
+        expect(wrapper.vm.askUpdate).to.be.false;
 
-        coordiantes = [1,1]
+        coordiantes = [1, 1];
         wrapper.vm.$root.$emit("updateFeature");
-        expect(wrapper.vm.askUpdate).to.be.true
+        expect(wrapper.vm.askUpdate).to.be.true;
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
-        expect(wrapper.vm.askUpdate).to.be.false
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.askUpdate).to.be.false;
     });
 
     it("show help for selectedmode", async () => {
