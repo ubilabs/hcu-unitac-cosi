@@ -1,7 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getComponent from "../../../../src/utils/getComponent";
-import Dropdown from "../../../../src/share-components/dropdowns/DropdownSimple.vue";
 import prepareDistrictLevels from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
@@ -12,15 +11,12 @@ import mutations from "../store/mutationsDistrictSelector";
 import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
-import VueSelect from "vue-select";
 import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
 
 export default {
     name: "DistrictSelector",
     components: {
-        Tool,
-        Dropdown,
-        VueSelect
+        Tool
     },
     data () {
         return {
@@ -30,8 +26,8 @@ export default {
             selectedNames: [],
             // A buffer for the extent of the selected district(s)
             bufferVal: 0,
-            // css class for the drag box button
-            dragBoxButtonClass: "btn-lgv-grey",
+            // color for the drag box button
+            dragBoxButtonColor: "grey lighten-1",
             // display additional info layers by key true/false
             visibleInfoLayers: [],
             // shows whether the features for all districts have been loaded
@@ -52,6 +48,20 @@ export default {
 
             this.districtLevels.forEach(district => {
                 obj[district.layerId] = district.label;
+            });
+
+            return obj;
+        },
+
+        /**
+         * Gets the options for the dropdown. The layerId for the value and the label for the text content.
+         * @returns {Object} The options.
+         */
+        labelsOfDistrictLevels2: function () {
+            const obj = [];
+
+            this.districtLevels.forEach(district => {
+                obj.push(district.label);
             });
 
             return obj;
@@ -284,11 +294,11 @@ export default {
         toggleDragBox () {
             if (this.dragBox.getActive()) {
                 this.dragBox.setActive(false);
-                this.dragBoxButtonClass = "btn-lgv-grey";
+                this.dragBoxButtonColor = "grey lighten-1";
             }
             else {
                 this.dragBox.setActive(true);
-                this.dragBoxButtonClass = "btn-primary";
+                this.dragBoxButtonColor = "primary";
             }
         },
 
@@ -437,148 +447,134 @@ export default {
             v-if="active"
             v-slot:toolBody
         >
-            <form class="district-selector">
-                <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.dropdownLabel') }}</label>
-                    <Dropdown
+            <v-app>
+                <form class="district-selector">
+                    <v-select
                         v-model="selectedLevelId"
-                        :options="labelsOfDistrictLevels"
+                        :items="districtLevels"
+                        :label="$t('additional:modules.tools.cosi.districtSelector.dropdownLabel')"
+                        item-text="label"
+                        item-value="layerId"
+                        outlined
+                        dense
                     />
-                </div>
-                <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel') }}</label>
-                    <VueSelect
-                        class="style-chooser"
-                        placeholder="Keine Auswahl"
+                    <v-select
                         :value="selectedNames"
-                        :options="namesOfDistricts"
+                        :items="namesOfDistricts"
+                        :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
+                        outlined
+                        dense
                         multiple
                         @input="updateSelectedFeatures"
                     />
-                </div>
-                <div class="form-group">
-                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.inputLabel') }}</label>
-                    <input
+                    <v-text-field
                         v-model="bufferVal"
-                        class="form-control"
+                        :label="$t('additional:modules.tools.cosi.districtSelector.inputLabel')"
+                        outlined
+                        dense
                         type="number"
                         step="250"
                         min="0"
-                    >
-                    <p class="help-block">
-                        {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
-                    </p>
-                </div>
-                <div
-                    class="form-group"
-                >
-                    <label>{{ $t('additional:modules.tools.cosi.districtSelector.additionalLayer') }}</label>
-                    <span
-                        class="glyphicon glyphicon-question-sign"
-                        @click="showAlert($t('additional:modules.tools.cosi.districtSelector.additionalInfoLayersHelp'))"
                     />
-                    <v-row dense>
-                        <v-col
-                            v-for="(ids, key) in additionalInfoLayers"
-                            :key="key"
+                    <p class="text-caption">
+                        {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
+                        <v-icon
+                            small
+                            @click="showAlert($t('additional:modules.tools.cosi.districtSelector.help'))"
                         >
-                            <v-checkbox
-                                v-model="visibleInfoLayers"
-                                :value="key"
-                                multiple
-                                dense
-                                hide-details
-                                class="form-check-input"
-                                type="checkbox"
-                                :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
-                            />
-                        </v-col>
-                    </v-row>
-                </div>
-                <button
-                    class="btn btn-lgv-grey"
-                    type="button"
-                    @click="setActive(false);"
-                >
-                    {{ $t('additional:modules.tools.cosi.districtSelector.buttonConfirm') }}
-                </button>
-                <button
-                    class="btn btn-lgv-grey"
-                    type="button"
-                    @click="clearFeatures"
-                >
-                    {{ $t('additional:modules.tools.cosi.districtSelector.buttonReset') }}
-                </button>
-                <button
-                    type="button"
-                    class="btn"
-                    title="Auswahlrechteck zeichnen"
-                    :class="[dragBoxButtonClass]"
-                    @click="toggleDragBox"
-                >
-                    <span class="glyphicon glyphicon-pencil" />
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-lgv-grey"
-                    title="Info"
-                    @click="showAlert($t('additional:modules.tools.cosi.districtSelector.info'))"
-                >
-                    <span class="glyphicon glyphicon-question-sign" />
-                </button>
-            </form>
+                            mdi-help-circle
+                        </v-icon>
+                    </p>
+                    <v-divider />
+                    <div>
+                        <span class="text-subtitle-2">
+                            {{ $t('additional:modules.tools.cosi.districtSelector.additionalLayer') }}
+                        </span>
+                        <v-icon
+                            small
+                            @click="showAlert($t('additional:modules.tools.cosi.districtSelector.additionalInfoLayersHelp'))"
+                        >
+                            mdi-help-circle
+                        </v-icon>
+                    </div>
+                    <div
+                        class="form-group"
+                    >
+                        <v-row dense>
+                            <v-col
+                                v-for="(ids, key) in additionalInfoLayers"
+                                :key="key"
+                            >
+                                <v-checkbox
+                                    v-model="visibleInfoLayers"
+                                    :value="key"
+                                    multiple
+                                    dense
+                                    hide-details
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
+                                />
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <v-divider />
+                    <v-btn
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        @click="setActive(false);"
+                    >
+                        {{ $t('additional:modules.tools.cosi.districtSelector.buttonConfirm') }}
+                    </v-btn>
+                    <v-btn
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        @click="clearFeatures"
+                    >
+                        {{ $t('additional:modules.tools.cosi.districtSelector.buttonReset') }}
+                    </v-btn>
+                    <v-btn
+                        dense
+                        small
+                        tile
+                        :color="dragBoxButtonColor"
+                        @click="toggleDragBox"
+                    >
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                </form>
+            </v-app>
         </template>
     </Tool>
 </template>
 
 <style lang="less" scoped>
     form {
-        max-width: 420px;;
-        .help-block {
-            margin-top: 5px;
-            font-size: 12px;
-        }
+        max-width: 430px;;
     }
 </style>
 
 <style lang="less">
     .district-selector {
-        .row {
-            margin-right: 0px;
-            margin-left: 0px;
-        }
-    }
-    .form-group {
-        .v-input--selection-controls {
-            margin-top: 0px;
-        }
-        .v-label {
-            font-size: 12px;
-            padding-bottom: 0px;
-            padding-top: 6px;
+        .form-group {
+            .v-input--selection-controls {
+                margin-top: 0px;
+            }
+            .v-label {
+                font-size: 12px;
+                padding-bottom: 0px;
+                padding-top: 6px;
+            }
         }
     }
     .ol-dragbox {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);
         border-width: 1.25
-    }
-    .style-chooser {
-        font-size: 14px;
-        .vs__dropdown-toggle {
-            border-radius: 0;
-        }
-        .vs__open-indicator {
-            fill: rgba(60,60,60,.9);
-            transform: scale(0.7);
-        }
-        .vs__search, .vs__search:focus {
-            padding: 1px 14px;
-            line-height: 1.42857143
-        }
-        .vs__actions {
-            padding: 4px 4px 0 3px;
-        }
     }
 </style>
 
