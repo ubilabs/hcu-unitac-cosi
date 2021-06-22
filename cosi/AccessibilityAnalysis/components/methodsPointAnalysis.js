@@ -39,7 +39,7 @@ export default {
         const range =
             this.scaleUnit === "time" ? this.distance * 60 : this.distance,
 
-            coordinates = this.getCoordinates(this.selectedFacilityName);
+            coordinates = this.getCoordinates();
 
         if (
             coordinates !== null &&
@@ -112,9 +112,11 @@ export default {
                 });
                 features = features.concat(layerUnionFeatures);
             }
+
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
             this.isochroneFeatures = features;
+            this.currentCoordinates = coordinates
 
             // TODO: get locale from store
             this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
@@ -394,18 +396,15 @@ export default {
             "rgba(0, 200, 3, 0.2)"
         ];
     },
-    getCoordinates: function (name) {
+    getCoordinates: function () {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
-            name: name
+            name: this.selectedFacilityName
         });
 
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
                 .getSource().getFeatures()
                 .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
-
-            for (const f of features)
-                console.log(this.isFeatureDisabled(f))
             
             return features
                 .map((feature) => {

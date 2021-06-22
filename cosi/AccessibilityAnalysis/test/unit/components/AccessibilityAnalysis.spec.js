@@ -4,7 +4,6 @@ import {
     shallowMount,
     createLocalVue,
     createWrapper, 
-    mount
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
 import AccessibilityAnalysis from "../../../store/index";
@@ -35,6 +34,11 @@ before(() => {
 });
 
 describe("AccessibilityAnalysis.vue", () => {
+    // eslint-disable-next-line no-unused-vars
+    let store, requestStub, sandbox, sourceStub, vuetify;
+
+    let coordiantes = [0,0]
+
     const mockConfigJson = {
             Portalconfig: {
                 menu: {
@@ -68,7 +72,7 @@ describe("AccessibilityAnalysis.vue", () => {
                                 }),
                                 getGeometry: sinon.stub().returns({
                                     getType: () => "Point",
-                                    getCoordinates: () => [0, 0]
+                                    getCoordinates: () => [...coordiantes]
                                 })
                             }])
                         })
@@ -78,8 +82,6 @@ describe("AccessibilityAnalysis.vue", () => {
             }
         }];
 
-    // eslint-disable-next-line no-unused-vars
-    let store, requestStub, sandbox, sourceStub, vuetify;
 
     beforeEach(() => {
         vuetify = new Vuetify()
@@ -260,8 +262,14 @@ describe("AccessibilityAnalysis.vue", () => {
             JSON.stringify(featuresRegion));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+        expect(wrapper.vm.currentCoordinates).not.to.be.empty
 
+        // check no update on equal coordinates
         expect(wrapper.vm.askUpdate).to.be.false
+        wrapper.vm.$root.$emit("updateFeature");
+        expect(wrapper.vm.askUpdate).to.be.false
+
+        coordiantes = [1,1]
         wrapper.vm.$root.$emit("updateFeature");
         expect(wrapper.vm.askUpdate).to.be.true
 

@@ -229,6 +229,7 @@ export default {
             this.geomPickerClearDrawPolygon();
             this.removePointMarker();
             this.locationPickerActive = false;
+            this.$root.$emit("updateFeature");
         },
 
         /**

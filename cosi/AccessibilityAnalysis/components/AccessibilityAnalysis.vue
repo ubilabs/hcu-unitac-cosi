@@ -8,6 +8,7 @@ import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsPointAnalysis";
 import requestIsochrones from "./requestIsochrones"
 import * as Proj from "ol/proj.js";
+import deepEqual from "deep-equal"
 
 export default {
     name: "AccessibilityAnalysis",
@@ -51,7 +52,8 @@ export default {
                 "rgba(200, 0, 3, 0.4)"
             ],
             askUpdate:false,
-            abortController: null
+            abortController: null,
+            currentCoordinates: null
         };
     },
     computed: {
@@ -89,10 +91,10 @@ export default {
         this.mapLayer.setVisible(true);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
-        this.$root.$on("updateFeature", ()=>{
-            if(this.mode === "region" && this.isochroneFeatures.length)
-                this.askUpdate = true
-        })
+
+        this.$root.$on("updateFeature", this.tryUpdateIsochrones)
+        Radio.on("ModelList", "showFeaturesById", this.tryUpdateIsochrones)
+        Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones)
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
@@ -104,6 +106,16 @@ export default {
 
         requestIsochrones: requestIsochrones,
         createAbortController: ()=>new AbortController,
+        tryUpdateIsochrones: function() {
+            if(this.mode === "region" && this.currentCoordinates)
+            {
+                const newCoordinates = this.getCoordinates()
+                if(!deepEqual( this.currentCoordinates.map(e=>([e[0], e[1]])), newCoordinates))
+                {
+                    this.askUpdate = true
+                }
+            }
+        },
 
         resetMarkerAndZoom: function () {
             const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
