@@ -296,7 +296,10 @@ export default {
                             class="btn btn-lgv-grey measure-delete"
                             @click="requestInhabitants"
                         >
-                            <span id="requestInhabitants" class="glyphicon glyphicon-user"></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
+                            <span
+                                id="requestInhabitants"
+                                class="glyphicon glyphicon-user"
+                            ></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
                         </button>
                     </div>
                 </div>

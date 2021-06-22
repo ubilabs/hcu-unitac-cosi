@@ -131,7 +131,8 @@ export default {
 
             // TODO: get locale from store
             this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
-        } else {
+        }
+        else {
             this.inputReminder();
         }
     },
@@ -190,7 +191,8 @@ export default {
             this.setIsochroneAsBbox();
             this.showRequestButton = true;
             this.cleanup();
-        } else {
+        }
+        else {
             this.inputReminder();
         }
     },
