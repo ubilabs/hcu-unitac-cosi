@@ -349,7 +349,7 @@ export default {
         getChartOptions (propertyName, chartRange) {
             if (
                 typeof chartRange !== "object" || chartRange === null
-                || !chartRange.hasOwnProperty(propertyName)
+                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
                 || !Array.isArray(chartRange[propertyName])
                 || !chartRange[propertyName].length === 2
             ) {
@@ -506,7 +506,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :givenOptions="barchartDataOptions"
+                        :given-options="barchartDataOptions"
                         :data="barchartData"
                     />
                 </div>

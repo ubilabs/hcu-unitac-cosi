@@ -164,7 +164,7 @@ export default {
                 :is-active-tab="isActiveTab"
                 :feature="feature"
                 :properties="properties"
-                :chartRange="chartRange"
+                :chart-range="chartRange"
                 :api="api"
                 :feature-type="featureType"
                 :translate="translate"

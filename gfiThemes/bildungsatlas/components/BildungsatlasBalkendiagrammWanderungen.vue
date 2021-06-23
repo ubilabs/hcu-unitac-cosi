@@ -157,7 +157,7 @@ export default {
         getChartOptions (propertyName, chartRange) {
             if (
                 typeof chartRange !== "object" || chartRange === null
-                || !chartRange.hasOwnProperty(propertyName)
+                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
                 || !Array.isArray(chartRange[propertyName])
                 || !chartRange[propertyName].length === 2
             ) {
@@ -303,7 +303,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :givenOptions="barchartDataOptions"
+                        :given-options="barchartDataOptions"
                         :data="barchartData"
                     />
                 </div>
@@ -322,7 +322,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :givenOptions="getChartOptionsForPercentage()"
+                        :given-options="getChartOptionsForPercentage()"
                         :data="barchartData_aus_umland"
                     />
                 </div>
@@ -338,7 +338,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :givenOptions="getChartOptionsForPercentage()"
+                        :given-options="getChartOptionsForPercentage()"
                         :data="barchartData_ins_umland"
                     />
                 </div>
