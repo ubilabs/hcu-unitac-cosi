@@ -1,5 +1,6 @@
 <script>
 import Chart from "chart.js";
+import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 
 export default {
     name: "VerkehrsstaerkenLineChart",
@@ -86,7 +87,14 @@ export default {
                     legend: this.createChartLegend(),
                     tooltips: this.createChartTooltip(),
                     scales: this.createChartScales()
-                }
+                },
+                plugins: [{
+                    beforeInit: chart => {
+                        chart.legend.afterFit = function () {
+                            this.height += 10;
+                        };
+                    }
+                }]
             });
         },
 
@@ -104,6 +112,7 @@ export default {
                 datasets: [{
                     borderColor: this.chartColorCircle,
                     fill: false,
+                    lineTension: 0,
                     label: this.createDatasetLabel(category),
                     data: preparedDataset.data,
                     pointBorderColor: preparedDataset.color,
@@ -209,7 +218,7 @@ export default {
                 bodyFontColor: this.toolTipBodyFontColor,
                 backgroundColor: this.toolTipBackgroundColor,
                 callbacks: {
-                    label: (tooltipItem) => tooltipItem.value,
+                    label: (tooltipItem) => thousandsSeparator(tooltipItem.value),
                     title: () => false
                 }
             };
@@ -239,7 +248,9 @@ export default {
                         labelString: this.createDatasetLabel(this.category)
                     },
                     ticks: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        precision: 0,
+                        callback: value => thousandsSeparator(value)
                     },
                     gridLines: this.createGridLines()
                 }]
@@ -317,7 +328,7 @@ export default {
     }
     #verkehrsstaerken-chart-container {
         position: absolute;
-        width: 58vh;
+        width: 57vh;
     }
 }
 </style>

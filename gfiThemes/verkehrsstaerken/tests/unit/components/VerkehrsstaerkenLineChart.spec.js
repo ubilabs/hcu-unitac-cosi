@@ -65,6 +65,7 @@ describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/Ve
                         borderColor: "rgba(70, 130, 180, 1)",
                         data: [17000, 17000, 17000, 17000, 16000, 16000, 16000, 16000, 18000, 16000, 16000],
                         fill: false,
+                        lineTension: 0,
                         label: "additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDay",
                         pointBackgroundColor: ["rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(255, 0, 0, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)"],
                         pointBorderColor: ["rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)", "rgba(255, 0, 0, 1)", "rgba(70, 130, 180, 1)", "rgba(70, 130, 180, 1)"],
@@ -121,7 +122,7 @@ describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/Ve
         expect(result.backgroundColor).to.equals("rgba(240, 240, 240, 1)");
 
         expect(result.callbacks.label).to.be.a("function");
-        expect(result.callbacks.label({value: 17000})).equals(17000);
+        expect(result.callbacks.label({value: 17000})).equals("17.000");
         expect(result.callbacks.title).to.be.a("function");
         expect(result.callbacks.title()).to.be.false;
     });
@@ -147,6 +148,7 @@ describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/Ve
             labelString: "additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDay"
         });
         expect(result.yAxes[0].ticks.beginAtZero).equals(true);
+        expect(result.yAxes[0].ticks.precision).equals(0);
         expect(result.xAxes[0].gridLines).to.deep.equals({
             color: "rgba(0, 0, 0, 1)",
             display: true,
