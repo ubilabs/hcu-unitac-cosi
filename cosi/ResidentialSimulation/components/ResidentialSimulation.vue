@@ -8,9 +8,8 @@ import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vu
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
 import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
+import StatisticsTable from "./StatisticsTable.vue";
 import createLayer from "../../utils/createLayer";
-import LineChart from "../../ChartGenerator/components/charts/LineChart.vue";
-import BarChart from "../../ChartGenerator/components/charts/BarChart.vue";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
 
@@ -21,8 +20,7 @@ export default {
         ScenarioManager,
         GeometryPicker,
         ReferenceDistrictPicker,
-        LineChart,
-        BarChart
+        StatisticsTable
     },
     data () {
         return {
@@ -35,7 +33,7 @@ export default {
                 gfz: 1.0,
                 populationDensity: 5000,
                 livingSpace: 30,
-                stats: {}
+                stats: null
             },
             fallbacks: {
                 residents: 0,
@@ -99,6 +97,10 @@ export default {
 
         residents () {
             return this.neighborhood.residents;
+        },
+
+        stats () {
+            return this.neighborhood.stats;
         }
     },
 
@@ -143,6 +145,11 @@ export default {
                 ],
                 "BarChart"
             );
+
+            /**
+             * @todo remove timeout - only used due to issues in ChartGenerator module
+             * will be refactored
+             */
             setTimeout(() => {
                 this.visualizeDemographics(
                     "age",
@@ -160,11 +167,16 @@ export default {
                     "LineChart"
                 );
             }, 250);
+
             this.extrapolateNeighborhoodStatistics();
         },
 
         residents () {
             this.extrapolateNeighborhoodStatistics();
+        },
+
+        stats () {
+            console.log(this.stats);
         }
     },
     created () {
@@ -198,6 +210,7 @@ export default {
          */
         updateGeometry (geom) {
             this.geometry = geom;
+            geomPickerUnlisten(this.$refs["geometry-picker"]);
         },
         updateArea (newArea) {
             updateArea(newArea, this.neighborhood, this.fallbacks);
@@ -259,7 +272,6 @@ export default {
                 options: this.baseStatsChartData.options
             });
 
-            // this.baseStatsChartData.charts.push(chartData);
             this.setNewDataSet(chartData);
         },
 
@@ -491,20 +503,10 @@ export default {
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
-                            <template v-if="baseStatsChartData.charts.length > 0">
-                                <v-row
-                                    v-for="(datum, i) in baseStatsChartData.charts"
-                                    :key="i"
-                                    dense
-                                >
-                                    <v-col cols="12">
-                                        <component
-                                            :is="datum.type"
-                                            :dataSets="datum"
-                                            :options="baseStatsChartData.options"
-                                        />
-                                    </v-col>
-                                </v-row>
+                            <template v-if="neighborhood.stats && polygonArea > 0">
+                                <StatisticsTable
+                                    v-model="neighborhood.stats"
+                                />
                             </template>
                         </div>
                     </v-form>

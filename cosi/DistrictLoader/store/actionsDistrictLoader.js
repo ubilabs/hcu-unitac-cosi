@@ -116,6 +116,11 @@ const actions = {
     async getStatsByDistrict ({getters, rootGetters, dispatch}, {districtFeature, districtLevel}) {
         // Return stats if already stored
         if (districtFeature.get("stats")) {
+            /**
+             * @deprecated
+             * @todo refactor when Radio removed
+            */
+            Radio.trigger("Util", "hideLoader");
             return districtFeature.get("stats");
         }
         /**
@@ -185,7 +190,7 @@ const actions = {
             const district = _districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
 
             if (district) {
-                district.set("stats", {...district.get("stats") || {}, [feature.get("kategorie")]: feature});
+                district.set("stats", [...district.get("stats") || [], feature]);
             }
         });
     },

@@ -10,7 +10,13 @@
                     "pickReference": "Referenzgebiet auswählen",
                     "helpPickReference": "Statistische Daten aus einem Referenzgebiet extrapolieren",
                     "statsFeatures": "Statistische Daten",
-                    "showStatsFeatures": "Statistische Daten einblenden"
+                    "showStatsFeatures": "Statistische Daten einblenden",
+                    "statsCategory": "Kategorie",
+                    "statsValue": "Wert",
+                    "statsType": "Typ",
+                    "editStats": "Wert bearbeiten",
+                    "editStatsInfo": "Bitte beachten Sie, dass nach der Veränderung eines Wertes keine Sicherheit mehr besteht, dass relative und absolute Werte zueinander passen oder Abhängigkeiten zwischen Werten realistisch abgebildet werden.",
+                    "isNotNumber": "Muss eine Zahl sein"
                 }
             }
         }

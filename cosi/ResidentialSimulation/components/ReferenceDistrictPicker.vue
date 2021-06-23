@@ -2,6 +2,7 @@
 import {Select} from "ol/interaction";
 import {mapActions, mapGetters} from "vuex";
 import getAvailableYears from "../../utils/getAvailableYears";
+import groupMapping from "../../utils/groupMapping";
 
 export default {
     name: "ReferenceDistrictPicker",
@@ -19,7 +20,11 @@ export default {
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
         ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel"]),
-        ...mapGetters("Tools/DistrictLoader", ["mapping"])
+        ...mapGetters("Tools/DistrictLoader", ["mapping"]),
+
+        statsMapping () {
+            return groupMapping(this.mapping);
+        }
     },
     watch: {
         /**
@@ -165,6 +170,7 @@ export default {
                     if (mappingObj.value.includes("Frauen")) {
                         const total = stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
 
+                        // baseStats.absolute[datum.kategorie] = refValue / total;
                         baseStats.absolute[datum.kategorie] = refValue / total;
                         continue;
                     }
@@ -207,7 +213,7 @@ export default {
             <v-col cols="12">
                 <v-select
                     v-model="selectedStatsFeature"
-                    :items="mapping"
+                    :items="statsMapping"
                     item-text="value"
                     return-object
                     :label="$t('additional:modules.tools.cosi.residentialSimulation.statsFeatures')"
