@@ -21,7 +21,7 @@ export function storageListener (models) {
             model.listenTo(Radio.channel("Storage"), {
                 "updated": function (key) {
 
-                    if (model.defaults.hasOwnProperty(key)) {
+                    if (Object.prototype.hasOwnProperty.call(model.defaults, key)) {
                         model.set(key, parseItem(key));
                     }
                 }

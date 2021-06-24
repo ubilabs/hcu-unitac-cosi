@@ -308,11 +308,11 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <form>
                 <Dropdown

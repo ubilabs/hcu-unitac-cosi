@@ -485,9 +485,9 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <div
                 id="CommuterFlows"
                 class="container"
@@ -548,7 +548,7 @@ export default {
                         </div>
                     </div>
                     <div class="row section">
-                        <div class="col"></div>
+                        <div class="col" />
                     </div>
                     <div class="row section">
                         <div class="col-sm-12">
@@ -626,7 +626,7 @@ export default {
                                     :disabled="!animationChecked"
                                     @click="playAnimation"
                                 >
-                                    <span class="glyphicon glyphicon-play"></span>
+                                    <span class="glyphicon glyphicon-play" />
                                     {{ translate("additional:modules.tools.CommuterFlows.buttonStart") }}
                                 </button>
                             </div>
@@ -639,14 +639,14 @@ export default {
                                     class="btn btn-default btn-sm animationButton"
                                     @click="stopAnimation"
                                 >
-                                    <span class="glyphicon glyphicon-stop"></span>
+                                    <span class="glyphicon glyphicon-stop" />
                                     {{ translate("additional:modules.tools.CommuterFlows.buttonStop") }}
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="row section">
-                        <div class="col"></div>
+                        <div class="col" />
                     </div>
                     <div class="row section">
                         <div class="col-6 col-sm-6 tooltipWrapper">
@@ -708,7 +708,7 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col">
-                            <hr />
+                            <hr>
                         </div>
                     </div>
                     <div class="row section">
@@ -726,7 +726,7 @@ export default {
                                         <td
                                             class="featureColor"
                                         >
-                                            <div :style="getStyleByIdx(idx)"></div>
+                                            <div :style="getStyleByIdx(idx)" />
                                         </td>
                                         <td class="featureCaption">
                                             {{ feature.get("caption") }}
@@ -750,7 +750,7 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col">
-                            <hr />
+                            <hr>
                         </div>
                     </div>
                     <div class="row section">
@@ -762,7 +762,7 @@ export default {
                                 @click="loadLess"
                             >
                                 {{ translate("additional:modules.tools.CommuterFlows.buttonLess", {listChunk}) }}
-                                <span class="glyphicon glyphicon-arrow-up"></span>
+                                <span class="glyphicon glyphicon-arrow-up" />
                             </button>
                         </div>
                         <div class="col-12 col-sm-4">
@@ -773,7 +773,7 @@ export default {
                                 @click="loadMore"
                             >
                                 {{ translate("additional:modules.tools.CommuterFlows.buttonMore", {listChunk}) }}
-                                <span class="glyphicon glyphicon-arrow-down"></span>
+                                <span class="glyphicon glyphicon-arrow-down" />
                             </button>
                         </div>
                         <div class="col-12 col-sm-4">
@@ -809,7 +809,7 @@ export default {
                                 class="btn btn-default btn-block"
                                 @click="resetAll"
                             >
-                                <span class="glyphicon glyphicon-trash"></span>
+                                <span class="glyphicon glyphicon-trash" />
                                 {{ translate("additional:modules.tools.CommuterFlows.buttonReset") }}
                             </button>
                         </div>

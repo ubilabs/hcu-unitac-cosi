@@ -130,6 +130,20 @@ describe("addons/gfiThemes/bildungsatlas/utils/bildungsatlasApi.js", () => {
             expect(api.filterComplexTypeFromJsonResponse([])).to.be.false;
             expect(api.filterComplexTypeFromJsonResponse(["string"])).to.be.false;
         });
+        it("should return a structure with altered values if values exists and is an object instead of an array", () => {
+            const api = new BildungsatlasApi("configUrl", "wfsUrls", "featureTypes", "mockWfsCall", true),
+                feature = new Feature(),
+                pseudoType = {
+                    values: {test: 1}
+                },
+                expected = {
+                    values: [{test: 1}]
+                };
+
+            feature.set("attributeName", pseudoType);
+
+            expect(api.filterComplexTypeFromJsonResponse([feature], "attributeName")).to.deep.equal(expected);
+        });
     });
 
     describe("getComplexType", () => {

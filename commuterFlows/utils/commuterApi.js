@@ -231,7 +231,7 @@ export class CommuterApi {
             blacklistAssoc[entry] = true;
         });
         featureList.forEach(feature => {
-            if (blacklistAssoc.hasOwnProperty(feature.get("caption"))) {
+            if (Object.prototype.hasOwnProperty.call(blacklistAssoc, feature.get("caption"))) {
                 return;
             }
             result.push(feature);
@@ -379,7 +379,7 @@ export class CommuterApi {
                 || !(item.getElementsByTagName(gmlItem) instanceof HTMLCollection)
                 || !item.getElementsByTagName(gmlItem).length
                 || !(item.getElementsByTagName(gmlItem)[0] instanceof Element)
-                || blacklistAssoc.hasOwnProperty(item.getElementsByTagName(gmlItem)[0].textContent)
+                || Object.prototype.hasOwnProperty.call(blacklistAssoc, item.getElementsByTagName(gmlItem)[0].textContent)
             ) {
                 return;
             }
@@ -406,7 +406,7 @@ export class CommuterApi {
             }, params),
             cacheKey = hash.sha1(url + "_" + JSON.stringify(axiosParams));
 
-        if (this.cache.hasOwnProperty(cacheKey)) {
+        if (Object.prototype.hasOwnProperty.call(this.cache, cacheKey)) {
             onsuccess(this.cache[cacheKey]);
             return;
         }
@@ -448,7 +448,7 @@ export class CommuterApi {
 </wfs:GetFeature>`,
             cacheKey = hash.sha1(url + "_" + JSON.stringify(reqParams));
 
-        if (this.cache.hasOwnProperty(cacheKey)) {
+        if (Object.prototype.hasOwnProperty.call(this.cache, cacheKey)) {
             onsuccess(this.cache[cacheKey]);
             return;
         }

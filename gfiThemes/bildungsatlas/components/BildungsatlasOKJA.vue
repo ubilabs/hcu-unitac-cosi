@@ -18,6 +18,18 @@ export default {
             type: Function,
             required: true
         },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
         /**
          * the properties as a key value object
          */
@@ -84,18 +96,6 @@ export default {
     },
     methods: {
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-        /**
          * refreshes the gfi
          * @returns {void}
          */
@@ -105,6 +105,7 @@ export default {
             this.refreshGfiPiechartOpening();
             this.refreshGfiPiechartOffers();
         },
+
         /**
          * refreshes the okja header of the gfi
          * @returns {void}
@@ -117,6 +118,7 @@ export default {
             this.durchsch_stammnutzer = this.properties?.durchsch_stammnutzer ? thousandsSeparator(this.properties.durchsch_stammnutzer) : "g.F.";
             this.angebotsstunden_pro_jahr = this.properties?.angebotsstunden_pro_jahr ? thousandsSeparator(this.properties.angebotsstunden_pro_jahr) : "g.F.";
         },
+
         /**
          * refreshes the table with offerings for target groups
          * @returns {void}
@@ -129,6 +131,7 @@ export default {
             this.jugendliche_14_bis_unter_18_jahre = this.properties?.jugendliche_14_bis_unter_18_jahre === "Ja" ? "Ja" : "Nein";
             this.junge_erwachsene_18_bis_unter_27_jahre = this.properties?.junge_erwachsene_18_bis_unter_27_jahre === "Ja" ? "Ja" : "Nein";
         },
+
         /**
          * refreshes the piechart with the distributions of opening hours
          * @returns {void}
@@ -155,15 +158,16 @@ export default {
                             this.properties?.wochenende_abendoeffnung ? this.properties.wochenende_abendoeffnung : 0
                         ],
                         backgroundColor: [
-                            convertColor([230, 159, 0, 1], "rgbaString"),
-                            convertColor([0, 114, 178, 1], "rgbaString"),
-                            convertColor([240, 228, 66, 1], "rgbaString"),
-                            convertColor([86, 180, 233, 1], "rgbaString")
+                            convertColor([0, 48, 99, 1], "rgbaString"),
+                            convertColor([46, 127, 210, 1], "rgbaString"),
+                            convertColor([255, 130, 102, 1], "rgbaString"),
+                            convertColor([255, 217, 102, 1], "rgbaString")
                         ]
                     }]
                 };
             }
         },
+
         /**
          * refreshes the piechart with the distribution of the content of the offer
          * @returns {void}
@@ -214,18 +218,18 @@ export default {
                             this.properties?.foerderung_der_medienkompetenz ? this.properties.foerderung_der_medienkompetenz : 0
                         ],
                         backgroundColor: [
-                            convertColor([230, 159, 0, 1], "rgbaString"),
-                            convertColor([86, 180, 233, 1], "rgbaString"),
-                            convertColor([0, 158, 115, 1], "rgbaString"),
-                            convertColor([240, 228, 66, 1], "rgbaString"),
-                            convertColor([0, 114, 178, 1], "rgbaString"),
-                            convertColor([213, 94, 0, 1], "rgbaString"),
-                            convertColor([204, 121, 167, 1], "rgbaString"),
-                            convertColor([230, 159, 0, 1], "rgbaString"),
-                            convertColor([86, 180, 233, 1], "rgbaString"),
-                            convertColor([0, 158, 115, 1], "rgbaString"),
-                            convertColor([240, 228, 66, 1], "rgbaString"),
-                            convertColor([0, 114, 178, 1], "rgbaString")
+                            convertColor([0, 48, 99, 1], "rgbaString"),
+                            convertColor([46, 127, 210, 1], "rgbaString"),
+                            convertColor([255, 88, 51, 1], "rgbaString"),
+                            convertColor([255, 230, 153, 1], "rgbaString"),
+                            convertColor([13, 86, 163, 1], "rgbaString"),
+                            convertColor([255, 172, 153, 1], "rgbaString"),
+                            convertColor([149, 149, 149, 1], "rgbaString"),
+                            convertColor([63, 63, 63, 1], "rgbaString"),
+                            convertColor([255, 217, 102, 1], "rgbaString"),
+                            convertColor([26, 106, 189, 1], "rgbaString"),
+                            convertColor([255, 130, 102, 1], "rgbaString"),
+                            convertColor([4, 66, 132, 1], "rgbaString")
                         ]
                     }]
                 };
@@ -247,7 +251,7 @@ export default {
                 </div>
                 <div class="rba_header_text">
                     {{ adresse }}
-                    <br />
+                    <br>
                     {{ ort }}
                 </div>
             </div>
@@ -351,7 +355,7 @@ export default {
                     class="rba_chart_content piechart_opening"
                 >
                     <Piechart
-                        :givenOptions="piechart_opening_options"
+                        :given-options="piechart_opening_options"
                         :data="piechart_opening"
                     />
                 </div>
@@ -371,7 +375,7 @@ export default {
                     class="rba_chart_content piechart_offers"
                 >
                     <Piechart
-                        :givenOptions="piechart_offers_options"
+                        :given-options="piechart_offers_options"
                         :data="piechart_offers"
                     />
                 </div>
@@ -412,58 +416,5 @@ export default {
 .gfi-bildungsatlas-okja {
     max-width: 420px;
     font-size: 13px;
-    .panel {
-        &.graphHeader {
-            padding: 0 8px 8px;
-            border-bottom: 2px solid #ddd;
-        }
-    }
-    .gfi-data {
-        padding: 10px;
-    }
-    .gfi-info {
-        padding: 0 10px 10px;
-    }
-
-    .rba_header {
-        text-align: right;
-        .rba_header_title {
-            font-weight: bold;
-        }
-    }
-    .rba_table {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        table {
-            width: 100%;
-        }
-        td {
-            vertical-align: top;
-        }
-        td.rba_table_rightcol {
-            text-align: right;
-        }
-    }
-    .rba_chart {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        .rba_chart_title {
-            font-weight: bold;
-        }
-    }
-    .rba_footer {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-    }
-
-    .hidden {
-        display: none;
-    }
-    .footer {
-        margin: 0 0 10px 10px;
-    }
 }
 </style>

@@ -1,41 +1,39 @@
 <script>
+import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
+import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
-import BildungsatlasCompBarchart from "./BildungsatlasCompBarchart.vue";
+import {
+    optimizeComplexTypeValues,
+    optimizeValueRootedInComplexType,
+    convertComplexTypeToBarchart,
+    sortComplexType,
+    isComplexType,
+    hasComplexTypeValues
+} from "../../../utils/complexType.js";
+
+/**
+ * a complex type is an object to represent a wfs array
+ * @typedef {Object} ComplexType
+ * @property {Object} metadata the metadata to describe the content of the array
+ * @property {String} metadata.type the type e.g. "timeseries"
+ * @property {String} metadata.format the format of the keys e.g. "DD.MM.YYYY"
+ * @property {String} metadata.description the description of the values
+ * @property {ComplexTypeValue[]} values an array of values
+ */
+
+/**
+ * a set of data in a complex type is an object with key and value params
+ * @typedef {Object} ComplexTypeValue
+ * @property {String|Number} key the key of the array entry
+ * @property {*} value the value for the key
+ */
 
 export default {
     name: "BildungsatlasBalkendiagramm",
     components: {
-        BildungsatlasCompBarchart
+        Barchart
     },
     props: {
-        feature: {
-            type: Object,
-            required: true
-        },
-        /**
-         * fixes the bildungsatlas data bug: any number delivered as -0.0001 should be 0
-         * @param {(String|Number)} value the value to fix
-         * @returns {(String|Number)}  the fixed value
-         */
-        fixDataBug: {
-            type: Function,
-            required: true
-        },
-        /**
-         * any value of the bildungsatlas needs to have a certain format
-         * - a percentage has to have a following %
-         * - a value equaling null must be shown as *g.F.
-         * - any absolute value should have no decimal places
-         * - any relative value should have 2 decimal places
-         * @param {(String|Number)} value the value to transform
-         * @param {Boolean} relative if true, a percent sign will be attached
-         * @param {Number} fixedTo the number of decimal places of the returning value
-         * @returns {String}  the value for the bildungsatlas based on the input
-         */
-        getValueForBildungsatlas: {
-            type: Function,
-            required: true
-        },
         /**
          * checks if the given tab name is currently active
          * @param {String} tab the tab name
@@ -44,191 +42,403 @@ export default {
         isActiveTab: {
             type: Function,
             required: true
+        },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
+        /**
+         * the properties as a key value object
+         */
+        properties: {
+            type: Object,
+            required: true
+        },
+
+        /**
+         * the chartRange as object to fix min and max values for the chart
+         */
+        chartRange: {
+            type: [Object, Boolean],
+            required: true
+        },
+
+        /**
+         * the BildungsatlasApi to access data via wfs with
+         */
+        api: {
+            type: Object,
+            required: true
         }
     },
     data () {
         return {
-            barBackgroundColor: "#d76629",
-            barHoverBackgroundColor: "#337ab7",
+            featureTypeKey: "",
+            propertyName: "",
+            title: "",
+            table_title: "",
 
-            subThemeTitle: "",
-            chartTitle: "",
-            description: "",
-            themeType: "",
-            layerType: "",
-            themeCategory: "",
-            themeUnit: "",
-            chartData: {},
-            tableContent: null,
-            renderLabelXAxis: xValue => xValue,
-            renderLabelYAxis: yValue => {
-                return thousandsSeparator(yValue);
-            },
-            descriptionXAxis: "",
-            descriptionYAxis: "",
-            setTooltipValue: tooltipItem => tooltipItem.value
+            statgeb_value: false,
+            sozialraum_value: false,
+            stadtteil_value: false,
+            bezirk_value: false,
+            stadt_value: false,
+
+            statgeb_id: "",
+            sozialraum_name: "",
+            stadtteil_name: "",
+            bezirk_name: "",
+            stadt_name: "Hamburg",
+
+            barchartData: false,
+            barchartDataOptions: {},
+
+            infoMatrix: {
+                anzahl_sus_primarstufe: ["anzahl_sus_primarstufe", "gebiet2011", "fallzahlen.anzahl_sus_primarstufe", "hint.anzahl_sus_primarstufe"],
+                anzahl_sus_sekundarstufe: ["anzahl_sus_sekundarstufe", "gebiet2011", "fallzahlen.anzahl_sus_sekundarstufe", "hint.anzahl_sus_sekundarstufe"],
+                anteil_sus_gymnasien: ["anteil_sus_gymnasien", "gebiet2011", "fallzahlen.anteil_sus_gymnasien", "hint.anzahl_sus_sekundarstufe"],
+                anteil_sus_stadtteilschulen: ["anteil_sus_stadtteilschulen", "gebiet2011", "fallzahlen.anteil_sus_stadtteilschulen", "hint.anzahl_sus_sekundarstufe"],
+                anteil_sus_sonderschulen: ["anteil_sus_sonderschulen", "gebiet2011", "fallzahlen.anteil_sus_sonderschulen", "hint.anzahl_sus_sekundarstufe", "hint.anteil_sus_sonderschulen"],
+                anzahl_u18: ["fallzahlen.anzahl_bev", "gebiet2011"],
+                anzahl_u3: ["fallzahlen.anzahl_bev", "gebiet2011"],
+                anzahl_3_5: ["fallzahlen.anzahl_bev", "gebiet2011"],
+                anzahl_6_9: ["fallzahlen.anzahl_bev", "gebiet2011"],
+                anzahl_10_15: ["fallzahlen.anzahl_bev", "gebiet2011"],
+                anteil_u18: ["fallzahlen.anteil_bev", "gebiet2011"],
+                anteil_u3: ["fallzahlen.anteil_bev", "gebiet2011"],
+                anteil_3_5: ["fallzahlen.anteil_bev", "gebiet2011"],
+                anteil_6_9: ["fallzahlen.anteil_bev", "gebiet2011"],
+                anteil_10_15: ["fallzahlen.anteil_bev", "gebiet2011"],
+                migrhintergrund_u18: ["migrhintergrund", "migrhintergrund_1", "migrhintergrund_2", "migrhintergrund_3", "fallzahlen.migrhintergrund", "gebiet2011"],
+                migrhintergrund_u3: ["migrhintergrund", "migrhintergrund_1", "migrhintergrund_2", "migrhintergrund_3", "fallzahlen.migrhintergrund", "gebiet2011"],
+                migrhintergrund_3_6: ["migrhintergrund", "migrhintergrund_1", "migrhintergrund_2", "migrhintergrund_3", "fallzahlen.migrhintergrund", "gebiet2011"],
+                migrhintergrund_6_9: ["migrhintergrund", "migrhintergrund_1", "migrhintergrund_2", "migrhintergrund_3", "fallzahlen.migrhintergrund", "gebiet2011"],
+                migrhintergrund_10_15: ["migrhintergrund", "migrhintergrund_1", "migrhintergrund_2", "migrhintergrund_3", "fallzahlen.migrhintergrund", "gebiet2011"],
+                nicht_dt_spr_kl1: ["nicht_dt_spr_kl1", "fallzahlen.nicht_dt_spr_kl1"],
+                alleinerz_u18: ["alleinerz", "fallzahlen.alleinerz", "gebiet2011"],
+                alleinerz_u6: ["alleinerz", "fallzahlen.alleinerz", "gebiet2011"],
+                alleinerz_u10: ["alleinerz", "fallzahlen.alleinerz", "gebiet2011"],
+                alleinerz_u16: ["alleinerz", "fallzahlen.alleinerz", "gebiet2011"],
+                hilfebeduerftige_u15: ["hilfebeduerftige_u15", "fallzahlen.hilfebeduerftige_u15"],
+                betr_quote_3_schuleintritt_proz: ["kita.betr_quote_3_schuleintritt_proz", "kita.betreuungsquote.betr_quote_3_schuleintritt_proz", "kita.berechnungsgrundlage.betr_quote_3_schuleintritt_proz", "kita.fallzahlen.betr_quote_3_schuleintritt_proz", "kita.leistungsarten.betr_quote_3_schuleintritt_proz", "kita.gutscheinsystem", "kita.gutscheinsystem_1", "kita.gutscheinsystem_2"],
+                betr_quote_4_proz: ["kita.betreuungsquote.betr_quote_4_proz", "kita.berechnungsgrundlage.betr_quote_4_proz", "kita.fallzahlen.betr_quote_4_proz", "kita.leistungsarten.betr_quote_4_proz", "kita.gutscheinsystem", "kita.gutscheinsystem_1", "kita.gutscheinsystem_2"],
+                betr_quote_unter3_proz: ["kita.betreuungsquote.betr_quote_unter3_proz", "kita.berechnungsgrundlage.betr_quote_unter3_proz", "kita.fallzahlen.betr_quote_unter3_proz", "kita.leistungsarten.betr_quote_unter3_proz", "kita.gutscheinsystem", "kita.gutscheinsystem_1", "kita.gutscheinsystem_2"],
+                betr_quote_2_proz: ["kita.betreuungsquote.betr_quote_2_proz", "kita.berechnungsgrundlage.betr_quote_2_proz", "kita.fallzahlen.betr_quote_2_proz"],
+                anteil_3_schuleintritt_fam_proz: ["kita.betreuungsquote.anteil_3_schuleintritt_fam_proz", "kita.anteil_3_schuleintritt_fam_proz", "kita.fallzahlen.anteil_3_schuleintritt_fam_proz"],
+                anteil_unter3_fam_proz: ["kita.anteil_unter3_fam_proz", "kita.fallzahlen.anteil_unter3_fam_proz"],
+                kinder_vorschulischer_sf: ["kita.kinder_vorschulischer_sf", "kita.fallzahlen.kinder_vorschulischer_sf", "kita.hint.kinder_vorschulischer_sf"],
+                hoher_anteil_migrhintergrund_u6: ["kita.hoher_anteil_migrhintergrund_u6", "kita.fallzahlen.hoher_anteil_migrhintergrund_u6", "kita.hint.hoher_anteil_migrhintergrund_u6", "kita.hint.hoher_anteil_migrhintergrund_u6_1", "kita.hint.hoher_anteil_migrhintergrund_u6_2", "kita.hint.hoher_anteil_migrhintergrund_u6_3", "kita.hint.hoher_anteil_migrhintergrund_u6_4", "kita.hint.hoher_anteil_migrhintergrund_u6_5"],
+                hoher_anteil_nicht_dt_spr_kl1: ["kita.hoher_anteil_nicht_dt_spr_kl1", "kita.berechnungsgrundlage.hoher_anteil_nicht_dt_spr_kl1", "kita.hint.hoher_anteil_nicht_dt_spr_kl1"],
+                anteil_nutzer_bevölkerung_6_9: ["jugendmusikschulen_anteil"],
+                anteil_nutzer_bevölkerung_10_15: ["jugendmusikschulen_anteil"],
+                anzahl_nutzer_6_9: ["jugendmusikschulen_anzahl"],
+                anteil_nutzer_10_15: ["jugendmusikschulen_anzahl"]
+            }
         };
     },
     watch: {
-        feature (feature) {
-            this.refreshGfi(feature);
+        // when the gfi window is switched, the gfi is refreshed
+        properties: {
+            handler (newVal, oldVal) {
+                if (oldVal) {
+                    this.refreshGfi();
+                }
+            },
+            immediate: true
         }
     },
     mounted () {
-        this.refreshGfi(this.feature);
+        this.refreshGfi();
     },
     methods: {
         /**
-         * returns the raw title of this sub theme based on the given properties
-         * @param {Object} properties the properties as an object with keys stadtteil or sozialraum_name
-         * @returns {String}  the content of stadtteil or sozialraum_name or an empty string if no such key was found
+         * checks if the given translation key exists
+         * @param {String} key the translation key to check
+         * @returns {boolean} true if it exists, false if not
          */
-        getSubThemeTitle (properties) {
-            if (properties === null || typeof properties !== "object") {
+        translationExists (key) {
+            return !(key === "additional:" + this.$t(key));
+        },
+
+        /**
+         * refreshes the gfi
+         * @returns {void}
+         */
+        refreshGfi () {
+            this.initValues();
+
+            this.api.callWhenInitialized(() => {
+                const featureTypeKey = this.getFeatureTypeKey(this.stadtteil_name, this.sozialraum_name, this.statgeb_id);
+
+                this.propertyName = this.getPropertyName(this.properties, featureTypeKey);
+                if (this.propertyName) {
+                    const complexType = this.properties[this.propertyName];
+
+                    if (hasComplexTypeValues(complexType)) {
+                        this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
+                        this.barchartDataOptions = this.getChartOptions(this.propertyName, this.chartRange);
+                        if (this.barchartDataOptions === false && this.isComplexTypeBasedOnPercentage(complexType)) {
+                            this.barchartDataOptions = this.getChartOptionsForPercentage();
+                        }
+                        else {
+                            this.barchartDataOptions = {};
+                        }
+                    }
+                    else {
+                        this.barchartData = false;
+                        this.barchartDataOptions = {};
+                    }
+
+                    this.setValuesBasedOnFeatureTypeKey(featureTypeKey, complexType);
+                    this.table_title = this.translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.title." + this.propertyName);
+
+                    this.api.getValueBezirk(this.propertyName, this.properties?.bezirk_id, value => {
+                        this.bezirk_value = this.convertValueBasedOnComplexType(value, complexType);
+                    }, error => {
+                        this.bezirk_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                        console.error(error);
+                    });
+                    this.api.getValueStadt(this.propertyName, value => {
+                        this.stadt_value = this.convertValueBasedOnComplexType(value, complexType);
+                    }, error => {
+                        this.stadt_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                        console.error(error);
+                    });
+                }
+                else {
+                    this.title = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                    this.table_title = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
+                }
+            });
+        },
+
+        /**
+         * initializes/resets all values for a clean start/switch of gfi
+         * @post the values are reset to default or initial values (like names or the "loading" text)
+         * @returns {void}
+         */
+        initValues () {
+            this.propertyName = "";
+            this.title = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.table_title = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+
+            this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
+            this.sozialraum_name = this.properties?.sozialraum_name ? this.properties.sozialraum_name : "";
+            this.statgeb_id = this.properties?.statgeb_id ? this.properties.statgeb_id : "";
+            this.bezirk_name = this.properties?.bezirk_name ? this.properties.bezirk_name : "";
+
+            this.statgeb_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.sozialraum_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.stadtteil_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.bezirk_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            this.stadt_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+
+            this.barchartData = false;
+        },
+
+        /**
+         * converts the given value into a string with thousandsSeparators or % if percent
+         * @param {String|Number} value the value to convert
+         * @param {ComplexType} complexType the ComplexType with metadata to analyse the unit
+         * @returns {String|Boolean} the value as string to show or false if no value was given (use g.F. outside)
+         */
+        convertValueBasedOnComplexType (value, complexType) {
+            if (!value) {
+                return false;
+            }
+            else if (this.isComplexTypeBasedOnPercentage(complexType)) {
+                return Math.round(optimizeValueRootedInComplexType(value)) + "%";
+            }
+            return thousandsSeparator(optimizeValueRootedInComplexType(value));
+        },
+
+        /**
+         * checks if the given complex type is based on percentages
+         * @param {ComplexType} complexType the ComplexType with metadata to analyse the unit
+         * @returns {boolean} true if it is based on percentages
+         */
+        isComplexTypeBasedOnPercentage (complexType) {
+            if (!isComplexType(complexType)) {
+                return false;
+            }
+            return complexType.metadata.description.indexOf("%") !== -1;
+        },
+
+        /**
+         * returns the propertyName of this theme based on the api knowladgebase (make sure the api is fully loaded)
+         * @param {Object} properties the properties to look for the current key
+         * @param {String} featureTypeKey the key of the featureType - see BildungsatlasApi constants
+         * @returns {String} the propertyName of this theme
+         */
+        getPropertyName (properties, featureTypeKey) {
+            if (typeof properties !== "object" || properties === null) {
                 return "";
             }
-            else if (properties.hasOwnProperty("stadtteil")) {
-                return properties.stadtteil;
-            }
-            else if (properties.hasOwnProperty("sozialraum_name")) {
-                return properties.sozialraum_name;
-            }
+            let result = "";
 
-            return "";
+            Object.keys(properties).forEach(key => {
+                if (this.api.hasFeatureType(featureTypeKey, key)) {
+                    result = key;
+                }
+            });
+            return result;
         },
-        /**
-         * returns the key to use for the current/newest value of the received properties
-         * @info in the received properties the data to use is prefixed by a string
-         * @param {Object} properties the received properties
-         * @param {String} [prefixOfYeardataOpt="jahr_"] the prefix to recognize data with
-         * @returns {(String|Boolean)}  the key to use for the current/newest value in properties, false if non was found
-         */
-        getLastKeyOfYeardata (properties, prefixOfYeardataOpt = "jahr_") {
-            let lastKeyOfYeardata = false,
-                key = "";
 
-            for (key in properties) {
-                if (key.indexOf(prefixOfYeardataOpt) !== 0) {
-                    continue;
+        /**
+         * helper function to execute api call on "Stadtteil"
+         * @param {String|Number} stadtteil_id the id of the "Stadtteil" - could be a piped string e.g. "101 | 102"
+         * @param {ComplexType} complexType the ComplexType with metadata to analyse the unit
+         * @param {String[]} [joinedValues=[]] for recursion only in case of piped stadtteil_id
+         * @post this.stadtteil_value is either a value or the error translation
+         * @returns {void}
+         */
+        loadValueStadtteil (stadtteil_id, complexType, joinedValues = []) {
+            const id = String(stadtteil_id),
+                reducedIds = id.split("|"),
+                currentId = reducedIds.shift().trim();
+
+            if (!currentId) {
+                // ready
+                if (!joinedValues.length) {
+                    this.stadtteil_value = "g.F.";
+                    return;
                 }
-                if (lastKeyOfYeardata === false || key > lastKeyOfYeardata) {
-                    lastKeyOfYeardata = key;
-                }
+                this.stadtteil_value = joinedValues.join(" | ");
+                return;
             }
-            return lastKeyOfYeardata;
+            else if (!Array.isArray(joinedValues)) {
+                // first circle
+                this.stadtteil_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
+            }
+
+            // recursion
+            this.api.getValueStadtteil(this.propertyName, currentId, value => {
+                const stadtteil_value = this.convertValueBasedOnComplexType(value, complexType);
+
+                joinedValues.push(stadtteil_value ? stadtteil_value : "g.F.");
+
+                this.loadValueStadtteil(reducedIds.join("|"), complexType, joinedValues);
+                // preview of already loaded data:
+                this.stadtteil_value = joinedValues.join(" | ");
+            }, error => {
+                // errors should only be applied to the pipe part that has the error
+                joinedValues.push(this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError"));
+
+                this.loadValueStadtteil(reducedIds.join("|"), complexType, joinedValues);
+                // preview of already loaded data:
+                this.stadtteil_value = joinedValues.join(" | ");
+                console.error(error);
+            });
         },
+
         /**
-         * creates an object to place as data in the chartjs bar diagram
-         * @param {Object} properties the received properties
-         * @param {String} [prefixOfYeardataOpt="jahr_"] the prefix to recognize data with
-         * @param {Function} [fixDataBugOpt] a function to parse every value with
-         * @returns {Object}  an object to use as data for chartjs
+         * returns the featureType key of BildungsatlasApi based on the state of the gfi theme
+         * @param {String} stadtteil_name the occurence of stadtteil_name
+         * @param {String} sozialraum_name the occurence of sozialraum_name
+         * @param {String} statgeb_id the occurence of statgeb_id
+         * @returns {String} either BildungsatlasApi KEY_STATGEB or KEY_SOZIALRAUM or anything else KEY_STADTTEIL
          */
-        createDataForDiagram (properties, prefixOfYeardataOpt = "jahr_", fixDataBugOpt) {
-            const labels = [],
-                data = [],
-                fixDataBug = typeof fixDataBugOpt === "function" ? fixDataBugOpt : this.fixDataBug;
-            let key = "";
-
-            for (key in properties) {
-                if (key.indexOf(prefixOfYeardataOpt) !== 0) {
-                    continue;
-                }
-                labels.push(key.substring(prefixOfYeardataOpt.length));
-                data.push(fixDataBug(properties[key]));
+        getFeatureTypeKey (stadtteil_name, sozialraum_name, statgeb_id) {
+            if (statgeb_id) {
+                return BildungsatlasApi.KEY_STATGEB;
             }
+            else if (sozialraum_name) {
+                return BildungsatlasApi.KEY_SOZIALRAUM;
+            }
+            return BildungsatlasApi.KEY_STADTTEIL;
+        },
 
+        /**
+         * sets all values that are dependend on the featureTypeKey (see BildungsatlasApi constants)
+         * @param {String} featureTypeKey the key to use (see this.getFeatureTypeKey)
+         * @param {ComplexType} complexType the ComplexType with metadata to analyse the unit
+         * @post all values that are dependend on the featureTypeKey are loaded
+         * @returns {void}
+         */
+        setValuesBasedOnFeatureTypeKey (featureTypeKey, complexType) {
+            switch (featureTypeKey) {
+                case BildungsatlasApi.KEY_STATGEB:
+                    if (isComplexType(complexType)) {
+                        this.statgeb_value = this.convertValueBasedOnComplexType(complexType.values[0].value, complexType);
+                    }
+                    if (!this.statgeb_value) {
+                        this.statgeb_value = "g.F.";
+                    }
+                    this.loadValueStadtteil(this.properties?.stadtteil_id, complexType);
+                    this.title = this.stadtteil_name + ": " + this.statgeb_id;
+                    break;
+                case BildungsatlasApi.KEY_SOZIALRAUM:
+                    if (isComplexType(complexType)) {
+                        this.sozialraum_value = this.convertValueBasedOnComplexType(complexType.values[0].value, complexType);
+                    }
+                    if (!this.sozialraum_value) {
+                        this.sozialraum_value = "g.F.";
+                    }
+                    this.loadValueStadtteil(this.properties?.stadtteil_id, complexType);
+                    this.title = this.sozialraum_name;
+                    break;
+                default:
+                    // BildungsatlasApi.KEY_STADTTEIL
+                    if (isComplexType(complexType)) {
+                        this.stadtteil_value = this.convertValueBasedOnComplexType(complexType.values[0].value, complexType);
+                    }
+                    if (!this.stadtteil_value) {
+                        this.stadtteil_value = "g.F.";
+                    }
+                    this.title = this.stadtteil_name;
+            }
+        },
+
+        /**
+         * returns the options for the chart using the chartRange to set min and max for y axis
+         * @param {String} propertyName the property name to lookup in chartRange
+         * @param {Object|boolean} chartRange the given chartRange
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptions (propertyName, chartRange) {
+            if (
+                typeof chartRange !== "object" || chartRange === null
+                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
+                || !Array.isArray(chartRange[propertyName])
+                || !chartRange[propertyName].length === 2
+            ) {
+                return false;
+            }
             return {
-                labels,
-                datasets: [{
-                    backgroundColor: this.barBackgroundColor,
-                    hoverBackgroundColor: this.barHoverBackgroundColor,
-                    borderWidth: 0,
-                    data
-                }]
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: chartRange[propertyName][0],
+                            suggestedMax: chartRange[propertyName][1]
+                        }
+                    }]
+                }
             };
         },
 
         /**
-         * refreshes the gfi, recalculates properties
-         * @pre the Gfi shows the data of the former feature or is not initialized yet
-         * @post the Gfi shows the data of the given feature
-         * @param {Object} feature the feature to base the refreshed Gfi on
-         * @returns {Void}  -
+         * returns the options for the chart with unit for percentages
+         * @returns {Object} the options for ChartJS
          */
-        refreshGfi (feature) {
-            const gfiTheme = feature?.getTheme(),
-                gfiParams = gfiTheme?.params,
-                format = gfiParams?.gfiBildungsatlasFormat,
-                properties = feature?.getProperties(),
-                subThemeTitleRaw = this.getSubThemeTitle(properties),
-                lastKeyOfYeardata = this.getLastKeyOfYeardata(properties);
-
-            if (typeof properties !== "object" || typeof format !== "object") {
-                return;
-            }
-            this.description = gfiParams.gfiBildungsatlasDescription;
-
-            this.themeType = format.themeType;
-            this.layerType = format.layerType;
-            this.themeCategory = format.themeCategory;
-            this.themeUnit = format.themeUnit;
-
-            this.tableContent = {};
-
-            if (this.themeCategory === "schule") {
-                this.renderLabelXAxis = year => {
-                    return Number(year.slice(-2)).toString().padStart(2, "0") + "/" + (Number(year.slice(-2)) + 1).toString().padStart(2, "0");
-                };
-                this.descriptionXAxis = "Schuljahr";
-            }
-            else {
-                this.renderLabelXAxis = year => year;
-                this.descriptionXAxis = "Jahr";
-            }
-
-            if (this.themeUnit === "anteilWanderungen") {
-                if (this.layerType === "Stadtteile") {
-                    this.subThemeTitle = subThemeTitleRaw;
-                    this.chartTitle = subThemeTitleRaw + " im Zeitverlauf";
-                    this.tableContent["In " + subThemeTitleRaw] = this.getValueForBildungsatlas(properties[lastKeyOfYeardata], false, 2);
-                    this.tableContent["Anteil der Zuzüge aus dem Umland:"] = this.getValueForBildungsatlas(properties.zuzuege_aus_umland, true, 2);
-                    this.tableContent["Anteil der Zuzüge ins Umland:"] = this.getValueForBildungsatlas(properties.fortzuege_aus_dem_umland, true, 2);
+        getChartOptionsForPercentage () {
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }]
                 }
-                else {
-                    this.subThemeTitle = subThemeTitleRaw + ": " + properties.statgebiet;
-                    this.chartTitle = subThemeTitleRaw + " (" + properties.statgebiet + ") im Zeitverlauf";
-                    this.tableContent["im Statistischen Gebiet"] = this.getValueForBildungsatlas(properties[lastKeyOfYeardata], false, 2);
-                }
-
-                this.setTooltipValue = tooltipItem => {
-                    return this.getValueForBildungsatlas(tooltipItem.value, false, 2);
-                };
-            }
-            else {
-                const isRelative = this.themeUnit === "anteil";
-
-                if (properties.summe_stadtteil) {
-                    this.subThemeTitle = subThemeTitleRaw + ": " + properties.statgebiet;
-                    this.chartTitle = subThemeTitleRaw + " (" + properties.statgebiet + ") im Zeitverlauf";
-                    this.tableContent["Statistisches Gebiet"] = this.getValueForBildungsatlas(properties[lastKeyOfYeardata], isRelative, 0);
-                    this.tableContent[subThemeTitleRaw] = this.getValueForBildungsatlas(properties.summe_stadtteil, isRelative, 0);
-                }
-                else {
-                    this.subThemeTitle = subThemeTitleRaw;
-                    this.chartTitle = subThemeTitleRaw + " im Zeitverlauf";
-                    this.tableContent[subThemeTitleRaw] = this.getValueForBildungsatlas(properties[lastKeyOfYeardata], isRelative, 0);
-                }
-
-                this.tableContent["Bezirk " + properties.bezirk] = this.getValueForBildungsatlas(properties.summe_bezirk, isRelative, 0);
-                this.tableContent.Hamburg = this.getValueForBildungsatlas(properties.summe_hamburg, isRelative, 0);
-
-                this.setTooltipValue = tooltipItem => {
-                    return this.getValueForBildungsatlas(tooltipItem.value, isRelative, 2);
-                };
-            }
-
-            this.chartData = this.createDataForDiagram(properties);
+            };
         }
     }
 };
@@ -237,53 +447,99 @@ export default {
 <template>
     <div class="gfi-balkendiagramm">
         <div
-            class="tab-panel"
+            class="tab-panel gfi-data"
             :class="{ 'hidden': !isActiveTab('data') }"
         >
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th colspan="2">
-                            {{ subThemeTitle }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th colspan="2">
-                            {{ description }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="(value, key) in tableContent"
-                        :key="key"
-                    >
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="panel graphHeader">
-                <BildungsatlasCompBarchart
-                    :chartTitle="chartTitle"
-                    :data="chartData"
-                    :setTooltipValue="setTooltipValue"
-                    :renderLabelXAxis="renderLabelXAxis"
-                    :renderLabelYAxis="renderLabelYAxis"
-                    :descriptionXAxis="descriptionXAxis"
-                    :descriptionYAxis="descriptionYAxis"
-                ></BildungsatlasCompBarchart>
+            <div class="rba_header">
+                <div class="rba_header_title">
+                    {{ title }}
+                </div>
             </div>
-            <div class="footer">
+            <div class="rba_table">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                {{ table_title }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-if="statgeb_id">
+                            <td>
+                                {{ translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.general.statisticalarea") }}
+                            </td>
+                            <td class="rba_table_rightcol">
+                                {{ statgeb_value }}
+                            </td>
+                        </tr>
+                        <tr v-if="sozialraum_name">
+                            <td>
+                                {{ sozialraum_name }}
+                            </td>
+                            <td class="rba_table_rightcol">
+                                {{ sozialraum_value }}
+                            </td>
+                        </tr>
+                        <tr v-if="stadtteil_name">
+                            <td>
+                                {{ stadtteil_name }}
+                            </td>
+                            <td class="rba_table_rightcol">
+                                {{ stadtteil_value }}
+                            </td>
+                        </tr>
+                        <tr v-if="bezirk_name">
+                            <td>
+                                {{ translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.general.district") }}
+                                {{ bezirk_name }}
+                            </td>
+                            <td class="rba_table_rightcol">
+                                {{ bezirk_value }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{ stadt_name }}
+                            </td>
+                            <td class="rba_table_rightcol">
+                                {{ stadt_value }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="rba_chart">
+                <div
+                    class="rba_chart_title"
+                >
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.barchart.title") }}
+                </div>
+                <div
+                    v-if="barchartData"
+                    class="rba_chart_content"
+                >
+                    <Barchart
+                        v-if="barchartData"
+                        :given-options="barchartDataOptions"
+                        :data="barchartData"
+                    />
+                </div>
+                <div v-else>
+                    g.F.
+                </div>
+            </div>
+            <div
+                v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.hint.' + propertyName)"
+                class="rba_footer"
+            >
                 <p>
-                    <i>
-                        *g.F: geringe Fallzahlen.
-                        Die Werte konnten aus datenschutzrechtlichen Gründen nicht ausgewiesen werden
-                        oder das Gebiet ist unbewohnt.
-                    </i>
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.hint." + propertyName) }}
                 </p>
+            </div>
+            <div class="rba_footer">
                 <p>
-                    Sie können die Position des Fensters durch Drag&#38;Drop ändern.
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.general.disclaimer") }}
                 </p>
             </div>
         </div>
@@ -291,115 +547,21 @@ export default {
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
         >
-            <div v-if="themeCategory === 'Bevölkerung'">
-                <div v-if="themeUnit === 'anzahl'">
-                    <br>
-                    <p><b>Anzahl der Kinder nach Altersgruppen</b></p>
-                    <p>Datenstand: 31.12.2017.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <P>Die Anzahl der Kinder nach Altersgruppen wird aus datenschutzrechtlichen Gründen nur ausgewiesen, sofern in einem Gebiet mindestens drei Kinder der jeweiligen Altersgruppe wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                </div>
-                <div v-else-if="themeUnit === 'anteil'">
-                    <br>
-                    <p><b>Anteil der Kinder nach Altersgruppen</b></p>
-                    <p>Datenstand: 31.12.2017.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <P>Die Anzahl der Kinder nach Altersgruppen wird aus datenschutzrechtlichen Gründen nur ausgewiesen, sofern in einem Gebiet mindestens drei Kinder der jeweiligen Altersgruppe wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                </div>
-                <div v-else-if="themeUnit === 'anteilWanderungen'">
-                    <br>
-                    <p><b>Wanderungssaldo von Familien</b></p>
-                    <p>Datenstand: 31.12.2017.</p>
-                    <br>
-                    <p><b>Relativer Wanderungssaldo:</b>  Da bei der Darstellung des absoluten Wanderungssaldos einwohnerstarke Stadtteile in der Rangfolge immer weit oben stehen würden, wird hier der aussagekräftigere relative Wanderungssaldo dargestellt, der den Wanderungssaldo der unter 6-Jährigen auf die Einwohnerzahl der Altersgruppe des jeweiligen Stadtteils bezieht (Wanderungssaldo je 100 Einwohnerinnen und Einwohner im Alter von 0 bis unter 6 Jahren). Damit die Bezugsgrundlage weniger anfällig für jährliche Schwankungen ist, wird für das jeweilige Gebiet jeweils ein Durchschnittswert von zwei Jahren berechnet. Für die Berechnung des relativen Wanderungssaldos der unter 6-Jährigen beispielsweise für das Jahr 2014 wird als Bezugsgrundlage also die durchschnittliche Anzahl der unter 6-Jährigen für die Jahre 2013 und 2014 (Bestand 31.12.2013 plus Bestand 31.12.2014 geteilt durch zwei) herangezogen.</p>
-                    <br>
-                    <p><b>Zu- und Fortzüge Umland:</b></p>
-                    <p>Die im Datenblatt angezeigten Anteile der Zuzüge der Kinder unter 6 Jahren aus dem Hamburger Umland wurde aus der absoluten Anzahl der aus dem Umland zugezogenen unter 6-Jährigen anteilig am absoluten Wanderungssaldo (Zuzüge minus Fortzüge) berechnet. Wenn also beispielsweise der absolute Wanderungssaldo in einem Stadtteil -100 und die Anzahl der darunter ins Umland fortgezogenen unter 6-Jährigen 10 beträgt, so sind 10% der Wanderungsbewegungen der unter 6-Jährigen über die Stadtteilgrenzen auf Fortzüge ins Umland zurückzuführen.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <p>Die Anteile der Kinder von Alleinerziehenden der jeweiligen Altersgruppen werden nur ausgewiesen, sofern in einem Gebiet mindestens 30 Kinder unter 6 Jahren bei Alleinerziehenden wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                </div>
-            </div>
-            <div v-else-if="themeCategory === 'schule'">
-                <div v-if="themeType === '1-4'">
-                    <br>
-                    <p><b>Schülerinnen und Schüler der Jahrgänge 1 bis 4:</b></p>
-                    <br>
-                    <p>Für diese Kennzahl wurden sowohl alle Schülerinnen und Schüler der Hamburger Grundschulen als auch die Schülerinnen und Schüler der Primarstufen* der Hamburger Sonderschulen erfasst. Bezugsgröße ist der Wohnort der Schüler.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <p>Die Anzahl der Schülerinnen und Schüler in der Primarstufe wird nur in Gebieten ausgewiesen, in denen mindestens 3 Kinder dieser Altersgruppe leben. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>* Primarstufe: </b>Die Jahrgangsstufen 1 bis 4.</p>
-                </div>
-                <div v-else-if="themeType === '5'">
-                    <br>
-                    <p><b>Schülerinnen und Schüler ab Jahrgang 5</b></p>
-                    <br>
-                    <p>Die Kennzahl berücksichtigt alle Schülerinnen und Schüler der weiterführenden Schulen in Hamburg. Dies umfasst die Schulformen Stadtteilschule, Gymnasium, Sonderschule und die verbliebenen 6-jährigen Grundschulen.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <p>Die Anzahl der Schülerinnen und Schüler in der Sekundarstufe I* wird nur in Gebieten ausgewiesen, in denen mindestens 3 Kinder dieser Altersgruppe leben. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                    <br>
-                    <p><b>* Sekundarstufe: </b>Die Jahrgangsstufen 5 bis 10 bilden die Sekundarstufe I, die Jahrgangsstufen 11 bis 13 die Sekundarstufe II.</p>
-                </div>
-                <div v-else-if="themeType === 'Gymnasium'">
-                    <br>
-                    <p><b>Anteil der Schülerinnen und Schüler an Gymnasien</b></p>
-                    <br>
-                    <p>Für die Berechnung des Anteils der Schülerinnen und Schüler an Gymnasien wurden nur die Schülerinnen und Schüler der Sekundarstufe I* berücksichtigt. Die Bezugsgröße für die Anteilsberechnung sind alle Schülerinnen und Schüler der Sekundarstufe I</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <p>Der Anteil der Schülerinnen und Schüler an Gymnasien wird nur in Gebieten ausgewiesen, in denen mindestens 30 Schülerinnen und Schüler der Sekundarstufe I wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                    <br>
-                    <p><b>* Sekundarstufe: </b>Die Jahrgangsstufen 5 bis 10 bilden die Sekundarstufe I, die Jahrgangsstufen 11 bis 13 die Sekundarstufe II.</p>
-                </div>
-                <div v-else-if="themeType === 'Stadtteilschulen'">
-                    <br>
-                    <p><b>Anteil der Schülerinnen und Schüler an Stadtteilschulen</b></p>
-                    <br>
-                    <p>Für die Berechnung des Anteils der Schülerinnen und Schüler an Stadtteilschulen wurden nur die Schülerinnen und Schüler der Sekundarstufe I* berücksichtigt. Die Bezugsgröße für die Anteilsberechnung sind alle Schülerinnen und Schüler der Sekundarstufe I.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <p>Der Anteil der Schülerinnen und Schüler an Stadtteilschulen wird nur in Gebieten ausgewiesen, in denen mindestens 30 Schülerinnen und Schüler der Sekundarstufe I wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                    <br>
-                    <p><b>* Sekundarstufe: </b>Die Jahrgangsstufen 5 bis 10 bilden die Sekundarstufe I, die Jahrgangsstufen 11 bis 13 die Sekundarstufe II.</p>
-                </div>
-                <div v-else-if="themeType === 'Sonderschulen'">
-                    <br>
-                    <p><b>Anteil der Schülerinnen und Schüler an Sonderschulen</b></p>
-                    <br>
-                    <p>Für die Berechnung des Anteils der Schülerinnen und Schüler an Sonderschulen* wurden nur die Schülerinnen und Schüler der Sekundarstufe I** berücksichtigt. Die Bezugsgröße für die Anteilsberechnung sind alle Schülerinnen und Schüler der Sekundarstufe I.</p>
-                    <br>
-                    <p><b>Keine oder zu geringe Fallzahlen:</b></p>
-                    <p>Der Anteil der Schülerinnen und Schüler an Sonderschulen wird nur in Gebieten ausgewiesen, in denen mindestens 30 Schülerinnen und Schüler der Sekundarstufe I wohnen. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt.</p>
-                    <br>
-                    <p><b>Gebietsveränderungen 2011:</b></p>
-                    <p>Am 1.1.2011 gab es in Hamburg eine Veränderung der Gebietszuschnitte bei den statistischen Gebieten und den Stadtteilen. Für die <b>Darstellung der Zeitreihe</b> im Datenblatt auf Ebene der statistischen Gebiete wurden die Daten aus den alten Gebietseinheiten den entsprechenden neuen Gebietseinheiten ab 2011 zugewiesen. Auf Ebene der Stadtteile wurden die Zahlen der 2011 zu Hamm zusammengelegten Stadtteile Hamm-Süd, Hamm-Mitte und Hamm-Nord auch in der Zeitreihe zu dem heutigen Gebiet von Hamm zusammengefasst. Die Neugründung von Neuallermöhe 2011 aus den Stadtteilen Allermöhe und Bergedorf führt in der Darstellung von Zeitreihen auf Stadtteilebene zu größeren Sprüngen in den betroffenen Gebieten.</p>
-                    <br>
-                    <p><b>* Sonderschulen: </b>Seit der Umsetzung inklusiver Bildung an Hamburgs Schulen umfassen die Sonderschulen nur noch die speziellen Sonderschulen. Diese sind entsprechend dem Förderbedarf ihrer Schülerinnen und Schüler in ihrer Arbeit auf die Förderschwerpunkte Hören und Kommunikation, Sehen, geistige Entwicklung und körperliche und motorische Entwicklung ausgerichtet. Die Angebote der früheren Förder- und Sprachheilschulen, die vor 2012 auch zu den Sonderschulen zählten, wurden gemeinsam mit den Angeboten der Regionalen Beratungs- und Unterstützungsstellen (REBUS) 2012 in den Regionalen Bildungs- und Beratungszentren (ReBBZ) zu einem Angebot zusammengeführt. Im Rahmen der seit dem Schuljahr 2011/12 umgesetzten Inklusion an den Hamburger Schulen können Schülerinnen und Schülern mit sonderpädagogischem Förderbedarf sowohl an speziellen Sonderschulen und regionalen Bildungs- und Beratungszentren als auch integrativ an allgemeinen Schulen beschult werden.</p>
-                    <br>
-                    <p><b>* Sekundarstufe: </b>Die Jahrgangsstufen 5 bis 10 bilden die Sekundarstufe I, die Jahrgangsstufen 11 bis 13 die Sekundarstufe II.</p>
+            <div v-if="infoMatrix.hasOwnProperty(propertyName) && Array.isArray(infoMatrix[propertyName])">
+                <div
+                    v-for="(lngkey, idx) in infoMatrix[propertyName]"
+                    :key="idx"
+                    :value="lngkey"
+                >
+                    <h5 v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.title')">
+                        <b>{{ $t('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.title') }}</b>
+                    </h5>
+                    <p v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.text')">
+                        {{ $t('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.text') }}
+                    </p>
+                    <ul v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.list')">
+                        <li>{{ $t('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.list') }}</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -409,34 +571,6 @@ export default {
 <style lang="less" scoped>
 .gfi-balkendiagramm {
     max-width: 420px;
-    table {
-        &.table {
-            tbody {
-                tr{
-                    td {
-                        &:last-child {
-                            text-align: right;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    .panel {
-        &.graphHeader {
-            padding: 0 8px 8px;
-            border-bottom: 2px solid #ddd;
-        }
-    }
-    .gfi-info {
-        padding: 0 10px 10px;
-    }
-
-    .hidden {
-        display: none;
-    }
-    .footer {
-        margin: 0 0 10px 10px;
-    }
+    font-size: 13px;
 }
 </style>

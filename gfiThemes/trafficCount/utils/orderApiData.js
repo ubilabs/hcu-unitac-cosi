@@ -15,7 +15,7 @@ export default function orderApiData (apiData, orderOfKeys) {
     apiData.forEach(dataObj => {
         result.push({});
         orderOfKeys.forEach(key => {
-            if (!dataObj.hasOwnProperty(key)) {
+            if (!Object.prototype.hasOwnProperty.call(dataObj, key)) {
                 return;
             }
 

@@ -295,7 +295,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
             layer = getLayerWhere(obj),
             xhr = new XMLHttpRequest();
 
-        if (featureList.hasOwnProperty(valueOfLayer)) {
+        if (Object.prototype.hasOwnProperty.call(featureList, valueOfLayer)) {
             return featureList[valueOfLayer];
         }
 
