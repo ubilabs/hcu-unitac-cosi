@@ -103,7 +103,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         })
                     },
                     actions: {
-                        createLayer: (state, name) => {
+                        createLayer: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 addEventListener: sinon.stub(),
@@ -125,7 +125,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
-    async function mount(layersMock) {
+    async function mount (layersMock) {
         requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "OpenRoute" && a2 === "requestIsochrones") {
                 return new Promise(function (resolve) {
@@ -147,8 +147,10 @@ describe("AccessibilityAnalysis.vue", () => {
             store,
             localVue
         });
-        await ret.vm.$nextTick()
-        return ret
+
+        await ret.vm.$nextTick();
+
+        return ret;
     }
 
     it("renders Component", async () => {
@@ -171,7 +173,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button with user input and point selected", async () => {
-        const wrapper = await mount([])
+        const wrapper = await mount([]);
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -181,7 +183,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
@@ -195,8 +197,8 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button requestInhabitants", async () => {
-        const wrapper = await mount([])
-        const rootWrapper = createWrapper(wrapper.vm.$root)
+        const wrapper = await mount([]),
+            rootWrapper = createWrapper(wrapper.vm.$root);
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -208,13 +210,13 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#create-isochrones").trigger("click");
 
         // need two ticks for all changes to propagate
-        await wrapper.vm.$nextTick()
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         await wrapper.find("#requestInhabitants").trigger("click");
 
-        expect(wrapper.vm.active).to.be.false
-        expect(rootWrapper.emitted('populationRequest')).to.exist
+        expect(wrapper.vm.active).to.be.false;
+        expect(rootWrapper.emitted("populationRequest")).to.exist;
     });
 
 
@@ -230,7 +232,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(

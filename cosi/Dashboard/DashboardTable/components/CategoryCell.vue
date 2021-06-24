@@ -1,6 +1,4 @@
 <script>
-import store from "../../../../../src/app-store";
-
 export default {
     name: "CategoryCell",
     props: {
@@ -28,7 +26,7 @@ export default {
     },
     watch: {
         isSelected () {
-            console.log(this.rowIndex);
+            // console.log(this.rowIndex);
         }
     }
 };

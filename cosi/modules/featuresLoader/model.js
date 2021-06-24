@@ -85,7 +85,7 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
      * @param {string[]} districtNameList - the names of the Stadtteile or of the Statistische Gebiete
      * @returns {void}
      */
-    checkDistrictScope: function (bbox, scope, districtNameList) {
+    checkDistrictScope: function (bbox, scope) {
         // to do - nur einmal laden und dann speichern
         if (scope) {
             this.set({
@@ -93,11 +93,10 @@ const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype
                 "stadtteile": [],
                 "bezirke": []
             });
-            const attrMap = this.getDistrictAttrMapping(scope);
 
             // this.set("featureList", []);
             Radio.trigger("Util", "showLoader");
-            //this.loadDistricts(bbox, attrMap.url, attrMap.attribute, districtNameList, attrMap.referenceAttributes);
+            // this.loadDistricts(bbox, attrMap.url, attrMap.attribute, districtNameList, attrMap.referenceAttributes);
         }
     },
 

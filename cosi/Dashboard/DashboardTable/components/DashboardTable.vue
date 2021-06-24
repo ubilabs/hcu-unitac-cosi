@@ -72,8 +72,8 @@ export default {
             this.setActive(state);
         },
         rows () {
-            console.log(this.columns);
-            console.log(this.rows);
+            // console.log(this.columns);
+            // console.log(this.rows);
         },
         featureList () {
             this.getData();

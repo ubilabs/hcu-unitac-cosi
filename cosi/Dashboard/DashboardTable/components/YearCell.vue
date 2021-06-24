@@ -1,6 +1,4 @@
 <script>
-import store from "../../../../../src/app-store";
-
 export default {
     name: "YearCell",
     props: {

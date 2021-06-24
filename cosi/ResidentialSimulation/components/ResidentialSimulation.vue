@@ -242,8 +242,8 @@ export default {
                 this.neighborhood.stats[prop] = Math.round(this.neighborhood.stats[prop] * this.neighborhood.residents);
             }
 
-            console.log(this.neighborhood);
-            console.log(this.baseStats);
+            // console.log(this.neighborhood);
+            // console.log(this.baseStats);
         },
 
         visualizeDemographics (id, name, scaleLabels, labels, type) {

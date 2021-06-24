@@ -1,7 +1,7 @@
 <script>
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getComponent from "../../../../src/utils/getComponent";
-import prepareDistrictLevels from "../utils/prepareDistrictLevels";
+import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
