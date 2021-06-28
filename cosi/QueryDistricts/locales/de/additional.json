@@ -1,0 +1,11 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "queryDistricts": {
+                    "title": "Vergleichbare Gebiete ermitteln"
+                }
+            }
+        }
+    }
+}
