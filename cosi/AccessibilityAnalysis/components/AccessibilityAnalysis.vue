@@ -320,23 +320,27 @@ export default {
                 </div>
             </template>
         </Tool>
-        <v-snackbar
-            v-model="askUpdate"
-            class="success"
-            :timeout="-1"
-        >
-            {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.askUpdate") }}
-            <template v-slot:action="{ attrs }">
-                <v-btn
-                    color="black"
-                    text
-                    v-bind="attrs"
-                    @click="createIsochrones"
-                >
-                    Ok
-                </v-btn>
-            </template>
-        </v-snackbar>
+        <v-app>
+            <v-snackbar
+                v-model="askUpdate"
+                color="white"
+                :timeout="-1"
+            >
+                <span class="snackbar-text">
+                    {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.askUpdate") }}
+                </span>
+                <template v-slot:action="{ attrs }">
+                    <v-btn
+                        color="black"
+                        text
+                        v-bind="attrs"
+                        @click="createIsochrones"
+                    >
+                        Ok
+                    </v-btn>
+                </template>
+            </v-snackbar>
+        </v-app>
     </div>
 </template>
 
@@ -350,5 +354,8 @@ export default {
 }
 .dropdown-info {
   margin-bottom: 5px;
+}
+.snackbar-text{
+    color: black
 }
 </style>
