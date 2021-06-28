@@ -2,6 +2,7 @@
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
 import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
+import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
@@ -64,9 +65,9 @@ export default {
         },
 
         /**
-         * the chartRange as object to fix min and max values for the chart
+         * the chartOptions as configured in config.json
          */
-        chartRange: {
+        chartOptions: {
             type: [Object, Boolean],
             required: true
         },
@@ -184,11 +185,11 @@ export default {
 
                     if (hasComplexTypeValues(complexType)) {
                         this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
-                        this.barchartDataOptions = this.getChartOptions(this.propertyName, this.chartRange);
+                        this.barchartDataOptions = getChartOptions(this.propertyName, this.chartOptions);
                         if (this.barchartDataOptions === false && this.isComplexTypeBasedOnPercentage(complexType)) {
-                            this.barchartDataOptions = this.getChartOptionsForPercentage();
+                            this.barchartDataOptions = getChartOptionsForPercentage(this.propertyName, this.chartOptions);
                         }
-                        else {
+                        if (this.barchartDataOptions === false) {
                             this.barchartDataOptions = {};
                         }
                     }
@@ -395,50 +396,6 @@ export default {
                     }
                     this.title = this.stadtteil_name;
             }
-        },
-
-        /**
-         * returns the options for the chart using the chartRange to set min and max for y axis
-         * @param {String} propertyName the property name to lookup in chartRange
-         * @param {Object|boolean} chartRange the given chartRange
-         * @returns {Object} the options for ChartJS
-         */
-        getChartOptions (propertyName, chartRange) {
-            if (
-                typeof chartRange !== "object" || chartRange === null
-                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
-                || !Array.isArray(chartRange[propertyName])
-                || !chartRange[propertyName].length === 2
-            ) {
-                return false;
-            }
-            return {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: chartRange[propertyName][0],
-                            suggestedMax: chartRange[propertyName][1]
-                        }
-                    }]
-                }
-            };
-        },
-
-        /**
-         * returns the options for the chart with unit for percentages
-         * @returns {Object} the options for ChartJS
-         */
-        getChartOptionsForPercentage () {
-            return {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 100
-                        }
-                    }]
-                }
-            };
         }
     }
 };

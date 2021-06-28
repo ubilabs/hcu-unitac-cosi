@@ -13,7 +13,7 @@ Hier werden die Parameter für das GFI-Template "bildungsatlas" definiert.
 |Name|Verpflichtend|Typ|default|Beschreibung|
 |----|-------------|---|-------|------------|
 |subTheme|nein|String|undefined|Durch Verwendung von Sub-Themes können komplexe Gfi-Themes entlang der Vererbungshierarchie in Unterbereiche aufgeteilt und besser handhabbar gemacht werden.|
-|chartRange|nein|Object|false|Durch die Angabe einer Range für die y-Achse kann ein Diagramm für eine bestimmte Property (siehe Beispiel) mit min- und max-Werten ausgestattet werden. Hinweis: Wird keine Range angenommen wird sie automatisch bestimmt oder im Falle von Prozent-Werten von 0 bis 100 festgelegt.|
+|chartOptions|nein|Object|false|Durch die Angabe von Optionen für ChartJS können die Diagramme individuell angepasst werden. Jedese Diagramm basiert auf einem bestimmten Merkmal, das als Schlüssel mit angegeben werden muss (siehe Beispiel). Sollten keine Werte angegeben werden, so greift der Default bzw. greifen die Automatismen von ChartJS.|
 
 **Beispiel gfiTheme für das template "Default":**
 
@@ -23,8 +23,12 @@ Hier werden die Parameter für das GFI-Template "bildungsatlas" definiert.
    "name": "bildungsatlas",
    "params": {
       "subTheme":  "BildungsatlasBalkendiagramm",
-      "chartRange": {
-         "wanderungssaldo_u6": [0, 200]
+      "chartOptions": {
+         "anzahl_sus_primarstufe": {
+            "suggestedMin": 0,
+            "suggestedMax": 6000,
+            "stepSize": 1000
+         }
       }
    }
 }

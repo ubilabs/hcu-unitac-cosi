@@ -1,6 +1,7 @@
 <script>
 import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
+import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
@@ -63,9 +64,9 @@ export default {
         },
 
         /**
-         * the chartRange as object to fix min and max values for the chart
+         * the chartOptions as configured in config.json
          */
-        chartRange: {
+        chartOptions: {
             type: [Object, Boolean],
             required: true
         }
@@ -87,7 +88,9 @@ export default {
             barchartData: false,
             barchartDataOptions: {},
             barchartData_aus_umland: false,
-            barchartData_ins_umland: false
+            barchartDataOptions_aus_umland: {},
+            barchartData_ins_umland: false,
+            barchartDataOptions_ins_umland: {}
         };
     },
     watch: {
@@ -125,9 +128,12 @@ export default {
 
             if (hasComplexTypeValues(this.wanderungssaldo_u6_complexType)) {
                 this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.wanderungssaldo_u6_complexType, 2)));
-                this.barchartDataOptions = this.getChartOptions("wanderungssaldo_u6", this.chartRange);
+                this.barchartDataOptions = getChartOptions("wanderungssaldo_u6", this.chartOptions);
                 if (this.barchartDataOptions === false) {
-                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                    this.barchartDataOptions = getChartOptionsForPercentage("wanderungssaldo_u6", this.chartOptions);
+                }
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = {};
                 }
             }
             else {
@@ -136,60 +142,20 @@ export default {
             }
             if (hasComplexTypeValues(this.wanderungssaldo_u6_aus_umland_complexType)) {
                 this.barchartData_aus_umland = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.wanderungssaldo_u6_aus_umland_complexType, 2)));
+                this.barchartDataOptions_aus_umland = getChartOptionsForPercentage("wanderungssaldo_u6", this.chartOptions);
             }
             else {
                 this.barchartData_aus_umland = false;
+                this.barchartDataOptions_aus_umland = {};
             }
             if (hasComplexTypeValues(this.wanderungssaldo_u6_ins_umland_complexType)) {
                 this.barchartData_ins_umland = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.wanderungssaldo_u6_ins_umland_complexType, 2)));
+                this.barchartDataOptions_ins_umland = getChartOptionsForPercentage("wanderungssaldo_u6", this.chartOptions);
             }
             else {
                 this.barchartData_ins_umland = false;
+                this.barchartDataOptions_ins_umland = {};
             }
-        },
-
-        /**
-         * returns the options for the chart using the chartRange to set min and max for y axis
-         * @param {String} propertyName the property name to lookup in chartRange
-         * @param {Object|boolean} chartRange the given chartRange
-         * @returns {Object} the options for ChartJS
-         */
-        getChartOptions (propertyName, chartRange) {
-            if (
-                typeof chartRange !== "object" || chartRange === null
-                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
-                || !Array.isArray(chartRange[propertyName])
-                || !chartRange[propertyName].length === 2
-            ) {
-                return false;
-            }
-            return {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: chartRange[propertyName][0],
-                            suggestedMax: chartRange[propertyName][1]
-                        }
-                    }]
-                }
-            };
-        },
-
-        /**
-         * returns the options for the chart with unit for percentages
-         * @returns {Object} the options for ChartJS
-         */
-        getChartOptionsForPercentage () {
-            return {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 100
-                        }
-                    }]
-                }
-            };
         }
     }
 };
@@ -322,7 +288,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :given-options="getChartOptionsForPercentage()"
+                        :given-options="barchartDataOptions_aus_umland"
                         :data="barchartData_aus_umland"
                     />
                 </div>
@@ -338,7 +304,7 @@ export default {
                 </div>
                 <div class="rba_chart_content">
                     <Barchart
-                        :given-options="getChartOptionsForPercentage()"
+                        :given-options="barchartDataOptions_ins_umland"
                         :data="barchartData_ins_umland"
                     />
                 </div>
