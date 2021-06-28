@@ -7,6 +7,7 @@ import getters from "../store/gettersOpenRouteService";
 import mutations from "../store/mutationsOpenRouteService";
 import {union} from "@turf/turf";
 import getRgbArray from "../../cosi/utils/getRgbArray";
+import getColorScale from "../../utils/colorScale.js";
 
 /**
  * Routing, Isochrones and Matrix Requests through OpenRouteService API
@@ -176,7 +177,7 @@ export default {
         styleFeatures (features) {
             const joinedIsochrones = this.joinIsochrones(this.requestData.joinIsochrones),
                 steps = joinedIsochrones ? features.length : features.length / this.requestData.locations.length,
-                colorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], this.colorspace, steps + 1);
+                colorScale = getColorScale([0, 1], this.colorspace, steps + 1);
             let stepFeatures;
 
             for (let i = 0; i < this.requestData.locations.length; i++) {

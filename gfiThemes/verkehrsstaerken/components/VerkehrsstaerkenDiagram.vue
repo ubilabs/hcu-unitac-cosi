@@ -43,9 +43,7 @@ export default {
          * @fires Tools.Graph#RadioTriggerGraphCreateGraph
          */
         createD3Document (category) {
-            const tabContentHeight = document.getElementById(
-                "verkehrsstaerken-tab-content"
-            )?.clientHeight,
+            const tabContentHeight = document.getElementById("verkehrsstaerken-tab-content")?.clientHeight,
                 legendData = createLegendData(category),
                 graphConfig = {
                     legendData: legendData,
@@ -186,7 +184,7 @@ export default {
             :id="'d3-div-' + category"
             class="graph"
         >
-            <div class="graph-tooltip-div"></div>
+            <div class="graph-tooltip-div" />
         </div>
     </div>
 </template>

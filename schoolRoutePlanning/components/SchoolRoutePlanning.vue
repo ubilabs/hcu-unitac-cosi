@@ -176,10 +176,11 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
-        :initialWidth="initialWidth"
+        :deactivate-gfi="deactivateGFI"
+        :initial-width="initialWidth"
+        :initial-width-mobile="initialWidthMobile"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <div
                 v-if="active"
                 class="content-school-route-planning"
@@ -207,8 +208,8 @@ export default {
                     <ToggleCheckbox
                         ref="rasterCheckBox"
                         class="routing-checkbox-toggle-checkbox"
-                        :textOn="$t('common:snippets.checkbox.on')"
-                        :textOff="$t('common:snippets.checkbox.off')"
+                        :text-on="$t('common:snippets.checkbox.on')"
+                        :text-off="$t('common:snippets.checkbox.off')"
                         @change="toggleLayer"
                     />
                 </div>

@@ -38,7 +38,7 @@ export class TrafficCountApi {
                 TrafficCountApi.instance = {};
             }
 
-            if (TrafficCountApi.instance.hasOwnProperty(httpHost)) {
+            if (Object.prototype.hasOwnProperty.call(TrafficCountApi.instance, httpHost)) {
                 return TrafficCountApi.instance[httpHost];
             }
 
@@ -65,7 +65,7 @@ export class TrafficCountApi {
         // set the mqtt listener
         if (this.mqttClient && typeof this.mqttClient.on === "function") {
             this.mqttClient.on("message", (topic, payload, packet) => {
-                if (this.subscriptionTopics.hasOwnProperty(topic)) {
+                if (Object.prototype.hasOwnProperty.call(this.subscriptionTopics, topic)) {
                     if (!Array.isArray(this.subscriptionTopics[topic])) {
                         return;
                     }
@@ -97,8 +97,8 @@ export class TrafficCountApi {
      * @returns {Boolean}  true/false
      */
     checkForObservations (dataset) {
-        return Array.isArray(dataset) && dataset.length > 0 && dataset[0].hasOwnProperty("Datastreams")
-            && Array.isArray(dataset[0].Datastreams) && dataset[0].Datastreams.length > 0 && dataset[0].Datastreams[0].hasOwnProperty("@iot.id")
+        return Array.isArray(dataset) && dataset.length > 0 && Object.prototype.hasOwnProperty.call(dataset[0], "Datastreams")
+            && Array.isArray(dataset[0].Datastreams) && dataset[0].Datastreams.length > 0 && Object.prototype.hasOwnProperty.call(dataset[0].Datastreams[0], "@iot.id")
             && Array.isArray(dataset[0].Datastreams[0].Observations);
     }
 
@@ -115,7 +115,7 @@ export class TrafficCountApi {
         let sum = 0;
 
         dataset[0].Datastreams[0].Observations.forEach(observation => {
-            if (!observation.hasOwnProperty("result")) {
+            if (!observation?.result) {
                 // continue
                 return;
             }
@@ -142,7 +142,7 @@ export class TrafficCountApi {
             phenomenonTime = "";
 
         dataset[0].Datastreams[0].Observations.forEach(observation => {
-            if (!observation.hasOwnProperty("phenomenonTime")) {
+            if (!observation?.phenomenonTime) {
                 // continue
                 return;
             }
@@ -181,7 +181,7 @@ export class TrafficCountApi {
      * @returns {Void}  -
      */
     mqttSubscribe (topic, options, handler) {
-        if (!this.subscriptionTopics.hasOwnProperty(topic)) {
+        if (!Object.prototype.hasOwnProperty.call(this.subscriptionTopics, topic)) {
             // new subscription
             this.subscriptionTopics[topic] = [];
         }
@@ -205,7 +205,7 @@ export class TrafficCountApi {
         const url = this.baseUrlHttp + "/Things(" + thingId + ")";
 
         return this.http.get(url, (dataset) => {
-            if (Array.isArray(dataset) && dataset.length > 0 && dataset[0].hasOwnProperty("name")) {
+            if (Array.isArray(dataset) && dataset.length > 0 && dataset[0]?.name) {
                 if (typeof onupdate === "function") {
                     onupdate(dataset[0].name);
                 }
@@ -229,7 +229,7 @@ export class TrafficCountApi {
         const url = this.baseUrlHttp + "/Things(" + thingId + ")";
 
         return this.http.get(url, (dataset) => {
-            if (Array.isArray(dataset) && dataset.length > 0 && dataset[0].hasOwnProperty("properties") && dataset[0].properties.hasOwnProperty("richtung")) {
+            if (Array.isArray(dataset) && dataset.length > 0 && dataset[0]?.properties && dataset[0].properties?.richtung) {
                 if (typeof onupdate === "function") {
                     onupdate(dataset[0].properties.richtung);
                 }
@@ -281,11 +281,11 @@ export class TrafficCountApi {
 
             // set retain handling rh to 2 to avoid getting the last message from the server, as this message is already included in the server call above (see doc\sensorThings_EN.md)
             this.mqttSubscribe(topic, {rh: 2}, (payload, packet) => {
-                if (packet && packet.hasOwnProperty("retain") && packet.retain === true) {
+                if (packet && packet?.retain && packet.retain === true) {
                     // this message is a retained message, so its content is already in sum
                     return;
                 }
-                if (payload && payload.hasOwnProperty("result")) {
+                if (payload && payload?.result) {
                     sum += payload.result;
 
                     if (typeof onupdate === "function") {
@@ -356,11 +356,11 @@ export class TrafficCountApi {
 
                 // set retain to 2 to avoid getting the last message from the server, as this message is already included in the server call above (see doc\sensorThings_EN.md)
                 this.mqttSubscribe(topic, {rh: 2}, (payload, packet) => {
-                    if (packet && packet.hasOwnProperty("retain") && packet.retain === true) {
+                    if (packet && packet?.retain && packet.retain === true) {
                         // this message is a retained message, so its content is already in sum
                         return;
                     }
-                    if (!payload || !payload.hasOwnProperty("result")) {
+                    if (!payload || !payload?.result) {
                         (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateYear: the payload does not include a result", payload);
                     }
                     sumThisDay += payload.result;
@@ -415,11 +415,11 @@ export class TrafficCountApi {
 
                 // set retain to 2 to avoid getting the last message from the server, as this message is already included in the server call above (see doc\sensorThings_EN.md)
                 this.mqttSubscribe(topic, {rh: 2}, (payload, packet) => {
-                    if (packet && packet.hasOwnProperty("retain") && packet.retain === true) {
+                    if (packet && packet?.retain && packet.retain === true) {
                         // this message is a retained message, so its content is already in sum
                         return;
                     }
-                    if (!payload || !payload.hasOwnProperty("result")) {
+                    if (!payload || !payload?.result) {
                         (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateTotal: the payload does not include a result", payload);
                     }
                     sumThisWeek += payload.result;
@@ -517,13 +517,13 @@ export class TrafficCountApi {
         return this.http.get(url, (dataset) => {
             if (this.checkForObservations(dataset)) {
                 dataset[0].Datastreams[0].Observations.forEach(observation => {
-                    if (!observation.hasOwnProperty("result") || !observation.hasOwnProperty("phenomenonTime")) {
+                    if (!observation?.result || !observation?.phenomenonTime) {
                         // continue
                         return;
                     }
 
                     month = moment(this.parsePhenomenonTime(observation.phenomenonTime)).format("MM");
-                    if (!sumMonths.hasOwnProperty(month)) {
+                    if (!Object.prototype.hasOwnProperty.call(sumMonths, month)) {
                         sumMonths[month] = 0;
                     }
                     sumMonths[month] += observation.result;
@@ -591,7 +591,7 @@ export class TrafficCountApi {
         return this.http.get(url, (dataset) => {
             if (this.checkForObservations(dataset)) {
                 dataset[0].Datastreams[0].Observations.forEach(observation => {
-                    if (!observation.hasOwnProperty("result") || !observation.hasOwnProperty("phenomenonTime")) {
+                    if (!observation?.result || !observation?.phenomenonTime) {
                         // continue
                         return;
                     }
@@ -621,11 +621,11 @@ export class TrafficCountApi {
 
                     // set retain to 2 to avoid getting the last message from the server, as this message is already included in the server call above (see doc\sensorThings_EN.md)
                     this.mqttSubscribe(topic, {rh: 2}, (payload, packet) => {
-                        if (packet && packet.hasOwnProperty("retain") && packet.retain === true) {
+                        if (packet && packet?.retain && packet.retain === true) {
                             // this message is a retained message, so its content is already in sum
                             return;
                         }
-                        if (payload && payload.hasOwnProperty("result") && payload.hasOwnProperty("phenomenonTime")) {
+                        if (payload && payload?.result && payload?.phenomenonTime) {
                             const datetime = moment(this.parsePhenomenonTime(payload.phenomenonTime)).format("YYYY-MM-DD HH:mm:ss");
 
                             result[meansOfTransport][datetime] = payload.result;
@@ -662,8 +662,8 @@ export class TrafficCountApi {
         // get the datastreamId via http to subscribe to with mqtt
         return this.http.get(url, (dataset) => {
             if (
-                Array.isArray(dataset) && dataset.length > 0 && dataset[0].hasOwnProperty("Datastreams")
-                && Array.isArray(dataset[0].Datastreams) && dataset[0].Datastreams.length > 0 && dataset[0].Datastreams[0].hasOwnProperty("@iot.id")
+                Array.isArray(dataset) && dataset.length > 0 && dataset[0]?.Datastreams
+                && Array.isArray(dataset[0].Datastreams) && dataset[0].Datastreams.length > 0 && Object.prototype.hasOwnProperty.call(dataset[0].Datastreams[0], "@iot.id")
             ) {
                 // subscribe via mqtt
                 const datastreamId = dataset[0].Datastreams[0]["@iot.id"],
@@ -671,7 +671,7 @@ export class TrafficCountApi {
 
                 // set retain to 0 to get the last message from the server immediately (see doc\sensorThings_EN.md)
                 this.mqttSubscribe(topic, {rh: 0}, (payload) => {
-                    if (payload && payload.hasOwnProperty("resultTime")) {
+                    if (payload && payload?.resultTime) {
                         if (typeof onupdate === "function") {
                             const datetime = moment(payload.resultTime).format("YYYY-MM-DD HH:mm:ss");
 

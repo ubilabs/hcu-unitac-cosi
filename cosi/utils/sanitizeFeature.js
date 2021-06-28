@@ -1,12 +1,10 @@
-import hash from "object-hash";
-
 /**
  * Validates and sanitizes a feature for parsing
  * @param {module:ol/Feature} feature - the OL feature
  * @returns {module:ol/Feature} the sanitized feature
  */
 export function sanitizeFeature (feature) {
-    console.log(feature);
+    // console.log(feature);
 
     return feature;
 }

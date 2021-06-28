@@ -25,7 +25,7 @@ export function addMissingDataDay (from, timeData) {
         for (m = 0; m < 4; m++) {
             key = datePrefix + String(h).padStart(2, "0") + ":" + String(m * 15).padStart(2, "0") + ":00";
 
-            if (zeroedData.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(zeroedData, key)) {
                 result[key] = zeroedData[key];
             }
             else {
@@ -59,7 +59,7 @@ export function addMissingDataWeek (from, timeData) {
     for (wd = 1; wd <= 7; wd++) {
         key = moment(from, "YYYY-MM-DD HH:mm:ss").isoWeekday(wd).format("YYYY-MM-DD HH:mm:00");
 
-        if (zeroedData.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(zeroedData, key)) {
             result[key] = zeroedData[key];
         }
         else {
@@ -94,7 +94,7 @@ export function addMissingDataYear (year, timeData) {
     while (objMoment.format("YYYY") === String(year)) {
         key = objMoment.isoWeekday(1).format("YYYY-MM-DD HH:mm:00");
 
-        if (zeroedData.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(zeroedData, key)) {
             result[key] = zeroedData[key];
         }
         else {

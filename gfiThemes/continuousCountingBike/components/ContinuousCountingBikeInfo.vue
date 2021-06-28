@@ -15,16 +15,14 @@ export default {
         <div
             class="tab-pane fade in active"
         >
-            <div class="imageContinuousCountingBikeDiv">
-            </div>
+            <div class="imageContinuousCountingBikeDiv" />
             <table class="table table-striped">
                 <tbody>
                     <tr
                         colspan="3"
                         class="bold"
                     >
-                        <td class="subHeader">
-                        </td>
+                        <td class="subHeader" />
                         <td>
                             {{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.timeframe") }}
                         </td>

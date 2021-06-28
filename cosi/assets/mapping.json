@@ -571,6 +571,6 @@
     "statgebiet": true,
     "stadtteil": true,
     "bezirk": true,
-    "valueType": "absolute"
+    "valueType": "relative"
   }
 ]

@@ -39,7 +39,7 @@ const BauforumGUIModeler = Backbone.Model.extend(/** @lends BauforumGUIModeler.p
         const parameters = Radio.request("ParametricURL", "getResult"),
             knownMainStreets = Radio.request("Parser", "getPortalConfig").bauforumHackathon;
 
-        if (parameters && parameters.hasOwnProperty("MAGISTRALE") && knownMainStreets && knownMainStreets.hasOwnProperty(parameters.MAGISTRALE)) {
+        if (parameters && Object.prototype.hasOwnProperty.call(parameters, "MAGISTRALE") && knownMainStreets && Object.prototype.hasOwnProperty.call(knownMainStreets, parameters.MAGISTRALE)) {
             return Radio.request("Util", "pick", knownMainStreets, parameters.MAGISTRALE);
         }
 

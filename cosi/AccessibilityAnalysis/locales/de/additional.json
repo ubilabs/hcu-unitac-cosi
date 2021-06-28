@@ -29,7 +29,8 @@
                     "requestInhibitants": "Einwohnerabfrage für den Bereich",
                     "inputReminder": "Bitte füllen Sie alle Felder aus.",
                     "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.",
-                    "askUpdate": "Möchten Sie die aktive Erreichbarkeitsanalyse aktualisieren?"
+                    "askUpdate": "Möchten Sie die aktive Erreichbarkeitsanalyse aktualisieren?",
+                    "showErrorInvalidInput": "Die Anfrage konnte nicht korrekt ausgeführt werden. Eine Eingabe ist im falschen Format oder ungültig"
                 }
             }
         }

@@ -332,8 +332,7 @@ export default {
             class="download-container"
             @click="exportFile"
             v-html="exportButtonTemplate.innerHTML"
-        >
-        </div>
+        />
         <div class="update">
             <table
                 :class="tableClass"

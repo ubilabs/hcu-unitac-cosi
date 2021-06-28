@@ -13,6 +13,27 @@ export default {
         },
 
         /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
+        /**
+         * Parsing the text with Html Tags into Html Format
+         * @param {String} str the text
+         * @returns {String} html format text
+         */
+        parseTranslationInHtml: {
+            type: Function,
+            required: true
+        },
+
+        /**
          * the featureType of current layer
          */
         featureType: {
@@ -53,19 +74,6 @@ export default {
     },
     methods: {
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-
-        /**
          * refreshes the gfi
          * @returns {void}
          */
@@ -79,18 +87,6 @@ export default {
             if (this.infoKey !== "") {
                 this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.fluechtlinge.info." + this.infoKey));
             }
-        },
-
-        /**
-         * Paring the text with Html Tags into Html Format
-         * @param {String} str the text
-         * @returns {String} html format text
-         */
-        parseTranslationInHtml (str) {
-            const parser = new DOMParser(),
-                doc = parser.parseFromString(str, "text/html");
-
-            return doc.body.innerHTML;
         }
     }
 };
@@ -124,8 +120,7 @@ export default {
         <div
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
-        >
-        </div>
+        />
     </div>
 </template>
 
@@ -133,14 +128,6 @@ export default {
     .gfi-bildungsatlas-fluechtlinge {
         max-width: 445px;
         font-size: 13px;
-
-        .gfi-data {
-            padding: 10px;
-        }
-        .gbf-header {
-            text-align: right;
-            font-weight: bold;
-        }
         .gbf-content {
             margin-top: 15px;
             padding-top: 15px;
@@ -161,11 +148,6 @@ export default {
                     }
                 }
             }
-        }
-        .gfi-bildungsatlas-footer {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
         }
     }
 </style>

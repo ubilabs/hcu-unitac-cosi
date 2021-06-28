@@ -73,7 +73,7 @@ export default {
             });
 
             Object.keys(gfiContent).forEach(subkey => {
-                if (assoc.hasOwnProperty(subkey)) {
+                if (Object.prototype.hasOwnProperty.call(assoc, subkey)) {
                     result[assoc[subkey]][subkey] = gfiContent[subkey];
                 }
                 else {

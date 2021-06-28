@@ -7,7 +7,10 @@ import {
     convertComplexTypeToLinechart,
     convertComplexTypesToMultilinechart,
     isComplexType,
-    sortComplexType
+    compareComplexTypesAndFillDataGaps,
+    sortComplexType,
+    cloneComplexType,
+    hasComplexTypeValues
 } from "../../../utils/complexType.js";
 
 describe("addons/utils/complexType.js", () => {
@@ -406,8 +409,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             384
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -446,8 +449,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             undefined
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -485,8 +488,8 @@ describe("addons/utils/complexType.js", () => {
                             398,
                             381
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -524,8 +527,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             384
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -564,8 +567,8 @@ describe("addons/utils/complexType.js", () => {
                             381,
                             384
                         ],
-                        backgroundColor: "rgba(0, 92, 169, 1)",
-                        hoverBackgroundColor: "rgba(225, 0, 25, 1)",
+                        backgroundColor: "rgba(0, 48, 99, 1)",
+                        hoverBackgroundColor: "rgba(181, 216, 250, 1)",
                         borderWidth: 1
                     }],
                     labels: [
@@ -1136,8 +1139,8 @@ describe("addons/utils/complexType.js", () => {
                                 381,
                                 384
                             ],
-                            backgroundColor: "rgba(230, 159, 0, 1)",
-                            borderColor: "rgba(230, 159, 0, 1)",
+                            backgroundColor: "rgba(46, 127, 210, 1)",
+                            borderColor: "rgba(46, 127, 210, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1154,8 +1157,8 @@ describe("addons/utils/complexType.js", () => {
                                 81,
                                 84
                             ],
-                            backgroundColor: "rgba(86, 180, 233, 1)",
-                            borderColor: "rgba(86, 180, 233, 1)",
+                            backgroundColor: "rgba(255, 217, 102, 1)",
+                            borderColor: "rgba(255, 217, 102, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1210,8 +1213,8 @@ describe("addons/utils/complexType.js", () => {
                             81,
                             84
                         ],
-                        backgroundColor: "rgba(86, 180, 233, 1)",
-                        borderColor: "rgba(86, 180, 233, 1)",
+                        backgroundColor: "rgba(255, 217, 102, 1)",
+                        borderColor: "rgba(255, 217, 102, 1)",
                         borderWidth: 2,
                         fill: false,
                         lineTension: 0,
@@ -1272,8 +1275,8 @@ describe("addons/utils/complexType.js", () => {
                                 381,
                                 384
                             ],
-                            backgroundColor: "rgba(230, 159, 0, 1)",
-                            borderColor: "rgba(230, 159, 0, 1)",
+                            backgroundColor: "rgba(46, 127, 210, 1)",
+                            borderColor: "rgba(46, 127, 210, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1290,8 +1293,8 @@ describe("addons/utils/complexType.js", () => {
                                 81,
                                 84
                             ],
-                            backgroundColor: "rgba(86, 180, 233, 1)",
-                            borderColor: "rgba(86, 180, 233, 1)",
+                            backgroundColor: "rgba(255, 217, 102, 1)",
+                            borderColor: "rgba(255, 217, 102, 1)",
                             borderWidth: 2,
                             fill: false,
                             lineTension: 0,
@@ -1443,6 +1446,166 @@ describe("addons/utils/complexType.js", () => {
 
             expect(changeMetadata(complexType, "anyentry", true)).to.be.true;
             expect(complexType?.metadata?.anyentry).to.be.true;
+        });
+    });
+    describe("cloneComplexType", () => {
+        it("should return a complex type", () => {
+            const complexType = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "key", value: 1}
+                    ]
+                },
+                clonedComplexType = cloneComplexType(complexType);
+
+            expect(isComplexType(clonedComplexType)).to.be.true;
+        });
+        it("should clone the complex type", () => {
+            const complexType = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "key", value: 1}
+                    ]
+                },
+                expectedComplexType = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "key", value: 1}
+                    ]
+                },
+                expectedClone = {
+                    metadata: {type: "type_changed", format: "format_changed", description: "description_changed"},
+                    values: [
+                        {key: "key_changed", value: 2}
+                    ]
+                },
+                clonedComplexType = cloneComplexType(complexType);
+
+            clonedComplexType.metadata.type = "type_changed";
+            clonedComplexType.metadata.format = "format_changed";
+            clonedComplexType.metadata.description = "description_changed";
+            clonedComplexType.values[0].key = "key_changed";
+            clonedComplexType.values[0].value = 2;
+
+            expect(clonedComplexType).to.deep.equal(expectedClone);
+            expect(complexType).to.deep.equal(expectedComplexType);
+        });
+    });
+    describe("hasComplexTypeValues", () => {
+        it("should return false if the given complexType is anything but a ComplexType", () => {
+            expect(hasComplexTypeValues(undefined)).to.be.false;
+            expect(hasComplexTypeValues(null)).to.be.false;
+            expect(hasComplexTypeValues("string")).to.be.false;
+            expect(hasComplexTypeValues(1234)).to.be.false;
+            expect(hasComplexTypeValues(true)).to.be.false;
+            expect(hasComplexTypeValues(false)).to.be.false;
+            expect(hasComplexTypeValues([])).to.be.false;
+            expect(hasComplexTypeValues({})).to.be.false;
+        });
+        it("should return false if the given complexType does not include any valid information", () => {
+            const complexType = {
+                metadata: {type: "type", format: "format", description: "description"},
+                values: [
+                    {key: "keyA", value: undefined},
+                    {key: "keyB", value: null},
+                    {key: "keyC", value: ""}
+                ]
+            };
+
+            expect(hasComplexTypeValues(complexType)).to.be.false;
+        });
+        it("should return true if the given complexType does include valid numeric information", () => {
+            const complexType = {
+                metadata: {type: "type", format: "format", description: "description"},
+                values: [
+                    {key: "keyA", value: undefined},
+                    {key: "keyB", value: null},
+                    {key: "keyOK", value: 0},
+                    {key: "keyC", value: ""}
+                ]
+            };
+
+            expect(hasComplexTypeValues(complexType)).to.be.true;
+        });
+        it("should return true if the given complexType does include valid string information", () => {
+            const complexType = {
+                metadata: {type: "type", format: "format", description: "description"},
+                values: [
+                    {key: "keyA", value: undefined},
+                    {key: "keyB", value: null},
+                    {key: "keyOK", value: "0"},
+                    {key: "keyC", value: ""}
+                ]
+            };
+
+            expect(hasComplexTypeValues(complexType)).to.be.true;
+        });
+    });
+
+    describe("compareComplexTypesAndFillDataGaps", () => {
+        it("should compare complexTypes and fill data gaps", () => {
+            const fillValue = "fillValue",
+                complexTypeA = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "keyA", value: 1},
+                        {key: "keyB", value: 2},
+                        {key: "keyC", value: 3}
+                    ]
+                },
+                complexTypeB = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "keyA", value: 4},
+                        {key: "keyB"},
+                        {key: "keyD", value: 5}
+                    ]
+                },
+                complexTypeC = {
+                    metadata: {type: "type", format: "format", description: "description"},
+                    values: [
+                        {key: "keyB", value: 6},
+                        {key: "keyE", value: 7}
+                    ]
+                },
+                expected = [
+                    {
+                        metadata: {type: "type", format: "format", description: "description"},
+                        values: [
+                            {key: "keyA", value: 1},
+                            {key: "keyB", value: 2},
+                            {key: "keyC", value: 3},
+                            {key: "keyD", value: "fillValue"},
+                            {key: "keyE", value: "fillValue"}
+                        ]
+                    },
+                    {
+                        metadata: {type: "type", format: "format", description: "description"},
+                        values: [
+                            {key: "keyA", value: 4},
+                            {key: "keyB", value: "fillValue"},
+                            {key: "keyC", value: "fillValue"},
+                            {key: "keyD", value: 5},
+                            {key: "keyE", value: "fillValue"}
+                        ]
+                    },
+                    {
+                        metadata: {type: "type", format: "format", description: "description"},
+                        values: [
+                            {key: "keyA", value: "fillValue"},
+                            {key: "keyB", value: 6},
+                            {key: "keyC", value: "fillValue"},
+                            {key: "keyD", value: "fillValue"},
+                            {key: "keyE", value: 7}
+                        ]
+                    }
+                ];
+
+            expect(compareComplexTypesAndFillDataGaps([
+                complexTypeA,
+                complexTypeB,
+                complexTypeC
+            ], fillValue)).to.deep.equal(expected);
         });
     });
 });

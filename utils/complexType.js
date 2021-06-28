@@ -27,17 +27,18 @@ import moment from "moment";
  * tries to optimize the values of the ComplexType: cutting down decimal points, converts german numbers to ChartJS standard
  * @param {ComplexType} complexType the ComplexType to optimize
  * @param {Number|boolean} [decimals=false] the number of decimal points to cut at - or false if no cuts
- * @returns {ComplexType} the same complexType with optimized values
+ * @returns {ComplexType} a clone of the complexType with optimized values
  */
 function optimizeComplexTypeValues (complexType, decimals = false) {
     if (!isComplexType(complexType)) {
         return complexType;
     }
+    const result = cloneComplexType(complexType);
 
-    complexType.values.forEach(item => {
+    result.values.forEach(item => {
         item.value = optimizeValueRootedInComplexType(item.value, decimals);
     });
-    return complexType;
+    return result;
 }
 
 /**
@@ -161,13 +162,13 @@ function convertComplexTypesToMultilinechart (complexTypes, options = null, line
         datasets = [],
         // default colors - see  https://jfly.uni-koeln.de/color/
         defaultColors = Array.isArray(lineColors) && lineColors.length ? lineColors : [
+            [46, 127, 210, 1],
+            [255, 217, 102, 1],
+            [13, 86, 163, 1],
+            [255, 130, 102, 1],
+            [0, 48, 99, 1],
             [230, 159, 0, 1],
-            [86, 180, 233, 1],
-            [0, 158, 115, 1],
-            [240, 228, 66, 1],
-            [0, 114, 178, 1],
-            [213, 94, 0, 1],
-            [204, 121, 167, 1]
+            [86, 180, 233, 1]
         ];
 
     complexTypes.forEach((complexType, idx) => {
@@ -244,8 +245,8 @@ function convertComplexTypeToBarchart (complexType, options = null) {
             label,
             data,
             // as standard colors we use masterportal standard blue and red
-            backgroundColor: convertColor("#005ca9", "rgbaString"),
-            hoverBackgroundColor: convertColor("#e10019", "rgbaString"),
+            backgroundColor: convertColor("#003063", "rgbaString"),
+            hoverBackgroundColor: convertColor("#B5D8FA", "rgbaString"),
             borderWidth: 1
         }, options)],
         labels
@@ -266,30 +267,127 @@ function isComplexType (data) {
 }
 
 /**
+ * finds gaps in unsorted complex values (comparing with other complex types) and fills them with a neutral value
+ * @param {ComplexType[]} complexTypes a list of complexTypes
+ * @param {*} [fillValue=null] the neutral value to fill gaps with
+ * @returns {ComplexType[]} the same list of complex types with filled gaps, is unsorted, use sortComplexTypes to sort afterwards
+ */
+function compareComplexTypesAndFillDataGaps (complexTypes, fillValue = null) {
+    if (!Array.isArray(complexTypes)) {
+        return complexTypes;
+    }
+    const blueprint = {},
+        assocs = [];
+
+    // generate the blueprint
+    complexTypes.forEach((complexType, idx) => {
+        if (!isComplexType(complexType)) {
+            return;
+        }
+        complexType.values.forEach(item => {
+            if (typeof item === "object" && item !== null && item?.key) {
+                blueprint[item.key] = true;
+                if (!Object.prototype.hasOwnProperty.call(assocs, idx)) {
+                    assocs[idx] = {};
+                }
+                if (item?.value) {
+                    assocs[idx][item.key] = item.value;
+                }
+            }
+        });
+    });
+
+    // apply blueprint
+    complexTypes.forEach((complexType, idx) => {
+        if (!isComplexType(complexType)) {
+            return;
+        }
+
+        complexType.values = [];
+        Object.keys(blueprint).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(assocs[idx], key)) {
+                complexType.values.push({key, value: assocs[idx][key]});
+            }
+            else {
+                complexType.values.push({key, value: fillValue});
+            }
+        });
+    });
+    return complexTypes;
+}
+
+/**
+ * sorts many complexTypes at once
+ * @info this is necessary after using compareComplexTypesAndFillDataGaps
+ * @param {ComplexType[]} complexTypes the list of complex types to sort at once
+ * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
+ * @returns {ComplexType} a list of clones of the given complex types with sorted values
+ */
+function sortComplexTypes (complexTypes, compareFunction = false) {
+    if (!Array.isArray(complexTypes)) {
+        return complexTypes;
+    }
+    const result = [];
+
+    complexTypes.forEach(complexType => {
+        result.push(sortComplexType(complexType, compareFunction));
+    });
+    return result;
+}
+
+/**
  * sorts a complexType with the given compare function or ascending by its keys by default
  * @param {ComplexType} complexType the complex type to sort
  * @param {Function|boolean} [compareFunction=false] the compare function as function(firstEl, secondEl) to sort with or false to use a default behavior
  * @see sort https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
- * @returns {ComplexType} the complex type with sorted values
+ * @returns {ComplexType} a clone of the complex type with sorted values
  */
 function sortComplexType (complexType, compareFunction = false) {
     if (!isComplexType(complexType)) {
         return false;
     }
-    else if (typeof compareFunction === "function") {
-        complexType.values.sort(compareFunction);
-        return complexType;
+    const result = cloneComplexType(complexType);
+
+    if (typeof compareFunction === "function") {
+        result.values.sort(compareFunction);
+        return result;
     }
 
-    if (complexType.metadata.type === "timeseries") {
-        sortComplexTypeTimeseries(complexType, complexType.metadata.format);
-        return complexType;
+    if (result.metadata.type === "timeseries") {
+        sortComplexTypeTimeseries(result, result.metadata.format);
+        return result;
     }
 
-    sortComplexTypeDefault(complexType);
-    return complexType;
+    sortComplexTypeDefault(result);
+    return result;
 }
 
+/**
+ * clones a complex type - necessary in every function to avoid changing the original
+ * @param {ComplexType} complexType the complex type to sort
+ * @returns {ComplexType} a clone of the given complexType
+ */
+function cloneComplexType (complexType) {
+    if (!isComplexType(complexType)) {
+        return complexType;
+    }
+    const result = {
+        metadata: {
+            type: complexType.metadata.type,
+            format: complexType.metadata.format,
+            description: complexType.metadata.description
+        },
+        values: []
+    };
+
+    complexType.values.forEach(elem => {
+        result.values.push({
+            key: elem.key,
+            value: elem.value
+        });
+    });
+    return result;
+}
 
 /** private */
 
@@ -300,10 +398,10 @@ function sortComplexType (complexType, compareFunction = false) {
  */
 function sortComplexTypeDefault (complexType) {
     return complexType.values.sort((firstEl, secondEl) => {
-        if (typeof firstEl !== "object" || firstEl === null || !firstEl.hasOwnProperty("key")) {
+        if (typeof firstEl !== "object" || firstEl === null || !Object.prototype.hasOwnProperty.call(firstEl, "key")) {
             return 1;
         }
-        else if (typeof secondEl !== "object" || secondEl === null || !secondEl.hasOwnProperty("key")) {
+        else if (typeof secondEl !== "object" || secondEl === null || !Object.prototype.hasOwnProperty.call(secondEl, "key")) {
             return -1;
         }
         else if (firstEl.key < secondEl.key) {
@@ -327,10 +425,10 @@ function sortComplexTypeDefault (complexType) {
  */
 function sortComplexTypeTimeseries (complexType, format) {
     return complexType.values.sort((firstEl, secondEl) => {
-        if (typeof firstEl !== "object" || firstEl === null || !firstEl.hasOwnProperty("key")) {
+        if (typeof firstEl !== "object" || firstEl === null || !Object.prototype.hasOwnProperty.call(firstEl, "key")) {
             return 1;
         }
-        else if (typeof secondEl !== "object" || secondEl === null || !secondEl.hasOwnProperty("key")) {
+        else if (typeof secondEl !== "object" || secondEl === null || !Object.prototype.hasOwnProperty.call(secondEl, "key")) {
             return -1;
         }
         return moment(firstEl.key, format).diff(moment(secondEl.key, format));
@@ -363,6 +461,27 @@ function getCompletestLabels (labels) {
     return result;
 }
 
+/**
+ * runs through the values of the given complexType and checks if there is data somewhere
+ * @param {ComplexType} complexType the complex type to check
+ * @returns {boolean} true if there ist data somewhere, false if there is no data (e.g. only undefined values)
+ */
+function hasComplexTypeValues (complexType) {
+    if (!isComplexType(complexType)) {
+        return false;
+    }
+    const len = complexType.values.length;
+    let i = 0;
+
+    for (i = 0; i < len; i++) {
+        if (typeof complexType.values[i].value === "number" || typeof complexType.values[i].value === "string" && complexType.values[i].value) {
+            // a number or a string (not empty)
+            return true;
+        }
+    }
+    return false;
+}
+
 export {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
@@ -372,5 +491,9 @@ export {
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
     isComplexType,
-    sortComplexType
+    compareComplexTypesAndFillDataGaps,
+    sortComplexType,
+    sortComplexTypes,
+    cloneComplexType,
+    hasComplexTypeValues
 };

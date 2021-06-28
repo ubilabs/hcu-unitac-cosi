@@ -11,26 +11,46 @@ import {
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
+import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 
-export const methodConfig = {store: null};
+export const methodConfig = {
+    store: null
+};
 export default {
     /**
      * create isochrones features
      * @returns {void}
      */
-    createIsochrones: function () {
+    createIsochrones: async function () {
         this.clear();
-        if (this.mode === "point") {
-            this.createIsochronesPoint();
+        try {
+            if (this.mode === "point") {
+                await this.createIsochronesPoint();
+            }
+            else {
+                await this.createIsochronesRegion();
+            }
         }
-        else {
-            this.createIsochronesRegion();
+        catch (err) {
+            console.error(err);
+            try {
+                const res = JSON.parse(err.response);
+
+                if (res.error.code === 3002) {
+                    this.showErrorInvalidInput();
+                }
+                else {
+                    this.showError();
+                }
+            }
+            catch (e) {
+                this.showError();
+            }
         }
     },
     /**
      * create isochrones features for selected several coordiantes
      * TODO: break apart into smaller functions
-     * @fires Alerting#RadioTriggerAlertAlertRemove
      * @fires Core#RadioRequestMapGetLayerByName
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
      * @returns {void}
@@ -49,7 +69,7 @@ export default {
         ) {
             // TODO: Use store-method - see DistrictSelector component
             this.askUpdate = false;
-            Radio.trigger("Alert", "alert:remove");
+            this.cleanup();
             // group coordinates into groups of 5
             const coordinatesList = [],
                 groupedFeaturesList = [],
@@ -120,8 +140,7 @@ export default {
             this.currentCoordinates = coordinates;
 
             // TODO: get locale from store
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
-            );
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
         }
         else {
             this.inputReminder();
@@ -142,58 +161,51 @@ export default {
             this.scaleUnit !== "" &&
             range !== 0
         ) {
-            try {
-                if (this.abortController) {
-                    this.abortController.abort();
-                }
-                this.abortController = this.createAbortController();
-                const res = await this.requestIsochrones(
-                        this.transportType,
-                        [this.coordinate],
-                        this.scaleUnit,
-                        [range * 0.33, range * 0.67, range],
-                        this.abortController.signal
-                    ),
-
-
-                    distance = parseFloat(this.distance);
-
-                this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)
-                );
-
-                // reverse JSON object sequence to render the isochrones in the correct order
-                // eslint-disable-next-line one-var
-                const json = JSON.parse(res),
-                    reversedFeatures = [...json.features].reverse(),
-                    featureType = "Erreichbarkeit ab einem Referenzpunkt";
-
-                json.features = reversedFeatures;
-                let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
-
-                newFeatures = this.transformFeatures(
-                    newFeatures,
-                    "EPSG:4326",
-                    "EPSG:25832"
-                );
-
-                newFeatures.forEach((feature) => {
-                    feature.set("featureType", featureType);
-                });
-
-                this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
-
-                this.styleFeatures(newFeatures, [this.coordinate]);
-
-                this.mapLayer.getSource().addFeatures(newFeatures.reverse());
-                this.isochroneFeatures = newFeatures;
-                this.setIsochroneAsBbox();
-                this.showRequestButton = true;
-                Radio.trigger("Alert", "alert:remove");
+            if (this.abortController) {
+                this.abortController.abort();
             }
-            catch (err) {
-                console.error(err);
-                this.showError();
-            }
+            this.abortController = this.createAbortController();
+            const res = await this.requestIsochrones(
+                    this.transportType,
+                    [this.coordinate],
+                    this.scaleUnit,
+                    [range * 0.33, range * 0.67, range],
+                    this.abortController.signal
+                ),
+
+
+                distance = parseFloat(this.distance);
+
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
+
+            // reverse JSON object sequence to render the isochrones in the correct order
+            // eslint-disable-next-line one-var
+            const json = JSON.parse(res),
+                reversedFeatures = [...json.features].reverse(),
+                featureType = "Erreichbarkeit ab einem Referenzpunkt";
+
+            json.features = reversedFeatures;
+            let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
+
+            newFeatures = this.transformFeatures(
+                newFeatures,
+                "EPSG:4326",
+                "EPSG:25832"
+            );
+
+            newFeatures.forEach((feature) => {
+                feature.set("featureType", featureType);
+            });
+
+            this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
+
+            this.styleFeatures(newFeatures, [this.coordinate]);
+
+            this.mapLayer.getSource().addFeatures(newFeatures.reverse());
+            this.isochroneFeatures = newFeatures;
+            this.setIsochroneAsBbox();
+            this.showRequestButton = true;
+            this.cleanup();
         }
         else {
             this.inputReminder();
@@ -257,41 +269,11 @@ export default {
      * @returns {void}
      */
     setSearchResultToOrigin: function () {
-        let features = this.markerPoint.getSource().getFeatures();
+        const coord = getSearchResultsCoordinates();
 
-        if (features.length === 1) {
-            // single point
-            const coord = features[0].getGeometry().getCoordinates(),
-                pcoord = Proj.transform(coord, "EPSG:25832", "EPSG:4326");
-
-            this.coordinate = pcoord;
+        if (coord) {
+            this.coordinate = coord;
             this.setBySearch = true;
-        }
-        else {
-            // single polygon
-            features = this.markerPolygon.getSource().getFeatures();
-            if (features.length === 1) {
-                const pts = features[0].getGeometry().getInteriorPoints();
-
-                if (pts.getPoints().length === 1) {
-                    const pcoord = Proj.transform(
-                        pts.getPoints()[0].getCoordinates().slice(0, 2),
-                        "EPSG:25832",
-                        "EPSG:4326"
-                    );
-
-                    this.coordinate = pcoord;
-                    this.setBySearch = true;
-                }
-                else if (pts.getPoints().length > 1) {
-                    const geo = features[0].getGeometry(),
-                        coords = Extent.getCenter(geo.getExtent()),
-                        pcoord = Proj.transform(coords, "EPSG:25832", "EPSG:4326");
-
-                    this.coordinate = pcoord;
-                    this.setBySearch = true;
-                }
-            }
         }
     },
     /**
@@ -299,16 +281,25 @@ export default {
      * @returns {void}
      */
     inputReminder: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
-            kategorie: "alert-warning"
+        this.addSingleAlert({
+            category: "Info",
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.inputReminder") + "</strong>",
+            displayClass: "info"
         });
     },
 
     showError: function () {
-        Radio.trigger("Alert", "alert", {
-            text: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
-            kategorie: "alert-danger"
+        this.addSingleAlert({
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
+            category: "Error",
+            displayClass: "error"
+        });
+    },
+    showErrorInvalidInput: function () {
+        this.addSingleAlert({
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
+            category: "Error",
+            displayClass: "error"
         });
     },
     /**
@@ -365,11 +356,11 @@ export default {
      * @returns {void}
      */
     showHelp: function () {
-        Radio.trigger("Alert", "alert:remove");
-        Radio.trigger("Alert", "alert", {
-            text: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
-            kategorie: "alert-info",
-            position: "center-center"
+        this.cleanup();
+        this.addSingleAlert({
+            category: "Info",
+            content: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
+            displayClass: "info"
         });
     },
     /**

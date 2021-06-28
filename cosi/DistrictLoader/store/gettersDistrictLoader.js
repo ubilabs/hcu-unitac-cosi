@@ -1,7 +1,6 @@
 
 import {generateSimpleGetters} from "../../../../src/app-store/utils/generators";
 import districtSelectorState from "./stateDistrictLoader";
-import MappingJson from "../../assets/mapping.json";
 import {WFS} from "ol/format.js";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import {getFeature} from "../../../../src/api/wfs/getFeature.js";
@@ -38,14 +37,6 @@ const getters = {
             .catch(function (error) {
                 console.error(error);
             });
-    },
-
-    /**
-     * Gets all categories of the stats data.
-     * @returns {object[]} List of all available stats categories.
-     */
-    getAllCategories: () => {
-        return MappingJson;
     },
 
     /**
@@ -155,7 +146,21 @@ const getters = {
      */
     currentStatsFeatures: (state, {selectedDistrictLevel}) => {
         return selectedDistrictLevel.features;
+    },
+
+    /**
+     * finds a mapping object by its category
+     * @param {Object} state - The DistrictLoader state.
+     * @param {Object} getters.mapping - The available statistical categories.
+     * @param {String} value - the category to search by
+     * @returns {object} the mapping object
+     */
+    findMappingObjectByCategory: (state, {mapping}) => value => {
+        return mapping.find(obj => {
+            return obj.category === value;
+        });
     }
+
 };
 
 

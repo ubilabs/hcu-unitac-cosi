@@ -7,6 +7,7 @@ import "d3-transition";
 import * as d3 from "d3-array";
 import evaluate from "./eval";
 import ContextActions from "text-loader!./contextActions.html";
+import getColorScale from "../../../utils/colorScale.js";
 
 const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     defaults: {
@@ -127,7 +128,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createValues: function (data, attrToShowArray, dynamicAxisStart = false, axisTicks, yAxisMaxValue) {
         const valueObj = {};
 
-        if (axisTicks && axisTicks.hasOwnProperty("start") && axisTicks.hasOwnProperty("end")) {
+        if (axisTicks && axisTicks?.start && axisTicks?.end) {
             valueObj.minValue = axisTicks.start;
             valueObj.maxValue = axisTicks.end;
         }
@@ -248,21 +249,20 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {Object} - axisBottom
      */
     createAxisBottom: function (scale, xAxisTicks) {
-        const unit = xAxisTicks?.unit ? " " + xAxisTicks.unit : "";
-        // const unit = !xAxisTicks.hasOwnProperty("unit") ? "" : " " + xAxisTicks.unit;
+        const unit = !xAxisTicks?.unit ? "" : " " + xAxisTicks.unit;
         let d3Object;
 
         if (xAxisTicks === undefined) {
             d3Object = axisBottom(scale);
         }
-        else if (xAxisTicks.hasOwnProperty("values") && !xAxisTicks.hasOwnProperty("factor")) {
+        else if (xAxisTicks?.values && !xAxisTicks?.factor) {
             d3Object = axisBottom(scale)
                 .tickValues(xAxisTicks.values)
                 .tickFormat(function (d) {
                     return d + unit;
                 });
         }
-        else if (xAxisTicks.hasOwnProperty("values") && xAxisTicks.hasOwnProperty("factor")) {
+        else if (xAxisTicks?.values && xAxisTicks?.factor) {
             d3Object = axisBottom(scale)
                 .ticks(xAxisTicks.values, xAxisTicks.factor)
                 .tickFormat(function (d) {
@@ -282,7 +282,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
     createAxisLeft: function (scale, yAxisTicks) {
         let d3Object;
 
-        if (!(yAxisTicks && yAxisTicks.ticks)) {
+        if (yAxisTicks === undefined && !yAxisTicks?.ticks) {
             d3Object = axisLeft(scale)
                 .tickFormat(function (d) {
                     if (d % 1 === 0) {
@@ -852,7 +852,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             xAttr = graphConfig.xAttr,
             xAxisLabel = graphConfig.xAxisLabel,
             yAxisLabel = graphConfig.yAxisLabel,
-            refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", graphConfig.attrToShowArray.length + 1),
+            refColorScale = getColorScale([0, 1], "interpolateSpectral", graphConfig.attrToShowArray.length + 1),
             attrToShowArray = graphConfig.attrToShowArray,
             flatAttrToShowArray = this.flattenAttrToShowArray(attrToShowArray),
             margin = graphConfig.margin,
@@ -875,7 +875,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             attribution = graphConfig.attribution || {};
         let valueLine;
 
-        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
+        if (graphConfig && graphConfig?.legendData) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         attrToShowArray.forEach(function (yAttrToShow, i) {
@@ -969,7 +969,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             tooltipDiv = select(graphConfig.selectorTooltip),
             attribution = graphConfig.attribution || {};
 
-        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
+        if (graphConfig && graphConfig?.legendData) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         this.drawBars(svg, data, scaleX, scaleY, height, selector, barWidth, xAttr, attrToShowArray, tooltipDiv);
@@ -996,7 +996,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @returns {void}
      */
     drawBars: function (svg, dataToAdd, x, y, height, selector, barWidth, xAttr, attrToShowArray, tooltipDiv) {
-        const refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", attrToShowArray.length + 1);
+        const refColorScale = getColorScale([0, 1], "interpolateSpectral", attrToShowArray.length + 1);
 
         svg.append("g")
             .attr("class", "graph-data")
@@ -1030,7 +1030,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             .attr("class", typeof selector === "string" ? "bar" + selector.split(".")[1] : "bar")
             .attr("fill", function (d, i) {
                 if (attrToShowArray.length <= 1) {
-                    return Radio.request("ColorScale", "getColorScaleByValues", y.domain(), "interpolateBlues").scale(d.val); // change to argument based
+                    return getColorScale(y.domain(), "interpolateBlues").scale(d.val); // change to argument based
                 }
                 return refColorScale.legend.colors[i];
             })
@@ -1149,7 +1149,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
             dotSize = graphConfig.dotSize || 5,
             attribution = graphConfig.attribution || {};
 
-        if (graphConfig && graphConfig.hasOwnProperty("legendData")) {
+        if (graphConfig && graphConfig?.legendData) {
             this.appendLegend(svg, graphConfig.legendData);
         }
         attrToShowArray.forEach(function (yAttrToShow) {
@@ -1350,7 +1350,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
         const refValues = data.reduce((res, val) => {
                 return res.includes(val[refAttr]) ? res : [...res, val[refAttr]];
             }, []),
-            refColorScale = Radio.request("ColorScale", "getColorScaleByValues", [0, 1], "interpolateSpectral", refValues.length + 1),
+            refColorScale = getColorScale([0, 1], "interpolateSpectral", refValues.length + 1),
             refColors = Radio.request("Util", "toObject", refValues.map((val, i) => [val, refColorScale.legend.colors[i]]));
         let yAttributeToShow,
             xAttributeToShow,

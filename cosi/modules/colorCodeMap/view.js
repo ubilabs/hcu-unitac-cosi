@@ -26,11 +26,10 @@ const ColorCodeMapView = Backbone.View.extend(/** @lends ColorCodeMapView.protot
         });
 
         store.watch((state, getters) => getters["Tools/DistrictSelector/extent"], extent => {
-            this.checkDistrictSelection(extent)
-        });
+            this.checkDistrictSelection(extent);
         // this.listenTo(Radio.channel("SelectDistrict"), {
         //     "selectionChanged": this.checkDistrictSelection
-        // });
+        });
 
         this.render();
     },

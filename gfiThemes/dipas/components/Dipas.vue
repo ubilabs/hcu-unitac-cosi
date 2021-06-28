@@ -22,7 +22,7 @@ export default {
          * @returns {String} the path to the icons
          */
         calculateIconPath (value) {
-            const styleModel = Radio.request("StyleList", "returnModelById", "beteiligungsfeatures");
+            const styleModel = Radio.request("StyleList", "returnModelById", "contributions");
             let valueStyle,
                 iconPath = this.feature.getTheme()?.params?.gfiIconPath;
 

@@ -2,8 +2,7 @@ import Vuex from "vuex";
 import {
     config,
     shallowMount,
-    createLocalVue,
-    createWrapper
+    createLocalVue
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
 import AccessibilityAnalysis from "../../../store/index";
@@ -36,7 +35,7 @@ before(() => {
 
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, requestStub, sandbox, sourceStub, vuetify,
+    let store, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify,
 
         coordiantes = [0, 0];
 
@@ -83,7 +82,6 @@ describe("AccessibilityAnalysis.vue", () => {
             }
         }];
 
-
     beforeEach(() => {
         vuetify = new Vuetify();
         sandbox = sinon.createSandbox();
@@ -94,6 +92,8 @@ describe("AccessibilityAnalysis.vue", () => {
                 []
             ])
         };
+        addSingleAlertStub = sinon.stub();
+        cleanupStub = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -127,6 +127,13 @@ describe("AccessibilityAnalysis.vue", () => {
                             });
                         }
                     }
+                },
+                Alerting: {
+                    namespaced: true,
+                    actions: {
+                        addSingleAlert: addSingleAlertStub,
+                        cleanup: cleanupStub
+                    }
                 }
             },
             state: {
@@ -141,8 +148,8 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
-    async function mount (layersMock) {
-        requestStub = sandbox.stub(Radio, "request").callsFake((a1, a2) => {
+    async function mount (layersMock, error = undefined) {
+        sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "Parser" && a2 === "getItemsByAttributes") {
                 return [];
             }
@@ -161,6 +168,9 @@ describe("AccessibilityAnalysis.vue", () => {
             vuetify,
             methods: {
                 requestIsochrones: () => {
+                    if (error) {
+                        return Promise.reject(error);
+                    }
                     return new Promise(function (resolve) {
                         resolve(JSON.stringify(data));
                     });
@@ -181,14 +191,37 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button without user input", async () => {
-        const wrapper = await mount(),
-            stub = sandbox.stub(Radio, "trigger");
+        const wrapper = await mount();
 
         await wrapper.find("#create-isochrones").trigger("click");
-        sinon.assert.calledWith(stub,
-            "Alert", "alert", {
-                text: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
-                kategorie: "alert-warning"
+        await wrapper.vm.$nextTick();
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1]).to.eql(
+            {
+                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
+                category: "Info",
+                displayClass: "info"
+            });
+    });
+
+    it("trigger button with wrong input", async () => {
+        const wrapper = await mount(undefined, {response: JSON.stringify({error: {code: 3002}})});
+
+        await wrapper.setData({
+            coordinate: "10.155828082155567, 53.60323024735499",
+            transportType: "Auto",
+            scaleUnit: "time",
+            distance: 10
+        });
+
+        await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick();
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1]).to.eql(
+            {
+                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>",
+                category: "Error",
+                displayClass: "error"
             });
     });
 
@@ -219,30 +252,6 @@ describe("AccessibilityAnalysis.vue", () => {
         wrapper.vm.$root.$emit("updateFeature");
         expect(wrapper.vm.askUpdate).to.be.false;
     });
-
-    it("trigger button requestInhabitants", async () => {
-        const wrapper = await mount([]),
-            rootWrapper = createWrapper(wrapper.vm.$root);
-
-        await wrapper.setData({
-            coordinate: "10.155828082155567, 53.60323024735499",
-            transportType: "Auto",
-            scaleUnit: "time",
-            distance: 10
-        });
-
-        await wrapper.find("#create-isochrones").trigger("click");
-
-        // need two ticks for all changes to propagate
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-
-        await wrapper.find("#requestInhabitants").trigger("click");
-
-        expect(wrapper.vm.active).to.be.false;
-        expect(rootWrapper.emitted("populationRequest")).to.exist;
-    });
-
 
     it("trigger button with user input and region selected", async () => {
         const wrapper = await mount(layersMock);
@@ -280,19 +289,20 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("show help for selectedmode", async () => {
-        const stub = sandbox.stub(Radio, "trigger"),
-            wrapper = await mount([]);
+        const wrapper = await mount([]);
 
         await wrapper.find("#help").trigger("click");
 
-        expect(stub.getCall(0).args[1]).to.equal("alert:remove");
-        expect(stub.getCall(1).args[2].text).to.contain("Erreichbarkeit ab einem Referenzpunkt");
+        sinon.assert.callCount(cleanupStub, 1);
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1].content).to.contain("Erreichbarkeit ab einem Referenzpunkt");
 
         await wrapper.setData({
             mode: "region"
         });
 
         await wrapper.find("#help").trigger("click");
-        expect(stub.getCall(3).args[2].text).to.contain("Erreichbarkeit im Gebiet");
+        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit im Gebiet");
     });
+
 });

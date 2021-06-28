@@ -5,8 +5,8 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
-import methods from "./methodsPointAnalysis";
 import requestIsochrones from "./requestIsochrones";
+import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
 
@@ -66,10 +66,12 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.map.addEventListener("click", this.setCoordinateFromClick);
+                this.map.addEventListener("click", this.setCoordinateFromClick.bind(this));
+                Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
             }
             else {
-                this.map.removeEventListener("click", this.setCoordinateFromClick);
+                this.map.removeEventListener("click", this.setCoordinateFromClick.bind(this));
+                Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
             }
         }
     },
@@ -97,11 +99,13 @@ export default {
         Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones);
     },
     methods: {
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
         ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
         requestIsochrones: requestIsochrones,
@@ -311,18 +315,6 @@ export default {
                                     {{ j }}
                                 </span>
                             </template>
-                        </div>
-                        <div v-if="mode === 'point'">
-                            <button
-                                v-if="showRequestButton"
-                                class="btn btn-lgv-grey measure-delete"
-                                @click="requestInhabitants"
-                            >
-                                <span
-                                    id="requestInhabitants"
-                                    class="glyphicon glyphicon-user"
-                                ></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
-                            </button>
                         </div>
                     </div>
                 </div>

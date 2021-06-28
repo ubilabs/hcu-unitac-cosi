@@ -12,6 +12,7 @@
  * @property {Boolean} resizableWindow Specifies whether the window should be resizable.
  * @property {Boolean} deactivateGFI Specifies whether the gfi should be disabled when this tool is opened.
  * @property {Number} initialWidth Size of the sidebar when opening.
+ * @property {Number} initialWidthMobile Mobile size of the sidebar when opening.
  * @property {String} layerName Name of the VectorLayer for the route elements.
  * @property {Number} printDpi The dpi for the printing.
  * @property {String} printLayout Layout for printing.
@@ -46,6 +47,7 @@ const state = {
     resizableWindow: true,
     deactivateGFI: false,
     initialWidth: 500,
+    initialWidthMobile: 300,
     layerName: "school_route_layer",
     printDpi: 200,
     printLayout: "A4 Hochformat",

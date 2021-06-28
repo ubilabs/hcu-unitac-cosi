@@ -110,9 +110,9 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <div
                 v-if="active"
                 id="tool-file-import"
@@ -120,13 +120,11 @@ export default {
                 <p
                     class="cta"
                     v-html="$t('additional:modules.tools.fileImportAddon.captions.introInfo')"
-                >
-                </p>
+                />
                 <p
                     class="cta"
                     v-html="$t('additional:modules.tools.fileImportAddon.captions.introFormats')"
-                >
-                </p>
+                />
                 <div
                     class="vh-center-outer-wrapper drop-area-fake"
                     :class="dropZoneAdditionalClass"
@@ -157,7 +155,7 @@ export default {
                         <input
                             type="file"
                             @change="onInputChange"
-                        />
+                        >
                         {{ $t("additional:modules.tools.fileImportAddon.captions.browse") }}
                     </label>
                 </div>

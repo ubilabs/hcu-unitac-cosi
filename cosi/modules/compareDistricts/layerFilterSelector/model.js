@@ -39,9 +39,9 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
             });
 
         this.setLayerOptions(layerOptions);
-        this.setDropDownModel(store.getters["Tools/DistrictLoader/getAllCategories"]);
+        this.setDropDownModel(store.getters["Tools/DistrictLoader/mapping"]);
         store.watch((state, getters) => getters["Tools/DistrictLoader/featureList"], () => {
-            this.updateDropDownModel(store.getters["Tools/DistrictLoader/getAllCategories"]);
+            this.updateDropDownModel(store.getters["Tools/DistrictLoader/mapping"]);
         });
     },
 
@@ -103,7 +103,9 @@ const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSel
             layers = this.getRawLayersBySelector(selector),
             layerModel = layers.find(layer => layer.featureType.includes(mappingObj.category.toLowerCase()));
 
-        this.set("selectedLayer", {layerName: layerModel.name, layerId: layerModel.id, layerText: mappingObj});
+        if (layerModel) {
+            this.set("selectedLayer", {layerName: layerModel.name, layerId: layerModel.id, layerText: mappingObj});
+        }
     },
 
     /**

@@ -511,7 +511,7 @@ export class TrafficCountCache {
      * @returns {*}  the value from the cache or undefined if key wasn't found
      */
     cacheGetValue (key) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return undefined;
         }
 
@@ -524,7 +524,7 @@ export class TrafficCountCache {
      * @returns {Boolean}  true ready, false not ready (check isInProgress next)
      */
     cacheIsReady (key) {
-        return this.cache.hasOwnProperty(key) && this.cache[key].isReady === true;
+        return Object.prototype.hasOwnProperty.call(this.cache, key) && this.cache[key].isReady === true;
     }
 
     /**
@@ -534,7 +534,7 @@ export class TrafficCountCache {
      * @returns {Boolean}  true in progress (just put your stuff on the waiting list), false not in progress
      */
     cacheInProgress (key) {
-        return this.cache.hasOwnProperty(key) && this.cache[key].inProgress === true;
+        return Object.prototype.hasOwnProperty.call(this.cache, key) && this.cache[key].inProgress === true;
     }
 
     /**
@@ -544,7 +544,7 @@ export class TrafficCountCache {
      * @returns {Function[]}  an array of functions
      */
     cacheGetWaitlist (key) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return [];
         }
 
@@ -559,7 +559,7 @@ export class TrafficCountCache {
      * @returns {Void}  -
      */
     cacheWorkOffWaitlist (key) {
-        if (!this.cache.hasOwnProperty(key) || Array.isArray(!this.cache[key])) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key) || Array.isArray(!this.cache[key])) {
             return;
         }
 
@@ -579,7 +579,7 @@ export class TrafficCountCache {
      * @returns {Function}  the observer from the cache or null if no observer was found
      */
     cacheGetObserver (key) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return null;
         }
 
@@ -593,7 +593,7 @@ export class TrafficCountCache {
      * @returns {Void}  -
      */
     cacheSetValue (key, value) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return;
         }
 
@@ -607,7 +607,7 @@ export class TrafficCountCache {
      * @returns {Void}  -
      */
     cacheSetIsReady (key, status) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return;
         }
 
@@ -621,7 +621,7 @@ export class TrafficCountCache {
      * @returns {Void}  -
      */
     cacheSetInProgress (key, status) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return;
         }
 
@@ -636,7 +636,7 @@ export class TrafficCountCache {
      * @returns {Void}  -
      */
     cacheAddToWaitlist (key, handler) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return;
         }
 
@@ -654,7 +654,7 @@ export class TrafficCountCache {
      * @returns {Void}  -
      */
     cacheSetObserver (key, observer) {
-        if (!this.cache.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, key)) {
             return;
         }
 
