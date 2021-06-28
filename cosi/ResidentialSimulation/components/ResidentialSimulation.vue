@@ -6,12 +6,16 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
 import createLayer from "../../utils/createLayer";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
+import residentialLayerStyle from "../utils/residentialLayerStyle";
+import Feature from "ol/Feature";
+import {getContainingDistrictForFeature} from "../../utils/geomUtils";
+import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 
 export default {
     name: "ResidentialSimulation",
@@ -26,6 +30,7 @@ export default {
         return {
             geometry: null,
             neighborhood: {
+                name: "Mein Wohnquartier",
                 area: 0,
                 residents: 0,
                 avgHouseholdSize: 2.5,
@@ -45,8 +50,8 @@ export default {
             },
             baseStats: {
                 reference: {},
-                absolute: {},
-                relative: {}
+                absolute: [],
+                relative: []
             },
             baseStatsChartData: {
                 charts: [],
@@ -83,7 +88,13 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["layer"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
+        ...mapGetters("Tools/DistrictLoader", ["districtLevels"]),
+        ...mapGetters("Tools/DistrictSelector", {
+            districtLayer: "layer",
+            selectedDistricts: "selectedFeatures",
+            selectedDistrictLevel: "selectedDistrictLevel"
+        }),
         geomField () {
             return {
                 name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
@@ -132,6 +143,10 @@ export default {
         },
 
         baseStats () {
+            if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
+                return;
+            }
+
             this.visualizeDemographics(
                 "gender",
                 "Demographie nach Gender",
@@ -175,19 +190,26 @@ export default {
             this.extrapolateNeighborhoodStatistics();
         },
 
-        stats () {
-            console.log(this.stats);
-        }
+        // stats: {
+        //     deep: true,
+        //     handler () {
+        //         console.log(this.stats);
+        //     }
+        // }
     },
     created () {
         this.$on("close", () => {
             this.setActive(false);
         });
     },
+    mounted () {
+        this.createDrawingLayer();
+    },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
+        ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
 
         /**
          * @description create a guide layer used for additional info to display on the map
@@ -197,7 +219,7 @@ export default {
             const newLayer = createLayer(this.id);
 
             newLayer.setVisible(true);
-            // newLayer.setStyle(featureTagStyle);
+            newLayer.setStyle(residentialLayerStyle);
             this.setDrawingLayer(newLayer);
 
             return newLayer;
@@ -246,14 +268,18 @@ export default {
         },
 
         extrapolateNeighborhoodStatistics () {
-            this.neighborhood.stats = {
-                ...this.baseStats.absolute,
-                ...this.baseStats.relative
-            };
-
-            for (const prop in this.baseStats.absolute) {
-                this.neighborhood.stats[prop] = Math.round(this.neighborhood.stats[prop] * this.neighborhood.residents);
+            if (this.baseStats.absolute.length === 0) {
+                return;
             }
+            this.neighborhood.stats = [
+                ...this.baseStats.absolute.map(datum => {
+                    return {
+                        ...datum,
+                        value: Math.round(datum.value * this.neighborhood.residents)
+                    };
+                }),
+                ...this.baseStats.relative
+            ];
 
             console.log(this.neighborhood);
             console.log(this.baseStats);
@@ -279,9 +305,58 @@ export default {
             return {
                 borderColor: "darkblue",
                 backgroundColor: "darkblue",
-                data: labels.map(label => this.baseStats.absolute[label]),
+                data: labels.map(label => this.baseStats.absolute.find(datum => datum.category === label)?.value),
                 label: districtName
             };
+        },
+
+        async createFeature () {
+            const feature = new Feature({
+                    geometry: this.geometry,
+                    ...this.neighborhood
+                }),
+                districts = getContainingDistrictForFeature(this.districtLayer.getSource().getFeatures(), feature, undefined, true, true),
+                neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
+
+            // fill in missing statistical information if necessary
+            for (const district of districts) {
+                await this.getStatsByDistrict({
+                    districtFeature: district,
+                    districtLevel: this.selectedDistrictLevel
+                });
+            }
+
+            console.log(feature, districts, neighborhood);
+            console.log(this.districtLevels);
+            this.activeScenario.addNeighborhood(neighborhood);
+
+            // reset geometry
+            geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
+        },
+
+        resetFeature () {
+            // reset neighborhood data to defaults
+            this.neighborhood.name = this.defaults.name;
+            this.neighborhood.avgHouseholdSize = this.defaults.avgHouseholdSize;
+            this.neighborhood.gfz = this.defaults.gfz;
+            this.neighborhood.populationDensity = this.defaults.populationDensity;
+            this.neighborhood.livingSpace = this.defaults.livingSpace;
+
+            // reset fallback data to defaults
+            this.fallbacks.avgHouseholdSize = this.defaults.avgHouseholdSize;
+            this.fallbacks.gfz = this.defaults.gfz;
+            this.fallbacks.populationDensity = this.defaults.populationDensity;
+            this.fallbacks.livingSpace = this.defaults.livingSpace;
+
+            // reset baseStats from reference
+            this.baseStats = {
+                reference: {},
+                absolute: [],
+                relative: []
+            };
+
+            // reset geometry
+            geomPickerResetLocation(this.$refs["geometry-picker"]);
         }
     }
 };
@@ -312,6 +387,17 @@ export default {
                         </div>
                         <v-divider />
                         <div class="form-group">
+                            <v-row dense>
+                                <v-col cols="3">
+                                    <v-subheader>Name</v-subheader>
+                                </v-col>
+                                <v-col cols="9">
+                                    <v-text-field
+                                        v-model="neighborhood.name"
+                                        label="Quartiername"
+                                    />
+                                </v-col>
+                            </v-row>
                             <GeometryPicker
                                 ref="geometry-picker"
                                 :geomField="geomField"
@@ -503,7 +589,35 @@ export default {
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
-                            <template v-if="neighborhood.stats && polygonArea > 0">
+                            <v-divider />
+                            <v-row dense>
+                                <v-col
+                                    class="flex"
+                                    cols="12"
+                                >
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        color="primary"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
+                                        :disabled="!activeScenario || geometry === null || !neighborhood.stats"
+                                        class="flex-item"
+                                        @click="createFeature"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                    </v-btn>
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        class="flex-item"
+                                        @click="resetFeature"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.resetFeature') }}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-divider />
+                            <template v-if="neighborhood.stats && geometry !== null">
                                 <StatisticsTable
                                     v-model="neighborhood.stats"
                                 />

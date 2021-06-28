@@ -25,15 +25,25 @@ export default {
         selectedDistrictLevel: {
             deep: true,
             handler () {
+                console.log(this.currentStatsFeatures);
                 if (this.currentStatsFeatures?.length > 0) {
                     this.appendStatsToDistricts({statsFeatures: this.currentStatsFeatures});
                 }
+            }
+        },
+
+        currentStatsFeatures: {
+            deep: true,
+            handler () {
+                console.log("currStats")
+                console.log(this.currentStatsFeatures);
             }
         }
     },
     created () {
         modifyDistricts(this.districtLevels);
         this.setSelectedDistrictLevel(this.districtLevels[0]);
+        console.log(this.$root);
     },
 
     methods: {

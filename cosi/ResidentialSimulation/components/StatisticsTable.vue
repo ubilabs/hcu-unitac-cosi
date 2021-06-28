@@ -6,7 +6,7 @@ export default {
     props: {
         value: {
             required: true,
-            type: Object
+            type: Array
         }
     },
     data: () => ({
@@ -17,26 +17,9 @@ export default {
     }),
     computed: {
         ...mapGetters("Tools/DistrictLoader", ["mapping"]),
-        tableItems () {
-            const items = Object.entries(this.value).map(item => {
-                const mappingObject = this.mapping.find(el => el.value === item[0]);
-
-                return {
-                    category: item[0],
-                    value: item[1],
-                    type: mappingObject.valueType,
-                    group: mappingObject.group
-                };
-            });
-
-            console.log(items);
-
-            return items;
-        },
-        tableHeaders () {
+        headers () {
             return [
                 {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsCategory"), value: "category"},
-                {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsType"), value: "type"},
                 {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsValue"), value: "value"}
             ];
         }
@@ -45,16 +28,13 @@ export default {
         value: {
             deep: true,
             handler (e) {
-                console.log(e);
                 this.$emit("input", e);
             }
         }
     },
-    mounted () {
-        console.log(this.value);
-    },
     methods: {
-        save () {
+        save (item) {
+            console.log(item)
             this.snack = true;
             this.snackColor = "success";
             this.snackText = this.$t("additional:modules.tools.cosi.success");
@@ -76,8 +56,8 @@ export default {
 <template>
     <div>
         <v-data-table
-            :headers="tableHeaders"
-            :items="tableItems"
+            :headers="headers"
+            :items="value"
             group-by="group"
             dense
             :items-per-page="-1"
@@ -89,7 +69,7 @@ export default {
                     :rules="[isNumber]"
                     large
                     persistent
-                    @save="save"
+                    @save="save(item)"
                     @cancel="cancel"
                     @open="open"
                 >
@@ -101,10 +81,10 @@ export default {
                         <v-text-field
                             v-model="item.value"
                             type="number"
-                            :label="$t('additional:modules.tools.cosi.residentialSimulation.editStats')"
+                            :label="$t('additional:modules.tools.cosi.residentialSimulation.editStatsInfo')"
                             single-line
                             autofocus
-                        ></v-text-field>
+                        ></v-text-field>s
                     </template>
                 </v-edit-dialog>
             </template>

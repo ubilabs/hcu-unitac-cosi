@@ -1,4 +1,5 @@
 import ScenarioFeature from "./ScenarioFeature";
+import ScenarioNeighborhood from "./ScenarioNeighborhood";
 import getClusterSource from "../../utils/getClusterSource";
 import Feature from "ol/Feature";
 import {featuresToGeoJsonCollection} from "../../utils/geomUtils";
@@ -20,6 +21,7 @@ export default class Scenario {
         this.name = name;
         this.simulatedFeatures = [];
         this.modifiedFeatures = [];
+        this.neighborhoods = [];
         this.guideLayer = guideLayer;
     }
 
@@ -27,7 +29,7 @@ export default class Scenario {
      * Adds a feature to the scenario
      * @todo use OL feature as input
      * @param {ScenarioFeature} scenarioFeature - the scenariofeature to add to the scenario
-     * @param {Boolean} renderFeature - whether to render the feature on add
+     * @param {Boolean} [renderFeature=true] - whether to render the feature on add
      * @returns {ScenarioFeature} the scenario Feature added
      */
     addFeature (scenarioFeature, renderFeature = true) {
@@ -135,6 +137,29 @@ export default class Scenario {
         for (item of scenarioFeatures) {
             item.resetProperties();
         }
+    }
+
+    /**
+     * Adds a neighborhood to the scenario
+     * Adds its stats to the surrounding districts
+     * @todo use OL feature as input
+     * @param {ScenarioFeature} scenarioNeighborhood - the neighborhood to add to the scenario
+     * @param {Boolean} [renderNeighborhood] - whether to render the neighborhood on add
+     * @returns {ScenarioFeature} the scenario Neighborhood added
+     */
+    addNeighborhood (scenarioNeighborhood, renderNeighborhood = true) {
+        if (scenarioNeighborhood.constructor !== ScenarioNeighborhood) {
+            console.error(`Scenario.addNeighborhood: neighborhood must be of Type ScenarioNeighborhood. Got ${scenarioNeighborhood?.constructor} instead.`);
+            return null;
+        }
+
+        this.neighborhoods.push(scenarioNeighborhood);
+
+        if (renderNeighborhood) {
+            scenarioNeighborhood.renderFeature();
+        }
+
+        return scenarioNeighborhood;
     }
 
     /**

@@ -20,7 +20,14 @@ const state = {
     resizableWindow: false,
     width: 0.4,
     // ResidentialSimulation specific state
-    drawingLayer: null
+    drawingLayer: null,
+    defaults: {
+        name: "Mein Wohnquartier",
+        avgHouseholdSize: 2.5,
+        gfz: 1.0,
+        populationDensity: 5000,
+        livingSpace: 30
+    }
 };
 
 export default state;

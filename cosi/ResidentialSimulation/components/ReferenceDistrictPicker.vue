@@ -6,16 +6,12 @@ import groupMapping from "../../utils/groupMapping";
 
 export default {
     name: "ReferenceDistrictPicker",
-    props: {
-    },
     data: () => ({
         select: null,
         referencePickerActive: false,
-        referenceFeature: null,
-        clusteredFeatures: [],
-        showClusteredFeaturePicker: false,
         workingDistrictLevel: null,
-        selectedStatsFeature: null
+        selectedStatsFeature: null,
+        layer: null
     }),
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
@@ -72,7 +68,7 @@ export default {
         this.unlisten();
     },
     methods: {
-        ...mapActions("Tools/DistrictLoader", ["getAllFeaturesByAttribute", "getStatsByDistrict"]),
+        ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
 
         /**
          * Toggles the Select interaction boolean on/off
@@ -152,8 +148,8 @@ export default {
                         districtName,
                         districtLevel
                     },
-                    absolute: {},
-                    relative: {}
+                    absolute: [],
+                    relative: []
                 };
 
             for (const mappingObj of populationStats) {
@@ -170,21 +166,39 @@ export default {
                     if (mappingObj.value.includes("Frauen")) {
                         const total = stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
 
-                        // baseStats.absolute[datum.kategorie] = refValue / total;
-                        baseStats.absolute[datum.kategorie] = refValue / total;
+                        baseStats.absolute.push({
+                            group: datum.group,
+                            category: datum.kategorie,
+                            value: refValue / total,
+                            valueType: mappingObj.valueType
+                        });
                         continue;
                     }
                     else if (mappingObj.value.includes("Männer")) {
                         const total = stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
 
-                        baseStats.absolute[datum.kategorie] = refValue / total;
+                        baseStats.absolute.push({
+                            group: datum.group,
+                            category: datum.kategorie,
+                            value: refValue / total,
+                            valueType: mappingObj.valueType
+                        });
                         continue;
                     }
-
-                    baseStats.absolute[datum.kategorie] = refValue / basePopulation;
+                    baseStats.absolute.push({
+                        group: datum.group,
+                        category: datum.kategorie,
+                        value: refValue / basePopulation,
+                        valueType: mappingObj.valueType
+                    });
                 }
                 else if (mappingObj.valueType === "relative") {
-                    baseStats.relative[datum.kategorie] = parseFloat(datum[latestYear]);
+                    baseStats.relative.push({
+                        group: datum.group,
+                        category: datum.kategorie,
+                        value: parseFloat(datum[latestYear]),
+                        valueType: mappingObj.valueType
+                    });
                 }
             }
 

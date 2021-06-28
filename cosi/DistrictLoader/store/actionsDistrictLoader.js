@@ -149,7 +149,7 @@ const actions = {
 
         // map category names
         statsFeatures.forEach(prepareStatsFeatures);
-        dispatch("appendStatsToDistricts", {statsFeatures, districtFeatures: districtLevel.layer.getSource().getFeatures()});
+        await dispatch("appendStatsToDistricts", {statsFeatures, districtFeatures: districtLevel.layer.getSource().getFeatures()});
 
         /**
          * @deprecated
@@ -189,7 +189,7 @@ const actions = {
         statsFeatures.forEach(feature => {
             const district = _districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
 
-            if (district) {
+            if (district && !district.get("stats")?.find(_feature => _feature === feature)) {
                 district.set("stats", [...district.get("stats") || [], feature]);
             }
         });

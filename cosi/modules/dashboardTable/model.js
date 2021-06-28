@@ -89,8 +89,9 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
         });
 
         store.watch((state, getters) => getters["Tools/DistrictLoader/featureList"], () => {
+            console.log("getting data");
             this.getData();
-        });
+        }, {deep: true});
 
         this.listenTo(channel, {
             "dashboardOpen": function () {
