@@ -6,7 +6,11 @@
                     "title": "Wohnungsbauquartiere anlegen",
                     "help": "Lorem Ipsum",
                     "geom": "Geometrie",
-                    "helpDrawGeom": "Polygon zeichnen oder auswählen"
+                    "helpDrawGeom": "Polygon zeichnen oder auswählen",
+                    "pickReference": "Referenzgebiet auswählen",
+                    "helpPickReference": "Statistische Daten aus einem Referenzgebiet extrapolieren",
+                    "statsFeatures": "Statistische Daten",
+                    "showStatsFeatures": "Statistische Daten einblenden"
                 }
             }
         }

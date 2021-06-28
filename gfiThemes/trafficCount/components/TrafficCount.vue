@@ -172,7 +172,7 @@ export default {
             for (i in datastreams) {
                 datastream = datastreams[i];
 
-                if (!datastream || typeof datastream !== "object" || !datastream.hasOwnProperty("properties") || !datastream.properties.hasOwnProperty("layerName")) {
+                if (!datastream || typeof datastream !== "object" || !datastream?.properties || !datastream.properties?.layerName) {
                     continue;
                 }
 
@@ -226,7 +226,7 @@ export default {
             });
 
             // type
-            if (meansOfTransport && this.typeAssoc.hasOwnProperty(meansOfTransport)) {
+            if (meansOfTransport && Object.prototype.hasOwnProperty.call(this.typeAssoc, meansOfTransport)) {
                 this.type = this.typeAssoc[meansOfTransport];
             }
             else {
@@ -234,7 +234,7 @@ export default {
             }
 
             // means of transport
-            if (meansOfTransport && this.meansOfTransportAssoc.hasOwnProperty(meansOfTransport)) {
+            if (meansOfTransport && Object.prototype.hasOwnProperty.call(this.meansOfTransportAssoc, meansOfTransport)) {
                 this.meansOfTransport = this.meansOfTransportAssoc[meansOfTransport];
             }
             else {
@@ -350,41 +350,41 @@ export default {
                     :key="keyInfo"
                     class="tab-pane fade in active"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountDay
                     id="day"
                     :key="keyDay"
                     class="tab-pane fade"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountWeek
                     id="week"
                     :key="keyWeek"
                     class="tab-pane fade"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountYear
                     id="year"
                     :key="keyYear"
                     class="tab-pane fade"
                     :api="api"
-                    :thingId="propThingId"
-                    :meansOfTransport="propMeansOfTransport"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
                 />
             </div>
         </div>
         <TrafficCountFooter
             class="footer"
-            :currentTabId="currentTabId"
+            :current-tab-id="currentTabId"
             :api="api"
-            :thingId="propThingId"
-            :meansOfTransport="propMeansOfTransport"
+            :thing-id="propThingId"
+            :means-of-transport="propMeansOfTransport"
         />
     </div>
 </template>

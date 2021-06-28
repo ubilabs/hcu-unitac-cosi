@@ -1,8 +1,9 @@
-import {getAllDistrictsWithoutLayer, getLayerById, getNameList, setNameList} from "../../../utils/prepareDistrictLevels.js";
+import {getAllDistrictsWithoutLayer, getLayerById, getNameList, setNameList, prepareDistrictLevels} from "../../../utils/prepareDistrictLevels.js";
 import {expect} from "chai";
 import Source from "ol/source/Vector.js";
 import Layer from "ol/layer/Vector.js";
 import Feature from "ol/Feature.js";
+import sinon from "sinon";
 
 describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
     describe("getAllDistrictsWithoutLayer", () => {
@@ -190,17 +191,70 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
                     getFeatures: () => ["", ""]
                 }
             },
+            eventDummyEmpty = {
+                target: {
+                    getFeatures: () => []
+                }
+            },
             copySetNameList = setNameList.bind(bindObj);
+
+        it("should return an object without the property 'nameList'", () => {
+            copySetNameList(eventDummyEmpty);
+            expect(bindObj).to.have.not.property("nameList");
+        });
 
         it("should return an object with the property 'nameList'", () => {
             copySetNameList(eventDummy);
 
             expect(bindObj).to.have.property("nameList");
         });
-        // to do
+
+        it("should return an array for the property 'nameList'", () => {
+            copySetNameList(eventDummy);
+
+            expect(bindObj.nameList).to.be.an("array");
+        });
+
+        it("should return ['Altona', 'Ottensen'] for the property 'nameList'", () => {
+            copySetNameList(eventDummy);
+
+            expect(bindObj.nameList).to.deep.equal(["Altona", "Ottensen"]);
+        });
+
+        it("should return ['Altona', 'Ottensen'] for the property 'nameList'", () => {
+            copySetNameList(eventDummy);
+
+            expect(bindObj.nameList).to.deep.equal(["Altona", "Ottensen"]);
+        });
     });
 
     describe("prepareDistrictLevels", () => {
-        // to do
+        const layerOne = new Layer({id: "123", source: new Source()}),
+            spyOnSource = sinon.spy(layerOne.getSource(), "on"),
+            layerList = [layerOne];
+
+        it("should call on listener", () => {
+            const testArray = [{layerId: "123", stats: {}}];
+
+            prepareDistrictLevels(testArray, layerList);
+            expect(spyOnSource.calledOnce).to.be.true;
+        });
+
+        it("should return an object with the properties 'nameList', 'layer' and 'districts'", () => {
+            const testArray = [{layerId: "123", stats: {}}];
+
+            prepareDistrictLevels(testArray, layerList);
+            expect(testArray[0]).to.have.property("nameList");
+            expect(testArray[0]).to.have.property("layer");
+            expect(testArray[0].stats).to.have.property("districts");
+        });
+
+        it("should do nothing if layer already there", () => {
+            const testArray = [{layer: {}, stats: {}}];
+
+            prepareDistrictLevels(testArray, layerList);
+            expect(testArray[0]).to.have.not.property("nameList");
+            expect(testArray[0].stats).to.have.not.property("districts");
+        });
     });
 });

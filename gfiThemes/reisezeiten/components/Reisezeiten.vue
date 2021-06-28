@@ -209,10 +209,8 @@ export default {
             id="loading-animation-container"
         >
             <div class="loading-animation">
-                <div>
-                </div>
-                <div>
-                </div>
+                <div />
+                <div />
             </div>
         </div>
     </div>

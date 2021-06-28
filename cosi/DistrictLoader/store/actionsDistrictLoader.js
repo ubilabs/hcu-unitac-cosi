@@ -2,7 +2,9 @@ import {WFS} from "ol/format.js";
 import {getLayerList} from "masterportalAPI/src/rawLayerList";
 import unifyString from "../../utils/unifyString";
 import MappingJson from "../../assets/mapping.json";
-import {getFeature} from "../../../../src/api/wfs/getFeature.js";
+import {getFeature, getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {equalTo} from "ol/format/filter";
+import prepareStatsFeatures from "../utils/prepareStatsFeatures";
 
 const actions = {
     /**
@@ -10,6 +12,7 @@ const actions = {
      * @param {Object} store.getters - The DistrictLoader getters.
      * @param {Object} getters.selectedDistrictLevel - The selected district level.
      * @param {Object} getters.districtLevels - All avaiable district levels.
+     * @param {Object} getters.findMappingObjectByCategory - Gets a mapping object by category.
      * @param {Object} payload - The stored features per layer.
      * @param {Number[]} payload.extent - The extent of the selected districts.
      * @param {String[]} payload.districtNameList - A list of the names of the selected districts.
@@ -36,15 +39,10 @@ const actions = {
                 .then(response => {
                     return wfsReader.readFeatures(response);
                 })
-                // mapping feature kategorie value
                 .then(features => {
-                    features.forEach(function (feature) {
-                        const mappingObject = findMappingObjectByCategory(feature.get("kategorie"));
+                    // mapping feature kategorie value
+                    features.forEach(prepareStatsFeatures);
 
-                        feature.unset("geom"); // fallback for accidentially loaded geometries
-                        feature.set("kategorie", mappingObject.value);
-                        feature.set("group", mappingObject.group);
-                    });
                     if (features.length > 0) {
                         layer.category = features[0].get("kategorie");
                     }
@@ -106,6 +104,57 @@ const actions = {
         });
     },
 
+    /**
+     * @param {Object} store.getters - The DistrictLoader getters.
+     * @param {Function} store.rootGetters - The root store getters.
+     * @param {Function} store.dispatch - Function to dispatch a action.
+     * @param {Object} payload - The stored features per layer.
+     * @param {Number[]} payload.districtFeature - The district to fetch data for.
+     * @param {String[]} payload.districtLevel - The administrative level the district belongs to.
+     * @returns {module:ol/Feature[]} Returns stats features.
+     */
+    async getStatsByDistrict ({getters, rootGetters, dispatch}, {districtFeature, districtLevel}) {
+        // Return stats if already stored
+        if (districtFeature.get("stats")) {
+            return districtFeature.get("stats");
+        }
+        /**
+         * @deprecated
+         * @todo refactor when Radio removed
+        */
+        Radio.trigger("Util", "showLoader");
+
+        const {stats, keyOfAttrName, keyOfAttrNameStats} = districtLevel,
+            {districtLevels} = getters,
+            url = stats.baseUrl,
+            srsName = rootGetters["Map/projectionCode"],
+            loaderDistrictLevel = districtLevels.find(level => level.label === districtLevel.label),
+            districtName = districtFeature.get(keyOfAttrName),
+            featureTypes = getLayerList().reduce((typeNames, layer) => {
+                return layer.url === url ? [...typeNames, layer.featureType] : typeNames;
+            }, []),
+            filter = equalTo(keyOfAttrNameStats, districtName),
+            result = await getFeaturePost(url, {
+                featureTypes,
+                srsName,
+                propertyNames: loaderDistrictLevel.propertyNameList.split(","),
+                filter
+            }),
+            statsFeatures = new WFS().readFeatures(result);
+
+        // map category names
+        statsFeatures.forEach(prepareStatsFeatures);
+        dispatch("appendStatsToDistricts", {statsFeatures, districtFeatures: districtLevel.layer.getSource().getFeatures()});
+
+        /**
+         * @deprecated
+         * @todo refactor when Radio removed
+        */
+        Radio.trigger("Util", "hideLoader");
+
+        return statsFeatures;
+    },
+
     alertError ({dispatch}) {
         dispatch("Alerting/addSingleAlert", {
             category: "Warnung",
@@ -123,16 +172,17 @@ const actions = {
      * @param {Object} context.rootGetters - the root store's getters
      * @param {Object} context.rootGetters.keyOfAttrName - the key for the attribute "name" of the districts in the map
      * @param {Object} context.rootGetters.selectedFeatures - the currently selected map features
-     * @param {Object[]} statsFeatures - the loaded stats features for the current districtLevel
+     * @param {module:ol/Feature[]} statsFeatures - the loaded stats features for the current districtLevel
+     * @param {module:ol/Feature[]} [districtFeatures] - the district features in the map, DistrictSelector's selected features if undefined
      * @returns {void}
      */
-    appendStatsToDistricts ({getters, rootGetters}, statsFeatures) {
+    appendStatsToDistricts ({getters, rootGetters}, {statsFeatures, districtFeatures}) {
         const keyOfAttrNameStats = getters.selectedDistrictLevel.keyOfAttrName,
             keyOfAttrName = rootGetters["Tools/DistrictSelector/keyOfAttrName"],
-            districtFeatures = rootGetters["Tools/DistrictSelector/selectedFeatures"];
+            _districtFeatures = districtFeatures || rootGetters["Tools/DistrictSelector/selectedFeatures"];
 
         statsFeatures.forEach(feature => {
-            const district = districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
+            const district = _districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
 
             if (district) {
                 district.set("stats", {...district.get("stats") || {}, [feature.get("kategorie")]: feature});
@@ -210,16 +260,5 @@ const actions = {
         state.mapping = MappingJson;
     }
 };
-
-/**
- * finds a mapping object by its category
- * @param {string} value - category of the mapping object
- * @returns {object} the mapping object
- */
-function findMappingObjectByCategory (value) {
-    return MappingJson.find(obj => {
-        return obj.category === value;
-    });
-}
 
 export default actions;

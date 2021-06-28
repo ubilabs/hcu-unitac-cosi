@@ -13,7 +13,7 @@ const mutations = {
     /**
      * @description add or remove a rowIndex from the open timeline rows
      * @param {Object} state - the state of the DashboardTable
-     * @param {number} payload.rowIndex - index of row to toggle 
+     * @param {number} payload.rowIndex - index of row to toggle
      * @param {Boolean} payload.timelineOpen - state of the selected timeline
      * @returns {void}
      */

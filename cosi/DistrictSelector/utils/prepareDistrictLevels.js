@@ -6,7 +6,7 @@
  * @param {module:ol/layer[]} layerList - An array of layers.
  * @returns {void}
  */
-export default function prepareDistrictLevels (districtLevels, layerList) {
+export function prepareDistrictLevels (districtLevels, layerList) {
     const filteredDistrictLevels = getAllDistrictsWithoutLayer(districtLevels);
 
     if (filteredDistrictLevels.length > 0) {
@@ -74,7 +74,7 @@ export function getNameList (layer, keyOfAttrName) {
         }
     });
 
-    return nameList;
+    return [...new Set(nameList)];
 }
 
 /**

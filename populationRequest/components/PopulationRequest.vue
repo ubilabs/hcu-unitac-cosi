@@ -181,33 +181,33 @@ export default {
 
             try {
                 responseResult = JSON.parse(response.ergebnis);
-                if (responseResult.hasOwnProperty("einwohner_fhh")) {
+                if (responseResult?.einwohner_fhh) {
                     this.inhabitantsFHHNum = responseResult.einwohner_fhh;
                     this.inhabitantsFHH = thousandsSeparator(responseResult.einwohner_fhh);
                 }
                 else {
                     this.inhabitantsFHHNum = -1;
                 }
-                if (responseResult.hasOwnProperty("einwohner_mrh")) {
+                if (responseResult?.einwohner_mrh) {
                     this.inhabitantsMRHNum = responseResult.einwohner_mrh;
                     this.inhabitantsMRH = thousandsSeparator(responseResult.einwohner_mrh);
                 }
                 else {
                     this.inhabitantsMRHNum = -1;
                 }
-                if (responseResult.hasOwnProperty("quelle_fhh")) {
+                if (responseResult?.quelle_fhh) {
                     this.sourceFHH = responseResult.quelle_fhh;
                 }
                 else {
                     this.sourceFHH = "nein";
                 }
-                if (responseResult.hasOwnProperty("quelle_mrh")) {
+                if (responseResult?.quelle_mrh) {
                     this.sourceMRH = responseResult.quelle_mrh;
                 }
                 else {
                     this.sourceMRH = "nein";
                 }
-                if (responseResult.hasOwnProperty("suchflaeche")) {
+                if (responseResult?.suchflaeche) {
                     this.searchArea = this.chooseUnitAndThousandsSeparator(responseResult.suchflaeche);
                 }
                 else {
@@ -407,18 +407,18 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
         class="PopulationRequest"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <div>{{ translate("additional:modules.tools.populationRequest.select.info") }}</div>
             <div class="dropdown">
                 <GraphicalSelect
                     ref="graphicalSelectComponent"
-                    :selectElement="'Dropdown'"
+                    :select-element="'Dropdown'"
                 />
             </div>
             <div
@@ -514,10 +514,10 @@ export default {
                                 <label @click="triggerRaster(!rasterActive)">{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
                                     ref="rasterCheckBox"
-                                    :defaultState="isRasterVisibleInMap"
+                                    :default-state="isRasterVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
-                                    :textOn="translate('common:snippets.checkbox.on')"
-                                    :textOff="translate('common:snippets.checkbox.off')"
+                                    :text-on="translate('common:snippets.checkbox.on')"
+                                    :text-off="translate('common:snippets.checkbox.off')"
                                     @change="triggerRaster"
                                 />
                             </div>
@@ -529,10 +529,10 @@ export default {
                                 <label @click="triggerAlkisAdresses(!alkisAdressesActive)">{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
                                 <ToggleCheckbox
                                     ref="alkisAdressesCheckBox"
-                                    :defaultState="isAlkisAdressesVisibleInMap"
+                                    :default-state="isAlkisAdressesVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
-                                    :textOn="translate('common:snippets.checkbox.on')"
-                                    :textOff="translate('common:snippets.checkbox.off')"
+                                    :text-on="translate('common:snippets.checkbox.on')"
+                                    :text-off="translate('common:snippets.checkbox.off')"
                                     @change="triggerAlkisAdresses"
                                 />
                             </div>

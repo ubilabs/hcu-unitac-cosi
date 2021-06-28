@@ -463,7 +463,7 @@ export default {
             padding: 0;
         }
         .selection {
-            width: 25%;
+            width: 40%;
             .search {
                 width: 100%;
             }

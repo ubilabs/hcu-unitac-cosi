@@ -204,7 +204,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             api.setSubscriptionTopics({});
             api.mqttSubscribe("foo", false, "bar");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty("foo")).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), "foo")).to.be.true;
             expect(api.getSubscriptionTopics().foo).to.be.an("array").that.is.not.empty;
             expect(api.getSubscriptionTopics().foo[0]).to.equal("bar");
         });
@@ -573,7 +573,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastSum = value;
             }, "onerror", "onstart", "oncomplete", "2020-03-20");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -628,7 +628,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastErrorMessage = error;
             }, "onstart", "oncomplete", "2020-03-20");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -812,7 +812,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastSum = value;
             }, "onerror", "onstart", "oncomplete", "2020");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -867,7 +867,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastErrorMessage = error;
             }, "onstart", "oncomplete", "2020");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -1024,7 +1024,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastSum = value;
             }, "onerror", "onstart", "oncomplete");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -1077,7 +1077,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastErrorMessage = error;
             }, "onstart", "oncomplete");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -1415,7 +1415,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastDataset = dataset;
             }, "onerror", "onstart", "oncomplete", "2020-03-20");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
 
@@ -1545,7 +1545,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             api.setSubscriptionTopics({});
             api.subscribeLastUpdate("thingId", "meansOfTransport", "onupdate", "onerror", "onstart", "oncomplete");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
         });
         it("should subscribe to a subscription topic with mqtt options rh 0", function () {
             let lastTopic = false,
@@ -1593,7 +1593,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             api.subscribeLastUpdate("thingId", "meansOfTransport", (datetime) => {
                 lastDatetime = datetime;
             }, "onerror", "onstart", "oncomplete");
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopic)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopic]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopic][0] === "function").to.be.true;
             api.getSubscriptionTopics()[expectedTopic][0]({

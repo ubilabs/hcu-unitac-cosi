@@ -7,8 +7,11 @@ import {
     changeMetadata,
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
+    compareComplexTypesAndFillDataGaps,
+    sortComplexTypes,
     sortComplexType,
-    isComplexType
+    isComplexType,
+    hasComplexTypeValues
 } from "../../../utils/complexType.js";
 
 export default {
@@ -27,6 +30,18 @@ export default {
             type: Function,
             required: true
         },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
         /**
          * the properties as a key value object
          */
@@ -34,6 +49,15 @@ export default {
             type: Object,
             required: true
         },
+
+        /**
+         * the chartRange as object to fix min and max values for the chart
+         */
+        chartRange: {
+            type: [Object, Boolean],
+            required: true
+        },
+
         /**
          * the BildungsatlasApi to access data via wfs with
          */
@@ -66,10 +90,10 @@ export default {
             anteil_sus_ohneabschluss_stadt: "",
 
             barchartData: false,
+            barchartDataOptions: false,
+
             linechartData: false,
-            linechartDataOptions: {
-                aspectRatio: 1
-            }
+            linechartDataOptions: false
         };
     },
     watch: {
@@ -88,23 +112,11 @@ export default {
     },
     methods: {
         /**
-         * translates the given key, checkes if the key exists and throws a console warning if not
-         * @param {String} key the key to translate
-         * @param {Object} [options=null] for interpolation, formating and plurals
-         * @returns {String} the translation or the key itself on error
-         */
-        translate (key, options = null) {
-            if (key === "additional:" + this.$t(key)) {
-                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
-            }
-            return this.$t(key, options);
-        },
-        /**
          * refreshes the gfi
          * @returns {void}
          */
         refreshGfi () {
-            this.susType = this.properties.hasOwnProperty("anteil_sus_abi") ? "anteil_sus_abi" : "anteil_sus_ohneabschluss";
+            this.susType = Object.prototype.hasOwnProperty.call(this.properties, "anteil_sus_abi") ? "anteil_sus_abi" : "anteil_sus_ohneabschluss";
 
             this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
             this.sozialraum_name = this.properties?.sozialraum_name ? this.properties.sozialraum_name : "";
@@ -121,6 +133,7 @@ export default {
 
             this.refreshLinechart();
         },
+
         /**
          * refreshes the data that is equal for anteil_sub_abi and anteil_sub_ohneabschluss
          * @returns {void}
@@ -171,6 +184,7 @@ export default {
                 console.error(error);
             });
         },
+
         /**
          * refreshes the data anteil_sub_abi only
          * @returns {void}
@@ -178,11 +192,20 @@ export default {
         refreshAbiData () {
             if (isComplexType(this.properties?.anteil_sus_abi) && typeof this.properties.anteil_sus_abi.values[0].value !== "undefined") {
                 this.anteil_sus_abi = optimizeValueRootedInComplexType(this.properties.anteil_sus_abi.values[0].value, 0) + "%";
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_abi, 2)));
             }
             else {
                 this.anteil_sus_abi = "g.F.";
+            }
+            if (hasComplexTypeValues(this.properties?.anteil_sus_abi)) {
+                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2)));
+                this.barchartDataOptions = this.getChartOptions("anteil_sus_abi", this.chartRange);
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                }
+            }
+            else {
                 this.barchartData = false;
+                this.barchartDataOptions = {};
             }
 
             this.anteil_sus_abi_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
@@ -201,6 +224,7 @@ export default {
                 console.error(error);
             });
         },
+
         /**
          * refreshes the data anteil_sub_ohneabschluss only
          * @returns {void}
@@ -208,11 +232,20 @@ export default {
         refreshOsaData () {
             if (isComplexType(this.properties?.anteil_sus_ohneabschluss) && typeof this.properties.anteil_sus_ohneabschluss.values[0].value !== "undefined") {
                 this.anteil_sus_ohneabschluss = optimizeValueRootedInComplexType(this.properties.anteil_sus_ohneabschluss.values[0].value, 0) + "%";
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties?.anteil_sus_ohneabschluss, 2)));
             }
             else {
                 this.anteil_sus_ohneabschluss = "g.F.";
+            }
+            if (hasComplexTypeValues(this.properties?.anteil_sus_ohneabschluss)) {
+                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2)));
+                this.barchartDataOptions = this.getChartOptions("anteil_sus_ohneabschluss", this.chartRange);
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                }
+            }
+            else {
                 this.barchartData = false;
+                this.barchartDataOptions = {};
             }
 
             this.anteil_sus_ohneabschluss_bezirk = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loading");
@@ -231,6 +264,7 @@ export default {
                 console.error(error);
             });
         },
+
         /**
          * a callback for the api to simplify the code of refreshLinechart
          * @param {String} propertyName the name of the property
@@ -246,29 +280,49 @@ export default {
                 this.api.getComplexTypeSozialraum(propertyName, this.properties?.sozialraum_id, onsuccess, onerror);
             }
         },
+
         /**
          * refreshes the multilinechart
          * @returns {void}
          */
         refreshLinechart () {
+            this.linechartDataOptions = Object.assign({
+                aspectRatio: 1
+            }, this.getChartOptions("anzahl_abschluss_bezug_gesamt", this.chartRange));
+
             this.callApiForLinechart("anzahl_abschluss_bezug_abi", complexTypeABI => {
                 this.callApiForLinechart("anzahl_abschluss_bezug_msa", complexTypeMSA => {
                     this.callApiForLinechart("anzahl_abschluss_bezug_esa", complexTypeESA => {
                         this.callApiForLinechart("anzahl_abschluss_bezug_osa", complexTypeOSA => {
                             this.callApiForLinechart("anzahl_abschluss_bezug_gesamt", complexTypeGesamt => {
-                                changeMetadata(complexTypeABI, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelABI"));
-                                changeMetadata(complexTypeMSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelMSA"));
-                                changeMetadata(complexTypeESA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelESA"));
-                                changeMetadata(complexTypeOSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelOSA"));
-                                changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
+                                if (
+                                    hasComplexTypeValues(complexTypeABI)
+                                    || hasComplexTypeValues(complexTypeMSA)
+                                    || hasComplexTypeValues(complexTypeESA)
+                                    || hasComplexTypeValues(complexTypeOSA)
+                                    || hasComplexTypeValues(complexTypeGesamt)
+                                ) {
+                                    changeMetadata(complexTypeABI, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelABI"));
+                                    changeMetadata(complexTypeMSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelMSA"));
+                                    changeMetadata(complexTypeESA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelESA"));
+                                    changeMetadata(complexTypeOSA, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelOSA"));
+                                    changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
 
-                                this.linechartData = convertComplexTypesToMultilinechart([
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeABI, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeMSA, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeESA, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeOSA, 2)),
-                                    sortComplexType(optimizeComplexTypeValues(complexTypeGesamt, 2))
-                                ]);
+                                    this.linechartData = convertComplexTypesToMultilinechart(
+                                        sortComplexTypes(
+                                            compareComplexTypesAndFillDataGaps([
+                                                optimizeComplexTypeValues(complexTypeABI, 2),
+                                                optimizeComplexTypeValues(complexTypeMSA, 2),
+                                                optimizeComplexTypeValues(complexTypeESA, 2),
+                                                optimizeComplexTypeValues(complexTypeOSA, 2),
+                                                optimizeComplexTypeValues(complexTypeGesamt, 2)
+                                            ])
+                                        )
+                                    );
+                                }
+                                else {
+                                    this.linechartData = false;
+                                }
                             }, error => {
                                 console.error(error);
                             });
@@ -284,6 +338,50 @@ export default {
             }, error => {
                 console.error(error);
             });
+        },
+
+        /**
+         * returns the options for the chart using the chartRange to set min and max for y axis
+         * @param {String} propertyName the property name to lookup in chartRange
+         * @param {Object|boolean} chartRange the given chartRange
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptions (propertyName, chartRange) {
+            if (
+                typeof chartRange !== "object" || chartRange === null
+                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
+                || !Array.isArray(chartRange[propertyName])
+                || !chartRange[propertyName].length === 2
+            ) {
+                return false;
+            }
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: chartRange[propertyName][0],
+                            suggestedMax: chartRange[propertyName][1]
+                        }
+                    }]
+                }
+            };
+        },
+
+        /**
+         * returns the options for the chart with unit for percentages
+         * @returns {Object} the options for ChartJS
+         */
+        getChartOptionsForPercentage () {
+            return {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }]
+                }
+            };
         }
     }
 };
@@ -310,7 +408,7 @@ export default {
                 <table class="table table-striped">
                     <thead>
                         <tr colspan="4">
-                            <th></th>
+                            <th />
                             <th>Abi/FH</th>
                             <th>MSA</th>
                             <th>ESA</th>
@@ -356,7 +454,7 @@ export default {
                 <table class="table table-striped">
                     <thead>
                         <tr colspan="4">
-                            <th></th>
+                            <th />
                             <th>oSA</th>
                             <th>ESA</th>
                             <th>MSA</th>
@@ -408,7 +506,7 @@ export default {
                 >
                     <Barchart
                         v-if="barchartData"
-                        :givenOptions="{}"
+                        :given-options="barchartDataOptions"
                         :data="barchartData"
                     />
                 </div>
@@ -426,7 +524,7 @@ export default {
                 >
                     <Linechart
                         v-if="linechartData"
-                        :givenOptions="linechartDataOptions"
+                        :given-options="linechartDataOptions"
                         :data="linechartData"
                     />
                 </div>
@@ -486,58 +584,5 @@ export default {
 .gfi-schulentlassene {
     max-width: 420px;
     font-size: 13px;
-    .panel {
-        &.graphHeader {
-            padding: 0 8px 8px;
-            border-bottom: 2px solid #ddd;
-        }
-    }
-    .gfi-data {
-        padding: 10px;
-    }
-    .gfi-info {
-        padding: 0 10px 10px;
-    }
-
-    .rba_header {
-        margin-top: 15px;
-        .rba_header_title {
-            font-weight: bold;
-        }
-    }
-    .rba_table {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        table {
-            width: 100%;
-        }
-        td {
-            vertical-align: top;
-        }
-        td.rba_table_rightcol {
-            text-align: right;
-        }
-    }
-    .rba_chart {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        .rba_chart_title {
-            font-weight: bold;
-        }
-    }
-    .rba_footer {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-    }
-
-    .hidden {
-        display: none;
-    }
-    .footer {
-        margin: 0 0 10px 10px;
-    }
 }
 </style>

@@ -60,10 +60,12 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.map.addEventListener("click", this.setCoordinateFromClick);
+                this.map.addEventListener("click", this.setCoordinateFromClick.bind(this));
+                Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
             }
             else {
-                this.map.removeEventListener("click", this.setCoordinateFromClick);
+                this.map.removeEventListener("click", this.setCoordinateFromClick.bind(this));
+                Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
             }
         }
     },
@@ -83,10 +85,9 @@ export default {
 
         this.mapLayer = await this.createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
-
-        Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
     },
     methods: {
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapMutations("Map", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
@@ -299,7 +300,8 @@ export default {
                             <span
                                 id="requestInhabitants"
                                 class="glyphicon glyphicon-user"
-                            ></span>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
+                            />
+                            {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.requestInhibitants") }}
                         </button>
                     </div>
                 </div>

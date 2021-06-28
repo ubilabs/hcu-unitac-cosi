@@ -41,7 +41,7 @@ export default {
         class="glyphicon glyphicon-map-marker"
         :title="$t('additional:modules.tools.gfi.themes.schulinfo.favoriteicons.adoptedTargetSchool')"
         @click="takeRoute"
-    ></span>
+    />
 </template>
 
 <style lang="less" scoped>

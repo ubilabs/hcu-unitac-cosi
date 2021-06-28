@@ -68,12 +68,12 @@ export default {
         filterProperties (language) {
             const all = this.feature.getMappedProperties(),
                 infoProps = omit(all, ["Tageslinie", "Wochenlinie", "Jahrgangslinie", "Name", "Typ", "Download"]),
-                dayProps = all.hasOwnProperty("Tageslinie") ? all.Tageslinie : null,
-                weekProps = all.hasOwnProperty("Wochenlinie") ? all.Wochenlinie : null,
-                yearProps = all.hasOwnProperty("Jahrgangslinie") ? all.Jahrgangslinie : null;
+                dayProps = all?.Tageslinie ? all.Tageslinie : null,
+                weekProps = all?.Wochenlinie ? all.Wochenlinie : null,
+                yearProps = all?.Jahrgangslinie ? all.Jahrgangslinie : null;
 
 
-            this.downloadLink = all.hasOwnProperty("Download") ? all.Download : this.downloadLink;
+            this.downloadLink = all?.Download ? all.Download : this.downloadLink;
             this.infoData = infoProps ? collectInfoData(infoProps) : null;
             this.dayData = dayProps ? collectDayData(dayProps) : null;
             this.weekData = weekProps ? collectWeekData(weekProps) : null;
@@ -225,7 +225,7 @@ export default {
                 type="button"
                 @click="onClick"
             >
-                <span class="glyphicon glyphicon-download"></span>{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.download") }}
+                <span class="glyphicon glyphicon-download" />{{ $t("additional:modules.tools.gfi.themes.continuousCountingBike.download") }}
             </button>
         </div>
     </div>

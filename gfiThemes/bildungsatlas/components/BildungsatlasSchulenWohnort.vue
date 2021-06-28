@@ -2,14 +2,11 @@
 import {mapGetters} from "vuex";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import mouseOverCotentLivingLocation from "../utils/mouseOverContent.js";
+import {optimizeValueRootedInComplexType} from "../../../utils/complexType.js";
 
 export default {
     name: "BildungsatlasSchulenWohnort",
     props: {
-        feature: {
-            type: Object,
-            required: true
-        },
         /**
          * checks if the given tab name is currently active
          * @param {String} tab the tab name
@@ -18,53 +15,67 @@ export default {
         isActiveTab: {
             type: Function,
             required: true
+        },
+
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate: {
+            type: Function,
+            required: true
+        },
+
+        /**
+         * Parsing the text with Html Tags into Html Format
+         * @param {String} str the text
+         * @returns {String} html format text
+         */
+        parseTranslationInHtml: {
+            type: Function,
+            required: true
+        },
+
+        feature: {
+            type: Object,
+            required: true
+        },
+
+        /**
+         * the featureType of current layer
+         */
+        featureType: {
+            type: String,
+            required: true
+        },
+
+        /**
+         * the properties as a key value object
+         */
+        properties: {
+            type: Object,
+            required: true
+        },
+        /**
+         * the BildungsatlasApi to access data via wfs with
+         */
+        api: {
+            type: Object,
+            required: true
         }
     },
     data () {
         return {
-            /**
-             * the theme type according to config.json -> gfiTheme.params.gfiBildungsatlasFormat.themeType (should equal school levels: primary, secondary)
-             * @type {String}
-             */
-            themeType: "",
-            /**
-             * titles for level of schools for each possible themeType (school levels: primary, secondary)
-             */
-            schoolLevels: {"primary": "Primarstufe", "secondary": "Sekundarstufe I"},
-            /**
-             * the school level as well formed title based on schoolLevels and themeType
-             */
+            schoolLevels: {"de.hh.up:einzug_einzugsgebiete_primarstufe": "Primarstufe", "de.hh.up:einzug_einzugsgebiete_sekundarstufe": "Sekundarstufe I"},
+            schoolNumbers: {"de.hh.up:einzug_einzugsgebiete_primarstufe": "anzahl_sus_primarstufe", "de.hh.up:einzug_einzugsgebiete_sekundarstufe": "anzahl_sus_sekundarstufe"},
             schoolLevelTitle: "",
-            /**
-             * correlation between the layer name as defined in config.json (see Themenconfig) and the themeType (school levels: primary, secondary)
-             * @type {Object}
-             */
-            layerNameCorrelation: {"primary": "internal Layer for primary schule am wohnort", "secondary": "internal Layer for middle schule am wohnort"},
-            /**
-             * area code of the selected district
-             * @type {Number}
-             */
-            StatGeb_Nr: 0,
-            /**
-             * name of the selected district
-             * @type {String}
-             */
-            ST_Name: "",
-            /**
-             * total number of students in primary schools living in the selected district
-             * @type {Number}
-             */
-            C12_SuS: 0,
-            /**
-             * total number of students in middle schools living in the selected district
-             * @type {Number}
-             */
-            C32_SuS: 0,
-            /**
-             * total number of students to show in the gfi based on numberOfStudents formated with thousand points - for calculations use numberOfStudents instead
-             * @type {Number}
-             */
-            numberOfStudentsInDistrictFormated: 0
+            layerNameCorrelation: {"de.hh.up:einzug_einzugsgebiete_primarstufe": "internal Layer for primary schule am wohnort", "de.hh.up:einzug_einzugsgebiete_sekundarstufe": "internal Layer for middle schule am wohnort"},
+            numberOfStudentsInDistrictFormated: 0,
+            statgeb_id: 0,
+            stadtteil_name: "",
+            featureIds: []
         };
     },
     computed: {
@@ -72,29 +83,9 @@ export default {
             isMobile: "mobile"
         }),
 
-        // The Properties of current layer
-        getProperties () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getProperties")) {
-                return this.feature.getProperties();
-            }
-
-            return {};
-        },
-
-        // The gfi params of the current layer
-        getGfiParams () {
-            if (!this.feature || typeof this.feature !== "object") {
-                return {};
-            }
-            const gfiTheme = this.feature?.getTheme(),
-                gfiParams = gfiTheme?.params;
-
-            return typeof gfiParams === "object" ? gfiParams : {};
-        },
-
         // The id of current layer
         getGfiTheme () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getTheme")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getTheme) {
                 return this.feature.getTheme();
             }
 
@@ -103,7 +94,7 @@ export default {
 
         // The id of current layer
         getGfiId () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getId")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getId) {
                 return this.feature.getId();
             }
 
@@ -112,7 +103,7 @@ export default {
 
         // The title/name of current layer
         getName () {
-            if (this.feature && typeof this.feature === "object" && this.feature.hasOwnProperty("getTitle")) {
+            if (this.feature && typeof this.feature === "object" && this.feature?.getTitle) {
                 return this.feature.getTitle();
             }
 
@@ -120,81 +111,66 @@ export default {
         }
     },
     watch: {
-        /**
-         * When feature is changed, the event will be triggered
-         * @param {Object} newVal - the new feature
-         * @param {Object} oldVal - the old feature
-         * @returns {void}
-         */
-        feature: function (newVal, oldVal) {
+        // when the gfi window is switched, the gfi is refreshed
+        properties (oldVal) {
             if (oldVal) {
                 this.reset(oldVal);
-                this.create();
+                this.refreshGfi();
+            }
+        },
+
+        featureIds (val) {
+            if (val && val.length) {
+                if (this.layerSchools) {
+                    this.layerSchools.setIsSelected(true);
+                }
+                this.showFeaturesByIds(this.layerSchools, val);
             }
         }
     },
     mounted () {
-        this.create();
+        this.refreshGfi();
     },
     beforeDestroy: function () {
         this.reset(null);
     },
     methods: {
         /**
-         * initialize the content
-         * @param   {Boolean} isVisible is gfi visible
+         * refreshes the gfi
          * @returns {void}
          */
-        create () {
-            const layerStatisticAreas = this.getLayerStatisticAreas(),
-                gfiBildungsatlasFormat = this.getGfiParams?.gfiBildungsatlasFormat;
+        refreshGfi () {
+            let themeType = "";
 
-            if (typeof gfiBildungsatlasFormat === "object" && gfiBildungsatlasFormat.hasOwnProperty("themeType")) {
-                this.setGFIProperties(this.getProperties, gfiBildungsatlasFormat.themeType);
+            this.statgeb_id = this.properties?.statgeb_id ? this.properties.statgeb_id : "";
+            this.stadtteil_name = this.properties?.stadtteil_name ? this.properties.stadtteil_name : "";
+
+            if (this.featureType !== "") {
+                this.schoolLevelTitle = this.schoolLevels[this.featureType];
+                themeType = this.featureType === "de.hh.up:einzug_einzugsgebiete_primarstufe" ? "primary" : "secondary";
             }
+
+            if (this.statgeb_id !== "") {
+                this.api.getValueStatistischeGebiete(this.schoolNumbers[this.featureType], this.statgeb_id, value => {
+                    this.numberOfStudentsInDistrictFormated = value !== undefined ? thousandsSeparator(value) : 0;
+                }, error => {
+                    console.error(error);
+                });
+            }
+
+            const layerStatisticAreas = this.getLayerStatisticAreas();
 
             if (this.getGfiId !== "") {
                 this.showFeaturesByIds(layerStatisticAreas, [this.getGfiId]);
             }
 
-            this.showSchoolLayer();
+            this.getActiveSchoolLayer();
 
             Backbone.Events.listenTo(Radio.channel("VectorLayer"), {
-                "featuresLoaded": this.showSchoolLayer
+                "featuresLoaded": this.getActiveSchoolLayer
             });
-        },
 
-        /**
-         * Sets this GFI
-         * @pre default values (as defined in model.defaults) are in place
-         * @post default values themeType, numberOfStudentsInDistrict, StatGeb_Nr and ST_Name are set accordingly to the given arguments
-         * @param   {Object} allProperties the properties of this model as simple object that may include {C32_SuS, C12_SuS, StatGeb_Nr, ST_Name}
-         * @param   {String} themeType the type of this theme as defined in config.json -> gfiTheme.params.gfiBildungsatlasFormat.themeType
-         * @returns {void}
-         */
-        setGFIProperties (allProperties, themeType) {
-            const schoolLevels = this.schoolLevels;
-
-            if (schoolLevels && schoolLevels.hasOwnProperty(themeType)) {
-                this.schoolLevelTitle = schoolLevels[themeType];
-            }
-
-            this.themeType = themeType;
-
-            if (themeType === "primary" && allProperties.hasOwnProperty("C12_SuS")) {
-                this.numberOfStudentsInDistrictFormated = thousandsSeparator(Math.round(allProperties.C12_SuS));
-            }
-            else if (themeType === "secondary" && allProperties.hasOwnProperty("C32_SuS")) {
-                this.numberOfStudentsInDistrictFormated = thousandsSeparator(Math.round(allProperties.C32_SuS));
-            }
-
-            if (allProperties.hasOwnProperty("StatGeb_Nr")) {
-                this.StatGeb_Nr = allProperties.StatGeb_Nr;
-            }
-
-            if (allProperties.hasOwnProperty("ST_Name")) {
-                this.ST_Name = allProperties.ST_Name;
-            }
+            this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.info." + themeType));
         },
 
         /**
@@ -212,66 +188,7 @@ export default {
                 this.showAllFeatures(layerSchools);
                 layerSchools.setIsSelected(false);
             }
-
             Backbone.Events.stopListening(Radio.channel("VectorLayer"), "featuresLoaded");
-        },
-        /**
-         * returns the html as hover information
-         * @param   {Object} school an object type Feature with the school information
-         * @param   {function(String):*} school.get a function to request information from the feature
-         * @param   {String} schoolLevelTitle the school level as defined in defaults.schoolLevels and selected with themeType
-         * @param   {Number} StatGeb_Nr the area code of the selected district as defined in defaults.StatGeb_Nr
-         * @param   {Number} numberOfStudentsInDistrict total number of students in the selected district
-         * @returns {Object} - the data for the mouseoverTemplate used by the view to fill its html placeholders
-         */
-        getDataForMouseHoverTemplate (school, schoolLevelTitle, StatGeb_Nr, numberOfStudentsInDistrict) {
-            const data = {
-                schoolLevelTitle: schoolLevelTitle,
-                schoolName: "",
-                address: {
-                    street: "",
-                    houseNumber: "",
-                    postalCode: "",
-                    city: ""
-                },
-                numberOfStudents: "",
-                numberOfStudentsPrimary: "",
-                socialIndex: "",
-                percentageOfStudentsFromDistrict: 0,
-                numberOfStudentsFromDistrict: 0
-            };
-
-            if (school && typeof school.get === "function") {
-                const percentage = this.getPercentageOfStudentsByStatGeb_Nr(school, StatGeb_Nr) === false ? 0 : this.getPercentageOfStudentsByStatGeb_Nr(school, StatGeb_Nr);
-
-                data.schoolName = school.get("C_S_Name");
-                data.address.street = school.get("C_S_Str");
-                data.address.houseNumber = school.get("C_S_HNr");
-                data.address.postalCode = school.get("C_S_PLZ");
-                data.address.city = school.get("C_S_Ort");
-                data.numberOfStudents = school.get("C_S_SuS");
-                data.numberOfStudentsPrimary = school.get("C_S_SuS_PS");
-                data.socialIndex = school.get("C_S_SI") === -1 ? "nicht vergeben" : school.get("C_S_SI");
-                data.percentageOfStudentsFromDistrict = Math.round(percentage);
-                data.numberOfStudentsFromDistrict = Math.round(numberOfStudentsInDistrict * percentage / 100);
-            }
-
-            return data;
-        },
-
-        /**
-         * get the percentage of students as defined in school using the parameter StatGeb_Nr
-         * @param   {Object} school an object type Feature with the school information
-         * @param   {function(String):*} school.get a function to request information from the feature
-         * @param   {Number} StatGeb_Nr the area code of the selected district as defined in defaults.StatGeb_Nr
-         * @returns {Number|Boolean}  the percentage of students defined in school.get("SG_" + StatGeb_Nr) - this should be a float [0 .. 100] - or false if the school seems to have no students from the district defined by StatGeb_Nr
-         */
-        getPercentageOfStudentsByStatGeb_Nr (school, StatGeb_Nr) {
-            if (!school || typeof school.get !== "function" || school.get("SG_" + StatGeb_Nr) === undefined) {
-                return false;
-            }
-
-            return school.get("SG_" + StatGeb_Nr);
         },
 
         /**
@@ -285,10 +202,10 @@ export default {
                 gfiName = this.getName;
 
             if (feature && typeof feature === "object") {
-                if (feature.hasOwnProperty("getTheme")) {
+                if (feature?.getTheme) {
                     gfiTheme = feature.getTheme();
                 }
-                if (feature.hasOwnProperty("getTitle")) {
+                if (feature?.getTitle) {
                     gfiName = feature.getTitle();
                 }
             }
@@ -308,7 +225,7 @@ export default {
          * @returns {?ol/layer/Layer}  - the layer of schools or false if there aren't any
          */
         getLayerSchools () {
-            const modelAttributes = {"name": this.layerNameCorrelation[this.themeType]},
+            const modelAttributes = {"name": this.layerNameCorrelation[this.featureType]},
                 /**
                  * conf as {Object} - a simple object {id, ...} with config parameters (see config.json -> Themenconfig)
                  * conf is the config of the module based on config.json Themenconfig found by name (see defaults.layerNameCorrelation) choosen by themeType
@@ -316,48 +233,81 @@ export default {
                 conf = Radio.request("Parser", "getItemByAttributes", modelAttributes);
             let layer = Radio.request("ModelList", "getModelByAttributes", modelAttributes);
 
-            if (!layer && conf && conf.hasOwnProperty("id")) {
+            if (!layer && conf && conf?.id) {
                 Radio.trigger("ModelList", "addModelsByAttributes", {id: conf.id});
                 layer = Radio.request("ModelList", "getModelByAttributes", {id: conf.id});
                 layer.setIsSelected(true);
+                layer.setVisible(false);
             }
 
             return layer;
         },
 
         /**
-         * Hide all features in all given layers except all features with given id
+         * Hide all features in all given layers except all features with given id and adding mouseover attributes to the visible features
          * @param {ol/layer/Layer} layer the Layer filtered by gfiTheme
          * @param {String[]} featureIds Array of feature Id to keep
          * @returns {void}
          */
         showFeaturesByIds (layer, featureIds) {
-            if (layer && layer.get("isSelected")) {
+            const schoolLevelTitle = this.schoolLevelTitle;
+
+            let schools;
+
+            if (featureIds.length && layer && layer.get("isSelected")) {
                 layer.showFeaturesByIds(featureIds);
+                layer.setVisible(true);
+
+                schools = layer.get("layer").getSource().getFeatures();
+
+                this.addHtmlMouseHoverCode(schools, schoolLevelTitle);
             }
         },
 
         /**
          * creates an array of featureIds to select by the model
          * @param {ol/Feature[]} schools an array of features to check
-         * @param {String} StatGeb_Nr the urban area number based on the customers content (equals StatGeb_Nr)
-         * @returns {String[]}  an array of feature ids where the feature is grouped by StatGeb_Nr
+         * @param {String} statGeb_Nr the urban area number based on the customers content (equals StatGeb_Nr)
+         * @returns {void}
          */
-        getFeatureIds (schools, StatGeb_Nr) {
-            const featureIds = [];
+        getFeatureIds (schools, statGeb_Nr) {
+            const featureIds = [],
+                schoolAssoc = {};
 
             if (!Array.isArray(schools)) {
                 return featureIds;
             }
 
-            schools.forEach(function (school) {
-                if (this.getPercentageOfStudentsByStatGeb_Nr(school, StatGeb_Nr) === false) {
-                    // continue with forEach
-                    return;
-                }
+            if (statGeb_Nr !== "") {
+                schools.forEach(school => {
+                    const id = school.get("Schul_ID").split("-").shift();
 
-                featureIds.push(school.getId());
-            }, this);
+                    if (!Object.prototype.hasOwnProperty.call(schoolAssoc, id)) {
+                        schoolAssoc[id] = [];
+                    }
+                    schoolAssoc[id].push(school);
+                });
+                this.api.getEinzugsgebieteValue(this.featureType, "statgeb_id", statGeb_Nr, value => {
+                    if (Array.isArray(value) && value.length) {
+                        value.forEach(data => {
+                            const id = data.get("schule_id"),
+                                schoolList = Object.prototype.hasOwnProperty.call(schoolAssoc, id) ? schoolAssoc[id] : false;
+
+                            if (Array.isArray(schoolList)) {
+                                schoolList.forEach(school => {
+                                    school.set("anzahl_sus_schule_stageb", data.get("anzahl_sus_schule_stageb") ? data.get("anzahl_sus_schule_stageb") : "");
+                                    school.set("anzahl_sus_stageb", data.get("anzahl_sus_stageb") ? data.get("anzahl_sus_stageb") : "");
+                                    school.set("anteil_sus_schule_stageb_an_anzahl_sus_stageb", data.get("anteil_sus_schule_stageb_an_anzahl_sus_stageb") ? data.get("anteil_sus_schule_stageb_an_anzahl_sus_stageb") : "");
+                                    school.set("anzahl_sus_schule", data.get("anzahl_sus_schule") ? data.get("anzahl_sus_schule") : "");
+                                    featureIds.push(school.getId());
+                                });
+                            }
+                        });
+                    }
+                }, error => {
+                    console.error(error);
+                });
+            }
 
             return featureIds;
         },
@@ -377,21 +327,47 @@ export default {
          * activates selected features of the school layer and adds html data for mouse hovering
          * @returns {void}
          */
-        showSchoolLayer: function () {
-            const StatGeb_Nr = this.StatGeb_Nr,
-                schoolLevelTitle = this.schoolLevelTitle,
-                numberOfStudentsInDistrict = this.numberOfStudentsInDistrictFormated,
+        getActiveSchoolLayer: function () {
+            const statGeb_Nr = this.statgeb_id,
                 layerSchools = this.getLayerSchools(),
-                schools = layerSchools ? layerSchools.get("layer").getSource().getFeatures() : [],
-                featureIds = this.getFeatureIds(schools, StatGeb_Nr);
+                schools = layerSchools ? layerSchools.get("layer").getSource().getFeatures() : [];
 
-            this.addHtmlMouseHoverCode(schools, schoolLevelTitle, StatGeb_Nr, numberOfStudentsInDistrict);
+            this.layerSchools = layerSchools;
+            this.featureIds = this.getFeatureIds(schools, statGeb_Nr);
+        },
 
-            if (layerSchools) {
-                layerSchools.setIsSelected(true);
+        /**
+         * returns the html as hover information
+         * @param   {Object} school an object type Feature with the school information
+         * @param   {function(String):*} school.get a function to request information from the feature
+         * @param   {String} schoolLevelTitle the school level as defined in defaults.schoolLevels and selected with themeType
+         * @returns {Object} - the data for the mouseoverTemplate used by the view to fill its html placeholders
+         */
+        getDataForMouseHoverTemplate (school, schoolLevelTitle) {
+            const data = {
+                schoolLevelTitle: schoolLevelTitle,
+                schoolName: "",
+                address: {
+                    street: "",
+                    city: ""
+                },
+                numberOfStudents: "",
+                numberOfStudentsPrimary: "",
+                percentageOfStudentsFromDistrict: 0,
+                numberOfStudentsFromDistrict: 0
+            };
+
+            if (school && typeof school.get === "function") {
+                data.schoolName = school.get("Name");
+                data.address.street = school.get("Adresse");
+                data.address.city = school.get("Ort");
+                data.numberOfStudents = school.get("schueleranzahl");
+                data.numberOfStudentsStep = school.get("anzahl_sus_schule");
+                data.percentageOfStudentsFromDistrict = data.percentageOfStudentsFromDistrict = optimizeValueRootedInComplexType(school.get("anteil_sus_schule_stageb_an_anzahl_sus_stageb"), 0);
+                data.numberOfStudentsFromDistrict = school.get("anzahl_sus_schule_stageb");
             }
 
-            this.showFeaturesByIds(layerSchools, featureIds);
+            return data;
         },
 
         /**
@@ -400,22 +376,15 @@ export default {
          * @post all features with a StatGeb_Nr validated by StatGeb_Nr have attatched mouse hover html code
          * @param {ol/Feature[]} schools schools an array of features to check
          * @param {String} schoolLevelTitle schoolLevelTitle the school level as defined in defaults.schoolLevelTitle
-         * @param {String} StatGeb_Nr StatGeb_Nr the urban area number based on the customers content (equals StatGeb_Nr)
-         * @param {Number} numberOfStudentsInDistrict numberOfStudentsInDistrict total number of students in the selected district
          * @returns {void}
          */
-        addHtmlMouseHoverCode: function (schools, schoolLevelTitle, StatGeb_Nr, numberOfStudentsInDistrict) {
+        addHtmlMouseHoverCode: function (schools, schoolLevelTitle) {
             let attr;
 
-            schools.forEach(function (school) {
-                if (this.getPercentageOfStudentsByStatGeb_Nr(school, StatGeb_Nr) === false) {
-                    // continue with forEach
-                    return;
-                }
-
-                attr = this.getDataForMouseHoverTemplate(school, schoolLevelTitle, StatGeb_Nr, numberOfStudentsInDistrict);
-                school.set("schoolsOnLivingLocaltion", mouseOverCotentLivingLocation(attr));
-            }, this);
+            schools.forEach(school => {
+                attr = this.getDataForMouseHoverTemplate(school, schoolLevelTitle);
+                school.set("schulenWohnort", mouseOverCotentLivingLocation(attr));
+            });
         }
     }
 };
@@ -431,13 +400,13 @@ export default {
                 <thead>
                     <tr>
                         <th colspan="2">
-                            Statistisches Gebiet: {{ StatGeb_Nr }}<br>({{ ST_Name }})
+                            {{ translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.statgeb") }}: {{ statgeb_id }}<br>({{ stadtteil_name }})
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr colspan="2">
-                        <td> Anzahl der Schülerinnen und Schüler im statistischen Gebiet in der {{ schoolLevelTitle }}:</td>
+                        <td><b> {{ translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.countInArea") }} {{ schoolLevelTitle }}: </b></td>
                         <td>{{ numberOfStudentsInDistrictFormated }}</td>
                     </tr>
                 </tbody>
@@ -447,13 +416,7 @@ export default {
                             v-if="isMobile"
                             colspan="2"
                         >
-                            <i>In der mobilen Ansicht ist keine Abfrage der Schülerzahlen möglich.</i>
-                        </td>
-                        <td
-                            v-else
-                            colspan="2"
-                        >
-                            <i>Zur Abfrage der Schülerzahlen bewegen Sie den Mauszeiger über eine Schule.</i>
+                            <i>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.hintMobile") }}</i>
                         </td>
                     </tr>
                 </tfoot>
@@ -462,28 +425,7 @@ export default {
         <div
             class="tab-panel gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
-        >
-            <div v-if="themeType === 'primary'">
-                <br>
-                <p><b>Schulwahl am Wohnort :</b></p>
-                <br>
-                <p>In der Karte dargestellt sind Schulen mit Primarstufe (Grundschulen, Stadtteilschulen mit integrierter Grundschule und Sonderschulen), die von Schülerinnen und Schülern eines von Ihnen ausgewählten Gebiets besucht werden. Durch Auswahl eines statistischen Gebiets werden die besuchten Schulen größenproportional angezeigt. Die absolute Anzahl an Schülerinnen und Schüler eines Gebietes, die in der Primarstufe sind, wird im Datenblatt durch Klicken auf die Schule angezeigt.</p>
-                <br>
-                <p><b>ACHTUNG:</b> Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p>
-                <br>
-                <p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Primarstufe wohnen.</p>
-            </div>
-            <div v-else>
-                <br>
-                <p><b>Schulwahl am Wohnort :</b></p>
-                <br>
-                <p>In der Karte dargestellt sind Schulen mit der Sekundarstufe I (Stadtteilschulen, Gymnasien, Sonderschulen), die von Schülerinnen und Schülern eines von Ihnen ausgewählten Gebiets besucht werden. Durch Auswahl eines statistischen Gebiets werden die besuchten Schulen größenproportional angezeigt. Die absolute Anzahl an Schülerinnen und Schüler eines Gebietes, die in der Sekundarstufe I sind, wird im Datenblatt durch Klicken auf die Schule angezeigt.</p>
-                <br>
-                <p><b>ACHTUNG:</b> Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p>
-                <br>
-                <p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Sekundarstufe I wohnen.</p>
-            </div>
-        </div>
+        />
     </div>
 </template>
 
@@ -491,18 +433,7 @@ export default {
     .gfi-school-living-location {
         max-width: 420px;
         table {
-            &.table {
-                table-layout: fixed;
-                tbody {
-                    tr{
-                        td {
-                            &:last-child {
-                                text-align: right;
-                            }
-                        }
-                    }
-                }
-            }
+            margin-bottom: 0;
         }
         .gfi-info {
             padding: 0 10px 10px;
@@ -510,6 +441,24 @@ export default {
 
         .hidden {
             display: none;
+        }
+    }
+</style>
+
+<style lang="less">
+     .schulWohnort {
+        &.table {
+            max-width: 420px;
+            tbody {
+                tr{
+                    td {
+                        font-weight: bold;
+                        &:last-child {
+                            text-align: right;
+                        }
+                    }
+                }
+            }
         }
     }
 </style>

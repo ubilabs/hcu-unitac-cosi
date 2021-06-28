@@ -98,6 +98,39 @@
                         "textB": "The key figures are only shown in areas where at least 30 school leavers live. In areas where there are too few or no cases according to this criterion, no values are shown and the areas are colored gray.",
                         "footer": "*) General education schools provide the foundations for further education at the primary level, and a general basic education or more in-depth general education at the lower and upper secondary levels. In Hamburg, general education schools at the primary and lower secondary levels shown in the Education Atlas include elementary schools, district schools, high schools and special education schools."
                     }
+                },
+                "balkendiagrammwanderungen": {
+                    "title": "Number of in-migrants and out-migrants (+/-) of children under 6 years of age per 100 children under 6 years of age",
+                    "table": {
+                        "statgeb": "In the statistical area",
+                        "sozialraum": "In {{sozialraum_name}}",
+                        "stadtteil": "In {{stadtteil_name}}",
+                        "ausUmland": "Proportion of inward migration from the surrounding area",
+                        "insUmland": "Proportion of departures to the surrounding area"
+                    },
+                    "barchart": {
+                        "title": "Key figure over time"
+                    }
+                },
+                "schulenWohnort": {
+                    "title": "Anzahl der Schülerinnen und Schüler im statistischen Gebiet in der Primarstufe:",
+                    "statgeb": "Statistisches Gebiet",
+                    "countInArea": "The count of students in statistischen Gebiet in",
+                    "hintMobile": "In the mobile view it is impossible to query the count of students",
+                    "info": {
+                        "primary": "<p><b>Schulwahl am Wohnort :</b></p><p>In der Karte dargestellt sind Schulen mit Primarstufe (Grundschulen, Stadtteilschulen mit integrierter Grundschule und Sonderschulen), die von Schülerinnen und Schülern eines von Ihnen ausgewählten Gebiets besucht werden. Durch Auswahl eines statistischen Gebiets werden die besuchten Schulen größenproportional angezeigt. Die absolute Anzahl an Schülerinnen und Schüler eines Gebietes, die in der Primarstufe sind, wird im Datenblatt durch Klicken auf die Schule angezeigt.</p><p><b>ACHTUNG:</b> Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p><p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Primarstufe wohnen.</p>",
+                        "secondary": "<p><b>Schulwahl am Wohnort :</b></p><p>In der Karte dargestellt sind Schulen mit der Sekundarstufe I (Stadtteilschulen, Gymnasien, Sonderschulen), die von Schülerinnen und Schülern eines von Ihnen ausgewählten Gebiets besucht werden. Durch Auswahl eines statistischen Gebiets werden die besuchten Schulen größenproportional angezeigt. Die absolute Anzahl an Schülerinnen und Schüler eines Gebietes, die in der Sekundarstufe I sind, wird im Datenblatt durch Klicken auf die Schule angezeigt.</p><p><b>ACHTUNG:</b> Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p><p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Sekundarstufe I wohnen.</p>"
+                    }
+                },
+                "SchulenEinzugsGebiete": {
+                    "address": "Address",
+                    "totalCount": "The total number of students:",
+                    "primaryCount": "In primary school:",
+                    "secondaryCount": "In middle school:",
+                    "countInArea": "The count of students in statistischen Gebiet in",
+                    "hintText": "Moving your mouse on the area to query the percentages of students",
+                    "hintMobile": "In the mobile view it is impossible to query the percentages of students",
+                    "info": "<h5><b>Einzugsgebiete :</b></h5><p>Dargestellt werden die Anteile der Schülerinnen und Schüler der angeklickten Schule nach Wohnort. Dabei können Grundschulen, Sonderschulen (Primarstufe) sowie Stadtteilschulen mit integrierter Grundschule angeklickt werden. Ist ein statistisches Gebiet um die angeklickte Schule beispielsweise dunkel eingefärbt, bedeutet dies, dass ein hoher Anteil der Schülerinnen und Schüler dieser Schule in diesem dunkel eingefärbten Gebiet wohnen. Durch Hovern auf ein eingefärbtes statistisches Gebiet wird die Anzahl der Schülerinnen und Schüler angezeigt, die in diesem Gebiet wohnen und die angeklickte Schule besuchen.</p><p>ACHTUNG: Bei Schulen mit mehreren Zweigstellen wurden die Schülerzahlen aller Zweigstellen addiert und am Hauptstandort der Schule angezeigt. Das gilt auch für die ReBBZ.</p><p>Nicht ausgewiesen werden statistische Gebiete, in denen insgesamt weniger als 5 Schülerinnen und Schüler der Primarstufe wohnen.</p>"
                 }
             }
         }

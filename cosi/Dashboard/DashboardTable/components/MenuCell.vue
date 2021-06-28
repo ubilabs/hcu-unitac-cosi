@@ -28,11 +28,11 @@ export default {
     },
     methods: {
         toggleMenu () {
-            console.log("menu open")
+            // console.log("menu open");
         },
         toggleTimeline () {
             this.timelineOpen = !this.timelineOpen;
-            console.log("timeline open", this.rowIndex);
+            // console.log("timeline open", this.rowIndex);
             store.commit("Tools/DashboardTable/toggleTimelineRow", {timelineOpen: this.timelineOpen, rowIndex: this.rowIndex});
         }
     }
