@@ -180,8 +180,8 @@ describe("AccessibilityAnalysis.vue", () => {
         expect(addSingleAlertStub.firstCall.args[1]).to.eql(
             {
                 content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
-                category: "Warning",
-                cssClass: "warning"
+                category: "Info",
+                displayClass: "info"
             });
     });
 
@@ -202,7 +202,7 @@ describe("AccessibilityAnalysis.vue", () => {
             {
                 content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>",
                 category: "Error",
-                cssClass: "error"
+                displayClass: "error"
             });
     });
 
