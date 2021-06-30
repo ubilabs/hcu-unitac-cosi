@@ -160,6 +160,11 @@ const actions = {
         return statsFeatures;
     },
 
+    /**
+     * Dispatches the warning if data couldn't be loaded
+     * @param {Function} store.dispatch - Function to dispatch a action.
+     * @return {void}
+     */
     alertError ({dispatch}) {
         dispatch("Alerting/addSingleAlert", {
             category: "Warnung",
@@ -189,7 +194,7 @@ const actions = {
         statsFeatures.forEach(feature => {
             const district = _districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
 
-            if (district && !district.get("stats")?.find(_feature => _feature === feature)) {
+            if (district && !district.get("stats")?.find(_feature => _feature.get("kategorie") === feature.get("kategorie"))) {
                 district.set("stats", [...district.get("stats") || [], feature]);
             }
         });

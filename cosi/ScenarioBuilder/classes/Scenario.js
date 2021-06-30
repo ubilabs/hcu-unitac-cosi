@@ -126,6 +126,18 @@ export default class Scenario {
     }
 
     /**
+     * Resets all modified districts and removes neighborhoods from the map
+     * @returns {void}
+     */
+    resetAllDistricts () {
+        let item;
+
+        for (item of this.neighborhoods) {
+            item.hideFeature();
+        }
+    }
+
+    /**
      * Resets all modified features of a layer to their original state
      * @param {module:ol/layer/Vector} layer - the layer to reset
      * @returns {void}
@@ -170,6 +182,7 @@ export default class Scenario {
         let item;
 
         this.resetAllFeatures();
+        this.resetAllDistricts();
         for (item of this.simulatedFeatures) {
             item.hideFeature();
         }
@@ -182,8 +195,38 @@ export default class Scenario {
     prune () {
         this.hideScenario();
         this.resetAllFeatures();
+        this.resetAllDistricts();
         this.simulatedFeatures = [];
         this.modifiedFeatures = [];
+        this.neighborhoods = [];
+    }
+
+    /**
+     * Removes a given neighborhood from the scenario
+     * @param {module:ol/Feature} feature - the feature in the map
+     * @returns {void}
+     */
+    removeNeighborhood (feature) {
+        const neighborhood = this.getNeighborhood(feature);
+
+        if (neighborhood) {
+            neighborhood.hideFeature();
+            this.neighborhoods = this.neighborhoods.filter(item => item !== neighborhood);
+        }
+    }
+
+    /**
+     * Removes a given feature from the scenario
+     * @param {module:ol/Feature} feature - the feature in the map
+     * @returns {void}
+     */
+    removeSimulatedFeature (feature) {
+        const scenarioFeature = this.getScenarioFeature(feature);
+
+        if (scenarioFeature) {
+            scenarioFeature.hideFeature();
+            this.simulatedFeatures = this.simulatedFeatures.filter(item => item !== scenarioFeature);
+        }
     }
 
     /**
@@ -201,6 +244,9 @@ export default class Scenario {
         }
         for (const item of this.modifiedFeatures) {
             item.restoreScenarioProperties();
+        }
+        for (const item of this.neighborhoods) {
+            item.renderFeature();
         }
     }
 
@@ -248,6 +294,15 @@ export default class Scenario {
      */
     getModifiedScenarioFeature (feature) {
         return this.modifiedFeatures.find(item => item.feature === feature);
+    }
+
+    /**
+     * Returns the modified ScenarioNeighborhood for a given map feature
+     * @param {module:ol/Feature} feature - the OL map feature
+     * @returns {ScenarioNeighborhood} the ScenarioNeighborhood and its scenario specific properties
+     */
+    getNeighborhood (feature) {
+        return this.neighborhoods.find(item => item.feature === feature);
     }
 
     /**

@@ -6,6 +6,18 @@ import groupMapping from "../../utils/groupMapping";
 
 export default {
     name: "ReferenceDistrictPicker",
+    props: {
+        groupsList: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        timelinePrefix: {
+            type: String,
+            required: false,
+            default: "jahr_"
+        }
+    },
     data: () => ({
         select: null,
         referencePickerActive: false,
@@ -69,6 +81,7 @@ export default {
     },
     methods: {
         ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
+        ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
          * Toggles the Select interaction boolean on/off
@@ -120,7 +133,7 @@ export default {
                     "Bevölkerung insgesamt"
                 );
 
-            if (feature) {
+            if (baseStats) {
                 this.$emit("pickReference", baseStats);
             }
 
@@ -136,11 +149,14 @@ export default {
          * @returns {Object} - the base stats for the picked reference district
          */
         processStats (districtName, districtLevel, statsFeatures, basePopulationProp) {
-            const attributeWhiteList = ["Bevölkerung", "Arbeitslose", "Sozialversicherungspflichtige", "SGB II Leistungen", "Verkehr"],
-                stats = statsFeatures.map(feature => feature.getProperties()),
+            if (!statsFeatures) {
+                this.alertError();
+                return null;
+            }
+            const stats = statsFeatures.map(feature => feature.getProperties()),
                 years = getAvailableYears(statsFeatures),
-                latestYear = "jahr_" + years[0],
-                populationStats = this.mapping.filter(mappingObj => attributeWhiteList.includes(mappingObj.group)),
+                latestYear = this.timelinePrefix + years[0],
+                populationStats = this.groupsList.length > 0 ? this.mapping.filter(mappingObj => this.groupsList.includes(mappingObj.group)) : this.mapping,
                 basePopulationFeature = statsFeatures.find(feature => feature.get("kategorie") === basePopulationProp),
                 basePopulation = parseFloat(basePopulationFeature.get(latestYear)),
                 baseStats = {
@@ -154,6 +170,7 @@ export default {
 
             for (const mappingObj of populationStats) {
                 const datum = stats.find(d => d.kategorie === mappingObj.value);
+                let value;
 
                 if (mappingObj.valueType === "absolute") {
                     const refValue = parseFloat(datum[latestYear]);
@@ -164,45 +181,36 @@ export default {
                      * Eine Idee wäre den Referenzwert auch in der mapping.json zu hinterlegen...
                      */
                     if (mappingObj.value.includes("Frauen")) {
-                        const total = stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
-
-                        baseStats.absolute.push({
-                            group: datum.group,
-                            category: datum.kategorie,
-                            value: refValue / total,
-                            valueType: mappingObj.valueType
-                        });
-                        continue;
+                        value = refValue / stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
                     }
                     else if (mappingObj.value.includes("Männer")) {
-                        const total = stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
-
-                        baseStats.absolute.push({
-                            group: datum.group,
-                            category: datum.kategorie,
-                            value: refValue / total,
-                            valueType: mappingObj.valueType
-                        });
-                        continue;
+                        value = refValue / stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
                     }
-                    baseStats.absolute.push({
-                        group: datum.group,
-                        category: datum.kategorie,
-                        value: refValue / basePopulation,
-                        valueType: mappingObj.valueType
-                    });
+                    else {
+                        value = refValue / basePopulation;
+                    }
                 }
-                else if (mappingObj.valueType === "relative") {
-                    baseStats.relative.push({
-                        group: datum.group,
-                        category: datum.kategorie,
-                        value: parseFloat(datum[latestYear]),
-                        valueType: mappingObj.valueType
-                    });
+                else {
+                    value = parseFloat(datum[latestYear]);
                 }
+
+                baseStats[mappingObj.valueType].push({
+                    group: datum.group,
+                    category: datum.kategorie,
+                    value: value,
+                    valueType: mappingObj.valueType
+                });
             }
 
             return baseStats;
+        },
+
+        alertError () {
+            this.addSingleAlert({
+                category: "Warnung",
+                content: this.$t("additional:modules.tools.cosi.residentialSimulation.errorPickReference"),
+                displayClass: "warning"
+            });
         }
     }
 };
@@ -223,7 +231,8 @@ export default {
                 />
             </v-col>
         </v-row>
-        <v-row>
+        <!-- TODO: Combine with CompareDistricts/DistrictQuery -->
+        <!-- <v-row>
             <v-col cols="12">
                 <v-select
                     v-model="selectedStatsFeature"
@@ -235,7 +244,7 @@ export default {
                     append-icon="mdi-chart-box"
                 />
             </v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
             <v-col cols="12">
                 <v-btn

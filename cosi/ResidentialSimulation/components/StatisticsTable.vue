@@ -13,7 +13,7 @@ export default {
         snack: false,
         snackColor: "",
         snackText: "",
-        isNumber: v => !isNaN(parseFloat(v)) || this.$t("additional:modules.tools.cosi.residentialSimulation.isNotNumber"),
+        isNumber: v => !isNaN(parseFloat(v)) || this.$t("additional:modules.tools.cosi.residentialSimulation.isNotNumber")
     }),
     computed: {
         ...mapGetters("Tools/DistrictLoader", ["mapping"]),
@@ -33,8 +33,7 @@ export default {
         }
     },
     methods: {
-        save (item) {
-            console.log(item)
+        save () {
             this.snack = true;
             this.snackColor = "success";
             this.snackText = this.$t("additional:modules.tools.cosi.success");
@@ -61,6 +60,7 @@ export default {
             group-by="group"
             dense
             :items-per-page="-1"
+            hide-default-footer
         >
             <!-- eslint-disable-next-line vue/valid-v-slot -->
             <template v-slot:item.value="{ item }">
@@ -76,15 +76,15 @@ export default {
                     <div>{{ item.value }}</div>
                     <template v-slot:input>
                         <div class="mt-4 text-h6">
-                            {{ $t("additional:modules.tools.cosi.residentialSimulation.editStats") }}
+                            {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsField") }}
                         </div>
                         <v-text-field
                             v-model="item.value"
                             type="number"
-                            :label="$t('additional:modules.tools.cosi.residentialSimulation.editStatsInfo')"
                             single-line
                             autofocus
-                        ></v-text-field>s
+                        />
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.editStatsInfo') }}
                     </template>
                 </v-edit-dialog>
             </template>

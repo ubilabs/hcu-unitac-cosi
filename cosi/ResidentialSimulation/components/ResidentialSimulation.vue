@@ -16,6 +16,7 @@ import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
+import Modal from "../../../../src/share-components/modals/Modal.vue";
 
 export default {
     name: "ResidentialSimulation",
@@ -24,10 +25,15 @@ export default {
         ScenarioManager,
         GeometryPicker,
         ReferenceDistrictPicker,
-        StatisticsTable
+        StatisticsTable,
+        Modal
     },
     data () {
         return {
+            datePicker: false,
+            editDialog: false,
+            editFeature: null,
+            editStatsTable: false,
             geometry: null,
             neighborhood: {
                 name: "Mein Wohnquartier",
@@ -38,7 +44,8 @@ export default {
                 gfz: 1.0,
                 populationDensity: 5000,
                 livingSpace: 30,
-                stats: null
+                stats: null,
+                year: new Date().toISOString().substr(0, 7)
             },
             fallbacks: {
                 residents: 0,
@@ -95,6 +102,7 @@ export default {
             selectedDistricts: "selectedFeatures",
             selectedDistrictLevel: "selectedDistrictLevel"
         }),
+        ...mapGetters("Map", ["map"]),
         geomField () {
             return {
                 name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
@@ -124,6 +132,9 @@ export default {
          * @returns {void}
          */
         active (newActive) {
+            this.editFeature = null;
+            this.editDialog = false;
+
             if (!newActive) {
                 const model = getComponent(this.id);
 
@@ -132,8 +143,6 @@ export default {
                 }
 
                 geomPickerUnlisten(this.$refs["geometry-picker"]);
-                geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
-                this.removePointMarker();
             }
         },
 
@@ -188,14 +197,7 @@ export default {
 
         residents () {
             this.extrapolateNeighborhoodStatistics();
-        },
-
-        // stats: {
-        //     deep: true,
-        //     handler () {
-        //         console.log(this.stats);
-        //     }
-        // }
+        }
     },
     created () {
         this.$on("close", () => {
@@ -204,11 +206,11 @@ export default {
     },
     mounted () {
         this.createDrawingLayer();
+        this.map.addEventListener("click", this.openEditDialog.bind(this));
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
-        ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
 
         /**
@@ -280,9 +282,6 @@ export default {
                 }),
                 ...this.baseStats.relative
             ];
-
-            console.log(this.neighborhood);
-            console.log(this.baseStats);
         },
 
         visualizeDemographics (id, name, scaleLabels, labels, type) {
@@ -313,7 +312,8 @@ export default {
         async createFeature () {
             const feature = new Feature({
                     geometry: this.geometry,
-                    ...this.neighborhood
+                    ...this.neighborhood,
+                    baseStats: this.baseStats
                 }),
                 districts = getContainingDistrictForFeature(this.districtLayer.getSource().getFeatures(), feature, undefined, true, true),
                 neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
@@ -326,8 +326,6 @@ export default {
                 });
             }
 
-            console.log(feature, districts, neighborhood);
-            console.log(this.districtLevels);
             this.activeScenario.addNeighborhood(neighborhood);
 
             // reset geometry
@@ -357,6 +355,29 @@ export default {
 
             // reset geometry
             geomPickerResetLocation(this.$refs["geometry-picker"]);
+        },
+
+        openEditDialog (evt) {
+            this.editFeature = null;
+            this.map.forEachFeatureAtPixel(evt.pixel, feature => {
+                this.editFeature = feature;
+                this.editDialog = true;
+            }, {
+                layerFilter: l => l === this.drawingLayer
+            });
+
+            if (!this.editFeature) {
+                this.editDialog = false;
+            }
+        },
+
+        deleteNeighborhood () {
+            this.activeScenario.removeNeighborhood(this.editFeature);
+            this.editDialog = false;
+        },
+
+        escapeEditStatsTable () {
+            this.editStatsTable = false;
         }
     }
 };
@@ -411,6 +432,7 @@ export default {
                                 <v-col cols="9">
                                     <v-text-field
                                         v-model="polygonArea"
+                                        readonly
                                         label="Fläche"
                                         suffix="m²"
                                     />
@@ -585,7 +607,58 @@ export default {
                                 </v-col>
                             </v-row>
                             <v-divider />
+                            <v-row dense>
+                                <v-col cols="12">
+                                    <v-menu
+                                        ref="datePicker"
+                                        v-model="datePicker"
+                                        :close-on-content-click="false"
+                                        :return-value.sync="neighborhood.year"
+                                        transition="scale-transition"
+                                        offset-y
+                                        max-width="290px"
+                                        min-width="auto"
+                                    >
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                            <v-text-field
+                                                v-model="neighborhood.year"
+                                                :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
+                                                prepend-icon="mdi-calendar"
+                                                readonly
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            />
+                                        </template>
+                                        <v-date-picker
+                                            v-model="neighborhood.year"
+                                            type="month"
+                                            no-title
+                                            scrollable
+                                        >
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="datePicker = false"
+                                            >
+                                                {{ $t("additional:modules.tools.cosi.cancel") }}
+                                            </v-btn>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="$refs.datePicker.save(neighborhood.year)"
+                                            >
+                                                OK
+                                            </v-btn>
+                                        </v-date-picker>
+                                    </v-menu>
+                                </v-col>
+                            </v-row>
+                            <v-divider />
                             <ReferenceDistrictPicker
+                                :groupsList="groupsList"
+                                :timelinePrefix="timelinePrefix"
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
@@ -598,32 +671,94 @@ export default {
                                     <v-btn
                                         tile
                                         depressed
+                                        class="flex-item"
+                                        @click="resetFeature"
+                                    >
+                                        <v-icon>mdi-eraser</v-icon>
+                                        <span>
+                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.resetFeature') }}
+                                        </span>
+                                    </v-btn>
+                                    <v-btn
+                                        tile
+                                        depressed
+                                        class="flex-item"
+                                        :disabled="!neighborhood.stats || geometry === null"
+                                        @click="editStatsTable = true"
+                                    >
+                                        <v-icon>mdi-pencil</v-icon>
+                                        <span>
+                                            {{ $t("additional:modules.tools.cosi.edit") }}
+                                        </span>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-btn
+                                        tile
+                                        depressed
                                         color="primary"
                                         :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
                                         :disabled="!activeScenario || geometry === null || !neighborhood.stats"
                                         class="flex-item"
                                         @click="createFeature"
                                     >
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
-                                    </v-btn>
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        class="flex-item"
-                                        @click="resetFeature"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.resetFeature') }}
+                                        <v-icon>mdi-home-plus</v-icon>
+                                        <span>
+                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                        </span>
                                     </v-btn>
                                 </v-col>
                             </v-row>
-                            <v-divider />
-                            <template v-if="neighborhood.stats && geometry !== null">
-                                <StatisticsTable
-                                    v-model="neighborhood.stats"
-                                />
-                            </template>
                         </div>
                     </v-form>
+                    <v-snackbar
+                        v-model="editDialog"
+                        :timeout="-1"
+                        color="grey"
+                    >
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.editFeature') }}
+
+                        <template v-slot:action="{ attrs }">
+                            <v-btn
+                                v-bind="attrs"
+                                text
+                                @click="deleteNeighborhood"
+                            >
+                                {{ $t("additional:modules.tools.cosi.delete") }}
+                            </v-btn>
+                            <!-- NOT IMPLEMENTED -->
+                            <!-- <v-btn
+                                v-bind="attrs"
+                                text
+                                @click="editStatsTable = true; editDialog = false;"
+                            >
+                                {{ $t("additional:modules.tools.cosi.edit") }}
+                            </v-btn> -->
+                        </template>
+                    </v-snackbar>
+                    <Modal
+                        :show-modal="editStatsTable"
+                        @modalHid="escapeEditStatsTable"
+                        @clickedOnX="escapeEditStatsTable"
+                        @clickedOutside="escapeEditStatsTable"
+                    >
+                        <v-container>
+                            <v-card-title primary-title>
+                                {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }}
+                            </v-card-title>
+                            <v-subheader>
+                                {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
+                            </v-subheader>
+                            <div class="stats-table-modal">
+                                <StatisticsTable
+                                    v-if="neighborhood.stats && geometry !== null"
+                                    v-model="neighborhood.stats"
+                                />
+                            </div>
+                        </v-container>
+                    </Modal>
                 </v-main>
             </v-app>
         </template>
@@ -633,5 +768,9 @@ export default {
 <style lang="less">
     .slider-val {
         width: 60px;
+    }
+    .stats-table-modal {
+        height: 65vh;
+        overflow-y: scroll;
     }
 </style>

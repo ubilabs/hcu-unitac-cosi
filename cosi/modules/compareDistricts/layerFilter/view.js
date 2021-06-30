@@ -53,8 +53,8 @@ const LayerFilterView = Backbone.View.extend(/** @lends LayerFilterView.prototyp
      */
     renderToleranceViews: function () {
         if (this.model.get("filter") !== "") {
-            console.info(this.model.get("filter"));
             const filterData = JSON.parse(this.model.get("filter"));
+
             Object.keys(filterData).forEach(filterKey => {
                 const newToleranceModel = new ToleranceModel({
                         key: filterKey,

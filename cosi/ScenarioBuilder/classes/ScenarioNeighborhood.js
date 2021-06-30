@@ -1,28 +1,7 @@
-import {intersect} from "../../utils/geomUtils";
-import store from "../../../../src/app-store";
 import storeOriginalDistrictStats from "../utils/storeOriginalDistrictStats";
 import getAvailableYears from "../../utils/getAvailableYears";
-
-/**
- * Gets the percentage of feature1 within feature2
- * @param {module:ol/Feature} feature1 - a polygonal feature
- * @param {module:ol/Feature} feature2 - a polygonal feature
- * @return {number} - the percentage as float
- */
-function getIntersection (feature1, feature2) {
-    const crs = store.getters["Map/projectionCode"],
-        intersection = intersect(
-            [feature1, feature2],
-            true,
-            true,
-            crs
-        ),
-        originalArea = feature1.getGeometry().getArea(),
-        intersectionArea = intersection?.getGeometry().getArea() || 0,
-        coverage = intersectionArea / originalArea;
-
-    return coverage;
-}
+import getIntersectionCoverage from "../../ResidentialSimulation/utils/getIntersectionCoverage";
+import store from "../../../../src/app-store";
 
 /**
  * @description Stores the scenario specific properties of a residential district feature
@@ -38,11 +17,12 @@ export default class ScenarioNeighborhood {
     constructor (feature, districts, layer) {
         this.feature = feature;
         this.layer = layer;
+        this.active = false;
 
         this.districts = districts.map(district => {
             storeOriginalDistrictStats(district);
 
-            return {coverage: getIntersection(feature, district), feature: district};
+            return {coverage: getIntersectionCoverage(feature, district), feature: district};
         });
     }
 
@@ -53,9 +33,12 @@ export default class ScenarioNeighborhood {
      * @returns {void}
      */
     renderFeature () {
+        if (this.active) {
+            return;
+        }
         this.modifyDistrictStats();
-
         this.layer.getSource().addFeature(this.feature);
+        this.active = true;
     }
 
     /**
@@ -64,23 +47,26 @@ export default class ScenarioNeighborhood {
      * @returns {void}
      */
     hideFeature () {
+        if (!this.active) {
+            return;
+        }
         this.resetDistrictStats();
-
         this.layer.getSource().removeFeature(this.feature);
+        this.active = false;
     }
 
     /**
+     * Updates the surrounding districts' statistics based on the stats of the neighborhood
      * @returns {void}
      */
     modifyDistrictStats () {
         for (const district of this.districts) {
-            console.log(this.feature.get("stats"));
-            console.log(district);
-            console.log(district.feature.get("stats"));
-            console.log(district.coverage);
 
-            const years = getAvailableYears(district.feature.get("stats"));
+            const years = getAvailableYears(district.feature.get("stats")),
+                completion = new Date(this.feature.get("year")).getFullYear();
             let year, originalVal;
+
+            console.log(this.feature);
 
             for (const datum of this.feature.get("stats")) {
                 /**
@@ -89,22 +75,48 @@ export default class ScenarioNeighborhood {
                 if (datum.valueType === "absolute") {
                     const districtDatum = district.feature.get("stats").find(d => d.get("kategorie") === datum.category);
 
-                    for (year of years) {
+                    for (year of years.filter(y => y >= completion)) {
                         originalVal = parseFloat(districtDatum.get("jahr_" + year)) || 0;
                         districtDatum.set("jahr_" + year, originalVal + Math.round(datum.value * district.coverage));
                     }
                 }
+                else if (datum.relation) {
+                    //
+                }
             }
-
-            console.log(district.feature.get("stats"));
-            console.log(store.getters["Tools/DistrictLoader/districtLevels"]);
         }
     }
 
     /**
+     * Resets the surrounding districts' statistics to their original
+     * @todo refactor DistrictLoader and Dashboard to avoid the weird iteration over the currentStatsFeatures list
      * @returns {void}
      */
     resetDistrictStats () {
+        for (const district of this.districts) {
+            district.feature.set("stats", district.feature.get("originalData").stats.map(feature => feature.clone()));
 
+            /**
+             * @todo JUST A WEIRD HACK
+             * REFACTOR DISTRICTLOADER
+             */
+            const currentStatsFeatures = store.getters["Tools/DistrictLoader/currentStatsFeatures"],
+                keyOfAttrNameStats = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
+
+            if (currentStatsFeatures) {
+                for (let i = 0; i < currentStatsFeatures.length; i++) {
+                    const clonedFeature = district.feature.get("stats").find(f => {
+                        return f.get("kategorie") === currentStatsFeatures[i].get("kategorie")
+                            && f.get(keyOfAttrNameStats) === currentStatsFeatures[i].get(keyOfAttrNameStats);
+                    });
+
+                    if (clonedFeature) {
+                        currentStatsFeatures[i] = clonedFeature;
+                    }
+                }
+
+                store.commit("Tools/DistrictLoader/setCurrentStatsFeatures", [...currentStatsFeatures]);
+            }
+        }
     }
 }

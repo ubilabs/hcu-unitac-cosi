@@ -14,7 +14,8 @@ export default function residentialLayerStyle (feature) {
             }),
             stroke: new Stroke({
                 width: 4,
-                color: [0, 104, 55, 1]
+                color: [0, 104, 55, 1],
+                lineDash: [5, 5]
             })
         }),
         new Style({
@@ -24,7 +25,11 @@ export default function residentialLayerStyle (feature) {
                 fill: new Fill({
                     color: "#000"
                 }),
-                text: Math.round(feature.get("residents")) + " EW",
+                stroke: new Stroke({
+                    color: "#fff",
+                    width: 1
+                }),
+                text: Math.round(feature.get("residents")).toLocaleString("de-DE") + " EW",
                 offsetY: 20
             })
         }),
@@ -35,7 +40,11 @@ export default function residentialLayerStyle (feature) {
                 fill: new Fill({
                     color: "#000"
                 }),
-                text: Math.round(feature.get("area")) + " m²",
+                stroke: new Stroke({
+                    color: "#fff",
+                    width: 1
+                }),
+                text: Math.round(feature.get("area")).toLocaleString("de-DE") + " m²",
                 offsetY: 4
             })
         }),
