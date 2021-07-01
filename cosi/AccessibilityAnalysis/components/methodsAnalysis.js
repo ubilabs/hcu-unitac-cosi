@@ -13,25 +13,44 @@ import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 
-export const methodConfig = {store: null};
+export const methodConfig = {
+    store: null
+};
 export default {
     /**
      * create isochrones features
      * @returns {void}
      */
-    createIsochrones: function () {
+    createIsochrones: async function () {
         this.clear();
-        if (this.mode === "point") {
-            this.createIsochronesPoint();
+        try {
+            if (this.mode === "point") {
+                await this.createIsochronesPoint();
+            }
+            else {
+                await this.createIsochronesRegion();
+            }
         }
-        else {
-            this.createIsochronesRegion();
+        catch (err) {
+            console.error(err);
+            try {
+                const res = JSON.parse(err.response);
+
+                if (res.error.code === 3002) {
+                    this.showErrorInvalidInput();
+                }
+                else {
+                    this.showError();
+                }
+            }
+            catch (e) {
+                this.showError();
+            }
         }
     },
     /**
      * create isochrones features for selected several coordiantes
      * TODO: break apart into smaller functions
-     * @fires Alerting#RadioTriggerAlertAlertRemove
      * @fires Core#RadioRequestMapGetLayerByName
      * @fires OpenRouteService#RadioRequestOpenRouteServiceRequestIsochrones
      * @returns {void}
@@ -40,7 +59,7 @@ export default {
         const range =
             this.scaleUnit === "time" ? this.distance * 60 : this.distance,
 
-            coordinates = this.getCoordinates(this.selectedFacilityName);
+            coordinates = this.getCoordinates();
 
         if (
             coordinates !== null &&
@@ -49,6 +68,7 @@ export default {
             range !== 0
         ) {
             // TODO: Use store-method - see DistrictSelector component
+            this.askUpdate = false;
             this.cleanup();
             // group coordinates into groups of 5
             const coordinatesList = [],
@@ -61,10 +81,14 @@ export default {
                 coordinatesList.push(arrayItem);
             }
 
+            if (this.abortController) {
+                this.abortController.abort();
+            }
+            this.abortController = this.createAbortController();
             for (const coords of coordinatesList) {
                 // TODO: make use of new OpenRouteService component
-                const res = await Radio.request("OpenRoute", "requestIsochrones", this.transportType, coords, this.scaleUnit,
-                        [range, range * 0.67, range * 0.33]),
+                const res = await this.requestIsochrones(this.transportType, coords, this.scaleUnit,
+                        [range, range * 0.67, range * 0.33], this.abortController.signal),
                     // reverse JSON object sequence to render the isochrones in the correct order
                     // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
                     json = JSON.parse(res),
@@ -109,12 +133,14 @@ export default {
                 });
                 features = features.concat(layerUnionFeatures);
             }
+
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
+            this.isochroneFeatures = features;
+            this.currentCoordinates = coordinates;
 
             // TODO: get locale from store
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)
-            );
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
         }
         else {
             this.inputReminder();
@@ -135,55 +161,51 @@ export default {
             this.scaleUnit !== "" &&
             range !== 0
         ) {
-            try {
-                const res = await Radio.request(
-                        "OpenRoute",
-                        "requestIsochrones",
-                        this.transportType,
-                        [this.coordinate],
-                        this.scaleUnit,
-                        [range * 0.33, range * 0.67, range]
-                    ),
-
-
-                    distance = parseFloat(this.distance);
-
-                this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)
-                );
-
-                // reverse JSON object sequence to render the isochrones in the correct order
-                // eslint-disable-next-line one-var
-                const json = JSON.parse(res),
-                    reversedFeatures = [...json.features].reverse(),
-                    featureType = "Erreichbarkeit ab einem Referenzpunkt";
-
-                json.features = reversedFeatures;
-                let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
-
-                newFeatures = this.transformFeatures(
-                    newFeatures,
-                    "EPSG:4326",
-                    "EPSG:25832"
-                );
-
-                newFeatures.forEach((feature) => {
-                    feature.set("featureType", featureType);
-                });
-
-                this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
-
-                this.styleFeatures(newFeatures, [this.coordinate]);
-
-                this.mapLayer.getSource().addFeatures(newFeatures.reverse());
-                this.isochroneFeatures = newFeatures;
-                this.setIsochroneAsBbox();
-                this.showRequestButton = true;
-                this.cleanup();
+            if (this.abortController) {
+                this.abortController.abort();
             }
-            catch (err) {
-                console.error(err);
-                this.showError();
-            }
+            this.abortController = this.createAbortController();
+            const res = await this.requestIsochrones(
+                    this.transportType,
+                    [this.coordinate],
+                    this.scaleUnit,
+                    [range * 0.33, range * 0.67, range],
+                    this.abortController.signal
+                ),
+
+
+                distance = parseFloat(this.distance);
+
+            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
+
+            // reverse JSON object sequence to render the isochrones in the correct order
+            // eslint-disable-next-line one-var
+            const json = JSON.parse(res),
+                reversedFeatures = [...json.features].reverse(),
+                featureType = "Erreichbarkeit ab einem Referenzpunkt";
+
+            json.features = reversedFeatures;
+            let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
+
+            newFeatures = this.transformFeatures(
+                newFeatures,
+                "EPSG:4326",
+                "EPSG:25832"
+            );
+
+            newFeatures.forEach((feature) => {
+                feature.set("featureType", featureType);
+            });
+
+            this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
+
+            this.styleFeatures(newFeatures, [this.coordinate]);
+
+            this.mapLayer.getSource().addFeatures(newFeatures.reverse());
+            this.isochroneFeatures = newFeatures;
+            this.setIsochroneAsBbox();
+            this.showRequestButton = true;
+            this.cleanup();
         }
         else {
             this.inputReminder();
@@ -268,8 +290,15 @@ export default {
 
     showError: function () {
         this.addSingleAlert({
-            category: "Fehler",
             content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
+            category: "Error",
+            displayClass: "error"
+        });
+    },
+    showErrorInvalidInput: function () {
+        this.addSingleAlert({
+            content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
+            category: "Error",
             displayClass: "error"
         });
     },
@@ -360,14 +389,15 @@ export default {
             "rgba(0, 200, 3, 0.2)"
         ];
     },
-    getCoordinates: function (name) {
+    getCoordinates: function () {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
-            name: name
+            name: this.selectedFacilityName
         });
 
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
-                .getSource().getFeatures().filter(f => typeof f.style_ === "object" || f.style_ === null);
+                .getSource().getFeatures()
+                .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
 
             return features
                 .map((feature) => {

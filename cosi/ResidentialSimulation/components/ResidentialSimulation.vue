@@ -8,7 +8,6 @@ import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vu
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
 import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
-import createLayer from "../../utils/createLayer";
 import LineChart from "../../ChartGenerator/components/charts/LineChart.vue";
 import BarChart from "../../ChartGenerator/components/charts/BarChart.vue";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
@@ -174,6 +173,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
+        ...mapActions("Map", ["createLayer"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 
@@ -181,8 +181,8 @@ export default {
          * @description create a guide layer used for additional info to display on the map
          * @returns {void}
          */
-        createDrawingLayer () {
-            const newLayer = createLayer(this.id);
+        async createDrawingLayer () {
+            const newLayer = await this.createLayer(this.id);
 
             newLayer.setVisible(true);
             // newLayer.setStyle(featureTagStyle);

@@ -16,7 +16,6 @@ const actions = {
 
         // remove all highlightings to avoid undefined errors on the map
         dispatch("Map/removeHighlightFeature", null, {root: true});
-
         if (layer) {
             if (!featureItem.enabled) {
                 source.removeFeature(featureItem.feature);

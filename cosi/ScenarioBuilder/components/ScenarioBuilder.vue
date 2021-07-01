@@ -20,7 +20,6 @@ import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
 import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon} from "../utils/geomPickerHandler";
-import createLayer from "../../utils/createLayer";
 
 export default {
     name: "ScenarioBuilder",
@@ -124,16 +123,17 @@ export default {
      * Lifecycle function, triggers on component initialize. Creates necessary guide and drawing layers.
      * @returns {void}
      */
-    created () {
+    async created () {
         this.$on("close", () => {
             this.setActive(false);
         });
-        this.createGuideLayer();
+        await this.createGuideLayer();
     },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
+        ...mapActions("Map", ["createLayer"]),
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules
@@ -142,8 +142,8 @@ export default {
          * @description create a guide layer used for additional info to display on the map
          * @returns {void}
          */
-        createGuideLayer () {
-            const newLayer = createLayer(this.id + "_layer");
+        async createGuideLayer () {
+            const newLayer = await this.createLayer(this.id + "_layer");
 
             newLayer.setVisible(true);
             newLayer.setStyle(featureTagStyle);
@@ -195,6 +195,7 @@ export default {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
+            this.$root.$emit("updateFeature");
         },
 
         /**

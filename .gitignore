@@ -11,3 +11,5 @@ qr/node_modules/*
 
 node_modules
 yarn.lock
+.eslintrc
+babel.config.js
