@@ -50,7 +50,9 @@ export default {
             // Helper to pass data to the graph generator
             graphData: [],
             // Helper to store type of feature dataSet
-            dataCategory: ""
+            dataCategory: "",
+            // layer for map names
+            namesLayer: null
         };
     },
     computed: {
@@ -105,13 +107,16 @@ export default {
             }
         }
     },
-    mounted () {
+    async mounted () {
         this.applyTranslationKey(this.name);
+        this.namesLayer = await this.createLayer("map-names");
+        this.namesLayer.setVisible(true);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
         ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Map", ["createLayer"]),
         /**
          * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
@@ -186,9 +191,11 @@ export default {
                     colorScale = this.getColorsByValues(resultValues);
 
                 this.generateDynamicLegend(results, colorScale);
+                this.namesLayer.getSource().clear();
                 this.selectedFeatures.forEach(district => {
                     const getStyling = district.getStyle(),
                         matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+
 
                     if (matchResults) {
                         if (this.originalStyling === null) {
@@ -232,24 +239,25 @@ export default {
                             styleArray.push(additionalText);
                         }
                         if (this.showMapNames) {
-                            const headText = new Style({
-                                zIndex: 100,
-                                text: new Text({
-                                    font: "16px Calibri, sans-serif",
-                                    fill: new Fill({
-                                        color: [0, 0, 0]
-                                    }),
-                                    placement: "point",
-                                    backgroundFill: new Fill({
-                                        color: [255, 255, 255]
-                                    }),
-                                    padding: [5, 10, 5, 10],
-                                    text: matchResults.getProperties()[this.keyOfAttrNameStats],
-                                    offsetY: -35
-                                })
-                            });
+                            const labelFeature = district.clone(),
+                                headText = new Style({
+                                    text: new Text({
+                                        font: "16px Calibri, sans-serif",
+                                        fill: new Fill({
+                                            color: [0, 0, 0]
+                                        }),
+                                        placement: "point",
+                                        backgroundFill: new Fill({
+                                            color: [255, 255, 255]
+                                        }),
+                                        padding: [5, 10, 5, 10],
+                                        text: matchResults.getProperties()[this.keyOfAttrNameStats],
+                                        offsetY: -35
+                                    })
+                                });
 
-                            styleArray.push(headText);
+                            labelFeature.setStyle([headText]);
+                            this.namesLayer.getSource().addFeature(labelFeature);
                         }
 
                         district.setStyle(styleArray);
@@ -287,6 +295,7 @@ export default {
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -485,6 +494,7 @@ export default {
                         </template>
                     </button>
                     <button
+                        id="switch"
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         title="Visualisierung an/ aus"
