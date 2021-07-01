@@ -166,7 +166,7 @@
     "statgebiet": true,
     "stadtteil": true,
     "bezirk": true,
-    "valueType": "absolute"
+    "valueType": "relative"
   },
   {
     "category": "hau_alleinerziehende_anz",
