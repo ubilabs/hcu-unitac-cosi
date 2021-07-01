@@ -454,7 +454,7 @@
                     "address": "Adresse",
                     "totalCount": "Gesamtzahl der Schüler:",
                     "primaryCount": "davon in der Primarstufe:",
-                    "secondaryCount": "davon in der Sekundarstufe:",
+                    "secondaryCount": "davon in der Sekundarstufe I:",
                     "countInArea": "The count of students in statistischen Gebiet in",
                     "hintText": "Zur Abfrage der Schülerzahlen bewegen Sie den Mauszeiger auf ein Gebiet.",
                     "hintMobile": "In der mobilen Ansicht ist keine Abfrage der Schülerzahlen möglich.",

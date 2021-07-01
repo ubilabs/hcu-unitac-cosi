@@ -1,6 +1,7 @@
 <script>
 import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
 import Linechart from "../../../../src/share-components/charts/components/Linechart.vue";
+import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
@@ -51,9 +52,9 @@ export default {
         },
 
         /**
-         * the chartRange as object to fix min and max values for the chart
+         * the chartOptions as configured in config.json
          */
-        chartRange: {
+        chartOptions: {
             type: [Object, Boolean],
             required: true
         },
@@ -198,9 +199,12 @@ export default {
             }
             if (hasComplexTypeValues(this.properties?.anteil_sus_abi)) {
                 this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2)));
-                this.barchartDataOptions = this.getChartOptions("anteil_sus_abi", this.chartRange);
+                this.barchartDataOptions = getChartOptions("anteil_sus_abi", this.chartOptions);
                 if (this.barchartDataOptions === false) {
-                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                    this.barchartDataOptions = getChartOptionsForPercentage("anteil_sus_abi", this.chartOptions);
+                }
+                if (this.barchartDataOptions === false) {
+                    this.barchartDataOptions = {};
                 }
             }
             else {
@@ -238,9 +242,9 @@ export default {
             }
             if (hasComplexTypeValues(this.properties?.anteil_sus_ohneabschluss)) {
                 this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2)));
-                this.barchartDataOptions = this.getChartOptions("anteil_sus_ohneabschluss", this.chartRange);
+                this.barchartDataOptions = getChartOptions("anteil_sus_ohneabschluss", this.chartOptions);
                 if (this.barchartDataOptions === false) {
-                    this.barchartDataOptions = this.getChartOptionsForPercentage();
+                    this.barchartDataOptions = getChartOptionsForPercentage("anteil_sus_ohneabschluss", this.chartOptions);
                 }
             }
             else {
@@ -288,7 +292,7 @@ export default {
         refreshLinechart () {
             this.linechartDataOptions = Object.assign({
                 aspectRatio: 1
-            }, this.getChartOptions("anzahl_abschluss_bezug_gesamt", this.chartRange));
+            }, getChartOptions("anzahl_abschluss_bezug_gesamt", this.chartOptions));
 
             this.callApiForLinechart("anzahl_abschluss_bezug_abi", complexTypeABI => {
                 this.callApiForLinechart("anzahl_abschluss_bezug_msa", complexTypeMSA => {
@@ -338,50 +342,6 @@ export default {
             }, error => {
                 console.error(error);
             });
-        },
-
-        /**
-         * returns the options for the chart using the chartRange to set min and max for y axis
-         * @param {String} propertyName the property name to lookup in chartRange
-         * @param {Object|boolean} chartRange the given chartRange
-         * @returns {Object} the options for ChartJS
-         */
-        getChartOptions (propertyName, chartRange) {
-            if (
-                typeof chartRange !== "object" || chartRange === null
-                || !Object.prototype.hasOwnProperty.call(chartRange, propertyName)
-                || !Array.isArray(chartRange[propertyName])
-                || !chartRange[propertyName].length === 2
-            ) {
-                return false;
-            }
-            return {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: chartRange[propertyName][0],
-                            suggestedMax: chartRange[propertyName][1]
-                        }
-                    }]
-                }
-            };
-        },
-
-        /**
-         * returns the options for the chart with unit for percentages
-         * @returns {Object} the options for ChartJS
-         */
-        getChartOptionsForPercentage () {
-            return {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 100
-                        }
-                    }]
-                }
-            };
         }
     }
 };
