@@ -75,7 +75,7 @@ export default {
         let intersection = [];
         const filterResults = [],
             filterCollection = layerFilter.filter;
-        
+
         Object.keys(filterCollection).forEach(filterKey => {
             const tolerance = [parseFloat(filterCollection[filterKey][0]), parseFloat(filterCollection[filterKey][1])],
                 refValue = layerFilter.districtInfo.filter(item => item.key === filterKey)[0].value,

@@ -29,19 +29,10 @@ config.mocks.$t = key => key;
 
 describe("cosi.QueryDistricts.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub;
+    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
-        getAllFeaturesByAttribute = ({id}) => {
-            if (id === "19041") {
-                return ha_features;
-            }
-            if (id === "19034") {
-                return bev_features;
-            }
-            return null;
-        },
 
         mockConfigJson = {
             Portalconfig: {
@@ -58,6 +49,16 @@ describe("cosi.QueryDistricts.vue", () => {
             }
         };
 
+    // eslint-disable-next-line require-jsdoc
+    function getAllFeaturesByAttribute ({id}) {
+        if (id === "19041") {
+            return ha_features;
+        }
+        if (id === "19034") {
+            return bev_features;
+        }
+        return null;
+    }
 
     beforeEach(() => {
         vuetify = new Vuetify();
@@ -69,6 +70,7 @@ describe("cosi.QueryDistricts.vue", () => {
         getSelectedDistrictStub = sandbox.stub();
         zoomToStub = sandbox.stub();
         layerFeaturesStub = sandbox.stub();
+        mappingStub = sandbox.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -91,6 +93,13 @@ describe("cosi.QueryDistricts.vue", () => {
                             mutations: {
                                 setSelectedDistrictsCollection: sinon.stub()
                             }
+                        },
+                        DistrictLoader: {
+                            namespaced: true,
+                            getters: {
+                                mapping: mappingStub,
+                                getAllFeaturesByAttribute: ()=>getAllFeaturesByAttribute
+                            }
                         }
                     }
                 },
@@ -105,7 +114,7 @@ describe("cosi.QueryDistricts.vue", () => {
                 configJson: mockConfigJson
             }
         });
-        store.commit("Tools/QueryDistricts/setActive", true);
+        store.commit("Tools/QueryDistricts/setActive", false);
     });
 
     afterEach(function () {
@@ -121,7 +130,6 @@ describe("cosi.QueryDistricts.vue", () => {
             vuetify,
             methods: {
                 getLayerList: getLayerListStub,
-                getAllFeaturesByAttribute,
                 getSelectedDistrict: getSelectedDistrictStub
             }
         });
@@ -129,9 +137,24 @@ describe("cosi.QueryDistricts.vue", () => {
         await ret.vm.$nextTick();
         return ret;
     }
+    it("renders inactive", async () => {
 
-    it("renders Component", async () => {
-        getLayerListStub.returns([{id: "15563", name: "Bevölkerung insgesamt", url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete"}]);
+        const wrapper = await mount();
+
+        expect(wrapper.find("#queryDistricts").exists()).to.be.false;
+    });
+    it("renders active", async () => {
+        // arrange
+        getLayerListStub.returns([{
+            id: "15563",
+            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
+            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+        }]);
+        mappingStub.returns([{
+            value: "Bevölkerung insgesamt",
+            category: "bev_insgesamt"
+
+        }]);
         keyOfAttrNameStub.returns("key");
         keyOfAttrNameStatsStub.returns("statgebiet");
         selectedFeaturesStub.returns([{
@@ -143,16 +166,30 @@ describe("cosi.QueryDistricts.vue", () => {
 
         const wrapper = await mount();
 
+        // act
+        store.commit("Tools/QueryDistricts/setActive", true);
+        await wrapper.vm.$nextTick();
+
+        // assert
         expect(wrapper.find("#queryDistricts").exists()).to.be.true;
         expect(wrapper.find("#queryDistricts").html()).to.not.be.empty;
         expect(wrapper.vm.selectedFeatures).to.not.empty;
-        expect(wrapper.vm.districtNames).to.deep.equal(["name"]);
+        // expect(wrapper.vm.districtNames).to.deep.equal(["name"]);
         expect(wrapper.vm.selectedLayer).to.be.null;
         expect(wrapper.vm.layerOptions).to.deep.equal([{"id": "15563", "name": "Bevölkerung insgesamt"}]);
     });
-    it.only("add selected layer", async () => {
+    it("add selected layer", async () => {
         // arrange
-        getLayerListStub.returns([{id: "19034", name: "Bevölkerung insgesamt", url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete"}]);
+        getLayerListStub.returns([{
+            id: "19034",
+            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
+            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+        }]);
+        mappingStub.returns([{
+            value: "Bevölkerung insgesamt",
+            category: "bev_insgesamt"
+
+        }]);
         keyOfAttrNameStub.returns("stadtteil_name");
         keyOfAttrNameStatsStub.returns("stadtteil");
         getSelectedDistrictStub.returns("Leeren");
@@ -172,6 +209,9 @@ describe("cosi.QueryDistricts.vue", () => {
         }]);
 
         const wrapper = await mount();
+
+        store.commit("Tools/QueryDistricts/setActive", true);
+        await wrapper.vm.$nextTick();
 
         // act
         await wrapper.setData({
@@ -216,6 +256,7 @@ describe("cosi.QueryDistricts.vue", () => {
                 {"layerId": "19034", "filter": {"jahr_2019": ["1000", "1000"]}, "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 92087, "min": 506}]}
             ],
             self = {
+                // TODO
                 getAllFeaturesByAttribute,
                 selectorField: "verwaltungseinheit",
                 getSelectedDistrict: ()=>"Leeren",

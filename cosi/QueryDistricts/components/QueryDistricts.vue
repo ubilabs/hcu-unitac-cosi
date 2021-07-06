@@ -6,6 +6,7 @@ import mutations from "../store/mutationsQueryDistricts";
 import VueSelect from "vue-select";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
+import LayerFilter from "./LayerFilter.vue";
 import Collection from "ol/Collection";
 
 
@@ -57,7 +58,8 @@ export default {
     name: "QueryDistricts",
     components: {
         Tool,
-        VueSelect
+        VueSelect,
+        LayerFilter
     },
     data () {
         return {
@@ -72,6 +74,9 @@ export default {
                 "bezirk": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"
             },
             layerFilterModels: [],
+            // filters: [{key: "test", "field": "test2", "min": 0, "max": 10, value: 1000, high: 0, low: 0}],
+            // filters: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
+            filters: [{"name": "19034", "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, hight: 0, low: 0}],
             selectorField: "verwaltungseinheit", // TODO
             resultNames: null,
             refDistrict: null
@@ -87,7 +92,7 @@ export default {
         ]),
         ...mapGetters("Tools/DistrictLoader", [
             "mapping",
-            "featureList"
+            "getAllFeaturesByAttribute"
         ])
     },
     watch: {
@@ -96,6 +101,24 @@ export default {
 
             if (result) {
                 this.resultNames = result.resultNames;
+            }
+        },
+        active (value) {
+            if (value) {
+                this.initializeDistrictNames();
+
+                const layers = this.getLayerList()
+                    .filter(layer=> layer.url === this.urls[this.keyOfAttrNameStats]);
+
+                this.allLayerOptions = [];
+                for (const m of this.mapping) {
+                    const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
+
+                    if (layer) {
+                        this.allLayerOptions.push({name: m.value, id: layer.id});
+                    }
+                }
+                this.layerOptions = [...this.allLayerOptions];
             }
         }
     },
@@ -111,11 +134,6 @@ export default {
    */
     async mounted () {
         this.applyTranslationKey(this.name);
-        this.initializeDistrictNames();
-        this.allLayerOptions = this.getLayerList()
-            .filter(layer=> layer.url === this.urls[this.keyOfAttrNameStats])
-            .map(layer => ({name: layer.name, id: layer.id}));
-        this.layerOptions = [...this.allLayerOptions];
 
     },
     methods: {
@@ -176,7 +194,9 @@ export default {
             if (districtName !== "Leeren") {
                 const refFeature = features.filter(feature => feature.getProperties()[selector] === districtName)[0];
 
-                value = parseInt(refFeature.getProperties()[field], 10);
+                if (refFeature) {
+                    value = parseInt(refFeature.getProperties()[field], 10);
+                }
             }
             // TODO: why array?
             return {layerId, field, filter: filter, districtInfo: [{key: field, value, max, min}]};
@@ -252,6 +272,22 @@ export default {
             });
         },
 
+        updateFilter (value) {
+            console.log(value);
+
+            const filters = [...this.filters];
+
+            for (let i = 0; i < this.filters.length; i++) {
+                if (filters[i].field === value.field) {
+                    filters[i] = {...filters[i], ...value};
+                    break;
+                }
+            }
+
+            console.log(filters);
+            this.filters = filters;
+        },
+
         /**
      * Closes this tool window
      * @returns {void}
@@ -292,6 +328,7 @@ export default {
                                     v-model="selectedLayer"
                                     class="style-chooser"
                                     placeholder="Keine Auswahl"
+                                    label="name"
                                     :options="layerOptions"
                                     :clearable="false"
                                 />
@@ -329,6 +366,15 @@ export default {
                 <br />
                 <div id="layerfilter-container"></div>
                 <div id="results">
+                    <template
+                        v-for="filter in filters"
+                    >
+                        <LayerFilter
+                            :key="filter.name"
+                            v-bind="filter"
+                            @update="updateFilter"
+                        />
+                    </template>
                     <div id="params">
                     </div>
                     <div id="reference-district">
@@ -375,17 +421,4 @@ export default {
 </template>
 
 <style lang="less">
-#accessibilityanalysis {
-  width: 400px;
-  min-height: 100px;
-}
-.isochrones {
-  margin-top: 10px;
-}
-.dropdown-info {
-  margin-bottom: 5px;
-}
-.snackbar-text {
-  color: black;
-}
 </style>

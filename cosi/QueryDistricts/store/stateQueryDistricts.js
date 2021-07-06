@@ -24,7 +24,7 @@ const state = {
     active: false,
     id: "QueryDistricts",
     // defaults for config.json parameters
-    name: "AccessibilityAnalysis (Vue)",
+    name: "QueryDistricts (Vue)",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: true,
     resizableWindow: false,
