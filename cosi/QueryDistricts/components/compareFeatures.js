@@ -12,32 +12,31 @@ export default {
                 results = [],
                 resultNames = [],
                 features = [];
-            let intersection = [],
-                comparableFeatures = [];
+
+            let comparableFeatures = [];
 
             for (const layerFilter of layerFilterList) {
-                if (layerFilter.filter !== "") {
-                    features.push(await this.getAllFeaturesByAttribute({
-                        id: layerFilter.layerId
-                    }));
-                }
+                features.push(await this.getAllFeaturesByAttribute({
+                    id: layerFilter.layerId
+                }));
             }
 
             if (features.length > 0) {
                 layerFilterList.forEach(layerFilter => {
-                    if (layerFilter.filter !== "" && layerFilter.districtInfo.length > 0) {
-                        resultNames.push(this.filterOne(layerFilter, features[0]).map(feature => feature.getProperties()[selector]));
-                        results.push(this.filterOne(layerFilter, features[0]));
-                    }
+                    const ret = this.filterOne(layerFilter, features[0]);
+
+                    resultNames.push(ret.map(feature => feature.getProperties()[selector]));
+                    results.push(ret);
 
                 }, this);
                 comparableFeatures = results[0];
                 if (results.length > 1) {
-                    intersection = resultNames.reduce(function (a, b) {
+                    const intersection = resultNames.reduce(function (a, b) {
                         return a.filter(function (val) {
                             return b.includes(val);
                         });
                     });
+
                     comparableFeatures = results[0].filter(feature => intersection.includes(feature.getProperties()[selector]));
                     // this.comparableFeaturesNames = intersection;
                     // this.renderCompareResults(intersection);
@@ -72,30 +71,14 @@ export default {
      * @returns {Array} filter results
      */
     filterOne: function (layerFilter, features) {
-        let intersection = [];
-        const filterResults = [],
-            filterCollection = layerFilter.filter;
+        const tolerance = [layerFilter.low, layerFilter.high],
+            refValue = layerFilter.value;
 
-        Object.keys(filterCollection).forEach(filterKey => {
-            const tolerance = [parseFloat(filterCollection[filterKey][0]), parseFloat(filterCollection[filterKey][1])],
-                refValue = layerFilter.districtInfo.filter(item => item.key === filterKey)[0].value,
-                selectedFeatures = features.filter(feature => {
-                    return feature.getProperties()[filterKey] >= refValue - tolerance[0]
-                        && feature.getProperties()[filterKey] <= refValue + tolerance[1]
+        return features.filter(feature => {
+            return feature.getProperties()[layerFilter.field] >= refValue - tolerance[0]
+                        && feature.getProperties()[layerFilter.field] <= refValue + tolerance[1]
                         && feature.getProperties()[this.keyOfAttrNameStats] !== this.getSelectedDistrict()
                         && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1;
-                });
-
-            filterResults.push(selectedFeatures);
-        }, this);
-        if (filterResults.length > 1) {
-            intersection = filterResults.reduce(function (a, b) {
-                return a.filter(function (val) {
-                    return b.includes(val);
-                });
-            });
-            return intersection;
-        }
-        return filterResults[0];
+        });
     }
 };

@@ -76,7 +76,7 @@ export default {
             layerFilterModels: [],
             // filters: [{key: "test", "field": "test2", "min": 0, "max": 10, value: 1000, high: 0, low: 0}],
             // filters: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
-            filters: [{"name": "19034", "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, hight: 0, low: 0}],
+            // layerFilterModels: [{"layerId": "19034", "name": "test", "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0}],
             selectorField: "verwaltungseinheit", // TODO
             resultNames: null,
             refDistrict: null
@@ -168,26 +168,22 @@ export default {
         },
 
         addLayerFilter: async function () {
-            const selectedLayerId = this.selectedLayer.id;
-
+            this.layerOptions = this.layerOptions.filter(layer => layer.id !== this.selectedLayer.id);
+            this.layerFilterModels.push(await this.createLayerFilterModel(this.selectedLayer));
             this.selectedLayer = null;
-            this.layerOptions = this.layerOptions.filter(layer => layer.id !== selectedLayerId);
-
-            this.layerFilterModels.push(await this.createLayerFilterModel(selectedLayerId));
         },
 
 
-        createLayerFilterModel: async function (layerId) {
+        createLayerFilterModel: async function (layer) {
             const selector = this.keyOfAttrNameStats,
                 features = await this.getAllFeaturesByAttribute({
-                    id: layerId
+                    id: layer.id
                 }),
                 field = getLatestFieldFromCollection(features),
                 values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
                 max = parseInt(Math.max(...values), 10),
                 min = parseInt(Math.min(...values), 10),
-                districtName = this.getSelectedDistrict(),
-                filter = {[field]: [0, 0]};
+                districtName = this.getSelectedDistrict();
 
             let value = 0;
 
@@ -198,8 +194,7 @@ export default {
                     value = parseInt(refFeature.getProperties()[field], 10);
                 }
             }
-            // TODO: why array?
-            return {layerId, field, filter: filter, districtInfo: [{key: field, value, max, min}]};
+            return {layerId: layer.id, name: layer.name, field, value, max, min, high: 0, low: 0};
         },
 
         /**
@@ -273,19 +268,15 @@ export default {
         },
 
         updateFilter (value) {
-            console.log(value);
+            const filters = [...this.layerFilterModels];
 
-            const filters = [...this.filters];
-
-            for (let i = 0; i < this.filters.length; i++) {
+            for (let i = 0; i < filters.length; i++) {
                 if (filters[i].field === value.field) {
                     filters[i] = {...filters[i], ...value};
                     break;
                 }
             }
-
-            console.log(filters);
-            this.filters = filters;
+            this.layerFilterModels = filters;
         },
 
         /**
@@ -367,10 +358,10 @@ export default {
                 <div id="layerfilter-container"></div>
                 <div id="results">
                     <template
-                        v-for="filter in filters"
+                        v-for="filter in layerFilterModels"
                     >
                         <LayerFilter
-                            :key="filter.name"
+                            :key="filter.layerId"
                             v-bind="filter"
                             @update="updateFilter"
                         />

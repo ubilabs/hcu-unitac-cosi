@@ -178,7 +178,7 @@ describe("cosi.QueryDistricts.vue", () => {
         expect(wrapper.vm.selectedLayer).to.be.null;
         expect(wrapper.vm.layerOptions).to.deep.equal([{"id": "15563", "name": "Bevölkerung insgesamt"}]);
     });
-    it("add selected layer", async () => {
+    it.only("add selected layer", async () => {
         // arrange
         getLayerListStub.returns([{
             id: "19034",
@@ -225,17 +225,20 @@ describe("cosi.QueryDistricts.vue", () => {
         expect(wrapper.vm.selectedLayer).to.be.null;
         expect(wrapper.vm.layerOptions).to.deep.equal([]);
         expect(wrapper.vm.layerFilterModels).to.deep.equal(
-            [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
+            [{
+                "layerId": "19034",
+                "name": "Bevölkerung insgesamt",
+                "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0
+            }]);
         expect(wrapper.vm.resultNames).to.deep.equal([]);
 
         // act: update filter
         await wrapper.setData({
-            layerFilterModels: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 38373}], "field": "jahr_2019", "filter": {"jahr_2019": ["1000", "1000"]}}]
+            layerFilterModels: [{"layerId": "19034", "field": "jahr_2019", "max": 92087, "min": 506, "value": 38373, high: 1000, low: 1000}]
         });
         await wrapper.vm.$nextTick();
 
         // assert
-        // TODO: wrong districts
         expect(wrapper.vm.resultNames).to.deep.equal(["Horn", "Hamm"]);
         expect(await wrapper.find("#compare-results").text()).to.equal("Vergleichbare Gebiete:  HornHamm");
 
@@ -250,10 +253,10 @@ describe("cosi.QueryDistricts.vue", () => {
         await wrapper.find("#set-selected-district").trigger("click");
         await wrapper.vm.$nextTick();
     });
-    it("compareFeatures on filter", async () => {
+    it.only("compareFeatures on filter", async () => {
         const value = [
-                {"layerId": "19041", "filter": {"jahr_2019": ["100", "200"]}, "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 3538, "min": 54}]},
-                {"layerId": "19034", "filter": {"jahr_2019": ["1000", "1000"]}, "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 92087, "min": 506}]}
+                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
+                {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506}
             ],
             self = {
                 // TODO
