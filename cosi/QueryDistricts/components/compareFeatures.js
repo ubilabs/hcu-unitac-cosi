@@ -6,8 +6,8 @@ export default {
      * @returns {void}
      */
     setComparableFeatures: async function (value) {
-        if (JSON.parse(value).length > 0) {
-            const layerFilterList = JSON.parse(value),
+        if (value.length > 0) {
+            const layerFilterList = value,
                 selector = this.keyOfAttrNameStats,
                 results = [],
                 resultNames = [],
@@ -44,14 +44,13 @@ export default {
                     // this.renderParams();
                     // console.log("c", comparableFeatures)
                     // return {comparableFeatures, intersection};
-                    return {comparableFeatures: intersection};
+                    return {resultNames: intersection};
                 }
                 // else {
                 // this.renderCompareResults(resultNames.reduce((acc, val) => acc.concat(val), [])); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
                 // this.renderParams();
                 // this.comparableFeaturesNames = resultNames.reduce((acc, val) => acc.concat(val), []); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
-                // console.log("r", resultNames)
-                return {comparableFeatures: resultNames.reduce((acc, val) => acc.concat(val), [])};
+                return {resultNames: resultNames.reduce((acc, val) => acc.concat(val), [])};
                 // }
                 // this.showComparableDistricts(comparableFeatures);
             }
@@ -75,15 +74,15 @@ export default {
     filterOne: function (layerFilter, features) {
         let intersection = [];
         const filterResults = [],
-            filterCollection = JSON.parse(layerFilter.filter);
-
+            filterCollection = layerFilter.filter;
+        
         Object.keys(filterCollection).forEach(filterKey => {
             const tolerance = [parseFloat(filterCollection[filterKey][0]), parseFloat(filterCollection[filterKey][1])],
                 refValue = layerFilter.districtInfo.filter(item => item.key === filterKey)[0].value,
                 selectedFeatures = features.filter(feature => {
                     return feature.getProperties()[filterKey] >= refValue - tolerance[0]
                         && feature.getProperties()[filterKey] <= refValue + tolerance[1]
-                        && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
+                        && feature.getProperties()[this.keyOfAttrNameStats] !== this.getSelectedDistrict()
                         && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1;
                 });
 

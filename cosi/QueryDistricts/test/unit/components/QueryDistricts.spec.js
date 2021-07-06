@@ -29,7 +29,7 @@ config.mocks.$t = key => key;
 
 describe("cosi.QueryDistricts.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub;
+    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
@@ -66,6 +66,9 @@ describe("cosi.QueryDistricts.vue", () => {
         keyOfAttrNameStub = sandbox.stub();
         keyOfAttrNameStatsStub = sandbox.stub();
         getLayerListStub = sandbox.stub();
+        getSelectedDistrictStub = sandbox.stub();
+        zoomToStub = sandbox.stub();
+        layerFeaturesStub = sandbox.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -79,9 +82,22 @@ describe("cosi.QueryDistricts.vue", () => {
                             getters: {
                                 selectedFeatures: selectedFeaturesStub,
                                 keyOfAttrName: keyOfAttrNameStub,
-                                keyOfAttrNameStats: keyOfAttrNameStatsStub
+                                keyOfAttrNameStats: keyOfAttrNameStatsStub,
+                                layer: ()=>({
+                                    getSource: () => ({
+                                        getFeatures: layerFeaturesStub
+                                    })})
+                            },
+                            mutations: {
+                                setSelectedDistrictsCollection: sinon.stub()
                             }
                         }
+                    }
+                },
+                Map: {
+                    namespaced: true,
+                    actions: {
+                        zoomTo: zoomToStub
                     }
                 }
             },
@@ -105,7 +121,8 @@ describe("cosi.QueryDistricts.vue", () => {
             vuetify,
             methods: {
                 getLayerList: getLayerListStub,
-                getAllFeaturesByAttribute
+                getAllFeaturesByAttribute,
+                getSelectedDistrict: getSelectedDistrictStub
             }
         });
 
@@ -134,49 +151,84 @@ describe("cosi.QueryDistricts.vue", () => {
         expect(wrapper.vm.layerOptions).to.deep.equal([{"id": "15563", "name": "Bevölkerung insgesamt"}]);
     });
     it.only("add selected layer", async () => {
+        // arrange
         getLayerListStub.returns([{id: "19034", name: "Bevölkerung insgesamt", url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete"}]);
-        keyOfAttrNameStub.returns("key");
-        keyOfAttrNameStatsStub.returns("statgebiet");
+        keyOfAttrNameStub.returns("stadtteil_name");
+        keyOfAttrNameStatsStub.returns("stadtteil");
+        getSelectedDistrictStub.returns("Leeren");
         selectedFeaturesStub.returns([{
             style_: null,
             getProperties: ()=>({
                 key: "name"
             })
         }]);
+        layerFeaturesStub.returns([{
+            getProperties: ()=>({
+                "stadtteil_name": "Horn"
+            }),
+            getGeometry: sinon.stub().returns({
+                getExtent: sinon.stub()
+            })
+        }]);
 
         const wrapper = await mount();
 
+        // act
         await wrapper.setData({
             selectedLayer: {id: "19034", name: "Bevölkerung insgesamt"}
         });
         await wrapper.find("#add-filter").trigger("click");
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
+        // assert
         expect(wrapper.vm.selectedLayer).to.be.null;
         expect(wrapper.vm.layerOptions).to.deep.equal([]);
         expect(wrapper.vm.layerFilterModels).to.deep.equal(
-            [{"districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 38373}], "field": "jahr_2019", "filter": "{\"field\":[0,0]}"}]);
+            [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
+        expect(wrapper.vm.resultNames).to.deep.equal([]);
 
+        // act: update filter
+        await wrapper.setData({
+            layerFilterModels: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 38373}], "field": "jahr_2019", "filter": {"jahr_2019": ["1000", "1000"]}}]
+        });
+        await wrapper.vm.$nextTick();
+
+        // assert
+        // TODO: wrong districts
+        expect(wrapper.vm.resultNames).to.deep.equal(["Horn", "Hamm"]);
+        expect(await wrapper.find("#compare-results").text()).to.equal("Vergleichbare Gebiete:  HornHamm");
+
+        // act: click result name
+        await wrapper.find("#result-Horn").trigger("click");
+        await wrapper.vm.$nextTick();
+
+        // assert
+        sinon.assert.callCount(zoomToStub, 1);
+
+        // act: set selected districts
+        await wrapper.find("#set-selected-district").trigger("click");
+        await wrapper.vm.$nextTick();
     });
     it("compareFeatures on filter", async () => {
         const value = [
-                {"layerId": "19041", "filter": "{\"jahr_2019\":[\"100\",\"200\"]}", "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 3538, "min": 54}]},
-                {"layerId": "19034", "filter": JSON.stringify({"jahr_2019": ["1000", "1000"]}), "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 92087, "min": 506}]}
+                {"layerId": "19041", "filter": {"jahr_2019": ["100", "200"]}, "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 3538, "min": 54}]},
+                {"layerId": "19034", "filter": {"jahr_2019": ["1000", "1000"]}, "districtInfo": [{"key": "jahr_2019", "value": 0, "max": 92087, "min": 506}]}
             ],
             self = {
                 getAllFeaturesByAttribute,
                 selectorField: "verwaltungseinheit",
-                selectedDistrict: "Leeren",
+                getSelectedDistrict: ()=>"Leeren",
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
             },
-            ret = await self.setComparableFeatures(JSON.stringify(value));
+            ret = await self.setComparableFeatures(value);
 
         // expect(ret).to.deep.equal({
         //     comparableFeatures: ["Reitbrook", "Tatenberg", "Spadenland", "Francop", "Cranz"]
         // });
         expect(ret).to.deep.equal({
-            comparableFeatures:
+            resultNames:
                 ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
         });
     });

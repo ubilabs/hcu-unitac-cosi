@@ -5,6 +5,8 @@ import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
 import VueSelect from "vue-select";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
+import compareFeatures from "./compareFeatures.js";
+import Collection from "ol/Collection";
 
 
 /**
@@ -64,14 +66,15 @@ export default {
             layerOptions: [],
             selectedLayer: null,
             districtNames: [],
-            showInDashboard: false,
-            showSetSelectedDistrict: false,
             urls: {
                 "statgebiet": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
                 "stadtteil": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
                 "bezirk": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"
             },
-            layerFilterModels: []
+            layerFilterModels: [],
+            selectorField: "verwaltungseinheit", // TODO
+            resultNames: null,
+            refDistrict: null
         };
     },
     computed: {
@@ -87,7 +90,15 @@ export default {
             "featureList"
         ])
     },
-    watch: {},
+    watch: {
+        async layerFilterModels (newModels) {
+            const result = await this.setComparableFeatures(newModels);
+
+            if (result) {
+                this.resultNames = result.resultNames;
+            }
+        }
+    },
     /**
    * @returns {void}
    */
@@ -108,8 +119,12 @@ export default {
 
     },
     methods: {
-        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
+        ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
+        // TODO:REMOVE
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Map", ["zoomTo"]),
+        ...compareFeatures,
 
         initializeDistrictNames: function () {
             const selector = this.keyOfAttrName;
@@ -129,6 +144,9 @@ export default {
 
         getLayerList: function () {
             return _getLayerList();
+        },
+        getSelectedDistrict: function () {
+            return Radio.request("DistrictSelector", "getSelectedDistrict"); // TODO
         },
 
         addLayerFilter: async function () {
@@ -150,8 +168,8 @@ export default {
                 values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
                 max = parseInt(Math.max(...values), 10),
                 min = parseInt(Math.min(...values), 10),
-                districtName = this.getSelectedDistrict,
-                filter = {field: [0, 0]};
+                districtName = this.getSelectedDistrict(),
+                filter = {[field]: [0, 0]};
 
             let value = 0;
 
@@ -161,7 +179,77 @@ export default {
                 value = parseInt(refFeature.getProperties()[field], 10);
             }
             // TODO: why array?
-            return {field, filter: JSON.stringify(filter), districtInfo: [{key: field, value, max, min}]};
+            return {layerId, field, filter: filter, districtInfo: [{key: field, value, max, min}]};
+        },
+
+        /**
+     * sets viewport to a district clicked on
+     * @param {string} districtName name of district
+     * @fires Core#RadioRequestMapCreateLayerIfNotExists
+     * @fires InfoScreen#RadioRequestInfoScreenGetIsInfoScreen
+     * @fires InfoScreen#RadioRequestInfoScreenTriggerRemote
+     * @returns {void}
+     */
+        zoomToDistrict: function (districtName) {
+            const selectedDistrictLayer = this.layer,
+                attributeSelector = this.keyOfAttrName,
+                districtFeatures = selectedDistrictLayer.getSource().getFeatures();
+
+
+            for (const feature of districtFeatures) {
+                if (feature.getProperties()[attributeSelector] === districtName) {
+                    const extent = feature.getGeometry().getExtent();
+
+                    this.zoomTo(extent, {padding: [20, 20, 20, 20]});
+                    return;
+                }
+            }
+        },
+
+        /**
+     * sets selectedDistricts to comparable districts
+     * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetScope
+     * @fires Core.ModelList#RadioRequestModelListGetModelByAttributes
+     * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetDistrictLayer
+     * @fires Tools.SelectDistrict#RadioRequestSetSelectedDistrictsToFeatures
+     * @returns {void}
+     */
+        changeDistrictSelection: function () {
+            const selector = this.keyOfAttrNameStats,
+                features = this.layer.getSource().getFeatures(),
+                selectedFeatures = features.filter(feature => this.resultNames.includes(feature.getProperties()[selector])),
+                featureCollection = new Collection(selectedFeatures);
+
+            featureCollection.set("fromExternal", true);
+
+            if (this.refDistrict) {
+                selectedFeatures.push(this.refDistrict);
+            }
+
+            this.setSelectedDistrictsCollection(featureCollection);
+        },
+
+        // TODO
+        showInDashboard: function () {
+            const results = $(this.$refs.result);
+
+            // Radio.trigger("Dashboard", "append", el, "#dashboard-containers", {
+            //     id: "reachability",
+            //     name: "Erreichbarkeit ab einem Referenzpunkt",
+            //     glyphicon: "glyphicon-road",
+            //     scalable: true
+            // });
+            // el.find("#dashboard-container").empty();
+
+            // const resultsClone = this.$el.find("#results").clone();
+
+            Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
+            Radio.trigger("Dashboard", "append", results, "#dashboard-containers", {
+                id: "compareDistricts",
+                name: "Vergleichbare Gebiete ermitteln",
+                glyphicon: "glyphicon glyphicon-random",
+                scalable: true
+            });
         },
 
         /**
@@ -245,15 +333,27 @@ export default {
                     </div>
                     <div id="reference-district">
                     </div>
-                    <div id="compare-results">
+                    <div
+                        v-if="resultNames!==null"
+                        id="compare-results"
+                    >
+                        <p><strong>Vergleichbare Gebiete: </strong></p>
+                        <span
+                            v-for="name in resultNames"
+                            :id="'result-'+name"
+                            :key="name"
+                            class="name-tag district-name"
+                            @click="zoomToDistrict(name)"
+                        >{{ name }}</span>
                     </div>
                 </div>
                 <br />
                 <div>
                     <button
-                        v-if="showSetSelectedDistrict"
+                        v-if="resultNames!==null"
                         id="set-selected-district"
                         class="btn btn-lgv-grey measure-delete"
+                        @click="changeDistrictSelection()"
                     >
                         Ergebnis als Gebietauswahl setzen
                     </button>
@@ -261,9 +361,10 @@ export default {
                 <br />
                 <div>
                     <button
-                        v-if="showInDashboard"
+                        v-if="resultNames!==null"
                         id="show-in-dashboard"
                         class="btn btn-lgv-grey measure-delete"
+                        @click="showInDashboard()"
                     >
                         Im Dashboard anzeigen
                     </button>
