@@ -340,17 +340,6 @@ export default {
 
         setBBoxToGeom(geometryCollection);
     },
-    showInDashboard: function () {
-        const el = $(this.$refs.result);
-
-        Radio.trigger("Dashboard", "append", el, "#dashboard-containers", {
-            id: "reachability",
-            name: "Erreichbarkeit ab einem Referenzpunkt",
-            glyphicon: "glyphicon-road",
-            scalable: true
-        });
-        el.find("#dashboard-container").empty();
-    },
     /**
      * shows help window
      * @returns {void}
