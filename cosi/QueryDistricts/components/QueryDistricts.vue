@@ -78,7 +78,7 @@ export default {
             // filters: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
             // layerFilterModels: [{"layerId": "19034", "name": "test", "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0}],
             selectorField: "verwaltungseinheit", // TODO
-            resultNames: null,
+            resultNames: [],
             refDistrict: null
         };
     },
@@ -99,9 +99,7 @@ export default {
         async layerFilterModels (newModels) {
             const result = await this.setComparableFeatures(newModels);
 
-            if (result) {
-                this.resultNames = result.resultNames;
-            }
+            this.resultNames = result?.resultNames;
         },
         active (value) {
             if (value) {
@@ -272,6 +270,7 @@ export default {
         updateFilter (value) {
             const filters = [...this.layerFilterModels];
 
+            // TODO: use name or layerId
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].field === value.field) {
                     filters[i] = {...filters[i], ...value};
@@ -279,6 +278,9 @@ export default {
                 }
             }
             this.layerFilterModels = filters;
+        },
+        closeFilter (value) {
+            this.layerFilterModels = this.layerFilterModels.filter(elem => elem.name !== value.name);
         },
 
         /**
@@ -366,6 +368,7 @@ export default {
                             :key="filter.layerId"
                             v-bind="filter"
                             @update="updateFilter"
+                            @close="closeFilter"
                         />
                     </template>
                     <div id="params">
@@ -382,7 +385,7 @@ export default {
                         >{{ selectedDistrict }}</span>
                     </div>
                     <div
-                        v-if="resultNames!==null"
+                        v-if="resultNames && resultNames.length"
                         id="compare-results"
                     >
                         <p><strong>Vergleichbare Gebiete: </strong></p>
@@ -398,7 +401,7 @@ export default {
                 <br />
                 <div>
                     <button
-                        v-if="resultNames!==null"
+                        v-if="resultNames && resultNames.length"
                         id="set-selected-district"
                         class="btn btn-lgv-grey measure-delete"
                         @click="changeDistrictSelection()"
@@ -409,7 +412,7 @@ export default {
                 <br />
                 <div>
                     <button
-                        v-if="resultNames!==null"
+                        v-if="resultNames && resultNames.length"
                         id="show-in-dashboard"
                         class="btn btn-lgv-grey measure-delete"
                         @click="showInDashboard()"

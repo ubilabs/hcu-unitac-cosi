@@ -43,6 +43,9 @@ export default {
         },
         updateValue () {
             this.$emit("update", {field: this.field, value: parseInt(this.$refs.inputValue.value, 10)});
+        },
+        close () {
+            this.$emit("close", {name: this.name});
         }
     }
 };
@@ -51,9 +54,11 @@ export default {
 <template lang="html">
     <div id="filter-panel">
         <button
+            id="close-button"
             type="button"
             class="close"
             aria-label="Close"
+            @click="close"
         >
             <span aria-hidden="true">&times;</span>
         </button>

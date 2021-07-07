@@ -5,6 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import QueryDistrictsComponent from "../../../components/QueryDistricts.vue";
+import LayerFilter from "../../../components/LayerFilter.vue";
 import compareFeatures from "../../../components/compareFeatures.js";
 import QueryDistricts from "../../../store/index";
 import {
@@ -282,7 +283,7 @@ describe("cosi.QueryDistricts.vue", () => {
 
         // act: update filter
         await wrapper.setData({
-            layerFilterModels: [{"layerId": "19034", "field": "jahr_2019", "max": 92087, "min": 506, "value": 38373, high: 1000, low: 1000}]
+            layerFilterModels: [{"layerId": "19034", "name": "name", "field": "jahr_2019", "max": 92087, "min": 506, "value": 38373, high: 1000, low: 1000}]
         });
         await wrapper.vm.$nextTick();
 
@@ -300,6 +301,13 @@ describe("cosi.QueryDistricts.vue", () => {
         // act: set selected districts
         await wrapper.find("#set-selected-district").trigger("click");
         await wrapper.vm.$nextTick();
+        // TODO
+
+        // act
+        await wrapper.findComponent(LayerFilter).vm.$emit("close", {name: "name"});
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.layerFilterModels).to.deep.equal([]);
+        expect(wrapper.find("#compare-results").exists()).to.be.false;
     });
     it("compareFeatures on filter", async () => {
         const value = [
