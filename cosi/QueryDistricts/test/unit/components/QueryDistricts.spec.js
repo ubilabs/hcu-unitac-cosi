@@ -17,6 +17,7 @@ import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import GeoJSON from "ol/format/GeoJSON";
+import VueSelect from "vue-select";
 
 Vue.use(Vuetify);
 
@@ -29,7 +30,7 @@ config.mocks.$t = key => key;
 
 describe("cosi.QueryDistricts.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub;
+    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
@@ -91,7 +92,7 @@ describe("cosi.QueryDistricts.vue", () => {
                                     })})
                             },
                             mutations: {
-                                setSelectedDistrictsCollection: sinon.stub()
+                                setSelectedDistrictsCollection: sandbox.stub()
                             }
                         },
                         DistrictLoader: {
@@ -119,7 +120,49 @@ describe("cosi.QueryDistricts.vue", () => {
 
     afterEach(function () {
         sandbox.restore();
+        wrapper.destroy();
     });
+
+    // eslint-disable-next-line require-jsdoc, no-shadow
+    async function setActive (active) {
+        store.commit("Tools/QueryDistricts/setActive", active);
+        await wrapper.vm.$nextTick();
+    }
+
+    // eslint-disable-next-line require-jsdoc, no-shadow
+    function setupDefaultStubs () {
+        getLayerListStub.returns([{
+            id: "19034",
+            // url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
+            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+        }]);
+        mappingStub.returns([{
+            value: "Bevölkerung insgesamt",
+            category: "bev_insgesamt"
+
+        }]);
+        keyOfAttrNameStub.returns("stadtteil_name");
+        keyOfAttrNameStatsStub.returns("stadtteil");
+
+        // keyOfAttrNameStub.returns("statgebiet_name");
+        // keyOfAttrNameStatsStub.returns("statgebiet");
+        getSelectedDistrictStub.returns("Leeren");
+        selectedFeaturesStub.returns([{
+            style_: null,
+            getProperties: ()=>({
+                key: "name"
+            })
+        }]);
+        layerFeaturesStub.returns([{
+            getProperties: ()=>({
+                "stadtteil_name": "Horn"
+            }),
+            getGeometry: sandbox.stub().returns({
+                getExtent: sandbox.stub()
+            })
+        }]);
+    }
 
     // eslint-disable-next-line require-jsdoc, no-shadow
     async function mount () {
@@ -135,83 +178,88 @@ describe("cosi.QueryDistricts.vue", () => {
         });
 
         await ret.vm.$nextTick();
+        wrapper = ret;
         return ret;
     }
     it("renders inactive", async () => {
 
-        const wrapper = await mount();
+        wrapper = await mount();
 
         expect(wrapper.find("#queryDistricts").exists()).to.be.false;
     });
     it("renders active", async () => {
         // arrange
-        getLayerListStub.returns([{
-            id: "15563",
-            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
-            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
-        }]);
-        mappingStub.returns([{
-            value: "Bevölkerung insgesamt",
-            category: "bev_insgesamt"
+        setupDefaultStubs();
 
-        }]);
-        keyOfAttrNameStub.returns("key");
-        keyOfAttrNameStatsStub.returns("statgebiet");
-        selectedFeaturesStub.returns([{
-            style_: null,
-            getProperties: ()=>({
-                key: "name"
-            })
-        }]);
-
-        const wrapper = await mount();
+        wrapper = await mount();
 
         // act
-        store.commit("Tools/QueryDistricts/setActive", true);
-        await wrapper.vm.$nextTick();
+        await setActive(true);
 
         // assert
         expect(wrapper.find("#queryDistricts").exists()).to.be.true;
         expect(wrapper.find("#queryDistricts").html()).to.not.be.empty;
         expect(wrapper.vm.selectedFeatures).to.not.empty;
-        // expect(wrapper.vm.districtNames).to.deep.equal(["name"]);
         expect(wrapper.vm.selectedLayer).to.be.null;
-        expect(wrapper.vm.layerOptions).to.deep.equal([{"id": "15563", "name": "Bevölkerung insgesamt"}]);
+        expect(wrapper.vm.layerOptions).to.deep.equal([{"id": "19034", "name": "Bevölkerung insgesamt"}]);
     });
-    it.only("add selected layer", async () => {
+    it("select district no selected features", async () => {
         // arrange
-        getLayerListStub.returns([{
-            id: "19034",
-            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
-            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
-        }]);
-        mappingStub.returns([{
-            value: "Bevölkerung insgesamt",
-            category: "bev_insgesamt"
+        setupDefaultStubs();
+        await mount();
+        selectedFeaturesStub.returns(null);
 
-        }]);
-        keyOfAttrNameStub.returns("stadtteil_name");
-        keyOfAttrNameStatsStub.returns("stadtteil");
-        getSelectedDistrictStub.returns("Leeren");
-        selectedFeaturesStub.returns([{
-            style_: null,
-            getProperties: ()=>({
-                key: "name"
-            })
-        }]);
-        layerFeaturesStub.returns([{
-            getProperties: ()=>({
-                "stadtteil_name": "Horn"
-            }),
-            getGeometry: sinon.stub().returns({
-                getExtent: sinon.stub()
-            })
-        }]);
+        // act
+        await setActive(true);
 
-        const wrapper = await mount();
+        // assert
+        expect(wrapper.vm.districtNames).to.deep.equal(["Horn"]);
+        expect(wrapper.find("#reference-district").exists()).to.be.false;
 
-        store.commit("Tools/QueryDistricts/setActive", true);
+        // act
+        await wrapper.setData({
+            selectedDistrict: "Horn"
+        });
+
+        // assert
+        expect(await wrapper.find("#reference-district").text()).to.equal("Referenzgebiet:  Horn");
+
+        // act
+        await wrapper.find("#reference-district-button").trigger("click");
         await wrapper.vm.$nextTick();
+
+        // assert
+        sinon.assert.callCount(zoomToStub, 1);
+
+    });
+    it("select district with selected features", async () => {
+        // arrange
+        setupDefaultStubs();
+        selectedFeaturesStub.returns([
+            {
+                getProperties: () => ({
+                    "stadtteil_name": "test1"
+                })},
+            {
+                getProperties: () => ({
+                    "stadtteil_name": "test2"
+                })
+            }
+        ]);
+        await mount();
+
+        // act
+        await setActive(true);
+
+        // assert
+        expect(wrapper.vm.districtNames).to.deep.equal(["test1", "test2"]);
+    });
+    it("add selected layer", async () => {
+        // arrange
+        setupDefaultStubs();
+        wrapper = await mount();
+
+        await setActive(true);
 
         // act
         await wrapper.setData({
@@ -253,7 +301,7 @@ describe("cosi.QueryDistricts.vue", () => {
         await wrapper.find("#set-selected-district").trigger("click");
         await wrapper.vm.$nextTick();
     });
-    it.only("compareFeatures on filter", async () => {
+    it("compareFeatures on filter", async () => {
         const value = [
                 {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
                 {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506}

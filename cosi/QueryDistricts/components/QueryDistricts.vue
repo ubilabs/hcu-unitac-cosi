@@ -148,11 +148,13 @@ export default {
             const selector = this.keyOfAttrName;
 
             if (this.selectedFeatures) {
+                console.log("herer1", selector, this.selectedFeatures);
                 this.districtNames = this.selectedFeatures.map(
                     (feature) => feature.getProperties()[selector]
                 );
             }
             else {
+                console.log("herer2", selector, this.selectedFeatures);
                 this.districtNames = this.layer
                     .getSource()
                     .getFeatures()
@@ -368,7 +370,16 @@ export default {
                     </template>
                     <div id="params">
                     </div>
-                    <div id="reference-district">
+                    <div
+                        v-if="selectedDistrict"
+                        id="reference-district"
+                    >
+                        <p><strong>Referenzgebiet: </strong></p>
+                        <span
+                            id="reference-district-button"
+                            class="name-tag district-name"
+                            @click="zoomToDistrict(selectedDistrict)"
+                        >{{ selectedDistrict }}</span>
                     </div>
                     <div
                         v-if="resultNames!==null"
