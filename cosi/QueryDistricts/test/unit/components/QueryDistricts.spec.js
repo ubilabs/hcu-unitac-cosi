@@ -31,7 +31,9 @@ config.mocks.$t = key => key;
 
 describe("cosi.QueryDistricts.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub, getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper;
+    let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
+        getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
+        addSingleAlertStub, cleanupStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
@@ -73,6 +75,9 @@ describe("cosi.QueryDistricts.vue", () => {
         zoomToStub = sandbox.stub();
         layerFeaturesStub = sandbox.stub();
         mappingStub = sandbox.stub();
+        addSingleAlertStub = sandbox.stub();
+        cleanupStub = sandbox.stub();
+        
 
         store = new Vuex.Store({
             namespaces: true,
@@ -109,6 +114,13 @@ describe("cosi.QueryDistricts.vue", () => {
                     namespaced: true,
                     actions: {
                         zoomTo: zoomToStub
+                    }
+                },
+                Alerting: {
+                    namespaced: true,
+                    actions: {
+                        addSingleAlert: addSingleAlertStub,
+                        cleanup: cleanupStub
                     }
                 }
             },
@@ -331,5 +343,26 @@ describe("cosi.QueryDistricts.vue", () => {
             resultNames:
                 ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
         });
+    });
+    it.only("show help", async () => {
+        // arrange
+        setupDefaultStubs();
+        wrapper = await mount();
+
+        await setActive(true);
+
+        // act
+        await wrapper.find("#help").trigger("click");
+
+        sinon.assert.callCount(cleanupStub, 1);
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        // expect(addSingleAlertStub.firstCall.args[1].content).to.contain("Erreichbarkeit ab einem Referenzpunkt");
+
+        // await wrapper.setData({
+        //     mode: "region"
+        // });
+
+        // await wrapper.find("#help").trigger("click");
+        // expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit im Gebiet");
     });
 });

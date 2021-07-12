@@ -8,6 +8,7 @@ import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
 import Collection from "ol/Collection";
+import Info from "text-loader!./info.html";
 
 
 /**
@@ -146,13 +147,11 @@ export default {
             const selector = this.keyOfAttrName;
 
             if (this.selectedFeatures) {
-                console.log("herer1", selector, this.selectedFeatures);
                 this.districtNames = this.selectedFeatures.map(
                     (feature) => feature.getProperties()[selector]
                 );
             }
             else {
-                console.log("herer2", selector, this.selectedFeatures);
                 this.districtNames = this.layer
                     .getSource()
                     .getFeatures()
@@ -284,6 +283,19 @@ export default {
         },
 
         /**
+     * shows help window
+     * @returns {void}
+     */
+        showHelp: function () {
+            this.cleanup();
+            this.addSingleAlert({
+                category: "Info",
+                content: Info,
+                displayClass: "info"
+            });
+        },
+
+        /**
      * Closes this tool window
      * @returns {void}
      */
@@ -338,7 +350,10 @@ export default {
                                 />
                             </td>
                             <td>
-                                <div id="help">
+                                <div
+                                    id="help"
+                                    @click="showHelp()"
+                                >
                                     <span class="glyphicon glyphicon-question-sign"></span>
                                 </div>
                             </td>
