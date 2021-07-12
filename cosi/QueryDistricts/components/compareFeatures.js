@@ -77,7 +77,7 @@ export default {
         return features.filter(feature => {
             return feature.getProperties()[layerFilter.field] >= refValue - tolerance[0]
                         && feature.getProperties()[layerFilter.field] <= refValue + tolerance[1]
-                        && feature.getProperties()[this.keyOfAttrNameStats] !== this.getSelectedDistrict()
+                        && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
                         && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1;
         });
     }

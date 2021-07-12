@@ -3,7 +3,9 @@
         "tools": {
             "cosi": {
                 "queryDistricts": {
-                    "title": "Vergleichbare Gebiete ermitteln"
+                    "title": "Vergleichbare Gebiete ermitteln",
+                    "layerDropdownLabel": "Auswahl statistische Daten",
+                    "districtDropdownLabel": "Referenzgebiet"
                 }
             }
         }

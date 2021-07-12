@@ -3,6 +3,10 @@
 export default {
     name: "LayerFilter",
     props: {
+        layerId: {
+            type: String,
+            default: null
+        },
         name: {
             type: String,
             default: null
@@ -36,16 +40,16 @@ export default {
     },
     methods: {
         updateLow () {
-            this.$emit("update", {field: this.field, low: parseInt(this.$refs.inputLow.value, 10)});
+            this.$emit("update", {layerId: this.layerId, low: parseInt(this.$refs.inputLow.value, 10)});
         },
         updateHigh () {
-            this.$emit("update", {field: this.field, high: parseInt(this.$refs.inputHigh.value, 10)});
+            this.$emit("update", {layerId: this.layerId, high: parseInt(this.$refs.inputHigh.value, 10)});
         },
         updateValue () {
-            this.$emit("update", {field: this.field, value: parseInt(this.$refs.inputValue.value, 10)});
+            this.$emit("update", {layerId: this.layerId, value: parseInt(this.$refs.inputValue.value, 10)});
         },
         close () {
-            this.$emit("close", {name: this.name});
+            this.$emit("close", {layerId: this.layerId});
         }
     }
 };
@@ -113,18 +117,36 @@ export default {
                         />
                     </td>
                     <td>
-                        <input
-                            ref="inputLow"
-                            type="number"
-                            :value="low"
-                            @input="updateLow()"
-                        />
-                        <input
-                            ref="inputHigh"
-                            type="number"
-                            :value="high"
-                            @input="updateHigh()"
-                        />
+                        <table>
+                            <tr>
+                                <td>
+                                    <span>-</span>
+                                </td>
+                                <td>
+                                    <input
+                                        ref="inputLow"
+                                        type="number"
+                                        :value="low"
+                                        min="0"
+                                        @input="updateLow()"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span>+</span>
+                                </td>
+                                <td>
+                                    <input
+                                        ref="inputHigh"
+                                        type="number"
+                                        :value="high"
+                                        min="0"
+                                        @input="updateHigh()"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </tbody>

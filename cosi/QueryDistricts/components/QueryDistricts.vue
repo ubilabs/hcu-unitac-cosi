@@ -3,7 +3,6 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
-import VueSelect from "vue-select";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
@@ -59,7 +58,6 @@ export default {
     name: "QueryDistricts",
     components: {
         Tool,
-        VueSelect,
         LayerFilter
     },
     data () {
@@ -79,7 +77,7 @@ export default {
             // filters: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
             // layerFilterModels: [{"layerId": "19034", "name": "test", "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0}],
             selectorField: "verwaltungseinheit", // TODO
-            resultNames: [],
+            resultNames: null,
             refDistrict: null
         };
     },
@@ -97,11 +95,15 @@ export default {
         ])
     },
     watch: {
-        async layerFilterModels (newModels) {
-            const result = await this.setComparableFeatures(newModels);
-
-            this.resultNames = result?.resultNames;
+        async layerFilterModels () {
+            this.computeResults();
         },
+
+        async selectedDistrict () {
+            await this.recreateLayerFilterModels();
+            this.computeResults();
+        },
+
         active (value) {
             if (value) {
                 this.initializeDistrictNames();
@@ -114,10 +116,10 @@ export default {
                     const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
 
                     if (layer) {
-                        this.allLayerOptions.push({name: m.value, id: layer.id});
+                        this.allLayerOptions.push({name: m.value, id: layer.id, group: m.group});
                     }
                 }
-                this.layerOptions = [...this.allLayerOptions];
+                this.setLayerOptions();
             }
         }
     },
@@ -146,7 +148,7 @@ export default {
         initializeDistrictNames: function () {
             const selector = this.keyOfAttrName;
 
-            if (this.selectedFeatures) {
+            if (this.selectedFeatures?.length) {
                 this.districtNames = this.selectedFeatures.map(
                     (feature) => feature.getProperties()[selector]
                 );
@@ -157,19 +159,34 @@ export default {
                     .getFeatures()
                     .map((district) => district.getProperties()[selector]);
             }
+
+            this.districtNames = [...new Set(this.districtNames)];
         },
 
         getLayerList: function () {
             return _getLayerList();
         },
-        getSelectedDistrict: function () {
-            return Radio.request("DistrictSelector", "getSelectedDistrict"); // TODO
+
+        setLayerOptions () {
+            const layerOptions = this.allLayerOptions.filter(
+                    layer => this.layerFilterModels.find(model => model.layerId === layer.id) === undefined
+                ),
+                groups = layerOptions.reduce((acc, el)=> ({...acc, [el.group]: [...acc[el.group] || [], el]}), {});
+
+            let ret = [];
+
+            for (const g in groups) {
+                ret.push({header: g});
+                ret = ret.concat(groups[g]);
+            }
+            this.layerOptions = ret;
         },
 
         addLayerFilter: async function () {
             this.layerOptions = this.layerOptions.filter(layer => layer.id !== this.selectedLayer.id);
             this.layerFilterModels.push(await this.createLayerFilterModel(this.selectedLayer));
             this.selectedLayer = null;
+            this.setLayerOptions();
         },
 
 
@@ -181,19 +198,37 @@ export default {
                 field = getLatestFieldFromCollection(features),
                 values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
                 max = parseInt(Math.max(...values), 10),
-                min = parseInt(Math.min(...values), 10),
-                districtName = this.getSelectedDistrict();
+                min = parseInt(Math.min(...values), 10);
 
             let value = 0;
 
-            if (districtName !== "Leeren") {
-                const refFeature = features.filter(feature => feature.getProperties()[selector] === districtName)[0];
+            if (this.selectedDistrict) {
+                const refFeature = features.filter(feature => feature.getProperties()[selector] === this.selectedDistrict)[0];
 
                 if (refFeature) {
                     value = parseInt(refFeature.getProperties()[field], 10);
                 }
             }
             return {layerId: layer.id, name: layer.name, field, value, max, min, high: 0, low: 0};
+        },
+
+        async recreateLayerFilterModels () {
+            const newModels = [];
+
+            for (const m of this.layerFilterModels) {
+                const newModel = await this.createLayerFilterModel({id: m.layerId, name: m.name});
+
+                newModel.high = m.high;
+                newModel.low = m.low;
+                newModels.push(newModel);
+            }
+            this.layerFilterModels = newModels;
+        },
+
+        async computeResults () {
+            const result = await this.setComparableFeatures(this.layerFilterModels);
+
+            this.resultNames = result?.resultNames;
         },
 
         /**
@@ -269,9 +304,8 @@ export default {
         updateFilter (value) {
             const filters = [...this.layerFilterModels];
 
-            // TODO: use name or layerId
             for (let i = 0; i < filters.length; i++) {
-                if (filters[i].field === value.field) {
+                if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
                     break;
                 }
@@ -279,7 +313,8 @@ export default {
             this.layerFilterModels = filters;
         },
         closeFilter (value) {
-            this.layerFilterModels = this.layerFilterModels.filter(elem => elem.name !== value.name);
+            this.layerFilterModels = this.layerFilterModels.filter(elem => elem.layerId !== value.layerId);
+            this.setLayerOptions();
         },
 
         /**
@@ -316,129 +351,148 @@ export default {
         :deactivateGFI="deactivateGFI"
     >
         <template v-slot:toolBody>
-            <div
-                v-if="active"
-                id="queryDistricts"
-                class="compare-districts"
-            >
-                <div>
-                    <table>
-                        <tr>
-                            <th>Statistische Datenfilter</th>
-                            <th>Referenzgebiet</th>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <VueSelect
-                                    id="layerfilter-selector-container"
-                                    v-model="selectedLayer"
-                                    class="style-chooser"
-                                    placeholder="Keine Auswahl"
-                                    label="name"
-                                    :options="layerOptions"
-                                    :clearable="false"
-                                />
-                            </td>
-                            <td>
-                                <VueSelect
-                                    v-model="selectedDistrict"
-                                    class="style-chooser"
-                                    placeholder="Keine Auswahl"
-                                    :options="districtNames"
-                                    :clearable="false"
-                                />
-                            </td>
-                            <td>
-                                <div
-                                    id="help"
-                                    @click="showHelp()"
-                                >
-                                    <span class="glyphicon glyphicon-question-sign"></span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <br />
-                <div>
-                    <button
-                        id="add-filter"
-                        type="button"
-                        class="btn btn-lgv-grey measure-delete"
-                        :disabled="selectedLayer===null"
-                        @click="addLayerFilter()"
-                    >
-                        <span class="glyphicon glyphicon-plus"></span>
-                        Hinzufügen
-                    </button>
-                </div>
-                <br />
-                <div id="layerfilter-container"></div>
-                <div id="results">
-                    <template
-                        v-for="filter in layerFilterModels"
-                    >
-                        <LayerFilter
-                            :key="filter.layerId"
-                            v-bind="filter"
-                            @update="updateFilter"
-                            @close="closeFilter"
+            <v-app>
+                <div
+                    v-if="active"
+                    id="queryDistricts"
+                    class="compare-districts"
+                >
+                    <div class="selectors">
+                        <v-select
+                            id="layerfilter-selector-container"
+                            v-model="selectedLayer"
+                            :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
+                            item-text="name"
+                            item-value="id"
+                            :items="layerOptions"
+                            :clearable="false"
+                            outlined
+                            dense
+                            return-object
+                            class="qd-select"
                         />
-                    </template>
-                    <div id="params">
+                        <v-select
+                            id="district-selector-container"
+                            v-model="selectedDistrict"
+                            :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
+                            :items="districtNames"
+                            :clearable="false"
+                            outlined
+                            dense
+                            class="qd-select"
+                        />
+                        <div
+                            id="help"
+                            @click="showHelp()"
+                        >
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                        </div>
                     </div>
-                    <div
-                        v-if="selectedDistrict"
-                        id="reference-district"
-                    >
-                        <p><strong>Referenzgebiet: </strong></p>
-                        <span
-                            id="reference-district-button"
-                            class="name-tag district-name"
-                            @click="zoomToDistrict(selectedDistrict)"
-                        >{{ selectedDistrict }}</span>
+                    <br />
+                    <div>
+                        <button
+                            id="add-filter"
+                            type="button"
+                            class="btn btn-lgv-grey measure-delete"
+                            :disabled="selectedLayer===null"
+                            @click="addLayerFilter()"
+                        >
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Hinzufügen
+                        </button>
                     </div>
-                    <div
-                        v-if="resultNames && resultNames.length"
-                        id="compare-results"
-                    >
-                        <p><strong>Vergleichbare Gebiete: </strong></p>
-                        <span
-                            v-for="name in resultNames"
-                            :id="'result-'+name"
-                            :key="name"
-                            class="name-tag district-name"
-                            @click="zoomToDistrict(name)"
-                        >{{ name }}</span>
+                    <br />
+                    <div id="layerfilter-container"></div>
+                    <div id="results">
+                        <template
+                            v-for="filter in layerFilterModels"
+                        >
+                            <LayerFilter
+                                :key="filter.layerId"
+                                v-bind="filter"
+                                class="layer-filter"
+                                @update="updateFilter"
+                                @close="closeFilter"
+                            />
+                        </template>
+                        <div id="params">
+                        </div>
+                        <div
+                            v-if="selectedDistrict"
+                            id="reference-district"
+                        >
+                            <p><strong>Referenzgebiet: </strong></p>
+                            <span
+                                id="reference-district-button"
+                                class="name-tag district-name"
+                                @click="zoomToDistrict(selectedDistrict)"
+                            >{{ selectedDistrict }}</span>
+                        </div>
+                        <div
+                            v-if="resultNames"
+                            id="compare-results"
+                        >
+                            <p><strong>Vergleichbare Gebiete: </strong></p>
+                            <span
+                                v-for="name in resultNames"
+                                :id="'result-'+name"
+                                :key="name"
+                                class="name-tag district-name"
+                                @click="zoomToDistrict(name)"
+                            >{{ name }}</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div>
+                        <button
+                            v-if="resultNames && resultNames.length"
+                            id="set-selected-district"
+                            class="btn btn-lgv-grey measure-delete"
+                            @click="changeDistrictSelection()"
+                        >
+                            Ergebnis als Gebietauswahl setzen
+                        </button>
+                    </div>
+                    <br />
+                    <div>
+                        <button
+                            v-if="resultNames && resultNames.length"
+                            id="show-in-dashboard"
+                            class="btn btn-lgv-grey measure-delete"
+                            @click="showInDashboard()"
+                        >
+                            Im Dashboard anzeigen
+                        </button>
                     </div>
                 </div>
-                <br />
-                <div>
-                    <button
-                        v-if="resultNames && resultNames.length"
-                        id="set-selected-district"
-                        class="btn btn-lgv-grey measure-delete"
-                        @click="changeDistrictSelection()"
-                    >
-                        Ergebnis als Gebietauswahl setzen
-                    </button>
-                </div>
-                <br />
-                <div>
-                    <button
-                        v-if="resultNames && resultNames.length"
-                        id="show-in-dashboard"
-                        class="btn btn-lgv-grey measure-delete"
-                        @click="showInDashboard()"
-                    >
-                        Im Dashboard anzeigen
-                    </button>
-                </div>
-            </div>
+            </v-app>
         </template>
     </Tool>
 </template>
 
 <style lang="less">
+.selectors {
+    display: flex;
+    flex-direction: column;
+}
+
+.qd-select .v-select__selection {
+  white-space: nowrap;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.qd-select .v-select__selections {
+  max-width: 300px;
+  max-height: 30px;
+}
+
+#help {
+    align-self: flex-end;
+}
+.layer-filter {
+    margin-bottom: 10px;
+}
 </style>

@@ -3,7 +3,9 @@
         "tools": {
             "cosi": {
                 "queryDistricts": {
-                    "title": "Query Districts"
+                    "title": "Query Districts",
+                    "layerDropdownLabel": "Select statistic data",
+                    "districtDropdownLabel": "reference district"
                 }
             }
         }

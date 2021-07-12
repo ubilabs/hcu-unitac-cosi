@@ -18,7 +18,6 @@ import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import GeoJSON from "ol/format/GeoJSON";
-import VueSelect from "vue-select";
 
 Vue.use(Vuetify);
 
@@ -77,7 +76,6 @@ describe("cosi.QueryDistricts.vue", () => {
         mappingStub = sandbox.stub();
         addSingleAlertStub = sandbox.stub();
         cleanupStub = sandbox.stub();
-        
 
         store = new Vuex.Store({
             namespaces: true,
@@ -152,8 +150,8 @@ describe("cosi.QueryDistricts.vue", () => {
         }]);
         mappingStub.returns([{
             value: "Bevölkerung insgesamt",
-            category: "bev_insgesamt"
-
+            category: "bev_insgesamt",
+            group: "Bevölkerung"
         }]);
         keyOfAttrNameStub.returns("stadtteil_name");
         keyOfAttrNameStatsStub.returns("stadtteil");
@@ -164,7 +162,8 @@ describe("cosi.QueryDistricts.vue", () => {
         selectedFeaturesStub.returns([{
             style_: null,
             getProperties: ()=>({
-                key: "name"
+                key: "name",
+                "stadtteil_name": "Test"
             })
         }]);
         layerFeaturesStub.returns([{
@@ -186,7 +185,6 @@ describe("cosi.QueryDistricts.vue", () => {
             vuetify,
             methods: {
                 getLayerList: getLayerListStub,
-                getSelectedDistrict: getSelectedDistrictStub
             }
         });
 
@@ -214,7 +212,23 @@ describe("cosi.QueryDistricts.vue", () => {
         expect(wrapper.find("#queryDistricts").html()).to.not.be.empty;
         expect(wrapper.vm.selectedFeatures).to.not.empty;
         expect(wrapper.vm.selectedLayer).to.be.null;
-        expect(wrapper.vm.layerOptions).to.deep.equal([{"id": "19034", "name": "Bevölkerung insgesamt"}]);
+        expect(wrapper.vm.districtNames).to.deep.equal(["Test"]);
+        expect(wrapper.vm.layerOptions).to.deep.equal([
+            {"header": "Bevölkerung"},
+            {"id": "19034", "name": "Bevölkerung insgesamt", "group": "Bevölkerung"}]);
+    });
+    it("no selectedFeatures", async () => {
+        // arrange
+        setupDefaultStubs();
+        selectedFeaturesStub.returns([]);
+
+        wrapper = await mount();
+
+        // act
+        await setActive(true);
+
+        // assert
+        expect(wrapper.vm.districtNames).to.deep.equal(["Horn"]);
     });
     it("select district no selected features", async () => {
         // arrange
@@ -316,10 +330,14 @@ describe("cosi.QueryDistricts.vue", () => {
         // TODO
 
         // act
-        await wrapper.findComponent(LayerFilter).vm.$emit("close", {name: "name"});
+        await wrapper.findComponent(LayerFilter).vm.$emit("close", {layerId: "19034"});
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.layerFilterModels).to.deep.equal([]);
         expect(wrapper.find("#compare-results").exists()).to.be.false;
+        expect(wrapper.vm.layerOptions).to.deep.equal([
+            {header: "Bevölkerung"},
+            {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung"}
+        ]);
     });
     it("compareFeatures on filter", async () => {
         const value = [
@@ -330,7 +348,6 @@ describe("cosi.QueryDistricts.vue", () => {
                 // TODO
                 getAllFeaturesByAttribute,
                 selectorField: "verwaltungseinheit",
-                getSelectedDistrict: ()=>"Leeren",
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
             },
@@ -344,7 +361,7 @@ describe("cosi.QueryDistricts.vue", () => {
                 ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
         });
     });
-    it.only("show help", async () => {
+    it("show help", async () => {
         // arrange
         setupDefaultStubs();
         wrapper = await mount();
@@ -354,15 +371,8 @@ describe("cosi.QueryDistricts.vue", () => {
         // act
         await wrapper.find("#help").trigger("click");
 
+        // assert
         sinon.assert.callCount(cleanupStub, 1);
         sinon.assert.callCount(addSingleAlertStub, 1);
-        // expect(addSingleAlertStub.firstCall.args[1].content).to.contain("Erreichbarkeit ab einem Referenzpunkt");
-
-        // await wrapper.setData({
-        //     mode: "region"
-        // });
-
-        // await wrapper.find("#help").trigger("click");
-        // expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit im Gebiet");
     });
 });
