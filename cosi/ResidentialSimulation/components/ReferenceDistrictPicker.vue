@@ -2,37 +2,24 @@
 import {Select} from "ol/interaction";
 import {mapActions, mapGetters} from "vuex";
 import getAvailableYears from "../../utils/getAvailableYears";
-import groupMapping from "../../utils/groupMapping";
+import mapping from "../../assets/mapping.json";
 
 export default {
     name: "ReferenceDistrictPicker",
     props: {
-        groupsList: {
-            type: Array,
-            required: false,
-            default: () => []
-        },
-        timelinePrefix: {
-            type: String,
-            required: false,
-            default: "jahr_"
-        }
     },
     data: () => ({
         select: null,
         referencePickerActive: false,
+        referenceFeature: null,
+        clusteredFeatures: [],
+        showClusteredFeaturePicker: false,
         workingDistrictLevel: null,
-        selectedStatsFeature: null,
-        layer: null
+        selectedStatsFeature: null
     }),
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
-        ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel"]),
-        ...mapGetters("Tools/DistrictLoader", ["mapping"]),
-
-        statsMapping () {
-            return groupMapping(this.mapping);
-        }
+        ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel"])
     },
     watch: {
         /**
@@ -80,8 +67,8 @@ export default {
         this.unlisten();
     },
     methods: {
-        ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
-        ...mapActions("Alerting", ["addSingleAlert"]),
+        ...mapActions("Tools/DistrictLoader", ["getAllFeaturesByAttribute"]),
+        ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
         /**
          * Toggles the Select interaction boolean on/off
@@ -123,7 +110,7 @@ export default {
         async pickReference (evt) {
             const feature = evt.selected[0],
                 stats = await this.getStatsByDistrict({
-                    districtFeature: feature,
+                    feature,
                     districtLevel: this.workingDistrictLevel
                 }),
                 baseStats = this.processStats(
@@ -133,7 +120,7 @@ export default {
                     "Bevölkerung insgesamt"
                 );
 
-            if (baseStats) {
+            if (feature) {
                 this.$emit("pickReference", baseStats);
             }
 
@@ -149,14 +136,11 @@ export default {
          * @returns {Object} - the base stats for the picked reference district
          */
         processStats (districtName, districtLevel, statsFeatures, basePopulationProp) {
-            if (!statsFeatures) {
-                this.alertError();
-                return null;
-            }
-            const stats = statsFeatures.map(feature => feature.getProperties()),
+            const attributeWhiteList = ["Bevölkerung", "Arbeitslose", "Sozialversicherungspflichtige", "SGB II Leistungen", "Verkehr"],
+                stats = statsFeatures.map(feature => feature.getProperties()),
                 years = getAvailableYears(statsFeatures),
-                latestYear = this.timelinePrefix + years[0],
-                populationStats = this.groupsList.length > 0 ? this.mapping.filter(mappingObj => this.groupsList.includes(mappingObj.group)) : this.mapping,
+                latestYear = "jahr_" + years[0],
+                populationStats = mapping.filter(mappingObj => attributeWhiteList.includes(mappingObj.group)),
                 basePopulationFeature = statsFeatures.find(feature => feature.get("kategorie") === basePopulationProp),
                 basePopulation = parseFloat(basePopulationFeature.get(latestYear)),
                 baseStats = {
@@ -164,13 +148,12 @@ export default {
                         districtName,
                         districtLevel
                     },
-                    absolute: [],
-                    relative: []
+                    absolute: {},
+                    relative: {}
                 };
 
             for (const mappingObj of populationStats) {
                 const datum = stats.find(d => d.kategorie === mappingObj.value);
-                let value;
 
                 if (mappingObj.valueType === "absolute") {
                     const refValue = parseFloat(datum[latestYear]);
@@ -181,36 +164,26 @@ export default {
                      * Eine Idee wäre den Referenzwert auch in der mapping.json zu hinterlegen...
                      */
                     if (mappingObj.value.includes("Frauen")) {
-                        value = refValue / stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
+                        const total = stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
+
+                        baseStats.absolute[datum.kategorie] = refValue / total;
+                        continue;
                     }
                     else if (mappingObj.value.includes("Männer")) {
-                        value = refValue / stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
-                    }
-                    else {
-                        value = refValue / basePopulation;
-                    }
-                }
-                else {
-                    value = parseFloat(datum[latestYear]);
-                }
+                        const total = stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
 
-                baseStats[mappingObj.valueType].push({
-                    group: datum.group,
-                    category: datum.kategorie,
-                    value: value,
-                    valueType: mappingObj.valueType
-                });
+                        baseStats.absolute[datum.kategorie] = refValue / total;
+                        continue;
+                    }
+
+                    baseStats.absolute[datum.kategorie] = refValue / basePopulation;
+                }
+                else if (mappingObj.valueType === "relative") {
+                    baseStats.relative[datum.kategorie] = parseFloat(datum[latestYear]);
+                }
             }
 
             return baseStats;
-        },
-
-        alertError () {
-            this.addSingleAlert({
-                category: "Warnung",
-                content: this.$t("additional:modules.tools.cosi.residentialSimulation.errorPickReference"),
-                displayClass: "warning"
-            });
         }
     }
 };
@@ -231,12 +204,11 @@ export default {
                 />
             </v-col>
         </v-row>
-        <!-- TODO: Combine with CompareDistricts/DistrictQuery -->
-        <!-- <v-row>
+        <v-row>
             <v-col cols="12">
                 <v-select
                     v-model="selectedStatsFeature"
-                    :items="statsMapping"
+                    :items="mapping"
                     item-text="value"
                     return-object
                     :label="$t('additional:modules.tools.cosi.residentialSimulation.statsFeatures')"
@@ -244,7 +216,7 @@ export default {
                     append-icon="mdi-chart-box"
                 />
             </v-col>
-        </v-row> -->
+        </v-row>
         <v-row>
             <v-col cols="12">
                 <v-btn

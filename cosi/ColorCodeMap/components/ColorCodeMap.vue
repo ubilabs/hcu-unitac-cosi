@@ -7,6 +7,7 @@ import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import Info from "text-loader!./info.html";
 import getColorScale from "../../../utils/colorScale.js";
+import mapping from "../../assets/mapping.json";
 
 export default {
     name: "ColorCodeMap",
@@ -50,15 +51,12 @@ export default {
             // Helper to pass data to the graph generator
             graphData: [],
             // Helper to store type of feature dataSet
-            dataCategory: "",
-            // layer for map names
-            namesLayer: null
+            dataCategory: ""
         };
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures"]),
         ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"])
     },
@@ -77,12 +75,9 @@ export default {
                 this.renderVisualization();
             }
         },
-        selectedDistrictLevel: {
-            deep: true,
-            handler () {
-                if (this.selectedDistrictLevel.features?.length > 0) {
-                    this.updateSelectedDistricts();
-                }
+        loadend (newValue) {
+            if (newValue && this.selectedFeatures.length > 0) {
+                this.updateSelectedDistricts();
             }
         },
         playState (stateChange) {
@@ -107,24 +102,21 @@ export default {
             }
         }
     },
-    async mounted () {
+    mounted () {
         this.applyTranslationKey(this.name);
-        this.namesLayer = await this.createLayer("map-names");
-        this.namesLayer.setVisible(true);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
         ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Map", ["createLayer"]),
         /**
          * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
          */
         updateSelectedDistricts () {
             this.featuresList = [];
-            if (this.currentStatsFeatures.length) {
-                this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
+            if (this.selectedStatFeatures.length) {
+                this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
                 this.updateFeaturesList();
             }
         },
@@ -134,10 +126,10 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            this.selectedFeature = this.mapping[0].value;
+            this.selectedFeature = mapping[0].value;
             this.selectedYear = this.availableYears[0];
 
-            this.mapping.forEach(attr => {
+            mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats]) {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
 
@@ -186,16 +178,14 @@ export default {
         renderVisualization () {
             this.graphData = [];
             if (this.visualizationState) {
-                const results = this.currentStatsFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
+                const results = this.selectedStatFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
 
                 this.generateDynamicLegend(results, colorScale);
-                this.namesLayer.getSource().clear();
                 this.selectedFeatures.forEach(district => {
                     const getStyling = district.getStyle(),
                         matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
-
 
                     if (matchResults) {
                         if (this.originalStyling === null) {
@@ -239,25 +229,24 @@ export default {
                             styleArray.push(additionalText);
                         }
                         if (this.showMapNames) {
-                            const labelFeature = district.clone(),
-                                headText = new Style({
-                                    text: new Text({
-                                        font: "16px Calibri, sans-serif",
-                                        fill: new Fill({
-                                            color: [0, 0, 0]
-                                        }),
-                                        placement: "point",
-                                        backgroundFill: new Fill({
-                                            color: [255, 255, 255]
-                                        }),
-                                        padding: [5, 10, 5, 10],
-                                        text: matchResults.getProperties()[this.keyOfAttrNameStats],
-                                        offsetY: -35
-                                    })
-                                });
+                            const headText = new Style({
+                                zIndex: 100,
+                                text: new Text({
+                                    font: "16px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [0, 0, 0]
+                                    }),
+                                    placement: "point",
+                                    backgroundFill: new Fill({
+                                        color: [255, 255, 255]
+                                    }),
+                                    padding: [5, 10, 5, 10],
+                                    text: matchResults.getProperties()[this.keyOfAttrNameStats],
+                                    offsetY: -35
+                                })
+                            });
 
-                            labelFeature.setStyle([headText]);
-                            this.namesLayer.getSource().addFeature(labelFeature);
+                            styleArray.push(headText);
                         }
 
                         district.setStyle(styleArray);
@@ -295,7 +284,6 @@ export default {
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
-
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -392,16 +380,16 @@ export default {
          * @returns {void}
          */
         changeSelector (value) {
-            const index = this.mapping.map(e => e.value).indexOf(this.selectedFeature) + value;
+            const index = mapping.map(e => e.value).indexOf(this.selectedFeature) + value;
 
             if (index === -1) {
-                this.selectedFeature = this.mapping[this.mapping.length - 1].value;
+                this.selectedFeature = mapping[mapping.length - 1].value;
             }
-            else if (index === this.mapping.length) {
-                this.selectedFeature = this.mapping[0].value;
+            else if (index === mapping.length) {
+                this.selectedFeature = mapping[0].value;
             }
             else {
-                this.selectedFeature = this.mapping[index].value;
+                this.selectedFeature = mapping[index].value;
             }
             this.renderVisualization();
         },
@@ -470,7 +458,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="currentStatsFeatures.length"
+        v-if="loadend"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
@@ -494,7 +482,6 @@ export default {
                         </template>
                     </button>
                     <button
-                        id="switch"
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         title="Visualisierung an/ aus"
@@ -525,7 +512,7 @@ export default {
                     </button>
 
                     <Multiselect
-                        v-if="currentStatsFeatures.length"
+                        v-if="selectedStatFeatures.length"
                         v-model="selectedYear"
                         class="year_selection selection"
                         :allow-empty="false"
@@ -542,7 +529,7 @@ export default {
                         </template>
                     </Multiselect>
                     <Multiselect
-                        v-if="currentStatsFeatures.length"
+                        v-if="selectedStatFeatures.length"
                         v-model="lastYear"
                         class="year_selection selection"
                         :class="{disable: !selectedYear}"

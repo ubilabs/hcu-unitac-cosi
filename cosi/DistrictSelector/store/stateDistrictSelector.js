@@ -34,7 +34,8 @@ const state = {
     selectedDistrictLevel: {},
     selectedDistrictsCollection: null,
     additionalInfoLayers: {},
-    bufferValue: 0
+    bufferValue: 0,
+    loadend: false
 };
 
 export default state;

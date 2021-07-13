@@ -40,34 +40,6 @@ export default {
         ...mapState(["easyReadMode"]),
 
         /**
-         * Gets the options for the dropdown. The layerId for the value and the label for the text content.
-         * @returns {Object} The options.
-         */
-        labelsOfDistrictLevels: function () {
-            const obj = {};
-
-            this.districtLevels.forEach(district => {
-                obj[district.layerId] = district.label;
-            });
-
-            return obj;
-        },
-
-        /**
-         * Gets the options for the dropdown. The layerId for the value and the label for the text content.
-         * @returns {Object} The options.
-         */
-        labelsOfDistrictLevels2: function () {
-            const obj = [];
-
-            this.districtLevels.forEach(district => {
-                obj.push(district.label);
-            });
-
-            return obj;
-        },
-
-        /**
          * Gets the names of the districts of the selected district level.
          * @returns {String[]} The district names or an empty array.
          */
@@ -170,10 +142,11 @@ export default {
             }
         });
     },
+
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Tools/DistrictLoader", ["loadDistricts"]),
+        ...mapActions("Tools/DistrictSelector", ["loadStats"]),
         ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
 
         /**
@@ -231,11 +204,14 @@ export default {
         /**
          * Registers listener for the feature collection of the select interaction.
          * On "change:length" (add or remove a feautre to/from the collection) the names of the selected districts are saved to the store.
+         * On "change:add" the district is set to selected.
+         * On "change:remove" the district is set to unselected.
          * @param {module:ol/Collection} featureCollection - The feature collection of the select interaction.
          * @returns {void}
          */
         registerFeatureCollectionListener (featureCollection) {
             featureCollection.on("change:length", (evt) => {
+                // evt.target = feature collection
                 this.setSelectedDistrictsCollection(evt.target);
 
                 const selectedNames = evt.target.getArray().map(feature => {
@@ -243,6 +219,24 @@ export default {
                 });
 
                 this.selectedNames = [...new Set(selectedNames)];
+            });
+
+            featureCollection.on("remove", (evt) => {
+                // evt.element -> feature that was removed
+                const foundDistrict = this.selectedDistrictLevel.districts.find(district => {
+                    return district.adminFeature.getId() === evt.element.getId();
+                });
+
+                foundDistrict.isSelected = false;
+            });
+
+            featureCollection.on("add", (evt) => {
+                // evt.element -> feature that was added
+                const foundDistrict = this.selectedDistrictLevel.districts.find(district => {
+                    return district.adminFeature.getId() === evt.element.getId();
+                });
+
+                foundDistrict.isSelected = true;
             });
         },
 
@@ -336,11 +330,17 @@ export default {
                 this.zoomTo(extent);
                 this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom(bboxGeom);
-                this.loadDistricts({
-                    extent: this.extent,
-                    districtNameList: this.districtNameList,
-                    districtFeatures: this.selectedFeatures
+                this.loadStats({
+                    districts: this.selectedDistricts,
+                    districtLevel: this.selectedDistrictLevel
                 });
+                // this.loadDistricts({
+                //     extent: this.extent,
+                //     districtNameList: this.districtNameList,
+                //     districtFeatures: this.selectedFeatures,
+                //     districtLevels: this.districtLevels,
+                //     selectedDistrictLevel: this.selectedDistrictLevel
+                // });
             }
             else {
                 this.setExtent([]);

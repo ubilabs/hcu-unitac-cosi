@@ -6,16 +6,12 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
-import StatisticsTable from "./StatisticsTable.vue";
+import LineChart from "../../ChartGenerator/components/charts/LineChart.vue";
+import BarChart from "../../ChartGenerator/components/charts/BarChart.vue";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
-import residentialLayerStyle from "../utils/residentialLayerStyle";
-import Feature from "ol/Feature";
-import {getContainingDistrictForFeature} from "../../utils/geomUtils";
-import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
 
 export default {
     name: "ResidentialSimulation",
@@ -24,18 +20,13 @@ export default {
         ScenarioManager,
         GeometryPicker,
         ReferenceDistrictPicker,
-        StatisticsTable,
-        Modal
+        LineChart,
+        BarChart
     },
     data () {
         return {
-            datePicker: false,
-            editDialog: false,
-            editFeature: null,
-            editStatsTable: false,
             geometry: null,
             neighborhood: {
-                name: "Mein Wohnquartier",
                 area: 0,
                 residents: 0,
                 avgHouseholdSize: 2.5,
@@ -43,8 +34,7 @@ export default {
                 gfz: 1.0,
                 populationDensity: 5000,
                 livingSpace: 30,
-                stats: null,
-                year: new Date().toISOString().substr(0, 7)
+                stats: {}
             },
             fallbacks: {
                 residents: 0,
@@ -56,8 +46,8 @@ export default {
             },
             baseStats: {
                 reference: {},
-                absolute: [],
-                relative: []
+                absolute: {},
+                relative: {}
             },
             baseStatsChartData: {
                 charts: [],
@@ -94,14 +84,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
-        ...mapGetters("Tools/DistrictLoader", ["districtLevels"]),
-        ...mapGetters("Tools/DistrictSelector", {
-            districtLayer: "layer",
-            selectedDistricts: "selectedFeatures",
-            selectedDistrictLevel: "selectedDistrictLevel"
-        }),
-        ...mapGetters("Map", ["map"]),
+        ...mapGetters("Tools/DistrictSelector", ["layer"]),
         geomField () {
             return {
                 name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
@@ -115,10 +98,6 @@ export default {
 
         residents () {
             return this.neighborhood.residents;
-        },
-
-        stats () {
-            return this.neighborhood.stats;
         }
     },
 
@@ -131,9 +110,6 @@ export default {
          * @returns {void}
          */
         active (newActive) {
-            this.editFeature = null;
-            this.editDialog = false;
-
             if (!newActive) {
                 const model = getComponent(this.id);
 
@@ -142,6 +118,8 @@ export default {
                 }
 
                 geomPickerUnlisten(this.$refs["geometry-picker"]);
+                geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
+                this.removePointMarker();
             }
         },
 
@@ -151,10 +129,6 @@ export default {
         },
 
         baseStats () {
-            if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
-                return;
-            }
-
             this.visualizeDemographics(
                 "gender",
                 "Demographie nach Gender",
@@ -168,11 +142,6 @@ export default {
                 ],
                 "BarChart"
             );
-
-            /**
-             * @todo remove timeout - only used due to issues in ChartGenerator module
-             * will be refactored
-             */
             setTimeout(() => {
                 this.visualizeDemographics(
                     "age",
@@ -190,7 +159,6 @@ export default {
                     "LineChart"
                 );
             }, 250);
-
             this.extrapolateNeighborhoodStatistics();
         },
 
@@ -203,15 +171,11 @@ export default {
             this.setActive(false);
         });
     },
-    mounted () {
-        this.createDrawingLayer();
-        this.map.addEventListener("click", this.openEditDialog.bind(this));
-    },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
-        ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
+        ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
 
         /**
          * @description create a guide layer used for additional info to display on the map
@@ -221,7 +185,7 @@ export default {
             const newLayer = await this.createLayer(this.id);
 
             newLayer.setVisible(true);
-            newLayer.setStyle(residentialLayerStyle);
+            // newLayer.setStyle(featureTagStyle);
             this.setDrawingLayer(newLayer);
 
             return newLayer;
@@ -234,7 +198,6 @@ export default {
          */
         updateGeometry (geom) {
             this.geometry = geom;
-            geomPickerUnlisten(this.$refs["geometry-picker"]);
         },
         updateArea (newArea) {
             updateArea(newArea, this.neighborhood, this.fallbacks);
@@ -270,18 +233,17 @@ export default {
         },
 
         extrapolateNeighborhoodStatistics () {
-            if (this.baseStats.absolute.length === 0) {
-                return;
-            }
-            this.neighborhood.stats = [
-                ...this.baseStats.absolute.map(datum => {
-                    return {
-                        ...datum,
-                        value: Math.round(datum.value * this.neighborhood.residents)
-                    };
-                }),
+            this.neighborhood.stats = {
+                ...this.baseStats.absolute,
                 ...this.baseStats.relative
-            ];
+            };
+
+            for (const prop in this.baseStats.absolute) {
+                this.neighborhood.stats[prop] = Math.round(this.neighborhood.stats[prop] * this.neighborhood.residents);
+            }
+
+            // console.log(this.neighborhood);
+            // console.log(this.baseStats);
         },
 
         visualizeDemographics (id, name, scaleLabels, labels, type) {
@@ -297,6 +259,7 @@ export default {
                 options: this.baseStatsChartData.options
             });
 
+            // this.baseStatsChartData.charts.push(chartData);
             this.setNewDataSet(chartData);
         },
 
@@ -304,80 +267,9 @@ export default {
             return {
                 borderColor: "darkblue",
                 backgroundColor: "darkblue",
-                data: labels.map(label => this.baseStats.absolute.find(datum => datum.category === label)?.value),
+                data: labels.map(label => this.baseStats.absolute[label]),
                 label: districtName
             };
-        },
-
-        async createFeature () {
-            const feature = new Feature({
-                    geometry: this.geometry,
-                    ...this.neighborhood,
-                    baseStats: this.baseStats
-                }),
-                districts = getContainingDistrictForFeature(this.districtLayer.getSource().getFeatures(), feature, undefined, true, true),
-                neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
-
-            // fill in missing statistical information if necessary
-            for (const district of districts) {
-                await this.getStatsByDistrict({
-                    districtFeature: district,
-                    districtLevel: this.selectedDistrictLevel
-                });
-            }
-
-            this.activeScenario.addNeighborhood(neighborhood);
-
-            // reset geometry
-            geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
-        },
-
-        resetFeature () {
-            // reset neighborhood data to defaults
-            this.neighborhood.name = this.defaults.name;
-            this.neighborhood.avgHouseholdSize = this.defaults.avgHouseholdSize;
-            this.neighborhood.gfz = this.defaults.gfz;
-            this.neighborhood.populationDensity = this.defaults.populationDensity;
-            this.neighborhood.livingSpace = this.defaults.livingSpace;
-
-            // reset fallback data to defaults
-            this.fallbacks.avgHouseholdSize = this.defaults.avgHouseholdSize;
-            this.fallbacks.gfz = this.defaults.gfz;
-            this.fallbacks.populationDensity = this.defaults.populationDensity;
-            this.fallbacks.livingSpace = this.defaults.livingSpace;
-
-            // reset baseStats from reference
-            this.baseStats = {
-                reference: {},
-                absolute: [],
-                relative: []
-            };
-
-            // reset geometry
-            geomPickerResetLocation(this.$refs["geometry-picker"]);
-        },
-
-        openEditDialog (evt) {
-            this.editFeature = null;
-            this.map.forEachFeatureAtPixel(evt.pixel, feature => {
-                this.editFeature = feature;
-                this.editDialog = true;
-            }, {
-                layerFilter: l => l === this.drawingLayer
-            });
-
-            if (!this.editFeature) {
-                this.editDialog = false;
-            }
-        },
-
-        deleteNeighborhood () {
-            this.activeScenario.removeNeighborhood(this.editFeature);
-            this.editDialog = false;
-        },
-
-        escapeEditStatsTable () {
-            this.editStatsTable = false;
         }
     }
 };
@@ -408,17 +300,6 @@ export default {
                         </div>
                         <v-divider />
                         <div class="form-group">
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>Name</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-text-field
-                                        v-model="neighborhood.name"
-                                        label="Quartiername"
-                                    />
-                                </v-col>
-                            </v-row>
                             <GeometryPicker
                                 ref="geometry-picker"
                                 :geomField="geomField"
@@ -432,7 +313,6 @@ export default {
                                 <v-col cols="9">
                                     <v-text-field
                                         v-model="polygonArea"
-                                        readonly
                                         label="Fläche"
                                         suffix="m²"
                                     />
@@ -607,158 +487,27 @@ export default {
                                 </v-col>
                             </v-row>
                             <v-divider />
-                            <v-row dense>
-                                <v-col cols="12">
-                                    <v-menu
-                                        ref="datePicker"
-                                        v-model="datePicker"
-                                        :close-on-content-click="false"
-                                        :return-value.sync="neighborhood.year"
-                                        transition="scale-transition"
-                                        offset-y
-                                        max-width="290px"
-                                        min-width="auto"
-                                    >
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                            <v-text-field
-                                                v-model="neighborhood.year"
-                                                :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
-                                                prepend-icon="mdi-calendar"
-                                                readonly
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            />
-                                        </template>
-                                        <v-date-picker
-                                            v-model="neighborhood.year"
-                                            type="month"
-                                            no-title
-                                            scrollable
-                                        >
-                                            <v-spacer></v-spacer>
-                                            <v-btn
-                                                text
-                                                color="primary"
-                                                @click="datePicker = false"
-                                            >
-                                                {{ $t("additional:modules.tools.cosi.cancel") }}
-                                            </v-btn>
-                                            <v-btn
-                                                text
-                                                color="primary"
-                                                @click="$refs.datePicker.save(neighborhood.year)"
-                                            >
-                                                OK
-                                            </v-btn>
-                                        </v-date-picker>
-                                    </v-menu>
-                                </v-col>
-                            </v-row>
-                            <v-divider />
                             <ReferenceDistrictPicker
-                                :groupsList="groupsList"
-                                :timelinePrefix="timelinePrefix"
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
-                            <v-divider />
-                            <v-row dense>
-                                <v-col
-                                    class="flex"
-                                    cols="12"
+                            <template v-if="baseStatsChartData.charts.length > 0">
+                                <v-row
+                                    v-for="(datum, i) in baseStatsChartData.charts"
+                                    :key="i"
+                                    dense
                                 >
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        class="flex-item"
-                                        @click="resetFeature"
-                                    >
-                                        <v-icon>mdi-eraser</v-icon>
-                                        <span>
-                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.resetFeature') }}
-                                        </span>
-                                    </v-btn>
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        class="flex-item"
-                                        :disabled="!neighborhood.stats || geometry === null"
-                                        @click="editStatsTable = true"
-                                    >
-                                        <v-icon>mdi-pencil</v-icon>
-                                        <span>
-                                            {{ $t("additional:modules.tools.cosi.edit") }}
-                                        </span>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        color="primary"
-                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
-                                        :disabled="!activeScenario || geometry === null || !neighborhood.stats"
-                                        class="flex-item"
-                                        @click="createFeature"
-                                    >
-                                        <v-icon>mdi-home-plus</v-icon>
-                                        <span>
-                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
-                                        </span>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
+                                    <v-col cols="12">
+                                        <component
+                                            :is="datum.type"
+                                            :dataSets="datum"
+                                            :options="baseStatsChartData.options"
+                                        />
+                                    </v-col>
+                                </v-row>
+                            </template>
                         </div>
                     </v-form>
-                    <v-snackbar
-                        v-model="editDialog"
-                        :timeout="-1"
-                        color="grey"
-                    >
-                        {{ $t('additional:modules.tools.cosi.residentialSimulation.editFeature') }}
-
-                        <template v-slot:action="{ attrs }">
-                            <v-btn
-                                v-bind="attrs"
-                                text
-                                @click="deleteNeighborhood"
-                            >
-                                {{ $t("additional:modules.tools.cosi.delete") }}
-                            </v-btn>
-                            <!-- NOT IMPLEMENTED -->
-                            <!-- <v-btn
-                                v-bind="attrs"
-                                text
-                                @click="editStatsTable = true; editDialog = false;"
-                            >
-                                {{ $t("additional:modules.tools.cosi.edit") }}
-                            </v-btn> -->
-                        </template>
-                    </v-snackbar>
-                    <Modal
-                        :show-modal="editStatsTable"
-                        @modalHid="escapeEditStatsTable"
-                        @clickedOnX="escapeEditStatsTable"
-                        @clickedOutside="escapeEditStatsTable"
-                    >
-                        <v-container>
-                            <v-card-title primary-title>
-                                {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }}
-                            </v-card-title>
-                            <v-subheader>
-                                {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
-                            </v-subheader>
-                            <div class="stats-table-modal">
-                                <StatisticsTable
-                                    v-if="neighborhood.stats && geometry !== null"
-                                    v-model="neighborhood.stats"
-                                />
-                            </div>
-                        </v-container>
-                    </Modal>
                 </v-main>
             </v-app>
         </template>
@@ -768,9 +517,5 @@ export default {
 <style lang="less">
     .slider-val {
         width: 60px;
-    }
-    .stats-table-modal {
-        height: 65vh;
-        overflow-y: scroll;
     }
 </style>

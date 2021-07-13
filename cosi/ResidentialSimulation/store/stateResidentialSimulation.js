@@ -20,16 +20,7 @@ const state = {
     resizableWindow: false,
     width: 0.4,
     // ResidentialSimulation specific state
-    timelinePrefix: "jahr_",
-    groupsList: ["Bevölkerung", "Arbeitslose", "Sozialversicherungspflichtige", "SGB II Leistungen", "Verkehr"],
-    drawingLayer: null,
-    defaults: {
-        name: "Mein Wohnquartier",
-        avgHouseholdSize: 2.5,
-        gfz: 1.0,
-        populationDensity: 5000,
-        livingSpace: 30
-    }
+    drawingLayer: null
 };
 
 export default state;

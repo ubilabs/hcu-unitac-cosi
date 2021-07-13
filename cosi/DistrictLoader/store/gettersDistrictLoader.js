@@ -145,7 +145,7 @@ const getters = {
      * @returns {module:ol/Feature[]} The stats features.
      */
     currentStatsFeatures: (state, {selectedDistrictLevel}) => {
-        return selectedDistrictLevel?.features;
+        return selectedDistrictLevel.features;
     },
 
     /**
