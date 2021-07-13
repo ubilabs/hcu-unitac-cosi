@@ -80,7 +80,7 @@ export default {
                 "bezirk": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"
             },
             layerFilterModels: [],
-            selectorField: "verwaltungseinheit", // TODO
+            selectorField: "verwaltungseinheit",
             resultNames: null,
             refDistrict: null,
             dashboard: null
