@@ -140,7 +140,7 @@ export default {
         },
         /**
          * watches if the numbers are checked
-         * @returns {void}["select-district"]
+         * @returns {void}
          */
         numbersChecked () {
             this.refreshCaptions();
