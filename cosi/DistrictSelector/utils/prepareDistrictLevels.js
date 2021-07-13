@@ -57,7 +57,7 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
  * @param {String} keyOfAttrName -
  * @returns {Object[]} The districts.
  */
-export function getDistricts ({layer, keyOfAttrName, label}) {
+export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
     const districts = [];
 
     layer.getSource().getFeatures().forEach(function (feature) {
@@ -72,13 +72,13 @@ export function getDistricts ({layer, keyOfAttrName, label}) {
             getId: () => feature.getId(),
             // label of the district
             getLabel: () => {
-                const sameNamedDistricts = ["Eimsbüttel", "Wandsbek", "Bergedorf"];
+                const districtName = feature.get(keyOfAttrName);
 
                 // rename feature name for reference levels to avoid naming conflict
-                if (label === "Bezirke" && sameNamedDistricts.includes(feature.get(keyOfAttrName))) {
-                    return feature.get(keyOfAttrName) + " (Bezirk)";
+                if (duplicateDistrictNames?.includes(districtName)) {
+                    return `${districtName} (${label.slice(0, -1)})`;
                 }
-                return feature.get(keyOfAttrName);
+                return districtName;
             },
             // name of the district
             getName: () => feature.get(keyOfAttrName)

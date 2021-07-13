@@ -5,11 +5,15 @@ import {equalTo} from "ol/format/filter";
 
 const actions = {
     /**
-     *
-     * @param {*} param0
-     * @param {*} param1
+     * @param {Object} store.commit -
+     * @param {Function} store.dispatch -
+     * @param {Function} store.rootGetters -
+     * @param {Object} payload -
+     * @param {Number[]} payload.districtLevel -
+     * @param {String[]} payload.districts -
+     * @returns {void}
      */
-    async loadStats ({dispatch, commit, rootGetters}, {districtLevel, districts}) {
+    async loadStats ({commit, dispatch, rootGetters}, {districtLevel, districts}) {
         commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         /**
@@ -31,7 +35,7 @@ const actions = {
                         filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
                     });
 
-                    // add statFeatures to district
+                // add statFeatures to district
                 districts[i].statFeatures = wfsFormat.readFeatures(features);
                 districts[i].statFeatures.forEach(prepareStatsFeatures);
             }
@@ -54,16 +58,16 @@ const actions = {
                 districts: referenceLevel.label === "Bezirke" ? referenceLevel.districts : refDistricts,
                 districtLevel: referenceLevel
             });
-        }
-
-        else {
-            commit("setLoadend", true);
-            dispatch("Alerting/cleanup", null, {root: true});
             /**
              * @deprecated
              * @todo refactor when Radio removed
              */
             Radio.trigger("Util", "hideLoader");
+        }
+
+        else {
+            commit("setLoadend", true);
+            dispatch("Alerting/cleanup", null, {root: true});
         }
     },
 
