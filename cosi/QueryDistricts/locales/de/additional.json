@@ -5,7 +5,15 @@
                 "queryDistricts": {
                     "title": "Vergleichbare Gebiete ermitteln",
                     "layerDropdownLabel": "Auswahl statistische Daten",
-                    "districtDropdownLabel": "Referenzgebiet"
+                    "districtDropdownLabel": "Referenzgebiet",
+                    "showInDashboardLable": "Im Dashboard anzeigen",
+                    "resultAsSelection": "Ergebnis als Gebietauswahl setzen",
+                    "comparableResults": "Vergleichbare Gebiete",
+                    "referenceDistrict": "Referenzgebiet",
+                    "add": "Hinzufügen",
+                    "year": "Jahr",
+                    "referenceValue": "Referenzwert",
+                    "tolerance": "Toleranz"
                 }
             }
         }

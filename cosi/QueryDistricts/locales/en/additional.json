@@ -5,7 +5,15 @@
                 "queryDistricts": {
                     "title": "Query Districts",
                     "layerDropdownLabel": "Select statistic data",
-                    "districtDropdownLabel": "reference district"
+                    "districtDropdownLabel": "reference district",
+                    "showInDashboardLable": "show in dashboard",
+                    "resultAsSelection": "set result as selection",
+                    "comparableResults": "comparable results",
+                    "referenceDistrict": "reference district",
+                    "add": "add",
+                    "year": "jear",
+                    "referenceValue": "reference value",
+                    "tolerance": "tolerance"
                 }
             }
         }

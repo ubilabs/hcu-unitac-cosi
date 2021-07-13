@@ -33,10 +33,10 @@ export default {
         <table class="table filter-result-table">
             <tr>
                 <th scope="col">
-                    Jahr
+                    {{ $t('additional:modules.tools.cosi.queryDistricts.year') }}
                 </th>
                 <th scope="col">
-                    Referenzwert
+                    {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValue') }}
                 </th>
                 <th scope="col">
                     -

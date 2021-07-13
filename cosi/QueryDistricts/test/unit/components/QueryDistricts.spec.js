@@ -249,7 +249,7 @@ describe("cosi.QueryDistricts.vue", () => {
         });
 
         // assert
-        expect(await wrapper.find("#reference-district").text()).to.equal("Referenzgebiet:  Horn");
+        expect(await wrapper.find("#reference-district-button").text()).to.equal("Horn");
 
         // act
         await wrapper.find("#reference-district-button").trigger("click");
@@ -315,7 +315,7 @@ describe("cosi.QueryDistricts.vue", () => {
 
         // assert
         expect(wrapper.vm.resultNames).to.deep.equal(["Horn", "Hamm"]);
-        expect(await wrapper.find("#compare-results").text()).to.equal("Vergleichbare Gebiete:  HornHamm");
+        expect(await wrapper.find("#compare-results").text()).to.contain("HornHamm");
 
         // act: click result name
         await wrapper.find("#result-Horn").trigger("click");

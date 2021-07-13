@@ -76,7 +76,7 @@ export default {
                         id="year"
                         scope="col"
                     >
-                        Jahr
+                        {{ $t('additional:modules.tools.cosi.queryDistricts.year') }}
                     </th><th
                         id="minmax"
                         scope="col"
@@ -93,13 +93,13 @@ export default {
                         id="reference"
                         scope="col"
                     >
-                        Referenzwert
+                        {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValue') }}
                     </th>
                     <th
                         id="tolerance"
                         scope="col"
                     >
-                        Toleranz
+                        {{ $t('additional:modules.tools.cosi.queryDistricts.tolerance') }}
                     </th>
                 </tr>
             </thead>

@@ -44,6 +44,9 @@ function getLatestField (feature, currentLatestField) {
 }
 
 /**
+ * @description get latest field from collection
+ * @param {*} features the features to test
+ * @returns {string} the selector
  */
 function getLatestFieldFromCollection (features) {
     let latestField;
@@ -123,24 +126,17 @@ export default {
             }
         }
     },
-    /**
-   * @returns {void}
-   */
+
     created () {
         this.$on("close", this.close);
     },
-    /**
-   * Put initialize here if mounting occurs after config parsing
-   * @returns {void}
-   */
+
     async mounted () {
         this.applyTranslationKey(this.name);
-
     },
     methods: {
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
-        // TODO:REMOVE
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Map", ["zoomTo"]),
         ...compareFeatures,
@@ -226,26 +222,16 @@ export default {
         },
 
         async computeResults () {
-            if(this.layerFilterModels.length)
-            {
-            const result = await this.setComparableFeatures(this.layerFilterModels);
+            if (this.layerFilterModels.length) {
+                const result = await this.setComparableFeatures(this.layerFilterModels);
 
-            this.resultNames = result?.resultNames;
+                this.resultNames = result?.resultNames;
             }
-            else
-            {
-            this.resultNames = null;
+            else {
+                this.resultNames = null;
             }
         },
 
-        /**
-     * sets viewport to a district clicked on
-     * @param {string} districtName name of district
-     * @fires Core#RadioRequestMapCreateLayerIfNotExists
-     * @fires InfoScreen#RadioRequestInfoScreenGetIsInfoScreen
-     * @fires InfoScreen#RadioRequestInfoScreenTriggerRemote
-     * @returns {void}
-     */
         zoomToDistrict: function (districtName) {
             const selectedDistrictLayer = this.layer,
                 attributeSelector = this.keyOfAttrName,
@@ -262,14 +248,6 @@ export default {
             }
         },
 
-        /**
-     * sets selectedDistricts to comparable districts
-     * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetScope
-     * @fires Core.ModelList#RadioRequestModelListGetModelByAttributes
-     * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetDistrictLayer
-     * @fires Tools.SelectDistrict#RadioRequestSetSelectedDistrictsToFeatures
-     * @returns {void}
-     */
         changeDistrictSelection: function () {
             const selector = this.keyOfAttrNameStats,
                 features = this.layer.getSource().getFeatures(),
@@ -326,10 +304,6 @@ export default {
             this.setLayerOptions();
         },
 
-        /**
-     * shows help window
-     * @returns {void}
-     */
         showHelp: function () {
             this.cleanup();
             this.addSingleAlert({
@@ -339,10 +313,6 @@ export default {
             });
         },
 
-        /**
-     * Closes this tool window
-     * @returns {void}
-     */
         close () {
             this.setActive(false);
         }
@@ -407,7 +377,7 @@ export default {
                             @click="addLayerFilter()"
                         >
                             <span class="glyphicon glyphicon-plus"></span>
-                            Hinzufügen
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
                         </button>
                     </div>
                     <br />
@@ -430,7 +400,9 @@ export default {
                             v-if="selectedDistrict"
                             id="reference-district"
                         >
-                            <p><strong>Referenzgebiet: </strong></p>
+                            <strong>
+                                {{ $t('additional:modules.tools.cosi.queryDistricts.referenceDistrict') }}:
+                            </strong>
                             <span
                                 id="reference-district-button"
                                 class="name-tag district-name"
@@ -441,7 +413,11 @@ export default {
                             v-if="resultNames"
                             id="compare-results"
                         >
-                            <p><strong>Vergleichbare Gebiete: </strong></p>
+                            <p>
+                                <strong>
+                                    {{ $t('additional:modules.tools.cosi.queryDistricts.comparableResults') }}:
+                                </strong>
+                            </p>
                             <span
                                 v-for="name in resultNames"
                                 :id="'result-'+name"
@@ -459,7 +435,7 @@ export default {
                             class="btn btn-lgv-grey measure-delete"
                             @click="changeDistrictSelection()"
                         >
-                            Ergebnis als Gebietauswahl setzen
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
                         </button>
                     </div>
                     <br />
@@ -470,7 +446,7 @@ export default {
                             class="btn btn-lgv-grey measure-delete"
                             @click="showInDashboard()"
                         >
-                            Im Dashboard anzeigen
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.showInDashboardLable') }}
                         </button>
                     </div>
                 </div>
@@ -589,5 +565,9 @@ export default {
     tr:hover {
         background-color: #f5f5f5;
     }
+}
+#reference-district {
+    color: #646262;
+    margin-bottom: 10px;
 }
 </style>
