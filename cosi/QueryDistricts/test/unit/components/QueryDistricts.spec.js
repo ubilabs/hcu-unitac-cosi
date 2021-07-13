@@ -18,6 +18,7 @@ import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import GeoJSON from "ol/format/GeoJSON";
+import { clone } from "@turf/turf";
 
 Vue.use(Vuetify);
 
@@ -32,7 +33,7 @@ describe("cosi.QueryDistricts.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
-        addSingleAlertStub, cleanupStub;
+        addSingleAlertStub, cleanupStub, addFeatureStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
@@ -76,6 +77,7 @@ describe("cosi.QueryDistricts.vue", () => {
         mappingStub = sandbox.stub();
         addSingleAlertStub = sandbox.stub();
         cleanupStub = sandbox.stub();
+        addFeatureStub = sandbox.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -111,7 +113,18 @@ describe("cosi.QueryDistricts.vue", () => {
                 Map: {
                     namespaced: true,
                     actions: {
-                        zoomTo: zoomToStub
+                        zoomTo: zoomToStub,
+                        createLayer: () => {
+                            return Promise.resolve({
+                                setVisible: sandbox.stub(),
+                                addEventListener: sandbox.stub(),
+                                getSource: () => ({
+                                    clear: sandbox.stub(),
+                                    addFeature: addFeatureStub,
+                                    addFeatures: sandbox.stub()
+                                })
+                            });
+                        }
                     }
                 },
                 Alerting: {
@@ -131,7 +144,9 @@ describe("cosi.QueryDistricts.vue", () => {
 
     afterEach(function () {
         sandbox.restore();
-        wrapper.destroy();
+        if (wrapper) {
+            wrapper.destroy();
+        }
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
@@ -172,6 +187,9 @@ describe("cosi.QueryDistricts.vue", () => {
             }),
             getGeometry: sandbox.stub().returns({
                 getExtent: sandbox.stub()
+            }),
+            clone: sandbox.stub().returns({
+                setStyle: sandbox.stub()
             })
         }]);
     }
@@ -184,7 +202,7 @@ describe("cosi.QueryDistricts.vue", () => {
             localVue,
             vuetify,
             methods: {
-                getLayerList: getLayerListStub,
+                getLayerList: getLayerListStub
             }
         });
 
@@ -242,6 +260,7 @@ describe("cosi.QueryDistricts.vue", () => {
         // assert
         expect(wrapper.vm.districtNames).to.deep.equal(["Horn"]);
         expect(wrapper.find("#reference-district").exists()).to.be.false;
+        sinon.assert.callCount(addFeatureStub, 0);
 
         // act
         await wrapper.setData({
@@ -249,6 +268,7 @@ describe("cosi.QueryDistricts.vue", () => {
         });
 
         // assert
+        sinon.assert.callCount(addFeatureStub, 1);
         expect(await wrapper.find("#reference-district-button").text()).to.equal("Horn");
 
         // act
@@ -339,13 +359,11 @@ describe("cosi.QueryDistricts.vue", () => {
             {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung"}
         ]);
     });
-    it("compareFeatures on filter", async () => {
+    it("compareFeatures one filter", async () => {
         const value = [
-                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
-                {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506}
+                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
             ],
             self = {
-                // TODO
                 getAllFeaturesByAttribute,
                 selectorField: "verwaltungseinheit",
                 keyOfAttrNameStats: "stadtteil",
@@ -353,13 +371,32 @@ describe("cosi.QueryDistricts.vue", () => {
             },
             ret = await self.setComparableFeatures(value);
 
-        // expect(ret).to.deep.equal({
-        //     comparableFeatures: ["Reitbrook", "Tatenberg", "Spadenland", "Francop", "Cranz"]
-        // });
-        expect(ret).to.deep.equal({
-            resultNames:
-                ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
-        });
+        expect(ret.resultNames).to.deep.equal(
+            ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
+        );
+    });
+    it("compareFeatures two filters", async () => {
+        const self = {
+                getAllFeaturesByAttribute,
+                selectorField: "verwaltungseinheit",
+                keyOfAttrNameStats: "stadtteil",
+                ...compareFeatures
+            },
+            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
+            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506},
+            ret1 = await self.setComparableFeatures([layer1]),
+            ret2 = await self.setComparableFeatures([layer2]),
+            ret = await self.setComparableFeatures([layer1, layer2]);
+
+        expect(ret1.resultNames).to.deep.equal(
+            ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
+        );
+        expect(ret2.resultNames).to.deep.equal(
+            ["Reitbrook", "Tatenberg", "Spadenland", "Francop", "Cranz"]
+        );
+        expect(ret.resultNames).to.deep.equal(
+            ["Cranz"]
+        );
     });
     it("show help", async () => {
         // arrange

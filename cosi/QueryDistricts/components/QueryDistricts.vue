@@ -11,6 +11,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Collection from "ol/Collection";
 import Info from "text-loader!./info.html";
+import {Fill, Stroke, Style} from "ol/style.js";
 
 
 /**
@@ -104,7 +105,6 @@ export default {
 
         async selectedDistrict () {
             await this.recreateLayerFilterModels();
-            this.computeResults();
         },
 
         active (value) {
@@ -133,12 +133,13 @@ export default {
 
     async mounted () {
         this.applyTranslationKey(this.name);
+        this.mapLayer = await this.createLayer("query-districts");
     },
     methods: {
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Map", ["zoomTo"]),
+        ...mapActions("Map", ["zoomTo", "createLayer"]),
         ...compareFeatures,
 
         initializeDistrictNames: function () {
@@ -225,10 +226,12 @@ export default {
             if (this.layerFilterModels.length) {
                 const result = await this.setComparableFeatures(this.layerFilterModels);
 
-                this.resultNames = result?.resultNames;
+                this.resultNames = result.resultNames;
+                this.showDistrictFeatures(result.features);
             }
             else {
                 this.resultNames = null;
+                this.showSelectedDistrict();
             }
         },
 
@@ -279,8 +282,9 @@ export default {
                 scalable: true
             });
 
-            if (this.dashboard) {
+            if (this.dashboard !== null) {
                 this.dashboard.$destroy();
+                this.dashboard = null;
             }
 
             this.dashboard = new Ctor({
@@ -315,6 +319,52 @@ export default {
 
         close () {
             this.setActive(false);
+        },
+
+        createDistrictStyle () {
+            return new Style({
+                fill: new Fill({
+                    color: [8, 119, 95, 0.3]
+                }),
+                stroke: new Stroke({
+                    color: [8, 119, 95, 0.3],
+                    width: 3
+                })
+            });
+        },
+
+        showSelectedDistrict: function () {
+            this.mapLayer.getSource().clear();
+
+            if (this.selectedDistrict) {
+
+                this.refDistrict = this.layer.getSource().getFeatures()
+                    .find(feature => feature.getProperties()[this.keyOfAttrName] === this.selectedDistrict);
+
+                const featureClone = this.refDistrict.clone();
+
+                featureClone.setStyle(this.createDistrictStyle());
+
+                this.mapLayer.getSource().addFeature(featureClone);
+            }
+        },
+        showDistrictFeatures (districtFeatures) {
+            this.mapLayer.getSource().clear();
+
+            const cloneCollection = districtFeatures.map((feature) => {
+                const featureClone = feature.clone();
+
+                featureClone.setStyle(this.createDistrictStyle());
+                return featureClone;
+            });
+
+            if (this.refDistrict) {
+                const refDistrictClone = this.refDistrict.clone();
+
+                refDistrictClone.setStyle(this.createDistrictStyle());
+                cloneCollection.push(refDistrictClone);
+            }
+            this.mapLayer.getSource().addFeatures(cloneCollection);
         }
     }
 };
@@ -355,7 +405,7 @@ export default {
                             v-model="selectedDistrict"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
                             :items="districtNames"
-                            :clearable="false"
+                            :clearable="true"
                             outlined
                             dense
                             class="qd-select"

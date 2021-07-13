@@ -1,84 +1,33 @@
 export default {
     /**
      * calculates comparable features
-     * @param {String} value layerFilterList value
-     * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetSelector
-     * @returns {void}
+     * @param {Array} layerFilterList value
+     * @returns {Array} comparable features results
      */
-    setComparableFeatures: async function (value) {
-        if (value.length > 0) {
-            const layerFilterList = value,
-                selector = this.keyOfAttrNameStats,
-                results = [],
-                resultNames = [],
-                features = [];
+    setComparableFeatures: async function (layerFilterList) {
 
-            let comparableFeatures = [];
+        const allFeatures = [];
 
-            for (const layerFilter of layerFilterList) {
-                features.push(await this.getAllFeaturesByAttribute({
-                    id: layerFilter.layerId
-                }));
-            }
+        for (const layerFilter of layerFilterList) {
+            const features = await this.getAllFeaturesByAttribute({
+                id: layerFilter.layerId
+            }).filter(feature => feature.getProperties()[layerFilter.field] >= layerFilter.value - layerFilter.low
+                && feature.getProperties()[layerFilter.field] <= layerFilter.value + layerFilter.high
+                && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
+                && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
 
-            if (features.length > 0) {
-                layerFilterList.forEach(layerFilter => {
-                    const ret = this.filterOne(layerFilter, features[0]);
-
-                    resultNames.push(ret.map(feature => feature.getProperties()[selector]));
-                    results.push(ret);
-
-                }, this);
-                comparableFeatures = results[0];
-                if (results.length > 1) {
-                    const intersection = resultNames.reduce(function (a, b) {
-                        return a.filter(function (val) {
-                            return b.includes(val);
-                        });
-                    });
-
-                    comparableFeatures = results[0].filter(feature => intersection.includes(feature.getProperties()[selector]));
-                    // this.comparableFeaturesNames = intersection;
-                    // this.renderCompareResults(intersection);
-                    // this.renderParams();
-                    // console.log("c", comparableFeatures)
-                    // return {comparableFeatures, intersection};
-                    return {resultNames: intersection};
-                }
-                // else {
-                // this.renderCompareResults(resultNames.reduce((acc, val) => acc.concat(val), [])); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
-                // this.renderParams();
-                // this.comparableFeaturesNames = resultNames.reduce((acc, val) => acc.concat(val), []); // arr.reduce((acc, val) => acc.concat(val), []) serves same function as arr.flat()
-                return {resultNames: resultNames.reduce((acc, val) => acc.concat(val), [])};
-                // }
-                // this.showComparableDistricts(comparableFeatures);
-            }
+            allFeatures.push(features);
         }
-        return null;
-        // this.$el.find("#compare-results").empty();
-        // this.$el.find("#params").empty();
-        // this.$el.find("#show-in-dashboard").hide();
-        // this.$el.find("#set-selected-district").hide();
-        // this.clearMapLayer();
-    },
 
-    /**
-     * runs all districts through one layerFilter
-     * @param {Object} layerFilter the layerFilter to filter through
-     * @param {Object[]} features -
-     * @fires FeaturesLoader#RadioRequestGetAllFeaturesByAttribute
-     * @fires Tools.SelectDistrict#RadioTriggerSelectDistrictGetSelector
-     * @returns {Array} filter results
-     */
-    filterOne: function (layerFilter, features) {
-        const tolerance = [layerFilter.low, layerFilter.high],
-            refValue = layerFilter.value;
+        // eslint-disable-next-line one-var
+        const intersection = allFeatures.reduce((a, b) => a.filter(
+            x => b.find(y => y.getProperties()[this.keyOfAttrNameStats]
+            === x.getProperties()[this.keyOfAttrNameStats])));
 
-        return features.filter(feature => {
-            return feature.getProperties()[layerFilter.field] >= refValue - tolerance[0]
-                        && feature.getProperties()[layerFilter.field] <= refValue + tolerance[1]
-                        && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
-                        && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1;
-        });
+        return {
+            resultNames: intersection.map(feature => feature.getProperties()[this.keyOfAttrNameStats]),
+            features: intersection
+        };
     }
+
 };
