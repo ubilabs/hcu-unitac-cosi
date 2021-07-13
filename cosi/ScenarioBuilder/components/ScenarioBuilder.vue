@@ -254,7 +254,6 @@ export default {
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
         :initial-width="0.4"
-        :initial-height="0.4"
     >
         <template
             v-if="active"
