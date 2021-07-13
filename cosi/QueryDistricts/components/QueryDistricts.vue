@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable vue/no-unused-components */
+import Vue from "vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getters from "../store/gettersQueryDistricts";
@@ -6,6 +8,7 @@ import mutations from "../store/mutationsQueryDistricts";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
+import DashboardResult from "./DashboardResult.vue";
 import Collection from "ol/Collection";
 import Info from "text-loader!./info.html";
 
@@ -73,9 +76,6 @@ export default {
                 "bezirk": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"
             },
             layerFilterModels: [],
-            // filters: [{key: "test", "field": "test2", "min": 0, "max": 10, value: 1000, high: 0, low: 0}],
-            // filters: [{"layerId": "19034", "districtInfo": [{"key": "jahr_2019", "max": 92087, "min": 506, "value": 0}], "field": "jahr_2019", "filter": {"jahr_2019": [0, 0]}}]);
-            // layerFilterModels: [{"layerId": "19034", "name": "test", "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0}],
             selectorField: "verwaltungseinheit", // TODO
             resultNames: null,
             refDistrict: null
@@ -226,9 +226,16 @@ export default {
         },
 
         async computeResults () {
+            if(this.layerFilterModels.length)
+            {
             const result = await this.setComparableFeatures(this.layerFilterModels);
 
             this.resultNames = result?.resultNames;
+            }
+            else
+            {
+            this.resultNames = null;
+            }
         },
 
         /**
@@ -278,27 +285,29 @@ export default {
             this.setSelectedDistrictsCollection(featureCollection);
         },
 
-        // TODO
         showInDashboard: function () {
-            const results = $(this.$refs.result);
+            const Ctor = Vue.extend(DashboardResult),
+                root = document.createElement("div"),
+                cont = document.createElement("div"); // nested container needed for mount
 
-            // Radio.trigger("Dashboard", "append", el, "#dashboard-containers", {
-            //     id: "reachability",
-            //     name: "Erreichbarkeit ab einem Referenzpunkt",
-            //     glyphicon: "glyphicon-road",
-            //     scalable: true
-            // });
-            // el.find("#dashboard-container").empty();
+            root.appendChild(cont);
 
-            // const resultsClone = this.$el.find("#results").clone();
 
             Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
-            Radio.trigger("Dashboard", "append", results, "#dashboard-containers", {
+            Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
                 id: "compareDistricts",
                 name: "Vergleichbare Gebiete ermitteln",
                 glyphicon: "glyphicon glyphicon-random",
                 scalable: true
             });
+
+            if (this.dashboard) {
+                this.dashboard.$destroy();
+            }
+
+            this.dashboard = new Ctor({
+                propsData: {layerFilterModels: this.layerFilterModels, districtNames: this.resultNames}
+            }).$mount(cont);
         },
 
         updateFilter (value) {
@@ -481,11 +490,11 @@ export default {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 300px;
+  max-width: 496px;
 }
 
 .qd-select .v-select__selections {
-  max-width: 300px;
+  max-width: 496px;
   max-height: 30px;
 }
 
@@ -494,5 +503,91 @@ export default {
 }
 .layer-filter {
     margin-bottom: 10px;
+}
+
+#compare-results {
+    max-width: 500px;
+ word-wrap: break-word
+}
+
+.compare-districts {
+    #layerfilter-selector-container {
+        .bootstrap-select {
+            width: 12vw !important;
+        }
+
+        .dropdown-menu.open {
+            width: 400px;
+            height: 200px;
+        }
+    }
+
+    #district-selector-container {
+        .bootstrap-select {
+            width: 12vw !important;
+        }
+
+        .dropdown-menu.open {
+            height: 200px;
+        }
+    }
+}
+
+
+#add-filter {
+    width: 100%;
+}
+
+
+#help {
+    padding-top: 5px;
+    background-color: white;
+    height: 30px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    text-align: center;
+    min-width: 30px;
+}
+
+#help:hover {
+    background-color: #d3d3d3;
+}
+
+#compare-results {
+    line-height: 1.6;
+}
+
+.name-tag {
+    border-radius: 5px;
+    background-color: #E3E3E3;
+    color: black;
+    padding: 2px 4px;
+    margin: 2px;
+    display: inline-block;
+}
+
+.name-tag.district-name {
+    cursor: pointer;
+}
+
+.compare-districts {
+    min-height: 300px;
+}
+
+#show-in-dashboard,
+#set-selected-district {
+    width: 100%;
+}
+
+.table {
+
+    th,
+    td {
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
 }
 </style>
