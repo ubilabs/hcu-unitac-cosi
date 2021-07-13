@@ -15,6 +15,10 @@ export default {
             type: String,
             default: null
         },
+        fieldValues: {
+            type: Array,
+            default: null
+        },
         min: {
             type: Number,
             default: NaN
@@ -27,6 +31,10 @@ export default {
             type: Number,
             default: NaN
         },
+        valueType: {
+            type: String,
+            default: null
+        },
         low: {
             type: Number,
             default: 0
@@ -37,8 +45,18 @@ export default {
         }
     },
     computed: {
+        values () {
+            return this.fieldValues.map(v=>v.replace("jahr_", ""));
+        },
+        fieldValue () {
+            return this.field.replace("jahr_", "");
+        }
     },
     methods: {
+        updateFieldValue (newValue) {
+            // console.log(newValue)
+            this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue});
+        },
         updateLow () {
             this.$emit("update", {layerId: this.layerId, low: parseInt(this.$refs.inputLow.value, 10)});
         },
@@ -105,7 +123,16 @@ export default {
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ field }}</td>
+                    <td>
+                        <v-select
+                            ref="inputFieldValue"
+                            :value="fieldValue"
+                            :items="values"
+                            outlined
+                            dense
+                            @change="updateFieldValue"
+                        />
+                    </td>
                     <td>{{ min }}</td>
                     <td>{{ max }}</td>
                     <td>
@@ -115,6 +142,7 @@ export default {
                             :value="value"
                             @input="updateValue()"
                         />
+                        {{ valueType }}
                     </td>
                     <td>
                         <table>

@@ -18,7 +18,7 @@ import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import GeoJSON from "ol/format/GeoJSON";
-import { clone } from "@turf/turf";
+import {clone} from "@turf/turf";
 
 Vue.use(Vuetify);
 
@@ -166,7 +166,8 @@ describe("cosi.QueryDistricts.vue", () => {
         mappingStub.returns([{
             value: "Bevölkerung insgesamt",
             category: "bev_insgesamt",
-            group: "Bevölkerung"
+            group: "Bevölkerung",
+            valueType: "relative"
         }]);
         keyOfAttrNameStub.returns("stadtteil_name");
         keyOfAttrNameStatsStub.returns("stadtteil");
@@ -233,7 +234,7 @@ describe("cosi.QueryDistricts.vue", () => {
         expect(wrapper.vm.districtNames).to.deep.equal(["Test"]);
         expect(wrapper.vm.layerOptions).to.deep.equal([
             {"header": "Bevölkerung"},
-            {"id": "19034", "name": "Bevölkerung insgesamt", "group": "Bevölkerung"}]);
+            {"id": "19034", "name": "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative"}]);
     });
     it("no selectedFeatures", async () => {
         // arrange
@@ -310,7 +311,7 @@ describe("cosi.QueryDistricts.vue", () => {
 
         // act
         await wrapper.setData({
-            selectedLayer: {id: "19034", name: "Bevölkerung insgesamt"}
+            selectedLayer: {id: "19034", name: "Bevölkerung insgesamt", "valueType": "relative"}
         });
         await wrapper.find("#add-filter").trigger("click");
         await wrapper.vm.$nextTick();
@@ -323,7 +324,10 @@ describe("cosi.QueryDistricts.vue", () => {
             [{
                 "layerId": "19034",
                 "name": "Bevölkerung insgesamt",
-                "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0
+                "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0,
+                "valueType": "relative",
+                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"
+                ]
             }]);
         expect(wrapper.vm.resultNames).to.deep.equal([]);
 
@@ -356,7 +360,7 @@ describe("cosi.QueryDistricts.vue", () => {
         expect(wrapper.find("#compare-results").exists()).to.be.false;
         expect(wrapper.vm.layerOptions).to.deep.equal([
             {header: "Bevölkerung"},
-            {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung"}
+            {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative"}
         ]);
     });
     it("compareFeatures one filter", async () => {

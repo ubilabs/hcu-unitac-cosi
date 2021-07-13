@@ -14,53 +14,6 @@ import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 
 
-/**
- * @description returns the selector for the latest entry in properties
- * @param {*} feature the feature to test, works also if a properties-object is provided
- * @param {string} [currentLatestField] the current latest field (optional)
- * @returns {string} the selector
- */
-function getLatestField (feature, currentLatestField) {
-    const prefix = "jahr_",
-        properties = feature.getProperties ? feature.getProperties() : feature;
-    let latestYear = currentLatestField ? parseFloat(currentLatestField.replace(prefix, "")) : 0,
-        selector = currentLatestField;
-
-    // find latest year
-    for (const prop in properties) {
-        if (prop.includes(prefix)) {
-            if (parseFloat(prop.replace(prefix, "")) > latestYear) {
-                latestYear = parseFloat(prop.replace(prefix, ""));
-                selector = prop;
-            }
-        }
-        // Break if the found date is from last year
-        // return true as 2nd value if the latest possible year is reached for collection to break the loop
-        if (latestYear === new Date().getFullYear() - 1) {
-            return currentLatestField ? [selector, true] : selector;
-        }
-    }
-
-    return selector;
-}
-
-/**
- * @description get latest field from collection
- * @param {*} features the features to test
- * @returns {string} the selector
- */
-function getLatestFieldFromCollection (features) {
-    let latestField;
-
-    for (const feature of features) {
-        latestField = getLatestField(feature, latestField);
-        if (latestField instanceof Array) {
-            latestField = latestField[0];
-        }
-    }
-    return latestField;
-}
-
 export default {
     name: "QueryDistricts",
     components: {
@@ -120,7 +73,7 @@ export default {
                     const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
 
                     if (layer) {
-                        this.allLayerOptions.push({name: m.value, id: layer.id, group: m.group});
+                        this.allLayerOptions.push({name: m.value, id: layer.id, group: m.group, valueType: m.valueType});
                     }
                 }
                 this.setLayerOptions();
@@ -187,13 +140,28 @@ export default {
             this.setLayerOptions();
         },
 
+        getFieldValues: function (features, prefix) {
+            const ret = [];
+
+            for (const feature of features) {
+                for (const prop in feature.getProperties()) {
+                    if (prop.startsWith(prefix)) {
+                        ret.push(prop);
+                    }
+                }
+            }
+
+            return [... new Set(ret)];
+        },
+
 
         createLayerFilterModel: async function (layer) {
             const selector = this.keyOfAttrNameStats,
                 features = await this.getAllFeaturesByAttribute({
                     id: layer.id
                 }),
-                field = getLatestFieldFromCollection(features),
+                fieldValues = this.getFieldValues(features, "jahr_"),
+                field = fieldValues[0],
                 values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
                 max = parseInt(Math.max(...values), 10),
                 min = parseInt(Math.min(...values), 10);
@@ -207,7 +175,7 @@ export default {
                     value = parseInt(refFeature.getProperties()[field], 10);
                 }
             }
-            return {layerId: layer.id, name: layer.name, field, value, max, min, high: 0, low: 0};
+            return {layerId: layer.id, name: layer.name, field, value, valueType: layer.valueType, max, min, high: 0, low: 0, fieldValues};
         },
 
         async recreateLayerFilterModels () {
@@ -218,6 +186,7 @@ export default {
 
                 newModel.high = m.high;
                 newModel.low = m.low;
+                newModel.field = m.field;
                 newModels.push(newModel);
             }
             this.layerFilterModels = newModels;
