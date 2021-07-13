@@ -116,7 +116,9 @@ export default {
         },
 
         activeVectorLayerList (layerList) {
-            toggleTagsOnLayerVisibility(this.guideLayer, layerList);
+            if (this.guideLayer) {
+                toggleTagsOnLayerVisibility(this.guideLayer, layerList);
+            }
         }
     },
     /**
@@ -229,11 +231,15 @@ export default {
         getDataFromReferenceFeature (feature) {
             const referenceProps = feature.getProperties();
 
-            if (referenceProps.hasOwnProperty("geom")) {
+            if (Object.prototype.hasOwnProperty.call(referenceProps, "geom")) {
                 delete referenceProps.geom;
             }
 
             this.featureProperties = referenceProps;
+        },
+
+        geomPickerUnlisten () {
+            geomPickerUnlisten(this.$refs["geometry-picker"]);
         }
     }
 };
@@ -246,13 +252,13 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
         :initial-width="0.4"
         :initial-height="0.4"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <v-app>
                 <div
@@ -285,9 +291,9 @@ export default {
                                 track-by="id"
                                 label="id"
                                 :multiple="false"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.scenarioBuilder.layerSelector')"
                             >
                                 <template slot="singleLabel">
@@ -300,21 +306,21 @@ export default {
                                 <v-row>
                                     <v-col cols="4">
                                         <ReferencePicker
-                                            :workingLayer="workingLayer"
+                                            :working-layer="workingLayer"
                                             :active="active"
-                                            :useIcons="useIcons"
+                                            :use-icons="useIcons"
                                             @pickReference="getDataFromReferenceFeature"
-                                            @referencePickerActive="geomPickerUnlisten($refs['geometry-picker'])"
+                                            @referencePickerActive="geomPickerUnlisten"
                                         />
                                     </v-col>
                                     <v-col cols="8">
                                         <MoveFeatures
-                                            :activeScenario="activeScenario"
-                                            :workingLayer="workingLayer"
+                                            :active-scenario="activeScenario"
+                                            :working-layer="workingLayer"
                                             :active="active"
-                                            :useIcons="useIcons"
-                                            :guideLayer="guideLayer"
-                                            @moveFeaturesActive="geomPickerUnlisten($refs['geometry-picker'])"
+                                            :use-icons="useIcons"
+                                            :guide-layer="guideLayer"
+                                            @moveFeaturesActive="geomPickerUnlisten"
                                         />
                                     </v-col>
                                 </v-row>
@@ -334,8 +340,8 @@ export default {
                                         <v-expansion-panel-content>
                                             <GeometryPicker
                                                 ref="geometry-picker"
-                                                :geomField="featureTypeDescSorted.geom"
-                                                :useIcons="useIcons"
+                                                :geom-field="featureTypeDescSorted.geom"
+                                                :use-icons="useIcons"
                                                 @updateGeometry="updateGeometry"
                                             />
                                         </v-expansion-panel-content>

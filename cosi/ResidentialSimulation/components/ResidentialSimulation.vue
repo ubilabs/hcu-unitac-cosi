@@ -390,12 +390,12 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
         :initial-width="width"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <v-app absolute>
                 <v-main
@@ -421,8 +421,8 @@ export default {
                             </v-row>
                             <GeometryPicker
                                 ref="geometry-picker"
-                                :geomField="geomField"
-                                :isGml="false"
+                                :geom-field="geomField"
+                                :is-gml="false"
                                 @updateGeometry="updateGeometry"
                             />
                             <v-row dense>
@@ -463,7 +463,7 @@ export default {
                                         :max="polygonArea / 5"
                                         @change="updateUnits"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <v-text-field
                                                 v-model="neighborhood.housingUnits"
                                                 class="mt-0 pt-0 slider-val"
@@ -488,7 +488,7 @@ export default {
                                         :max="polygonArea * 4"
                                         @change="updateBgf"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <v-text-field
                                                 v-model="neighborhood.bgf"
                                                 class="mt-0 pt-0 slider-val"
@@ -514,7 +514,7 @@ export default {
                                         step="0.2"
                                         @change="updateHousholdSize"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <v-text-field
                                                 v-model="neighborhood.avgHouseholdSize"
                                                 class="mt-0 pt-0 slider-val"
@@ -540,7 +540,7 @@ export default {
                                         step="0.1"
                                         @change="updateGfz"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.gfz"
@@ -566,7 +566,7 @@ export default {
                                         max="50000"
                                         @change="updateDensity"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.populationDensity"
@@ -592,7 +592,7 @@ export default {
                                         max="100"
                                         @change="updateLivingSpace"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.livingSpace"
@@ -619,7 +619,7 @@ export default {
                                         max-width="290px"
                                         min-width="auto"
                                     >
-                                        <template v-slot:activator="{ on, attrs }">
+                                        <template #activator="{ on, attrs }">
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.year"
@@ -636,7 +636,7 @@ export default {
                                             no-title
                                             scrollable
                                         >
-                                            <v-spacer></v-spacer>
+                                            <v-spacer />
                                             <v-btn
                                                 text
                                                 color="primary"
@@ -657,8 +657,8 @@ export default {
                             </v-row>
                             <v-divider />
                             <ReferenceDistrictPicker
-                                :groupsList="groupsList"
-                                :timelinePrefix="timelinePrefix"
+                                :groups-list="groupsList"
+                                :timeline-prefix="timelinePrefix"
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
@@ -720,7 +720,7 @@ export default {
                     >
                         {{ $t('additional:modules.tools.cosi.residentialSimulation.editFeature') }}
 
-                        <template v-slot:action="{ attrs }">
+                        <template #action="{ attrs }">
                             <v-btn
                                 v-bind="attrs"
                                 text

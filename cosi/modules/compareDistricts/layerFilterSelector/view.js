@@ -21,8 +21,8 @@ const LayerFilterSelectorView = Backbone.View.extend(/** @lends LayerFilterSelec
      * @return {LayerFilterView} returns this
      */
     render: function () {
-        this.$el.html(this.template(this.model.toJSON()));
-        this.$el.find("#layer-selection").selectpicker("refresh");
+        // this.$el.html(this.template(this.model.toJSON()));
+        // this.$el.find("#layer-selection").selectpicker("refresh");
         this.renderDropDownView(this.model.get("dropDownModel"));
         return this;
     },

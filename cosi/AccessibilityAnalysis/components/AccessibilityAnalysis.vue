@@ -178,9 +178,9 @@ export default {
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"
-            :deactivateGFI="deactivateGFI"
+            :deactivate-gfi="deactivateGFI"
         >
-            <template v-slot:toolBody>
+            <template #toolBody>
                 <div
                     v-if="active"
                     id="accessibilityanalysis"
@@ -210,7 +210,7 @@ export default {
                                         title="Referenzpunkt"
                                         type="text"
                                         min="0"
-                                    />
+                                    >
                                 </div>
                             </div>
                             <div
@@ -258,7 +258,7 @@ export default {
                                         title="Entfernung"
                                         type="number"
                                         min="0"
-                                    />
+                                    >
                                 </div>
                             </div>
                             <div class="form-group">
@@ -277,7 +277,7 @@ export default {
                                         id="help"
                                         @click="showHelp()"
                                     >
-                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                        <span class="glyphicon glyphicon-question-sign" />
                                     </div>
                                 </div>
                                 <div
@@ -288,12 +288,12 @@ export default {
                                         id="clear"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.clear')"
                                     >
-                                        <span class="glyphicon glyphicon-trash"></span>
+                                        <span class="glyphicon glyphicon-trash" />
                                     </div>
                                 </div>
                             </div>
                         </form>
-                        <hr />
+                        <hr>
                         <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
                         <div id="legend">
                             <template v-for="(j, i) in steps">
@@ -329,7 +329,7 @@ export default {
                 <span class="snackbar-text">
                     {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.askUpdate") }}
                 </span>
-                <template v-slot:action="{ attrs }">
+                <template #action="{ attrs }">
                     <v-btn
                         color="black"
                         text

@@ -399,7 +399,7 @@ export default {
                 :label="geomField.type"
                 dense
             >
-                <template v-slot:append>
+                <template #append>
                     <v-btn
                         tile
                         depressed

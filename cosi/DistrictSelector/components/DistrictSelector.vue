@@ -441,11 +441,11 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <v-app>
                 <form class="district-selector">
@@ -465,6 +465,7 @@ export default {
                         outlined
                         dense
                         multiple
+                        chips
                         @input="updateSelectedFeatures"
                     />
                     <v-text-field
