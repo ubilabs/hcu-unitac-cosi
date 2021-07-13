@@ -22,6 +22,10 @@ export default {
         high: {
             type: Number,
             default: 0
+        },
+        i18n: {
+            type: Object,
+            default: null
         }
     }
 };
@@ -33,10 +37,10 @@ export default {
         <table class="table filter-result-table">
             <tr>
                 <th scope="col">
-                    {{ $t('additional:modules.tools.cosi.queryDistricts.year') }}
+                    {{ i18n['year'] }}
                 </th>
                 <th scope="col">
-                    {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValue') }}
+                    {{ i18n['referenceValue'] }}
                 </th>
                 <th scope="col">
                     -

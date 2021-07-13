@@ -15,6 +15,10 @@ export default {
         districtNames: {
             type: Array,
             default: null
+        },
+        i18n: {
+            type: Object,
+            default: null
         }
     }
 };
@@ -27,11 +31,11 @@ export default {
         >
             <LayerFilterResult
                 :key="filter.layerId"
-                v-bind="filter"
+                v-bind="{...filter, i18n}"
             />
-
         </template>
-        <p><strong>Vergleichbare Gebiete: </strong></p>
+        <p><strong>{{ i18n['comparableResults'] }}: </strong></p>
+
         <span
             v-for="name in districtNames"
             :key="name"

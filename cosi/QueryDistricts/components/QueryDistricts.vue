@@ -82,7 +82,8 @@ export default {
             layerFilterModels: [],
             selectorField: "verwaltungseinheit", // TODO
             resultNames: null,
-            refDistrict: null
+            refDistrict: null,
+            dashboard: null
         };
     },
     computed: {
@@ -269,7 +270,8 @@ export default {
         showInDashboard: function () {
             const Ctor = Vue.extend(DashboardResult),
                 root = document.createElement("div"),
-                cont = document.createElement("div"); // nested container needed for mount
+                cont = document.createElement("div"), // nested container needed for mount
+                i18n = this.$t("additional:modules.tools.cosi.queryDistricts", {"returnObjects": true});
 
             root.appendChild(cont);
 
@@ -288,7 +290,7 @@ export default {
             }
 
             this.dashboard = new Ctor({
-                propsData: {layerFilterModels: this.layerFilterModels, districtNames: this.resultNames}
+                propsData: {layerFilterModels: this.layerFilterModels, districtNames: this.resultNames, i18n}
             }).$mount(cont);
         },
 
