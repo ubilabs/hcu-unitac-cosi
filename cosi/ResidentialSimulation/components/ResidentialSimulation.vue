@@ -487,9 +487,6 @@ export default {
                                 </v-col>
                             </v-row>
                             <v-divider />
-<<<<<<< HEAD
-                            <ReferenceDistrictPicker
-=======
                             <v-row dense>
                                 <v-col cols="12">
                                     <v-menu
@@ -542,7 +539,6 @@ export default {
                             <ReferenceDistrictPicker
                                 :groups-list="groupsList"
                                 :timeline-prefix="timelinePrefix"
->>>>>>> cosi/dev
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
@@ -555,7 +551,7 @@ export default {
                                     <v-col cols="12">
                                         <component
                                             :is="datum.type"
-                                            :dataSets="datum"
+                                            :data-sets="datum"
                                             :options="baseStatsChartData.options"
                                         />
                                     </v-col>
@@ -563,8 +559,6 @@ export default {
                             </template>
                         </div>
                     </v-form>
-<<<<<<< HEAD
-=======
                     <v-snackbar
                         v-model="editDialog"
                         :timeout="-1"
@@ -611,7 +605,6 @@ export default {
                             </div>
                         </v-container>
                     </Modal>
->>>>>>> cosi/dev
                 </v-main>
             </v-app>
         </template>
