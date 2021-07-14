@@ -18,7 +18,7 @@ const state = {
     name: "Wohnungsbauquartiere anlegen",
     renderToWindow: false,
     resizableWindow: false,
-    width: 0.4,
+    width: 0.45,
     // ResidentialSimulation specific state
     drawingLayer: null
 };

@@ -282,12 +282,12 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
         :initial-width="width"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <v-app absolute>
                 <v-main
@@ -302,8 +302,8 @@ export default {
                         <div class="form-group">
                             <GeometryPicker
                                 ref="geometry-picker"
-                                :geomField="geomField"
-                                :isGml="false"
+                                :geom-field="geomField"
+                                :is-gml="false"
                                 @updateGeometry="updateGeometry"
                             />
                             <v-row dense>
@@ -343,7 +343,7 @@ export default {
                                         :max="polygonArea / 5"
                                         @change="updateUnits"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <v-text-field
                                                 v-model="neighborhood.housingUnits"
                                                 class="mt-0 pt-0 slider-val"
@@ -368,7 +368,7 @@ export default {
                                         :max="polygonArea * 4"
                                         @change="updateBgf"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <v-text-field
                                                 v-model="neighborhood.bgf"
                                                 class="mt-0 pt-0 slider-val"
@@ -394,7 +394,7 @@ export default {
                                         step="0.2"
                                         @change="updateHousholdSize"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <v-text-field
                                                 v-model="neighborhood.avgHouseholdSize"
                                                 class="mt-0 pt-0 slider-val"
@@ -420,7 +420,7 @@ export default {
                                         step="0.1"
                                         @change="updateGfz"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.gfz"
@@ -446,7 +446,7 @@ export default {
                                         max="50000"
                                         @change="updateDensity"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.populationDensity"
@@ -472,7 +472,7 @@ export default {
                                         max="100"
                                         @change="updateLivingSpace"
                                     >
-                                        <template v-slot:append>
+                                        <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                             <v-text-field
                                                 v-model="neighborhood.livingSpace"
@@ -487,7 +487,62 @@ export default {
                                 </v-col>
                             </v-row>
                             <v-divider />
+<<<<<<< HEAD
                             <ReferenceDistrictPicker
+=======
+                            <v-row dense>
+                                <v-col cols="12">
+                                    <v-menu
+                                        ref="datePicker"
+                                        v-model="datePicker"
+                                        :close-on-content-click="false"
+                                        :return-value.sync="neighborhood.year"
+                                        transition="scale-transition"
+                                        offset-y
+                                        max-width="290px"
+                                        min-width="auto"
+                                    >
+                                        <template #activator="{ on, attrs }">
+                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                            <v-text-field
+                                                v-model="neighborhood.year"
+                                                :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
+                                                prepend-icon="mdi-calendar"
+                                                readonly
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            />
+                                        </template>
+                                        <v-date-picker
+                                            v-model="neighborhood.year"
+                                            type="month"
+                                            no-title
+                                            scrollable
+                                        >
+                                            <v-spacer />
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="datePicker = false"
+                                            >
+                                                {{ $t("additional:modules.tools.cosi.cancel") }}
+                                            </v-btn>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="$refs.datePicker.save(neighborhood.year)"
+                                            >
+                                                OK
+                                            </v-btn>
+                                        </v-date-picker>
+                                    </v-menu>
+                                </v-col>
+                            </v-row>
+                            <v-divider />
+                            <ReferenceDistrictPicker
+                                :groups-list="groupsList"
+                                :timeline-prefix="timelinePrefix"
+>>>>>>> cosi/dev
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                             />
@@ -508,6 +563,55 @@ export default {
                             </template>
                         </div>
                     </v-form>
+<<<<<<< HEAD
+=======
+                    <v-snackbar
+                        v-model="editDialog"
+                        :timeout="-1"
+                        color="grey"
+                    >
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.editFeature') }}
+
+                        <template #action="{ attrs }">
+                            <v-btn
+                                v-bind="attrs"
+                                text
+                                @click="deleteNeighborhood"
+                            >
+                                {{ $t("additional:modules.tools.cosi.delete") }}
+                            </v-btn>
+                            <!-- NOT IMPLEMENTED -->
+                            <!-- <v-btn
+                                v-bind="attrs"
+                                text
+                                @click="editStatsTable = true; editDialog = false;"
+                            >
+                                {{ $t("additional:modules.tools.cosi.edit") }}
+                            </v-btn> -->
+                        </template>
+                    </v-snackbar>
+                    <Modal
+                        :show-modal="editStatsTable"
+                        @modalHid="escapeEditStatsTable"
+                        @clickedOnX="escapeEditStatsTable"
+                        @clickedOutside="escapeEditStatsTable"
+                    >
+                        <v-container>
+                            <v-card-title primary-title>
+                                {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }}
+                            </v-card-title>
+                            <v-subheader>
+                                {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
+                            </v-subheader>
+                            <div class="stats-table-modal">
+                                <StatisticsTable
+                                    v-if="neighborhood.stats && geometry !== null"
+                                    v-model="neighborhood.stats"
+                                />
+                            </div>
+                        </v-container>
+                    </Modal>
+>>>>>>> cosi/dev
                 </v-main>
             </v-app>
         </template>

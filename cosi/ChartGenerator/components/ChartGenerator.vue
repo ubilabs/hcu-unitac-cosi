@@ -353,9 +353,9 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <div
                 v-if="active"
                 id="chart_generator"
@@ -365,7 +365,7 @@ export default {
                     title="Werkzeuginformationen"
                     @click="showInfo()"
                 >
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    <span class="glyphicon glyphicon-question-sign" />
                 </button>
                 <div
                     id="chart_panel"
@@ -407,7 +407,7 @@ export default {
                                         title="Diesen Graphen entfernen."
                                         @click="removeGraph(index)"
                                     >
-                                        <span class="glyphicon glyphicon-remove"></span>
+                                        <span class="glyphicon glyphicon-remove" />
                                     </button>
                                 </div>
                             </div>
@@ -426,7 +426,7 @@ export default {
                                             >
                                                 <div
                                                     :id="`graph-${index}-${i}`"
-                                                ></div>
+                                                />
                                                 <div class="graph_functions">
                                                     <button
                                                         class="dl right"
@@ -434,7 +434,7 @@ export default {
                                                         @click="downloadGraph($event)"
                                                     >
                                                         PNG
-                                                        <span class="glyphicon glyphicon-download-alt"></span>
+                                                        <span class="glyphicon glyphicon-download-alt" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -450,7 +450,7 @@ export default {
                                             @click="downloadGraph($event)"
                                         >
                                             PNG
-                                            <span class="glyphicon glyphicon-download-alt"></span>
+                                            <span class="glyphicon glyphicon-download-alt" />
                                         </button>
                                     </div>
                                 </template>
@@ -475,27 +475,27 @@ export default {
                                             title="Vorherigen Graphen auswählen"
                                             @click="graphPrevNext(-1)"
                                         >
-                                            <span class="glyphicon glyphicon-chevron-left"></span>
+                                            <span class="glyphicon glyphicon-chevron-left" />
                                         </button>
                                         <button
                                             class="nxt"
                                             @click="graphPrevNext(+1)"
                                         >
-                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                            <span class="glyphicon glyphicon-chevron-right" />
                                         </button>
                                         <button
                                             class="dl"
                                             title="Alle Graphen als PNG herunterladen"
                                             @click="downloadAll()"
                                         >
-                                            <span class="glyphicon glyphicon-download-alt"></span>
+                                            <span class="glyphicon glyphicon-download-alt" />
                                         </button>
                                         <button
                                             class="rm"
                                             title="Alle Graphen im Werkzeug löschen"
                                             @click="removeAll()"
                                         >
-                                            <span class="glyphicon glyphicon-remove"></span>
+                                            <span class="glyphicon glyphicon-remove" />
                                         </button>
                                     </div>
                                 </template>

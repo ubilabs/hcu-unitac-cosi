@@ -417,7 +417,7 @@ export default {
                 });
 
                 districtFeatures.forEach(feature => {
-                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
+                    if (Object.prototype.hasOwnProperty.call(namesAssoc, feature.get(this.keyOfAttrName))) {
                         this.select.getFeatures().push(feature);
                     }
                 });
@@ -434,11 +434,11 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <v-app>
                 <form class="district-selector">
@@ -458,6 +458,7 @@ export default {
                         outlined
                         dense
                         multiple
+                        chips
                         @input="updateSelectedFeatures"
                     />
                     <v-text-field

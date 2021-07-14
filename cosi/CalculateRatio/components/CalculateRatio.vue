@@ -672,9 +672,9 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <div
                 v-if="active"
                 id="calculateratio"
@@ -686,7 +686,7 @@ export default {
                         title="Werkzeuginformationen"
                         @click="showInfo()"
                     >
-                        <span class="glyphicon glyphicon-question-sign"></span>
+                        <span class="glyphicon glyphicon-question-sign" />
                     </button>
                     <p class="section intro">
                         {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
@@ -731,9 +731,9 @@ export default {
                                 track-by="id"
                                 label="id"
                                 :multiple="false"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
                                 @input="getFacilityData('A')"
                             >
@@ -755,9 +755,9 @@ export default {
                                 :group-select="false"
                                 group-values="data"
                                 :multiple="sumUpSwitchA ? true : false"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
                                 @input="checkSumUp('A')"
                             >
@@ -785,7 +785,7 @@ export default {
                                                 <span
                                                     v-if="fActive_A"
                                                     class="glyphicon glyphicon-remove"
-                                                ></span>
+                                                />
                                                 <span v-else>Faktor (F) hinzufügen</span>
                                             </button>
                                         </div>
@@ -809,9 +809,9 @@ export default {
                                         :multiple="false"
                                         :preselect-first="true"
                                         :disabled="facilityPropertyList_A.length < 2"
-                                        selectedLabel=""
-                                        selectLabel=""
-                                        deselectLabel=""
+                                        selected-label=""
+                                        select-label=""
+                                        deselect-label=""
                                         placeholder=""
                                     >
                                         <template slot="singleLabel">
@@ -866,9 +866,9 @@ export default {
                                 track-by="id"
                                 label="id"
                                 :multiple="false"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
                                 @input="getFacilityData('B')"
                             >
@@ -888,9 +888,9 @@ export default {
                                 :group-select="false"
                                 group-values="data"
                                 :multiple="sumUpSwitchB ? true : false"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
                                 @input="checkSumUp('B')"
                             >
@@ -920,7 +920,7 @@ export default {
                                                 <span
                                                     v-if="fActive_B"
                                                     class="glyphicon glyphicon-remove"
-                                                ></span>
+                                                />
                                                 <span v-else>Faktor (F) hinzufügen</span>
                                             </button>
                                         </div>
@@ -944,9 +944,9 @@ export default {
                                         :multiple="false"
                                         :preselect-first="true"
                                         :disabled="facilityPropertyList_B.length < 2"
-                                        selectedLabel=""
-                                        selectLabel=""
-                                        deselectLabel=""
+                                        selected-label=""
+                                        select-label=""
+                                        deselect-label=""
                                         placeholder=""
                                     >
                                         <template slot="singleLabel">
@@ -979,14 +979,14 @@ export default {
                                 title="Datenfelder A und B tauschen"
                                 @click="switchSelection"
                             >
-                                <span class="glyphicon glyphicon-retweet"></span>
+                                <span class="glyphicon glyphicon-retweet" />
                             </button>
                             <button
                                 class="cancel"
                                 title="Alle Eingaben zurücksetzen"
                                 @click="clearAllValues"
                             >
-                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="glyphicon glyphicon-remove-circle" />
                                 Zurücksetzen
                             </button>
                             <button
@@ -994,7 +994,7 @@ export default {
                                 title="Datensätze berechnen"
                                 @click="prepareCoverage"
                             >
-                                <span class="glyphicon glyphicon-ok-circle"></span>
+                                <span class="glyphicon glyphicon-ok-circle" />
                                 Berechnen
                             </button>
                         </div>
@@ -1033,7 +1033,7 @@ export default {
                             >
                                 <span
                                     class="glyphicon glyphicon-stats"
-                                ></span>
+                                />
                             </button>
                             <Multiselect
                                 v-model="columnSelector"
@@ -1043,9 +1043,9 @@ export default {
                                 :options="availableColumns"
                                 :multiple="false"
                                 :preselect-first="true"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
@@ -1062,11 +1062,11 @@ export default {
                                 <span
                                     v-if="!dataToColorCodeMap"
                                     class="glyphicon glyphicon-eye-open"
-                                ></span>
+                                />
                                 <span
                                     v-else
                                     class="glyphicon glyphicon-eye-close"
-                                ></span>
+                                />
                             </button>
                             <div
                                 v-if="!ASwitch || !BSwitch"
@@ -1080,9 +1080,9 @@ export default {
                                     :multiple="false"
                                     :preselect-first="true"
                                     :disabled="ASwitch && BSwitch"
-                                    selectedLabel=""
-                                    selectLabel=""
-                                    deselectLabel=""
+                                    selected-label=""
+                                    select-label=""
+                                    deselect-label=""
                                     placeholder=""
                                     @input="recalcData()"
                                 >
@@ -1093,10 +1093,10 @@ export default {
                             </div>
                         </div>
                         <DataTable
-                            :dataSet="results"
-                            :typeA="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
-                            :typeB="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
-                            :fActive="fActive_A || fActive_B ? true : false"
+                            :data-set="results"
+                            :type-a="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
+                            :type-b="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
+                            :f-active="fActive_A || fActive_B ? true : false"
                         />
                     </div>
                 </div>
