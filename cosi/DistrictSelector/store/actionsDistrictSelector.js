@@ -13,7 +13,7 @@ const actions = {
      * @param {String[]} payload.districts -
      * @returns {void}
      */
-    async loadStats ({commit, dispatch, rootGetters}, {districtLevel, districts}) {
+    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts}) {
         commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         /**
@@ -53,9 +53,8 @@ const actions = {
                     return refNames.includes(district.getName());
                 });
 
-            dispatch("loadStats", {
-                // referenceLevel.districts => for all of hamburg
-                districts: referenceLevel.label === "Bezirke" ? referenceLevel.districts : refDistricts,
+            dispatch("loadStatFeatures", {
+                districts: referenceLevel.label === "Hamburg" ? referenceLevel.districts : refDistricts,
                 districtLevel: referenceLevel
             });
             /**
@@ -68,6 +67,11 @@ const actions = {
         else {
             commit("setLoadend", true);
             dispatch("Alerting/cleanup", null, {root: true});
+            /**
+             * @deprecated
+             * @todo refactor when Radio removed
+             */
+            Radio.trigger("Util", "hideLoader");
         }
     },
 
@@ -88,7 +92,7 @@ const actions = {
         if (foundDistrict.statFeatures.length > 0) {
             return foundDistrict.statFeatures;
         }
-        await dispatch("loadStats", {
+        await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
             districtLevel: districtLevel
         });

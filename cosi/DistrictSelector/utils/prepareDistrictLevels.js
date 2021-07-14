@@ -58,6 +58,10 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
  * @returns {Object[]} The districts.
  */
 export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
+    if (label === "Hamburg") {
+        return [getHamburgDistrict()];
+    }
+
     const districts = [];
 
     layer.getSource().getFeatures().forEach(function (feature) {
@@ -97,6 +101,27 @@ export function getFeatureTypes (level) {
     return getLayerList().reduce((typeNames, layer) => {
         return layer.url === level?.stats.baseUrl ? [...typeNames, layer.featureType] : typeNames;
     }, []);
+}
+
+/**
+ *
+ * @returns
+ */
+export function getHamburgDistrict () {
+    return {
+        // the administration feature (district), for hamburg not present
+        adminFeature: undefined,
+        // an array for all statistical features of this district
+        statFeatures: [],
+        // flag district is selected
+        isSelected: false,
+        // id of the district
+        getId: () => "Hamburg",
+        // label of the district
+        getLabel: () => "Hamburg (gesamt)",
+        // name of the district
+        getName: () => "hamburg_gesamt"
+    };
 }
 
 /**

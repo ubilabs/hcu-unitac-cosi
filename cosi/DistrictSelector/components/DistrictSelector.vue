@@ -146,7 +146,7 @@ export default {
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Tools/DistrictSelector", ["loadStats"]),
+        ...mapActions("Tools/DistrictSelector", ["loadStatFeatures"]),
         ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
 
         /**
@@ -330,17 +330,10 @@ export default {
                 this.zoomTo(extent);
                 this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom(bboxGeom);
-                this.loadStats({
+                this.loadStatFeatures({
                     districts: this.selectedDistricts,
                     districtLevel: this.selectedDistrictLevel
                 });
-                // this.loadDistricts({
-                //     extent: this.extent,
-                //     districtNameList: this.districtNameList,
-                //     districtFeatures: this.selectedFeatures,
-                //     districtLevels: this.districtLevels,
-                //     selectedDistrictLevel: this.selectedDistrictLevel
-                // });
             }
             else {
                 this.setExtent([]);
