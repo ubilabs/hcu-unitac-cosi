@@ -6,7 +6,7 @@ const eventKeys = {};
 
 /**
  * Prepares the district level objects for the district selector.
- * Each district level is assigned its layer and a list of all district names.
+ * Each district level is assigned its layer, the districts, the reference level (the next higher) and a list of all district names.
  * Will no longer be executed once all district levels have their layer.
  * @param {Object[]} districtLevels - All avaiable district level objects.
  * @param {module:ol/layer[]} layerList - An array of layers.
@@ -24,9 +24,9 @@ export function prepareDistrictLevels (districtLevels, layerList) {
             // the names of all avaible districts
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
             // property names for the WFS GetFeature request for the stats features, without geometry
-            districtLevel.propertyNameList = getPropertyNameList(districtLevel);
+            districtLevel.propertyNameList = getPropertyNameList(districtLevel.stats.baseUrl);
             // all featureTypes for the WFS GetFeature request for the stats features
-            districtLevel.featureTypes = getFeatureTypes(districtLevel);
+            districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl);
             // all districts at this level
             districtLevel.districts = getDistricts(districtLevel);
             // at this point the features of the layer are probably not yet loaded,
@@ -53,8 +53,11 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
 
 /**
  * Creates a new 'district' object for all features from the layer and return them.
- * @param {module:ol/layer} layer - A vector layer.
- * @param {String} keyOfAttrName -
+ * @param {Object} districtLevel - The district level.
+ * @param {module:ol/layer} districtLevel.layer - The layer of the district level.
+ * @param {String} districtLevel.keyOfAttrName - The key for the attribute containing the name of the district.
+ * @param {String} districtLevel.label - The label of the district level.
+ * @param {String[]|undefined} districtLevel.duplicateDistrictNames - Names of districts that trigger conflicts.
  * @returns {Object[]} The districts.
  */
 export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
@@ -93,19 +96,27 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
 }
 
 /**
- *
- * @param {Object} level
- * @returns {String[]}
+ * Returns a list of all feature types for the given WFS sources (urls).
+ * @param {String[]} urls - The urls of the WFS`s.
+ * @returns {Array.<String[]>} The feature types for each url.
  */
-export function getFeatureTypes (level) {
-    return getLayerList().reduce((typeNames, layer) => {
-        return layer.url === level?.stats.baseUrl ? [...typeNames, layer.featureType] : typeNames;
-    }, []);
+export function getFeatureTypes (urls) {
+    const featureTypes = [];
+
+    for (let i = 0; i < urls.length; i++) {
+        featureTypes[i] = getLayerList().reduce((typeNames, layer) => {
+            return layer.url === urls[i] ? [...typeNames, layer.featureType] : typeNames;
+        }, []);
+    }
+
+    return featureTypes;
 }
 
 /**
- *
- * @returns
+ * Returns the district object for the district level Hamburg.
+ * This is a special case, because there is no own 'adminFeature' for this level.
+ * The statistical features are get via the source of the Bezirke.
+ * @returns {Object} d
  */
 export function getHamburgDistrict () {
     return {
@@ -164,25 +175,29 @@ export function getNameList (layer, keyOfAttrName) {
 }
 
 /**
- * Prepares the district level objects for the district selector.
- * Each district level is assigned its layer and a list of all district names.
- * Will no longer be executed once all district levels have their layer.
- * @param {Object[]} level - All avaiable district level objects.
- * @param {module:ol/layer[]} layerList - An array of layers.
- * @returns {void}
+ * Returns a list of all property names for the given WFS sources (urls), without geometries.
+ * @param {String[]} urls - The urls of the WFS`s.
+ * @returns {Array.<String[]>} The property name for each url.
  */
-export default async function getPropertyNameList (level) {
-    const layer = getLayerList().find(rawlayer => rawlayer.url === level.stats.baseUrl),
-        json = await describeFeatureType(level.stats.baseUrl),
-        desc = getFeatureDescription(json, layer?.featureType),
-        propertyNameList = [];
+export default async function getPropertyNameList (urls) {
+    const propertyNameList = [];
 
-    if (desc) {
-        desc.forEach(des => {
-            if (des.type.search("gml:") === -1) {
-                propertyNameList.push(des.name);
-            }
-        });
+    for (let i = 0; i < urls.length; i++) {
+        propertyNameList[i] = [];
+
+        const layer = getLayerList().find(rawlayer => rawlayer.url === urls[i]),
+            // get the property names by the 'DescribeFeatureType' request
+            json = await describeFeatureType(urls[i]),
+            description = getFeatureDescription(json, layer?.featureType);
+
+        if (description) {
+            description.forEach(element => {
+                // "gml:" => geometry property
+                if (element.type.search("gml:") === -1) {
+                    propertyNameList[i].push(element.name);
+                }
+            });
+        }
     }
 
     return propertyNameList;
