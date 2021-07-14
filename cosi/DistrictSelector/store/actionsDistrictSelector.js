@@ -5,12 +5,14 @@ import {equalTo} from "ol/format/filter";
 
 const actions = {
     /**
-     * @param {Object} store.commit -
-     * @param {Function} store.dispatch -
-     * @param {Function} store.rootGetters -
-     * @param {Object} payload -
-     * @param {Number[]} payload.districtLevel -
-     * @param {String[]} payload.districts -
+     * Loads the statistical features for the given districts.
+     * @param {Object} store - The vuex store.
+     * @param {Function} store.commit - Function to commit a mutation.
+     * @param {Function} store.dispatch - Function to dispatch an action.
+     * @param {Object} store.rootGetters - The global getters.
+     * @param {Object} payload - The payload for this action.
+     * @param {Number[]} payload.districtLevel - The district level to which the districts belong.
+     * @param {String[]} payload.districts - The districts for which the statistical features are loaded.
      * @returns {void}
      */
     async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts}) {
@@ -22,22 +24,27 @@ const actions = {
          */
         Radio.trigger("Util", "showLoader");
 
-        const wfsFormat = new WFS();
+        const wfsFormat = new WFS(),
+            urls = districtLevel.stats.baseUrl;
 
-        for (let i = 0; i < districts.length; i++) {
-            // check if statFeatures are already loaded
-            if (districts[i].statFeatures.length === 0) {
-                const districtName = districts[i].getName(),
-                    features = await getFeaturePost(districtLevel.stats.baseUrl, {
-                        featureTypes: districtLevel.featureTypes,
-                        srsName: rootGetters["Map/projectionCode"],
-                        propertyNames: districtLevel.propertyNameList,
-                        filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
-                    });
+        for (let j = 0; j < urls.length; j++) {
+            for (let i = 0; i < districts.length; i++) {
+                // check if statFeatures are already loaded
+                if (districts[i].statFeatures.length === 0) {
+                    const districtName = districts[i].getName(),
+                        statFeatures = await getFeaturePost(urls[j], {
+                            featureTypes: districtLevel.featureTypes[j],
+                            srsName: rootGetters["Map/projectionCode"],
+                            propertyNames: districtLevel.propertyNameList[j],
+                            filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
+                        }),
+                        olFeatures = wfsFormat.readFeatures(statFeatures);
 
-                // add statFeatures to district
-                districts[i].statFeatures = wfsFormat.readFeatures(features);
-                districts[i].statFeatures.forEach(prepareStatsFeatures);
+                    olFeatures.forEach(prepareStatsFeatures);
+
+                    // add statFeatures to district
+                    districts[i].statFeatures.push(...olFeatures);
+                }
             }
         }
 
@@ -76,17 +83,16 @@ const actions = {
     },
 
     /**
-     * @param {Object} store.getters - The DistrictLoader getters.
-     * @param {Function} store.rootGetters - The root store getters.
-     * @param {Function} store.dispatch - Function to dispatch a action.
-     * @param {Object} payload - The stored features per layer.
-     * @param {Number[]} payload.districtFeature - The district to fetch data for.
-     * @param {String[]} payload.districtLevel - The administrative level the district belongs to.
-     * @returns {module:ol/Feature[]} Returns stats features.
+     * Gets all statistical features for the given district.
+     * @param {Object} store - The vuex store.
+     * @param {Function} store.dispatch - Function to dispatch an action.
+     * @param {Object} payload - The payload for this action.
+     * @param {String} payload.id - The id of the district.
+     * @param {Object} payload.districtLevel - The level the district belongs to.
+     * @returns {module:ol/Feature[]} The statistical features.
      */
-    async getStatsByDistrict ({dispatch}, {feature, districtLevel}) {
-        const {keyOfAttrName} = districtLevel,
-            foundDistrict = districtLevel.districts.find(district => district.getName() === feature.get(keyOfAttrName));
+    async getStatsByDistrict ({dispatch}, {id, districtLevel}) {
+        const foundDistrict = districtLevel.districts.find(district => district.getId() === id);
 
         // Return stats if already stored
         if (foundDistrict.statFeatures.length > 0) {

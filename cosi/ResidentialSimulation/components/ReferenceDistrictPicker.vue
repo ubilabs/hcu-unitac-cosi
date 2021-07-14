@@ -110,7 +110,7 @@ export default {
         async pickReference (evt) {
             const feature = evt.selected[0],
                 stats = await this.getStatsByDistrict({
-                    feature,
+                    id: feature.getId(),
                     districtLevel: this.workingDistrictLevel
                 }),
                 baseStats = this.processStats(
