@@ -66,11 +66,11 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.map.addEventListener("click", this.setCoordinateFromClick.bind(this));
+                this.map.addEventListener("click", this.setCoordinateFromClick);
                 Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
             }
             else {
-                this.map.removeEventListener("click", this.setCoordinateFromClick.bind(this));
+                this.map.removeEventListener("click", this.setCoordinateFromClick);
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
             }
         }

@@ -424,7 +424,7 @@ export default {
                 });
 
                 districtFeatures.forEach(feature => {
-                    if (namesAssoc.hasOwnProperty(feature.get(this.keyOfAttrName))) {
+                    if (Object.prototype.hasOwnProperty.call(namesAssoc, feature.get(this.keyOfAttrName))) {
                         this.select.getFeatures().push(feature);
                     }
                 });
