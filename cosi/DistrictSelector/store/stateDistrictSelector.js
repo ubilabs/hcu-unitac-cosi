@@ -1,3 +1,5 @@
+import MappingJson from "../../assets/mapping.json";
+
 /**
  * User type definition
  * @typedef {Object} DistrictSelectorState
@@ -35,7 +37,8 @@ const state = {
     selectedDistrictsCollection: null,
     additionalInfoLayers: {},
     bufferValue: 0,
-    loadend: false
+    loadend: false,
+    mapping: MappingJson
 };
 
 export default state;

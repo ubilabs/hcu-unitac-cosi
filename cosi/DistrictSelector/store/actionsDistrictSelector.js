@@ -2,6 +2,7 @@ import {WFS} from "ol/format.js";
 import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
 import prepareStatsFeatures from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
+import Vue from "vue";
 
 const actions = {
     /**
@@ -44,6 +45,9 @@ const actions = {
 
                     // add statFeatures to district
                     districts[i].statFeatures.push(...olFeatures);
+
+                    // store original data on the district as a copy
+                    districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
                 }
             }
         }
@@ -104,6 +108,17 @@ const actions = {
         });
 
         return foundDistrict.statFeatures;
+    },
+
+    /**
+     * @param {Object} store - The vuex store.
+     * @param {Function} store.commit - Function to dispatch an action.
+     * @returns {void}
+     */
+    async updateDistricts ({commit}) {
+        commit("setLoadend", false);
+        await Vue.nextTick();
+        commit("setLoadend", true);
     }
 };
 

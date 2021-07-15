@@ -71,8 +71,10 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
         districts.push({
             // the administration feature (district)
             adminFeature: feature,
-            // an array for all statistical features of this district
+            // an array for all statistical features of this district, currently used for calculations
             statFeatures: [],
+            // an array with the original statistical features of this district as backup
+            originalStatFeatures: [],
             // flag district is selected
             isSelected: false,
             // id of the district

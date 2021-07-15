@@ -1,5 +1,5 @@
 /**
- * @todo Keep Generic and adjust to data structure to be served by DistrictLoader
+ * @todo Keep Generic and adjust to data structure to be served by DistrictSelector
  */
 
 /**

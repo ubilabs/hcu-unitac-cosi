@@ -1,4 +1,4 @@
-import storeOriginalDistrictStats from "../utils/storeOriginalDistrictStats";
+// import storeOriginalDistrictStats from "../utils/storeOriginalDistrictStats";
 import getAvailableYears from "../../utils/getAvailableYears";
 import getIntersectionCoverage from "../../ResidentialSimulation/utils/getIntersectionCoverage";
 import store from "../../../../src/app-store";
@@ -20,9 +20,8 @@ export default class ScenarioNeighborhood {
         this.active = false;
 
         this.districts = districts.map(district => {
-            storeOriginalDistrictStats(district);
-
-            return {coverage: getIntersectionCoverage(feature, district), feature: district};
+            // storeOriginalDistrictStats(district);
+            return {coverage: getIntersectionCoverage(feature, district.adminFeature), district: district};
         });
     }
 
@@ -60,24 +59,22 @@ export default class ScenarioNeighborhood {
      * @returns {void}
      */
     modifyDistrictStats () {
-        for (const district of this.districts) {
+        for (const item of this.districts) {
 
-            const years = getAvailableYears(district.feature.get("stats")),
+            const years = getAvailableYears(item.district.statFeatures),
                 completion = new Date(this.feature.get("year")).getFullYear();
             let year, originalVal;
-
-            // console.log(this.feature);
 
             for (const datum of this.feature.get("stats")) {
                 /**
                  * @todo IT'S JUST A PROTOTYPE
                  */
                 if (datum.valueType === "absolute") {
-                    const districtDatum = district.feature.get("stats").find(d => d.get("kategorie") === datum.category);
+                    const districtDatum = item.district.statFeatures.find(d => d.get("kategorie") === datum.category);
 
                     for (year of years.filter(y => y >= completion)) {
                         originalVal = parseFloat(districtDatum.get("jahr_" + year)) || 0;
-                        districtDatum.set("jahr_" + year, originalVal + Math.round(datum.value * district.coverage));
+                        districtDatum.set("jahr_" + year, originalVal + Math.round(datum.value * item.coverage));
                     }
                 }
                 else if (datum.relation) {
@@ -85,38 +82,19 @@ export default class ScenarioNeighborhood {
                 }
             }
         }
+
+        store.dispatch("Tools/DistrictSelector/updateDistricts");
     }
 
     /**
      * Resets the surrounding districts' statistics to their original
-     * @todo refactor DistrictLoader and Dashboard to avoid the weird iteration over the currentStatsFeatures list
      * @returns {void}
      */
     resetDistrictStats () {
-        for (const district of this.districts) {
-            district.feature.set("stats", district.feature.get("originalData").stats.map(feature => feature.clone()));
-
-            /**
-             * @todo JUST A WEIRD HACK
-             * REFACTOR DISTRICTLOADER
-             */
-            const currentStatsFeatures = store.getters["Tools/DistrictLoader/currentStatsFeatures"],
-                keyOfAttrNameStats = store.getters["Tools/DistrictSelector/keyOfAttrNameStats"];
-
-            if (currentStatsFeatures) {
-                for (let i = 0; i < currentStatsFeatures.length; i++) {
-                    const clonedFeature = district.feature.get("stats").find(f => {
-                        return f.get("kategorie") === currentStatsFeatures[i].get("kategorie")
-                            && f.get(keyOfAttrNameStats) === currentStatsFeatures[i].get(keyOfAttrNameStats);
-                    });
-
-                    if (clonedFeature) {
-                        currentStatsFeatures[i] = clonedFeature;
-                    }
-                }
-
-                store.commit("Tools/DistrictLoader/setCurrentStatsFeatures", [...currentStatsFeatures]);
-            }
+        for (const item of this.districts) {
+            item.district.statFeatures = item.district.originalStatFeatures.map(feature => feature.clone());
         }
+
+        store.dispatch("Tools/DistrictSelector/updateDistricts");
     }
 }

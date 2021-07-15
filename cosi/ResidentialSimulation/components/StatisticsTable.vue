@@ -16,7 +16,7 @@ export default {
         isNumber: v => !isNaN(parseFloat(v)) || this.$t("additional:modules.tools.cosi.residentialSimulation.isNotNumber")
     }),
     computed: {
-        ...mapGetters("Tools/DistrictLoader", ["mapping"]),
+        ...mapGetters("Tools/DistrictSelector", ["mapping"]),
         headers () {
             return [
                 {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsCategory"), value: "category"},
