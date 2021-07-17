@@ -83,7 +83,9 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
 
 ### Overview
 
-![Pic1](https://user-images.githubusercontent.com/79461871/126049361-e99d3eb9-ef8a-47d1-ac2a-a2eaf6833100.png)
+![Illustration 1 The CoSI UI](https://user-images.githubusercontent.com/79461871/126049907-9316494b-3228-4d76-bcdc-ec51fe53b750.png)
+
+*Illustration 1: The CoSI UI*
 
 1. **Topic tree / topic layer** (see topics)
 2. **Analysis functions** (see analysis)
@@ -94,14 +96,14 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
 7. **Area selection** (see area selection)
 8. **Contact form** - Requests, comments, comments and error reports can be sent directly to the project team or the technical control center 
 9. **Search bar** - You can search for locations, addresses, B-plans, as well as active features (day care centers, sports facilities, etc.) in the map
-10.	**Tool window** - Active tools are displayed in the movable window
-11.	**Sidebar** - The dashboard and the filter are displayed in the sidebar, which remains open even when other tools are used. The width of the sidebar can be adjusted. (see dashboard)
-12.	**Zoom in**
-13.	**Zoom out**
-14.	**Focus on the selected area**
-15.	**Map visualization of regional statistical data / control element****
-16.	**Tooltip (mouse hover)** - Displays the area and other items under the mouse pointer. Can be deactivated under "Services" via "Switch mouse hover on / off".
-17.	**Selected areas** - Selected areas are shown with a blue border.
+10. **Tool window** - Active tools are displayed in the movable window
+11. **Sidebar** - The dashboard and the filter are displayed in the sidebar, which remains open even when other tools are used. The width of the sidebar can be adjusted. (see dashboard)
+12. **Zoom in**
+13. **Zoom out**
+14. **Focus on the selected area**
+15. **Map visualization of regional statistical data / control element****
+16. **Tooltip (mouse hover)** - Displays the area and other items under the mouse pointer. Can be deactivated under "Services" via "Switch mouse hover on / off".
+17. **Selected areas** - Selected areas are shown with a blue border.
 
 *Note: The simulation function has not yet been activated.*
 
@@ -111,6 +113,26 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
 Layers can be switched on or off at any time from the “Themes” tab. However, when connecting, it must be taken into account that the loading times can be correspondingly longer if no planning area has been specified beforehand, as the data must then be loaded for the entire Hamburg area. The topics are sorted under technical data.
 
 The topic tree is divided into background maps, a catalog of specialist data and the current selection of map levels.
+
+![Illustration 2 - The topic tree](https://user-images.githubusercontent.com/79461871/126049893-b4aec557-d456-49b1-85ba-39e824f7fbcf.png)
+
+*Illustration 2: The topic tree*
+
+1.	**Background maps** - Layers such as "City Map Hamburg", which are automatically active by default. If necessary, the "DOP 2 aerial maps" layer can also be activated. They can also be deactivated.
+2.	**Technical data** - 
+	   a.	***Analysis / Simulation*** - The prepared layers for CoSI-specific tools (provided as WFS, see glossary). The individual data layers are divided into categories that are regularly adapted or updated.
+      b.	***Presentation*** - Data for pure "display" in the map, mainly taken from the FHH Atlas (provided as WMS). *
+3.	**Selected topics** - The active layers can be moved in their order and made transparent
+4.	**Layer info** - The legend and metadata of the specialist data layer can be displayed via the info button. This includes a description of the topic, the date of publication and the URL of the relevant service. The function is the same for all FHH geoportals.
+
+The topics contain information that is represented symbolically or by areas on the map. In Figure 4, for example, the red dots represent the existing daycare centers in the area, while the purple lines represent areas that belong to the development plans layer.  
+
+A legend on the active topics can be displayed by clicking on the "Legend" tab. Independently of this, further information on the respective topic can be called up by clicking on the info button to the right of the layer. Information such as a brief description of the topic including the data status and a legend on the topic are displayed. There are also links to download sources and a WFS or WMF address behind the info button.  
+
+Clicking on an object on the map opens an information panel for the current selection (sports facility, daycare center, etc.). Information about the object is displayed on the information board. Data relevant to data protection (personal) are not displayed.  
+
+It is possible to adjust the order and the transparency of the active layers: Under "Selected topics" there is an info button and a setting wheel for each selected topic. A click on the wheel opens the setting options for order and transparency.
+
 
 
 
