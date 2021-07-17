@@ -81,6 +81,8 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
 #### `Adjustments`
 `In some cases, the tools from the master portal had to be slightly adapted for CoSI in order to ensure stability within CoSI and to increase the benefit. For example, with the “Print map” tool, unlike in the master portal, individually styled map elements are also output, for which there was no need in the master portal. Additional tools such as “Filter” and “Resident Survey” have been adapted or expanded to increase their usability in CoSI. With the filter, a list of results is generated and can be transferred to the dashboard (push). The resident query was integrated into the accessibility analysis and thus enables an address-specific query of the number of residents for a generated catchment area. Various other (partly also purely cosmetic) adjustments to the UI flow from CoSI back into the core architecture of the mast portal.`
 
+### Overview
+
 ![Pic1](https://user-images.githubusercontent.com/79461871/126049361-e99d3eb9-ef8a-47d1-ac2a-a2eaf6833100.png)
 
 1. **Topic tree / topic layer** (see topics)
@@ -105,6 +107,10 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
 
 *General note: Each (CoSI-specific) module offers a help button (question mark symbol) with information and explanations. Wherever possible and necessary, all elements are provided with explanatory tooltips, which appear when the mouse pointer pauses briefly over the element.*
 
+### Themes (layers)
+Layers can be switched on or off at any time from the “Themes” tab. However, when connecting, it must be taken into account that the loading times can be correspondingly longer if no planning area has been specified beforehand, as the data must then be loaded for the entire Hamburg area. The topics are sorted under technical data.
+
+The topic tree is divided into background maps, a catalog of specialist data and the current selection of map levels.
 
 
 
