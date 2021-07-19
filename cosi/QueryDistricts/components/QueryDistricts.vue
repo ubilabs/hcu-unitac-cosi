@@ -12,6 +12,8 @@ import DashboardResult from "./DashboardResult.vue";
 import Collection from "ol/Collection";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
+import * as Proj from "ol/proj.js";
+import * as Extent from "ol/extent";
 
 
 export default {
@@ -46,7 +48,8 @@ export default {
         ...mapGetters("Tools/DistrictLoader", [
             "mapping",
             "getAllFeaturesByAttribute"
-        ])
+        ]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
     },
     watch: {
         async layerFilterModels () {
@@ -80,6 +83,7 @@ export default {
 
     created () {
         this.$on("close", this.close);
+        Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -333,6 +337,37 @@ export default {
                 cloneCollection.push(refDistrictClone);
             }
             this.mapLayer.getSource().addFeatures(cloneCollection);
+        },
+
+        setFacilityNames (models) {
+            this.facilityNames = models.filter(
+                (model) => model.get("isFacility") === true
+            ).map((model) => model.get("name").trim());
+        },
+
+        //TODO: copied from accessibilityAnalysis
+        getCoordinates: function () {
+            const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
+                name: this.selectedFacilityName
+            });
+
+            if (selectedLayerModel) {
+                const features = selectedLayerModel.get("layer")
+                    .getSource().getFeatures()
+                    .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
+
+                return features
+                    .map((feature) => {
+                        const geometry = feature.getGeometry();
+
+                        if (geometry.getType() === "Point") {
+                            return geometry.getCoordinates().splice(0, 2);
+                        }
+                        return Extent.getCenter(geometry.getExtent());
+
+                    }).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
+            }
+            return null;
         }
     }
 };
