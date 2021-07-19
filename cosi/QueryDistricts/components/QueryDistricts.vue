@@ -64,7 +64,7 @@ export default {
             if (value) {
                 this.initializeDistrictNames();
 
-                const url = this.selectedDistrictLevel.stats.baseUrl,
+                const url = this.selectedDistrictLevel.stats.baseUrl[0],
                     layers = this.getLayerList()
                         .filter(layer=> layer.url === url);
 
