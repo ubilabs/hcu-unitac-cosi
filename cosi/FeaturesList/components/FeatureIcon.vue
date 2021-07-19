@@ -104,7 +104,7 @@ export default {
             class="marker"
             :src="getIconSrc()"
             alt="no img"
-        />
+        >
         <span
             v-else-if="getCircleStyle()"
             class="marker"

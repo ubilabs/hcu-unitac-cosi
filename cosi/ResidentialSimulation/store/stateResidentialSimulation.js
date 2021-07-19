@@ -18,9 +18,18 @@ const state = {
     name: "Wohnungsbauquartiere anlegen",
     renderToWindow: false,
     resizableWindow: false,
-    width: 0.4,
+    width: 0.45,
     // ResidentialSimulation specific state
-    drawingLayer: null
+    timelinePrefix: "jahr_",
+    groupsList: ["Bevölkerung", "Arbeitslose", "Sozialversicherungspflichtige", "SGB II Leistungen", "Verkehr"],
+    drawingLayer: null,
+    defaults: {
+        name: "Mein Wohnquartier",
+        avgHouseholdSize: 2.5,
+        gfz: 1.0,
+        populationDensity: 5000,
+        livingSpace: 30
+    }
 };
 
 export default state;
