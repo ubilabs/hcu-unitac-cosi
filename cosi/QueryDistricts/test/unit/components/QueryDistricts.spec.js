@@ -97,7 +97,7 @@ describe("cosi.QueryDistricts.vue", () => {
                                 }),
                                 selectedDistrictLevel: () => ({
                                     stats: {
-                                        baseUrl: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"
+                                        baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
                                     }
                                 })
                             },
