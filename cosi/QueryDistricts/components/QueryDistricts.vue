@@ -27,11 +27,6 @@ export default {
             layerOptions: [],
             selectedLayer: null,
             districtNames: [],
-            urls: {
-                "statgebiet": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
-                "stadtteil": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
-                "bezirk": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"
-            },
             layerFilterModels: [],
             selectorField: "verwaltungseinheit",
             resultNames: null,
@@ -45,7 +40,8 @@ export default {
             "keyOfAttrName",
             "selectedFeatures",
             "layer",
-            "keyOfAttrNameStats"
+            "keyOfAttrNameStats",
+            "selectedDistrictLevel"
         ]),
         ...mapGetters("Tools/DistrictLoader", [
             "mapping",
@@ -65,8 +61,9 @@ export default {
             if (value) {
                 this.initializeDistrictNames();
 
-                const layers = this.getLayerList()
-                    .filter(layer=> layer.url === this.urls[this.keyOfAttrNameStats]);
+                const url = this.selectedDistrictLevel.stats.baseUrl,
+                    layers = this.getLayerList()
+                        .filter(layer=> layer.url === url);
 
                 this.allLayerOptions = [];
                 for (const m of this.mapping) {

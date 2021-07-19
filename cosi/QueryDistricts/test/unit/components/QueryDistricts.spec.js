@@ -18,7 +18,6 @@ import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import GeoJSON from "ol/format/GeoJSON";
-import {clone} from "@turf/turf";
 
 Vue.use(Vuetify);
 
@@ -32,7 +31,7 @@ config.mocks.$t = key => key;
 describe("cosi.QueryDistricts.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
-        getLayerListStub, getSelectedDistrictStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
+        getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
         addSingleAlertStub, cleanupStub, addFeatureStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
@@ -71,7 +70,6 @@ describe("cosi.QueryDistricts.vue", () => {
         keyOfAttrNameStub = sandbox.stub();
         keyOfAttrNameStatsStub = sandbox.stub();
         getLayerListStub = sandbox.stub();
-        getSelectedDistrictStub = sandbox.stub();
         zoomToStub = sandbox.stub();
         layerFeaturesStub = sandbox.stub();
         mappingStub = sandbox.stub();
@@ -95,7 +93,13 @@ describe("cosi.QueryDistricts.vue", () => {
                                 layer: ()=>({
                                     getSource: () => ({
                                         getFeatures: layerFeaturesStub
-                                    })})
+                                    })
+                                }),
+                                selectedDistrictLevel: () => ({
+                                    stats: {
+                                        baseUrl: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"
+                                    }
+                                })
                             },
                             mutations: {
                                 setSelectedDistrictsCollection: sandbox.stub()
@@ -159,7 +163,6 @@ describe("cosi.QueryDistricts.vue", () => {
     function setupDefaultStubs () {
         getLayerListStub.returns([{
             id: "19034",
-            // url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete",
             url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
             featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
         }]);
@@ -172,9 +175,6 @@ describe("cosi.QueryDistricts.vue", () => {
         keyOfAttrNameStub.returns("stadtteil_name");
         keyOfAttrNameStatsStub.returns("stadtteil");
 
-        // keyOfAttrNameStub.returns("statgebiet_name");
-        // keyOfAttrNameStatsStub.returns("statgebiet");
-        getSelectedDistrictStub.returns("Leeren");
         selectedFeaturesStub.returns([{
             style_: null,
             getProperties: ()=>({
