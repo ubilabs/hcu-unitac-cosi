@@ -280,7 +280,7 @@ export default {
 
             if (statGeb_Nr !== "") {
                 schools.forEach(school => {
-                    const id = school.get("Schul_ID").split("-").shift();
+                    const id = school.get("schul_id").split("-").shift();
 
                     if (!Object.prototype.hasOwnProperty.call(schoolAssoc, id)) {
                         schoolAssoc[id] = [];
@@ -299,6 +299,7 @@ export default {
                                     school.set("anzahl_sus_stageb", data.get("anzahl_sus_stageb") ? data.get("anzahl_sus_stageb") : "");
                                     school.set("anteil_sus_schule_stageb_an_anzahl_sus_stageb", data.get("anteil_sus_schule_stageb_an_anzahl_sus_stageb") ? data.get("anteil_sus_schule_stageb_an_anzahl_sus_stageb") : "");
                                     school.set("anzahl_sus_schule", data.get("anzahl_sus_schule") ? data.get("anzahl_sus_schule") : "");
+                                    school.set("schueleranzahl_all", this.getTotalNumber(school.get("anzahl_schueler_gesamt") ? school.get("anzahl_schueler_gesamt") : null));
                                     featureIds.push(school.getId());
                                 });
                             }
@@ -310,6 +311,18 @@ export default {
             }
 
             return featureIds;
+        },
+
+        /**
+         * Get the total number of students
+         * @param {String} val the attribute text from properties
+         * @returns {string} total number
+         */
+        getTotalNumber: function (val) {
+            if (typeof val === "string") {
+                return val.split(" ").shift();
+            }
+            return val;
         },
 
         /**
@@ -358,10 +371,10 @@ export default {
             };
 
             if (school && typeof school.get === "function") {
-                data.schoolName = school.get("Name");
-                data.address.street = school.get("Adresse");
-                data.address.city = school.get("Ort");
-                data.numberOfStudents = school.get("schueleranzahl");
+                data.schoolName = school.get("schulname");
+                data.address.street = school.get("adresse_strasse_hausnr");
+                data.address.city = school.get("adresse_ort");
+                data.numberOfStudents = school.get("schueleranzahl_all");
                 data.numberOfStudentsStep = school.get("anzahl_sus_schule");
                 data.percentageOfStudentsFromDistrict = data.percentageOfStudentsFromDistrict = optimizeValueRootedInComplexType(school.get("anteil_sus_schule_stageb_an_anzahl_sus_stageb"), 0);
                 data.numberOfStudentsFromDistrict = school.get("anzahl_sus_schule_stageb");

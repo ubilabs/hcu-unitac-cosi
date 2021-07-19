@@ -16,11 +16,11 @@ function mouseOverCotentLivingLocation (attr) {
         "            <td colspan=\"2\">" + attr.address.street + "<br>" + attr.address.city + "</td>\n" +
         "        </tr>\n" +
         "        <tr>\n" +
-        "            <td colspan=\"2\">Gesamtanzahl der Schüler:</td>\n" +
+        "            <td colspan=\"2\">Anzahl der Schülerinnen und<br>Schüler in allen Stufen:</td>\n" +
         "            <td width=\"25%\">" + attr.numberOfStudents + "</td>\n" +
         "        </tr>\n" +
         "        <tr>\n" +
-        "            <td colspan=\"2\">Anzahl der Schülerinnen und Schüler<br>in der " + attr.schoolLevelTitle + " :</td>\n" +
+        "            <td colspan=\"2\">Anzahl der Schülerinnen und Schüler<br>in der " + attr.schoolLevelTitle + ":</td>\n" +
         "            <td>" + attr.numberOfStudentsStep + "</td>\n" +
         "        </tr>\n" +
         "        <tr>\n" +

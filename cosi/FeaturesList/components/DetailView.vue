@@ -67,7 +67,7 @@ export default {
          * @returns {void}
          */
         updateFilterProps () {
-            if (this.filterProps?.hasOwnProperty(this.item.layerId)) {
+            if (Object.prototype.hasOwnProperty.call(this.filterProps, this.item.layerId)) {
                 this.selectedProps = this.filterProps[this.item.layerId];
             }
         }
@@ -79,7 +79,7 @@ export default {
     <v-sheet>
         <v-card>
             <v-simple-table dense>
-                <template v-slot:default>
+                <template #default>
                     <tbody class="detail-view-row">
                         <tr
                             v-for="(val, prop) in featureProperties"

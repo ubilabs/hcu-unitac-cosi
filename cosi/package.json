@@ -10,7 +10,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@turf/turf": "^5.1.6",
+    "@turf/turf": "^6.4.0",
     "chart.js": "^2.9.4",
     "object-hash": "^2.1.1",
     "vue-chartjs": "^3.5.1",

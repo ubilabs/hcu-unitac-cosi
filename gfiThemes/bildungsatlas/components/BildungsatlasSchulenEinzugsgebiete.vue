@@ -246,13 +246,25 @@ export default {
 
             this.name = properties.schulname ? properties.schulname : "";
             this.address = properties.adresse_strasse_hausnr && properties.adresse_ort ? properties.adresse_strasse_hausnr + ", " + properties.adresse_ort : "";
-            this.countStudents = properties.anzahl_schueler ? properties.anzahl_schueler : "";
+            this.countStudents = this.getTotalNumber(properties.anzahl_schueler_gesamt ? properties.anzahl_schueler_gesamt : null);
 
             if (schulId === "") {
                 return;
             }
 
             this.parseEinzugsGebieteLayer(this.featureType, featureTypes, schulId);
+        },
+
+        /**
+         * Get the total number of students
+         * @param {String} val the attribute text from properties
+         * @returns {string} total number
+         */
+        getTotalNumber: function (val) {
+            if (typeof val === "string") {
+                return val.split(" ").shift();
+            }
+            return val;
         },
 
         /**

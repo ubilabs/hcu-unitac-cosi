@@ -7,6 +7,7 @@ import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
 import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
 import BildungsatlasSchulenEinzugsgebiete from "./BildungsatlasSchulenEinzugsgebiete.vue";
+import BildungsatlasVorschulischeSF from "./BildungsatlasVorschulischeSF.vue";
 
 export default {
     name: "Bildungsatlas",
@@ -17,7 +18,8 @@ export default {
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
         BildungsatlasSchulenWohnort,
-        BildungsatlasSchulenEinzugsgebiete
+        BildungsatlasSchulenEinzugsgebiete,
+        BildungsatlasVorschulischeSF
     },
     props: {
         /**
@@ -32,7 +34,7 @@ export default {
         return {
             activeTab: "data",
             subTheme: "",
-            chartRange: false,
+            chartOptions: false,
             featureType: "",
             properties: {},
             api: null,
@@ -84,11 +86,11 @@ export default {
             else {
                 this.featureType = "";
             }
-            if (typeof gfiParams === "object" && gfiParams?.chartRange) {
-                this.chartRange = gfiParams.chartRange;
+            if (typeof gfiParams === "object" && gfiParams?.chartOptions) {
+                this.chartOptions = gfiParams.chartOptions;
             }
             else {
-                this.chartRange = false;
+                this.chartOptions = false;
             }
 
             this.properties = typeof properties === "object" && properties !== null ? properties : {};
@@ -164,7 +166,7 @@ export default {
                 :is-active-tab="isActiveTab"
                 :feature="feature"
                 :properties="properties"
-                :chart-range="chartRange"
+                :chart-options="chartOptions"
                 :api="api"
                 :feature-type="featureType"
                 :translate="translate"
