@@ -24,7 +24,7 @@ const state = {
     active: false,
     id: "QueryDistricts",
     // defaults for config.json parameters
-    name: "QueryDistricts (Vue)",
+    name: "QueryDistricts",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: true,
     resizableWindow: false,
