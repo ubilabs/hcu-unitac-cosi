@@ -109,10 +109,10 @@ export default {
                     track-by="name"
                     label="name"
                     :multiple="false"
-                    :allowEmpty="false"
-                    selectedLabel=""
-                    selectLabel=""
-                    deselectLabel=""
+                    :allow-empty="false"
+                    selected-label=""
+                    select-label=""
+                    deselect-label=""
                     :placeholder="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
                 >
                     <template slot="singleLabel">
@@ -224,7 +224,7 @@ export default {
                 id="new-scenario-form"
                 ref="new-scenario-form"
                 v-model="newScenarioValid"
-                onSubmit="return false;"
+                on-submit="return false;"
                 @submit="createNewScenario"
             >
                 <v-row>

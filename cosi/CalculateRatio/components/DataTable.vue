@@ -105,7 +105,7 @@ export default {
             hide-default-header
         >
             <template
-                v-slot:header="{ props }"
+                #header="{ props }"
             >
                 <thead>
                     <tr>
@@ -122,7 +122,7 @@ export default {
                 </thead>
             </template>
             <template
-                v-slot:item.paramA_val="{ item }"
+                #item.paramA_val="{ item }"
             >
                 <div
                     class="table_cell"
@@ -141,7 +141,7 @@ export default {
                 </div>
             </template>
             <template
-                v-slot:item.paramB_val="{ item }"
+                #item.paramB_val="{ item }"
             >
                 <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                 <div class="table_cell">

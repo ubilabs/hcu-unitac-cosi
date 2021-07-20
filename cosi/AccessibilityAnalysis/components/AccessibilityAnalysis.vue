@@ -89,11 +89,11 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.map.addEventListener("click", this.setCoordinateFromClick.bind(this));
+                this.map.addEventListener("click", this.setCoordinateFromClick);
                 Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
             }
             else {
-                this.map.removeEventListener("click", this.setCoordinateFromClick.bind(this));
+                this.map.removeEventListener("click", this.setCoordinateFromClick);
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
             }
         }
@@ -201,7 +201,7 @@ export default {
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"
-            :deactivateGFI="deactivateGFI"
+            :deactivate-gfi="deactivateGFI"
         >
             <template v-slot:toolBody>
                 <v-app>
@@ -233,7 +233,7 @@ export default {
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference')"
                                         type="text"
                                         min="0"
-                                    />
+                                    >
                                 </div>
                                 <div
                                     v-if="mode === 'region'"
@@ -275,7 +275,7 @@ export default {
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                         type="number"
                                         min="0"
-                                    />
+                                    >
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-3 col-sm-5">
@@ -347,7 +347,7 @@ export default {
                 <span class="snackbar-text">
                     {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.askUpdate") }}
                 </span>
-                <template v-slot:action="{ attrs }">
+                <template #action="{ attrs }">
                     <v-btn
                         color="black"
                         text

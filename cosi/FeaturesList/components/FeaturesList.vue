@@ -324,11 +324,11 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
         <template
             v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
             <v-app>
                 <div id="features-list">
@@ -345,9 +345,9 @@ export default {
                                 track-by="id"
                                 label="id"
                                 :multiple="true"
-                                selectedLabel=""
-                                selectLabel=""
-                                deselectLabel=""
+                                selected-label=""
+                                select-label=""
+                                deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
                             >
                                 <template slot="singleLabel">
@@ -381,23 +381,23 @@ export default {
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
                             >
-                                <template v-slot:expanded-item="{ headers, item }">
+                                <template #expanded-item="{ headers, item }">
                                     <td
                                         class="detail-view"
                                         :colspan="headers.length"
                                     >
                                         <DetailView
                                             :item="item"
-                                            :propBlacklist="propBlacklist"
-                                            :filterProps="filterProps"
+                                            :prop-blacklist="propBlacklist"
+                                            :filter-props="filterProps"
                                             @filterProps="updateFilterProps"
                                         />
                                     </td>
                                 </template>
-                                <template v-slot:item.style="{ item }">
+                                <template #item.style="{ item }">
                                     <FeatureIcon :item="item" />
                                 </template>
-                                <template v-slot:item.actions="{ item }">
+                                <template #item.actions="{ item }">
                                     <v-icon
                                         small
                                         disabled
@@ -417,7 +417,7 @@ export default {
                                         mdi-delete
                                     </v-icon>
                                 </template>
-                                <template v-slot:item.enabled="{ item }">
+                                <template #item.enabled="{ item }">
                                     <v-switch
                                         v-model="item.enabled"
                                         dense
