@@ -15,8 +15,10 @@ import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import features_bibs from "./features_bibs.json";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
+import features_ha_with_geo from "./features_ha_with_geo.json";
 import GeoJSON from "ol/format/GeoJSON";
 
 Vue.use(Vuetify);
@@ -28,7 +30,7 @@ localVue.use(Vuex);
 config.mocks.$t = key => key;
 
 
-describe("cosi.QueryDistricts.vue", () => {
+describe("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
@@ -36,6 +38,7 @@ describe("cosi.QueryDistricts.vue", () => {
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
+        geo_features = new GeoJSON().readFeatures(features_ha_with_geo),
 
         mockConfigJson = {
             Portalconfig: {
@@ -59,6 +62,9 @@ describe("cosi.QueryDistricts.vue", () => {
         }
         if (id === "19034") {
             return bev_features;
+        }
+        if (id === "19042") {
+            return geo_features;
         }
         return null;
     }
@@ -110,6 +116,12 @@ describe("cosi.QueryDistricts.vue", () => {
                             getters: {
                                 mapping: mappingStub,
                                 getAllFeaturesByAttribute: ()=>getAllFeaturesByAttribute
+                            }
+                        },
+                        FeaturesList: {
+                            namespaced: true,
+                            getters: {
+                                isFeatureDisabled: () => ()=>false
                             }
                         }
                     }
@@ -193,6 +205,24 @@ describe("cosi.QueryDistricts.vue", () => {
                 setStyle: sandbox.stub()
             })
         }]);
+
+        sandbox.stub(Radio, "request").callsFake((a1, a2) => {
+            if (a1 === "ModelList" && a2 === "getModelByAttributes") {
+                return {get: (prop) => {
+                    if (prop === "layer") {
+                        const features = new GeoJSON().readFeatures(features_bibs);
+
+                        return {
+                            getSource: () => ({
+                                getFeatures: sinon.stub().returns(features)
+                            })
+                        };
+                    }
+                    return null;
+                }};
+            }
+            return null;
+        });
     }
 
     // eslint-disable-next-line require-jsdoc, no-shadow
@@ -368,7 +398,7 @@ describe("cosi.QueryDistricts.vue", () => {
                 {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
             ],
             self = {
-                getAllFeaturesByAttribute,
+                propertiesMap: {"19041": getAllFeaturesByAttribute({id: "19041"})},
                 selectorField: "verwaltungseinheit",
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
@@ -381,7 +411,8 @@ describe("cosi.QueryDistricts.vue", () => {
     });
     it("compareFeatures two filters", async () => {
         const self = {
-                getAllFeaturesByAttribute,
+                propertiesMap: {"19041": getAllFeaturesByAttribute({id: "19041"}),
+                    "19034": getAllFeaturesByAttribute({id: "19034"})},
                 selectorField: "verwaltungseinheit",
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
@@ -415,5 +446,41 @@ describe("cosi.QueryDistricts.vue", () => {
         // assert
         sinon.assert.callCount(cleanupStub, 1);
         sinon.assert.callCount(addSingleAlertStub, 1);
+    });
+    it("add fachdaten layer", async () => {
+        // arrange
+        setupDefaultStubs();
+        wrapper = await mount();
+
+        await setActive(true);
+
+        // act
+        await wrapper.setData({
+            selectedLayer: {id: "fachdaten_Öffentliche Bibliotheken", name: "Öffentliche Bibliotheken", "valueType": "relative"}
+        });
+
+        await wrapper.find("#add-filter").trigger("click");
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        const expModel = {
+            "layerId": "fachdaten_Öffentliche Bibliotheken",
+            "name": "Öffentliche Bibliotheken",
+            "field": "jahr_2019", "max": 43, "min": 35, "value": 0, high: 0, low: 0,
+            "valueType": "relative",
+            "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"
+            ]};
+
+        expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
+        expect(wrapper.vm.resultNames).to.deep.equal([]);
+
+        // act: update filter
+        await wrapper.setData({
+            layerFilterModels: [{...expModel, high: 1000, low: 1000}]
+        });
+        await wrapper.vm.$nextTick();
+
+        // assert
+        expect(wrapper.vm.resultNames).to.deep.equal(["Rahlstedt", "Farmsen-Berne"]);
     });
 });

@@ -24,7 +24,7 @@ const getters = {
      * @returns {String} The key for the attribute "name".
      */
     keyOfAttrNameStats: (state, {selectedDistrictLevel}) => {
-        return selectedDistrictLevel.keyOfAttrNameStats;
+        return selectedDistrictLevel.stats.keyOfAttrName;
     },
 
     /**

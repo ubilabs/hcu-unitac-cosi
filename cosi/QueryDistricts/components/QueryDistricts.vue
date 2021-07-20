@@ -14,6 +14,9 @@ import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
+import * as turf from "@turf/turf";
+
+import GeoJSON from "ol/format/GeoJSON";
 
 
 export default {
@@ -33,7 +36,9 @@ export default {
             selectorField: "verwaltungseinheit",
             resultNames: null,
             refDistrict: null,
-            dashboard: null
+            dashboard: null,
+            facilityNames: [],
+            propertiesMap: {}
         };
     },
     computed: {
@@ -75,6 +80,9 @@ export default {
                     if (layer) {
                         this.allLayerOptions.push({name: m.value, id: layer.id, group: m.group, valueType: m.valueType});
                     }
+                }
+                for (const name of this.facilityNames) {
+                    this.allLayerOptions.push({name: name, id: "fachdaten_" + name, group: "Fachdaten", valueType: "absolute"});
                 }
                 this.setLayerOptions();
             }
@@ -157,23 +165,65 @@ export default {
 
 
         createLayerFilterModel: async function (layer) {
-            const selector = this.keyOfAttrNameStats,
-                features = await this.getAllFeaturesByAttribute({
+
+            if (layer.id.startsWith("fachdaten_")) {
+                const facilityFeatures = this.getFacilityFeatures(layer.name),
+                    features = await this.getAllFeaturesByAttribute({
+                        id: "19042"
+                    }),
+                    fmap = {};
+
+                for (const ffeature of facilityFeatures) {
+                    for (const feature of features) {
+                        if (turf.booleanPointInPolygon(
+                            turf.point(this.getCoordinate(ffeature)),
+                            turf.polygon(feature.getGeometry().getCoordinates()))) {
+
+                            fmap[feature.getId()] = (fmap[feature.getId()] || 0) + 1;
+
+                            break;
+                        }
+                    }
+                }
+
+                this.propertiesMap[layer.id] = features.map(feature => {
+                    const rfeature = feature.clone(),
+                        props = rfeature.getProperties(),
+                        count = fmap[feature.getId()];
+
+                    for (const p in props) {
+                        if (p.startsWith("jahr_")) {
+                            rfeature.set(p, props[p] / count);
+                        }
+                    }
+                    return rfeature;
+                });
+            }
+            else {
+
+                const features = await this.getAllFeaturesByAttribute({
                     id: layer.id
-                }),
+                });
+
+                this.propertiesMap[layer.id] = features;
+            }
+
+            const features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
-                values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),
+                values = features.map(f => parseFloat(f.getProperties()[field])).filter(v => !Number.isNaN(v)),
                 max = parseInt(Math.max(...values), 10),
                 min = parseInt(Math.min(...values), 10);
+
 
             let value = 0;
 
             if (this.selectedDistrict) {
-                const refFeature = features.filter(feature => feature.getProperties()[selector] === this.selectedDistrict)[0];
+                const selector = this.keyOfAttrNameStats,
+                    refProps = features.filter(f => f.getProperties()[selector] === this.selectedDistrict)[0];
 
-                if (refFeature) {
-                    value = parseInt(refFeature.getProperties()[field], 10);
+                if (refProps) {
+                    value = parseInt(refProps[field], 10);
                 }
             }
             return {layerId: layer.id, name: layer.name, field, value, valueType: layer.valueType, max, min, high: 0, low: 0, fieldValues};
@@ -189,6 +239,7 @@ export default {
                 newModel.low = m.low;
                 newModel.field = m.field;
                 newModels.push(newModel);
+
             }
             this.layerFilterModels = newModels;
         },
@@ -320,6 +371,7 @@ export default {
                 this.mapLayer.getSource().addFeature(featureClone);
             }
         },
+
         showDistrictFeatures (districtFeatures) {
             this.mapLayer.getSource().clear();
 
@@ -345,10 +397,9 @@ export default {
             ).map((model) => model.get("name").trim());
         },
 
-        //TODO: copied from accessibilityAnalysis
-        getCoordinates: function () {
+        getFacilityFeatures: function (name) {
             const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
-                name: this.selectedFacilityName
+                name: name
             });
 
             if (selectedLayerModel) {
@@ -356,18 +407,18 @@ export default {
                     .getSource().getFeatures()
                     .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
 
-                return features
-                    .map((feature) => {
-                        const geometry = feature.getGeometry();
-
-                        if (geometry.getType() === "Point") {
-                            return geometry.getCoordinates().splice(0, 2);
-                        }
-                        return Extent.getCenter(geometry.getExtent());
-
-                    }).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
+                return features;
             }
-            return null;
+            return [];
+        },
+
+        getCoordinate: function (feature) {
+            const geometry = feature.getGeometry();
+
+            if (geometry.getType() === "Point") {
+                return geometry.getCoordinates().splice(0, 2);
+            }
+            return Extent.getCenter(geometry.getExtent());
         }
     }
 };
@@ -380,9 +431,9 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-g-f-i="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <v-app>
                 <div
                     v-if="active"
@@ -417,10 +468,10 @@ export default {
                             id="help"
                             @click="showHelp()"
                         >
-                            <span class="glyphicon glyphicon-question-sign"></span>
+                            <span class="glyphicon glyphicon-question-sign" />
                         </div>
                     </div>
-                    <br />
+                    <br>
                     <div>
                         <button
                             id="add-filter"
@@ -429,12 +480,12 @@ export default {
                             :disabled="selectedLayer===null"
                             @click="addLayerFilter()"
                         >
-                            <span class="glyphicon glyphicon-plus"></span>
+                            <span class="glyphicon glyphicon-plus" />
                             {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
                         </button>
                     </div>
-                    <br />
-                    <div id="layerfilter-container"></div>
+                    <br>
+                    <div id="layerfilter-container" />
                     <div id="results">
                         <template
                             v-for="filter in layerFilterModels"
@@ -447,8 +498,7 @@ export default {
                                 @close="closeFilter"
                             />
                         </template>
-                        <div id="params">
-                        </div>
+                        <div id="params" />
                         <div
                             v-if="selectedDistrict"
                             id="reference-district"
@@ -480,7 +530,7 @@ export default {
                             >{{ name }}</span>
                         </div>
                     </div>
-                    <br />
+                    <br>
                     <div>
                         <button
                             v-if="resultNames && resultNames.length"
@@ -491,7 +541,7 @@ export default {
                             {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
                         </button>
                     </div>
-                    <br />
+                    <br>
                     <div>
                         <button
                             v-if="resultNames && resultNames.length"

@@ -9,12 +9,11 @@ export default {
         const allFeatures = [];
 
         for (const layerFilter of layerFilterList) {
-            const features = await this.getAllFeaturesByAttribute({
-                id: layerFilter.layerId
-            }).filter(feature => feature.getProperties()[layerFilter.field] >= layerFilter.value - layerFilter.low
-                && feature.getProperties()[layerFilter.field] <= layerFilter.value + layerFilter.high
-                && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
-                && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
+            const features = this.propertiesMap[layerFilter.layerId]
+                .filter(feature => feature.getProperties()[layerFilter.field] >= layerFilter.value - layerFilter.low
+                    && feature.getProperties()[layerFilter.field] <= layerFilter.value + layerFilter.high
+                    && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
+                    && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
 
             allFeatures.push(features);
         }
@@ -25,7 +24,7 @@ export default {
             === x.getProperties()[this.keyOfAttrNameStats])));
 
         return {
-            resultNames: intersection.map(feature => feature.getProperties()[this.keyOfAttrNameStats]),
+            resultNames: intersection.map(f => f.getProperties()[this.keyOfAttrNameStats]),
             features: intersection
         };
     }
