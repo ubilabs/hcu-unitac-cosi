@@ -13,7 +13,8 @@
                     "add": "Hinzufügen",
                     "year": "Jahr",
                     "referenceValue": "Referenzwert",
-                    "tolerance": "Toleranz"
+                    "tolerance": "Toleranz",
+                    "funcData": "Fachdaten"
                 }
             }
         }

@@ -264,7 +264,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.districtNames).to.deep.equal(["Test"]);
         expect(wrapper.vm.layerOptions).to.deep.equal([
             {"header": "Bevölkerung"},
-            {"id": "19034", "name": "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative"}]);
+            {"id": "19034", "name": "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative", "derived": false}]);
     });
     it("no selectedFeatures", async () => {
         // arrange
@@ -356,8 +356,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "name": "Bevölkerung insgesamt",
                 "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0,
                 "valueType": "relative",
-                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"
-                ]
+                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
             }]);
         expect(wrapper.vm.resultNames).to.deep.equal([]);
 
@@ -390,7 +389,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.find("#compare-results").exists()).to.be.false;
         expect(wrapper.vm.layerOptions).to.deep.equal([
             {header: "Bevölkerung"},
-            {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative"}
+            {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative", "derived": false}
         ]);
     });
     it("compareFeatures one filter", async () => {
@@ -456,7 +455,10 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // act
         await wrapper.setData({
-            selectedLayer: {id: "fachdaten_Öffentliche Bibliotheken", name: "Öffentliche Bibliotheken", "valueType": "relative"}
+            selectedLayer: {
+                id: "Öffentliche Bibliotheken", name: "Öffentliche Bibliotheken", valueType: "relative",
+                derived: true
+            }
         });
 
         await wrapper.find("#add-filter").trigger("click");
@@ -464,12 +466,12 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
 
         const expModel = {
-            "layerId": "fachdaten_Öffentliche Bibliotheken",
+            "layerId": "Öffentliche Bibliotheken",
             "name": "Öffentliche Bibliotheken",
             "field": "jahr_2019", "max": 43, "min": 35, "value": 0, high: 0, low: 0,
             "valueType": "relative",
-            "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"
-            ]};
+            "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+        };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
         expect(wrapper.vm.resultNames).to.deep.equal([]);

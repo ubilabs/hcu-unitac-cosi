@@ -13,7 +13,8 @@
                     "add": "add",
                     "year": "jear",
                     "referenceValue": "reference value",
-                    "tolerance": "tolerance"
+                    "tolerance": "tolerance",
+                    "funcData": "functional data"
                 }
             }
         }

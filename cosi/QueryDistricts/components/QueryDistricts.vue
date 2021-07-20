@@ -12,12 +12,8 @@ import DashboardResult from "./DashboardResult.vue";
 import Collection from "ol/Collection";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
-
-import GeoJSON from "ol/format/GeoJSON";
-
 
 export default {
     name: "QueryDistricts",
@@ -78,11 +74,18 @@ export default {
                     const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
 
                     if (layer) {
-                        this.allLayerOptions.push({name: m.value, id: layer.id, group: m.group, valueType: m.valueType});
+                        this.allLayerOptions.push({name: m.value, id: layer.id,
+                            group: m.group, valueType: m.valueType, derived: false});
                     }
                 }
                 for (const name of this.facilityNames) {
-                    this.allLayerOptions.push({name: name, id: "fachdaten_" + name, group: "Fachdaten", valueType: "absolute"});
+                    this.allLayerOptions.push({
+                        name: name,
+                        id: name,
+                        group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                        valueType: "absolute",
+                        derived: true
+                    });
                 }
                 this.setLayerOptions();
             }
@@ -166,7 +169,7 @@ export default {
 
         createLayerFilterModel: async function (layer) {
 
-            if (layer.id.startsWith("fachdaten_")) {
+            if (layer.derived) {
                 const facilityFeatures = this.getFacilityFeatures(layer.name),
                     features = await this.getAllFeaturesByAttribute({
                         id: "19042"
