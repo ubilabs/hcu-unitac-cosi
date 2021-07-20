@@ -14,7 +14,8 @@
                     "year": "Jahr",
                     "referenceValue": "Referenzwert",
                     "tolerance": "Toleranz",
-                    "funcData": "Fachdaten"
+                    "funcData": "Fachdaten",
+                    "count": "Anz."
                 }
             }
         }

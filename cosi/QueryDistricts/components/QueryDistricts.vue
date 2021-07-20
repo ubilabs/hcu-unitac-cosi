@@ -75,17 +75,30 @@ export default {
 
                     if (layer) {
                         this.allLayerOptions.push({name: m.value, id: layer.id,
-                            group: m.group, valueType: m.valueType, derived: false});
+                            group: m.group, valueType: m.valueType});
                     }
                 }
                 for (const name of this.facilityNames) {
-                    this.allLayerOptions.push({
-                        name: name,
-                        id: name,
-                        group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                        valueType: "absolute",
-                        derived: true
-                    });
+                    for (const referenceLayer of this.referenceLayers) {
+                        const layer = layers.find(l=>l.id === referenceLayer.id);
+
+
+                        if (layer && layer.featureType) {
+                            const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),
+                                cnt = this.$t("additional:modules.tools.cosi.queryDistricts.count"),
+                                layerName = `${mapping.value}/${cnt} ${name}`;
+
+
+                            this.allLayerOptions.push({
+                                name: layerName,
+                                id: layerName,
+                                group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                                valueType: "absolute",
+                                referenceLayerId: referenceLayer.id,
+                                facilityLayerName: name
+                            });
+                        }
+                    }
                 }
                 this.setLayerOptions();
             }
@@ -166,13 +179,12 @@ export default {
             return [... new Set(ret)];
         },
 
-
         createLayerFilterModel: async function (layer) {
 
-            if (layer.derived) {
-                const facilityFeatures = this.getFacilityFeatures(layer.name),
+            if (layer.referenceLayerId) {
+                const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName),
                     features = await this.getAllFeaturesByAttribute({
-                        id: "19042"
+                        id: layer.referenceLayerId
                     }),
                     fmap = {};
 

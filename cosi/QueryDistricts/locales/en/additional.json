@@ -14,7 +14,8 @@
                     "year": "jear",
                     "referenceValue": "reference value",
                     "tolerance": "tolerance",
-                    "funcData": "functional data"
+                    "funcData": "functional data",
+                    "count": "ct."
                 }
             }
         }
