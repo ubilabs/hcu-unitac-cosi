@@ -27,7 +27,6 @@ import RefocusView from "./controls/refocus/view";
 // import FilterView from "./filter/view";
 import store from "../../../src/app-store";
 
-import "../cosi.style.less";
 
 /**
  * Handles the loading of CoSI custom modules and methodes, incl. some global functions and polyfills

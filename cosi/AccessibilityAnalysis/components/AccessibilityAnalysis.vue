@@ -1,8 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/Tool.vue";
-import Dropdown from "../../../../src/share-components/dropdowns/DropdownSimple.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
-import VueSelect from "vue-select";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import requestIsochrones from "./requestIsochrones";
@@ -13,9 +11,7 @@ import deepEqual from "deep-equal";
 export default {
     name: "AccessibilityAnalysis",
     components: {
-        Tool,
-        Dropdown,
-        VueSelect
+        Tool
     },
     data () {
         return {
@@ -25,20 +21,47 @@ export default {
             coordinate: null,
             setBySearch: false,
             transportType: "",
-            transportTypes: {
-                "": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.clear"),
-                "driving-car": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.driving-car"),
-                "cycling-regular": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular"),
-                "cycling-electric": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric"),
-                "foot-walking": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking"),
-                wheelchair: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.wheelchair")
-            },
+            transportTypes: [
+                {
+                    type: "",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.clear")
+                },
+                {
+                    type: "driving-car",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.driving-car")
+                },
+                {
+                    type: "cycling-regular",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
+                },
+                {
+                    type: "cycling-electric",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
+                },
+                {
+                    type: "foot-walking",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
+                },
+                {
+                    type: "wheelchair",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.wheelchair")
+                }
+            ],
             scaleUnit: "",
-            scaleUnits: {
-                "": this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.clear"),
-                time: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.time"),
-                distance: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
-            },
+            scaleUnits: [
+                {
+                    type: "",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.clear")
+                },
+                {
+                    type: "time",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.time")
+                },
+                {
+                    type: "distance",
+                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
+                }
+            ],
             distance: "",
             rawGeoJson: null,
             showRequestButton: false,
@@ -181,143 +204,138 @@ export default {
             :deactivateGFI="deactivateGFI"
         >
             <template v-slot:toolBody>
-                <div
-                    v-if="active"
-                    id="accessibilityanalysis"
-                >
-                    <p class="dropdown-info">
-                        {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo") }}
-                    </p>
-                    <Dropdown
-                        v-model="mode"
-                        :options="availableModes"
-                    />
+                <v-app>
                     <div
-                        v-if="mode !== null"
-                        class="isochrones"
+                        v-if="active"
+                        id="accessibilityanalysis"
                     >
-                        <form class="form-horizontal">
-                            <div
-                                v-if="mode === 'point'"
-                                class="form-group"
-                            >
-                                <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference") }}</label>
-                                <div class="col-sm-9">
-                                    <input
+                        <v-select
+                            v-model="mode"
+                            :items="availableModes"
+                            :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo')"
+                            item-text="text"
+                            item-value="type"
+                            outlined
+                            dense
+                        />
+                        <div
+                            v-if="mode !== null"
+                            class="isochrones"
+                        >
+                            <form class="form-horizontal">
+                                <div
+                                    v-if="mode === 'point'"
+                                    class="form-group"
+                                >
+                                    <v-text-field
                                         id="coordinate"
                                         v-model="coordinate"
-                                        class="form-control input-sm"
-                                        title="Referenzpunkt"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference')"
                                         type="text"
                                         min="0"
                                     />
                                 </div>
-                            </div>
-                            <div
-                                v-if="mode === 'region'"
-                                class="form-group"
-                            >
-                                <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.topic") }}</label>
-                                <div class="col-sm-9">
-                                    <VueSelect
+                                <div
+                                    v-if="mode === 'region'"
+                                    class="form-group"
+                                >
+                                    <v-select
                                         v-model="selectedFacilityName"
-                                        class="style-chooser"
                                         placeholder="Keine Auswahl"
-                                        :options="facilityNames"
-                                        :clearable="false"
+                                        :items="facilityNames"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
+                                        outlined
+                                        dense
                                     />
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.transportType") }}</label>
-                                <div class="col-sm-9">
-                                    <Dropdown
+                                <div class="form-group">
+                                    <v-select
                                         v-model="transportType"
                                         title="Verkehrsmittel"
-                                        :options="transportTypes"
+                                        :items="transportTypes"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.transportType')"
+                                        item-text="name"
+                                        item-value="type"
                                     />
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit") }}</label>
-                                <div class="col-sm-9">
-                                    <Dropdown
+                                <div class="form-group">
+                                    <v-select
                                         v-model="scaleUnit"
                                         title="Maßeinheit der Entfernung"
-                                        :options="scaleUnits"
+                                        :items="scaleUnits"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit')"
+                                        item-text="name"
+                                        item-value="type"
                                     />
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3">{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.distance") }}</label>
-                                <div class="col-sm-9">
-                                    <input
+                                <div class="form-group">
+                                    <v-text-field
                                         id="range"
                                         v-model="distance"
-                                        class="form-control input-sm"
-                                        title="Entfernung"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                         type="number"
                                         min="0"
                                     />
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-3 col-sm-5">
-                                    <button
-                                        id="create-isochrones"
-                                        type="button"
-                                        class="btn btn-lgv-grey"
-                                        @click="createIsochrones()"
-                                    >
-                                        {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
-                                    </button>
-                                </div>
-                                <div class="col-sm-1">
-                                    <div
-                                        id="help"
-                                        @click="showHelp()"
-                                    >
-                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-5">
+                                        <v-btn
+                                            id="create-isochrones"
+                                            dense
+                                            small
+                                            tile
+                                            color="grey lighten-1"
+                                            @click="createIsochrones()"
+                                        >
+                                            {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
+                                        </v-btn>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <v-icon
+                                            id="help"
+                                            :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
+                                            @click="showHelp()"
+                                        >
+                                            mdi-help-circle-outline
+                                        </v-icon>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <v-icon
+                                            id="clear"
+                                            :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.clear')"
+                                            @click="clear()"
+                                        >
+                                            mdi-trash-can-outline
+                                        </v-icon>
                                     </div>
                                 </div>
-                                <div
-                                    class="col-sm-1"
-                                    @click="clear()"
-                                >
-                                    <div
-                                        id="clear"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.clear')"
+                            </form>
+                            <hr />
+                            <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
+                            <div id="legend">
+                                <template v-for="(j, i) in steps">
+                                    <svg
+                                        :key="i"
+                                        width="15"
+                                        height="15"
                                     >
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                    </div>
-                                </div>
+                                        <circle
+                                            cx="7.5"
+                                            cy="7.5"
+                                            r="7.5"
+                                            :style="`fill: ${
+                                                legendColors[i]
+                                            }; stroke-width: 0.5; stroke: #e3e3e3;`"
+                                        />
+                                    </svg>
+                                    <span :key="i * 2 + steps.length">
+                                        {{ j }}
+                                    </span>
+                                </template>
                             </div>
-                        </form>
-                        <hr />
-                        <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
-                        <div id="legend">
-                            <template v-for="(j, i) in steps">
-                                <svg
-                                    :key="i"
-                                    width="15"
-                                    height="15"
-                                >
-                                    <circle
-                                        cx="7.5"
-                                        cy="7.5"
-                                        r="7.5"
-                                        :style="`fill: ${
-                                            legendColors[i]
-                                        }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                    />
-                                </svg>
-                                <span :key="i * 2 + steps.length">
-                                    {{ j }}
-                                </span>
-                            </template>
                         </div>
                     </div>
-                </div>
+                </v-app>
             </template>
         </Tool>
         <v-app>
@@ -357,5 +375,8 @@ export default {
 }
 .snackbar-text{
     color: black
+}
+#help {
+    border: none
 }
 </style>
