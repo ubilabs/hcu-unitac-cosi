@@ -30,7 +30,7 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    referenceLayers: []
+    referenceLayers: [{"id": "19042"}]
 };
 
 export default state;

@@ -78,10 +78,10 @@ export default {
                             group: m.group, valueType: m.valueType});
                     }
                 }
+
                 for (const name of this.facilityNames) {
                     for (const referenceLayer of this.referenceLayers) {
                         const layer = layers.find(l=>l.id === referenceLayer.id);
-
 
                         if (layer && layer.featureType) {
                             const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),

@@ -45,11 +45,12 @@ describe("addons/cosi/QueryDistricts/", () => {
                 menu: {
                     tools: {
                         children: {
-                            QueryDistricts: {
-                                "name": "translate#additional:modules.tools.vueAddon.title",
-                                "glyphicon": "glyphicon-th-list",
+                            queryDistricts: {
                                 "referenceLayers": [{"id": "19042"}]
                             }
+                        },
+                        queryDistricts: {
+                            "referenceLayers": [{"id": "19042"}]
                         }
                     }
                 }
@@ -176,6 +177,11 @@ describe("addons/cosi/QueryDistricts/", () => {
     function setupDefaultStubs () {
         getLayerListStub.returns([{
             id: "19034",
+            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+        },
+        {
+            id: "19042",
             url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
             featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
         }]);
@@ -485,5 +491,38 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // assert
         expect(wrapper.vm.resultNames).to.deep.equal(["Rahlstedt", "Farmsen-Berne"]);
+    });
+    it("facilityNames", async () => {
+        // arrange
+        setupDefaultStubs();
+        wrapper = await mount();
+
+        // act
+        await wrapper.setData({
+            facilityNames: ["Öffentliche Bibliotheken"],
+            referenceLayers: [{"id": "19042"}]
+        });
+        await setActive(true);
+
+
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.allLayerOptions).to.deep.equal([
+            {
+                "group": "Bevölkerung",
+                "id": "19034",
+                "name": "Bevölkerung insgesamt",
+                "valueType": "relative"
+            },
+            {
+                "facilityLayerName": "Öffentliche Bibliotheken",
+                "group": "additional:modules.tools.cosi.queryDistricts.funcData",
+                "id": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
+                "name": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
+                "referenceLayerId": "19042",
+                "valueType": "absolute"
+            }
+        ]);
     });
 });
