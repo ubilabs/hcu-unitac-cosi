@@ -15,7 +15,7 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
@@ -105,9 +105,14 @@ export default {
             if (currentTabId === "day") {
                 this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
                     this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-15min_Werte");
-                    // onerror
+                    if (this.api.constructor.name === "DauerzaehlstellenRadApi") {
+                        this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
+                    }
+                    else {
+                        this.exportModel.set("filename", result.title.replace(" ", "_") + "-15min_Werte");
+                    }
                 }, error => {
+                    // onerror
                     console.warn("error", "downloadDataDay", error);
                     Radio.trigger("Alert", "alert", {
                         content: "Die Daten können im Moment nicht heruntergeladen werden",

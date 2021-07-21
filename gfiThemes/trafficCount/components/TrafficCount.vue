@@ -2,6 +2,7 @@
 import {mapGetters} from "vuex";
 
 import {TrafficCountCache} from "../utils/trafficCountCache";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 import TrafficCountInfo from "./TrafficCountInfo.vue";
 import TrafficCountDay from "./TrafficCountDay.vue";
 import TrafficCountWeek from "./TrafficCountWeek.vue";
@@ -95,7 +96,14 @@ export default {
         feature: {
             handler (newVal, oldVal) {
                 if (oldVal) {
-                    this.createDataConnection(newVal.getProperties(), null);
+                    if (this.isGurlittInsel(newVal)) {
+                        this.createDataConnectionDauerzaehlstellenRad(newVal, errormsg => {
+                            console.warn("An error occured constructing Gurlitt Insel:", errormsg);
+                        });
+                    }
+                    else {
+                        this.createDataConnection(newVal.getProperties(), null);
+                    }
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
                     this.setComponentKey(this.propThingId + this.propMeansOfTransport);
                     this.setActiveDefaultTab();
@@ -123,7 +131,12 @@ export default {
         }
     },
     created: function () {
-        this.createDataConnection(this.feature.getProperties(), null);
+        if (this.isGurlittInsel(this.feature)) {
+            this.createDataConnectionDauerzaehlstellenRad(this.feature);
+        }
+        else {
+            this.createDataConnection(this.feature.getProperties(), null);
+        }
     },
     mounted: function () {
         this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
@@ -133,10 +146,31 @@ export default {
     },
     methods: {
         /**
+         * checks if this is the feature of Gurlitt-Insel
+         * @param {Object} feature the feature
+         * @returns {void}
+         */
+        isGurlittInsel (feature) {
+            return typeof feature === "object" && feature !== null
+                && typeof feature.getMimeType === "function" && feature.getMimeType() === "text/xml"
+                && typeof feature.getId === "function" && typeof feature.getId() === "string" && feature.getId().indexOf("DE.HH.UP_DAUERZAEHLSTELLEN_RAD") === 0;
+        },
+        /**
+         * sets the GFI up for the Gurlitt-Insel feature
+         * @param {Object} feature the feature
+         * @param {Function} [onerror] a function to call on error
+         * @returns {void}
+         */
+        createDataConnectionDauerzaehlstellenRad (feature, onerror) {
+            this.api = new DauerzaehlstellenRadApi(feature, onerror);
+            this.propThingId = this.api.getThingId(onerror);
+            this.propMeansOfTransport = this.api.getMeansOfTransport();
+        },
+        /**
          * it will make conntection to thing api
-         * @param {Object[]} feature the feature properties from thing
+         * @param {Object} feature the feature properties from thing
          * @param {Object} [sensorThingsApiOpt=null] an optional api for testing
-         * @returns {Void} -
+         * @returns {void}
          */
         createDataConnection: function (feature, sensorThingsApiOpt = null) {
             const thingId = feature["@iot.id"],

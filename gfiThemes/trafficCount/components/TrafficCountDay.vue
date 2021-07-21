@@ -21,7 +21,7 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
@@ -50,13 +50,13 @@ export default {
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay"),
+            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay", {minutes: this.api.constructor.name === "DauerzaehlstellenRadApi" ? 60 : 15}),
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
             },
 
             // props for table
-            tableTitle: "Datum",
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleDay"),
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
@@ -138,7 +138,8 @@ export default {
             const api = this.api,
                 thingId = this.thingId,
                 meansOfTransport = this.meansOfTransport,
-                timeSettings = [];
+                timeSettings = [],
+                minutesForMissingData = api.constructor.name === "DauerzaehlstellenRadApi" ? 60 : 15;
 
             if (dates.length === 0) {
                 this.apiData = [];
@@ -163,7 +164,7 @@ export default {
                             const from = typeof timeSettings[idx] === "object" ? timeSettings[idx].from + " 00:00:00" : "";
 
                             Object.keys(transportData).forEach(transportKey => {
-                                datasets[idx][transportKey] = addMissingDataDay(from, datasets[idx][transportKey]);
+                                datasets[idx][transportKey] = addMissingDataDay(from, datasets[idx][transportKey], minutesForMissingData);
                             });
                         });
                     }

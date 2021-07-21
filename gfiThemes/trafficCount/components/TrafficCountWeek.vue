@@ -21,7 +21,7 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
@@ -58,7 +58,7 @@ export default {
             },
 
             // props for table
-            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.weekLabel"),
+            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek"),
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd");
             },

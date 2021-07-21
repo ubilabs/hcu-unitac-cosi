@@ -21,7 +21,7 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
@@ -61,7 +61,7 @@ export default {
             },
 
             // props for table
-            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.yearLabel"),
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleYear"),
             setColTitle: datetime => {
                 return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
             },
