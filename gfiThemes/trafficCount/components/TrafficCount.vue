@@ -36,7 +36,10 @@ export default {
             keyInfo: "info",
             keyDay: "day",
             keyWeek: "week",
-            keyYear: "year"
+            keyYear: "year",
+            dayCheckReset: false,
+            weekCheckReset: false,
+            yearCheckReset: false
         };
     },
     computed: {
@@ -298,6 +301,22 @@ export default {
          */
         setGfiDefaultWidth: function () {
             document.querySelector(".tool-window-vue").style.maxWidth = "600px";
+        },
+
+        /**
+         * changing resetting check status for the active tab
+         * @returns {void} -
+         */
+        resetTab: function () {
+            if (this.currentTabId === "day") {
+                this.dayCheckReset = !this.dayCheckReset;
+            }
+            else if (this.currentTabId === "week") {
+                this.weekCheckReset = !this.weekCheckReset;
+            }
+            else if (this.currentTabId === "year") {
+                this.yearCheckReset = !this.yearCheckReset;
+            }
         }
     }
 };
@@ -360,6 +379,7 @@ export default {
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
+                    :reset="dayCheckReset"
                 />
                 <TrafficCountWeek
                     id="week"
@@ -368,6 +388,7 @@ export default {
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
+                    :reset="weekCheckReset"
                 />
                 <TrafficCountYear
                     id="year"
@@ -376,6 +397,7 @@ export default {
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
+                    :reset="yearCheckReset"
                 />
             </div>
         </div>
@@ -385,6 +407,7 @@ export default {
             :api="api"
             :thing-id="propThingId"
             :means-of-transport="propMeansOfTransport"
+            @resetTab="resetTab"
         />
     </div>
 </template>

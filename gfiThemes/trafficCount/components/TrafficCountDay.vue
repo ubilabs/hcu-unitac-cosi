@@ -27,6 +27,10 @@ export default {
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
@@ -77,6 +81,12 @@ export default {
             diagramDay: "diagramDay",
             tableDay: "tableDay"
         };
+    },
+    watch: {
+        reset () {
+            this.dayDatepicker = null;
+            this.setDayDatepicker();
+        }
     },
     mounted () {
         moment.locale(i18next.language);

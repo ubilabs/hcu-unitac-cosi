@@ -286,6 +286,14 @@ export default {
         },
 
         /**
+         * trigger the function of resetting tab
+         * @returns {Void}  -
+         */
+        reset: function () {
+            this.$emit("resetTab");
+        },
+
+        /**
          * setup of the last update date
          * @param {Object} api instance of TrafficCountApi
          * @param {String} thingId the thingId to be send to any api call
@@ -333,6 +341,18 @@ export default {
             @click="exportFile"
             v-html="exportButtonTemplate.innerHTML"
         />
+        <div
+            v-if="currentTabId !== 'infos'"
+            class="reset-container"
+        >
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="reset"
+            >
+                {{ $t("additional:modules.tools.gfi.themes.trafficCount.reset") }}
+            </button>
+        </div>
         <div class="update">
             <table
                 :class="tableClass"
@@ -367,6 +387,14 @@ export default {
           padding-top: 35px;
      }
 }
+.reset-container {
+    float: left;
+    padding-top: 25px;
+    margin-left: 10px;
+    @media (max-width: 600px) {
+        padding-top: 35px;
+    }
+}
 table {
     margin-bottom: 0;
     .text-right {
@@ -378,7 +406,10 @@ table {
         float: right;
         margin-top: 25px;
         @media (max-width: 600px) {
-            min-width: inherit;
+            margin-top: 35px;
+        }
+        @media (max-width: 550px) {
+            margin-top: 10px;
         }
         tbody {
             tr {

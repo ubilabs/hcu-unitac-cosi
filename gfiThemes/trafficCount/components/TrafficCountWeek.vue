@@ -27,6 +27,10 @@ export default {
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
@@ -88,6 +92,12 @@ export default {
     computed: {
         calendarweek: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek");
+        }
+    },
+    watch: {
+        reset () {
+            this.weekDatepicker = null;
+            this.setWeekdatepicker();
         }
     },
     mounted () {

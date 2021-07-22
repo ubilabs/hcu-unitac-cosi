@@ -27,6 +27,10 @@ export default {
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
@@ -84,7 +88,14 @@ export default {
             tableYear: "tableYear"
         };
     },
+    watch: {
+        reset () {
+            this.yearDatepicker = null;
+            this.setYearDatepicker();
+        }
+    },
     mounted () {
+        moment.locale(i18next.language);
         this.setYearDatepicker();
     },
     methods: {
