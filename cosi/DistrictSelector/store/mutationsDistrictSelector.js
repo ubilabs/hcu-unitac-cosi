@@ -16,9 +16,10 @@ const mutations = {
      * @param {Object} state - the DistrictSelector store state
      * @param {String} category - the new category
      * @param {String} group - the group the category belongs to
+     * @param {String} [valueType="relative"] - absolute or relative
      * @returns {void}
      */
-    addCategoryToMapping (state, {category, group}) {
+    addCategoryToMapping (state, {category, group, valueType = "relative"}) {
         const mappingObject = state.mapping.find(el => el.value === category && el.group === group);
 
         if (!mappingObject) {
@@ -29,7 +30,7 @@ const mutations = {
                 statgebiet: true,
                 stadtteil: true,
                 bezirk: true,
-                valueType: "relative"
+                valueType: valueType
             });
         }
     },

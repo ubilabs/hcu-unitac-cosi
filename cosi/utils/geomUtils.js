@@ -5,12 +5,11 @@ import {GeoJSON} from "ol/format";
  * Checks which district contains a given feature
  * @param {DistrictLevel} districtLevel - the districtLevel to check
  * @param {module:ol/Feature} feature - the feature to check against
- * @param {String} [keyOfAttrName] - defines the key of the attribute "name" to return for the district, if undefined the store value is used.
  * @param {Boolean} [returnsFeature=true] - defines whether to return a String or the Feature Object
  * @param {Boolean} [multiple=false] - defines whether multiple results are possible, returns the first result if false
  * @returns {String|module:ol/Feature} the districts name or the district feature
  */
-export function getContainingDistrictForFeature (districtLevel, feature, keyOfAttrName, returnsFeature = true, multiple = false) {
+export function getContainingDistrictForFeature (districtLevel, feature, returnsFeature = true, multiple = false) {
     const containingDistricts = [];
 
     for (const district of districtLevel.districts) {

@@ -45,7 +45,7 @@ export default {
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapGetters("Map", ["layerById", "visibleLayerList"]),
         ...mapState(["configJson"]),
         columns () {
@@ -100,11 +100,11 @@ export default {
                 }
             ];
         },
-        districtFeatures () {
-            return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
-                ? this.selectedDistrictFeatures
-                : this.districtLayer.getSource().getFeatures();
-        },
+        // districtFeatures () {
+        //     return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
+        //         ? this.selectedDistrictFeatures
+        //         : this.districtLayer.getSource().getFeatures();
+        // },
         selected: {
             get () {
                 return this.selectedFeatureItems;
@@ -220,7 +220,7 @@ export default {
                             key: layerMap.id + i,
                             name: feature.get(layerMap.keyOfAttrName),
                             style: layerStyleFunction(feature),
-                            district: getContainingDistrictForFeature(this.districtFeatures, feature),
+                            district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
                             layerId: layerMap.layerId,

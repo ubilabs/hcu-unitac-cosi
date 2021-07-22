@@ -18,7 +18,7 @@ export function getTimestamps (data, timestampPrefix = "jahr_", ascending = fals
     const _data = Array.isArray(data) ? data : [data],
         timestamps = _data.reduce((range, datum) => {
             for (const key in datum) {
-                if (datum[key].constructor === Object) {
+                if (datum[key]?.constructor === Object) {
                     for (const prop in datum[key]) {
                         const timestamp = parseInt(prop.replace(timestampPrefix, ""), 10);
 

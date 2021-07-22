@@ -57,7 +57,7 @@ export default {
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures"]),
-        ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
+        ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"])
     },
     watch: {
@@ -458,7 +458,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="loadend"
+        v-if="loadend && !dashboardOpen"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"

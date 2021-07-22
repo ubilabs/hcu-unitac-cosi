@@ -132,8 +132,6 @@ export default {
                     "Bevölkerung insgesamt"
                 );
 
-            console.log(baseStats);
-
             if (baseStats) {
                 this.$emit("pickReference", baseStats);
             }
