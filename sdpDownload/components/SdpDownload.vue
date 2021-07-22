@@ -116,15 +116,14 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <div
                 v-if="active"
                 id="sdp-addon"
                 class="header"
-            >
-            </div>
+            />
             <div class="content">
                 <div class="form-group col-xs-12 first">
                     <span>{{ translate(selectFormat) }}</span>
@@ -156,8 +155,7 @@ export default {
                     >
                         <GraphicalSelect
                             ref="graphicalSelection"
-                        >
-                        </GraphicalSelect>
+                        />
                     </div>
                 </div>
                 <div class="form-group col-md-12 col-xs-12 limiter">
