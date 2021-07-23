@@ -76,9 +76,6 @@ export default {
                 this.chart.destroy();
             }
 
-            Chart.defaults.global.defaultFontFamily = this.defaultFontFamily;
-            Chart.defaults.global.defaultFontColor = this.defaultFontColor;
-
             this.chart = new Chart(ctx, {
                 type: this.chartType,
                 data: this.createChartData(this.dataset, this.category),
@@ -86,7 +83,9 @@ export default {
                     responsive: true,
                     legend: this.createChartLegend(),
                     tooltips: this.createChartTooltip(),
-                    scales: this.createChartScales()
+                    scales: this.createChartScales(),
+                    defaultFontFamily: this.defaultFontFamily,
+                    defaultFontColor: this.defaultFontColor
                 },
                 plugins: [{
                     beforeInit: chart => {
