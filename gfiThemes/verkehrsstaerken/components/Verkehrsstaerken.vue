@@ -231,7 +231,6 @@ export default {
         padding: 6px;
     }
     .tab-content {
-        overflow: auto;
         width: 100%;
         height: 32vh;
         padding: 0px 5px 5px 5px;

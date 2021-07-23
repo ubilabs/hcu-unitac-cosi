@@ -319,6 +319,8 @@ export default {
 
 <style lang="less">
 #verkehrsstaerken-line-chart {
+    margin: 6px;
+
     button {
         outline: none;
     }
@@ -326,7 +328,6 @@ export default {
         padding: 8px;
     }
     #verkehrsstaerken-chart-container {
-        position: absolute;
         width: 57vh;
     }
 }
