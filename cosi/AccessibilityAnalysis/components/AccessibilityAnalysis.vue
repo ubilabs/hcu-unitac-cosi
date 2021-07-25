@@ -233,7 +233,7 @@ export default {
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference')"
                                         type="text"
                                         min="0"
-                                    >
+                                    />
                                 </div>
                                 <div
                                     v-if="mode === 'region'"
@@ -275,7 +275,7 @@ export default {
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                         type="number"
                                         min="0"
-                                    >
+                                    />
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-3 col-sm-5">
