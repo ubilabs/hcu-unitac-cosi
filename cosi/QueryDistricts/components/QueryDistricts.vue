@@ -377,6 +377,7 @@ export default {
             }
             this.layerFilterModels = filters;
         },
+
         closeFilter (value) {
             this.layerFilterModels = this.layerFilterModels.filter(elem => elem.layerId !== value.layerId);
             this.updateAvailableLayerOptions();

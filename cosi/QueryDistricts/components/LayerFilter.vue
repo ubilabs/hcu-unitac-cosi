@@ -141,6 +141,7 @@ export default {
                             :items="values"
                             outlined
                             dense
+                            hide-details
                             @change="updateFieldValue"
                         />
                     </td>
