@@ -3,6 +3,7 @@ import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
 import prepareStatsFeatures from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
+import Collection from "ol/Collection";
 
 const actions = {
     /**
@@ -84,6 +85,16 @@ const actions = {
              */
             Radio.trigger("Util", "hideLoader");
         }
+    },
+
+    setDistrictsByName ({getters, commit}, districtNames) {
+        const districtFeatures = getters.selectedDistrictLevel.districts,
+            newSelection = districtFeatures.filter(dist => districtNames.includes(dist.getName())),
+            adminFeatures = newSelection.map(dist => dist.adminFeature),
+            collection = new Collection(adminFeatures);
+
+        collection.set("fromExternal", true);
+        commit("setSelectedDistrictsCollection", collection);
     },
 
     /**

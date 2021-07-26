@@ -41,10 +41,10 @@ export default {
             "selectedFeatures",
             "layer",
             "keyOfAttrNameStats",
-            "selectedDistrictLevel"
+            "selectedDistrictLevel",
+            "mapping"
         ]),
         ...mapGetters("Tools/DistrictLoader", [
-            "mapping",
             "getAllFeaturesByAttribute"
         ])
     },
@@ -89,6 +89,7 @@ export default {
     methods: {
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
+        ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Map", ["zoomTo", "createLayer"]),
         ...compareFeatures,
@@ -219,20 +220,15 @@ export default {
         },
 
         changeDistrictSelection: function () {
-            const selector = this.keyOfAttrNameStats,
-                features = this.layer.getSource().getFeatures(),
-                selectedFeatures = features.filter(feature => this.resultNames.includes(feature.getProperties()[selector])),
-                featureCollection = new Collection(selectedFeatures);
+            const refDistrictName = this.refDistrict?.get(this.keyOfAttrName);
 
-            featureCollection.set("fromExternal", true);
-
-            if (this.refDistrict) {
-                selectedFeatures.push(this.refDistrict);
-            }
-
-            this.setSelectedDistrictsCollection(featureCollection);
+            this.setDistrictsByName(refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames);
         },
 
+        /**
+         * @deprecated
+         * @returns {void}
+         */
         showInDashboard: function () {
             const Ctor = Vue.extend(DashboardResult),
                 root = document.createElement("div"),
@@ -345,7 +341,7 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
         <template v-slot:toolBody>
             <v-app>

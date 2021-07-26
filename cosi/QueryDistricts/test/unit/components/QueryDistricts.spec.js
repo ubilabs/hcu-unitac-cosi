@@ -99,7 +99,8 @@ describe("cosi.QueryDistricts.vue", () => {
                                     stats: {
                                         baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
                                     }
-                                })
+                                }),
+                                mapping: mappingStub
                             },
                             mutations: {
                                 setSelectedDistrictsCollection: sandbox.stub()
@@ -108,7 +109,6 @@ describe("cosi.QueryDistricts.vue", () => {
                         DistrictLoader: {
                             namespaced: true,
                             getters: {
-                                mapping: mappingStub,
                                 getAllFeaturesByAttribute: ()=>getAllFeaturesByAttribute
                             }
                         }
