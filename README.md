@@ -94,9 +94,9 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
    6. Identify comparable areas
    7. Supply analysis
 1. Simulation: (in development)
-   1. Scenario manager
-   2. Scenario builder
-   3. Neighborhood Builder
+   1. Scenario Manager
+   2. Scenario Builder
+   3. Neighborhood-Builder
 1. Services: 
    1. Switch mousehover on / off
    2. Open the second window
@@ -418,10 +418,10 @@ All widgets (with the exception of the overview table) can be deleted using the 
 
 *Figure 15 - Widget + context menu (e.g. diagram)*
 
-1. **Title (move)**
-2. **Minimize**
-3. **Clear**
-4. **Zoom in / out**
+1. **Title (move)** - By clicking and dragging, the widget can be dragged to another location on the dashboard and the order of the widgets can be changed.
+2. **Minimize** - The widget can be minimized and made available for later use.
+3. **Clear** - The widget can be deleted at any time. The data will then be lost. Only the overview table will be rebuilt the next time the dashboard is opened.
+4. **Zoom in / out** - Widgets can be enlarged and reduced; The extent to which this is possible depends on the content.
 5. **Context menu**
 
 ### The Context menu
@@ -461,6 +461,14 @@ Please note: In regional statistical areas with less than 100 inhabitants or a c
 1. **Diagrams** - Create diagrams from the selected data set. Bar charts can also be created for multiple indicators as grouped bar charts. The results are displayed as a widget at the bottom of the dashboard.
 2. **Selection** - Two data sets for the formation of ratios / correlations. The selection made is displayed above the table and under "Own calculations".
 3. **Own calculations** - Create calculations from the previous selection. In the case of ratios, the numerator values are divided by the denominator values every year. In correlation diagrams, the Y values for all years are plotted against the X values.
+
+### Download XLSX
+The overview table can be downloaded as an XLS file for further processing in MS Excel. The table can be created using the buttons at the end of the table. You can choose between unfiltered and filtered XLSX.
+1. The table can be downloaded either unfiltered or filtered.
+2. Own calculations are included.
+3. The order of the columns can be changed by the user in the dashboard.
+4. Columns are excluded by hiding.
+
 
 ### Diagrams
 In principle, the following diagram types can be displayed in the current version of the CoSI dashboard: 
