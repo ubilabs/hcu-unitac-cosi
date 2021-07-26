@@ -253,12 +253,76 @@ The individual functions of the tool are explained in detail below:
 
 1. **Result** - Results are shown in a table including the total value, as well as in the map, color-coded according to the value.
    - Area
-   - Facility: The total number of facilities or the selected parameter of facilities in the area (e.g. m² playground)
-   - Target group: The number of people in the (combined) target group in the area
-   - Capacity: The number of people who can take care of the facilities, according to factor F
-   - Requirement: The value of the parameter of the facilities that would be necessary for the number of people in the area, according to factor F
-   - Relationship: The simple relationship between facilities (number or parameters) and (combined) target group in the area
+   - Facility: The total number of facilities or the selected parameter of facilities in the area (e.g. m² playground).
+   - Target group: The number of people in the (combined) target group in the area.
+   - Capacity: The number of people who can take care of the facilities, according to factor F.
+   - Requirement: The value of the parameter of the facilities that would be necessary for the number of people in the area, according to factor F.
+   - Relationship: The simple relationship between facilities (number or parameters) and (combined) target group in the area.
+   - Undersupply / oversupply: The coverage in percent, ie the ratio between capacity and (combined) target group in the area. If no factor F was selected, the column shows the direct relationship between institution and target group.
+2. **Total / average** - Total and average values are determined for the selected areas. The total value is calculated from the sum of all facility and target group values. The average value is the arithmetic mean of the selected areas.
+3. **Download as XLSX or GeoJson** - The above table can be downloaded as an XLSX file or as GeoJson for further processing in e.g. MS Excel or QGIS.
+4. **Show in dashboard** - The results table can be transferred directly to the dashboard for later use.
 
+### Comparable areas
+The tool allows the determination of all areas (city districts or stat. Areas) in which the selected parameters predominate, or those which are similar to the selected reference area in these parameters.
 
+![Illustration 11 - Comparable areas](https://user-images.githubusercontent.com/79461871/126950034-4e7cd58c-6afd-48db-a0e6-067a1ffb1ab0.png)
 
+*Illustration 11 - Comparable areas*
 
+1. **Statistical data filters** - Select the desired parameter for the comparison. Any number of parameters can be added. All StaNord data sets are available for this. However, proportional values are more suitable for comparability. At present, you cannot use your own calculations from the dashboard.
+2. **Reference area** - Optionally, one of the selected areas can be specified as a reference area.
+3. **Parameter settings** - The parameter settings show the current data set (year min. And max. Value of all Hamburg areas, the reference value (freely selectable or of the reference area), as well as the tolerance upwards and downwards. The tolerance interval is either in absolute numbers or in percent for proportional Values given.
+4. **Results** - The areas that apply are marked on the map.
+
+![Illustration 12th - Comparability, results](https://user-images.githubusercontent.com/79461871/126950365-6fb43513-fa56-4ae1-b89f-9b7eef22b441.png)
+
+*Illustration 12th - Comparability, results*
+
+1. **Results** - All areas to which the selected criteria apply are listed here. A click on an area defines the map section for this area.
+2. **Set as area selection** - The current area selection can be set to the result areas for further analysis via Set selection.
+3. **Show in dashboard** - The list of results can be transferred to the dashboard without changing the area selection.
+
+## Simulation
+A first simulation function was developed. As soon as this has been transferred to production, step-by-step instructions will follow at this point.
+
+## Services
+
+<img width="131" alt="Illustration 13th - Services" src="https://user-images.githubusercontent.com/79461871/126950907-ac1eea38-af73-43ac-a785-5bee8216bab1.png">
+
+*Illustration 13th - Services*
+
+1. **Print map** - Print the current map section including active layers.
+2. **Switch mousehover on / off** - (De-) activate the tooltip that is displayed on the map at the mouse pointer.
+3. **Save session** - Save the current session with active data, selected areas and filters as a URL. The card status can be reproduced via the URL. *Note: Manually added map services (WMS) and calculations made are not retained. Saving all work results is part of the ongoing development project.*
+4. **Add WMS** - Any other map services can be integrated from the FHH Atlas or other sources via the web address (URL) of the service. The URLs can be found, for example, in the metadata catalog of the FHH or the geoportal under the info button in the topic tree (see topic tree).
+5. **Open the second window** - s. Second window
+
+### Second window
+You can open a second browser tab with the dashboard via the "Services" / "Open second window" tab. All functions are available to you there as in the original window. You can detach the second window from your browser by dragging the tab (tab) to move it to a second screen. If the InfoScreen (second window) is open, you can no longer open the dashboard in the main window. If you close the window, the dashboard returns to the main window.
+
+## Area selection
+When you start CoSI, a frame of reference is first established and a planning area is compiled and confirmed.
+
+![Illustration 14th - The Select Area tool](https://user-images.githubusercontent.com/79461871/126951633-8b6fc73f-08be-47fd-bac6-f2070e11e0fc.png)
+
+*Illustration 14th - The "Select Area" tool*
+
+1. **Choose frame of reference** - "Districts", "City districts" or "Statistical areas" can be selected via a drop-down menu - the administrative unit for which the statistical data is to be displayed and evaluations to be created. All functions are available on the respective area levels. However, the number of indicators available may vary. The frame of reference also determines the superordinate reference areas to be loaded: City districts for stat. Areas, districts by districts.
+2. **Set buffer** - A buffer radius can be specified for which selected specialist data are displayed around the planning area. This takes into account the fact that the catchment area of a facility does not necessarily coincide with the territorial boundaries of the administrative unit within which the facility is located. The analysis functions are not affected by this.
+3. **Confirm selection** - Loads the data for the selected planning area from the server and defines the area for the specialist data to be displayed. An empty selection can also be confirmed. Then no data will be loaded and specialist data will be displayed for the entire city area. (see below)
+4. **Reset selection** - Resets the current planning area. In direct A new planning area can then be compiled and confirmed.
+5. **Draw a selection rectangle** - A starting point is set and a rectangle is drawn over the relevant area to the end point. All administrative units that lie within the rectangle or on the lines of the rectangle are included in the planning area.
+6. **Tool info**
+7. **Show and hide additional help levels** - With the help of the checkbox, additional layers can be shown and hidden for orientation. The layer can also be switched on and off via the topic tree. The auxiliary levels currently include the “social spaces” and the “RISE support areas”.
+8. **Select and deselect areas** -
+	 - Click on the individual administrative units (statistical area or district) (clicking again deactivates the selection), the boundaries are marked in blue. 
+	 - Click on the pen to the right of “Reset selection”. A drawing tool is activated; This allows the user to draw a rectangle over the selection area in order to select it.
+	 - Both options described above can also be combined with one another, the order being irrelevant. The users can therefore first select individual administrative units and then activate the drawing tool in order to add additional administrative units or to proceed the other way round.
+
+The defined planning area can be adjusted at any time; the area can be expanded (both by clicking and using the drawing tool), reduced (by clicking marked administrative units can be deselected) or completely reset (by clicking on “Reset selection”).
+A planning area does not always have to be defined first in every context of use; Certain analysis tools such as the "Accessibility Analysis" and "Comparable Areas" can be used without specifying an area beforehand.
+The following information applies to such cases:
+1.	No data records are loaded, ie it is not possible to display the regional statistical data. Regional statistical data are also not displayed in the dashboard.
+2.	When adding topics from the specialist data, the loading process could take longer
+3.	The availability analysis may not work reliably for a very large number of facilities.
