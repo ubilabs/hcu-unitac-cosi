@@ -410,3 +410,79 @@ Table columns can also be moved or hidden. When creating a diagram, the order of
 In the context menu you can 1) create diagrams from table columns or 2) offset table rows with one another (form quotients). The calculation results are added to the table as a new line for all years and areas. You can select multiple rows in the table for grouped diagrams using a check box or pressed the CTRL key.
 
 Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
+
+<img width="233" alt="Illustration 17th - Context functions summary table" src="https://user-images.githubusercontent.com/79461871/126954670-8adc61f2-d2bf-4082-ad9c-0b1835003541.png">
+
+*Illustration 17th - Context functions summary table*
+
+1. **Diagrams** - Create diagrams from the selected data set. Bar charts can also be created for multiple indicators as grouped bar charts. The results are displayed as a widget at the bottom of the dashboard.
+2. **Selection** - Two data sets for the formation of ratios / correlations. The selection made is displayed above the table and under "Own calculations".
+3. **Own calculations** - Create calculations from the previous selection. In the case of ratios, the numerator values are divided by the denominator values every year. In correlation diagrams, the Y values for all years are plotted against the X values.
+
+### Diagrams
+In principle, the following diagram types can be displayed in the current version of the CoSI dashboard: 
+1. **Bar graphs** - for a selected year, also grouped for several data sets (see Fig. 17)
+2. **Line charts** - for one data set over all years
+3. **Time beam** - Animated bar charts for all years, color coding in the map (see timeline)
+4. **Correlation Charts (Scatter Charts)** - Visualization of any data set (Y-axis, ordinate) on top of another (X-axis, abscissa) (see calculate correlation)
+
+![Illustration 18th - Select data for charts](https://user-images.githubusercontent.com/79461871/126955479-1682ab31-142f-45cf-b2bd-7d6d1fddf698.png)
+
+*Illustration 18th - Select data for charts*
+
+1. **Select multiple rows (grouped bar charts)** - Several lines of the table can be selected for grouped bar graphs using the check box or by pressing the CTRL key (see below). Does not work for line charts for the sake of clarity. The order of the selection determines the order of the bars in the diagram.
+2. **Select year for bar chart** - A message is displayed if no data record is available. The last year from the current date is always preset. Confirm by clicking on "Create for".
+3. **Axis scaling for line charts** - 
+	 - Unscaled axes: The Y-axis starts at 0
+	 - Scaled axes: The Y-axis starts with the next sensible (if possible integer) value below the lowest value
+*Note: The order of the columns determines the order in the (bar) diagrams. Records from hidden columns are not displayed.*
+
+*Illustration 19th - Chart types*
+
+1. **Simple bar graph** - Linear color scale from white (low value) to blue (high value), adapts to the selected columns. Selected year in the title.
+2. **Grouped bar graph** - Spectral color scale for each selected table row, grouped by area. Selected year in the title.
+3. **Line chart (unscaled Y-axis)** - Y-axis starts at 0. X-axis shows all years. Spectral color scale for each area.
+4. **Line diagram (scaled Y-axis)** - Y-axis starts at the highest possible meaningful (if possible integer) value.
+5. **Tooltip** - Mousehover above the diagram always shows the respective value and the area.
+6. **Download diagram** -Each diagram can be downloaded as a raster or vector graphic using the context menu. 
+
+### Time beam
+
+*Illustration 20th - Time beam*
+
+1. **Time beam** - The years can be switched through using the slider.
+2. **Play button** - The animation of the annual data sets runs in a loop via the play button.
+3. **Bar graph** - The bar chart shows the current values for the selected year; Reference areas and calculated values are ignored.
+4 **Color coding** - The current values are shown on the map with the same color scale.
+5. **Delete timeline** - When the timeline is deleted or a new one is created, the map is also cleaned up.
+6. 
+*Note: At the current stage of development, the timeline only works for existing StaNord data and not for your own calculations.*
+
+### Calculate ratios
+Any two columns for calculation or correlation can be selected via the context menu.
+
+*Illustration 21 - Write your own calculations in the table*
+
+1. **Select counter / Y-axis** - The data set, which is plotted as the Y value for ratios above the fraction line, for correlation diagrams. A new selection overwrites the previous value.
+2. **Select denominator / X-axis** - The data set, which is plotted as the X value in the case of ratios below the fraction line, in correlation diagrams. A new selection overwrites the previous value.
+3. **Deselect** -Reset the current selection.
+4. **Current selection** - Your current selection is shown with a split symbol (“/”) above the table and in the context menu.
+5. **Calculate ratio** - Divides each table entry (area and year) of the numerator data set by the corresponding one of the denominator data set. The results are appended to the table.
+6. **Create a correlation diagram** - (see correlation diagram).
+7. **Own calculations** - The new data record can be found in the table under the “Calculations” group. Like all other data sets, it can also be used for new diagrams, it can be filtered according to it and it can be downloaded with the table as XLSX. The only exception is the timeline (see timeline)
+
+*Note: At present, your own calculations cannot be displayed on the map like the original StaNord data.*
+
+### Correlation diagram
+
+*Illustration 22nd - Correlation diagram*
+
+1. **Values** - For the selected data sets (X-axis, Y-axis) the values of all years and areas are plotted on top of one another. Each color represents an area / a table column and each point a value pair of a year.
+2. **Tooltip** - The tooltip shows area, X-value, Y-value and year for each point.
+3. **Regression line**
+4. **Correlation** (Pearson) / Covariance
+
+*Note: The correlation diagram does not make any statements about causality and does not take any other variables into account. Furthermore, the values are not weighted any further and outliers can distort the picture. In order to strengthen the informative value of the diagram, it is recommended to select a large number of areas or to restrict the area selection using "comparable areas" based on certain parameters.*
+
+### Results
+All results from other tools can be transferred to the dashboard. They are displayed there as widgets and are retained even after changing the area selection. If they contain names of facilities or areas, you can click on them to zoom to the object on the map.
