@@ -242,13 +242,10 @@ export default {
                 valueType = layer.valueType;
             }
 
+
             const features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
-                field = fieldValues[0],
-                values = features.map(f => parseFloat(f.getProperties()[field])).filter(v => !Number.isNaN(v)),
-                max = parseInt(Math.max(...values), 10),
-                min = parseInt(Math.min(...values), 10);
-
+                field = fieldValues[0];
 
             if (this.selectedDistrict) {
                 const selector = this.keyOfAttrNameStats,
@@ -262,8 +259,19 @@ export default {
                 }
 
             }
-            return {layerId: layer.id, name: layer.name, field, value, valueType, max, min, high: 0, low: 0, fieldValues,
-                referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName, error};
+            return {layerId: layer.id, name: layer.name, field, value, valueType, high: 0, low: 0, fieldValues,
+                referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName, error,
+                ...this.getMinMaxForField(layer.id, field)
+            };
+        },
+
+        getMinMaxForField (layerId, field) {
+            const features = this.propertiesMap[layerId],
+                values = features.map(f => parseFloat(f.getProperties()[field])).filter(v => !Number.isNaN(v)),
+                max = parseInt(Math.max(...values), 10),
+                min = parseInt(Math.min(...values), 10);
+
+            return {min, max};
         },
 
         async recreateLayerFilterModels () {
@@ -361,6 +369,9 @@ export default {
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
+                    if (value.field) {
+                        filters[i] = {...filters[i], ...this.getMinMaxForField(value.layerId, value.field)};
+                    }
                     break;
                 }
             }
