@@ -118,6 +118,12 @@ export default {
                         {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValue') }}
                     </th>
                     <th
+                        id="reference"
+                        scope="col"
+                    >
+                        {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValueType') }}
+                    </th>
+                    <th
                         id="tolerance"
                         scope="col"
                     >
@@ -130,6 +136,7 @@ export default {
                     <td>
                         <v-select
                             ref="inputFieldValue"
+                            class="fit"
                             :value="fieldValue"
                             :items="values"
                             outlined
@@ -142,11 +149,17 @@ export default {
                     <td>
                         <input
                             ref="inputValue"
+                            class="number-input"
                             type="number"
                             :value="value"
                             @input="updateValue()"
                         >
-                        {{ valueType }}
+                    </td>
+                    <td>
+                        {{ valueType === 'absolute'?
+                            $t('additional:modules.tools.cosi.queryDistricts.valueTypeAbsolute') :
+                            $t('additional:modules.tools.cosi.queryDistricts.valueTypeRelative')
+                        }}
                     </td>
                     <td>
                         <table>
@@ -157,6 +170,7 @@ export default {
                                 <td>
                                     <input
                                         ref="inputLow"
+                                        class="number-input"
                                         type="number"
                                         :value="low"
                                         min="0"
@@ -171,6 +185,7 @@ export default {
                                 <td>
                                     <input
                                         ref="inputHigh"
+                                        class="number-input"
                                         type="number"
                                         :value="high"
                                         min="0"
@@ -192,6 +207,15 @@ export default {
 <style lang="less" scoped>
 .error-msg{
     color: #a94442
+}
+.number-input{
+    max-width: 100px;
+}
+.v-select.fit {
+  width: min-content;
+}
+.v-select.fit  .v-select__selection--comma {
+    text-overflow: unset;
 }
 </style>
 
