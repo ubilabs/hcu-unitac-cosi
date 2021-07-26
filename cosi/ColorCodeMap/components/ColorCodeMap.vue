@@ -17,13 +17,13 @@ export default {
     data () {
         return {
             // Selected Feature
-            selectedFeature: "",
+            // selectedFeature: "",
             // List of available features for selected Districts
             featuresList: [],
             // Array of all available years
             availableYears: [],
             // Selected Year
-            selectedYear: null,
+            // selectedYear: null,
             // Results for generating the CCM legend including colorscale values
             legendResults: [],
             // Values displayed in CCM legend
@@ -40,12 +40,12 @@ export default {
             loVal: null,
             // Triggers classes for minimized view
             minimize: false,
-            // State of animation playing
-            playState: false,
+            // // State of animation playing
+            // playState: false,
             // Playback speed of the animation
             playSpeed: 1,
-            // State of names of districts visible on map
-            showMapNames: false,
+            // // State of names of districts visible on map
+            // showMapNames: false,
             // Helper Variable to force Legend Markers to rerender
             updateLegendList: 1,
             // Helper to pass data to the graph generator
@@ -58,7 +58,23 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures"]),
         ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
-        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"])
+        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
+        _selectedFeature: {
+            get () {
+                return this.selectedFeature;
+            },
+            set (v) {
+                this.setSelectedFeature(v);
+            }
+        },
+        _selectedYear: {
+            get () {
+                return this.selectedYear;
+            },
+            set (v) {
+                this.setSelectedYear(v);
+            }
+        }
     },
     watch: {
         selectedFeatures () {
@@ -85,9 +101,6 @@ export default {
                 this.animationOverYears(this.playSpeed);
             }
         },
-        showMapNames () {
-            this.renderVisualization();
-        },
         dataToColorCodeMap (newState) {
             if (newState) {
                 this.renderDataFromCalculateRatio();
@@ -100,6 +113,18 @@ export default {
             if (this.dataToColorCodeMap) {
                 this.renderDataFromCalculateRatio();
             }
+        },
+        selectedFeature () {
+            this.renderVisualization();
+        },
+        showMapNames () {
+            this.renderVisualization();
+        },
+        selectedYear () {
+            this.renderVisualization();
+        },
+        lastYear () {
+            this.renderVisualization();
         }
     },
     mounted () {
@@ -126,8 +151,8 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            this.selectedFeature = mapping[0].value;
-            this.selectedYear = this.availableYears[0];
+            this.setSelectedFeature(mapping[0].value);
+            this.setSelectedYear(this.availableYears[0]);
 
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats]) {
@@ -164,7 +189,7 @@ export default {
 
                 setTimeout(() => {
                     window.requestAnimationFrame(() => {
-                        this.selectedYear = this.availableYears[current];
+                        this.setSelectedYear(this.availableYears[current]);
                         this.renderVisualization();
                         this.animationOverYears(tempo);
                     });
@@ -318,7 +343,7 @@ export default {
          * @returns {void}
          */
         generateDynamicLegend (results, colorScale) {
-            if (results.length > 1) {
+            if (results.length > 1 && !this.dashboardOpen) {
                 const legendDiv = document.getElementById("colorCodeMapLegend"),
                     legendMarks = document.querySelector("#legend_wrapper").children,
                     legendMarksArray = Array.from(legendMarks),
@@ -383,13 +408,13 @@ export default {
             const index = mapping.map(e => e.value).indexOf(this.selectedFeature) + value;
 
             if (index === -1) {
-                this.selectedFeature = mapping[mapping.length - 1].value;
+                this.setSelectedFeature(mapping[mapping.length - 1].value);
             }
             else if (index === mapping.length) {
-                this.selectedFeature = mapping[0].value;
+                this.setSelectedFeature(mapping[0].value);
             }
             else {
-                this.selectedFeature = mapping[index].value;
+                this.setSelectedFeature(mapping[index].value);
             }
             this.renderVisualization();
         },
@@ -513,7 +538,7 @@ export default {
 
                     <Multiselect
                         v-if="selectedStatFeatures.length"
-                        v-model="selectedYear"
+                        v-model="_selectedYear"
                         class="year_selection selection"
                         :allow-empty="false"
                         :options="availableYears"
@@ -522,7 +547,6 @@ export default {
                         selectLabel=""
                         deselectLabel=""
                         placeholder=""
-                        @input="renderVisualization()"
                     >
                         <template>
                             <strong>{{ selectedYear }}</strong>
@@ -540,7 +564,6 @@ export default {
                         selectLabel=""
                         deselectLabel="Entfernen"
                         placeholder=""
-                        @input="renderVisualization()"
                     >
                         <template>
                             <strong>{{ lastYear }}</strong>
@@ -549,7 +572,7 @@ export default {
                 </div>
                 <Multiselect
                     v-if="featuresList.length"
-                    v-model="selectedFeature"
+                    v-model="_selectedFeature"
                     class="feature_selection selection"
                     :allow-empty="false"
                     :options="featuresList"
@@ -562,7 +585,6 @@ export default {
                     selectLabel=""
                     deselectLabel=""
                     placeholder=""
-                    @input="renderVisualization()"
                 >
                     <template>
                         <strong>{{ selectedFeature }}</strong>
@@ -615,7 +637,7 @@ export default {
                         class="play_button"
                         :class="{highlight: playState}"
                         title="Visualisierung über die Jahre animieren"
-                        @click="playState = !playState"
+                        @click="setPlayState(!playState)"
                     >
                         <template v-if="!playState">
                             <span class="glyphicon glyphicon-play"></span>
@@ -639,7 +661,7 @@ export default {
                 <button
                     class="map_button"
                     title="Gebietsnamen ein-/ ausblenden"
-                    @click="showMapNames = !showMapNames"
+                    @click="setShowMapNames(!showMapNames)"
                 >
                     <span class="glyphicon glyphicon-map-marker"></span>
                 </button>
