@@ -1049,7 +1049,6 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
-                                    <!--eslint-disable-next-line-->
                                     <span><strong>{{ columnSelector.name }}</strong></span>
                                 </template>
                             </Multiselect>

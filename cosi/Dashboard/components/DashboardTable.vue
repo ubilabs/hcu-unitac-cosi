@@ -279,7 +279,7 @@ export default {
         },
 
         renderScatterplot () {
-
+            // 
         },
 
         onVisualizationChanged () {

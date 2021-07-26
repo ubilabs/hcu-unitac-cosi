@@ -8,6 +8,7 @@ import Multiselect from "vue-multiselect";
 import Info from "text-loader!./info.html";
 import getColorScale from "../../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
+import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 
 export default {
     name: "ColorCodeMap",
@@ -451,7 +452,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         loadToChartGenerator () {
-            const graphObj = {
+            const graphObj = new ChartDataSet({
                 id: "ccm",
                 name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart"],
@@ -462,7 +463,7 @@ export default {
                     labels: [],
                     dataSets: []
                 }
-            };
+            });
 
             this.availableYears.forEach(year => {
                 graphObj.data.labels.push(year);

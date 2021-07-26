@@ -98,7 +98,7 @@ export function calculateCorrelation () {
         covar = mathutils.covar(xArr, yArr),
         corr = mathutils.pearsons(xArr, yArr);
 
-    console.log(fReg, data, stdDev, covar, corr);
+    // console.log(fReg, data, stdDev, covar, corr);
 
     return {
         data,
