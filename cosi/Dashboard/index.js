@@ -1,11 +1,11 @@
-import DashboardTable from "./components/DashboardTable.vue";
-import DashboardTableStore from "./store/indexDashboardTable";
+import Dashboard from "./components/Dashboard.vue";
+import DashboardStore from "./store/indexDashboard";
 import deLocale from "./locales/de/additional.json";
 import enLocale from "./locales/en/additional.json";
 
 export default {
-    component: DashboardTable,
-    store: DashboardTableStore,
+    component: Dashboard,
+    store: DashboardStore,
     locales: {
         de: deLocale,
         en: enLocale

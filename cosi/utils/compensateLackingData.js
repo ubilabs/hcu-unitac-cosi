@@ -1,23 +1,4 @@
-/**
- * Calculates the median for a given sample
- * @param {Number[]} data The array of existing values
- * @returns {Number} the median
- */
-function median (data) {
-    const sortData = data.sort(),
-        mid = Math.ceil(sortData.length / 2);
-
-    return sortData.length % 2 === 0 ? (sortData[mid] + sortData[mid - 1]) / 2 : sortData[mid - 1];
-}
-
-/**
- * Calculates the mean for a given sample
- * @param {Number[]} data The array of existing values
- * @returns {Number} the mean
- */
-function mean (data) {
-    return data.reduce((total, datum) => total + datum, 0) / data.length;
-}
+import {mean, median} from "./math";
 
 /** If parameters of a facility dataset is inconsistent, this function provides the average value from all other facilities.
 * @param {Number[]} dataArray Of Objects containing data to be checked for lacking data sets.

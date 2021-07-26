@@ -39,12 +39,8 @@
     "path":"cosi/DistrictLoader",
     "type": "tool"
   },
-  "DashboardManager": {
-    "path":"cosi/Dashboard/DashboardManager",
-    "type": "tool"
-  },
-  "DashboardTable": {
-    "path":"cosi/Dashboard/DashboardTable",
+  "Dashboard": {
+    "path":"cosi/Dashboard",
     "type": "tool"
   },
   "FeaturesList": {

@@ -54,12 +54,6 @@ describe("ColorCodeMap.vue", () => {
                     namespaced: true,
                     modules: {
                         ColorCodeMap,
-                        DistrictLoader: {
-                            namespaced: true,
-                            getters: {
-                                currentStatsFeatures: currentStatsFeaturesStub
-                            }
-                        },
                         DistrictSelector: {
                             namespaced: true,
                             getters: {

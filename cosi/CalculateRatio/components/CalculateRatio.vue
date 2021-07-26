@@ -9,6 +9,7 @@ import JsonExcel from "vue-json-excel";
 import DataTable from "./DataTable.vue";
 import Info from "text-loader!./info.html";
 import {exportAsGeoJson} from "../utils/exportResults";
+import mapping from "../../assets/mapping.json";
 
 export default {
     name: "CalculateRatio",
@@ -80,8 +81,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["mapping", "selectedDistrictLevel", "currentStatsFeatures"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "selectedStatFeatures", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
@@ -145,12 +145,9 @@ export default {
             this.layerIdList = this.layerList.map(x => x.getProperties().name);
             this.updateFacilities();
         },
-        selectedDistrictLevel: {
-            deep: true,
-            handler () {
-                if (this.selectedDistrictLevel.features?.length > 0) {
-                    this.updateFeaturesList();
-                }
+        loadend (newValue) {
+            if (newValue && this.selectedStatFeatures.length > 0) {
+                this.updateFeaturesList();
             }
         },
         availableYears (newYears) {
@@ -222,8 +219,8 @@ export default {
          */
         updateFeaturesList () {
             this.featuresList = [];
-            this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
-            this.mapping.forEach(attr => {
+            this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
+            mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
 
@@ -324,7 +321,7 @@ export default {
          */
         checkSumUp (letter) {
             if (!this[letter + "Switch"]) {
-                const checkSumUp = this.mapping.find(x => x.value === this["selectedField" + letter].id);
+                const checkSumUp = mapping.find(x => x.value === this["selectedField" + letter].id);
 
                 if (!this["sumUpSwitch" + letter]) {
                     if (checkSumUp.summable) {
@@ -550,7 +547,7 @@ export default {
         getFeatureData (districtName, featureName) {
             const featureDataList = [];
 
-            this.currentStatsFeatures.forEach(feature => {
+            this.selectedStatFeatures.forEach(feature => {
                 if (utils.unifyString(feature.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(districtName) && utils.unifyString(feature.get("kategorie")) === utils.unifyString(featureName)) {
                     Object.entries(feature.getProperties()).forEach(([key, val]) => {
                         if (key.includes(this.yearSelector)) {
@@ -1052,7 +1049,6 @@ export default {
                                 placeholder=""
                             >
                                 <template slot="singleLabel">
-                                    <!--eslint-disable-next-line-->
                                     <span><strong>{{ columnSelector.name }}</strong></span>
                                 </template>
                             </Multiselect>

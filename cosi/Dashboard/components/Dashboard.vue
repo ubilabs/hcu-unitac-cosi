@@ -1,14 +1,14 @@
 <script>
-import Tool from "../../../../../src/modules/tools/Tool.vue";
-import getComponent from "../../../../../src/utils/getComponent";
+import Tool from "../../../../src/modules/tools/Tool.vue";
+import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import getters from "../store/gettersDashboardManager";
-import mutations from "../store/mutationsDashboardManager";
-import actions from "../store/actionsDashboardManager";
-import DashboardTable from "../../DashboardTable/components/DashboardTable.vue";
+import getters from "../store/gettersDashboard";
+import mutations from "../store/mutationsDashboard";
+import actions from "../store/actionsDashboard";
+import DashboardTable from "./DashboardTable.vue";
 
 export default {
-    name: "DashboardManager",
+    name: "Dashboard",
     components: {
         Tool,
         DashboardTable
@@ -19,12 +19,12 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/DashboardManager", Object.keys(getters))
+        ...mapGetters("Tools/Dashboard", Object.keys(getters))
     },
 
     watch: {
-        active (state) {
-            this.dashboardOpen = state;
+        active () {
+            // ..
         }
     },
     created () {
@@ -45,8 +45,8 @@ export default {
     },
 
     methods: {
-        ...mapMutations("Tools/DashboardManager", Object.keys(mutations)),
-        ...mapActions("Tools/DashboardManager", Object.keys(actions))
+        ...mapMutations("Tools/Dashboard", Object.keys(mutations)),
+        ...mapActions("Tools/Dashboard", Object.keys(actions))
     }
 };
 </script>
@@ -58,24 +58,22 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivateGFI="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
         :initial-width="0.6"
     >
         <template
-            v-if="active"
-            v-slot:toolBody
+            #toolBody
         >
-            <DashboardTable
-                :dashboardOpen="dashboardOpen"
-            />
+            <v-app absolute>
+                <v-main>
+                    <DashboardTable />
+                </v-main>
+            </v-app>
         </template>
     </Tool>
 </template>
 
 <style lang="less" scoped>
-</style>
-
-<style src="vue-select/dist/vue-select.css">
 </style>
 
 

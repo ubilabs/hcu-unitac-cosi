@@ -2,8 +2,8 @@ import {tools, general} from "./tools";
 import {addPolyfills} from "./polyfills";
 
 // import ColorCodeMapView from "./colorCodeMap/view";
-import DashboardView from "./dashboard/view";
-import DashboardTableView from "./dashboardTable/view";
+// import DashboardView from "./dashboard/view";
+// import DashboardTableView from "./dashboardTable/view";
 import ContextMenuView from "./contextMenu/view";
 // import SelectDistrictView from "./selectDistrict/view";
 /**
@@ -35,7 +35,7 @@ import "../cosi.style.less";
  */
 function initializeCosi () {
     const infoScreenOpen = JSON.parse(window.localStorage.getItem("infoScreenOpen"));
-    let dashboard = {};
+    // let dashboard = {};
 
     addPolyfills();
 
@@ -45,9 +45,9 @@ function initializeCosi () {
         // ..
     }
 
-    dashboard = new DashboardView({model: general.dashboard});
+    // dashboard = new DashboardView({model: general.dashboard});
 
-    new DashboardTableView({model: general.dashboardTable});
+    // new DashboardTableView({model: general.dashboardTable});
     new ContextMenuView();
     new GraphModel();
     new TimeSliderView();

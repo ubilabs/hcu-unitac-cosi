@@ -95,11 +95,13 @@ export default {
     computed: {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
-        ...mapGetters("Tools/DistrictLoader", ["districtLevels"]),
         ...mapGetters("Tools/DistrictSelector", {
             districtLayer: "layer",
-            selectedDistricts: "selectedFeatures",
-            selectedDistrictLevel: "selectedDistrictLevel"
+            selectedFeatures: "selectedFeatures",
+            selectedAdminFeatures: "selectedAdminFeatures",
+            selectedDistricts: "selectedDistricts",
+            selectedDistrictLevel: "selectedDistrictLevel",
+            statsLoadend: "loadend"
         }),
         ...mapGetters("Map", ["map"]),
         geomField () {
@@ -196,6 +198,14 @@ export default {
 
         residents () {
             this.extrapolateNeighborhoodStatistics();
+        },
+
+        statsLoadend (loadend) {
+            if (loadend) {
+                console.log(this.selectedFeatures);
+                console.log(this.selectedAdminFeatures);
+                console.log(this.selectedDistricts);
+            }
         }
     },
     created () {
@@ -211,7 +221,7 @@ export default {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
-        ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
+        ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
         /**
          * @description create a guide layer used for additional info to display on the map
@@ -310,18 +320,19 @@ export default {
         },
 
         async createFeature () {
+            console.log(this.selectedDistrictLevel);
             const feature = new Feature({
                     geometry: this.geometry,
                     ...this.neighborhood,
                     baseStats: this.baseStats
                 }),
-                districts = getContainingDistrictForFeature(this.districtLayer.getSource().getFeatures(), feature, undefined, true, true),
+                districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
                 neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
 
             // fill in missing statistical information if necessary
             for (const district of districts) {
                 await this.getStatsByDistrict({
-                    districtFeature: district,
+                    id: district.getId(),
                     districtLevel: this.selectedDistrictLevel
                 });
             }

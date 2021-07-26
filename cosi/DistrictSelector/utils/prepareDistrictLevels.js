@@ -1,6 +1,12 @@
+import {unByKey} from "ol/Observable";
+import {describeFeatureType, getFeatureDescription} from "../../../../src/api/wfs/describeFeatureType.js";
+import {getLayerList} from "masterportalAPI/src/rawLayerList";
+
+const eventKeys = {};
+
 /**
  * Prepares the district level objects for the district selector.
- * Each district level is assigned its layer and a list of all district names.
+ * Each district level is assigned its layer, the districts, the reference level (the next higher) and a list of all district names.
  * Will no longer be executed once all district levels have their layer.
  * @param {Object[]} districtLevels - All avaiable district level objects.
  * @param {module:ol/layer[]} layerList - An array of layers.
@@ -10,14 +16,22 @@ export function prepareDistrictLevels (districtLevels, layerList) {
     const filteredDistrictLevels = getAllDistrictsWithoutLayer(districtLevels);
 
     if (filteredDistrictLevels.length > 0) {
-        filteredDistrictLevels.forEach(districtLevel => {
+        filteredDistrictLevels.forEach((districtLevel, index) => {
+            // the reference level, null if there is none reference level
+            districtLevel.referenceLevel = index < districtLevels.length - 1 ? districtLevels[index + 1] : null;
             // the layer for the district level
             districtLevel.layer = getLayerById(layerList, districtLevel.layerId);
             // the names of all avaible districts
-            // at this point the features are probably not yet loaded, therefore the listener
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
-            districtLevel.layer.getSource().on("change", setNameList.bind(districtLevel));
-            districtLevel.stats.districts = [];
+            // property names for the WFS GetFeature request for the stats features, without geometry
+            districtLevel.propertyNameList = getPropertyNameList(districtLevel.stats.baseUrl);
+            // all featureTypes for the WFS GetFeature request for the stats features
+            districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl);
+            // all districts at this level
+            districtLevel.districts = getDistricts(districtLevel);
+            // at this point the features of the layer are probably not yet loaded,
+            // therefore the listener on the layer source to set the 'nameList' and the 'districts' property
+            eventKeys[districtLevel.layerId] = districtLevel.layer.getSource().on("change", setProperties.bind(districtLevel));
         });
     }
 }
@@ -37,6 +51,91 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
     });
 }
 
+/**
+ * Creates a new 'district' object for all features from the layer and return them.
+ * @param {Object} districtLevel - The district level.
+ * @param {module:ol/layer} districtLevel.layer - The layer of the district level.
+ * @param {String} districtLevel.keyOfAttrName - The key for the attribute containing the name of the district.
+ * @param {String} districtLevel.label - The label of the district level.
+ * @param {String[]|undefined} districtLevel.duplicateDistrictNames - Names of districts that trigger conflicts.
+ * @returns {Object[]} The districts.
+ */
+export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
+    if (label === "Hamburg") {
+        return [getHamburgDistrict()];
+    }
+
+    const districts = [];
+
+    layer.getSource().getFeatures().forEach(function (feature) {
+        districts.push({
+            // the administration feature (district)
+            adminFeature: feature,
+            // an array for all statistical features of this district, currently used for calculations
+            statFeatures: [],
+            // an array with the original statistical features of this district as backup
+            originalStatFeatures: [],
+            // flag district is selected
+            isSelected: false,
+            // id of the district
+            getId: () => feature.getId(),
+            // label of the district
+            getLabel: () => {
+                const districtName = feature.get(keyOfAttrName);
+
+                // rename feature name for reference levels to avoid naming conflict
+                if (duplicateDistrictNames?.includes(districtName)) {
+                    return `${districtName} (${label.slice(0, -1)})`;
+                }
+                return districtName;
+            },
+            // name of the district
+            getName: () => feature.get(keyOfAttrName)
+        });
+    });
+
+    return districts;
+}
+
+/**
+ * Returns a list of all feature types for the given WFS sources (urls).
+ * @param {String[]} urls - The urls of the WFS`s.
+ * @returns {Array.<String[]>} The feature types for each url.
+ */
+export function getFeatureTypes (urls) {
+    const featureTypes = [];
+
+    for (let i = 0; i < urls.length; i++) {
+        featureTypes[i] = getLayerList().reduce((typeNames, layer) => {
+            return layer.url === urls[i] ? [...typeNames, layer.featureType] : typeNames;
+        }, []);
+    }
+
+    return featureTypes;
+}
+
+/**
+ * Returns the district object for the district level Hamburg.
+ * This is a special case, because there is no own 'adminFeature' for this level.
+ * The statistical features are get via the source of the Bezirke.
+ * @returns {Object} d
+ */
+export function getHamburgDistrict () {
+    return {
+        // the administration feature (district), for hamburg not present
+        adminFeature: undefined,
+        // an array for all statistical features of this district
+        statFeatures: [],
+        // flag district is selected
+        isSelected: false,
+        // id of the district
+        getId: () => "Hamburg",
+        // label of the district
+        getLabel: () => "Hamburg (gesamt)",
+        // name of the district
+        getName: () => "hamburg_gesamt"
+    };
+}
 
 /**
  * Returns the layer of the passed id or undefined if no layer is found.
@@ -57,7 +156,7 @@ export function getLayerById (layerList, id) {
 
 /**
  * Returns the names of all avaible districts in the district level.
- * @param {module:ol/layer/VectorLayer} layer - An vector layer.
+ * @param {module:ol/layer/VectorLayer} layer - A vector layer.
  * @param {String} keyOfAttrName - The key for the attribute "name" of the district features.
  * @returns {String[]} The names of the districts or an empty array.
  */
@@ -78,13 +177,46 @@ export function getNameList (layer, keyOfAttrName) {
 }
 
 /**
- * Sets the names of all districts to the district level.
+ * Returns a list of all property names for the given WFS sources (urls), without geometries.
+ * @param {String[]} urls - The urls of the WFS`s.
+ * @returns {Array.<String[]>} The property name for each url.
+ */
+export default async function getPropertyNameList (urls) {
+    const propertyNameList = [];
+
+    for (let i = 0; i < urls.length; i++) {
+        propertyNameList[i] = [];
+
+        const layer = getLayerList().find(rawlayer => rawlayer.url === urls[i]),
+            // get the property names by the 'DescribeFeatureType' request
+            json = await describeFeatureType(urls[i]),
+            description = getFeatureDescription(json, layer?.featureType);
+
+        if (description) {
+            description.forEach(element => {
+                // "gml:" => geometry property
+                if (element.type.search("gml:") === -1) {
+                    propertyNameList[i].push(element.name);
+                }
+            });
+        }
+    }
+
+    return propertyNameList;
+}
+
+/**
+ * Sets the districts and the names of all districts to the district level.
+ * Removes the event listener using the key returned by on() for this callback.
  * @this districtLevel
  * @param {module:ol/events/Event~BaseEvent} evt - Change event of a source.
  * @returns {void}
  */
-export function setNameList (evt) {
-    if (evt.target.getFeatures().length > 0) {
+export function setProperties (evt) {
+    if (evt.target.getFeatures().length > 0 && this.districts.length === 0) {
+        this.districts = getDistricts(this);
         this.nameList = getNameList(this.layer, this.keyOfAttrName);
+        // unbind the listener
+        unByKey(eventKeys[this.layerId]);
     }
 }

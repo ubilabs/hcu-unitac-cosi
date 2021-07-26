@@ -21,8 +21,8 @@ export default class ChartDataSet {
      * @param {String} [params.options] - optional chart options to override default
      */
     constructor ({id = "cg", name, data, type, scaleLabels, color = "blue", source = "", sub = false, sub_graph, sub_index, sub_length, options}) {
-        if (!(name && data && type && typeof name === "string" && typeof type === "string" && typeof data === "object")) {
-            throw new EvalError(`ChartDataSet: 'name', 'data' and 'type' musst be provided in the options. Got ${name}, ${data} and ${type} insted`);
+        if (!(name && data && type && typeof name === "string" && (typeof type === "string" || Array.isArray(type)) && typeof data === "object")) {
+            throw new EvalError(`ChartDataSet: 'name', 'data' and 'type' musst be provided in the options. Got ${name}, ${data} and ${type} instead`);
         }
         this.type = type;
         this.id = id;

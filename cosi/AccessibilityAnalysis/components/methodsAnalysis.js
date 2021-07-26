@@ -152,8 +152,7 @@ export default {
      * @returns {void}
      */
     createIsochronesPoint: async function () {
-        const range =
-            this.scaleUnit === "time" ? this.distance * 60 : this.distance;
+        const range = this.scaleUnit === "time" ? this.distance * 60 : this.distance;
 
         if (
             this.coordinate !== null &&
@@ -169,14 +168,14 @@ export default {
                     this.transportType,
                     [this.coordinate],
                     this.scaleUnit,
-                    [range * 0.33, range * 0.67, range],
+                    [range / 3, range * 2 / 3, range],
                     this.abortController.signal
                 ),
 
 
                 distance = parseFloat(this.distance);
 
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
+            this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
 
             // reverse JSON object sequence to render the isochrones in the correct order
             // eslint-disable-next-line one-var

@@ -1,5 +1,5 @@
-import {generateSimpleMutations} from "../../../../../src/app-store/utils/generators";
-import stateDashboardManager from "./stateDashboardManager";
+import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
+import stateDashboard from "./stateDashboard";
 
 const mutations = {
     /**
@@ -8,7 +8,7 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateDashboardManager)
+    ...generateSimpleMutations(stateDashboard)
 };
 
 export default mutations;
