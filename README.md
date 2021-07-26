@@ -1,7 +1,7 @@
 # Data model & infrastructure
-CoSI is essentially based on the superimposition of regularly updated regional statistical characteristics of the individual area levels, which are supplied by the North Statistics Office for Hamburg and Schleswig-Holstein (StaNord), and various specialist data from the various authorities, such as the digital green plan (BUKEA) or the public schools (BUE). In doing so, CoSI tries to do more than just ensure that the data records are displayed next to and on top of each other in the map and table. The aim is to achieve an integration of the data and an interaction with the data. So on the one hand to make connections and interactions between different data sets tangible for the users and on the other hand to allow them to “intervene” in the data sets, to filter, search or “manipulate” them. The latter,
+CoSI is essentially based on the superimposition of regularly updated regional statistical characteristics of the individual area levels, which are supplied by the Statistikamt Nord (Statistical Office North) for Hamburg and Schleswig-Holstein (StaNord), and various specialist data from the various authorities, such as the digital green plan (BUKEA) or the public schools (BUE). In doing so, CoSI tries to do more than just ensure that the data records are displayed next to and on top of each other in the map and table. The aim is to achieve an integration of the data and an interaction with it. So, on the one hand CoSI makes connections and interactions between different data sets tangible for the users. On the other hand CoSI allows users to "intervene" in the data sets, filter, search, or "manipulate" them. The latter, the real-time change of data records in the running program (see simulation), is currently being developed and implemented in the ongoing project.
 ## Regional statistical data
-The StaNord data is available for all administrative levels of the FHH (statistical areas, city districts, districts and the entire city). Depending on the level, they include over 60 indicators, which are divided into the categories
+The StaNord data is available for all administrative levels of the FHH (statistical area, city districts, boroughs, and the entire city). Depending on the level, they include over 60 indicators, which are divided into the categories
 -	Population
 -	Surface
 -	Households
@@ -14,7 +14,7 @@ The StaNord data is available for all administrative levels of the FHH (statisti
 
 structure (for a precise list, see appendix). These data sets contain time series, which are recorded from approx. 2012 (depending on the data set) and are expanded annually.
 
-*Note: For reasons of data protection law, the data provider filters out those data sets which, in the case of sensitive data, could be traced back to individual individuals. These data records are shown in "-" or with "No data".*
+*Note: Note: For reasons of data protection law, the data provider filters those data sets which, in the case of sensitive data, could be traced back to single individuals.*
 
 #### `Datensatz (Bsp.)`
 | `Verwaltungseinheit`        | `Stadtteil`
@@ -29,8 +29,7 @@ structure (for a precise list, see appendix). These data sets contain time serie
 `2018` | `55,6`
 
 #### `Features loader`
-`All StaNord data, like all other specialist data, are provided by geospatial service. As shown in the example above, the data structure of the data not only provides each data record as a separate data object (feature) for each geographical area, at each administrative level. Each feature is also linked to its geographic geometry. In other words, it is not possible to load a single feature with all the data records, but the request must be made for each indicator individually. The Features Loader is the CoSI-specific module which, when selecting the area, requests the collected data sets from the server excluding the geometry (for performance reasons) and then links these within the application with the area shown on the map.`
-
+>All StaNord data, like all other specialist data, are provided by geospatial service. As shown in the example above, the data structure of the data not only provides each data record as a separate data object (feature) for each geographical area, at each administrative level. Each feature is also linked to its geographic geometry. In other words, it is not possible to load a single feature with all the data records, but the request must be made for each indicator individually. The Features Loader is the CoSI-specific module which, when selecting the area, requests the collected data sets from the server excluding the geometry (for performance reasons) and then links these within the application with the area shown on the map.
 ### Technical data
 The technical data sets that are and can be integrated in CoSI are provided as geospatial services by a wide variety of data owners (above all authorities, but in principle also private companies, real-time sensors, etc.) and accessed in CoSI, as in the FHH Atlas, via the URL of the respective service . Many of the data sets in their edited form emerged from the negotiation and coordination processes of the Urban Data Hub, through which the authorities and data holders of the FHH agree on common standards and regular publications.
 ### Analysis
@@ -79,7 +78,7 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
    3. Add WMS 
     
 #### `Adjustments`
-`In some cases, the tools from the master portal had to be slightly adapted for CoSI in order to ensure stability within CoSI and to increase the benefit. For example, with the “Print map” tool, unlike in the master portal, individually styled map elements are also output, for which there was no need in the master portal. Additional tools such as “Filter” and “Resident Survey” have been adapted or expanded to increase their usability in CoSI. With the filter, a list of results is generated and can be transferred to the dashboard (push). The resident query was integrated into the accessibility analysis and thus enables an address-specific query of the number of residents for a generated catchment area. Various other (partly also purely cosmetic) adjustments to the UI flow from CoSI back into the core architecture of the mast portal.`
+>In some cases, the tools from the master portal had to be slightly adapted for CoSI in order to ensure stability within CoSI and to increase the benefit. For example, with the “Print map” tool, unlike in the master portal, individually styled map elements are also output, for which there was no need in the master portal. Additional tools such as “Filter” and “Resident Survey” have been adapted or expanded to increase their usability in CoSI. With the filter, a list of results is generated and can be transferred to the dashboard (push). The resident query was integrated into the accessibility analysis and thus enables an address-specific query of the number of residents for a generated catchment area. Various other (partly also purely cosmetic) adjustments to the UI flow from CoSI back into the core architecture of the mast portal.
 
 ## Overview
 
@@ -118,12 +117,12 @@ The topic tree is divided into background maps, a catalog of specialist data and
 
 *Illustration 2: The topic tree*
 
-1.	**Background maps** - Layers such as "City Map Hamburg", which are automatically active by default. If necessary, the "DOP 2 aerial maps" layer can also be activated. They can also be deactivated.
-2.	**Technical data** - 
-	   a.	**Analysis / Simulation** - The prepared layers for CoSI-specific tools (provided as WFS, see glossary). The individual data layers are divided into categories that are regularly adapted or updated.
-      b.	**Presentation** - Data for pure "display" in the map, mainly taken from the FHH Atlas (provided as WMS). 
-3.	**Selected topics** - The active layers can be moved in their order and made transparent
-4.	**Layer info** - The legend and metadata of the specialist data layer can be displayed via the info button. This includes a description of the topic, the date of publication and the URL of the relevant service. The function is the same for all FHH geoportals.
+1. **Background maps** - Layers such as "City Map Hamburg", which are automatically active by default. If necessary, the "DOP 2 aerial maps" layer can also be activated. They can also be deactivated.
+2. **Technical data** - 
+	 - **Analysis / Simulation** - The prepared layers for CoSI-specific tools (provided as WFS, see glossary). The individual data layers are divided into categories that are regularly adapted or updated.
+	 - **Presentation** - Data for pure "display" in the map, mainly taken from the FHH Atlas (provided as WMS). 
+3. **Selected topics** - The active layers can be moved in their order and made transparent
+4. **Layer info** - The legend and metadata of the specialist data layer can be displayed via the info button. This includes a description of the topic, the date of publication and the URL of the relevant service. The function is the same for all FHH geoportals.
 
 The topics contain information that is represented symbolically or by areas on the map. In Figure 4, for example, the red dots represent the existing daycare centers in the area, while the purple lines represent areas that belong to the development plans layer.  
 
@@ -177,6 +176,7 @@ Basically, this function offers the possibility of determining the exact number 
 When calling up directly under the "Analysis" tab, the area over which the query is to be carried out must be specified manually (by drawing a rectangle or circle or by drawing an area).
 
 When used within the context of the accessibility analysis, the area does not have to be specified manually, but the calculated catchment area is adopted as the area.
+
 ### Accessibility analysis
 An accessibility analysis can be carried out in two ways: 1) from a reference point and 2) in the planning area. The mode of analysis can be selected in the dropdown menu.
 
@@ -321,7 +321,9 @@ When you start CoSI, a frame of reference is first established and a planning ar
 	 - Both options described above can also be combined with one another, the order being irrelevant. The users can therefore first select individual administrative units and then activate the drawing tool in order to add additional administrative units or to proceed the other way round.
 
 The defined planning area can be adjusted at any time; the area can be expanded (both by clicking and using the drawing tool), reduced (by clicking marked administrative units can be deselected) or completely reset (by clicking on “Reset selection”).
+
 A planning area does not always have to be defined first in every context of use; Certain analysis tools such as the "Accessibility Analysis" and "Comparable Areas" can be used without specifying an area beforehand.
+
 The following information applies to such cases:
 1.	No data records are loaded, ie it is not possible to display the regional statistical data. Regional statistical data are also not displayed in the dashboard.
 2.	When adding topics from the specialist data, the loading process could take longer
@@ -329,6 +331,7 @@ The following information applies to such cases:
 
 ## Map analysis of regional statistical data
 In addition to the technical data layers, the basis of all CoSI analysis functions are the data records of the StaNord database, which are available as time series for the various administrative units (see Sect. Regional statistical data). These can be visualized directly and dynamically on the map for the selected planning area. The color scaling and legend are generated dynamically from the selection. The most recent data set is always displayed.
+
 The tool for visualizing regional statistical data enables the selection of regional statistical data sets that are available for the selected districts. It can only be used if areas have already been selected using the area selection tool. The tool can visualize the selected data sets on the map and generates a dynamic legend. Furthermore, data sets for several years can be selected and, if desired, animated in consecutive order.
 
 ![Illustration 15th - Window for map analysis of statistical data](https://user-images.githubusercontent.com/79461871/126953007-e3bdbc11-373f-41a1-aeaa-4f8eecf99258.png)
@@ -361,8 +364,8 @@ The dashboard forms the "heart" of the analysis functions in CoSI. All evaluatio
 4. **Shut down**
 
 ### Structure (technology)
-According to its basic function, the dashboard is a freely configurable work environment that can be configured as freely as possible both for your own work and for the visualization and presentation of the results (more on this under InfoScreen and Outlook). According to its structure, that is 
-Dashboard completely ignorant of the content that is presented on it. So it is conceivable to expand it at will in future development steps.
+According to its basic function, the dashboard is a freely configurable work environment that can be configured as freely as possible both for your own work and for the visualization and presentation of the results (more on this under InfoScreen and Outlook). According to its structure, the Dashboard is completely ignorant of the content that is presented on it. So it is conceivable to expand it at will in future development steps.
+
 Using a simple, preconfigured function, content from other modules can be transferred to the dashboard and displayed there as a new widget.
 
 ### InfoScreen
@@ -370,7 +373,9 @@ You can open a second browser tab with the dashboard via the "Services" / "Open 
 
 ### Widgets
 A widget is an isolated window / field within the dashboard that can accommodate any content and functions. Widgets can (if not configured otherwise) be scaled, moved, minimized and deleted. They are retained (persistent) even if the user closes the dashboard or changes the area selection. They can also be managed decentrally (on the code side) from anywhere in CoSI.
+
 All widgets (with the exception of the overview table) can be deleted using the "Reset dashboard" button at the bottom of the dashboard.
+
 *Note: With the exception of the overview table, currently open widgets are not automatically transferred when the InfoScreen is opened.*
 
 ![Figure 15 - Widget + context menu (e g  diagram)](https://user-images.githubusercontent.com/79461871/126953871-eddb9dda-c393-4ec6-887b-0ed7fa983a72.png)
@@ -383,21 +388,23 @@ All widgets (with the exception of the overview table) can be deleted using the 
 4. **Zoom in / out**
 5. **Context menu**
 
-### The context menu
+### The Context menu
 All more in-depth interactions with the contents of the dashboard or widgets take place via a context menu, which is called up by right-clicking on an element. Which functions are available depends on the respective element. If no functions are available on an element, the context menu does not open. Context functions are currently implemented in the summary table and the diagrams.
-### The overview table
-By default, the table is the first widget that is automatically displayed when the dashboard is opened. The table shows all indicators of the StaNord data for the selected areas as well as the associated reference areas of the next larger administrative unit. Ie the respective city districts at stat. Areas and the districts in districts. All data sets are grouped by topic and contain continuous time series, which are expanded annually (see p.regional statistical data). In addition, calculated average and total values for the original selection are shown.
+
+### The Overview table
+By default, the table is the first widget that is automatically displayed when the dashboard is opened. The table shows all indicators of the StaNord data for the selected areas as well as the associated reference areas of the next larger administrative unit i.e, the respective city districts at stat. Areas and the districts in districts. All data sets are grouped by topic and contain continuous time series, which are expanded annually (see p.regional statistical data). In addition, calculated average and total values for the original selection are shown.
 
 The table shows all indicators of the StaNord data for your selected areas. In addition, you will see 
 
 #### `Calculations`
-`The reference areas are not included. Also, only total and average values are calculated for absolute and not for proportional values, since the reference values are not clear and can therefore lead to incorrect calculations. For example, the “proportion of the population with a migration background” refers to the “total population”, “Proportion of women 15 to under 65 years of age who are subject to social insurance contributions”, however, to the absolute number of women between 15 and 65 who, in this form, at the StaNord- Data is not available as a data set. Theoretically, referencing the reference data record in the database is conceivable. However, this is a data issue that must be decided in coordination between UDH and StaNord in future development steps.`
+>The reference areas are not included. Also, only total and average values are calculated for absolute and not for proportional values, since the reference values are not clear and can therefore lead to incorrect calculations. For example, the “proportion of the population with a migration background” refers to the “total population”, “Proportion of women 15 to under 65 years of age who are subject to social insurance contributions”, however, to the absolute number of women between 15 and 65 who, in this form, at the StaNord- Data is not available as a data set. Theoretically, referencing the reference data record in the database is conceivable. However, this is a data issue that must be decided in coordination between UDH and StaNord in future development steps.
 
-the associated reference areas of the next largest administrative unit as well as calculated average and total values for your selection (the reference areas are not included).
+The associated reference areas of the next largest administrative unit as well as calculated average and total values for your selection (the reference areas are not included).
 You can zoom in on an area name on the map by clicking on it. You can move or hide table columns. Hidden columns are not taken into account when creating a diagram. 
 
 In the context menu you can 1) create diagrams from table columns or 2) offset table rows with one another (form quotients). The calculation results are added to the table as a new line for all years and areas. You can select multiple rows in the table for grouped diagrams using a check box or pressed the CTRL key.
 The table can be filtered using the selection field (top right). The original and the filtered table can be downloaded as an XLSX file.
+
 Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
 
 The table can be filtered using the selection field (top right). The original and the filtered table can be downloaded as XLSX (see Download XLSX). By clicking on an area name, the map zooms in on it.
@@ -421,10 +428,10 @@ Please note: In regional statistical areas with less than 100 inhabitants or a c
 
 ### Diagrams
 In principle, the following diagram types can be displayed in the current version of the CoSI dashboard: 
-1. **Bar graphs** - for a selected year, also grouped for several data sets (see Fig. 17)
-2. **Line charts** - for one data set over all years
-3. **Time beam** - Animated bar charts for all years, color coding in the map (see timeline)
-4. **Correlation Charts (Scatter Charts)** - Visualization of any data set (Y-axis, ordinate) on top of another (X-axis, abscissa) (see calculate correlation)
+1. **Bar graphs** - For a selected year, also grouped for several data sets (see Fig. 17).
+2. **Line charts** - For one data set over all years.
+3. **Time beam** - Animated bar charts for all years, color coding in the map (see timeline).
+4. **Correlation Charts (Scatter Charts)** - Visualization of any data set (Y-axis, ordinate) on top of another (X-axis, abscissa) (see calculate correlation).
 
 ![Illustration 18th - Select data for charts](https://user-images.githubusercontent.com/79461871/126955479-1682ab31-142f-45cf-b2bd-7d6d1fddf698.png)
 
@@ -434,7 +441,8 @@ In principle, the following diagram types can be displayed in the current versio
 2. **Select year for bar chart** - A message is displayed if no data record is available. The last year from the current date is always preset. Confirm by clicking on "Create for".
 3. **Axis scaling for line charts** - 
 	 - Unscaled axes: The Y-axis starts at 0
-	 - Scaled axes: The Y-axis starts with the next sensible (if possible integer) value below the lowest value
+	 - Scaled axes: The Y-axis starts with the next sensible (if possible integer) value below the lowest value.
+
 *Note: The order of the columns determines the order in the (bar) diagrams. Records from hidden columns are not displayed.*
 
 *Illustration 19th - Chart types*
@@ -453,9 +461,9 @@ In principle, the following diagram types can be displayed in the current versio
 1. **Time beam** - The years can be switched through using the slider.
 2. **Play button** - The animation of the annual data sets runs in a loop via the play button.
 3. **Bar graph** - The bar chart shows the current values for the selected year; Reference areas and calculated values are ignored.
-4 **Color coding** - The current values are shown on the map with the same color scale.
+4  **Color coding** - The current values are shown on the map with the same color scale.
 5. **Delete timeline** - When the timeline is deleted or a new one is created, the map is also cleaned up.
-6. 
+
 *Note: At the current stage of development, the timeline only works for existing StaNord data and not for your own calculations.*
 
 ### Calculate ratios
@@ -465,11 +473,11 @@ Any two columns for calculation or correlation can be selected via the context m
 
 1. **Select counter / Y-axis** - The data set, which is plotted as the Y value for ratios above the fraction line, for correlation diagrams. A new selection overwrites the previous value.
 2. **Select denominator / X-axis** - The data set, which is plotted as the X value in the case of ratios below the fraction line, in correlation diagrams. A new selection overwrites the previous value.
-3. **Deselect** -Reset the current selection.
+3. **Deselect** - Reset the current selection.
 4. **Current selection** - Your current selection is shown with a split symbol (“/”) above the table and in the context menu.
 5. **Calculate ratio** - Divides each table entry (area and year) of the numerator data set by the corresponding one of the denominator data set. The results are appended to the table.
 6. **Create a correlation diagram** - (see correlation diagram).
-7. **Own calculations** - The new data record can be found in the table under the “Calculations” group. Like all other data sets, it can also be used for new diagrams, it can be filtered according to it and it can be downloaded with the table as XLSX. The only exception is the timeline (see timeline)
+7. **Own calculations** - The new data record can be found in the table under the “Calculations” group. Like all other data sets, it can also be used for new diagrams, it can be filtered according to it and it can be downloaded with the table as XLSX. The only exception is the timeline (see timeline).
 
 *Note: At present, your own calculations cannot be displayed on the map like the original StaNord data.*
 
