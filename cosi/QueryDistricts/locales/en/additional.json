@@ -15,7 +15,8 @@
                     "referenceValue": "reference value",
                     "tolerance": "tolerance",
                     "funcData": "functional data",
-                    "count": "ct."
+                    "count": "ct.",
+                    "selectedDistrictNotAvailable": "Reference value invalid for selected district"
                 }
             }
         }

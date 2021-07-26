@@ -363,7 +363,10 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "name": "Bevölkerung insgesamt",
                 "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0,
                 "valueType": "relative",
-                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"]
+                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                "error": undefined,
+                "facilityLayerName": undefined,
+                "referenceLayerId": undefined
             }]);
         expect(wrapper.vm.resultNames).to.deep.equal([]);
 
@@ -400,6 +403,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         ]);
     });
     it("compareFeatures one filter", async () => {
+        // arrange
         const value = [
                 {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
             ],
@@ -409,13 +413,16 @@ describe("addons/cosi/QueryDistricts/", () => {
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
             },
+            // act
             ret = await self.setComparableFeatures(value);
 
+        // assert
         expect(ret.resultNames).to.deep.equal(
             ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
         );
     });
     it("compareFeatures two filters", async () => {
+        // arrange
         const self = {
                 propertiesMap: {"19041": getAllFeaturesByAttribute({id: "19041"}),
                     "19034": getAllFeaturesByAttribute({id: "19034"})},
@@ -425,10 +432,12 @@ describe("addons/cosi/QueryDistricts/", () => {
             },
             layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
             layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506},
+            // act
             ret1 = await self.setComparableFeatures([layer1]),
             ret2 = await self.setComparableFeatures([layer2]),
             ret = await self.setComparableFeatures([layer1, layer2]);
 
+        // assert
         expect(ret1.resultNames).to.deep.equal(
             ["Sternschanze", "Hoheluft-West", "Hoheluft-Ost", "Hohenfelde", "Dulsberg", "Eilbek", "Langenbek", "Cranz", "Hamburg-Altstadt", "St.Georg", "Borgfelde"]
         );
@@ -473,12 +482,35 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
 
         const expModel = {
-            "layerId": "Öffentliche Bibliotheken",
-            "name": "Öffentliche Bibliotheken",
-            "field": "jahr_2019", "max": 43, "min": 35, "value": 0, high: 0, low: 0,
-            "valueType": "relative",
-            "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"]
-        };
+                "layerId": "Öffentliche Bibliotheken",
+                "referenceLayerId": "19042",
+                "name": "Öffentliche Bibliotheken",
+                "field": "jahr_2019", "max": 43, "min": 35, "value": 0, high: 0, low: 0,
+                "valueType": "absolute",
+                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                "error": undefined,
+                "facilityLayerName": undefined
+            },
+            expModelRahlstedt = {
+                "layerId": "Öffentliche Bibliotheken",
+                "referenceLayerId": "19042",
+                "name": "Öffentliche Bibliotheken",
+                "field": "jahr_2019", "max": 43, "min": 35, "value": 35, high: 1000, low: 1000,
+                "valueType": "absolute",
+                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                "error": undefined,
+                "facilityLayerName": undefined
+            },
+            expModelHorn = {
+                "layerId": "Öffentliche Bibliotheken",
+                "referenceLayerId": "19042",
+                "name": "Öffentliche Bibliotheken",
+                "field": "jahr_2019", "max": 43, "min": 35, "value": NaN, high: 1000, low: 1000,
+                "valueType": "absolute",
+                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable",
+                "facilityLayerName": undefined
+            };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
         expect(wrapper.vm.resultNames).to.deep.equal([]);
@@ -491,6 +523,24 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // assert
         expect(wrapper.vm.resultNames).to.deep.equal(["Rahlstedt", "Farmsen-Berne"]);
+
+        // act: select district
+        await wrapper.setData({
+            selectedDistrict: "Rahlstedt"
+        });
+        await wrapper.vm.$nextTick();
+
+        // assert
+
+        expect(wrapper.vm.layerFilterModels).to.deep.equal([expModelRahlstedt]);
+
+        // act: select invalid district
+        await wrapper.setData({
+            selectedDistrict: "Horn"
+        });
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.layerFilterModels).to.deep.equal([expModelHorn]);
     });
     it("facilityNames", async () => {
         // arrange
@@ -508,6 +558,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
 
+        // assert
         expect(wrapper.vm.allLayerOptions).to.deep.equal([
             {
                 "group": "Bevölkerung",

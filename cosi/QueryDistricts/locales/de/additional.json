@@ -15,7 +15,8 @@
                     "referenceValue": "Referenzwert",
                     "tolerance": "Toleranz",
                     "funcData": "Fachdaten",
-                    "count": "Anz."
+                    "count": "Anz.",
+                    "selectedDistrictNotAvailable": "Der Referenzwert ist für das Referenzgebiet nicht definiert"
                 }
             }
         }
