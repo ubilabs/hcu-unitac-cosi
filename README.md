@@ -1,3 +1,39 @@
+# Contents
+- [Data model & infrastructure](#data-model--infrastructure)
+  - [Regional statistical data](#regional-statistical-data)
+    - [Technical data](#technical-data)
+    - [Analysis](#analysis)
+    - [Presentation](#presentation)
+    - [Geospatial services](#geospatial-services)
+    - [WMS](#wms)
+    - [WFS](#wfs)
+- [Modules](#modules)
+  - [Overview](#overview)
+  - [Themes (layers)](#themes-layers)
+  - [Accessibility](#accessibility)
+  - [Analysis](#analysis-1)
+    - [Resident query](#resident-query)
+    - [Accessibility analysis](#accessibility-analysis)
+    - [Filter](#filter)
+    - [Supply analysis](#supply-analysis)
+    - [Comparable areas](#comparable-areas)
+  - [Simulation](#simulation)
+  - [Services](#services)
+    - [Second window](#second-window)
+  - [Area selection](#area-selection)
+  - [Map analysis of regional statistical data](#map-analysis-of-regional-statistical-data)
+  - [Dashboard](#dashboard)
+    - [Structure (technology)](#structure-technology)
+    - [InfoScreen](#infoscreen)
+    - [Widgets](#widgets)
+    - [The Context menu](#the-context-menu)
+    - [The Overview table](#the-overview-table)
+    - [Context functions](#context-functions)
+    - [Diagrams](#diagrams)
+    - [Time beam](#time-beam)
+    - [Calculate ratios](#calculate-ratios)
+    - [Correlation diagram](#correlation-diagram)
+    - [Results](#results)
 # Data model & infrastructure
 CoSI is essentially based on the superimposition of regularly updated regional statistical characteristics of the individual area levels, which are supplied by the Statistikamt Nord (Statistical Office North) for Hamburg and Schleswig-Holstein (StaNord), and various specialist data from the various authorities, such as the digital green plan (BUKEA) or the public schools (BUE). In doing so, CoSI tries to do more than just ensure that the data records are displayed next to and on top of each other in the map and table. The aim is to achieve an integration of the data and an interaction with it. So, on the one hand CoSI makes connections and interactions between different data sets tangible for the users. On the other hand CoSI allows users to "intervene" in the data sets, filter, search, or "manipulate" them. The latter, the real-time change of data records in the running program (see simulation), is currently being developed and implemented in the ongoing project.
 ## Regional statistical data
@@ -16,7 +52,7 @@ structure (for a precise list, see appendix). These data sets contain time serie
 
 *Note: Note: For reasons of data protection law, the data provider filters those data sets which, in the case of sensitive data, could be traced back to single individuals.*
 
-#### `Datensatz (Bsp.)`
+**Datensatz (Bsp.)**
 | `Verwaltungseinheit`        | `Stadtteil`
 ------------ | -------------
 `Bezirk` | `Hamburg-Nord`
@@ -28,7 +64,7 @@ structure (for a precise list, see appendix). These data sets contain time serie
 `2017` | `56,2`
 `2018` | `55,6`
 
-#### `Features loader`
+**Features loader**
 >All StaNord data, like all other specialist data, are provided by geospatial service. As shown in the example above, the data structure of the data not only provides each data record as a separate data object (feature) for each geographical area, at each administrative level. Each feature is also linked to its geographic geometry. In other words, it is not possible to load a single feature with all the data records, but the request must be made for each indicator individually. The Features Loader is the CoSI-specific module which, when selecting the area, requests the collected data sets from the server excluding the geometry (for performance reasons) and then links these within the application with the area shown on the map.
 ### Technical data
 The technical data sets that are and can be integrated in CoSI are provided as geospatial services by a wide variety of data owners (above all authorities, but in principle also private companies, real-time sensors, etc.) and accessed in CoSI, as in the FHH Atlas, via the URL of the respective service . Many of the data sets in their edited form emerged from the negotiation and coordination processes of the Urban Data Hub, through which the authorities and data holders of the FHH agree on common standards and regular publications.
@@ -77,7 +113,7 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
    2. Save session
    3. Add WMS 
     
-#### `Adjustments`
+**Adjustments**
 >In some cases, the tools from the master portal had to be slightly adapted for CoSI in order to ensure stability within CoSI and to increase the benefit. For example, with the “Print map” tool, unlike in the master portal, individually styled map elements are also output, for which there was no need in the master portal. Additional tools such as “Filter” and “Resident Survey” have been adapted or expanded to increase their usability in CoSI. With the filter, a list of results is generated and can be transferred to the dashboard (push). The resident query was integrated into the accessibility analysis and thus enables an address-specific query of the number of residents for a generated catchment area. Various other (partly also purely cosmetic) adjustments to the UI flow from CoSI back into the core architecture of the mast portal.
 
 ## Overview
@@ -396,7 +432,7 @@ By default, the table is the first widget that is automatically displayed when t
 
 The table shows all indicators of the StaNord data for your selected areas. In addition, you will see 
 
-#### `Calculations`
+**Calculations**
 >The reference areas are not included. Also, only total and average values are calculated for absolute and not for proportional values, since the reference values are not clear and can therefore lead to incorrect calculations. For example, the “proportion of the population with a migration background” refers to the “total population”, “Proportion of women 15 to under 65 years of age who are subject to social insurance contributions”, however, to the absolute number of women between 15 and 65 who, in this form, at the StaNord- Data is not available as a data set. Theoretically, referencing the reference data record in the database is conceivable. However, this is a data issue that must be decided in coordination between UDH and StaNord in future development steps.
 
 The associated reference areas of the next largest administrative unit as well as calculated average and total values for your selection (the reference areas are not included).
