@@ -326,3 +326,87 @@ The following information applies to such cases:
 1.	No data records are loaded, ie it is not possible to display the regional statistical data. Regional statistical data are also not displayed in the dashboard.
 2.	When adding topics from the specialist data, the loading process could take longer
 3.	The availability analysis may not work reliably for a very large number of facilities.
+
+## Map analysis of regional statistical data
+In addition to the technical data layers, the basis of all CoSI analysis functions are the data records of the StaNord database, which are available as time series for the various administrative units (see Sect. Regional statistical data). These can be visualized directly and dynamically on the map for the selected planning area. The color scaling and legend are generated dynamically from the selection. The most recent data set is always displayed.
+The tool for visualizing regional statistical data enables the selection of regional statistical data sets that are available for the selected districts. It can only be used if areas have already been selected using the area selection tool. The tool can visualize the selected data sets on the map and generates a dynamic legend. Furthermore, data sets for several years can be selected and, if desired, animated in consecutive order.
+
+![Illustration 15th - Window for map analysis of statistical data](https://user-images.githubusercontent.com/79461871/126953007-e3bdbc11-373f-41a1-aeaa-4f8eecf99258.png)
+
+*Illustration 15th - Window for map analysis of statistical data*
+
+The individual functions of the tool are explained in detail below:
+1.	The tool window can be minimized using the button.
+2.	The map visualization can be shown and hidden again using the button.
+3.	With the forward and back buttons, the regional statistical data sets can be switched through fluently.
+4.	The year for which the regional statistical data set is visualized. The most recent available year is selected by default.
+5.	Here you can select a year for comparison. The percentage difference to the first selected year is then also shown on the map.
+6.	The selection field for the available regional statistical data sets. StaNord data sets Allows the relevant regional statistical data sets for the selected areas and the reference scale to be switched through and these to be displayed on the map with a color scale. The selection always shows the latest available data.
+7.	The legend for the color visualization of the map. If you hover the mouse over one of the markers, the value of the associated, selected area is displayed. The lowest and highest values are also shown on the right and left.
+8.	Use the button to open this auxiliary window. 
+9.	With the play button you start the animation of the data sets for all available years. In the adjacent field you can enter a value that indicates how quickly the individual animation steps are run through (in seconds).
+10.	Loads the current data into the visualization tool and creates a graph there.
+11.	You can use the button to show and hide the names of the selected areas on the map.
+
+## Dashboard
+The dashboard forms the "heart" of the analysis functions in CoSI. All evaluations of the map-based tools as well as the underlying data sets come together here. It always shows the city as a whole, the selected statistical areas and the associated reference areas (of the higher-level administrative unit) with all StaNord characteristic data in tabular form and houses a number of statistical analysis tools such as diagrams, correlations or ratio formation. In addition, the evaluation results of all other CoSI modules can be displayed in the dashboard and used here for further evaluations or displays.
+
+<img width="960" alt="Illustration 16 - Dashboard overview" src="https://user-images.githubusercontent.com/79461871/126953243-bd80cbc1-e921-42e6-8c3f-76a1a036cceb.png">
+
+*Illustration 16 - Dashboard overview*
+
+1. **Dashboard**
+2. **Widget**(see widgets)
+3. **Zoom in / out**
+4. **Shut down**
+
+### Structure (technology)
+According to its basic function, the dashboard is a freely configurable work environment that can be configured as freely as possible both for your own work and for the visualization and presentation of the results (more on this under InfoScreen and Outlook). According to its structure, that is 
+Dashboard completely ignorant of the content that is presented on it. So it is conceivable to expand it at will in future development steps.
+Using a simple, preconfigured function, content from other modules can be transferred to the dashboard and displayed there as a new widget.
+
+### InfoScreen
+You can open a second browser tab with the dashboard via the "Services" / "Open second window" tab. All functions are available to you there as in the original window. You can detach the second window from your browser by dragging the tab (tab) to move it to a second screen. If the InfoScreen is open, you can no longer open the dashboard in the main window. When you close the window, the dashboard returns to the main window.
+
+### Widgets
+A widget is an isolated window / field within the dashboard that can accommodate any content and functions. Widgets can (if not configured otherwise) be scaled, moved, minimized and deleted. They are retained (persistent) even if the user closes the dashboard or changes the area selection. They can also be managed decentrally (on the code side) from anywhere in CoSI.
+All widgets (with the exception of the overview table) can be deleted using the "Reset dashboard" button at the bottom of the dashboard.
+*Note: With the exception of the overview table, currently open widgets are not automatically transferred when the InfoScreen is opened.*
+
+![Figure 15 - Widget + context menu (e g  diagram)](https://user-images.githubusercontent.com/79461871/126953871-eddb9dda-c393-4ec6-887b-0ed7fa983a72.png)
+
+*Figure 15 - Widget + context menu (e.g. diagram)*
+
+1. **Title (move)**
+2. **Minimize**
+3. **Clear**
+4. **Zoom in / out**
+5. **Context menu**
+
+### The context menu
+All more in-depth interactions with the contents of the dashboard or widgets take place via a context menu, which is called up by right-clicking on an element. Which functions are available depends on the respective element. If no functions are available on an element, the context menu does not open. Context functions are currently implemented in the summary table and the diagrams.
+### The overview table
+By default, the table is the first widget that is automatically displayed when the dashboard is opened. The table shows all indicators of the StaNord data for the selected areas as well as the associated reference areas of the next larger administrative unit. Ie the respective city districts at stat. Areas and the districts in districts. All data sets are grouped by topic and contain continuous time series, which are expanded annually (see p.regional statistical data). In addition, calculated average and total values for the original selection are shown.
+
+The table shows all indicators of the StaNord data for your selected areas. In addition, you will see 
+
+#### `Calculations`
+`The reference areas are not included. Also, only total and average values are calculated for absolute and not for proportional values, since the reference values are not clear and can therefore lead to incorrect calculations. For example, the “proportion of the population with a migration background” refers to the “total population”, “Proportion of women 15 to under 65 years of age who are subject to social insurance contributions”, however, to the absolute number of women between 15 and 65 who, in this form, at the StaNord- Data is not available as a data set. Theoretically, referencing the reference data record in the database is conceivable. However, this is a data issue that must be decided in coordination between UDH and StaNord in future development steps.`
+
+the associated reference areas of the next largest administrative unit as well as calculated average and total values for your selection (the reference areas are not included).
+You can zoom in on an area name on the map by clicking on it. You can move or hide table columns. Hidden columns are not taken into account when creating a diagram. 
+
+In the context menu you can 1) create diagrams from table columns or 2) offset table rows with one another (form quotients). The calculation results are added to the table as a new line for all years and areas. You can select multiple rows in the table for grouped diagrams using a check box or pressed the CTRL key.
+The table can be filtered using the selection field (top right). The original and the filtered table can be downloaded as an XLSX file.
+Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
+
+The table can be filtered using the selection field (top right). The original and the filtered table can be downloaded as XLSX (see Download XLSX). By clicking on an area name, the map zooms in on it.
+
+Table columns can also be moved or hidden. When creating a diagram, the order of the areas shown (in the case of bar charts) depends on the selected column order. In turn, hidden columns are not taken into account when creating the diagram.
+
+*Note: At present, columns with numerical names (stat. Areas) cannot be moved, but are always shown in the table on the left in ascending order of their numbers.*
+
+### Context functions
+In the context menu you can 1) create diagrams from table columns or 2) offset table rows with one another (form quotients). The calculation results are added to the table as a new line for all years and areas. You can select multiple rows in the table for grouped diagrams using a check box or pressed the CTRL key.
+
+Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
