@@ -576,4 +576,31 @@ describe("addons/cosi/QueryDistricts/", () => {
             }
         ]);
     });
+    it.only("quotient layer", async () => {
+        // arrange
+        setupDefaultStubs();
+        wrapper = await mount();
+
+        await setActive(true);
+
+        await wrapper.setData({
+            selectedLayer: {id: "19041", name: "Layer", "valueType": "relative"}
+        });
+        await wrapper.find("#add-filter").trigger("click");
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        // assert
+        expect(wrapper.vm.layerFilterModels[0].quotientLayers)
+            .to.deep.equal([{"id": "19034", "name": "Bevölkerung insgesamt"}]);
+
+        // act
+        await wrapper.setData({
+            layerFilterModels: [{...wrapper.vm.layerFilterModels[0], quotientLayer: "19034"}]
+        });
+        await wrapper.vm.$nextTick();
+
+        // assert
+        expect(wrapper.vm.resultNames).to.deep.equal(["Horn", "Hamm"]);
+    });
 });

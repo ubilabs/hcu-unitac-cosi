@@ -46,6 +46,14 @@ export default {
         error: {
             type: String,
             default: null
+        },
+        quotientLayers: {
+            type: Array,
+            default: null
+        },
+        quotientLayer: {
+            type: String,
+            default: null
         }
     },
     computed: {
@@ -58,7 +66,6 @@ export default {
     },
     methods: {
         updateFieldValue (newValue) {
-            // console.log(newValue)
             this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue});
         },
         updateLow () {
@@ -69,6 +76,9 @@ export default {
         },
         updateValue () {
             this.$emit("update", {layerId: this.layerId, value: parseInt(this.$refs.inputValue.value, 10)});
+        },
+        updateQLayer (newValue) {
+            this.$emit("update", {layerId: this.layerId, quotientLayer: newValue});
         },
         close () {
             this.$emit("close", {layerId: this.layerId});
@@ -195,6 +205,18 @@ export default {
                                 </td>
                             </tr>
                         </table>
+                        <v-select
+                            class="fit"
+                            :value="quotientLayer"
+                            :items="quotientLayers"
+                            item-text="name"
+                            item-value="id"
+                            outlined
+                            dense
+                            hide-details
+                            :clearable="true"
+                            @change="updateQLayer"
+                        />
                     </td>
                 </tr>
             </tbody>

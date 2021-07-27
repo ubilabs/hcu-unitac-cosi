@@ -206,11 +206,7 @@ export default {
             return fmap;
         },
 
-        createLayerFilterModel: async function (layer) {
-            let valueType,
-                value = 0,
-                error;
-
+        loadFeatures: async function (layer) {
             if (layer.referenceLayerId) {
                 const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName),
                     features = await this.getAllFeaturesByAttribute({
@@ -230,7 +226,6 @@ export default {
                     }
                     return rfeature;
                 });
-                valueType = "absolute";
             }
             else {
 
@@ -239,13 +234,19 @@ export default {
                 });
 
                 this.propertiesMap[layer.id] = features;
-                valueType = layer.valueType;
             }
+        },
 
+        createLayerFilterModel: async function (layer) {
+            await this.loadFeatures(layer);
 
-            const features = this.propertiesMap[layer.id],
+            const valueType = layer.referenceLayerId ? "absolute" : layer.valueType,
+                features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0];
+
+            let value = 0,
+                error;
 
             if (this.selectedDistrict) {
                 const selector = this.keyOfAttrNameStats,
@@ -261,7 +262,8 @@ export default {
             }
             return {layerId: layer.id, name: layer.name, field, value, valueType, high: 0, low: 0, fieldValues,
                 referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName, error,
-                ...this.getMinMaxForField(layer.id, field)
+                ...this.getMinMaxForField(layer.id, field),
+                quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name}))
             };
         },
 
@@ -372,10 +374,18 @@ export default {
                     if (value.field) {
                         filters[i] = {...filters[i], ...this.getMinMaxForField(value.layerId, value.field)};
                     }
+                    if (value.quotientLayer) {
+                        // filters[i] = {...filters[i], ...this.getMinMaxForField(value.layerId, value.field)};
+                    }
                     break;
                 }
             }
             this.layerFilterModels = filters;
+        },
+
+        applyQuotientLayer (value) {
+
+
         },
 
         closeFilter (value) {
