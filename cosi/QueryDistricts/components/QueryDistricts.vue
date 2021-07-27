@@ -9,7 +9,6 @@ import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
-import Collection from "ol/Collection";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 
@@ -343,7 +342,7 @@ export default {
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
     >
-        <template v-slot:toolBody>
+        <template #toolBody>
             <v-app>
                 <div
                     v-if="active"
@@ -378,10 +377,10 @@ export default {
                             id="help"
                             @click="showHelp()"
                         >
-                            <span class="glyphicon glyphicon-question-sign"></span>
+                            <span class="glyphicon glyphicon-question-sign" />
                         </div>
                     </div>
-                    <br />
+                    <br>
                     <div>
                         <button
                             id="add-filter"
@@ -390,12 +389,12 @@ export default {
                             :disabled="selectedLayer===null"
                             @click="addLayerFilter()"
                         >
-                            <span class="glyphicon glyphicon-plus"></span>
+                            <span class="glyphicon glyphicon-plus" />
                             {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
                         </button>
                     </div>
-                    <br />
-                    <div id="layerfilter-container"></div>
+                    <br>
+                    <div id="layerfilter-container" />
                     <div id="results">
                         <template
                             v-for="filter in layerFilterModels"
@@ -408,8 +407,7 @@ export default {
                                 @close="closeFilter"
                             />
                         </template>
-                        <div id="params">
-                        </div>
+                        <div id="params" />
                         <div
                             v-if="selectedDistrict"
                             id="reference-district"
@@ -441,7 +439,7 @@ export default {
                             >{{ name }}</span>
                         </div>
                     </div>
-                    <br />
+                    <br>
                     <div>
                         <button
                             v-if="resultNames && resultNames.length"
@@ -452,7 +450,7 @@ export default {
                             {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
                         </button>
                     </div>
-                    <br />
+                    <br>
                     <div>
                         <button
                             v-if="resultNames && resultNames.length"

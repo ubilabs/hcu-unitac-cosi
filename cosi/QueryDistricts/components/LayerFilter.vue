@@ -141,7 +141,7 @@ export default {
                             type="number"
                             :value="value"
                             @input="updateValue()"
-                        />
+                        >
                         {{ valueType }}
                     </td>
                     <td>
@@ -157,7 +157,7 @@ export default {
                                         :value="low"
                                         min="0"
                                         @input="updateLow()"
-                                    />
+                                    >
                                 </td>
                             </tr>
                             <tr>
@@ -171,7 +171,7 @@ export default {
                                         :value="high"
                                         min="0"
                                         @input="updateHigh()"
-                                    />
+                                    >
                                 </td>
                             </tr>
                         </table>
