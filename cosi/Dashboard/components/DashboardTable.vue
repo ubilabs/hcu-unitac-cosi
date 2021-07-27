@@ -9,7 +9,7 @@ import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
 import {calculateStats, calculateCorrelation} from "../utils/operations";
-import generateChartForDistricts from "../utils/chart";
+import {generateChartForDistricts, generateChartForCorrelation} from "../utils/chart";
 
 export default {
     name: "DashboardTable",
@@ -279,7 +279,13 @@ export default {
         },
 
         renderScatterplot () {
-            // 
+            const correlation = this.calculateCorrelation(),
+                chart = generateChartForCorrelation(correlation, this.fields.B.category, this.fields.A.category);
+
+            console.log(this.fields.A, this.fields.B);
+            console.log(correlation);
+
+            this.setNewChartDataSet(chart);
         },
 
         onVisualizationChanged () {
@@ -409,7 +415,7 @@ export default {
                     @subtract="calculateStats('subtract')"
                     @multiply="calculateStats('multiply')"
                     @divide="calculateStats('divide')"
-                    @correlate="calculateCorrelation"
+                    @correlate="renderScatterplot"
                     @visualizationChanged="onVisualizationChanged"
                     @renderCharts="renderCharts"
                 />
