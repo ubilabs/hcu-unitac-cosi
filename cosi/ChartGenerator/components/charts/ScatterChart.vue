@@ -1,10 +1,11 @@
+
 <script>
-import {Bar} from "vue-chartjs";
+import {Scatter} from "vue-chartjs";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 
 export default {
-    name: "BarChart",
-    extends: Bar,
+    name: "ScatterChart",
+    extends: Scatter,
     props: {
         dataSets: {
             type: Object,
@@ -22,7 +23,7 @@ export default {
                 scales: {
                     xAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: false
                         },
                         scaleLabel: {
                             display: true,
@@ -31,7 +32,7 @@ export default {
                     }],
                     yAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: false
                         },
                         scaleLabel: {
                             display: true,
@@ -80,6 +81,7 @@ export default {
             this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
             this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
             this._options.title.text = beautifyKey(this.chartData.name);
+
             this.renderChart(this.chartData.graph, this._options);
         }
     }

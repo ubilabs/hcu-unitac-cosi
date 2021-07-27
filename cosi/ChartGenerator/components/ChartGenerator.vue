@@ -10,6 +10,7 @@ import {color} from "d3-color";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
+import ScatterChart from "./charts/ScatterChart.vue";
 import Info from "text-loader!./info.html";
 
 export default {
@@ -17,7 +18,8 @@ export default {
     components: {
         Tool,
         LineChart,
-        BarChart
+        BarChart,
+        ScatterChart
     },
     data () {
         return {
@@ -163,6 +165,7 @@ export default {
                 set.borderColor = getColor;
                 set.backgroundColor = d3Color;
             });
+
             // eslint-disable-next-line one-var
             const target = document.getElementById(dataSet.target),
                 // Extend Component dynamically
