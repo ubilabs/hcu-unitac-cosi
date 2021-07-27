@@ -51,9 +51,6 @@
     "path": "cosi/ScenarioBuilder",
     "type": "tool"
   },
-  "FileImportAddon": {
-    "type": "tool"
-  },
   "schoolRoutePlanning": {
     "type": "tool"
   },
