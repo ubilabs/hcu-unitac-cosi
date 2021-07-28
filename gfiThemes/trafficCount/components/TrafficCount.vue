@@ -40,7 +40,19 @@ export default {
             keyYear: "year",
             dayCheckReset: false,
             weekCheckReset: false,
-            yearCheckReset: false
+            yearCheckReset: false,
+            holidays: [
+                "newYearsDay",
+                "goodFriday",
+                "easterMonday",
+                "laborDay",
+                "ascensionDay",
+                "pentecostMonday",
+                "germanUnityDay",
+                "reformationDay",
+                "christmasDay",
+                "secondDayOfChristmas"
+            ]
         };
     },
     computed: {
@@ -107,6 +119,7 @@ export default {
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
                     this.setComponentKey(this.propThingId + this.propMeansOfTransport);
                     this.setActiveDefaultTab();
+                    this.setHolidays(newVal);
                 }
             },
             immediate: true
@@ -140,6 +153,7 @@ export default {
     },
     mounted: function () {
         this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
+        this.setHolidays(this.feature);
     },
     beforeDestroy: function () {
         this.api.unsubscribeEverything();
@@ -338,6 +352,21 @@ export default {
         },
 
         /**
+         * Setting the holidays in Array if there are holiday configured in config.json
+         * @param {Object} feature the feature
+         * @returns {void}
+         */
+        setHolidays (feature) {
+            const gfiTheme = feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                holidays = gfiParams?.holidays;
+
+            if (Array.isArray(holidays) && holidays.length) {
+                this.holidays = holidays;
+            }
+        },
+
+        /**
          * changing resetting check status for the active tab
          * @returns {void} -
          */
@@ -414,6 +443,7 @@ export default {
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
                     :reset="dayCheckReset"
+                    :holidays="holidays"
                 />
                 <TrafficCountWeek
                     id="week"
@@ -423,6 +453,7 @@ export default {
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
                     :reset="weekCheckReset"
+                    :holidays="holidays"
                 />
                 <TrafficCountYear
                     id="year"
@@ -432,6 +463,7 @@ export default {
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
                     :reset="yearCheckReset"
+                    :holidays="holidays"
                 />
             </div>
         </div>

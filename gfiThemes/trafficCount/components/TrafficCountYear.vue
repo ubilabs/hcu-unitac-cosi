@@ -31,6 +31,10 @@ export default {
         reset: {
             type: Boolean,
             required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
         }
     },
     data () {

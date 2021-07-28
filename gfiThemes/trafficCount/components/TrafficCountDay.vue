@@ -7,6 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataDay} from "../utils/addMissingData.js";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountDay",
@@ -30,6 +31,10 @@ export default {
         },
         reset: {
             type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
             required: true
         }
     },
@@ -106,7 +111,16 @@ export default {
                     type: "datepicker",
                     inputs: $(document.getElementById("dayDateInput")),
                     todayHighlight: false,
-                    language: i18next.language
+                    language: i18next.language,
+                    beforeShowDay: date => {
+                        const holiday = getPublicHoliday(date, this.holidays);
+
+                        if (holiday?.translationKey) {
+                            return {classes: "holiday", tooltip: i18next.t(holiday.translationKey)};
+                        }
+
+                        return true;
+                    }
                 });
 
                 this.dayDatepicker.on("valuesChanged", function (evt) {
