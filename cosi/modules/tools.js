@@ -18,7 +18,6 @@ import InfoScreenHandler from "./infoScreen/infoScreenHandler/model";
 import OpenRouteService from "./openRouteService/model";
 // import CalculateRatio from "./calculateRatio/model";
 // import ReachabilitySelect from "./reachabilitySelect/model";
-import CompareDistricts from "./compareDistricts/model";
 // import Filter from "./filter/model";
 
 // new FeaturesLoader();
@@ -195,14 +194,6 @@ const general = {
             name: "Zweites Fenster öffnen",
             glyphicon: "glyphicon-new-window",
             renderToWindow: false
-        }),
-        compareDistricts: new CompareDistricts({
-            id: "compareDistricts",
-            parentId: "tools",
-            type: "tool",
-            name: "Vergleichbare Gebiete ermitteln",
-            glyphicon: "glyphicon glyphicon-random",
-            resizableWindow: true
         })
         // calculateRatio: new CalculateRatio({
         //     parentId: "tools",
