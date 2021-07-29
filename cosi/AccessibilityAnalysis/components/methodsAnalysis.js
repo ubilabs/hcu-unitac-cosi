@@ -88,7 +88,7 @@ export default {
             for (const coords of coordinatesList) {
                 // TODO: make use of new OpenRouteService component
                 const res = await this.requestIsochrones(this.transportType, coords, this.scaleUnit,
-                        [range, range * 0.67, range * 0.33], this.abortController.signal),
+                        [range, range * 2 / 3, range / 3], this.abortController.signal),
                     // reverse JSON object sequence to render the isochrones in the correct order
                     // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
                     json = JSON.parse(res),
@@ -130,6 +130,10 @@ export default {
                 // TODO: add props to layers, like type of facility, unit of measured distance
                 layerUnionFeatures.forEach(feature => {
                     feature.set("featureType", featureType);
+                    feature.set("value", layeredList[0].properties.value);
+                    feature.set("mode", this.transportType);
+                    feature.set("unit", this.scaleUnit);
+                    feature.set("topic", this.selectedFacilityName);
                 });
                 features = features.concat(layerUnionFeatures);
             }
@@ -140,7 +144,7 @@ export default {
             this.currentCoordinates = coordinates;
 
             // TODO: get locale from store
-            this.steps = [distance * 0.33, distance * 0.67, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
+            this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
         }
         else {
             this.inputReminder();
@@ -390,7 +394,8 @@ export default {
     },
     getCoordinates: function () {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
-            name: this.selectedFacilityName
+            name: this.selectedFacilityName,
+            type: "layer"
         });
 
         if (selectedLayerModel) {

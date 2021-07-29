@@ -49,17 +49,19 @@ function prepareScatterData (data) {
 
 /**
  * @description Adjusting data for Graph Generator Tool.
- * @param {Object} data - the correlation data from the dashboardTable
+ * @param {Object} correlation - the correlation data from the dashboardTable
  * @returns {void}
  */
-function prepareLinRegData (data) {
+function prepareLinRegData (correlation) {
     return {
         type: "line",
         label: "Regression",
-        data: data.map(datum => ({
+        data: correlation.data.map(datum => ({
             x: datum.x,
             y: datum.yEst
         })),
+        correlation: correlation.correlation,
+        covariance: correlation.covariance,
         options: {
             showLine: true
         }
@@ -134,8 +136,8 @@ export function generateChartForDistricts (data, districtNames, districtLevelLab
  */
 export function generateChartForCorrelation (correlation, categoryX, categoryY) {
     const scatterData = prepareScatterData(correlation.data),
-        lineData = prepareLinRegData(correlation.data),
-        graphObj = generateScatterGraphObj(scatterData, categoryX, categoryY);
+        lineData = prepareLinRegData(correlation),
+        graphObj = generateScatterGraphObj([...scatterData, lineData], categoryX, categoryY);
 
     return graphObj;
 }

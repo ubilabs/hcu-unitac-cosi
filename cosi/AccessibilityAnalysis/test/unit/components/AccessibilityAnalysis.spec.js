@@ -242,7 +242,7 @@ describe("AccessibilityAnalysis.vue", () => {
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
             JSON.stringify(features));
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
 
         await wrapper.find("#clear").trigger("click");
         sinon.assert.callCount(sourceStub.clear, 2);
@@ -271,7 +271,7 @@ describe("AccessibilityAnalysis.vue", () => {
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
             JSON.stringify(featuresRegion));
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
         // check no update on equal coordinates
