@@ -95,6 +95,7 @@ export default {
             else {
                 this.map.removeEventListener("click", this.setCoordinateFromClick);
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
+                this.removePointMarker();
             }
         }
     },

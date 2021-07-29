@@ -24,7 +24,7 @@ const getters = {
      * @returns {String} The key for the attribute "name".
      */
     keyOfAttrNameStats: (state, {selectedDistrictLevel}) => {
-        return selectedDistrictLevel.keyOfAttrNameStats;
+        return selectedDistrictLevel.stats.keyOfAttrName;
     },
 
     /**
@@ -50,22 +50,6 @@ const getters = {
     },
 
     /**
-     * Returns a list of all names of the selected districts.
-     * @param {Object} state - The DistrictSelector state.
-     * @param {Object} getters - The DistrictSelector getters.
-     * @param {String} getters.keyOfAttrNameStats - The key for the attribute "name" of the district features.
-     * @param {module:ol/Collection[]} getters.selectedDistrictsCollection - The collection with the selected features.
-     * @returns {String[]} The names of all selected features.
-     */
-    districtNameList: (state, {keyOfAttrName, selectedDistrictsCollection}) => {
-        const nameList = selectedDistrictsCollection.getArray().map(feature => {
-            return feature.get(keyOfAttrName);
-        });
-
-        return nameList;
-    },
-
-    /**
      * Returns the selected districts in an array and not as a collection.
      * @param {Object} state - The DistrictSelector state.
      * @param {Object} getters - The DistrictSelector getters.
@@ -79,8 +63,50 @@ const getters = {
         return selectedDistrictsCollection.getArray();
     },
 
-    propertyNameList: (state, {selectedDistrictLevel}) => {
-        return selectedDistrictLevel.stats.propertyNameList;
+    /**
+     * Returns the admin features of the selected districts.
+     * @param {Object} state - The DistrictSelector state.
+     * @param {Object} getters - The DistrictSelector getters.
+     * @param {Object} getters.selectedDistricts - The selected districts.
+     * @returns {module:ol/Feature[]} The admin features.
+     */
+    selectedAdminFeatures: (state, {selectedDistricts}) => {
+        return selectedDistricts.map(district => district.adminFeature);
+    },
+
+    /**
+     * Returns the selected districts.
+     * @param {Object} state - The DistrictSelector state.
+     * @param {Object} getters - The DistrictSelector getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @returns {Object} The selected districts.
+     */
+    selectedDistricts: (state, {selectedDistrictLevel}) => {
+        return selectedDistrictLevel.districts.filter(district => {
+            return district.isSelected === true;
+        });
+    },
+
+    /**
+     * Returns an array with all names of the selected districts.
+     * @param {Object} state - The DistrictSelector state.
+     * @param {Object} getters - The DistrictSelector getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @returns {String[]} The districts names.
+     */
+    selectedDistrictsNames: (state, {selectedDistricts}) => {
+        return selectedDistricts.map(district => district.getName());
+    },
+
+    /**
+     * Returns the statistical features of the selected districts.
+     * @param {Object} state - The DistrictSelector state.
+     * @param {Object} getters - The DistrictSelector getters.
+     * @param {Object} getters.selectedDistricts - The selected districts.
+     * @returns {module:ol/Feature[]} The statistical features.
+     */
+    selectedStatFeatures: (state, {selectedDistricts}) => {
+        return selectedDistricts.map(district => district.statFeatures).flat();
     }
 };
 

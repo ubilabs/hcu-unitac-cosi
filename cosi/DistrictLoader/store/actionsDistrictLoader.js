@@ -20,7 +20,7 @@ const actions = {
      * @param {String[]} payload.subDistrictNameList - The district names on the lower level to avoid naming conflicts
      * @returns {module:ol/Feature[]}Returns stats features.
      */
-    loadDistricts ({commit, dispatch, getters}, payload) {
+    async loadDistricts ({commit, dispatch, getters}, payload) {
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         dispatch("resetMapping");
         const {selectedDistrictLevel, districtLevels} = getters,
@@ -116,11 +116,6 @@ const actions = {
     async getStatsByDistrict ({getters, rootGetters, dispatch}, {districtFeature, districtLevel}) {
         // Return stats if already stored
         if (districtFeature.get("stats")) {
-            /**
-             * @deprecated
-             * @todo refactor when Radio removed
-            */
-            Radio.trigger("Util", "hideLoader");
             return districtFeature.get("stats");
         }
         /**
@@ -149,7 +144,7 @@ const actions = {
 
         // map category names
         statsFeatures.forEach(prepareStatsFeatures);
-        await dispatch("appendStatsToDistricts", {statsFeatures, districtFeatures: districtLevel.layer.getSource().getFeatures()});
+        dispatch("appendStatsToDistricts", {statsFeatures, districtFeatures: districtLevel.layer.getSource().getFeatures()});
 
         /**
          * @deprecated
@@ -160,11 +155,6 @@ const actions = {
         return statsFeatures;
     },
 
-    /**
-     * Dispatches the warning if data couldn't be loaded
-     * @param {Function} store.dispatch - Function to dispatch a action.
-     * @return {void}
-     */
     alertError ({dispatch}) {
         dispatch("Alerting/addSingleAlert", {
             category: "Warnung",
@@ -194,8 +184,8 @@ const actions = {
         statsFeatures.forEach(feature => {
             const district = _districtFeatures.find(districtFeature => districtFeature.get(keyOfAttrName) === feature.get(keyOfAttrNameStats));
 
-            if (district && !district.get("stats")?.find(_feature => _feature.get("kategorie") === feature.get("kategorie"))) {
-                district.set("stats", [...district.get("stats") || [], feature]);
+            if (district) {
+                district.set("stats", {...district.get("stats") || {}, [feature.get("kategorie")]: feature});
             }
         });
     },

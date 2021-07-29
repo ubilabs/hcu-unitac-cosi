@@ -27,8 +27,7 @@ export default {
     }),
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
-        ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel"]),
-        ...mapGetters("Tools/DistrictLoader", ["mapping"]),
+        ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel", "mapping"]),
 
         statsMapping () {
             return groupMapping(this.mapping);
@@ -80,7 +79,7 @@ export default {
         this.unlisten();
     },
     methods: {
-        ...mapActions("Tools/DistrictLoader", ["getStatsByDistrict"]),
+        ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
@@ -123,7 +122,7 @@ export default {
         async pickReference (evt) {
             const feature = evt.selected[0],
                 stats = await this.getStatsByDistrict({
-                    districtFeature: feature,
+                    id: feature.getId(),
                     districtLevel: this.workingDistrictLevel
                 }),
                 baseStats = this.processStats(

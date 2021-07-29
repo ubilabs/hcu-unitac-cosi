@@ -1,26 +1,23 @@
-import store from "../../../src/app-store";
 import {union as turfUnion, intersect as turfIntersect} from "@turf/turf";
 import {GeoJSON} from "ol/format";
 
 /**
  * Checks which district contains a given feature
- * @param {*} districtFeatures - the districts to check
- * @param {*} feature - the feature to check against
- * @param {String} [keyOfAttrName] - defines the key of the attribute "name" to return for the district, if undefined the store value is used.
- * @param {Boolean} [returnsFeature=false] - defines whether to return a String or the Feature Object
+ * @param {DistrictLevel} districtLevel - the districtLevel to check
+ * @param {module:ol/Feature} feature - the feature to check against
+ * @param {Boolean} [returnsFeature=true] - defines whether to return a String or the Feature Object
  * @param {Boolean} [multiple=false] - defines whether multiple results are possible, returns the first result if false
  * @returns {String|module:ol/Feature} the districts name or the district feature
  */
-export function getContainingDistrictForFeature (districtFeatures, feature, keyOfAttrName, returnsFeature = false, multiple = false) {
-    const _keyOfAttrName = keyOfAttrName || store.getters["Tools/DistrictSelector/keyOfAttrName"],
-        containingDistricts = [];
+export function getContainingDistrictForFeature (districtLevel, feature, returnsFeature = true, multiple = false) {
+    const containingDistricts = [];
 
-    for (const district of districtFeatures) {
-        const geom = district.getGeometry(),
+    for (const district of districtLevel.districts) {
+        const geom = district.adminFeature.getGeometry(),
             featureExtent = feature.getGeometry().getExtent();
 
         if (geom.intersectsExtent(featureExtent)) {
-            containingDistricts.push(returnsFeature ? district : district.get(_keyOfAttrName));
+            containingDistricts.push(returnsFeature ? district : district.getName());
 
             if (!multiple) {
                 break;

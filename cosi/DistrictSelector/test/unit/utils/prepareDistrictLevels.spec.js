@@ -1,4 +1,4 @@
-import {getAllDistrictsWithoutLayer, getLayerById, getNameList, setNameList, prepareDistrictLevels} from "../../../utils/prepareDistrictLevels.js";
+import {getAllDistrictsWithoutLayer, getLayerById, getNameList, prepareDistrictLevels} from "../../../utils/prepareDistrictLevels.js";
 import {expect} from "chai";
 import Source from "ol/source/Vector.js";
 import Layer from "ol/layer/Vector.js";
@@ -166,65 +166,6 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
 
             expect(getNameList(layerOne, "name")).to.be.an("array");
             expect(getNameList(layerOne, "name")).to.deep.equal(["Altona", "Ottensen"]);
-        });
-    });
-
-    describe("setNameList", () => {
-        const bindObj = {
-                keyOfAttrName: "name",
-                layer: new Layer({
-                    source: new Source({
-                        features: [
-                            new Feature({
-                                name: "Altona",
-                                id: "123"
-                            }),
-                            new Feature({
-                                name: "Ottensen"
-                            })
-                        ]
-                    })
-                })
-            },
-            eventDummy = {
-                target: {
-                    getFeatures: () => ["", ""]
-                }
-            },
-            eventDummyEmpty = {
-                target: {
-                    getFeatures: () => []
-                }
-            },
-            copySetNameList = setNameList.bind(bindObj);
-
-        it("should return an object without the property 'nameList'", () => {
-            copySetNameList(eventDummyEmpty);
-            expect(bindObj).to.have.not.property("nameList");
-        });
-
-        it("should return an object with the property 'nameList'", () => {
-            copySetNameList(eventDummy);
-
-            expect(bindObj).to.have.property("nameList");
-        });
-
-        it("should return an array for the property 'nameList'", () => {
-            copySetNameList(eventDummy);
-
-            expect(bindObj.nameList).to.be.an("array");
-        });
-
-        it("should return ['Altona', 'Ottensen'] for the property 'nameList'", () => {
-            copySetNameList(eventDummy);
-
-            expect(bindObj.nameList).to.deep.equal(["Altona", "Ottensen"]);
-        });
-
-        it("should return ['Altona', 'Ottensen'] for the property 'nameList'", () => {
-            copySetNameList(eventDummy);
-
-            expect(bindObj.nameList).to.deep.equal(["Altona", "Ottensen"]);
         });
     });
 

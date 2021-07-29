@@ -1,9 +1,9 @@
 // import FeaturesLoader from "./featuresLoader/model";
 // import BboxSettor from "./bboxSettor/model";
 // import ColorCodeMap from "./colorCodeMap/model";
-import Dashboard from "./dashboard/model";
-import DashboardTable from "./dashboardTable/model";
-import DashboardWidgetHandler from "./dashboardWidget/handler";
+// import Dashboard from "./dashboard/model";
+// import DashboardTable from "./dashboardTable/model";
+// import DashboardWidgetHandler from "./dashboardWidget/handler";
 // import SelectDistrict from "./selectDistrict/model";
 /**
  * The saveSelection addon module has been disabled in cosi.
@@ -18,7 +18,6 @@ import InfoScreenHandler from "./infoScreen/infoScreenHandler/model";
 import OpenRouteService from "./openRouteService/model";
 // import CalculateRatio from "./calculateRatio/model";
 // import ReachabilitySelect from "./reachabilitySelect/model";
-import CompareDistricts from "./compareDistricts/model";
 // import Filter from "./filter/model";
 
 // new FeaturesLoader();
@@ -26,19 +25,19 @@ import CompareDistricts from "./compareDistricts/model";
 new OpenRouteService();
 
 const general = {
-        dashboardTable: new DashboardTable({
-            name: "Übersicht",
-            id: "dashboardTable"
-        }),
-        dashboard: new Dashboard({
-            // type: "tool",
-            name: "Dashboard",
-            id: "dashboard",
-            glyphicon: "glyphicon-dashboard",
-            renderToWindow: false,
-            keepOpen: true
-        }),
-        dashboardWidgetHandler: new DashboardWidgetHandler()
+        // dashboardTable: new DashboardTable({
+        //     name: "Übersicht",
+        //     id: "dashboardTable"
+        // }),
+        // dashboard: new Dashboard({
+        //     // type: "tool",
+        //     name: "Dashboard",
+        //     id: "dashboard",
+        //     glyphicon: "glyphicon-dashboard",
+        //     renderToWindow: false,
+        //     keepOpen: true
+        // }),
+        // dashboardWidgetHandler: new DashboardWidgetHandler()
     },
     tools = !window.location.pathname.includes("infoscreen.html") ? {
         // filter: new Filter({
@@ -195,14 +194,6 @@ const general = {
             name: "Zweites Fenster öffnen",
             glyphicon: "glyphicon-new-window",
             renderToWindow: false
-        }),
-        compareDistricts: new CompareDistricts({
-            id: "compareDistricts",
-            parentId: "tools",
-            type: "tool",
-            name: "Vergleichbare Gebiete ermitteln",
-            glyphicon: "glyphicon glyphicon-random",
-            resizableWindow: true
         })
         // calculateRatio: new CalculateRatio({
         //     parentId: "tools",
