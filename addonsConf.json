@@ -51,9 +51,6 @@
     "path": "cosi/ScenarioBuilder",
     "type": "tool"
   },
-  "FileImportAddon": {
-    "type": "tool"
-  },
   "schoolRoutePlanning": {
     "type": "tool"
   },
@@ -110,6 +107,10 @@
   },
   "AccessibilityAnalysis": {
     "path": "cosi/AccessibilityAnalysis",
+    "type": "tool"
+  },
+  "QueryDistricts": {
+    "path": "cosi/QueryDistricts",
     "type": "tool"
   },
   "ResidentialSimulation": {
