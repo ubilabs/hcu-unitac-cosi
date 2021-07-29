@@ -202,7 +202,27 @@ export default {
                 position: "top",
                 align: "start",
                 labels: {
-                    usePointStyle: true
+                    usePointStyle: true,
+                    generateLabels: chart => {
+                        const data = chart.data,
+                            legends = Array.isArray(data.datasets) ? data.datasets.map((dataset, i) => {
+                                return {
+                                    text: dataset.label,
+                                    fillStyle: !Array.isArray(dataset.pointBackgroundColor) ? dataset.pointBackgroundColor : this.chartColorCircle,
+                                    hidden: !chart.isDatasetVisible(i),
+                                    lineCap: dataset.borderCapStyle,
+                                    lineDash: dataset.borderDash,
+                                    lineDashOffset: dataset.borderDashOffset,
+                                    lineJoin: dataset.borderJoinStyle,
+                                    lineWidth: dataset.borderWidth,
+                                    strokeStyle: dataset.borderColor,
+                                    pointStyle: dataset.pointStyle,
+                                    datasetIndex: i
+                                };
+                            }, this) : [];
+
+                        return legends;
+                    }
                 },
                 onClick: (e) => e.stopPropagation()
             };
@@ -216,6 +236,14 @@ export default {
             return {
                 bodyFontColor: this.toolTipBodyFontColor,
                 backgroundColor: this.toolTipBackgroundColor,
+                yAlign: "bottom",
+                custom: (tooltip) => {
+                    if (!tooltip) {
+                        return;
+                    }
+                    // disable displaying the color box;
+                    tooltip.displayColors = false;
+                },
                 callbacks: {
                     label: (tooltipItem) => thousandsSeparator(tooltipItem.value),
                     title: () => false
@@ -328,7 +356,8 @@ export default {
         padding: 8px;
     }
     #verkehrsstaerken-chart-container {
-        width: 57vh;
+        width: 100%;
+        height: 100%;
     }
 }
 </style>

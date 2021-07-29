@@ -78,7 +78,7 @@ export default {
                     parsedYears.push(year);
                 }
             });
-            this.years = [...new Set(parsedYears)];
+            this.years = [...new Set(parsedYears)].length > 10 ? [...new Set(parsedYears)].slice(Math.max([...new Set(parsedYears)].length - 10, 1)) : [...new Set(parsedYears)];
             this.rowNames = [...new Set(newRowNames)];
             this.dataset = combineYearsData(dataPerYear, this.years);
         },
@@ -232,7 +232,6 @@ export default {
     }
     .tab-content {
         width: 100%;
-        height: 32vh;
         padding: 0px 5px 5px 5px;
     }
     .downloadButton{

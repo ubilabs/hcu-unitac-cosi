@@ -108,10 +108,7 @@ describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/Ve
         expect(wrapper.vm.createChartLegend("DTV")).to.deep.includes({
             display: true,
             position: "top",
-            align: "start",
-            labels: {
-                usePointStyle: true
-            }
+            align: "start"
         });
     });
 
