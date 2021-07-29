@@ -100,8 +100,7 @@ export default {
             selectedFeatures: "selectedFeatures",
             selectedAdminFeatures: "selectedAdminFeatures",
             selectedDistricts: "selectedDistricts",
-            selectedDistrictLevel: "selectedDistrictLevel",
-            statsLoadend: "loadend"
+            selectedDistrictLevel: "selectedDistrictLevel"
         }),
         ...mapGetters("Map", ["map"]),
         geomField () {
@@ -198,14 +197,6 @@ export default {
 
         residents () {
             this.extrapolateNeighborhoodStatistics();
-        },
-
-        statsLoadend (loadend) {
-            if (loadend) {
-                console.log(this.selectedFeatures);
-                console.log(this.selectedAdminFeatures);
-                console.log(this.selectedDistricts);
-            }
         }
     },
     created () {
