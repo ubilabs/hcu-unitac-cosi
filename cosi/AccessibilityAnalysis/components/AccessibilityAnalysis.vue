@@ -204,7 +204,7 @@ export default {
             :resizable-window="resizableWindow"
             :deactivate-gfi="deactivateGFI"
         >
-            <template v-slot:toolBody>
+            <template #toolBody>
                 <v-app>
                     <div
                         v-if="active"
@@ -311,7 +311,7 @@ export default {
                                     </div>
                                 </div>
                             </form>
-                            <hr />
+                            <hr>
                             <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
                             <div id="legend">
                                 <template v-for="(j, i) in steps">
