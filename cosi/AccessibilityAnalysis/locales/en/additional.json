@@ -25,6 +25,7 @@
                     "distance": "Distance",
                     "calculate": "Calculate",
                     "clear": "Clear current result",
+                    "help": "Help",
                     "legend": "Legend:",
                     "requestInhibitants": "Request inhibitants for the area",
                     "inputReminder": "Please fill out all input fields.",

@@ -1,0 +1,17 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "dashboard": {
+                    "title": "Dashboard",
+                    "avgCol": "Durchschnitt",
+                    "totalCol": "Gesamt",
+                    "groupCol": "Gruppe",
+                    "categoryCol": "Kategorie",
+                    "timestampCol": "Jahr",
+                    "search": "Tabelle durchsuchen"
+                }
+            }
+        }
+    }
+}

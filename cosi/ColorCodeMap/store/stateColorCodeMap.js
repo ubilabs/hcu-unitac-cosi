@@ -23,7 +23,12 @@ const state = {
     deactivateGFI: false,
     yearSelector: "jahr_",
     colorScheme: "interpolateBlues",
-    visualizationState: false
+    visualizationState: false,
+    showMapNames: false,
+    playState: false,
+    selectedFeature: "",
+    selectedYear: null,
+    chart: false
 };
 
 export default state;

@@ -17,7 +17,10 @@ export default function getIntersectionCoverage (feature1, feature2) {
         ),
         originalArea = feature1.getGeometry().getArea(),
         intersectionArea = intersection?.getGeometry().getArea() || 0,
-        coverage = intersectionArea / originalArea;
+
+        // coverage as the ratio between the intersection and the original area
+        // round to 3 decimal places
+        coverage = Math.round(((intersectionArea / originalArea) + Number.EPSILON) * 1000) / 1000;
 
     return coverage;
 }

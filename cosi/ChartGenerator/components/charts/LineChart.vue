@@ -58,6 +58,9 @@ export default {
                     datasets: this.dataSets.data.dataSets
                 }
             };
+        },
+        _options () {
+            return this.options;
         }
     },
     watch: {
@@ -83,9 +86,9 @@ export default {
                 dataset.backgroundColor = newColor;
             });
 
-            this.options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
-            this.options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
-            this.options.title.text = beautifyKey(this.chartData.name);
+            this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
+            this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
+            this._options.title.text = beautifyKey(this.chartData.name);
 
             this.renderChart(this.chartData.graph, this.options);
         }
