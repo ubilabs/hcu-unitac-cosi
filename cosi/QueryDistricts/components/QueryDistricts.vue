@@ -11,6 +11,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
+import {getAllFeatures} from "../utils/getAllFeatures.js";
 
 
 export default {
@@ -30,7 +31,8 @@ export default {
             selectorField: "verwaltungseinheit",
             resultNames: null,
             refDistrict: null,
-            dashboard: null
+            dashboard: null,
+            featureList: {}
         };
     },
     computed: {
@@ -42,9 +44,6 @@ export default {
             "keyOfAttrNameStats",
             "selectedDistrictLevel",
             "mapping"
-        ]),
-        ...mapGetters("Tools/DistrictLoader", [
-            "getAllFeaturesByAttribute"
         ])
     },
     watch: {
@@ -154,9 +153,7 @@ export default {
 
         createLayerFilterModel: async function (layer) {
             const selector = this.keyOfAttrNameStats,
-                features = await this.getAllFeaturesByAttribute({
-                    id: layer.id
-                }),
+                features = await getAllFeatures(this.featureList, layer.id),
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
                 values = features.map(feature => parseFloat(feature.getProperties()[field])).filter(value => !Number.isNaN(value)),

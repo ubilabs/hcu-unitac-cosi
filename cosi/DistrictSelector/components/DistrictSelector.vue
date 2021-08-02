@@ -307,7 +307,6 @@ export default {
          */
         transferFeatures (featureCollection) {
             if (featureCollection.get("fromExternal")) {
-                console.info("fromExternal");
                 this.select.getFeatures().clear();
                 featureCollection.forEach(feature => {
                     this.select.getFeatures().push(feature);

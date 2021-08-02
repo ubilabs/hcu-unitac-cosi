@@ -4,14 +4,12 @@ export default {
      * @param {Array} layerFilterList value
      * @returns {Array} comparable features results
      */
-    setComparableFeatures: async function (layerFilterList) {
+    setComparableFeatures: function (layerFilterList) {
 
         const allFeatures = [];
 
         for (const layerFilter of layerFilterList) {
-            const features = await this.getAllFeaturesByAttribute({
-                id: layerFilter.layerId
-            }).filter(feature => feature.getProperties()[layerFilter.field] >= layerFilter.value - layerFilter.low
+            const features = this.featureList[layerFilter.layerId].filter(feature => feature.getProperties()[layerFilter.field] >= layerFilter.value - layerFilter.low
                 && feature.getProperties()[layerFilter.field] <= layerFilter.value + layerFilter.high
                 && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
                 && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
