@@ -2,8 +2,8 @@ import {tools, general} from "./tools";
 import {addPolyfills} from "./polyfills";
 
 // import ColorCodeMapView from "./colorCodeMap/view";
-import DashboardView from "./dashboard/view";
-import DashboardTableView from "./dashboardTable/view";
+// import DashboardView from "./dashboard/view";
+// import DashboardTableView from "./dashboardTable/view";
 import ContextMenuView from "./contextMenu/view";
 // import SelectDistrictView from "./selectDistrict/view";
 /**
@@ -26,7 +26,6 @@ import RefocusView from "./controls/refocus/view";
 // import FilterView from "./filter/view";
 import store from "../../../src/app-store";
 
-import "../cosi.style.less";
 
 /**
  * Handles the loading of CoSI custom modules and methodes, incl. some global functions and polyfills
@@ -35,7 +34,7 @@ import "../cosi.style.less";
  */
 function initializeCosi () {
     const infoScreenOpen = JSON.parse(window.localStorage.getItem("infoScreenOpen"));
-    let dashboard = {};
+    // let dashboard = {};
 
     addPolyfills();
 
@@ -45,9 +44,9 @@ function initializeCosi () {
         // ..
     }
 
-    dashboard = new DashboardView({model: general.dashboard});
+    // dashboard = new DashboardView({model: general.dashboard});
 
-    new DashboardTableView({model: general.dashboardTable});
+    // new DashboardTableView({model: general.dashboardTable});
     new ContextMenuView();
     new GraphModel();
     new TimeSliderView();

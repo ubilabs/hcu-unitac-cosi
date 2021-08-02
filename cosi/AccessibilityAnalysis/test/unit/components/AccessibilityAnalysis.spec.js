@@ -20,6 +20,7 @@ import GeoJSON from "ol/format/GeoJSON";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import * as turf from "@turf/turf";
 
 Vue.use(Vuetify);
 
@@ -32,6 +33,22 @@ config.mocks.$t = key => key;
 before(() => {
     registerProjections();
 });
+
+/**
+* @param {object} actualFeatures actual features
+* @param {object} expFeatures expected features
+* @returns {void}
+*/
+function expectFeaturesEqual (actualFeatures, expFeatures) {
+    expect(actualFeatures.length, expFeatures.length);
+
+    for (let i = 0; i < actualFeatures.length; i++) {
+        const f1 = turf.polygon(actualFeatures[i].getGeometry().getCoordinates()),
+            f2 = turf.polygon(expFeatures[i].getGeometry().getCoordinates());
+
+        expect(turf.booleanEqual(f1, f2)).to.be.true;
+    }
+}
 
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
@@ -242,7 +259,7 @@ describe("AccessibilityAnalysis.vue", () => {
         expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
             JSON.stringify(features));
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
 
         await wrapper.find("#clear").trigger("click");
         sinon.assert.callCount(sourceStub.clear, 2);
@@ -268,10 +285,12 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
-        expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
-            JSON.stringify(featuresRegion));
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+        expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
+            new GeoJSON().readFeatures(featuresRegion));
+
+
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
         // check no update on equal coordinates

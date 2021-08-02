@@ -107,7 +107,8 @@ describe("addons/cosi/QueryDistricts/", () => {
                                     stats: {
                                         baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
                                     }
-                                })
+                                }),
+                                mapping: mappingStub
                             },
                             mutations: {
                                 setSelectedDistrictsCollection: sandbox.stub()
@@ -116,7 +117,6 @@ describe("addons/cosi/QueryDistricts/", () => {
                         DistrictLoader: {
                             namespaced: true,
                             getters: {
-                                mapping: mappingStub,
                                 getAllFeaturesByAttribute: ()=>getAllFeaturesByAttribute
                             }
                         },

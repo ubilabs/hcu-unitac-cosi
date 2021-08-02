@@ -150,10 +150,11 @@
       ]
     },
     "properties": {
-      "group_index": 0,
-      "value": 600,
-      "center": [9.98924303775824, 53.54993984587356],
-      "featureType": "Erreichbarkeit im Gebiet"
+      "featureType": "Erreichbarkeit im Gebiet",
+      "mode": "Auto",
+      "topic": "familyName",
+      "range_type": "time",
+      "value": 600
     }
   }, {
     "type": "Feature",
@@ -233,10 +234,11 @@
       ]
     },
     "properties": {
-      "group_index": 0,
-      "value": 402,
-      "center": [9.98924303775824, 53.54993984587356],
-      "featureType": "Erreichbarkeit im Gebiet"
+      "featureType": "Erreichbarkeit im Gebiet",
+      "mode": "Auto",
+      "topic": "familyName",
+      "range_type": "time",
+      "value": 402
     }
   }, {
     "type": "Feature",
@@ -281,10 +283,11 @@
       ]
     },
     "properties": {
-      "group_index": 0,
-      "value": 198,
-      "center": [9.98924303775824, 53.54993984587356],
-      "featureType": "Erreichbarkeit im Gebiet"
+      "featureType": "Erreichbarkeit im Gebiet",
+      "mode": "Auto",
+      "topic": "familyName",
+      "range_type": "time",
+      "value": 198
     }
   }]
 }

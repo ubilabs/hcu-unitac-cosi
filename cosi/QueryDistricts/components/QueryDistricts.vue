@@ -9,7 +9,6 @@ import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
-import Collection from "ol/Collection";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 import * as Extent from "ol/extent";
@@ -44,10 +43,10 @@ export default {
             "selectedFeatures",
             "layer",
             "keyOfAttrNameStats",
-            "selectedDistrictLevel"
+            "selectedDistrictLevel",
+            "mapping"
         ]),
         ...mapGetters("Tools/DistrictLoader", [
-            "mapping",
             "getAllFeaturesByAttribute"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
@@ -85,6 +84,7 @@ export default {
     methods: {
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
+        ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Map", ["zoomTo", "createLayer"]),
         ...compareFeatures,
@@ -322,20 +322,15 @@ export default {
         },
 
         changeDistrictSelection: function () {
-            const selector = this.keyOfAttrNameStats,
-                features = this.layer.getSource().getFeatures(),
-                selectedFeatures = features.filter(feature => this.resultNames.includes(feature.getProperties()[selector])),
-                featureCollection = new Collection(selectedFeatures);
+            const refDistrictName = this.refDistrict?.get(this.keyOfAttrName);
 
-            featureCollection.set("fromExternal", true);
-
-            if (this.refDistrict) {
-                selectedFeatures.push(this.refDistrict);
-            }
-
-            this.setSelectedDistrictsCollection(featureCollection);
+            this.setDistrictsByName(refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames);
         },
 
+        /**
+         * @deprecated
+         * @returns {void}
+         */
         showInDashboard: function () {
             const Ctor = Vue.extend(DashboardResult),
                 root = document.createElement("div"),
@@ -483,7 +478,7 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
-        :deactivate-g-f-i="deactivateGFI"
+        :deactivate-gfi="deactivateGFI"
     >
         <template #toolBody>
             <v-app>

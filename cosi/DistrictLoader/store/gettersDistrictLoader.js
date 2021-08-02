@@ -22,7 +22,7 @@ const getters = {
         const valueOfLayer = attributes[Object.keys(attributes)[0]],
             layer = getLayerWhere(attributes);
 
-        if (featureList.hasOwnProperty(valueOfLayer)) {
+        if (Object.prototype.hasOwnProperty.call(featureList, valueOfLayer)) {
             return featureList[valueOfLayer];
         }
         return getFeature(layer?.url, layer?.featureType)
@@ -145,7 +145,7 @@ const getters = {
      * @returns {module:ol/Feature[]} The stats features.
      */
     currentStatsFeatures: (state, {selectedDistrictLevel}) => {
-        return selectedDistrictLevel?.features;
+        return selectedDistrictLevel.features;
     },
 
     /**

@@ -7,6 +7,8 @@ import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import Info from "text-loader!./info.html";
 import getColorScale from "../../../utils/colorScale.js";
+import mapping from "../../assets/mapping.json";
+import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 
 export default {
     name: "ColorCodeMap",
@@ -16,13 +18,13 @@ export default {
     data () {
         return {
             // Selected Feature
-            selectedFeature: "",
+            // selectedFeature: "",
             // List of available features for selected Districts
             featuresList: [],
             // Array of all available years
             availableYears: [],
             // Selected Year
-            selectedYear: null,
+            // selectedYear: null,
             // Results for generating the CCM legend including colorscale values
             legendResults: [],
             // Values displayed in CCM legend
@@ -39,28 +41,41 @@ export default {
             loVal: null,
             // Triggers classes for minimized view
             minimize: false,
-            // State of animation playing
-            playState: false,
+            // // State of animation playing
+            // playState: false,
             // Playback speed of the animation
             playSpeed: 1,
-            // State of names of districts visible on map
-            showMapNames: false,
+            // // State of names of districts visible on map
+            // showMapNames: false,
             // Helper Variable to force Legend Markers to rerender
             updateLegendList: 1,
             // Helper to pass data to the graph generator
             graphData: [],
             // Helper to store type of feature dataSet
-            dataCategory: "",
-            // layer for map names
-            namesLayer: null
+            dataCategory: ""
         };
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats"]),
-        ...mapGetters("Tools/DistrictLoader", ["featureList", "selectedDistrictLevel", "mapping", "currentStatsFeatures"]),
-        ...mapGetters("Tools/DashboardManager", {dashboardOpen: "active"}),
-        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"])
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures"]),
+        ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
+        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
+        _selectedFeature: {
+            get () {
+                return this.selectedFeature;
+            },
+            set (v) {
+                this.setSelectedFeature(v);
+            }
+        },
+        _selectedYear: {
+            get () {
+                return this.selectedYear;
+            },
+            set (v) {
+                this.setSelectedYear(v);
+            }
+        }
     },
     watch: {
         selectedFeatures () {
@@ -77,21 +92,15 @@ export default {
                 this.renderVisualization();
             }
         },
-        selectedDistrictLevel: {
-            deep: true,
-            handler () {
-                if (this.selectedDistrictLevel.features?.length > 0) {
-                    this.updateSelectedDistricts();
-                }
+        loadend (newValue) {
+            if (newValue && this.selectedFeatures.length > 0) {
+                this.updateSelectedDistricts();
             }
         },
         playState (stateChange) {
             if (stateChange) {
                 this.animationOverYears(this.playSpeed);
             }
-        },
-        showMapNames () {
-            this.renderVisualization();
         },
         dataToColorCodeMap (newState) {
             if (newState) {
@@ -105,26 +114,35 @@ export default {
             if (this.dataToColorCodeMap) {
                 this.renderDataFromCalculateRatio();
             }
+        },
+        selectedFeature () {
+            this.renderVisualization();
+        },
+        showMapNames () {
+            this.renderVisualization();
+        },
+        selectedYear () {
+            this.renderVisualization();
+        },
+        lastYear () {
+            this.renderVisualization();
         }
     },
-    async mounted () {
+    mounted () {
         this.applyTranslationKey(this.name);
-        this.namesLayer = await this.createLayer("map-names");
-        this.namesLayer.setVisible(true);
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
         ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Map", ["createLayer"]),
         /**
          * @description Updates featuresList when selection of district changes and finds all available years for data.
          * @returns {void}
          */
         updateSelectedDistricts () {
             this.featuresList = [];
-            if (this.currentStatsFeatures.length) {
-                this.availableYears = utils.getAvailableYears(this.currentStatsFeatures, this.yearSelector);
+            if (this.selectedStatFeatures.length) {
+                this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
                 this.updateFeaturesList();
             }
         },
@@ -134,10 +152,10 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            this.selectedFeature = this.mapping[0].value;
-            this.selectedYear = this.availableYears[0];
+            this.setSelectedFeature(mapping[0].value);
+            this.setSelectedYear(this.availableYears[0]);
 
-            this.mapping.forEach(attr => {
+            mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats]) {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
 
@@ -172,7 +190,7 @@ export default {
 
                 setTimeout(() => {
                     window.requestAnimationFrame(() => {
-                        this.selectedYear = this.availableYears[current];
+                        this.setSelectedYear(this.availableYears[current]);
                         this.renderVisualization();
                         this.animationOverYears(tempo);
                     });
@@ -186,16 +204,14 @@ export default {
         renderVisualization () {
             this.graphData = [];
             if (this.visualizationState) {
-                const results = this.currentStatsFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
+                const results = this.selectedStatFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
                     colorScale = this.getColorsByValues(resultValues);
 
                 this.generateDynamicLegend(results, colorScale);
-                this.namesLayer.getSource().clear();
                 this.selectedFeatures.forEach(district => {
                     const getStyling = district.getStyle(),
                         matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
-
 
                     if (matchResults) {
                         if (this.originalStyling === null) {
@@ -239,25 +255,24 @@ export default {
                             styleArray.push(additionalText);
                         }
                         if (this.showMapNames) {
-                            const labelFeature = district.clone(),
-                                headText = new Style({
-                                    text: new Text({
-                                        font: "16px Calibri, sans-serif",
-                                        fill: new Fill({
-                                            color: [0, 0, 0]
-                                        }),
-                                        placement: "point",
-                                        backgroundFill: new Fill({
-                                            color: [255, 255, 255]
-                                        }),
-                                        padding: [5, 10, 5, 10],
-                                        text: matchResults.getProperties()[this.keyOfAttrNameStats],
-                                        offsetY: -35
-                                    })
-                                });
+                            const headText = new Style({
+                                zIndex: 100,
+                                text: new Text({
+                                    font: "16px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [0, 0, 0]
+                                    }),
+                                    placement: "point",
+                                    backgroundFill: new Fill({
+                                        color: [255, 255, 255]
+                                    }),
+                                    padding: [5, 10, 5, 10],
+                                    text: matchResults.getProperties()[this.keyOfAttrNameStats],
+                                    offsetY: -35
+                                })
+                            });
 
-                            labelFeature.setStyle([headText]);
-                            this.namesLayer.getSource().addFeature(labelFeature);
+                            styleArray.push(headText);
                         }
 
                         district.setStyle(styleArray);
@@ -296,7 +311,6 @@ export default {
                 const getStyling = district.getStyle(),
                     matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
-
                 if (matchResults) {
                     if (this.originalStyling === null) {
                         this.originalStyling = getStyling;
@@ -330,7 +344,7 @@ export default {
          * @returns {void}
          */
         generateDynamicLegend (results, colorScale) {
-            if (results.length > 1) {
+            if (results.length > 1 && !this.dashboardOpen) {
                 const legendDiv = document.getElementById("colorCodeMapLegend"),
                     legendMarks = document.querySelector("#legend_wrapper").children,
                     legendMarksArray = Array.from(legendMarks),
@@ -392,16 +406,16 @@ export default {
          * @returns {void}
          */
         changeSelector (value) {
-            const index = this.mapping.map(e => e.value).indexOf(this.selectedFeature) + value;
+            const index = mapping.map(e => e.value).indexOf(this.selectedFeature) + value;
 
             if (index === -1) {
-                this.selectedFeature = this.mapping[this.mapping.length - 1].value;
+                this.setSelectedFeature(mapping[mapping.length - 1].value);
             }
-            else if (index === this.mapping.length) {
-                this.selectedFeature = this.mapping[0].value;
+            else if (index === mapping.length) {
+                this.setSelectedFeature(mapping[0].value);
             }
             else {
-                this.selectedFeature = this.mapping[index].value;
+                this.setSelectedFeature(mapping[index].value);
             }
             this.renderVisualization();
         },
@@ -438,7 +452,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         loadToChartGenerator () {
-            const graphObj = {
+            const graphObj = new ChartDataSet({
                 id: "ccm",
                 name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart"],
@@ -449,7 +463,7 @@ export default {
                     labels: [],
                     dataSets: []
                 }
-            };
+            });
 
             this.availableYears.forEach(year => {
                 graphObj.data.labels.push(year);
@@ -470,7 +484,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="currentStatsFeatures.length"
+        v-if="loadend && !dashboardOpen"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
@@ -494,7 +508,6 @@ export default {
                         </template>
                     </button>
                     <button
-                        id="switch"
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         title="Visualisierung an/ aus"
@@ -525,8 +538,8 @@ export default {
                     </button>
 
                     <Multiselect
-                        v-if="currentStatsFeatures.length"
-                        v-model="selectedYear"
+                        v-if="selectedStatFeatures.length"
+                        v-model="_selectedYear"
                         class="year_selection selection"
                         :allow-empty="false"
                         :options="availableYears"
@@ -535,14 +548,13 @@ export default {
                         selectLabel=""
                         deselectLabel=""
                         placeholder=""
-                        @input="renderVisualization()"
                     >
                         <template>
                             <strong>{{ selectedYear }}</strong>
                         </template>
                     </Multiselect>
                     <Multiselect
-                        v-if="currentStatsFeatures.length"
+                        v-if="selectedStatFeatures.length"
                         v-model="lastYear"
                         class="year_selection selection"
                         :class="{disable: !selectedYear}"
@@ -553,7 +565,6 @@ export default {
                         selectLabel=""
                         deselectLabel="Entfernen"
                         placeholder=""
-                        @input="renderVisualization()"
                     >
                         <template>
                             <strong>{{ lastYear }}</strong>
@@ -562,7 +573,7 @@ export default {
                 </div>
                 <Multiselect
                     v-if="featuresList.length"
-                    v-model="selectedFeature"
+                    v-model="_selectedFeature"
                     class="feature_selection selection"
                     :allow-empty="false"
                     :options="featuresList"
@@ -575,7 +586,6 @@ export default {
                     selectLabel=""
                     deselectLabel=""
                     placeholder=""
-                    @input="renderVisualization()"
                 >
                     <template>
                         <strong>{{ selectedFeature }}</strong>
@@ -628,7 +638,7 @@ export default {
                         class="play_button"
                         :class="{highlight: playState}"
                         title="Visualisierung über die Jahre animieren"
-                        @click="playState = !playState"
+                        @click="setPlayState(!playState)"
                     >
                         <template v-if="!playState">
                             <span class="glyphicon glyphicon-play"></span>
@@ -652,7 +662,7 @@ export default {
                 <button
                     class="map_button"
                     title="Gebietsnamen ein-/ ausblenden"
-                    @click="showMapNames = !showMapNames"
+                    @click="setShowMapNames(!showMapNames)"
                 >
                     <span class="glyphicon glyphicon-map-marker"></span>
                 </button>

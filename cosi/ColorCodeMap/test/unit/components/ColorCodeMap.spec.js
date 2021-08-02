@@ -12,6 +12,10 @@ import
     expect
 } from "chai";
 import sinon from "sinon";
+import Vue from "vue";
+import Vuetify from "vuetify";
+
+Vue.use(Vuetify);
 
 const localVue = createLocalVue();
 
@@ -35,7 +39,7 @@ describe("ColorCodeMap.vue", () => {
     };
 
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, sourceStub, currentStatsFeaturesStub, selectedFeaturesStub, addFeatureStub;
+    let store, sandbox, sourceStub, selectedStatsFeaturesStub, selectedFeaturesStub, addFeatureStub, loadendStub, dashboardOpenStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -44,8 +48,10 @@ describe("ColorCodeMap.vue", () => {
             clear: sinon.stub(),
             addFeature: addFeatureStub
         };
-        currentStatsFeaturesStub = sandbox.stub();
+        selectedStatsFeaturesStub = sandbox.stub();
         selectedFeaturesStub = sinon.stub();
+        loadendStub = sinon.stub();
+        dashboardOpenStub = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -54,17 +60,13 @@ describe("ColorCodeMap.vue", () => {
                     namespaced: true,
                     modules: {
                         ColorCodeMap,
-                        DistrictLoader: {
-                            namespaced: true,
-                            getters: {
-                                currentStatsFeatures: currentStatsFeaturesStub
-                            }
-                        },
                         DistrictSelector: {
                             namespaced: true,
                             getters: {
+                                selectedStatFeatures: selectedStatsFeaturesStub,
                                 selectedFeatures: selectedFeaturesStub,
-                                keyOfAttrNameStats: () => "attrKey"
+                                keyOfAttrNameStats: () => "attrKey",
+                                loadend: loadendStub
                             }
                         }
                     }
@@ -78,6 +80,12 @@ describe("ColorCodeMap.vue", () => {
                                 getSource: () => sourceStub
                             });
                         }
+                    }
+                },
+                Dashboard: {
+                    namespaced: true,
+                    getters: {
+                        dashboardOpen: dashboardOpenStub
                     }
                 }
             },
@@ -103,7 +111,7 @@ describe("ColorCodeMap.vue", () => {
     }
 
     it("not renders Component", async () => {
-        currentStatsFeaturesStub.returns([]);
+        selectedStatsFeaturesStub.returns([]);
         const wrapper = await mount();
 
         expect(wrapper.find("#ccm").exists()).to.be.false;
@@ -111,7 +119,7 @@ describe("ColorCodeMap.vue", () => {
 
 
     it("showMapNames", async () => {
-        currentStatsFeaturesStub.returns([{
+        selectedStatsFeaturesStub.returns([{
             getProperties: () => ({kategorie: "feature"})
         }]);
         selectedFeaturesStub.returns([{
@@ -120,19 +128,24 @@ describe("ColorCodeMap.vue", () => {
             setStyle: () => sinon.stub(),
             clone: () => ({setStyle: sinon.stub()})
         }]);
+        loadendStub.returns(true);
+        dashboardOpenStub.returns(false);
+
         const wrapper = await mount();
 
-        await wrapper.setData({
-            selectedFeature: "feature",
-            selectedYear: "2021",
-            showMapNames: true
-        });
+        wrapper.vm.setSelectedFeature("feature");
+        wrapper.vm.setSelectedYear(2021);
+        wrapper.vm.setShowMapNames(true);
+        // await wrapper.setData({
+        //     selectedFeature: "feature",
+        //     selectedYear: "2021",
+        //     showMapNames: true
+        // });
 
         expect(wrapper.find("#ccm").exists()).to.be.true;
         expect(wrapper.find("#ccm").html()).to.not.be.empty;
 
         await wrapper.find("#switch").trigger("click");
         expect(addFeatureStub.callCount).to.equal(1);
-
     });
 });

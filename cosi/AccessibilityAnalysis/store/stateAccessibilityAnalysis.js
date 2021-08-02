@@ -30,10 +30,16 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    availableModes: {
-        point: "Erreichbarkeit ab einem Referenzpunkt",
-        region: "Erreichbarkeit im Gebiet"
-    }
+    availableModes: [
+        {
+            type: "point",
+            text: "Erreichbarkeit ab einem Referenzpunkt"
+        },
+        {
+            type: "region",
+            text: "Erreichbarkeit im Gebiet"
+        }
+    ]
 };
 
 export default state;
