@@ -1,3 +1,37 @@
+<h1 align="center">CoSI</h1>
+<h1 align="center">Cockpit Urban Infrastructures</h1>
+<h4 align="center">GIS + data based analysis & planning tools in the Hamburg city administration</h4>
+<br></br>
+
+## User manual
+
+<h7>2nd phase (further development)</h2>
+<h7>Version 2.0</h2>
+<h7>For internal use</h2>
+
+### Authors
+Daniel Schulz, HafenCity University Hamburg, Sebastian Duden, State Office for Geoinformation and Surveying Hamburg
+Ogeigha Koroyin, HafenCity University Hamburg
+Nicola Stradtmann, HafenCity University Hamburg
+Johanna Fleischer, Hafen City University
+Yuxiang Zhang, HafenCity University Hamburg
+
+### was standing
+06/17/2021
+
+### Keywords
+GIS, Dashboard, Data Driven Urban Planning, Social Infrastructure, Urban Data Platform, Data Visualization, Planning Support Tools, Demand Driven Decision Making
+
+### Together-version
+When planning urban and social infrastructure, decision-making processes in public administration are often characterized by lengthy procedures and a fragmented database. This means that requirements are recognized too late, or the specification of the planning is delayed due to the time-consuming process of obtaining information.
+<br></br>
+This manual describes the *Cockpit Urban Infrastructures* for Hamburg as a digital analysis and planning tool, which uses an easily accessible user interface to bundle, visualize and integrate statistical and geo-referenced data in order to identify planning needs and accelerate planning processes.
+<br></br>
+For this purpose, the *Urban Data Platform* of the City of Hamburg used the database structures built up by the City of Hamburg to establish a map-based web application, which provides the city's social space planners with a range of analysis functions in order to identify socio-demographic relationships at the administrative level of the statistical areas, to recognize trends and relationships between the existing ones To determine the infrastructure offer and the relevant target groups. In the following, the tool should help to find locations and potentials for the development of infrastructure. The results of these analyzes can be visualized directly from CoSI and used as a basis for decision-making and discussion. The workflow follows a three-stage logic from the visualization of data, through the analysis.
+<br></br>
+In order to set up the technical and content-related requirements of the initialization project, a series of stakeholder and user story workshops with the members of the Hamburg administration were held at various levels in advance. CoSI was then developed from August 2019 in an agile process, based on the SCRUM method, by an interdisciplinary team from HCU Hamburg and LGV Hamburg and was an internal pilot for the social space planners of the Hamburg Nord district from January 28, 2020 to May 2020 Management network available. After a successful evaluation, the process was transferred to productive operation in mid-2020 and has been available to several thousand employees since then available. The development project started on February 1st, 2021 with the aim of improving existing functions and integrating new functions. This includes in particular the "look ahead" through the development of a simulation function.
+
+
 # Contents
 - [Data model & infrastructure](#data-model--infrastructure)
   - [Regional statistical data](#regional-statistical-data)
@@ -118,7 +152,7 @@ CoSI offers various modules, some of which are taken from the Master Portal, the
 
 ## Overview
 
-![Illustration 1 The CoSI UI](https://user-images.githubusercontent.com/79461871/126049907-9316494b-3228-4d76-bcdc-ec51fe53b750.png)
+![Illustration 1 The CoSI UI](https://user-images.githubusercontent.com/79461871/127781976-c7617966-f82d-4389-99ae-2c3affaecba5.JPG)
 
 *Illustration 1: The CoSI UI*
 
@@ -149,7 +183,7 @@ Layers can be switched on or off at any time from the “Themes” tab. However,
 
 The topic tree is divided into background maps, a catalog of specialist data and the current selection of map levels.
 
-![Illustration 2 - The topic tree](https://user-images.githubusercontent.com/79461871/126049893-b4aec557-d456-49b1-85ba-39e824f7fbcf.png)
+![Illustration 2 - The topic tree](https://user-images.githubusercontent.com/79461871/127782065-9d6d1017-3096-4861-9f71-60ce9f046969.JPG)
 
 *Illustration 2: The topic tree*
 
@@ -172,7 +206,7 @@ It is possible to adjust the order and the transparency of the active layers: Un
 
 Various aids have been created in CoSI to make it easier to read.
 
-![Illustration 3 - Help with accessibility](https://user-images.githubusercontent.com/79461871/126124092-6ed33e7c-6c1f-47f9-9714-bce050c218c6.png)
+![Illustration 3 - Help with accessibility](https://user-images.githubusercontent.com/79461871/127782088-89e677aa-6351-45ce-abf8-fed9a79ad37a.JPG)
 
 *Illustration 3 - Help with accessibility*
 
@@ -182,13 +216,13 @@ Various aids have been created in CoSI to make it easier to read.
 4. **Tool tips** - Tool tips have been integrated into all new tools. The tips can be called up via the question marks that become visible when you move the mouse over the window.
 5. **Emphasis on clustered facilities** - Several facilities that are close together are displayed as a “cluster” with a single symbol and the number of facilities at the location (see below).
 
-![Illustration 4th - clustered entities](https://user-images.githubusercontent.com/79461871/126124516-34fcf642-aa4c-49b4-898a-f40a4d023b52.png)
+![Illustration 4th - clustered entities](https://user-images.githubusercontent.com/79461871/127782091-a00a9f3a-a35d-4a47-9f88-c909a874ac88.JPG)
 
 *Illustration 4th - clustered entities*
 
 ## Analysis
 
-![Illustration 5 - analysis](https://user-images.githubusercontent.com/79461871/126124635-b72c137e-3acd-4b8d-bd8f-927ca3aafb5f.png)
+![Illustration 5 - analysis](https://user-images.githubusercontent.com/79461871/127782097-fa359c67-d915-458d-a239-9f44ca22627c.JPG)
 
 *Illustration 5 - analysis*
 
@@ -224,7 +258,7 @@ Indicates an area that can be reached from a point on the map selected by the us
 
 The module can be used without first selecting and confirming a planning area. 
 
-![Illustration 6th - Accessibility from a reference point](https://user-images.githubusercontent.com/79461871/126127347-80b8548e-f908-4bf8-87f8-e3c5262d57ac.png)
+![Illustration 6th - Accessibility from a reference point](https://user-images.githubusercontent.com/79461871/127782103-395c5ab3-2ed9-40e0-b9de-cc2c607164ee.JPG)
 
 *Illustration 6th - Accessibility from a reference point*
 
@@ -242,7 +276,7 @@ The module can be used without first selecting and confirming a planning area.
 **2) Accessibility in the area**
 Shows the coverage and accessibility of a previously specified type of facility (e.g. kindergartens) in the specified catchment area (planning area). The catchment area is the distance from the respective facility and can be specified in time or in meters. Accessibility depends on the means of transport specified.
 
-![Illustration 7th - Accessibility in the area](https://user-images.githubusercontent.com/79461871/126128355-fe9be018-4ea4-4c44-b5a3-da99cbb77fcb.png)
+![Illustration 7th - Accessibility in the area](https://user-images.githubusercontent.com/79461871/127782106-b66ef81e-928a-4f1f-87c6-ba404c0d8a18.JPG)
 
 *Illustration 7th - Accessibility in the area*
 
@@ -256,7 +290,7 @@ Shows the coverage and accessibility of a previously specified type of facility 
 ### Filter
 The active, selected topics can be searched and filtered according to the categories of their data sets by clicking on the "Filter" tab. The map automatically zooms in on the filter results. Only results in the selected areas are included. The filter is available for all technical data sets that have meaningful filterable attributes (such as area, use, carrier, etc.).
 
-![Illustration 8th - filters](https://user-images.githubusercontent.com/79461871/126128906-77c77f07-ec73-4371-ad28-90e44433532c.png)
+![Illustration 8th - filters](https://user-images.githubusercontent.com/79461871/127782108-14cf240d-948c-48ec-a94d-cb921da9e510.JPG)
 
 *Illustration 8th - filters*
 
@@ -272,7 +306,7 @@ The active, selected topics can be searched and filtered according to the catego
 ### Supply analysis
 The "Supply Analysis" tool calculates the relationship between two data records. The data sets can either be regional statistical data or facility data from the menu "Topics / Technical data". In order for the supply analysis to be used, at least two data records must have been loaded.
 
-![Illustration 9 - Supply analysis, settings](https://user-images.githubusercontent.com/79461871/126129882-a458fd2d-fdfb-4cf7-8cf5-c07ce8ae3b5d.jpg)
+![Illustration 9 - Supply analysis, settings](https://user-images.githubusercontent.com/79461871/127782111-691aff4e-ece2-4c1c-a259-a5760bae1886.JPG)
 
 *Illustration 9 - Supply analysis, settings*
 
@@ -283,7 +317,7 @@ The individual functions of the tool are explained in detail below:
 4. For facility data sets, you can specify a factor (F) that determines how many units of the selected facility are required for the reference data set. For example, if you want to calculate the number of public schools against the number of the population under 18 and give a factor of 0.001, this would mean that one school is required for every 1000 members of the reference group. If a factor (F) is given, the columns "Capacity" and "Demand" are also given in the calculation table. 
 5. Some facility records have parameters other than just their number in the selected areas. In public schools, for example, you can query the data record "number of students" or in hospitals the number of stationary places. Not every setup record has additional parameters.
 
-![Illustration 10 - Care analysis, results](https://user-images.githubusercontent.com/79461871/126129990-a50b3506-0232-4aae-b8c0-6c290927be2c.png)
+![Illustration 10 - Care analysis, results](https://user-images.githubusercontent.com/79461871/127782114-ee7c35c1-ea8f-4e5a-a7e5-edab2f15c2b1.JPG)
 
 *Illustration 10 - Care analysis, results*
 
@@ -302,7 +336,7 @@ The individual functions of the tool are explained in detail below:
 ### Comparable areas
 The tool allows the determination of all areas (city districts or stat. Areas) in which the selected parameters predominate, or those which are similar to the selected reference area in these parameters.
 
-![Illustration 11 - Comparable areas](https://user-images.githubusercontent.com/79461871/126950034-4e7cd58c-6afd-48db-a0e6-067a1ffb1ab0.png)
+![Illustration 11 - Comparable areas](https://user-images.githubusercontent.com/79461871/127782118-05befeba-3d13-4c8b-b7d5-71ffdb6186d0.JPG)
 
 *Illustration 11 - Comparable areas*
 
@@ -311,7 +345,7 @@ The tool allows the determination of all areas (city districts or stat. Areas) i
 3. **Parameter settings** - The parameter settings show the current data set (year min. And max. Value of all Hamburg areas, the reference value (freely selectable or of the reference area), as well as the tolerance upwards and downwards. The tolerance interval is either in absolute numbers or in percent for proportional Values given.
 4. **Results** - The areas that apply are marked on the map.
 
-![Illustration 12th - Comparability, results](https://user-images.githubusercontent.com/79461871/126950365-6fb43513-fa56-4ae1-b89f-9b7eef22b441.png)
+![Illustration 12th - Comparability, results](https://user-images.githubusercontent.com/79461871/127782119-559aeaa9-db60-4b6b-ade6-e71944e5849b.JPG)
 
 *Illustration 12th - Comparability, results*
 
@@ -324,7 +358,7 @@ A first simulation function was developed. As soon as this has been transferred 
 
 ## Services
 
-<img width="131" alt="Illustration 13th - Services" src="https://user-images.githubusercontent.com/79461871/126950907-ac1eea38-af73-43ac-a785-5bee8216bab1.png">
+![Illustration 13th - Services](https://user-images.githubusercontent.com/79461871/127782123-8623f992-a44b-4e13-b1b9-8c38ee1f0be2.JPG)
 
 *Illustration 13th - Services*
 
@@ -340,7 +374,7 @@ You can open a second browser tab with the dashboard via the "Services" / "Open 
 ## Area selection
 When you start CoSI, a frame of reference is first established and a planning area is compiled and confirmed.
 
-![Illustration 14th - The Select Area tool](https://user-images.githubusercontent.com/79461871/126951633-8b6fc73f-08be-47fd-bac6-f2070e11e0fc.png)
+![Illustration 14th - The Select Area tool](https://user-images.githubusercontent.com/79461871/127782128-ff5de021-c244-40cd-bb04-6092034df218.JPG)
 
 *Illustration 14th - The "Select Area" tool*
 
@@ -370,7 +404,7 @@ In addition to the technical data layers, the basis of all CoSI analysis functio
 
 The tool for visualizing regional statistical data enables the selection of regional statistical data sets that are available for the selected districts. It can only be used if areas have already been selected using the area selection tool. The tool can visualize the selected data sets on the map and generates a dynamic legend. Furthermore, data sets for several years can be selected and, if desired, animated in consecutive order.
 
-![Illustration 15th - Window for map analysis of statistical data](https://user-images.githubusercontent.com/79461871/126953007-e3bdbc11-373f-41a1-aeaa-4f8eecf99258.png)
+![Illustration 15th - Window for map analysis of statistical data](https://user-images.githubusercontent.com/79461871/127782132-cc308d4a-a00a-4422-bcdd-0a75c6321f15.JPG)
 
 *Illustration 15th - Window for map analysis of statistical data*
 
@@ -390,7 +424,7 @@ The individual functions of the tool are explained in detail below:
 ## Dashboard
 The dashboard forms the "heart" of the analysis functions in CoSI. All evaluations of the map-based tools as well as the underlying data sets come together here. It always shows the city as a whole, the selected statistical areas and the associated reference areas (of the higher-level administrative unit) with all StaNord characteristic data in tabular form and houses a number of statistical analysis tools such as diagrams, correlations or ratio formation. In addition, the evaluation results of all other CoSI modules can be displayed in the dashboard and used here for further evaluations or displays.
 
-<img width="960" alt="Illustration 16 - Dashboard overview" src="https://user-images.githubusercontent.com/79461871/126953243-bd80cbc1-e921-42e6-8c3f-76a1a036cceb.png">
+![Illustration 16 - Dashboard overview](https://user-images.githubusercontent.com/79461871/127782139-9508d8ac-0202-46db-8f35-f7375845ea31.JPG)
 
 *Illustration 16 - Dashboard overview*
 
@@ -414,7 +448,7 @@ All widgets (with the exception of the overview table) can be deleted using the 
 
 *Note: With the exception of the overview table, currently open widgets are not automatically transferred when the InfoScreen is opened.*
 
-![Figure 15 - Widget + context menu (e g  diagram)](https://user-images.githubusercontent.com/79461871/126953871-eddb9dda-c393-4ec6-887b-0ed7fa983a72.png)
+![Figure 15 - Widget + context menu (e g  diagram)](https://user-images.githubusercontent.com/79461871/127782154-e1046e45-7c77-4d66-b84e-5f821890d9fc.JPG)
 
 *Figure 15 - Widget + context menu (e.g. diagram)*
 
@@ -454,7 +488,7 @@ In the context menu you can 1) create diagrams from table columns or 2) offset t
 
 Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
 
-<img width="233" alt="Illustration 17th - Context functions summary table" src="https://user-images.githubusercontent.com/79461871/126954670-8adc61f2-d2bf-4082-ad9c-0b1835003541.png">
+![Illustration 17th - Context functions summary table](https://user-images.githubusercontent.com/79461871/127782168-6df58d11-5f69-4b07-b9fd-0b0671fa3ef5.JPG)
 
 *Illustration 17th - Context functions summary table*
 
@@ -477,7 +511,7 @@ In principle, the following diagram types can be displayed in the current versio
 3. **Time beam** - Animated bar charts for all years, color coding in the map (see timeline).
 4. **Correlation Charts (Scatter Charts)** - Visualization of any data set (Y-axis, ordinate) on top of another (X-axis, abscissa) (see calculate correlation).
 
-![Illustration 18th - Select data for charts](https://user-images.githubusercontent.com/79461871/126955479-1682ab31-142f-45cf-b2bd-7d6d1fddf698.png)
+![Illustration 18th - Select data for charts](https://user-images.githubusercontent.com/79461871/127782171-d2627104-9c30-4549-9a57-0c584dd7469a.JPG)
 
 *Illustration 18th - Select data for charts*
 
@@ -489,6 +523,8 @@ In principle, the following diagram types can be displayed in the current versio
 
 *Note: The order of the columns determines the order in the (bar) diagrams. Records from hidden columns are not displayed.*
 
+![Illustration 19th - Chart types](https://user-images.githubusercontent.com/79461871/127782198-55074d19-3099-4097-a097-f0784d61e10d.JPG)
+
 *Illustration 19th - Chart types*
 
 1. **Simple bar graph** - Linear color scale from white (low value) to blue (high value), adapts to the selected columns. Selected year in the title.
@@ -499,6 +535,8 @@ In principle, the following diagram types can be displayed in the current versio
 6. **Download diagram** -Each diagram can be downloaded as a raster or vector graphic using the context menu. 
 
 ### Time beam
+
+![Illustration 20th - Time beam](https://user-images.githubusercontent.com/79461871/127782204-49798778-530a-4497-89ab-a14edd132aa1.JPG)
 
 *Illustration 20th - Time beam*
 
@@ -513,6 +551,8 @@ In principle, the following diagram types can be displayed in the current versio
 ### Calculate ratios
 Any two columns for calculation or correlation can be selected via the context menu.
 
+![Illustration 21 - Write your own calculations in the table](https://user-images.githubusercontent.com/79461871/127782211-804a96c0-175d-40b2-9e5d-159e9dd6a5f3.JPG)
+
 *Illustration 21 - Write your own calculations in the table*
 
 1. **Select counter / Y-axis** - The data set, which is plotted as the Y value for ratios above the fraction line, for correlation diagrams. A new selection overwrites the previous value.
@@ -526,6 +566,8 @@ Any two columns for calculation or correlation can be selected via the context m
 *Note: At present, your own calculations cannot be displayed on the map like the original StaNord data.*
 
 ### Correlation diagram
+
+![Illustration 22nd - Correlation diagram](https://user-images.githubusercontent.com/79461871/127782214-2517e4dd-63de-472c-8fea-4b3372bd69f9.JPG)
 
 *Illustration 22nd - Correlation diagram*
 
