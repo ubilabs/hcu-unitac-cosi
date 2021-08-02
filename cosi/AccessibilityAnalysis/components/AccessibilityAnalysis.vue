@@ -286,7 +286,7 @@ export default {
                                             small
                                             tile
                                             color="grey lighten-1"
-                                            @click="createIsochrones()"
+                                            @click.native="createIsochrones()"
                                         >
                                             {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                         </v-btn>
@@ -353,7 +353,7 @@ export default {
                         color="black"
                         text
                         v-bind="attrs"
-                        @click="createIsochrones"
+                        @click.native="createIsochrones"
                     >
                         Ok
                     </v-btn>
