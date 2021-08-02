@@ -22,12 +22,10 @@ import PrintView from "../../../modules/tools/print/view";
 import GraphModel from "./graph_v2/model";
 // import ReachabilitySelectView from "./reachabilitySelect/view";
 import {storageListener, updateFromStorage, setupStorage} from "./storage";
-import CompareDistrictsView from "./compareDistricts/view";
 import RefocusView from "./controls/refocus/view";
 // import FilterView from "./filter/view";
 import store from "../../../src/app-store";
 
-import "../cosi.style.less";
 
 /**
  * Handles the loading of CoSI custom modules and methodes, incl. some global functions and polyfills
@@ -75,7 +73,6 @@ function initializeCosi () {
         // new SaveSelectionCosiView({model: tools.saveSelectionCosi});
         // new SelectDistrictView({model: tools.selectDistrict});
         new PrintView({model: tools.print});
-        new CompareDistrictsView({model: tools.compareDistricts});
         $(document).ready(function () {
             new RefocusView({el: addRowTR("refocus")});
         });

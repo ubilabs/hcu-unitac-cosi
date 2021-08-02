@@ -109,6 +109,10 @@
     "path": "cosi/AccessibilityAnalysis",
     "type": "tool"
   },
+  "QueryDistricts": {
+    "path": "cosi/QueryDistricts",
+    "type": "tool"
+  },
   "ResidentialSimulation": {
     "path": "cosi/ResidentialSimulation",
     "type": "tool"

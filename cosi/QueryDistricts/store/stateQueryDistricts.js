@@ -22,24 +22,14 @@
  */
 const state = {
     active: false,
-    id: "AccessibilityAnalysis",
+    id: "QueryDistricts",
     // defaults for config.json parameters
-    name: "AccessibilityAnalysis (Vue)",
+    name: "QueryDistricts",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
-    deactivateGFI: true,
-    availableModes: [
-        {
-            type: "point",
-            text: "Erreichbarkeit ab einem Referenzpunkt"
-        },
-        {
-            type: "region",
-            text: "Erreichbarkeit im Gebiet"
-        }
-    ]
+    deactivateGFI: true
 };
 
 export default state;

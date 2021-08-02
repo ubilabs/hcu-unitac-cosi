@@ -290,7 +290,7 @@ describe("AccessibilityAnalysis.vue", () => {
             new GeoJSON().readFeatures(featuresRegion));
 
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.306.7010");
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
         // check no update on equal coordinates

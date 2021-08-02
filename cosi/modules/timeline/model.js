@@ -60,6 +60,7 @@ const Timeline = Tool.extend({
         return properties[selector];
     },
 
+    //TODO: remove
     getLatestFieldFromCollection (collection) {
         let latestField;
 
