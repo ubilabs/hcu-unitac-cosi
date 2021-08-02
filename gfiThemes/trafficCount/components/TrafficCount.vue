@@ -76,7 +76,7 @@ export default {
         typeAssoc: function () {
             return {
                 Anzahl_Kfz: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor"),
-                Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.countingstation")
+                Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor")
             };
         },
 
@@ -278,7 +278,12 @@ export default {
 
             // type
             if (meansOfTransport && Object.prototype.hasOwnProperty.call(this.typeAssoc, meansOfTransport)) {
-                this.type = this.typeAssoc[meansOfTransport];
+                if (this.isGurlittInsel(this.feature)) {
+                    this.type = this.$t("additional:modules.tools.gfi.themes.trafficCount.inductionLoop");
+                }
+                else {
+                    this.type = this.typeAssoc[meansOfTransport];
+                }
             }
             else {
                 this.type = "";
