@@ -503,14 +503,12 @@ describe("addons/cosi/QueryDistricts/", () => {
             },
             expModelRahlstedt = {
                 ...expModel,
-                "value": 35, high: 1000, low: 1000,
-                "quotientLayer": undefined
+                "value": 35, high: 1000, low: 1000
             },
             expModelHorn = {
                 ...expModel,
                 "value": NaN, high: 1000, low: 1000,
-                "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable",
-                "quotientLayer": undefined
+                "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable"
             };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);

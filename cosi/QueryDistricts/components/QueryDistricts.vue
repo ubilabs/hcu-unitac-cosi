@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-unused-components */
 import Vue from "vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/Tool.vue";
@@ -57,7 +56,15 @@ export default {
         },
 
         async selectedDistrict () {
-            await this.recreateLayerFilterModels();
+            const newModels = [];
+
+            for (const m of this.layerFilterModels) {
+                const newModel = {...m};
+
+                newModels.push(newModel);
+                this.setLayerFilterModelValue(newModel);
+            }
+            this.layerFilterModels = newModels;
         },
 
         facilityNames () {
@@ -286,32 +293,6 @@ export default {
             return {min: Number(Number(min).toFixed(2)), max: Number(Number(max).toFixed(2))};
         },
 
-        async recreateLayerFilterModels () {
-            const newModels = [];
-
-            for (const m of this.layerFilterModels) {
-                const newModel = await this.createLayerFilterModel({id: m.layerId, name: m.name,
-                        referenceLayerId: m.referenceLayerId,
-                        facilityLayerName: m.facilityLayerName
-                    }),
-                    {min, max} = this.getMinMaxForField(m.currentLayerId, m.field);
-
-
-                newModel.high = m.high;
-                newModel.low = m.low;
-                newModel.field = m.field;
-                newModel.referenceLayerId = m.referenceLayerId;
-                newModel.quotientLayer = m.quotientLayer;
-                newModel.currentLayerId = m.currentLayerId;
-                newModel.min = min;
-                newModel.max = max;
-                newModels.push(newModel);
-
-                this.setLayerFilterModelValue(newModel);
-            }
-            this.layerFilterModels = newModels;
-        },
-
         async computeResults () {
             if (this.layerFilterModels.length) {
                 const result = await this.setComparableFeatures(this.layerFilterModels);
@@ -384,17 +365,11 @@ export default {
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
-                    if (value.quotientLayer) {
-                        await this.computeQuotientLayer(value);
+                    if (value.field || value.quotientLayer === null || value.quotientLayer) {
 
-                        const currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
-
-                        filters[i] = {...filters[i], currentLayerId,
-                            ...this.getMinMaxForField(currentLayerId, filters[i].field)
-                        };
-                        this.setLayerFilterModelValue(filters[i]);
-                    }
-                    else if (value.field || value.quotientLayer === null) {
+                        if (value.quotientLayer) {
+                            await this.computeQuotientLayer(value);
+                        }
                         const currentLayerId = filters[i].quotientLayer ?
                             `${filters[i].layerId}/${filters[i].quotientLayer}` : filters[i].layerId;
 
