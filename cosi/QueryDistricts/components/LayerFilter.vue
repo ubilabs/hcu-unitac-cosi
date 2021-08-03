@@ -69,13 +69,25 @@ export default {
             this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue});
         },
         updateLow () {
-            this.$emit("update", {layerId: this.layerId, low: parseInt(this.$refs.inputLow.value, 10)});
+            const v = parseFloat(this.$refs.inputLow.value);
+
+            if (!isNaN(v)) {
+                this.$emit("update", {layerId: this.layerId, low: v});
+            }
         },
         updateHigh () {
-            this.$emit("update", {layerId: this.layerId, high: parseInt(this.$refs.inputHigh.value, 10)});
+            const v = parseFloat(this.$refs.inputHigh.value);
+
+            if (!isNaN(v)) {
+                this.$emit("update", {layerId: this.layerId, high: v});
+            }
         },
         updateValue () {
-            this.$emit("update", {layerId: this.layerId, value: parseInt(this.$refs.inputValue.value, 10)});
+            const v = parseFloat(this.$refs.inputValue.value);
+
+            if (!isNaN(v)) {
+                this.$emit("update", {layerId: this.layerId, value: v});
+            }
         },
         updateQLayer (newValue) {
             this.$emit("update", {layerId: this.layerId, quotientLayer: newValue});
@@ -205,22 +217,23 @@ export default {
                                 </td>
                             </tr>
                         </table>
-                        <v-select
-                            class="fit"
-                            :value="quotientLayer"
-                            :items="quotientLayers"
-                            item-text="name"
-                            item-value="id"
-                            outlined
-                            dense
-                            hide-details
-                            :clearable="true"
-                            @change="updateQLayer"
-                        />
                     </td>
                 </tr>
             </tbody>
         </table>
+        <v-select
+            class="quotient-layer-select"
+            :label="$t('additional:modules.tools.cosi.queryDistricts.selectQuotientLayer')"
+            :value="quotientLayer"
+            :items="quotientLayers"
+            item-text="name"
+            item-value="id"
+            outlined
+            dense
+            hide-details
+            :clearable="true"
+            @change="updateQLayer"
+        />
         <div class="error-msg">
             {{ error }}
         </div>
@@ -239,6 +252,9 @@ export default {
 }
 .v-select.fit  .v-select__selection--comma {
     text-overflow: unset;
+}
+.quotient-layer-select{
+    padding-left: 8px;
 }
 </style>
 

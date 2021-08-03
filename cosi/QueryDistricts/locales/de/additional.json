@@ -19,7 +19,8 @@
                     "tolerance": "Toleranz",
                     "funcData": "Fachdaten",
                     "count": "Anz.",
-                    "selectedDistrictNotAvailable": "Der Referenzwert ist für das Referenzgebiet nicht definiert"
+                    "selectedDistrictNotAvailable": "Der Referenzwert ist für das Referenzgebiet nicht definiert",
+                    "selectQuotientLayer": "Quotient"
                 }
             }
         }

@@ -173,11 +173,11 @@ export default {
             this.updateAvailableLayerOptions();
         },
 
-        getFieldValues: function (features, prefix) {
+        getFieldValues: function (properties, prefix) {
             const ret = [];
 
-            for (const feature of features) {
-                for (const prop in feature.getProperties()) {
+            for (const entry of properties) {
+                for (const prop in entry) {
                     if (prop.startsWith(prefix)) {
                         ret.push(prop);
                     }
@@ -207,34 +207,31 @@ export default {
         },
 
         loadFeatures: async function (layer) {
+            let fmap;
+            const features = await this.getAllFeaturesByAttribute({
+                id: layer.referenceLayerId || layer.id
+            });
+
             if (layer.referenceLayerId) {
-                const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName),
-                    features = await this.getAllFeaturesByAttribute({
-                        id: layer.referenceLayerId
-                    }),
-                    fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
+                const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName);
 
-                this.propertiesMap[layer.id] = features.map(feature => {
-                    const rfeature = feature.clone(),
-                        props = rfeature.getProperties(),
-                        count = fmap[feature.getId()];
+                fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
+            }
 
-                    for (const p in props) {
-                        if (p.startsWith("jahr_")) {
-                            rfeature.set(p, props[p] / count);
-                        }
+            this.propertiesMap[layer.id] = features.map(feature => {
+                const props = feature.getProperties(),
+                    count = fmap ? fmap[feature.getId()] : 1,
+                    ret = {...props};
+
+                for (const p in props) {
+                    if (p.startsWith("jahr_")) {
+                        ret[p] = props[p] / count;
                     }
-                    return rfeature;
-                });
-            }
-            else {
-
-                const features = await this.getAllFeaturesByAttribute({
-                    id: layer.id
-                });
-
-                this.propertiesMap[layer.id] = features;
-            }
+                }
+                ret.feature = feature;
+                ret.id = props[this.keyOfAttrNameStats];
+                return ret;
+            });
         },
 
         createLayerFilterModel: async function (layer) {
@@ -243,37 +240,50 @@ export default {
             const valueType = layer.referenceLayerId ? "absolute" : layer.valueType,
                 features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
-                field = fieldValues[0];
+                field = fieldValues[0],
+                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues,
+                    referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName,
+                    ...this.getMinMaxForField(layer.id, field),
+                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name}))
+                };
 
-            let value = 0,
-                error;
+            this.setLayerFilterModelValue(model);
+            return model;
+        },
+
+        setLayerFilterModelValue (model) {
+            const features = this.propertiesMap[model.currentLayerId];
 
             if (this.selectedDistrict) {
                 const selector = this.keyOfAttrNameStats,
-                    feature = features.find(f => f.getProperties()[selector] === this.selectedDistrict);
+                    feature = features.find(f => f[selector] === this.selectedDistrict);
 
                 if (feature) {
-                    value = parseInt(feature.getProperties()[field], 10);
-                    if (isNaN(value)) {
-                        error = this.$t("additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable");
+                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(2));
+
+                    if (!isFinite(value)) {
+                        model.error = this.$t("additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable");
+                        model.value = NaN;
+                    }
+                    else {
+                        model.value = value;
+                        model.error = undefined;
                     }
                 }
-
             }
-            return {layerId: layer.id, name: layer.name, field, value, valueType, high: 0, low: 0, fieldValues,
-                referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName, error,
-                ...this.getMinMaxForField(layer.id, field),
-                quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name}))
-            };
+            else {
+                model.value = 0;
+                model.error = undefined;
+            }
         },
 
         getMinMaxForField (layerId, field) {
             const features = this.propertiesMap[layerId],
-                values = features.map(f => parseFloat(f.getProperties()[field])).filter(v => !Number.isNaN(v)),
-                max = parseInt(Math.max(...values), 10),
-                min = parseInt(Math.min(...values), 10);
+                values = features.map(f => parseFloat(f[field])).filter(v => isFinite(v)),
+                max = parseFloat(Math.max(...values)),
+                min = parseFloat(Math.min(...values));
 
-            return {min, max};
+            return {min: Number(Number(min).toFixed(2)), max: Number(Number(max).toFixed(2))};
         },
 
         async recreateLayerFilterModels () {
@@ -281,15 +291,23 @@ export default {
 
             for (const m of this.layerFilterModels) {
                 const newModel = await this.createLayerFilterModel({id: m.layerId, name: m.name,
-                    referenceLayerId: m.referenceLayerId,
-                    facilityLayerName: m.facilityLayerName
-                });
+                        referenceLayerId: m.referenceLayerId,
+                        facilityLayerName: m.facilityLayerName
+                    }),
+                    {min, max} = this.getMinMaxForField(m.currentLayerId, m.field);
+
 
                 newModel.high = m.high;
                 newModel.low = m.low;
                 newModel.field = m.field;
+                newModel.referenceLayerId = m.referenceLayerId;
+                newModel.quotientLayer = m.quotientLayer;
+                newModel.currentLayerId = m.currentLayerId;
+                newModel.min = min;
+                newModel.max = max;
                 newModels.push(newModel);
 
+                this.setLayerFilterModelValue(newModel);
             }
             this.layerFilterModels = newModels;
         },
@@ -360,17 +378,29 @@ export default {
             }).$mount(cont);
         },
 
-        updateFilter (value) {
+        async updateFilter (value) {
             const filters = [...this.layerFilterModels];
 
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
-                    if (value.field) {
-                        filters[i] = {...filters[i], ...this.getMinMaxForField(value.layerId, value.field)};
-                    }
                     if (value.quotientLayer) {
-                        // filters[i] = {...filters[i], ...this.getMinMaxForField(value.layerId, value.field)};
+                        await this.computeQuotientLayer(value);
+
+                        const currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
+
+                        filters[i] = {...filters[i], currentLayerId,
+                            ...this.getMinMaxForField(currentLayerId, filters[i].field)
+                        };
+                        this.setLayerFilterModelValue(filters[i]);
+                    }
+                    else if (value.field || value.quotientLayer === null) {
+                        const currentLayerId = filters[i].quotientLayer ?
+                            `${filters[i].layerId}/${filters[i].quotientLayer}` : filters[i].layerId;
+
+                        filters[i] = {...filters[i], currentLayerId,
+                            ...this.getMinMaxForField(currentLayerId, filters[i].field)};
+                        this.setLayerFilterModelValue(filters[i]);
                     }
                     break;
                 }
@@ -378,9 +408,29 @@ export default {
             this.layerFilterModels = filters;
         },
 
-        applyQuotientLayer (value) {
+        async computeQuotientLayer (value) {
 
+            await this.loadFeatures({id: value.quotientLayer});
 
+            const lprops = this.propertiesMap[value.layerId],
+                qprops = this.propertiesMap[value.quotientLayer],
+                qid = `${value.layerId}/${value.quotientLayer}`;
+
+            if (!(qid in this.propertiesMap)) {
+                this.propertiesMap[qid] = lprops.map(entry => {
+
+                    const props = qprops.find(p=>p.id === entry.id),
+                        ret = {...props};
+
+                    for (const p in props) {
+                        if (p.startsWith("jahr_")) {
+                            ret[p] = entry[p] / props[p];
+                        }
+                    }
+                    ret.feature = entry.feature;
+                    return ret;
+                });
+            }
         },
 
         closeFilter (value) {
@@ -548,6 +598,7 @@ export default {
                             v-for="filter in layerFilterModels"
                         >
                             <LayerFilter
+                                id="layer-filter"
                                 :key="filter.layerId"
                                 v-bind="filter"
                                 class="layer-filter"

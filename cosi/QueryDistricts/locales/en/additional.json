@@ -19,7 +19,8 @@
                     "tolerance": "tolerance",
                     "funcData": "functional data",
                     "count": "ct.",
-                    "selectedDistrictNotAvailable": "Reference value invalid for selected district"
+                    "selectedDistrictNotAvailable": "Reference value invalid for selected district",
+                    "selectQuotientLayer": "quotient"
                 }
             }
         }
