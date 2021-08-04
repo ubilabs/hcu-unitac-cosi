@@ -455,7 +455,7 @@ export default {
             const graphObj = new ChartDataSet({
                 id: "ccm",
                 name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
-                type: ["LineChart", "BarChart"],
+                type: ["LineChart", "BarChart", "PieChart"],
                 color: "blue",
                 source: "Kartenvisualisierungswerkzeug",
                 scaleLabels: [this.selectedFeature, "Jahre"],
