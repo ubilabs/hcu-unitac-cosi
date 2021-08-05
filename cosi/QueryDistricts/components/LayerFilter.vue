@@ -42,6 +42,18 @@ export default {
         high: {
             type: Number,
             default: 0
+        },
+        error: {
+            type: String,
+            default: null
+        },
+        quotientLayers: {
+            type: Array,
+            default: null
+        },
+        quotientLayer: {
+            type: String,
+            default: null
         }
     },
     computed: {
@@ -54,17 +66,31 @@ export default {
     },
     methods: {
         updateFieldValue (newValue) {
-            // console.log(newValue)
             this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue});
         },
         updateLow () {
-            this.$emit("update", {layerId: this.layerId, low: parseInt(this.$refs.inputLow.value, 10)});
+            const v = parseFloat(this.$refs.inputLow.value);
+
+            if (!isNaN(v)) {
+                this.$emit("update", {layerId: this.layerId, low: v});
+            }
         },
         updateHigh () {
-            this.$emit("update", {layerId: this.layerId, high: parseInt(this.$refs.inputHigh.value, 10)});
+            const v = parseFloat(this.$refs.inputHigh.value);
+
+            if (!isNaN(v)) {
+                this.$emit("update", {layerId: this.layerId, high: v});
+            }
         },
         updateValue () {
-            this.$emit("update", {layerId: this.layerId, value: parseInt(this.$refs.inputValue.value, 10)});
+            const v = parseFloat(this.$refs.inputValue.value);
+
+            if (!isNaN(v)) {
+                this.$emit("update", {layerId: this.layerId, value: v});
+            }
+        },
+        updateQLayer (newValue) {
+            this.$emit("update", {layerId: this.layerId, quotientLayer: newValue});
         },
         close () {
             this.$emit("close", {layerId: this.layerId});
@@ -114,6 +140,12 @@ export default {
                         {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValue') }}
                     </th>
                     <th
+                        id="reference"
+                        scope="col"
+                    >
+                        {{ $t('additional:modules.tools.cosi.queryDistricts.referenceValueType') }}
+                    </th>
+                    <th
                         id="tolerance"
                         scope="col"
                     >
@@ -126,10 +158,12 @@ export default {
                     <td>
                         <v-select
                             ref="inputFieldValue"
+                            class="fit"
                             :value="fieldValue"
                             :items="values"
                             outlined
                             dense
+                            hide-details
                             @change="updateFieldValue"
                         />
                     </td>
@@ -138,11 +172,17 @@ export default {
                     <td>
                         <input
                             ref="inputValue"
+                            class="number-input"
                             type="number"
                             :value="value"
                             @input="updateValue()"
                         >
-                        {{ valueType }}
+                    </td>
+                    <td>
+                        {{ valueType === 'absolute'?
+                            $t('additional:modules.tools.cosi.queryDistricts.valueTypeAbsolute') :
+                            $t('additional:modules.tools.cosi.queryDistricts.valueTypeRelative')
+                        }}
                     </td>
                     <td>
                         <table>
@@ -153,6 +193,7 @@ export default {
                                 <td>
                                     <input
                                         ref="inputLow"
+                                        class="number-input"
                                         type="number"
                                         :value="low"
                                         min="0"
@@ -167,6 +208,7 @@ export default {
                                 <td>
                                     <input
                                         ref="inputHigh"
+                                        class="number-input"
                                         type="number"
                                         :value="high"
                                         min="0"
@@ -179,10 +221,41 @@ export default {
                 </tr>
             </tbody>
         </table>
+        <v-select
+            class="quotient-layer-select"
+            :label="$t('additional:modules.tools.cosi.queryDistricts.selectQuotientLayer')"
+            :value="quotientLayer"
+            :items="quotientLayers"
+            item-text="name"
+            item-value="id"
+            outlined
+            dense
+            hide-details
+            :clearable="true"
+            @change="updateQLayer"
+        />
+        <div class="error-msg">
+            {{ error }}
+        </div>
     </div>
 </template>
 
 <style lang="less" scoped>
+.error-msg{
+    color: #a94442
+}
+.number-input{
+    max-width: 100px;
+}
+.v-select.fit {
+  width: min-content;
+}
+.v-select.fit  .v-select__selection--comma {
+    text-overflow: unset;
+}
+.quotient-layer-select{
+    padding-left: 8px;
+}
 </style>
 
 

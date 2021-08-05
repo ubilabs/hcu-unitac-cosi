@@ -10,10 +10,17 @@
                     "resultAsSelection": "set result as selection",
                     "comparableResults": "comparable results",
                     "referenceDistrict": "reference district",
+                    "valueTypeAbsolute": "absolute",
+                    "valueTypeRelative": "relative",
                     "add": "add",
                     "year": "jear",
                     "referenceValue": "reference value",
-                    "tolerance": "tolerance"
+                    "referenceValueType": "type",
+                    "tolerance": "tolerance",
+                    "funcData": "functional data",
+                    "count": "ct.",
+                    "selectedDistrictNotAvailable": "Reference value invalid for selected district",
+                    "selectQuotientLayer": "quotient"
                 }
             }
         }
