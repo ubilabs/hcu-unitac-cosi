@@ -60,6 +60,7 @@ export default {
          * @returns {void}
          */
         onChangeProps () {
+            console.log("I think I got called?!!");
             this.$emit("filterProps", {[this.item.layerId]: this.selectedProps});
         },
         /**

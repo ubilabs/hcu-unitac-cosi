@@ -172,6 +172,7 @@ export default {
                     value = parseInt(refFeature.getProperties()[field], 10);
                 }
             }
+
             return {layerId: layer.id, name: layer.name, field, value, valueType: layer.valueType, max, min, high: 0, low: 0, fieldValues};
         },
 

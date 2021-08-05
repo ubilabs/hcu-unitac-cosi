@@ -46,7 +46,7 @@ export default {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
-        ...mapGetters("Map", ["layerById", "visibleLayerList"]),
+        ...mapGetters("Map", ["layerById"]),
         ...mapState(["configJson"]),
         columns () {
             return [
@@ -100,11 +100,6 @@ export default {
                 }
             ];
         },
-        // districtFeatures () {
-        //     return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
-        //         ? this.selectedDistrictFeatures
-        //         : this.districtLayer.getSource().getFeatures();
-        // },
         selected: {
             get () {
                 return this.selectedFeatureItems;
@@ -185,7 +180,8 @@ export default {
     },
     mounted () {
         // initally set the facilities mapping based on the config.json
-        this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
+        this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
+        this.updateFeaturesList();
 
         /**
          * @description Listen to newly loaded VectorLayer Features to update the FeaturesList
@@ -201,6 +197,8 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Map", ["removeHighlightFeature"]),
+
+        getVectorlayerMapping,
 
         /**
          * Reads the active vector layers, constructs the list of table items and writes them to the store.
@@ -262,6 +260,7 @@ export default {
         },
 
         updateFilterProps (newFilterProps) {
+            console.log("I should have been called!!");
             this.filterProps = {
                 ...this.filterProps,
                 ...newFilterProps
