@@ -478,6 +478,7 @@ export default {
             :api="api"
             :thing-id="propThingId"
             :means-of-transport="propMeansOfTransport"
+            :holidays="holidays"
             @resetTab="resetTab"
         />
     </div>

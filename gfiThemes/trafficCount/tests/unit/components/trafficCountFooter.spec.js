@@ -47,7 +47,19 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                 currentTabId: "infos",
                 api: dummyApi,
                 thingId: 5508,
-                meansOfTransport: "Anzahl_Fahrraeder"
+                meansOfTransport: "Anzahl_Fahrraeder",
+                holidays: [
+                    "newYearsDay",
+                    "goodFriday",
+                    "easterMonday",
+                    "laborDay",
+                    "ascensionDay",
+                    "pentecostMonday",
+                    "germanUnityDay",
+                    "reformationDay",
+                    "christmasDay",
+                    "secondDayOfChristmas"
+                ]
             },
             localVue
         });
@@ -68,22 +80,37 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                     "2020-06-23 00:30:01": 0.13,
                     "2020-06-23 00:45:01": 0.15
                 },
-                dataDay = wrapper.vm.prepareDataForDownload(obj, "day"),
-                dataWeek = wrapper.vm.prepareDataForDownload(obj, "week"),
-                dataYear = wrapper.vm.prepareDataForDownload(obj, "year");
+                dataDay = wrapper.vm.prepareDataForDownload(obj, "day", wrapper.vm.holidays),
+                dataWeek = wrapper.vm.prepareDataForDownload(obj, "week", wrapper.vm.holidays),
+                dataYear = wrapper.vm.prepareDataForDownload(obj, "year", wrapper.vm.holidays);
 
-            expect(dataDay[0]).to.have.all.keys("Datum", "Uhrzeit von", "Anzahl");
+            expect(dataDay[0]).to.have.all.keys("Datum", "Uhrzeit von", "Anzahl", "Feiertag");
             expect(dataDay[0].Datum).to.equal("2020-06-23");
             expect(dataDay[1]["Uhrzeit von"]).to.equal("00:15");
+            expect(dataDay[1].Feiertag).to.equal("");
             expect(dataDay[2].Anzahl).to.equal(0.13);
 
-            expect(dataWeek[0]).to.have.all.keys("Datum", "Anzahl");
+            expect(dataWeek[0]).to.have.all.keys("Datum", "Anzahl", "Feiertag");
             expect(dataWeek[0].Datum).to.equal("2020-06-23");
             expect(dataWeek[2].Anzahl).to.equal(0.13);
 
-            expect(dataYear[0]).to.have.all.keys("Kalenderwoche ab", "Anzahl");
+            expect(dataYear[0]).to.have.all.keys("Kalenderwoche ab", "Anzahl", "Feiertag");
             expect(dataYear[0]["Kalenderwoche ab"]).to.equal("2020-06-23");
             expect(dataYear[2].Anzahl).to.equal(0.13);
+        });
+    });
+
+    describe("checkHolidayInWeek", function () {
+        it("should return false if there no holidays in that week", function () {
+            const date = "2020-05-11";
+
+            expect(wrapper.vm.checkHolidayInWeek(date, wrapper.vm.holidays, "YYYY-MM-DD")).to.be.false;
+        });
+
+        it("should return true if there are holidays in that week", function () {
+            const date = "2021-12-31";
+
+            expect(wrapper.vm.checkHolidayInWeek(date, wrapper.vm.holidays, "YYYY-MM-DD")).to.be.true;
         });
     });
 

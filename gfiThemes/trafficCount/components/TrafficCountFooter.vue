@@ -2,6 +2,7 @@
 import moment from "moment";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountFooter",
@@ -20,6 +21,10 @@ export default {
         },
         meansOfTransport: {
             type: String,
+            required: true
+        },
+        holidays: {
+            type: Array,
             required: true
         }
     },
@@ -104,7 +109,7 @@ export default {
             // tab body
             if (currentTabId === "day") {
                 this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
                     if (this.api.constructor.name === "DauerzaehlstellenRadApi") {
                         this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
                     }
@@ -129,7 +134,7 @@ export default {
             }
             else if (currentTabId === "week") {
                 this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Tageswerte");
                     // onerror
                 }, error => {
@@ -149,7 +154,7 @@ export default {
             }
             else if (currentTabId === "year") {
                 this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Wochenwerte");
                     // onerror
                 }, error => {
@@ -256,9 +261,10 @@ export default {
          * converts the data object into an array of objects for the csv download
          * @param {Object} data - the data for download
          * @param {String} tabValue - day | week | year
+         * @param {String[]} holidays - the holidays from parent component in array format
          * @returns {Object[]} objArr - converted data
          */
-        prepareDataForDownload: function (data, tabValue) {
+        prepareDataForDownload: function (data, tabValue, holidays) {
             const objArr = [];
 
             for (const key in data) {
@@ -268,18 +274,40 @@ export default {
                 if (tabValue === "day") {
                     obj.Datum = date[0];
                     obj["Uhrzeit von"] = date[1].slice(0, -3);
+                    obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "week") {
                     obj.Datum = date[0];
+                    obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
+                    obj.Feiertag = this.checkHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 obj.Anzahl = data[key];
                 objArr.push(obj);
             }
 
             return objArr;
+        },
+
+        /**
+         * Checking if there are holidays in the current week of given date
+         * @param {String} date - the date in format "YYYY-MM-DD"
+         * @param {String[]} holidays - the holidays in array format
+         * @param {String} format - the format of date in "YYYY-MM-DD"
+         * @returns {Boolean} -
+         */
+        checkHolidayInWeek: function (date, holidays, format) {
+            for (let i = 0; i <= 6; i++) {
+                const day = moment(date).add(i, "days").format(format);
+
+                if (getPublicHoliday(day, holidays, format)) {
+                    return true;
+                }
+            }
+
+            return false;
         },
 
         /**
