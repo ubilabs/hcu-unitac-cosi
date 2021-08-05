@@ -5,8 +5,6 @@ export default {
      * @returns {Array} comparable features results
      */
     setComparableFeatures: async function (layerFilterList) {
-
-
         const allFeatures = layerFilterList.map(layerFilter => {
 
                 const id = layerFilter.quotientLayer ?
@@ -31,5 +29,4 @@ export default {
             features: resultNames.map(n => intersection.find(f => f[this.keyOfAttrNameStats] === n).feature)
         };
     }
-
 };
