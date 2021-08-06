@@ -40,6 +40,7 @@ export default {
     },
     data () {
         return {
+            tab: "week",
             weekDatepicker: null,
             apiData: [],
 
@@ -289,6 +290,8 @@ export default {
         />
         <div id="tableWeek">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

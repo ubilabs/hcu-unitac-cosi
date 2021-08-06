@@ -29,6 +29,7 @@
                         "calendarweek": "CW",
                         "infraredsensor": "Infrared sensor",
                         "inductionLoop": "Induction loop",
+                        "tableIndication": "* This value is influenced by public holidays / school vacations",
                         "carLabel": "Car",
                         "bicycleLabel": "Bicycle",
                         "idLabel": "ID:",

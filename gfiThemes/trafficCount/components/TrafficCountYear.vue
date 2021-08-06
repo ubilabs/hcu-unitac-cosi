@@ -40,6 +40,7 @@ export default {
     },
     data () {
         return {
+            tab: "year",
             yearDatepicker: null,
             apiData: [],
 
@@ -276,6 +277,8 @@ export default {
         />
         <div id="tableYear">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

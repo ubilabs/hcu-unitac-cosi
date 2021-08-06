@@ -29,6 +29,7 @@
                         "calendarweek": "KW",
                         "infraredsensor": "Infrarotsensor",
                         "inductionLoop": "Induktionsschleife",
+                        "tableIndication": "* Dieser Wert ist beinflusst von Feiertagen / Schulferien",
                         "carLabel": "KFZ",
                         "bicycleLabel": "Fahrrad",
                         "idLabel": "ID:",

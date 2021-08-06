@@ -1,4 +1,7 @@
 <script>
+import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
+import moment from "moment";
+
 export default {
     name: "TrafficCountCompTable",
     props: {
@@ -46,6 +49,25 @@ export default {
         setFieldValue: {
             type: Function,
             required: true
+        },
+        /**
+         * the holidays in array format
+         */
+        holidays: {
+            type: Array,
+            required: true
+        },
+        /**
+         * the name of the active tab
+         */
+        currentTabId: {
+            type: String,
+            required: true
+        }
+    },
+    computed: {
+        tableIndication: function () {
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.tableIndication");
         }
     },
     methods: {
@@ -108,6 +130,33 @@ export default {
             });
 
             return result;
+        },
+        /**
+         * returns a star if the given datetime is a public holiday
+         * @param {String} datetime a string representing a date in format YYYY-MM-DD HH:mm:ss
+         * @return {string} a star as a string or empty string
+         */
+        setStar (datetime) {
+            if (this.currentTabId === "week") {
+                return getPublicHoliday(datetime, this.holidays, "YYYY-MM-DD HH:mm:ss") ? "*" : "";
+            }
+            else if (this.currentTabId === "year") {
+                return hasHolidayInWeek(datetime, this.holidays, "YYYY-MM-DD HH:mm:ss") ? "*" : "";
+            }
+
+            return "";
+        },
+        /**
+         * returns a star if the given datetime is a public holiday
+         * @param {String[]} datetimeArray - an array of strings representing a date in format YYYY-MM-DD HH:mm:ss
+         * @return {string} a star as a string or empty string
+         */
+        setStarAtDay (datetimeArray) {
+            if (this.currentTabId === "day") {
+                return getPublicHoliday(datetimeArray[0], this.holidays, "YYYY-MM-DD HH:mm:ss") ? "*" : "";
+            }
+
+            return "";
         }
     }
 };
@@ -136,13 +185,13 @@ export default {
                     :key="idx"
                 >
                     <td class="td-first-col">
-                        {{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }}
+                        {{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }} {{ setStarAtDay(Object.keys(dataObjFlat.dataset)) }}
                     </td>
                     <td
                         v-for="(value, datetime) of dataObjFlat.dataset"
                         :key="datetime"
                     >
-                        {{ setFieldValue(value) }}
+                        {{ setFieldValue(value) }} {{ setStar(datetime) }}
                     </td>
                 </tr>
             </tbody>

@@ -48,6 +48,10 @@ export default {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.notice");
         },
 
+        tableIndication: function () {
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.tableIndication");
+        },
+
         lastupdateLabel: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.lastupdateLabel");
         },
@@ -345,6 +349,13 @@ export default {
     <div>
         <div
             v-if="currentTabId !== 'infos'"
+            class="tableIndication"
+            :style="customStyle"
+        >
+            {{ tableIndication }}
+        </div>
+        <div
+            v-if="currentTabId !== 'infos'"
             class="indication"
             :style="customStyle"
         >
@@ -390,9 +401,17 @@ export default {
 <style lang="less" scoped>
 @import "~variables";
 
+.tableIndication {
+    font-size: 10px;
+    position: absolute;
+    top: -3px;
+    left: 0px;
+}
+
 .indication {
     font-size: 10px;
     position: absolute;
+    top: 10px;
     left: 0px;
 }
 .download-container {

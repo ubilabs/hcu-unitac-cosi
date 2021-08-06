@@ -41,6 +41,7 @@ export default {
     },
     data () {
         return {
+            tab: "day",
             dayDatepicker: null,
             apiData: [],
 
@@ -273,6 +274,8 @@ export default {
         />
         <div id="tableDay">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

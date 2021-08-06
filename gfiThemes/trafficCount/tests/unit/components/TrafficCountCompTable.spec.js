@@ -40,7 +40,20 @@ describe("addons/trafficCount/components/TrafficCountCompTable.vue", () => {
                 },
                 setFieldValue: value => {
                     return value !== null ? value : "";
-                }
+                },
+                holidays: [
+                    "newYearsDay",
+                    "goodFriday",
+                    "easterMonday",
+                    "laborDay",
+                    "ascensionDay",
+                    "pentecostMonday",
+                    "germanUnityDay",
+                    "reformationDay",
+                    "christmasDay",
+                    "secondDayOfChristmas"
+                ],
+                currentTabId: "day"
             }
         });
     });
@@ -97,17 +110,17 @@ describe("addons/trafficCount/components/TrafficCountCompTable.vue", () => {
         it("should call setRowTitle for the first column of each row", () => {
             const tr = wrapper.findAll("tr");
 
-            expect(tr.at(1).findAll("td").at(0).text()).to.equal("truckdate3");
-            expect(tr.at(2).findAll("td").at(0).text()).to.equal("cardate2");
-            expect(tr.at(3).findAll("td").at(0).text()).to.equal("bikedate1");
+            expect(tr.at(1).findAll("td").at(0).text()).to.equal("truckdate3 *");
+            expect(tr.at(2).findAll("td").at(0).text()).to.equal("cardate2 *");
+            expect(tr.at(3).findAll("td").at(0).text()).to.equal("bikedate1 *");
 
-            expect(tr.at(4).findAll("td").at(0).text()).to.equal("cardate5");
-            expect(tr.at(5).findAll("td").at(0).text()).to.equal("truckdate6");
-            expect(tr.at(6).findAll("td").at(0).text()).to.equal("bikedate4");
+            expect(tr.at(4).findAll("td").at(0).text()).to.equal("cardate5 *");
+            expect(tr.at(5).findAll("td").at(0).text()).to.equal("truckdate6 *");
+            expect(tr.at(6).findAll("td").at(0).text()).to.equal("bikedate4 *");
 
-            expect(tr.at(7).findAll("td").at(0).text()).to.equal("cardate8");
-            expect(tr.at(8).findAll("td").at(0).text()).to.equal("bikedate7");
-            expect(tr.at(9).findAll("td").at(0).text()).to.equal("truckdate9");
+            expect(tr.at(7).findAll("td").at(0).text()).to.equal("cardate8 *");
+            expect(tr.at(8).findAll("td").at(0).text()).to.equal("bikedate7 *");
+            expect(tr.at(9).findAll("td").at(0).text()).to.equal("truckdate9 *");
         });
         it("should place the value of each dataset into the fields of the table", () => {
             const tr = wrapper.findAll("tr");
@@ -125,6 +138,86 @@ describe("addons/trafficCount/components/TrafficCountCompTable.vue", () => {
             expect(tr.at(7).findAll("td").at(1).text()).to.equal("value8");
             expect(tr.at(8).findAll("td").at(1).text()).to.equal("value7");
             expect(tr.at(9).findAll("td").at(1).text()).to.equal("value9");
+        });
+    });
+    describe("setStarAtDay", () => {
+        it("should return a star if the given datetime is a public holiday", () => {
+            const result = wrapper.vm.setStarAtDay(["2021-05-01 00:00:00"]),
+                expected = "*";
+
+            expect(result).to.deep.equal(expected);
+        });
+        it("should return any star if the given datetime is not a public holiday", () => {
+            const result = wrapper.vm.setStarAtDay(["2021-12-06 00:00:00"]),
+                expected = "";
+
+            expect(result).to.deep.equal(expected);
+        });
+    });
+});
+
+describe("addons/trafficCount/components/TrafficCountCompTable.vue", () => {
+    let wrapper;
+
+    beforeEach(() => {
+        wrapper = shallowMount(TrafficCountCompTable, {
+            localVue,
+            propsData: {
+                apiData: [
+                    {
+                        truck: {date3: "value3", date33: "value33"},
+                        car: {date2: "value2", date22: null},
+                        bike: {date1: "value1"}
+                    },
+                    {
+                        car: {date5: "value5"},
+                        truck: {date6: "value6"},
+                        bike: {date4: "value4"}
+                    },
+                    {
+                        car: {date8: "value8"},
+                        bike: {date7: "value7"},
+                        truck: {date9: "value9"}
+                    }
+                ],
+                tableTitle: "tableTitle",
+                setColTitle (datetime) {
+                    return datetime;
+                },
+                setRowTitle (key, datetime) {
+                    return String(key) + String(datetime);
+                },
+                setFieldValue: value => {
+                    return value !== null ? value : "";
+                },
+                holidays: [
+                    "newYearsDay",
+                    "goodFriday",
+                    "easterMonday",
+                    "laborDay",
+                    "ascensionDay",
+                    "pentecostMonday",
+                    "germanUnityDay",
+                    "reformationDay",
+                    "christmasDay",
+                    "secondDayOfChristmas"
+                ],
+                currentTabId: "week"
+            }
+        });
+    });
+    describe("setStar", () => {
+        it("should return a star if the given datetime is a public holiday", () => {
+            const result = wrapper.vm.setStar("2021-05-01 00:00:00"),
+                expected = "*";
+
+            expect(result).to.deep.equal(expected);
+        });
+        it("should return any star if the given datetime is not a public holiday", () => {
+            const result = wrapper.vm.setStar("2021-12-06 00:00:00"),
+                expected = "";
+
+            expect(result).to.deep.equal(expected);
         });
     });
 });
