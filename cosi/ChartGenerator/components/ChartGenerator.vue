@@ -10,6 +10,7 @@ import {color} from "d3-color";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
+import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import Info from "text-loader!./info.html";
 
@@ -19,6 +20,7 @@ export default {
         Tool,
         LineChart,
         BarChart,
+        PieChart,
         ScatterChart
     },
     data () {
@@ -33,6 +35,7 @@ export default {
             forceGraphUpdate: 1,
             // Download Object
             downloadHelper: {},
+            // String Beautifier
             beautifyKey: beautifyKey
         };
     },
@@ -142,6 +145,18 @@ export default {
          * @returns {void}
          */
         generateGraphComponent (dataSet) {
+
+            const colorRange = this.generateColorScale(dataSet);
+
+            dataSet.data.dataSets.forEach((set, index) => {
+                const getColor = colorRange(index),
+                    d3Color = color(getColor);
+
+                d3Color.opacity = 0.5;
+                set.borderColor = getColor;
+                set.backgroundColor = d3Color;
+            });
+
             if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
                 this.newType = "BarChart";
             }
@@ -155,17 +170,10 @@ export default {
             else {
                 this.newType = dataSet.type;
             }
-            const colorRange = this.generateColorScale(dataSet);
 
-            dataSet.data.dataSets.forEach((set, index) => {
-                const getColor = colorRange(index),
-                    d3Color = color(getColor);
-
-                d3Color.opacity = 0.5;
-                set.borderColor = getColor;
-                set.backgroundColor = d3Color;
-            });
-
+            this.renderGraph(dataSet);
+        },
+        renderGraph (dataSet) {
             // eslint-disable-next-line one-var
             const target = document.getElementById(dataSet.target),
                 // Extend Component dynamically
@@ -210,18 +218,29 @@ export default {
 
             dataSet.data.labels.forEach((label, i) => {
                 const obj = {
+                    name: this.beautifyKey(dataSet.name) + " - " + label,
+                    type: "PieChart",
                     group: label,
                     label: [],
-                    data: [],
-                    index: i
+                    dataSets: {backgroundColor: [], data: []},
+                    target: dataSet.target ? dataSet.target : "",
+                    cgid: dataSet.cgid,
+                    id: dataSet.id,
+                    source: dataSet.source,
+                    sub: dataSet.sub,
+                    sub_graph: dataSet.sub ? dataSet.sub_graph : false,
+                    sub_index: dataSet.sub ? dataSet.sub_index : false,
+                    sub_length: dataSet.sub ? dataSet.sub_length : false,
+                    pie_index: i
                 };
 
                 dataSet.data.dataSets.forEach((set) => {
                     const labelScope = set.label,
                         labelVal = set.data[i];
 
-                    obj[label].label.push(labelScope);
-                    obj[label].data.push(labelVal);
+                    obj.label.push(labelScope);
+                    obj.dataSets.backgroundColor.push(set.backgroundColor);
+                    obj.dataSets.data.push(labelVal);
                 });
 
                 newPieChartData.push(obj);
@@ -230,7 +249,48 @@ export default {
             return newPieChartData;
         },
         createPieChart (dataSets) {
-            console.warn("PieChart Funktionalität noch nicht vollständig implementiert", dataSets);
+            const index = this.dataSets.findIndex(x => x.cgid === dataSets[0].cgid),
+                target = this.targetHelper(dataSets[0]);
+
+            dataSets.forEach(dataSet => {
+                const pieTarget = document.createElement("div");
+
+                pieTarget.id = "graph-" + index + "-" + dataSet.sub_index + "-pie-" + dataSet.pie_index;
+                pieTarget.classList.add("pie_chart");
+
+                dataSet.target = pieTarget.id;
+
+                this.$nextTick(function () {
+                    document.getElementById(target).appendChild(pieTarget);
+                    dataSet.sub = false;
+                    this.renderGraph(dataSet);
+                });
+            });
+        },
+        /**
+         * @description Determines the target div-id for the graph to be generated.
+         * @param {Object} dataSet dataSet containing the information necessary to determine the target div.
+         * @returns {String} id of the div.
+         */
+        targetHelper (dataSet) {
+            const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
+
+            if (dataSet.target !== "" && dataSet.target !== undefined) {
+                const target = dataSet.target;
+
+                return target;
+            }
+            else if (!dataSet.sub) {
+                const target = "graph-" + index;
+
+                return target;
+            }
+
+            // eslint-disable-next-line
+            const target = "graph-" + index + "-" + dataSet.sub_index;
+
+            return target;
+
         },
         /**
          * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
@@ -374,6 +434,7 @@ export default {
                     id="chart_panel"
                     class="wrapper"
                 >
+                    <div id="testgraph" />
                     <div
                         v-for="(graph, index) in dataSets"
                         :key="graph.cgid"
@@ -515,6 +576,11 @@ export default {
     @import "../../utils/variables.less";
     #chart_generator {
         width:400px;
+
+        canvas {
+            width:400px;
+            height:400px !important;
+        }
 
         .info_button {
             display:block;
