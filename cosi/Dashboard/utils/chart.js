@@ -80,7 +80,7 @@ export function generateGraphObj (graphData, districtLevelLabel, category, times
     return new ChartDataSet({
         id: "ccm",
         name: districtLevelLabel + " - " + category,
-        type: ["LineChart", "BarChart"],
+        type: ["LineChart", "BarChart", "PieChart"],
         color: "blue",
         source: "Dashboard",
         scaleLabels: [category, "Jahre"],
