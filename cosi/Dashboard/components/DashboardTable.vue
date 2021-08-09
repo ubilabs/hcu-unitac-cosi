@@ -114,10 +114,6 @@ export default {
     },
 
     watch: {
-        rows () {
-            console.log(this.columns);
-            console.log(this.items);
-        },
         loadend (v) {
             if (v) {
                 this.generateTable();
@@ -281,9 +277,6 @@ export default {
         renderScatterplot () {
             const correlation = this.calculateCorrelation(),
                 chart = generateChartForCorrelation(correlation, this.fields.B.category, this.fields.A.category);
-
-            console.log(this.fields.A, this.fields.B);
-            console.log(correlation);
 
             this.setNewChartDataSet(chart);
         },

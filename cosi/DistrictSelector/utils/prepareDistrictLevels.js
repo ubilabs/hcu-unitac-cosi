@@ -61,6 +61,11 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
  * @returns {Object[]} The districts.
  */
 export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
+    if (typeof layer !== "object" || layer === null || Array.isArray(layer) || typeof keyOfAttrName !== "string" || typeof label !== "string") {
+        console.error(`prepareDistrictLevels.getDistricts: ${layer} has to be defined and an object. ${keyOfAttrName} has to be defined and a string. ${label} has to be defined and a string`);
+        return [];
+    }
+
     if (label === "Hamburg") {
         return [getHamburgDistrict()];
     }
@@ -103,11 +108,15 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
  * @returns {Array.<String[]>} The feature types for each url.
  */
 export function getFeatureTypes (urls) {
+    if (!Array.isArray(urls)) {
+        console.error(`prepareDistrictLevels.getFeatureTypes: ${urls} has to be defined and an array.`);
+        return [];
+    }
     const featureTypes = [];
 
     for (let i = 0; i < urls.length; i++) {
         featureTypes[i] = getLayerList().reduce((typeNames, layer) => {
-            return layer.url === urls[i] ? [...typeNames, layer.featureType] : typeNames;
+            return layer?.url === urls[i] ? [...typeNames, layer.featureType] : typeNames;
         }, []);
     }
 
@@ -181,25 +190,33 @@ export function getNameList (layer, keyOfAttrName) {
  * @param {String[]} urls - The urls of the WFS`s.
  * @returns {Array.<String[]>} The property name for each url.
  */
-export default async function getPropertyNameList (urls) {
+export async function getPropertyNameList (urls) {
+    if (!Array.isArray(urls)) {
+        console.error(`prepareDistrictLevels.getPropertyNameList: ${urls} has to be defined and an array.`);
+        return [];
+    }
     const propertyNameList = [];
 
     for (let i = 0; i < urls.length; i++) {
         propertyNameList[i] = [];
 
-        const layer = getLayerList().find(rawlayer => rawlayer.url === urls[i]),
-            // get the property names by the 'DescribeFeatureType' request
-            json = await describeFeatureType(urls[i]),
-            description = getFeatureDescription(json, layer?.featureType);
+        const layer = getLayerList().find(rawlayer => rawlayer.url === urls[i]);
 
-        if (description) {
-            description.forEach(element => {
-                // "gml:" => geometry property
-                if (element.type.search("gml:") === -1) {
-                    propertyNameList[i].push(element.name);
-                }
-            });
+        if (layer) {
+            // get the property names by the 'DescribeFeatureType' request
+            const json = await describeFeatureType(urls[i]),
+                description = getFeatureDescription(json, layer?.featureType);
+
+            if (description) {
+                description.forEach(element => {
+                    // "gml:" => geometry property
+                    if (element.type.search("gml:") === -1) {
+                        propertyNameList[i].push(element.name);
+                    }
+                });
+            }
         }
+
     }
 
     return propertyNameList;

@@ -59,7 +59,7 @@ export default {
                                 d = dataset.data[item[0].index],
                                 stdDev = Math.round((d.stdDev + Number.EPSILON) * 1000) / 1000,
                                 corr = Math.round((dataset.correlation + Number.EPSILON) * 1000) / 1000,
-                                footer = dataset.type === "line" ? `Korrelation: ${corr}` : `stdDev: ${stdDev}`;
+                                footer = dataset.type === "line" ? `Korrelation: ${corr}` : `Abweichung: ${stdDev}`;
 
                             return footer;
                         }

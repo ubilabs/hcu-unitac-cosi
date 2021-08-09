@@ -29,7 +29,8 @@ const state = {
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
-    deactivateGFI: true
+    deactivateGFI: true,
+    referenceLayers: [{"id": "15563"}, {"id": "15990"}, {"id": "19041"}, {"id": "19034"}, {"id": "18977"}, {"id": "18970"}]
 };
 
 export default state;

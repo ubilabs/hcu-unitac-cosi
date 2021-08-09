@@ -5,29 +5,28 @@ export default {
      * @returns {Array} comparable features results
      */
     setComparableFeatures: async function (layerFilterList) {
+        const allFeatures = layerFilterList.map(layerFilter => {
 
-        const allFeatures = [];
+                const id = layerFilter.quotientLayer ?
+                    `${layerFilter.layerId}/${layerFilter.quotientLayer}` : layerFilter.layerId;
 
-        for (const layerFilter of layerFilterList) {
-            const features = await this.getAllFeaturesByAttribute({
-                id: layerFilter.layerId
-            }).filter(feature => feature.getProperties()[layerFilter.field] >= layerFilter.value - layerFilter.low
-                && feature.getProperties()[layerFilter.field] <= layerFilter.value + layerFilter.high
-                && feature.getProperties()[this.keyOfAttrNameStats] !== this.selectedDistrict
-                && feature.getProperties()[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
+                return this.propertiesMap[id]
+                    .filter(feature => feature[layerFilter.field] >= layerFilter.value - layerFilter.low
+                    && feature[layerFilter.field] <= layerFilter.value + layerFilter.high
+                    && feature[this.keyOfAttrNameStats] !== this.selectedDistrict
+                    && feature[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
 
-            allFeatures.push(features);
-        }
+            }),
+            intersection = allFeatures.reduce((a, b) => a.filter(
+                x => b.find(y => y[this.keyOfAttrNameStats]
+                    === x[this.keyOfAttrNameStats]))),
 
-        // eslint-disable-next-line one-var
-        const intersection = allFeatures.reduce((a, b) => a.filter(
-            x => b.find(y => y.getProperties()[this.keyOfAttrNameStats]
-            === x.getProperties()[this.keyOfAttrNameStats])));
+            resultNames = intersection.map(f => f[this.keyOfAttrNameStats])
+                .sort().filter((x, i, a) => !i || x !== a[i - 1]); // sort and without duplicates
 
         return {
-            resultNames: intersection.map(feature => feature.getProperties()[this.keyOfAttrNameStats]),
-            features: intersection
+            resultNames,
+            features: resultNames.map(n => intersection.find(f => f[this.keyOfAttrNameStats] === n).feature)
         };
     }
-
 };

@@ -1,6 +1,6 @@
 import {WFS} from "ol/format.js";
 import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
-import prepareStatsFeatures from "../utils/prepareStatsFeatures";
+import {prepareStatsFeatures} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
@@ -15,9 +15,10 @@ const actions = {
      * @param {Object} payload - The payload for this action.
      * @param {Number[]} payload.districtLevel - The district level to which the districts belong.
      * @param {String[]} payload.districts - The districts for which the statistical features are loaded.
+     * @param {Function} payload.getStatFeatures - Function for WFS GetFeature-Request via Post.
      * @returns {void}
      */
-    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts}) {
+    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts, getStatFeatures}) {
         commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         /**
@@ -34,7 +35,7 @@ const actions = {
                 // check if statFeatures are already loaded
                 if (districts[i].statFeatures.length === 0) {
                     const districtName = districts[i].getName(),
-                        statFeatures = await getFeaturePost(urls[j], {
+                        statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Map/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
@@ -67,7 +68,8 @@ const actions = {
 
             dispatch("loadStatFeatures", {
                 districts: referenceLevel.label === "Hamburg" ? referenceLevel.districts : refDistricts,
-                districtLevel: referenceLevel
+                districtLevel: referenceLevel,
+                getStatFeatures: getFeaturePost
             });
             /**
              * @deprecated
@@ -115,7 +117,8 @@ const actions = {
         }
         await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
-            districtLevel: districtLevel
+            districtLevel: districtLevel,
+            getStatFeatures: getFeaturePost
         });
 
         return foundDistrict.statFeatures;
@@ -134,3 +137,5 @@ const actions = {
 };
 
 export default actions;
+
+

@@ -12,6 +12,7 @@ import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
 import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
+import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
 
 export default {
     name: "DistrictSelector",
@@ -332,7 +333,8 @@ export default {
                 setBBoxToGeom(bboxGeom);
                 this.loadStatFeatures({
                     districts: this.selectedDistricts,
-                    districtLevel: this.selectedDistrictLevel
+                    districtLevel: this.selectedDistrictLevel,
+                    getStatFeatures: getFeaturePost
                 });
             }
             else {

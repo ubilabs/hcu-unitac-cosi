@@ -10,10 +10,17 @@
                     "resultAsSelection": "Ergebnis als Gebietauswahl setzen",
                     "comparableResults": "Vergleichbare Gebiete",
                     "referenceDistrict": "Referenzgebiet",
+                    "referenceValueType": "Typ",
+                    "valueTypeAbsolute": "absolut",
+                    "valueTypeRelative": "relativ",
                     "add": "Hinzufügen",
                     "year": "Jahr",
                     "referenceValue": "Referenzwert",
-                    "tolerance": "Toleranz"
+                    "tolerance": "Toleranz",
+                    "funcData": "Fachdaten",
+                    "count": "Anz.",
+                    "selectedDistrictNotAvailable": "Der Referenzwert ist für das Referenzgebiet nicht definiert",
+                    "selectQuotientLayer": "Quotient"
                 }
             }
         }
