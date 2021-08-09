@@ -7,7 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataYear} from "../utils/addMissingData.js";
-import {checkHolidayInWeek} from "../utils/checkHolidayInWeek.js";
+import {hasHolidayInWeek} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountYear",
@@ -69,7 +69,7 @@ export default {
                     format = "YYYY-MM-DD";
 
                 for (let i = 0; i < datetime.length; i++) {
-                    if (checkHolidayInWeek(datetime[i], this.holidays, format)) {
+                    if (hasHolidayInWeek(datetime[i], this.holidays, format)) {
                         pointStyle.push("star");
                     }
                     else {

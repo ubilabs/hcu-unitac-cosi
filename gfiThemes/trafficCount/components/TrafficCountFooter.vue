@@ -2,8 +2,7 @@
 import moment from "moment";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
-import {getPublicHoliday} from "../../../../src/utils/calendar.js";
-import {checkHolidayInWeek} from "../utils/checkHolidayInWeek.js";
+import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountFooter",
@@ -283,7 +282,7 @@ export default {
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
-                    obj.Feiertag = checkHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
+                    obj.Feiertag = hasHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 obj.Anzahl = data[key];
                 objArr.push(obj);
