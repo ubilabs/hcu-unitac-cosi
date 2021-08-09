@@ -10,6 +10,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
+import {getAllFeatures} from "../utils/getAllFeatures.js";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 
@@ -44,9 +45,6 @@ export default {
             "keyOfAttrNameStats",
             "selectedDistrictLevel",
             "mapping"
-        ]),
-        ...mapGetters("Tools/DistrictLoader", [
-            "getAllFeaturesByAttribute"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
     },
@@ -214,10 +212,14 @@ export default {
         },
 
         loadFeatures: async function (layer) {
+            if (Object.prototype.hasOwnProperty.call(this.propertiesMap, layer.id)) {
+                return;
+            }
+
             let fmap;
-            const features = await this.getAllFeaturesByAttribute({
-                id: layer.referenceLayerId || layer.id
-            });
+            const features = await getAllFeatures(
+                layer.referenceLayerId || layer.id
+            );
 
             if (layer.referenceLayerId) {
                 const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName);
