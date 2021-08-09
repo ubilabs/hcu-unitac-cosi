@@ -9,18 +9,19 @@ import {getFeature} from "../../../../src/api/wfs/getFeature.js";
  * @param {String} layerId - The id of the layer.
  * @returns {module:ol/Feature[]} The features of the layer.
  */
-export async function getAllFeatures (featureList, layerId) {
-    if (Object.prototype.hasOwnProperty.call(featureList, layerId)) {
-        return featureList[layerId];
-    }
+export async function getAllFeatures (layerId) {
+    // if (Object.prototype.hasOwnProperty.call(featureList, layerId)) {
+    //     return featureList[layerId];
+    // }
 
+    // console.log(featureList, layerId);
     const layer = getLayerWhere({id: layerId}),
         wfsReader = new WFS({
             featureNS: layer.featureNS
         }),
         features = await getFeature(layer?.url, layer?.featureType);
 
-    featureList[layerId] = wfsReader.readFeatures(features);
+    // featureList[layerId] = wfsReader.readFeatures(features);
 
-    return featureList[layerId];
+    return wfsReader.readFeatures(features);
 }

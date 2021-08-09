@@ -212,10 +212,14 @@ export default {
         },
 
         loadFeatures: async function (layer) {
+            if (Object.prototype.hasOwnProperty.call(this.propertiesMap, layer.id)) {
+                return;
+            }
+
             let fmap;
-            const features = await getAllFeatures({
-                id: layer.referenceLayerId || layer.id
-            });
+            const features = await getAllFeatures(
+                layer.referenceLayerId || layer.id
+            );
 
             if (layer.referenceLayerId) {
                 const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName);
