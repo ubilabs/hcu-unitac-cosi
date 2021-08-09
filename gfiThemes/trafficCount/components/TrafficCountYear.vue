@@ -7,6 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataYear} from "../utils/addMissingData.js";
+import {checkHolidayInWeek} from "../utils/checkHolidayInWeek.js";
 
 export default {
     name: "TrafficCountYear",
@@ -63,7 +64,21 @@ export default {
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (checkHolidayInWeek(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
             // props for table
             tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleYear"),
             setColTitle: datetime => {
@@ -253,6 +268,7 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
             />
         </div>
         <TrafficCountCheckbox

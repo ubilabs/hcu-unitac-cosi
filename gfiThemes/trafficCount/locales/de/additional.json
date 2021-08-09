@@ -41,7 +41,8 @@
                         "yAxisTextDay": "Anzahl / {{minutes}} Min.",
                         "yAxisTextWeek": "Anzahl / Tag",
                         "yAxisTextYear": "Anzahl / Woche",
-                        "reset": "zurücksetzen"
+                        "reset": "zurücksetzen",
+                        "holidaySign": "Dieser Wert ist beinflusst von Feiertagen"
                     }
                 }
             }

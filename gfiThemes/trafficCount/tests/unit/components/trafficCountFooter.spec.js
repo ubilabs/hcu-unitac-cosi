@@ -100,27 +100,25 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
         });
     });
 
-    describe("checkHolidayInWeek", function () {
-        it("should return false if there no holidays in that week", function () {
-            const date = "2020-05-11";
-
-            expect(wrapper.vm.checkHolidayInWeek(date, wrapper.vm.holidays, "YYYY-MM-DD")).to.be.false;
-        });
-
-        it("should return true if there are holidays in that week", function () {
-            const date = "2021-12-31";
-
-            expect(wrapper.vm.checkHolidayInWeek(date, wrapper.vm.holidays, "YYYY-MM-DD")).to.be.true;
-        });
-    });
-
     describe("updateFooter", function () {
         wrapper = shallowMount(trafficCountFooter, {
             propsData: {
                 currentTabId: "day",
                 api: dummyApi,
                 thingId: 5508,
-                meansOfTransport: "Anzahl_Fahrraeder"
+                meansOfTransport: "Anzahl_Fahrraeder",
+                holidays: [
+                    "newYearsDay",
+                    "goodFriday",
+                    "easterMonday",
+                    "laborDay",
+                    "ascensionDay",
+                    "pentecostMonday",
+                    "germanUnityDay",
+                    "reformationDay",
+                    "christmasDay",
+                    "secondDayOfChristmas"
+                ]
             },
             localVue
         });

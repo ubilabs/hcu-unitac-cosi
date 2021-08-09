@@ -41,7 +41,8 @@
                         "yAxisTextDay": "Count / {{minutes}} Min.",
                         "yAxisTextWeek": "Count / Day",
                         "yAxisTextYear": "Count / Week",
-                        "reset": "Reset"
+                        "reset": "Reset",
+                        "holidaySign": "The Value in Holiday"
                     }
                 }
             }

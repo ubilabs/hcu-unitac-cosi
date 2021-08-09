@@ -61,7 +61,21 @@ export default {
 
                 return this.calendarweek + " " + weeknumber + " / " + year;
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
             // props for table
             tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek"),
             setColTitle: datetime => {
@@ -267,6 +281,7 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
             />
         </div>
         <TrafficCountCheckbox

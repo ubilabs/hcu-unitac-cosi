@@ -3,6 +3,7 @@ import moment from "moment";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import {checkHolidayInWeek} from "../utils/checkHolidayInWeek.js";
 
 export default {
     name: "TrafficCountFooter",
@@ -282,32 +283,13 @@ export default {
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
-                    obj.Feiertag = this.checkHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
+                    obj.Feiertag = checkHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 obj.Anzahl = data[key];
                 objArr.push(obj);
             }
 
             return objArr;
-        },
-
-        /**
-         * Checking if there are holidays in the current week of given date
-         * @param {String} date - the date in format "YYYY-MM-DD"
-         * @param {String[]} holidays - the holidays in array format
-         * @param {String} format - the format of date in "YYYY-MM-DD"
-         * @returns {Boolean} -
-         */
-        checkHolidayInWeek: function (date, holidays, format) {
-            for (let i = 0; i <= 6; i++) {
-                const day = moment(date).add(i, "days").format(format);
-
-                if (getPublicHoliday(day, holidays, format)) {
-                    return true;
-                }
-            }
-
-            return false;
         },
 
         /**
