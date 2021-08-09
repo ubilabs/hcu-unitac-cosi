@@ -174,7 +174,6 @@ export default {
             this.renderGraph(dataSet);
         },
         renderGraph (dataSet) {
-            console.log(dataSet);
             // eslint-disable-next-line one-var
             const target = document.getElementById(dataSet.target),
                 // Extend Component dynamically
