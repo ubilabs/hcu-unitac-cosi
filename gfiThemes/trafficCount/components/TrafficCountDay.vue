@@ -8,6 +8,7 @@ import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataDay} from "../utils/addMissingData.js";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 
 export default {
     name: "TrafficCountDay",
@@ -55,7 +56,7 @@ export default {
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay", {minutes: this.api.constructor.name === "DauerzaehlstellenRadApi" ? 60 : 15}),
+            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay", {minutes: this.api instanceof DauerzaehlstellenRadApi ? 60 : 15}),
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
             },
@@ -167,7 +168,7 @@ export default {
                 thingId = this.thingId,
                 meansOfTransport = this.meansOfTransport,
                 timeSettings = [],
-                minutesForMissingData = api.constructor.name === "DauerzaehlstellenRadApi" ? 60 : 15;
+                minutesForMissingData = api instanceof DauerzaehlstellenRadApi ? 60 : 15;
 
             if (dates.length === 0) {
                 this.apiData = [];

@@ -3,6 +3,7 @@ import moment from "moment";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 
 export default {
     name: "TrafficCountFooter",
@@ -110,7 +111,7 @@ export default {
             if (currentTabId === "day") {
                 this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
                     this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
-                    if (this.api.constructor.name === "DauerzaehlstellenRadApi") {
+                    if (this.api instanceof DauerzaehlstellenRadApi) {
                         this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
                     }
                     else {
