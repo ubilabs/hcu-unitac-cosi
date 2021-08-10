@@ -430,6 +430,7 @@ export default {
                             <v-row>
                                 <v-col cols="12">
                                     <v-btn
+                                        id="export-table"
                                         tile
                                         depressed
                                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
@@ -438,6 +439,7 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                                     </v-btn>
                                     <v-btn
+                                        id="export-detail"
                                         tile
                                         depressed
                                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"

@@ -1,7 +1,6 @@
 import Vuex from "vuex";
 import {
     config,
-    shallowMount,
     mount,
     createLocalVue
 } from "@vue/test-utils";
@@ -10,14 +9,10 @@ import FeaturesListStore from "../../../store/indexFeaturesList";
 import DetailView from "../../../components/DetailView.vue";
 import {expect} from "chai";
 import sinon from "sinon";
-import {
-    registerProjections
-} from "./util";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import Scenario from "../../../../ScenarioBuilder/classes/Scenario";
-import GeoJSON from "ol/format/GeoJSON";
 import Layer from "ol/layer/Vector.js";
 import Source from "ol/source/Vector.js";
 import Feature from "ol/Feature";
@@ -37,7 +32,7 @@ config.mocks.$t = key => key;
 global.requestAnimationFrame = (fn) => fn();
 
 describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
-    let store, sandbox, addSingleAlertStub, cleanupStub, vuetify, layerListStub;
+    let store, sandbox, vuetify, layerListStub;
 
     const layer1 = new Layer({
             id: "1234",
@@ -80,8 +75,6 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     beforeEach(() => {
         vuetify = new Vuetify();
         sandbox = sinon.createSandbox();
-        addSingleAlertStub = sinon.stub();
-        cleanupStub = sinon.stub();
         layerListStub = sinon.stub();
 
         store = new Vuex.Store({
@@ -246,8 +239,22 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(spyUpdateFilterProps.calledOnce).to.be.true;
         });
 
-        it("expect download prompt to open when table is exported", () => {
-            const wrapper = await mountComponent(true, [layer1]);
+        it("expect download prompt to open when table is exported", async () => {
+            const spyExportTable = sinon.spy(FeaturesList.methods, "exportTable"),
+                wrapper = await mountComponent(true, [layer1]);
+
+            await wrapper.vm.$nextTick();
+            await wrapper.find("#export-table").trigger("click");
+
+            // exportTable should have been called once with arg[0] === false
+            expect(spyExportTable.callCount).to.equal(1);
+            expect(spyExportTable.calledOnceWith(false)).to.be.true;
+
+            await wrapper.find("#export-detail").trigger("click");
+
+            // exportTable should have been called twice, the 2nd time with arg[0] === true
+            expect(spyExportTable.callCount).to.equal(2);
+            expect(spyExportTable.calledOnceWith(true)).to.be.true;
         });
 
         //     it("should find a checkbox component with the value RISE", () => {
