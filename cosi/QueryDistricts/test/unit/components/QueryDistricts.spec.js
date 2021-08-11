@@ -31,7 +31,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("addons/cosi/QueryDistricts/", () => {
+describe.only("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
@@ -59,7 +59,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         };
 
     // eslint-disable-next-line require-jsdoc
-    function getAllFeaturesByAttribute ({id}) {
+    function getAllFeatures (id) {
         if (id === "19041") {
             return ha_features;
         }
@@ -113,12 +113,6 @@ describe("addons/cosi/QueryDistricts/", () => {
                             },
                             mutations: {
                                 setSelectedDistrictsCollection: sandbox.stub()
-                            }
-                        },
-                        DistrictLoader: {
-                            namespaced: true,
-                            getters: {
-                                getAllFeaturesByAttribute: () => getAllFeaturesByAttribute
                             }
                         },
                         FeaturesList: {
@@ -414,7 +408,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
             ],
             self = {
-                propertiesMap: {"19041": getAllFeaturesByAttribute({id: "19041"}).map(f => f.getProperties())},
+                propertiesMap: {"19041": getAllFeatures("19041").map(f => f.getProperties())},
                 selectorField: "verwaltungseinheit",
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
@@ -430,8 +424,8 @@ describe("addons/cosi/QueryDistricts/", () => {
         // arrange
         const self = {
                 propertiesMap: {
-                    "19041": getAllFeaturesByAttribute({id: "19041"}).map(f => f.getProperties()),
-                    "19034": getAllFeaturesByAttribute({id: "19034"}).map(f => f.getProperties())
+                    "19041": getAllFeatures("19041").map(f => f.getProperties()),
+                    "19034": getAllFeatures("19034").map(f => f.getProperties())
                 },
                 selectorField: "verwaltungseinheit",
                 keyOfAttrNameStats: "stadtteil",

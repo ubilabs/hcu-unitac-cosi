@@ -36,7 +36,7 @@ config.mocks.$t = key => key;
 
 global.requestAnimationFrame = (fn) => fn();
 
-describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, addSingleAlertStub, cleanupStub, vuetify, layerListStub;
 
     const layer1 = new Layer({
