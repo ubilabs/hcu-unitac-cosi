@@ -1,6 +1,5 @@
 <script>
 import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
-import moment from "moment";
 
 export default {
     name: "TrafficCountCompTable",
