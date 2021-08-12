@@ -29,7 +29,6 @@
                         "calendarweek": "CW",
                         "infraredsensor": "Infrared sensor",
                         "inductionLoop": "Induction loop",
-                        "tableIndication": "* This value is influenced by public holidays / school vacations",
                         "carLabel": "Car",
                         "bicycleLabel": "Bicycle",
                         "idLabel": "ID:",
@@ -43,7 +42,7 @@
                         "yAxisTextWeek": "Count / Day",
                         "yAxisTextYear": "Count / Week",
                         "reset": "Reset",
-                        "holidaySign": "The Value in Holiday"
+                        "holidaySign": "Holiday Influence"
                     }
                 }
             }

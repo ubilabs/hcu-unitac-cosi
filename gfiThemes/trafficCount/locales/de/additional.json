@@ -29,7 +29,6 @@
                         "calendarweek": "KW",
                         "infraredsensor": "Infrarotsensor",
                         "inductionLoop": "Induktionsschleife",
-                        "tableIndication": "* Dieser Wert ist beinflusst von Feiertagen / Schulferien",
                         "carLabel": "KFZ",
                         "bicycleLabel": "Fahrrad",
                         "idLabel": "ID:",
@@ -43,7 +42,7 @@
                         "yAxisTextWeek": "Anzahl / Tag",
                         "yAxisTextYear": "Anzahl / Woche",
                         "reset": "zurücksetzen",
-                        "holidaySign": "Dieser Wert ist beinflusst von Feiertagen"
+                        "holidaySign": "Feiertagseinfluss"
                     }
                 }
             }

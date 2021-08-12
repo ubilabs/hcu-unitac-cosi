@@ -49,7 +49,7 @@ export default {
         },
 
         tableIndication: function () {
-            return this.$t("additional:modules.tools.gfi.themes.trafficCount.tableIndication");
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.holidaySign");
         },
 
         lastupdateLabel: function () {
@@ -354,7 +354,7 @@ export default {
             class="tableIndication"
             :style="customStyle"
         >
-            {{ tableIndication }}
+            * {{ tableIndication }}
         </div>
         <div
             v-if="currentTabId !== 'infos'"
