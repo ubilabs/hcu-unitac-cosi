@@ -279,17 +279,19 @@ export default {
                 if (tabValue === "day") {
                     obj.Datum = date[0];
                     obj["Uhrzeit von"] = date[1].slice(0, -3);
+                    obj.Anzahl = data[key];
                     obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "week") {
                     obj.Datum = date[0];
+                    obj.Anzahl = data[key];
                     obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
+                    obj.Anzahl = data[key];
                     obj.Feiertag = hasHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
-                obj.Anzahl = data[key];
                 objArr.push(obj);
             }
 
@@ -416,17 +418,17 @@ export default {
 }
 .download-container {
     float: left;
-    padding-top: 25px;
+    padding-top: 30px;
      @media (max-width: 600px) {
-          padding-top: 35px;
+          padding-top: 45px;
      }
 }
 .reset-container {
     float: left;
-    padding-top: 25px;
+    padding-top: 30px;
     margin-left: 10px;
     @media (max-width: 600px) {
-        padding-top: 35px;
+        padding-top: 45px;
     }
 }
 table {
@@ -438,7 +440,7 @@ table {
         min-width: 280px;
         width: 50%;
         float: right;
-        margin-top: 25px;
+        margin-top: 30px;
         @media (max-width: 600px) {
             margin-top: 35px;
         }
