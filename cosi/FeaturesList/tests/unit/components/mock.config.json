@@ -1,4 +1,16 @@
 {
+    "Portalconfig": {
+        "menu": {
+            "tools": {
+                "children": {
+                    "featuresList": {
+                        "name": "translate#additional:modules.tools.cosi.featuresList.title",
+                        "glyphicon": "glyphicon-apple"
+                    }
+                }
+            }
+        }
+    },
     "Themenconfig": {
         "Fachdaten": {
             "Ordner": [{
