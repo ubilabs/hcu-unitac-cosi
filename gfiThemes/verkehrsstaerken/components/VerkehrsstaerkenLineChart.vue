@@ -237,6 +237,8 @@ export default {
                 bodyFontColor: this.toolTipBodyFontColor,
                 backgroundColor: this.toolTipBackgroundColor,
                 yAlign: "bottom",
+                titleAlign: "center",
+                bodyAlign: "center",
                 custom: (tooltip) => {
                     if (!tooltip) {
                         return;
