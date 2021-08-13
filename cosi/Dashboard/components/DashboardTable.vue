@@ -8,7 +8,7 @@ import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
-import {calculateStats, calculateCorrelation} from "../utils/operations";
+import {calculateStats, calculateCorrelation, getTotal, getAverage} from "../utils/operations";
 import {generateChartForDistricts, generateChartForCorrelation} from "../utils/chart";
 
 export default {
@@ -58,14 +58,16 @@ export default {
                     value: "average",
                     align: "end",
                     sortable: false,
-                    groupable: false
+                    groupable: false,
+                    selected: false
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.dashboard.totalCol"),
                     value: "total",
                     align: "end",
                     sortable: false,
-                    groupable: false
+                    groupable: false,
+                    selected: false
                 }
             ],
             districtColumns: [],
@@ -106,8 +108,10 @@ export default {
             return this.groupMapping(this.mapping);
         },
         selectedColumnNames () {
-            const selectedCols = this.districtColumns.filter(col => col.selected),
-                districtNames = selectedCols.length > 0 ? selectedCols.map(col => col.text) : this.districtColumns.map(col => col.text);
+            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected),
+                districtNames = selectedCols.length > 0
+                    ? selectedCols.map(col => col.text)
+                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.text);
 
             return districtNames;
         }
@@ -231,31 +235,15 @@ export default {
         },
 
         getAverage (item, timestamp) {
-            if (item.valueType !== "absolute") {
-                return "-";
-            }
-            let result = 0;
+            const average = getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
-            for (const district of this.selectedDistrictsNames) {
-                result += parseFloat(item[district][this.timestampPrefix + timestamp]);
-            }
-
-            result /= this.selectedDistrictsNames.length;
-
-            return result.toLocaleString(this.currentLocale);
+            return average.toLocaleString(this.currentLocale);
         },
 
         getTotal (item, timestamp) {
-            if (item.valueType !== "absolute") {
-                return "-";
-            }
-            let result = 0;
+            const total = getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
-            for (const district of this.selectedDistrictsNames) {
-                result += parseFloat(item[district][this.timestampPrefix + timestamp]);
-            }
-
-            return result.toLocaleString(this.currentLocale);
+            return total.toLocaleString(this.currentLocale);
         },
 
         setField (field, item) {
@@ -269,7 +257,29 @@ export default {
         },
 
         renderCharts (item) {
-            const chart = generateChartForDistricts(item, this.selectedColumnNames, this.selectedDistrictLevel.label, this.timestampPrefix);
+            const total = Object.fromEntries(
+                    item.years.map(timestamp => [
+                        this.timestampPrefix + timestamp,
+                        getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                    ])
+                ),
+                average = Object.fromEntries(
+                    item.years.map(timestamp => [
+                        this.timestampPrefix + timestamp,
+                        getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                    ])
+                ),
+                data = {
+                    ...item,
+                    Gesamt: total,
+                    Durchschnitt: average
+                },
+                chart = generateChartForDistricts(
+                    data,
+                    this.selectedColumnNames,
+                    this.selectedDistrictLevel.label,
+                    this.timestampPrefix
+                );
 
             this.setNewChartDataSet(chart);
         },
@@ -367,7 +377,7 @@ export default {
 
             <!-- Header for districts -->
             <template
-                v-for="district in districtColumns"
+                v-for="district in [...districtColumns, ...aggregateColumns]"
                 #[`header.${district.value}`]="{ header }"
             >
                 <div :key="district.value">
