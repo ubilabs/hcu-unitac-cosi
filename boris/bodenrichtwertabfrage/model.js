@@ -345,9 +345,11 @@ function initializeBrwAbfrageModel () {
          */
         sendGetFeatureRequest: function (richtwertNummer, year) {
             const typeName = parseInt(year, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
-                xhttp = new XMLHttpRequest();
+                xhttp = new XMLHttpRequest(),
+                index = Config.layerConf.lastIndexOf("/"),
+                url =  Config.layerConf.substring(0, index);
 
-            xhttp.open("POST", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte", true);
+            xhttp.open("POST", url + "/HH_WFS_Bodenrichtwerte", true);
             xhttp.onload = event => {
                 this.handleGetFeatureResponse(event.target.responseText, event.target.status, year);
             };
@@ -400,7 +402,9 @@ function initializeBrwAbfrageModel () {
          */
         sendGetFeatureRequestById: function (featureId, year) {
             const xhttp = new XMLHttpRequest(),
-                yearInt = parseInt(year, 10);
+                yearInt = parseInt(year, 10),
+                index = Config.layerConf.lastIndexOf("/"),
+                url =  Config.layerConf.substring(0, index);
             let typeName,
                 urlParams = null,
                 geometryName = "geom_zone";
@@ -417,7 +421,7 @@ function initializeBrwAbfrageModel () {
             }
             urlParams = "typeName=" + typeName + "&featureID=" + featureId;
 
-            xhttp.open("GET", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
+            xhttp.open("GET", url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
             xhttp.onload = event => {
                 const feature = new WFS().readFeature(event.target.responseText);
 
