@@ -317,7 +317,7 @@ export default {
             <form>
                 <Dropdown
                     v-model="selectedOption"
-                    :focusOnCreation="true"
+                    :focus-on-creation="true"
                     :options="options"
                 />
             </form>
