@@ -100,61 +100,6 @@ function parsedDataValue (value) {
     return value;
 }
 
-/**
- * Creates the definitions for the diagrams legend
- * @param   {String} value category of the inspection, e.g. "DTV"
- * @returns {Object[]} Definitions for diagram legend
- */
-export function createLegendData (value) {
-    const attr = [];
-
-    if (value === "DTV") {
-        attr.push({
-            text: i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDay"),
-            class: "dot",
-            style: "circle"
-        });
-    }
-    else if (value === "DTVw") {
-        attr.push({
-            text: i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDayWeekly"),
-            class: "dot",
-            style: "circle"
-        });
-    }
-    else {
-        attr.push({
-            text: i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeek"),
-            class: "dot",
-            style: "circle"
-        });
-    }
-
-    attr.push({
-        text: i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.withConstructionSiteInfluence"),
-        class: "dot_visible",
-        style: "rect"
-    });
-
-    return attr;
-}
-
-/**
- * Mapping of the the y-axis name
- * @param   {String} value  category of the inspection, e.g. "DTV"
- * @returns {String} Mapped y-axis name
- */
-export function createYAxisLabel (value) {
-    if (value === "DTV") {
-        return i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDay");
-    }
-    else if (value === "DTVw") {
-        return i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.carsPerDayWeekly");
-    }
-    return i18next.t("additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeek");
-}
-
-
-export default {combineYearsData, createNewRowName, createLegendData, createYAxisLabel};
+export default {combineYearsData, createNewRowName};
 
 

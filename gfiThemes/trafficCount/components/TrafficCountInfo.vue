@@ -10,7 +10,7 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {

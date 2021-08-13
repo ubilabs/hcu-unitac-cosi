@@ -231,16 +231,10 @@ export default {
     </div>
 </template>
 
-<style lang="less">
-.gfi .tool-window-vue {
-    max-width:  980px;
-}
-.vue-tool-content-body{
-    max-width: 980px;
-    max-height: 720px;
-}
+<style lang="less" scoped>
 .continuousCountingBike {
      overflow: auto;
+     max-width:  980px;
 
      padding: 5px 20px 5px 20px;
         @media (max-width: 767px) {

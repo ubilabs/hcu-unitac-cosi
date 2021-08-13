@@ -7,6 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataWeek} from "../utils/addMissingData.js";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountWeek",
@@ -21,16 +22,25 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
         }
     },
     data () {
         return {
+            tab: "week",
             weekDatepicker: null,
             apiData: [],
 
@@ -52,9 +62,23 @@ export default {
 
                 return this.calendarweek + " " + weeknumber + " / " + year;
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
             // props for table
-            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.weekLabel"),
+            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek"),
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd");
             },
@@ -90,6 +114,12 @@ export default {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek");
         }
     },
+    watch: {
+        reset () {
+            this.weekDatepicker = null;
+            this.setWeekdatepicker();
+        }
+    },
     mounted () {
         moment.locale(i18next.language);
         this.setWeekdatepicker();
@@ -117,7 +147,16 @@ export default {
                         }
                     },
                     todayHighlight: false,
-                    language: i18next.language
+                    language: i18next.language,
+                    beforeShowDay: date => {
+                        const holiday = getPublicHoliday(date, this.holidays);
+
+                        if (holiday?.translationKey) {
+                            return {classes: "holiday", tooltip: i18next.t(holiday.translationKey)};
+                        }
+
+                        return true;
+                    }
                 });
 
                 this.weekDatepicker.on("valuesChanged", function (evt) {
@@ -243,6 +282,7 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
             />
         </div>
         <TrafficCountCheckbox
@@ -250,6 +290,8 @@ export default {
         />
         <div id="tableWeek">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

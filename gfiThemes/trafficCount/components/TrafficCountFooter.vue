@@ -2,6 +2,8 @@
 import moment from "moment";
 import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
+import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 
 export default {
     name: "TrafficCountFooter",
@@ -15,11 +17,15 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
+            required: true
+        },
+        holidays: {
+            type: Array,
             required: true
         }
     },
@@ -40,6 +46,10 @@ export default {
     computed: {
         indication: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.notice");
+        },
+
+        tableIndication: function () {
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.holidaySign");
         },
 
         lastupdateLabel: function () {
@@ -104,10 +114,15 @@ export default {
             // tab body
             if (currentTabId === "day") {
                 this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-15min_Werte");
-                    // onerror
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
+                    if (this.api instanceof DauerzaehlstellenRadApi) {
+                        this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
+                    }
+                    else {
+                        this.exportModel.set("filename", result.title.replace(" ", "_") + "-15min_Werte");
+                    }
                 }, error => {
+                    // onerror
                     console.warn("error", "downloadDataDay", error);
                     Radio.trigger("Alert", "alert", {
                         content: "Die Daten können im Moment nicht heruntergeladen werden",
@@ -124,7 +139,7 @@ export default {
             }
             else if (currentTabId === "week") {
                 this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Tageswerte");
                     // onerror
                 }, error => {
@@ -144,7 +159,7 @@ export default {
             }
             else if (currentTabId === "year") {
                 this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Wochenwerte");
                     // onerror
                 }, error => {
@@ -251,9 +266,10 @@ export default {
          * converts the data object into an array of objects for the csv download
          * @param {Object} data - the data for download
          * @param {String} tabValue - day | week | year
+         * @param {String[]} holidays - the holidays from parent component in array format
          * @returns {Object[]} objArr - converted data
          */
-        prepareDataForDownload: function (data, tabValue) {
+        prepareDataForDownload: function (data, tabValue, holidays) {
             const objArr = [];
 
             for (const key in data) {
@@ -263,14 +279,19 @@ export default {
                 if (tabValue === "day") {
                     obj.Datum = date[0];
                     obj["Uhrzeit von"] = date[1].slice(0, -3);
+                    obj.Anzahl = data[key];
+                    obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "week") {
                     obj.Datum = date[0];
+                    obj.Anzahl = data[key];
+                    obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
+                    obj.Anzahl = data[key];
+                    obj.Feiertag = hasHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
-                obj.Anzahl = data[key];
                 objArr.push(obj);
             }
 
@@ -283,6 +304,14 @@ export default {
          */
         exportFile: function () {
             this.exportView.export();
+        },
+
+        /**
+         * trigger the function of resetting tab
+         * @returns {Void}  -
+         */
+        reset: function () {
+            this.$emit("resetTab");
         },
 
         /**
@@ -322,6 +351,13 @@ export default {
     <div>
         <div
             v-if="currentTabId !== 'infos'"
+            class="tableIndication"
+            :style="customStyle"
+        >
+            * {{ tableIndication }}
+        </div>
+        <div
+            v-if="currentTabId !== 'infos'"
             class="indication"
             :style="customStyle"
         >
@@ -333,6 +369,18 @@ export default {
             @click="exportFile"
             v-html="exportButtonTemplate.innerHTML"
         />
+        <div
+            v-if="currentTabId !== 'infos'"
+            class="reset-container"
+        >
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="reset"
+            >
+                {{ $t("additional:modules.tools.gfi.themes.trafficCount.reset") }}
+            </button>
+        </div>
         <div class="update">
             <table
                 :class="tableClass"
@@ -355,17 +403,33 @@ export default {
 <style lang="less" scoped>
 @import "~variables";
 
+.tableIndication {
+    font-size: 10px;
+    position: absolute;
+    top: -3px;
+    left: 0px;
+}
+
 .indication {
     font-size: 10px;
     position: absolute;
+    top: 10px;
     left: 0px;
 }
 .download-container {
     float: left;
-    padding-top: 25px;
+    padding-top: 30px;
      @media (max-width: 600px) {
-          padding-top: 35px;
+          padding-top: 45px;
      }
+}
+.reset-container {
+    float: left;
+    padding-top: 30px;
+    margin-left: 10px;
+    @media (max-width: 600px) {
+        padding-top: 45px;
+    }
 }
 table {
     margin-bottom: 0;
@@ -376,9 +440,12 @@ table {
         min-width: 280px;
         width: 50%;
         float: right;
-        margin-top: 25px;
+        margin-top: 30px;
         @media (max-width: 600px) {
-            min-width: inherit;
+            margin-top: 35px;
+        }
+        @media (max-width: 550px) {
+            margin-top: 10px;
         }
         tbody {
             tr {

@@ -7,6 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataYear} from "../utils/addMissingData.js";
+import {hasHolidayInWeek} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountYear",
@@ -21,16 +22,25 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
         }
     },
     data () {
         return {
+            tab: "year",
             yearDatepicker: null,
             apiData: [],
 
@@ -55,9 +65,23 @@ export default {
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (hasHolidayInWeek(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
             // props for table
-            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.yearLabel"),
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleYear"),
             setColTitle: datetime => {
                 return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
             },
@@ -84,7 +108,14 @@ export default {
             tableYear: "tableYear"
         };
     },
+    watch: {
+        reset () {
+            this.yearDatepicker = null;
+            this.setYearDatepicker();
+        }
+    },
     mounted () {
+        moment.locale(i18next.language);
         this.setYearDatepicker();
     },
     methods: {
@@ -238,6 +269,7 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
             />
         </div>
         <TrafficCountCheckbox
@@ -245,6 +277,8 @@ export default {
         />
         <div id="tableYear">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

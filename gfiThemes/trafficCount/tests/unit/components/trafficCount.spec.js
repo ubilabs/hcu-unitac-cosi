@@ -40,6 +40,12 @@ describe("addons/trafficCount/components/TraffiCount.vue", () => {
                             "requestUrl": "test://api",
                             "versionUrl": "1.0"
                         };
+                    },
+                    getTheme: function () {
+                        return {
+                            name: "trafficCount",
+                            params: {}
+                        };
                     }
                 }
             },

@@ -7,6 +7,8 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataDay} from "../utils/addMissingData.js";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 
 export default {
     name: "TrafficCountDay",
@@ -21,16 +23,25 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
         }
     },
     data () {
         return {
+            tab: "day",
             dayDatepicker: null,
             apiData: [],
 
@@ -46,13 +57,27 @@ export default {
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay"),
+            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay", {minutes: this.api instanceof DauerzaehlstellenRadApi ? 60 : 15}),
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
             // props for table
-            tableTitle: "Datum",
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleDay"),
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
@@ -78,6 +103,12 @@ export default {
             tableDay: "tableDay"
         };
     },
+    watch: {
+        reset () {
+            this.dayDatepicker = null;
+            this.setDayDatepicker();
+        }
+    },
     mounted () {
         moment.locale(i18next.language);
         this.setDayDatepicker();
@@ -96,7 +127,16 @@ export default {
                     type: "datepicker",
                     inputs: $(document.getElementById("dayDateInput")),
                     todayHighlight: false,
-                    language: i18next.language
+                    language: i18next.language,
+                    beforeShowDay: date => {
+                        const holiday = getPublicHoliday(date, this.holidays);
+
+                        if (holiday?.translationKey) {
+                            return {classes: "holiday", tooltip: i18next.t(holiday.translationKey)};
+                        }
+
+                        return true;
+                    }
                 });
 
                 this.dayDatepicker.on("valuesChanged", function (evt) {
@@ -128,7 +168,8 @@ export default {
             const api = this.api,
                 thingId = this.thingId,
                 meansOfTransport = this.meansOfTransport,
-                timeSettings = [];
+                timeSettings = [],
+                minutesForMissingData = api instanceof DauerzaehlstellenRadApi ? 60 : 15;
 
             if (dates.length === 0) {
                 this.apiData = [];
@@ -153,7 +194,7 @@ export default {
                             const from = typeof timeSettings[idx] === "object" ? timeSettings[idx].from + " 00:00:00" : "";
 
                             Object.keys(transportData).forEach(transportKey => {
-                                datasets[idx][transportKey] = addMissingDataDay(from, datasets[idx][transportKey]);
+                                datasets[idx][transportKey] = addMissingDataDay(from, datasets[idx][transportKey], minutesForMissingData);
                             });
                         });
                     }
@@ -225,6 +266,7 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
             />
         </div>
         <TrafficCountCheckbox
@@ -232,6 +274,8 @@ export default {
         />
         <div id="tableDay">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

@@ -233,6 +233,7 @@ export default {
 @background_color_2: rgba(0,0,0,.5);
 
 .schulinfo {
+    max-width: 40vw;
     position: relative;
     .bold {
         td {

@@ -4,7 +4,6 @@
   "cosi": "modules/loader.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
-  "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "fileImportAddon": {
@@ -13,10 +12,16 @@
   "populationRequest": {
     "type": "tool"
   },
+  "sdpDownload": {
+    "type": "tool"
+  },
   "commuterFlows": {
     "type": "tool"
   },
   "tacticalMark": {
+    "type": "tool"
+  },
+  "geoAnalyze": {
     "type": "tool"
   },
   "vueAddon": {

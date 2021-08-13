@@ -2,12 +2,13 @@
     "modules": {
         "tools": {
             "sdpdownload": {
-                "selectFormat": "Wählen Sie das Format aus",
+                "name": "SDP Download",
+                "selectFormat": "Wählen Sie das Format aus:",
                 "howToChooseTiles": "Wie möchten Sie die Kacheln auswählen?",
                 "downloadDataPackage": "Datenpaket herunterladen",
                 "specialDownloads": "Spezielle Downloads",
                 "neuwerkDataPackage": "Datenpaket von Neuwerk - Format bitte oben auswählen",
-                "scharhörnDataPackage": "Datenpaket von Scharhörn - Format bitte oben auswählen",
+                "scharhoernDataPackage": "Datenpaket von Scharhörn - Format bitte oben auswählen",
                 "tileOverview310": "UTM-Kachel Übersichten LS310",
                 "tileOverview320": "UTM-Kachel Übersichten LS320",
                 "nasLabel": "NAS",
@@ -22,8 +23,13 @@
                 "tooManyTilesSelected": "Die von Ihnen getroffene Auswahl beinhaltet {{tilesCount}} Kacheln. Sie dürfen maximal {{maxTiles}} Kacheln aufeinmal herunterladen. Bitte reduzieren Sie Ihre Auswahl!",
                 "failedToDownload": "Die Daten konnten leider nicht heruntergeladen werden!",
                 "details": "Details:",
-                "serviceNotResponding": "Ein benötigter Dienst antwortet nicht."
+                "serviceNotResponding": "Ein benötigter Dienst antwortet nicht.",
+                "alerts":{
+                  "info": "Info",
+                  "error": "Fehler",
+                  "downloadError": "Der Layer: wfsRaster konnte nicht geladen werden, da der Dienst nicht antwortet. Bitte versuchen Sie es zu einem späteren Zeitpunkt erneut. Falls das Problem weiterhin besteht wenden Sie sich bitte an den Betreiber des Dienstes: wfsRaster"
+                }
             }
         }
-    } 
+    }
 }
