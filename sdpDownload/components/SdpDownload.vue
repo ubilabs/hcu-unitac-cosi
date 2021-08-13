@@ -38,6 +38,7 @@ export default {
                     this.$refs.graphicalSelection.setStatus(value);
                     this.$refs.graphicalSelection.resetGeographicSelection();
                 });
+                this.setFocusToFirstControl();
             }
             else {
                 this.toggleRasterLayer();
@@ -72,7 +73,17 @@ export default {
     methods: {
         ...mapMutations("Tools/SdpDownload", Object.keys(mutations)),
         ...mapActions("Tools/SdpDownload", Object.keys(actions)),
-
+        /**
+         * Sets the focus to the first control
+         * @returns {void}
+         */
+        setFocusToFirstControl () {
+            this.$nextTick(() => {
+                if (this.$refs.formatSelection) {
+                    this.$refs.formatSelection.focus();
+                }
+            });
+        },
         /**
          * Translates the given key, checks if the key exists and throws a console warning if not
          * @param {String} key the key to translate
@@ -133,6 +144,7 @@ export default {
                 <div class="form-group col-xs-12">
                     <select
                         id="formatSelection"
+                        ref="formatSelection"
                         name="formatSelection"
                         class="form-control formatselect"
                         @change="setSelectedFormat($event.target.value)"
