@@ -59,7 +59,8 @@ export default {
                     align: "end",
                     sortable: false,
                     groupable: false,
-                    selected: false
+                    selected: false,
+                    isAggregation: true
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.dashboard.totalCol"),
@@ -67,7 +68,8 @@ export default {
                     align: "end",
                     sortable: false,
                     groupable: false,
-                    selected: false
+                    selected: false,
+                    isAggregation: true
                 }
             ],
             districtColumns: [],
@@ -228,6 +230,14 @@ export default {
             return colList;
         },
 
+        moveColLeft (col) {
+            console.log(col, this.districtColumns);
+        },
+
+        moveColRight (col) {
+            console.log(col, this.districtColumns);
+        },
+
         getValue (item, header, timestamp) {
             const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
 
@@ -380,13 +390,30 @@ export default {
                 v-for="district in [...districtColumns, ...aggregateColumns]"
                 #[`header.${district.value}`]="{ header }"
             >
-                <div :key="district.value">
+                <div
+                    :key="district.value"
+                    class="district-header"
+                >
                     <v-checkbox
                         v-model="header.selected"
                         :label="header.text"
                         dense
                         hide-details
                     />
+                    <template v-if="!district.isAggregation">
+                        <v-icon
+                            class="move-col left"
+                            @click="moveColLeft(district)"
+                        >
+                            mdi-chevron-left
+                        </v-icon>
+                        <v-icon
+                            class="move-col right"
+                            @click="moveColRight(district)"
+                        >
+                            mdi-chevron-right
+                        </v-icon>
+                    </template>
                 </div>
             </template>
 
@@ -537,6 +564,20 @@ export default {
     }
 
     thead {
+        .district-header {
+            position: relative;
+            .move-col {
+                position: absolute;
+                top: -10px;
+                font-size: 16px;
+                &.left {
+                    right: 0;
+                }
+                &.right {
+                    right: -10px;
+                }
+            }
+        }
         .v-input {
             font-size: unset;
             label {
