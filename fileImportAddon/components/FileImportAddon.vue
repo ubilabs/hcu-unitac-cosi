@@ -111,7 +111,7 @@ export default {
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
-        :focusToCloseIcon="true"
+        :focus-to-close-icon="true"
     >
         <template #toolBody>
             <div
