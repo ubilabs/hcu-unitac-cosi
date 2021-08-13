@@ -347,7 +347,7 @@ function initializeBrwAbfrageModel () {
             const typeName = parseInt(year, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
                 xhttp = new XMLHttpRequest(),
                 index = Config.layerConf.lastIndexOf("/"),
-                url =  Config.layerConf.substring(0, index);
+                url = Config.layerConf.substring(0, index);
 
             xhttp.open("POST", url + "/HH_WFS_Bodenrichtwerte", true);
             xhttp.onload = event => {
@@ -404,7 +404,7 @@ function initializeBrwAbfrageModel () {
             const xhttp = new XMLHttpRequest(),
                 yearInt = parseInt(year, 10),
                 index = Config.layerConf.lastIndexOf("/"),
-                url =  Config.layerConf.substring(0, index);
+                url = Config.layerConf.substring(0, index);
             let typeName,
                 urlParams = null,
                 geometryName = "geom_zone";
