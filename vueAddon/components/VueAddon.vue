@@ -54,7 +54,6 @@ export default {
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
         :focus-to-close-icon="true"
-
     >
         <template #toolBody>
             <div
