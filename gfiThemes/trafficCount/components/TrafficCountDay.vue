@@ -76,6 +76,21 @@ export default {
 
                 return pointStyle;
             },
+            renderPointSize: (datetime) => {
+                const pointSize = [],
+                    format = "YYYY-MM-DD";
+
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointSize.push(6);
+                    }
+                    else {
+                        pointSize.push(2);
+                    }
+                }
+
+                return pointSize;
+            },
             // props for table
             tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleDay"),
             setColTitle: datetime => {
@@ -267,6 +282,7 @@ export default {
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
                 :render-point-style="renderPointStyle"
+                :render-point-size="renderPointSize"
             />
         </div>
         <TrafficCountCheckbox

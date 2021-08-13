@@ -91,6 +91,15 @@ export default {
         renderPointStyle: {
             type: Function,
             required: true
+        },
+        /**
+         * a function (datetime[]) to get the point size
+         * @param {String[]} datetime the full datetime of dataset (format ["YYYY-MM-DD HH:mm:ss", ...])
+         * @returns {String}  the pointSize in Array
+         */
+        renderPointSize: {
+            type: Function,
+            required: true
         }
     },
     data () {
@@ -117,11 +126,11 @@ export default {
     watch: {
         apiData (newData, oldValue) {
             if (!oldValue.length) {
-                this.chartData = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend, this.renderPointStyle);
+                this.chartData = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend, this.renderPointStyle, this.renderPointSize);
                 this.createChart(this.chartData, this.ctx);
             }
             else if (Array.isArray(newData) && newData.length) {
-                this.chart.data = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend, this.renderPointStyle);
+                this.chart.data = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend, this.renderPointStyle, this.renderPointSize);
                 this.chart.update(this.updateAnimation);
             }
             else {
@@ -130,7 +139,7 @@ export default {
         }
     },
     mounted () {
-        this.chartData = this.createDataForDiagram(this.apiData, this.colors, this.renderLabelLegend, this.renderPointStyle);
+        this.chartData = this.createDataForDiagram(this.apiData, this.colors, this.renderLabelLegend, this.renderPointStyle, this.renderPointSize);
         this.ctx = this.$el.getElementsByTagName("canvas")[0].getContext("2d");
 
         /**
@@ -174,9 +183,10 @@ export default {
          * @param {String[]} colors an array of colors to use for coloring the datasets
          * @param {Function} callbackRenderLabelLegend a function(datetime) to render the text of the legend
          * @param {Function} callbackRenderPointStyle a function(datetime[]) to render the point style in Array
+         * @param {Function} callbackRenderPointSize a function(datetime[]) to render the point size in Array
          * @returns {Object}  an object {labels, datasets} to use for chartjs
          */
-        createDataForDiagram (apiData, colors, callbackRenderLabelLegend, callbackRenderPointStyle) {
+        createDataForDiagram (apiData, colors, callbackRenderLabelLegend, callbackRenderPointStyle, callbackRenderPointSize) {
             if (!Array.isArray(apiData) || apiData.length === 0 || typeof apiData[0] !== "object" || apiData[0] === null || Object.keys(apiData[0]).length === 0) {
                 return [];
             }
@@ -212,8 +222,8 @@ export default {
                     spanGaps: false,
                     fill: false,
                     borderWidth: 1,
-                    pointRadius: 3,
-                    pointHoverRadius: 3,
+                    pointRadius: datetimes.length > 0 && typeof callbackRenderPointSize === "function" ? callbackRenderPointSize(datetimes) : 2,
+                    pointHoverRadius: datetimes.length > 0 && typeof callbackRenderPointSize === "function" ? callbackRenderPointSize(datetimes) : 2,
                     pointStyle: datetimes.length > 0 && typeof callbackRenderPointStyle === "function" ? callbackRenderPointStyle(datetimes) : "",
                     datetimes
                 });

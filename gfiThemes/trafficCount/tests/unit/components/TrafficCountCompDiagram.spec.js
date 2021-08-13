@@ -97,9 +97,12 @@ describe("addons/trafficCount/components/TrafficCountCompDiagram.vue", () => {
                     },
                     callbackRenderPointStyle: (datetime) => {
                         return datetime;
+                    },
+                    callbackRenderPointSize: () => {
+                        return 2;
                     }
                 },
-                result = wrapper.vm.createDataForDiagram(apiData, colors, testFunctions.callbackRenderLabelLegend, testFunctions.callbackRenderPointStyle);
+                result = wrapper.vm.createDataForDiagram(apiData, colors, testFunctions.callbackRenderLabelLegend, testFunctions.callbackRenderPointStyle, testFunctions.callbackRenderPointSize);
 
             expect(result).to.be.an("object");
             expect(result.datasets).to.be.an("array").to.have.length(2);
@@ -112,8 +115,8 @@ describe("addons/trafficCount/components/TrafficCountCompDiagram.vue", () => {
             expect(result.datasets[0].spanGaps).to.be.false;
             expect(result.datasets[0].fill).to.be.false;
             expect(result.datasets[0].borderWidth).to.equal(1);
-            expect(result.datasets[0].pointRadius).to.equal(3);
-            expect(result.datasets[0].pointHoverRadius).to.equal(3);
+            expect(result.datasets[0].pointRadius).to.equal(2);
+            expect(result.datasets[0].pointHoverRadius).to.equal(2);
 
             expect(result.datasets[1]).to.be.an("object");
             expect(result.datasets[1].label).to.equal("Bkey1");
@@ -123,8 +126,8 @@ describe("addons/trafficCount/components/TrafficCountCompDiagram.vue", () => {
             expect(result.datasets[1].spanGaps).to.be.false;
             expect(result.datasets[1].fill).to.be.false;
             expect(result.datasets[1].borderWidth).to.equal(1);
-            expect(result.datasets[1].pointRadius).to.equal(3);
-            expect(result.datasets[1].pointHoverRadius).to.equal(3);
+            expect(result.datasets[1].pointRadius).to.equal(2);
+            expect(result.datasets[1].pointHoverRadius).to.equal(2);
         });
     });
 
