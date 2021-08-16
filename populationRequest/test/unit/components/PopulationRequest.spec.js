@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import Component from "../../../components/PopulationRequest.vue";
 import GraphicalSelectComponent from "../../../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
-import ToggleCheckboxComponent from "../../../../../src/share-components/ToggleCheckbox.vue";
+import ToggleCheckboxComponent from "../../../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
 import Module from "../../../store/indexPopulationRequest";
 
 const localVue = createLocalVue();

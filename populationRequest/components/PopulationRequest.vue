@@ -4,7 +4,7 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
 import GraphicalSelect from "../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
-import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
+import ToggleCheckbox from "../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import LoaderOverlay from "../../../src/utils/loaderOverlay";

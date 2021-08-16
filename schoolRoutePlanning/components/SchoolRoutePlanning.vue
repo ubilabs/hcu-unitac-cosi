@@ -8,7 +8,7 @@ import Tool from "../../../src/modules/tools/Tool.vue";
 import AddressList from "./SchoolRoutePlanningAddressList.vue";
 import RouteInformation from "./SchoolRoutePlanningRouteInformation.vue";
 import Schools from "./SchoolRoutePlanningSchools.vue";
-import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
+import ToggleCheckbox from "../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
 
 import getComponent from "../../../src/utils/getComponent";
 import {addRouteFeatures, routeStyle} from "../utils/routeLayer";
