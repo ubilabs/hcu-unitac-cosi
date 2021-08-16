@@ -928,9 +928,9 @@ function initializeBrwAbfrageModel () {
                 isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
             if (key === "convertedBrw") {
-                const valueDm = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(value, 10) * 1.95583).toFixed(1)) : "";
+                const valueDm = isDMTime ? thousandsSeparator((parseFloat(value, 10) * 1.95583).toFixed(1)) : "";
 
-                feature.setProperties({"convertedBrw": Radio.request("Util", "thousandsSeparator", value)});
+                feature.setProperties({"convertedBrw": thousandsSeparator(value)});
                 feature.setProperties({"convertedBrwDM": valueDm});
             }
             else if (key === "zBauweise") {
