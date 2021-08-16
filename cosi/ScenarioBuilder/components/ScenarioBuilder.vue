@@ -260,6 +260,10 @@ export default {
             #toolBody
         >
             <v-app>
+                <div class="form-group">
+                    <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
+                    <ScenarioManager />
+                </div>
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"
@@ -273,10 +277,6 @@ export default {
                     id="scenario-builder"
                 >
                     <form class="form-inline features-list-controls">
-                        <div class="form-group">
-                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
-                            <ScenarioManager />
-                        </div>
                         <v-divider />
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>

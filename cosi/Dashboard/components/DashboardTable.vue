@@ -209,6 +209,7 @@ export default {
                     value: district.getLabel(),
                     align: "end",
                     district,
+                    districtLevel: districtLevel.label,
                     sortable: false,
                     groupable: false,
                     selected: false
@@ -230,12 +231,40 @@ export default {
             return colList;
         },
 
-        moveColLeft (col) {
-            console.log(col, this.districtColumns);
+        setColDividers () {
+            for (let i = 0; i < this.districtColumns.length; i++) {
+                if (this.districtColumns[i].districtLevel !== this.districtColumns[i + 1]?.districtLevel) {
+                    this.districtColumns[i].divider = true;
+                }
+                else {
+                    this.districtColumns[i].divider = false;
+                }
+            }
         },
 
-        moveColRight (col) {
-            console.log(col, this.districtColumns);
+        /**
+         * Moves a district column left/right
+         * @param {Object} col - the column to move
+         * @param {0 | 1} [dir=0] - the direction to move, 0 = left, 1 = right
+         * @returns {void}
+         */
+        moveCol (col, dir = 0) {
+            // dont move left if index is 0
+            if (this.districtColumns.findIndex(_col => _col === col) === 0 && dir === 0) {
+                return;
+            }
+
+            const i = this.districtColumns.findIndex(_col => _col === col),
+                c0 = this.districtColumns.slice(0, i - 1 + dir),
+                c1 = this.districtColumns.slice(i + 1 + dir),
+                cSwap = this.districtColumns.slice(i - 1 + dir, i + 1 + dir).reverse(),
+                cols = [...c0, ...cSwap, ...c1];
+
+            this.districtColumns = cols;
+            console.log(cols, cols.map(c => c.text));
+            console.log(this.columns);
+
+            this.setColDividers();
         },
 
         getValue (item, header, timestamp) {
@@ -403,13 +432,13 @@ export default {
                     <template v-if="!district.isAggregation">
                         <v-icon
                             class="move-col left"
-                            @click="moveColLeft(district)"
+                            @click="moveCol(district, 0)"
                         >
                             mdi-chevron-left
                         </v-icon>
                         <v-icon
                             class="move-col right"
-                            @click="moveColRight(district)"
+                            @click="moveCol(district, 1)"
                         >
                             mdi-chevron-right
                         </v-icon>

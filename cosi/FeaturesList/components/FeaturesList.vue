@@ -90,10 +90,10 @@ export default {
                     value: "group",
                     divider: true
                 },
-                {
-                    text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
-                    value: "actions"
-                },
+                // {
+                //     text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
+                //     value: "actions"
+                // },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
                     value: "enabled"
