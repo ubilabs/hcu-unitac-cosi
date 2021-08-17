@@ -17,11 +17,14 @@ const actions = {
         // remove all highlightings to avoid undefined errors on the map
         dispatch("Map/removeHighlightFeature", null, {root: true});
         if (layer) {
+            console.log(layer);
             if (!featureItem.enabled) {
+                console.log(source);
                 source.removeFeature(featureItem.feature);
                 commit("addDisabledFeatureItem", featureItem);
             }
             else {
+                console.log(source);
                 source.addFeature(featureItem.feature);
                 commit("removeDisabledFeatureItem", featureItem);
             }

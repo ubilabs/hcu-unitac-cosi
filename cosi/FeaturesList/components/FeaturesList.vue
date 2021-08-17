@@ -213,9 +213,11 @@ export default {
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
-                    return [...list, ...features.map((feature, i) => {
+                    list.push(...this.checkDisabledFeatures(vectorLayer));
+
+                    return [...list, ...features.map((feature) => {
                         return {
-                            key: layerMap.id + i,
+                            key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
                             style: layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
@@ -234,6 +236,10 @@ export default {
             else {
                 this.items = [];
             }
+        },
+
+        checkDisabledFeatures (layer) {
+            return this.disabledFeatureItems.filter(item => item.layerId === layer.get("id"));
         },
 
         /**
@@ -260,7 +266,6 @@ export default {
         },
 
         updateFilterProps (newFilterProps) {
-            console.log("I should have been called!!");
             this.filterProps = {
                 ...this.filterProps,
                 ...newFilterProps
@@ -307,6 +312,7 @@ export default {
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         },
+
         toggleFeature (featureItem) {
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
