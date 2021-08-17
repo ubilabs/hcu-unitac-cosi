@@ -75,6 +75,16 @@ export default {
     },
     watch: {
         /**
+         * set focus, if the tool is activated (active === true).
+         * @param {Boolean} value Value deciding whether the tool gets activated or deactivated.
+         * @returns {void}
+         */
+        active (value) {
+            if (value) {
+                this.setFocusToFirstControl();
+            }
+        },
+        /**
          * Shows the route in the map.
          * @param {ol/MultiLineString|null} value The geometry of the route.
          * @returns {void}
@@ -99,6 +109,17 @@ export default {
         ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
         ...mapActions("Tools/SchoolRoutePlanning", Object.keys(actions)),
 
+        /**
+         * Sets the focus to the first control
+         * @returns {void}
+         */
+        setFocusToFirstControl () {
+            this.$nextTick(() => {
+                if (this.$refs.input) {
+                    this.$refs.input.focus();
+                }
+            });
+        },
         /**
          * Closes this tool window by setting active to false.
          * Save in there current school number as initialSelectedSchoolNumber for reopen this tool.

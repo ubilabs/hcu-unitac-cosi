@@ -414,6 +414,7 @@ export default {
                 <GraphicalSelect
                     ref="graphicalSelectComponent"
                     :select-element="'Dropdown'"
+                    :focus-on-creation="true"
                 />
             </div>
             <div

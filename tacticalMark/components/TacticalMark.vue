@@ -151,6 +151,7 @@ export default {
         active (value) {
             if (value) {
                 this.setActive(value);
+                this.setFocusToFirstControl();
             }
             else {
                 this.resetCanvasCursor();
@@ -177,7 +178,17 @@ export default {
             addInteractionToMap: "addInteraction",
             removeInteractionFromMap: "removeInteraction"
         }),
-
+        /**
+         * Sets the focus to the first control
+         * @returns {void}
+         */
+        setFocusToFirstControl () {
+            this.$nextTick(() => {
+                if (this.$refs["select-drawtype"]) {
+                    this.$refs["select-drawtype"].focus();
+                }
+            });
+        },
         /**
          * call the setIcon function by changes in damage account
          * field to update the number with setted param dmaChg
@@ -580,6 +591,7 @@ export default {
                     </label>
                 </div>
                 <select
+                    ref="select-drawtype"
                     class="form-control input-sm"
                     @change="selectIconCat($event);"
                 >

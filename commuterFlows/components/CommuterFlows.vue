@@ -87,6 +87,7 @@ export default {
                     // resets the tool for a clean start
                     this.resetAll();
                 }
+                this.setFocusToFirstControl();
             }
         },
         /**
@@ -193,6 +194,17 @@ export default {
     methods: {
         ...mapMutations("Tools/CommuterFlows", Object.keys(mutations)),
         thousandsSeparator,
+        /**
+         * Sets the focus to the first control
+         * @returns {void}
+         */
+        setFocusToFirstControl () {
+            this.$nextTick(() => {
+                if (this.$refs["select-district"]) {
+                    this.$refs["select-district"].focus();
+                }
+            });
+        },
         /**
          * Closes this tool window by setting active to false
          * @returns {void}
@@ -499,6 +511,7 @@ export default {
                             class="form-group"
                         >
                             <select
+                                ref="select-district"
                                 v-model="currentDistrict"
                                 class="form-control"
                             >
