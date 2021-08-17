@@ -535,7 +535,7 @@ export default {
                     class="compare-districts"
                 >
                     <div class="selectors">
-                        <v-select
+                        <v-autocomplete
                             id="layerfilter-selector-container"
                             v-model="selectedLayer"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
@@ -548,7 +548,7 @@ export default {
                             return-object
                             class="qd-select"
                         />
-                        <v-select
+                        <v-autocomplete
                             id="district-selector-container"
                             v-model="selectedDistrict"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
