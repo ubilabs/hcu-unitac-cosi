@@ -315,6 +315,7 @@ export default {
             }
             else {
                 this.resultNames = null;
+                this.results = null;
                 this.showSelectedDistrict();
             }
         },
