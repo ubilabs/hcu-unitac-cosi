@@ -10,7 +10,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import {getAllFeatures} from "../utils/getAllFeatures.js";
+import {getAllFeatures as _getAllFeatures} from "../utils/getAllFeatures.js";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 
@@ -117,6 +117,10 @@ export default {
             return _getLayerList();
         },
 
+        getAllFeatures: async function (id) {
+            return _getAllFeatures(id);
+        },
+
         setLayerOptions: function () {
             const url = this.selectedDistrictLevel.stats.baseUrl[0],
                 layers = this.getLayerList()
@@ -212,17 +216,17 @@ export default {
         },
 
         loadFeatures: async function (layer) {
-            if (Object.prototype.hasOwnProperty.call(this.propertiesMap, layer.id)) {
+            if (this.propertiesMap[layer.id]) {
                 return;
             }
 
             let fmap;
-            const features = await getAllFeatures(
+            const features = await this.getAllFeatures(
                 layer.referenceLayerId || layer.id
             );
 
             if (layer.referenceLayerId) {
-                const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName);
+                const facilityFeatures = await this.getFacilityFeatures(layer.facilityLayerName);
 
                 fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
             }
@@ -426,6 +430,16 @@ export default {
 
         close () {
             this.setActive(false);
+
+            // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
+            // else the menu-entry for this tool is always highlighted
+            const model = Radio.request("ModelList", "getModelByAttributes", {
+                id: this.$store.state.Tools.QueryDistricts.id
+            });
+
+            if (model) {
+                model.set("isActive", false);
+            }
         },
 
         createDistrictStyle () {
@@ -481,19 +495,12 @@ export default {
             ).map((model) => model.get("name").trim());
         },
 
-        getFacilityFeatures: function (name) {
+        async getFacilityFeatures (name) {
             const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
                 name: name
             });
 
-            if (selectedLayerModel) {
-                const features = selectedLayerModel.get("layer")
-                    .getSource().getFeatures()
-                    .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
-
-                return features;
-            }
-            return [];
+            return selectedLayerModel ? this.getAllFeatures(selectedLayerModel.id) : [];
         },
 
         getCoordinate: function (feature) {
@@ -525,7 +532,7 @@ export default {
                     class="compare-districts"
                 >
                     <div class="selectors">
-                        <v-select
+                        <v-autocomplete
                             id="layerfilter-selector-container"
                             v-model="selectedLayer"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
@@ -538,7 +545,7 @@ export default {
                             return-object
                             class="qd-select"
                         />
-                        <v-select
+                        <v-autocomplete
                             id="district-selector-container"
                             v-model="selectedDistrict"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
