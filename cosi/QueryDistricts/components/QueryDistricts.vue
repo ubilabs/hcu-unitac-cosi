@@ -500,14 +500,7 @@ export default {
                 name: name
             });
 
-            if (selectedLayerModel) {
-                const features = selectedLayerModel.get("layer")
-                    .getSource().getFeatures()
-                    .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
-
-                return features;
-            }
-            return [];
+            return selectedLayerModel ? this.getAllFeatures(selectedLayerModel.id) : [];
         },
 
         getCoordinate: function (feature) {

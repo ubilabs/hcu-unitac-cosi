@@ -39,7 +39,8 @@ describe("addons/cosi/QueryDistricts/", () => {
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
-        geo_features = new GeoJSON().readFeatures(features_ha_with_geo);
+        geo_features = new GeoJSON().readFeatures(features_ha_with_geo),
+        bib_features = new GeoJSON().readFeatures(features_bibs);
 
 
     // eslint-disable-next-line require-jsdoc
@@ -52,6 +53,9 @@ describe("addons/cosi/QueryDistricts/", () => {
         }
         if (id === "19042") {
             return geo_features;
+        }
+        if (id === "bib_layer") {
+            return bib_features;
         }
         return null;
     }
@@ -192,18 +196,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "ModelList" && a2 === "getModelByAttributes") {
                 return {
-                    get: (prop) => {
-                        if (prop === "layer") {
-                            const features = new GeoJSON().readFeatures(features_bibs);
-
-                            return {
-                                getSource: () => ({
-                                    getFeatures: sinon.stub().returns(features)
-                                })
-                            };
-                        }
-                        return null;
-                    }
+                    id: "bib_layer"
                 };
             }
             return null;
@@ -221,6 +214,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 getLayerList: getLayerListStub,
                 getAllFeatures: (id) => getAllFeaturesByAttribute({id})
             }
+
         });
 
         await ret.vm.$nextTick();
