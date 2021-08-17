@@ -40,23 +40,8 @@ describe("addons/cosi/QueryDistricts/", () => {
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
         geo_features = new GeoJSON().readFeatures(features_ha_with_geo),
+        bib_features = new GeoJSON().readFeatures(features_bibs);
 
-        mockConfigJson = {
-            Portalconfig: {
-                menu: {
-                    tools: {
-                        children: {
-                            queryDistricts: {
-                                "referenceLayers": [{"id": "19042"}]
-                            }
-                        },
-                        queryDistricts: {
-                            "referenceLayers": [{"id": "19042"}]
-                        }
-                    }
-                }
-            }
-        };
 
     // eslint-disable-next-line require-jsdoc
     function getAllFeaturesByAttribute ({id}) {
@@ -68,6 +53,9 @@ describe("addons/cosi/QueryDistricts/", () => {
         }
         if (id === "19042") {
             return geo_features;
+        }
+        if (id === "bib_layer") {
+            return bib_features;
         }
         return null;
     }
@@ -115,12 +103,6 @@ describe("addons/cosi/QueryDistricts/", () => {
                                 setSelectedDistrictsCollection: sandbox.stub()
                             }
                         },
-                        DistrictLoader: {
-                            namespaced: true,
-                            getters: {
-                                getAllFeaturesByAttribute: () => getAllFeaturesByAttribute
-                            }
-                        },
                         FeaturesList: {
                             namespaced: true,
                             getters: {
@@ -153,9 +135,6 @@ describe("addons/cosi/QueryDistricts/", () => {
                         cleanup: cleanupStub
                     }
                 }
-            },
-            state: {
-                configJson: mockConfigJson
             }
         });
         store.commit("Tools/QueryDistricts/setActive", false);
@@ -217,18 +196,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "ModelList" && a2 === "getModelByAttributes") {
                 return {
-                    get: (prop) => {
-                        if (prop === "layer") {
-                            const features = new GeoJSON().readFeatures(features_bibs);
-
-                            return {
-                                getSource: () => ({
-                                    getFeatures: sinon.stub().returns(features)
-                                })
-                            };
-                        }
-                        return null;
-                    }
+                    id: "bib_layer"
                 };
             }
             return null;
@@ -243,8 +211,10 @@ describe("addons/cosi/QueryDistricts/", () => {
             localVue,
             vuetify,
             methods: {
-                getLayerList: getLayerListStub
+                getLayerList: getLayerListStub,
+                getAllFeatures: (id) => getAllFeaturesByAttribute({id})
             }
+
         });
 
         await ret.vm.$nextTick();
@@ -483,6 +453,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.find("#add-filter").trigger("click");
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         const expModel = {
                 "layerId": "Öffentliche Bibliotheken",
@@ -571,7 +542,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "group": "additional:modules.tools.cosi.queryDistricts.funcData",
                 "id": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
                 "name": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "referenceLayerId": "19042",
+                "referenceLayerId": "19034",
                 "valueType": "absolute"
             }
         ]);
@@ -640,7 +611,6 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // assert
         expect(wrapper.vm.layerFilterModels[0].value).to.be.equal(0.03);
-
 
         // act
         await wrapper.vm.updateFilter({layerId: "19041", quotientLayer: null});
