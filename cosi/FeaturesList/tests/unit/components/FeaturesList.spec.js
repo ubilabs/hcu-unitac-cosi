@@ -69,7 +69,17 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 }]
             }]
         }],
-        expCols = ["style", "name", "district", "address", "layerName", "type", "group", "actions", "enabled"],
+        expCols = [
+            "style",
+            "name",
+            "district",
+            "address",
+            "layerName",
+            "type",
+            "group",
+            // "actions",
+            "enabled"
+        ],
         layersMock = [];
 
     beforeEach(() => {
@@ -104,7 +114,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 Map: {
                     namespaced: true,
                     getters: {
-                        layerById: () => sinon.stub(),
+                        layerById: () => sinon.stub().returns({olLayer: layer1}),
                         layerList: layerListStub
                     },
                     actions: {
@@ -202,7 +212,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const wrapper = await mountComponent(true, [layer1]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
 
-            await wrapper.vm.$nextTick();
+            // await wrapper.vm.$nextTick();
 
             // table has been rendered
             expect(tableWrapper.exists()).to.be.true;
@@ -214,7 +224,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const wrapper = await mountComponent(true, [layer1]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
 
-            await wrapper.vm.$nextTick();
+            // await wrapper.vm.$nextTick();
             await wrapper.find("button.mdi-chevron-down").trigger("click");
 
             // expand the table on expand button click
@@ -227,7 +237,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const spyUpdateFilterProps = sinon.spy(FeaturesList.methods, "updateFilterProps"),
                 wrapper = await mountComponent(true, [layer1]);
 
-            await wrapper.vm.$nextTick();
+            // await wrapper.vm.$nextTick();
             await wrapper.find("button.mdi-chevron-down").trigger("click");
             await wrapper.findComponent(DetailView).find("input").trigger("click");
 
@@ -255,6 +265,19 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             // exportTable should have been called twice, the 2nd time with arg[0] === true
             expect(spyExportTable.callCount).to.equal(2);
             expect(spyExportTable.calledWith(true)).to.be.true;
+        });
+
+        it("expect feature to be removed from map/layer, when toggled off", async () => {
+            const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
+                wrapper = await mountComponent(true, [layer1]);
+
+            await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
+            await wrapper.vm.$nextTick();
+
+            expect(spyToggleFeature.calledOnceWith(wrapper.vm.items[0])).to.be.true;
+            expect(wrapper.vm.disabledFeatureItems).to.have.lengthOf(1);
+            expect(wrapper.vm.items[0].enabled).to.be.false;
+            expect(layer1.getSource().getFeatures()).to.have.lengthOf(0);
         });
     });
 
