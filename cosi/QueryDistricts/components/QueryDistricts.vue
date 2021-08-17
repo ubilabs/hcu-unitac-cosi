@@ -10,7 +10,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import {getAllFeatures} from "../utils/getAllFeatures.js";
+import {getAllFeatures as _getAllFeatures} from "../utils/getAllFeatures.js";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 
@@ -117,6 +117,10 @@ export default {
             return _getLayerList();
         },
 
+        getAllFeatures: async function (id) {
+            return _getAllFeatures(id);
+        },
+
         setLayerOptions: function () {
             const url = this.selectedDistrictLevel.stats.baseUrl[0],
                 layers = this.getLayerList()
@@ -212,17 +216,17 @@ export default {
         },
 
         loadFeatures: async function (layer) {
-            if (Object.prototype.hasOwnProperty.call(this.propertiesMap, layer.id)) {
+            if (this.propertiesMap[layer.id]) {
                 return;
             }
 
             let fmap;
-            const features = await getAllFeatures(
+            const features = await this.getAllFeatures(
                 layer.referenceLayerId || layer.id
             );
 
             if (layer.referenceLayerId) {
-                const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName);
+                const facilityFeatures = await this.getFacilityFeatures(layer.facilityLayerName);
 
                 fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
             }
@@ -491,7 +495,7 @@ export default {
             ).map((model) => model.get("name").trim());
         },
 
-        getFacilityFeatures: function (name) {
+        async getFacilityFeatures (name) {
             const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
                 name: name
             });
