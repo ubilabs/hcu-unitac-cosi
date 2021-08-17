@@ -21,7 +21,9 @@
                     "count": "ct.",
                     "selectedDistrictNotAvailable": "Reference value invalid for selected district",
                     "selectQuotientLayer": "quotient",
-                    "rowsPerPage": "rows per page"
+                    "rowsPerPage": "rows per page",
+                    "exportTable": "export table",
+                    "exportFilename": "CoSI_query_districts"
                 }
             }
         }

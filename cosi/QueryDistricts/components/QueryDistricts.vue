@@ -11,8 +11,10 @@ import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 import {getAllFeatures as _getAllFeatures} from "../utils/getAllFeatures.js";
+import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
+import renameKeys from "../../utils/renameKeys.js";
 
 export default {
     name: "QueryDistricts",
@@ -369,7 +371,7 @@ export default {
             }
 
             this.dashboard = new Ctor({
-                propsData: {layerFilterModels: this.layerFilterModels, districtNames: this.resultNames, i18n}
+                propsData: {resultTableHeaders: this.resultTableHeaders, results: this.results, i18n}
             }).$mount(cont);
         },
 
@@ -518,6 +520,15 @@ export default {
                 return geometry.getCoordinates().splice(0, 2);
             }
             return Extent.getCenter(geometry.getExtent());
+        },
+
+        exportTable: function () {
+            const exportData = this.results.map(r=>renameKeys(
+                    Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))), r)),
+                date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
+                filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
+
+            exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         }
     }
 };
@@ -649,14 +660,23 @@ export default {
                     </div>
                     <br>
                     <div>
-                        <button
+                        <!-- <button
                             v-if="resultNames && resultNames.length"
                             id="show-in-dashboard"
                             class="btn btn-lgv-grey measure-delete"
                             @click="showInDashboard()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.showInDashboardLable') }}
-                        </button>
+                        </button> -->
+                        <v-btn
+                            v-if="resultNames && resultNames.length"
+                            tile
+                            depressed
+                            :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
+                            @click="exportTable()"
+                        >
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
+                        </v-btn>
                     </div>
                 </div>
             </v-app>
@@ -778,5 +798,12 @@ export default {
 #reference-district {
     color: #646262;
     margin-bottom: 10px;
+}
+.download-container {
+    float: left;
+    padding-top: 25px;
+     @media (max-width: 600px) {
+          padding-top: 35px;
+     }
 }
 </style>
