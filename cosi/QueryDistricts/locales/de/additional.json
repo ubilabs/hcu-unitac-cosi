@@ -20,7 +20,8 @@
                     "funcData": "Fachdaten",
                     "count": "Anz.",
                     "selectedDistrictNotAvailable": "Der Referenzwert ist für das Referenzgebiet nicht definiert",
-                    "selectQuotientLayer": "Quotient"
+                    "selectQuotientLayer": "Quotient",
+                    "rowsPerPage": "Zeilen pro Seite"
                 }
             }
         }

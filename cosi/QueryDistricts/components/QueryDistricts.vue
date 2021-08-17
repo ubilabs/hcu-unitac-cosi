@@ -30,10 +30,12 @@ export default {
             layerFilterModels: [],
             selectorField: "verwaltungseinheit",
             resultNames: null,
+            results: null,
             refDistrict: null,
             dashboard: null,
             facilityNames: [],
-            propertiesMap: {}
+            propertiesMap: {},
+            resultTableHeaders: null
         };
     },
     computed: {
@@ -304,6 +306,11 @@ export default {
                 const result = await this.setComparableFeatures(this.layerFilterModels);
 
                 this.resultNames = result.resultNames;
+                this.results = result.table;
+                this.resultTableHeaders = [{text: "Name", align: "start", value: "name"}];
+                for (let i = 0; i < this.layerFilterModels.length; i++) {
+                    this.resultTableHeaders.push({text: this.layerFilterModels[i].name, value: i.toString(), align: "center"});
+                }
                 this.showDistrictFeatures(result.features);
             }
             else {
@@ -312,14 +319,14 @@ export default {
             }
         },
 
-        zoomToDistrict: function (districtName) {
+        zoomToDistrict: function (row) {
             const selectedDistrictLayer = this.layer,
                 attributeSelector = this.keyOfAttrName,
                 districtFeatures = selectedDistrictLayer.getSource().getFeatures();
 
 
             for (const feature of districtFeatures) {
-                if (feature.getProperties()[attributeSelector] === districtName) {
+                if (feature.getProperties()[attributeSelector] === row.name) {
                     const extent = feature.getGeometry().getExtent();
 
                     this.zoomTo(extent, {padding: [20, 20, 20, 20]});
@@ -601,7 +608,7 @@ export default {
                             <span
                                 id="reference-district-button"
                                 class="name-tag district-name"
-                                @click="zoomToDistrict(selectedDistrict)"
+                                @click="zoomToDistrict({'name': selectedDistrict})"
                             >{{ selectedDistrict }}</span>
                         </div>
                         <div
@@ -613,13 +620,19 @@ export default {
                                     {{ $t('additional:modules.tools.cosi.queryDistricts.comparableResults') }}:
                                 </strong>
                             </p>
-                            <span
-                                v-for="name in resultNames"
-                                :id="'result-'+name"
-                                :key="name"
-                                class="name-tag district-name"
-                                @click="zoomToDistrict(name)"
-                            >{{ name }}</span>
+                            <v-data-table
+                                v-if="resultNames.length > 0"
+                                id="result-table"
+                                dense
+                                :headers="resultTableHeaders"
+                                :items="results"
+                                item-key="name"
+                                class="elevation-1"
+                                :footer-props="{
+                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage')
+                                }"
+                                @click:row="zoomToDistrict"
+                            />
                         </div>
                     </div>
                     <br>

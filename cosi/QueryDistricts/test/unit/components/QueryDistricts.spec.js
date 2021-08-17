@@ -354,10 +354,14 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // assert
         expect(wrapper.vm.resultNames).to.deep.equal(["Hamm", "Horn"]);
-        expect(await wrapper.find("#compare-results").text()).to.contain("HammHorn");
+        expect(wrapper.vm.results).to.deep.equal([{"0": 38331, "name": "Hamm"}, {"0": 38373, "name": "Horn"}]);
+        expect(wrapper.vm.resultTableHeaders).to.deep.equal([{"align": "start", "text": "Name", "value": "name"}, {"text": "name", "value": "0", "align": "center"}]);
+
+        expect(await wrapper.find("#result-table").exists()).to.be.true;
 
         // act: click result name
-        await wrapper.find("#result-Horn").trigger("click");
+        // await wrapper.find("#result-Horn").trigger("click");
+        await wrapper.vm.zoomToDistrict({"name": "Horn"});
         await wrapper.vm.$nextTick();
 
         // assert
@@ -400,8 +404,8 @@ describe("addons/cosi/QueryDistricts/", () => {
         // arrange
         const self = {
                 propertiesMap: {
-                    "19041": getAllFeaturesByAttribute({id: "19041"}).map(f => f.getProperties()),
-                    "19034": getAllFeaturesByAttribute({id: "19034"}).map(f => f.getProperties())
+                    "19041": getAllFeaturesByAttribute({id: "19041"}).map(feature => ({...feature.getProperties(), feature})),
+                    "19034": getAllFeaturesByAttribute({id: "19034"}).map(feature => ({...feature.getProperties(), feature}))
                 },
                 selectorField: "verwaltungseinheit",
                 keyOfAttrNameStats: "stadtteil",
@@ -420,6 +424,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(ret.resultNames).to.deep.equal(
             ["Cranz"]
         );
+        expect(ret.table).to.deep.equal([{"0": "133.28764", "1": "133.28764", "name": "Cranz"}]);
     });
     it("show help", async () => {
         // arrange
