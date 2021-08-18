@@ -50,16 +50,15 @@ function flattenFolderLayers (folder, condition) {
  * @param {String} misc - the name to group ungrouped layers by
  * @returns {Object[]} the layer mapping array
  */
-export default function getVectorlayerMapping (topicsConfig, path = "Fachdaten/FachdatenAnalyseSimulation2", condition = "isFacility", misc = "Sonstiges") {
-    const _path = path.split("/"),
-        mapping = [];
-    let vectorlayerHierarchy = _path.length > 0 ? topicsConfig[_path[0]] : topicsConfig;
+export default function getVectorlayerMapping (topicsConfig, path = ["Fachdaten", "Fachdaten - Analyse / Simulation"], condition = "isFacility", misc = "Sonstiges") {
+    const mapping = [];
+    let vectorlayerHierarchy = path.length > 0 ? topicsConfig[path[0]] : topicsConfig;
 
     // follow the path down the folder structure to the destined folder containing the analysis layers
-    if (_path.length > 1) {
-        for (let i = 1; i < _path.length; i++) {
+    if (path.length > 1) {
+        for (let i = 1; i < path.length; i++) {
             if (vectorlayerHierarchy && vectorlayerHierarchy.Ordner) {
-                vectorlayerHierarchy = vectorlayerHierarchy.Ordner.find(folder => folder.id === _path[i]);
+                vectorlayerHierarchy = vectorlayerHierarchy.Ordner.find(folder => folder.Titel === path[i]);
             }
         }
     }

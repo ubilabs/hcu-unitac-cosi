@@ -108,3 +108,45 @@ export function calculateCorrelation () {
         regression: fReg
     };
 }
+
+/**
+ * Calculates the average of a dataset
+ * @param {Object} item - the data for that category
+ * @param {String[]} districtNames - the districts objects to generate the chart data for
+ * @param {Number} timestamp - the current timestamp
+ * @param {String} timestampPrefix - the prefix for timestamp attributes
+ * @returns {Number} the average
+ */
+export function getAverage (item, districtNames, timestamp, timestampPrefix) {
+    if (item.valueType !== "absolute") {
+        return "-";
+    }
+    let result = getTotal(item, districtNames, timestamp, timestampPrefix);
+
+    result /= districtNames.filter(dist => item[dist]).length;
+
+    return result;
+}
+
+/**
+ * Calculates the total of a dataset
+ * @param {Object} item - the data for that category
+ * @param {String[]} districtNames - the districts objects to generate the chart data for
+ * @param {Number} timestamp - the current timestamp
+ * @param {String} timestampPrefix - the prefix for timestamp attributes
+ * @returns {Number} the total
+ */
+export function getTotal (item, districtNames, timestamp, timestampPrefix) {
+    if (item.valueType !== "absolute") {
+        return "-";
+    }
+    let result = 0;
+
+    for (const district of districtNames) {
+        if (item[district]?.[timestampPrefix + timestamp]) {
+            result += parseFloat(item[district][timestampPrefix + timestamp]);
+        }
+    }
+
+    return result;
+}
