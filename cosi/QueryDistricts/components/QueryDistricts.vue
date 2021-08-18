@@ -41,6 +41,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/QueryDistricts", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", [
             "keyOfAttrName",
@@ -356,7 +357,6 @@ export default {
 
             root.appendChild(cont);
 
-
             Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
             Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
                 id: "compareDistricts",
@@ -644,7 +644,14 @@ export default {
                                     'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage')
                                 }"
                                 @click:row="zoomToDistrict"
-                            />
+                            >
+                                <template
+                                    v-for="col in resultTableHeaders.filter(e => e.value !== 'name')"
+                                    #[`item.${col.value}`]="{ item, header }"
+                                >
+                                    {{ parseFloat(item[header.value]).toLocaleString(currentLocale) }}
+                                </template>
+                            </v-data-table>
                         </div>
                     </div>
                     <br>
