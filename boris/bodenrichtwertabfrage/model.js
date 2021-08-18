@@ -66,9 +66,9 @@ function initializeBrwAbfrageModel () {
          * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
          */
         requestParametricUrl: function () {
-            const brwId = Radio.request("ParametricURL", "getBrwId"),
-                brwLayerName = Radio.request("ParametricURL", "getBrwLayerName"),
-                center = Radio.request("ParametricURL", "getCenter"),
+            const brwId = store.state.urlParams?.brwId,
+                brwLayerName = store.state.urlParams?.brwLayerName,
+                center = store.state.urlParams && store.state.urlParams["Map/center"],
                 processFromParametricUrl = true;
 
             if (brwId && brwLayerName && center) {
