@@ -240,7 +240,7 @@ export default {
             </v-card>
         </v-menu>
         <v-icon @click="renderVisualization">
-            {{ _item.visualized ? 'mdi-eye-off' : 'mdi-eye' }}
+            {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
         </v-icon>
         <v-icon @click="_item.expanded = !_item.expanded">
             {{ _item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}

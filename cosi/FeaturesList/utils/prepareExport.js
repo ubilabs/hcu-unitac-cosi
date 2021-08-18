@@ -55,7 +55,7 @@ export function prepareDetailsExport (data, filterProps) {
             properties = Object.entries(_item.feature.getProperties()) // the feature's properties as tuples
                 .filter(prop => {
                     // return all properties if no filter is set
-                    if (filterProps[_item.layerId]?.length === 0) {
+                    if (!filterProps[_item.layerId] || filterProps[_item.layerId].length === 0) {
                         return true;
                     }
                     // filter according to the properties selected in the detail view

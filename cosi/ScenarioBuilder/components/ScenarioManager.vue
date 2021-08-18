@@ -160,9 +160,9 @@ export default {
                     tile
                     depressed
                     :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
-                    :disabled="!activeScenario || activeScenario.simulatedFeatures.length === 0"
+                    :disabled="!activeScenario"
                     class="flex-item"
-                    @click="activeScenario ? activeScenario.exportSzenarioFeatures() : null"
+                    @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
                 >
                     <span v-if="useIcons">
                         <v-icon>mdi-download</v-icon>
@@ -224,8 +224,7 @@ export default {
                 id="new-scenario-form"
                 ref="new-scenario-form"
                 v-model="newScenarioValid"
-                on-submit="return false;"
-                @submit="createNewScenario"
+                @submit.prevent="createNewScenario"
             >
                 <v-row>
                     <v-col cols="12">

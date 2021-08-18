@@ -347,7 +347,19 @@ export default class Scenario {
      * Exports simulated features as geoJson
      * @returns {void}
      */
-    exportSzenarioFeatures () {
+    exportScenarioFeatures () {
+        const geojson = featuresToGeoJsonCollection(
+            this.simulatedFeatures.map(scenarioFeature => scenarioFeature.feature)
+        );
+
+        downloadJsonToFile(geojson, this.name + "_Simulierte_Einrichtungen.json");
+    }
+
+    /**
+     * Exports simulated features as geoJson
+     * @returns {void}
+     */
+    exportScenario () {
         const geojson = featuresToGeoJsonCollection(
             this.simulatedFeatures.map(scenarioFeature => scenarioFeature.feature)
         );

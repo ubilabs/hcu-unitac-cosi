@@ -8,7 +8,7 @@ import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
-import {calculateStats, calculateCorrelation} from "../utils/operations";
+import {calculateStats, calculateCorrelation, getTotal, getAverage} from "../utils/operations";
 import {generateChartForDistricts, generateChartForCorrelation} from "../utils/chart";
 
 export default {
@@ -58,14 +58,18 @@ export default {
                     value: "average",
                     align: "end",
                     sortable: false,
-                    groupable: false
+                    groupable: false,
+                    selected: false,
+                    isAggregation: true
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.dashboard.totalCol"),
                     value: "total",
                     align: "end",
                     sortable: false,
-                    groupable: false
+                    groupable: false,
+                    selected: false,
+                    isAggregation: true
                 }
             ],
             districtColumns: [],
@@ -106,8 +110,10 @@ export default {
             return this.groupMapping(this.mapping);
         },
         selectedColumnNames () {
-            const selectedCols = this.districtColumns.filter(col => col.selected),
-                districtNames = selectedCols.length > 0 ? selectedCols.map(col => col.text) : this.districtColumns.map(col => col.text);
+            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected),
+                districtNames = selectedCols.length > 0
+                    ? selectedCols.map(col => col.text)
+                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.text);
 
             return districtNames;
         }
@@ -203,6 +209,7 @@ export default {
                     value: district.getLabel(),
                     align: "end",
                     district,
+                    districtLevel: districtLevel.label,
                     sortable: false,
                     groupable: false,
                     selected: false
@@ -224,6 +231,42 @@ export default {
             return colList;
         },
 
+        setColDividers () {
+            for (let i = 0; i < this.districtColumns.length; i++) {
+                if (this.districtColumns[i].districtLevel !== this.districtColumns[i + 1]?.districtLevel) {
+                    this.districtColumns[i].divider = true;
+                }
+                else {
+                    this.districtColumns[i].divider = false;
+                }
+            }
+        },
+
+        /**
+         * Moves a district column left/right
+         * @param {Object} col - the column to move
+         * @param {0 | 1} [dir=0] - the direction to move, 0 = left, 1 = right
+         * @returns {void}
+         */
+        moveCol (col, dir = 0) {
+            // dont move left if index is 0
+            if (this.districtColumns.findIndex(_col => _col === col) === 0 && dir === 0) {
+                return;
+            }
+
+            const i = this.districtColumns.findIndex(_col => _col === col),
+                c0 = this.districtColumns.slice(0, i - 1 + dir),
+                c1 = this.districtColumns.slice(i + 1 + dir),
+                cSwap = this.districtColumns.slice(i - 1 + dir, i + 1 + dir).reverse(),
+                cols = [...c0, ...cSwap, ...c1];
+
+            this.districtColumns = cols;
+            console.log(cols, cols.map(c => c.text));
+            console.log(this.columns);
+
+            this.setColDividers();
+        },
+
         getValue (item, header, timestamp) {
             const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
 
@@ -231,31 +274,15 @@ export default {
         },
 
         getAverage (item, timestamp) {
-            if (item.valueType !== "absolute") {
-                return "-";
-            }
-            let result = 0;
+            const average = getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
-            for (const district of this.selectedDistrictsNames) {
-                result += parseFloat(item[district][this.timestampPrefix + timestamp]);
-            }
-
-            result /= this.selectedDistrictsNames.length;
-
-            return result.toLocaleString(this.currentLocale);
+            return average.toLocaleString(this.currentLocale);
         },
 
         getTotal (item, timestamp) {
-            if (item.valueType !== "absolute") {
-                return "-";
-            }
-            let result = 0;
+            const total = getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
-            for (const district of this.selectedDistrictsNames) {
-                result += parseFloat(item[district][this.timestampPrefix + timestamp]);
-            }
-
-            return result.toLocaleString(this.currentLocale);
+            return total.toLocaleString(this.currentLocale);
         },
 
         setField (field, item) {
@@ -269,7 +296,29 @@ export default {
         },
 
         renderCharts (item) {
-            const chart = generateChartForDistricts(item, this.selectedColumnNames, this.selectedDistrictLevel.label, this.timestampPrefix);
+            const total = Object.fromEntries(
+                    item.years.map(timestamp => [
+                        this.timestampPrefix + timestamp,
+                        getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                    ])
+                ),
+                average = Object.fromEntries(
+                    item.years.map(timestamp => [
+                        this.timestampPrefix + timestamp,
+                        getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                    ])
+                ),
+                data = {
+                    ...item,
+                    Gesamt: total,
+                    Durchschnitt: average
+                },
+                chart = generateChartForDistricts(
+                    data,
+                    this.selectedColumnNames,
+                    this.selectedDistrictLevel.label,
+                    this.timestampPrefix
+                );
 
             this.setNewChartDataSet(chart);
         },
@@ -367,16 +416,33 @@ export default {
 
             <!-- Header for districts -->
             <template
-                v-for="district in districtColumns"
+                v-for="district in [...districtColumns, ...aggregateColumns]"
                 #[`header.${district.value}`]="{ header }"
             >
-                <div :key="district.value">
+                <div
+                    :key="district.value"
+                    class="district-header"
+                >
                     <v-checkbox
                         v-model="header.selected"
                         :label="header.text"
                         dense
                         hide-details
                     />
+                    <template v-if="!district.isAggregation">
+                        <v-icon
+                            class="move-col left"
+                            @click="moveCol(district, 0)"
+                        >
+                            mdi-chevron-left
+                        </v-icon>
+                        <v-icon
+                            class="move-col right"
+                            @click="moveCol(district, 1)"
+                        >
+                            mdi-chevron-right
+                        </v-icon>
+                    </template>
                 </div>
             </template>
 
@@ -527,6 +593,20 @@ export default {
     }
 
     thead {
+        .district-header {
+            position: relative;
+            .move-col {
+                position: absolute;
+                top: -10px;
+                font-size: 16px;
+                &.left {
+                    right: 0;
+                }
+                &.right {
+                    right: -10px;
+                }
+            }
+        }
         .v-input {
             font-size: unset;
             label {

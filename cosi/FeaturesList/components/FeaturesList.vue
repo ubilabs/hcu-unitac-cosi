@@ -46,7 +46,6 @@ export default {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
-        ...mapGetters("Map", ["layerById", "visibleLayerList"]),
         ...mapState(["configJson"]),
         columns () {
             return [
@@ -90,21 +89,16 @@ export default {
                     value: "group",
                     divider: true
                 },
-                {
-                    text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
-                    value: "actions"
-                },
+                // {
+                //     text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
+                //     value: "actions"
+                // },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
                     value: "enabled"
                 }
             ];
         },
-        // districtFeatures () {
-        //     return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
-        //         ? this.selectedDistrictFeatures
-        //         : this.districtLayer.getSource().getFeatures();
-        // },
         selected: {
             get () {
                 return this.selectedFeatureItems;
@@ -185,7 +179,8 @@ export default {
     },
     mounted () {
         // initally set the facilities mapping based on the config.json
-        this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
+        this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
+        this.updateFeaturesList();
 
         /**
          * @description Listen to newly loaded VectorLayer Features to update the FeaturesList
@@ -202,6 +197,8 @@ export default {
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Map", ["removeHighlightFeature"]),
 
+        getVectorlayerMapping,
+
         /**
          * Reads the active vector layers, constructs the list of table items and writes them to the store.
          * Finds the containing district from districtSelector for each feature
@@ -215,9 +212,11 @@ export default {
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
-                    return [...list, ...features.map((feature, i) => {
+                    list.push(...this.checkDisabledFeatures(vectorLayer));
+
+                    return [...list, ...features.map((feature) => {
                         return {
-                            key: layerMap.id + i,
+                            key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
                             style: layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
@@ -236,6 +235,10 @@ export default {
             else {
                 this.items = [];
             }
+        },
+
+        checkDisabledFeatures (layer) {
+            return this.disabledFeatureItems.filter(item => item.layerId === layer.get("id"));
         },
 
         /**
@@ -308,6 +311,7 @@ export default {
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         },
+
         toggleFeature (featureItem) {
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
@@ -430,6 +434,7 @@ export default {
                             <v-row>
                                 <v-col cols="12">
                                     <v-btn
+                                        id="export-table"
                                         tile
                                         depressed
                                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
@@ -438,6 +443,7 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                                     </v-btn>
                                     <v-btn
+                                        id="export-detail"
                                         tile
                                         depressed
                                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
