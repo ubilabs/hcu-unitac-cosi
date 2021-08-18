@@ -271,6 +271,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
                 wrapper = await mountComponent(true, [layer1]);
 
+            // toggle feature off
             await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
             await wrapper.vm.$nextTick();
 
@@ -278,6 +279,13 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.disabledFeatureItems).to.have.lengthOf(1);
             expect(wrapper.vm.items[0].enabled).to.be.false;
             expect(layer1.getSource().getFeatures()).to.have.lengthOf(0);
+
+            // toggle feature back on again
+            await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.items[0].enabled).to.be.true;
+            expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
         });
     });
 
