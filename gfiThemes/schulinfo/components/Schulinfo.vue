@@ -227,6 +227,8 @@ export default {
 
 
 <style lang="less" scoped>
+@import "~/css/mixins.less";
+
 @color_1: #fff;
 @color_2: #fec44f;
 @background_color_1: rgba(227, 227, 227, 0.5);
@@ -252,6 +254,12 @@ export default {
         font-size: 12px;
         .btn-default {
             margin: 4px;
+            &:focus {
+                .primary_action_focus();
+            }
+            &:hover {
+                .primary_action_hover();
+            }
         }
         padding-right: 64px;
     }
