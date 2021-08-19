@@ -453,7 +453,7 @@ export default {
                         outlined
                         dense
                     />
-                    <v-select
+                    <v-autocomplete
                         :value="selectedNames"
                         :items="namesOfDistricts"
                         :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"

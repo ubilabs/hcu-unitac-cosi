@@ -27,6 +27,13 @@ export default {
         StatisticsTable,
         Modal
     },
+    directives: {
+        blur: {
+            inserted: function (el) {
+                el.onfocus = (ev) => ev.target.blur();
+            }
+        }
+    },
     data () {
         return {
             datePicker: false,
@@ -242,24 +249,31 @@ export default {
         },
         updateUnits (newUnits) {
             updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         updateResidents (newResidents) {
             updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         updateDensity (newDensity) {
             updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         updateLivingSpace (newLivingSpace) {
             updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         updateGfz (newGfz) {
             updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         updateBgf (newBgf) {
             updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         updateHousholdSize (newHouseholdSize) {
             updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInputs();
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -380,6 +394,15 @@ export default {
 
         escapeEditStatsTable () {
             this.editStatsTable = false;
+        },
+
+        unfocusInputs () {
+            for (const key in this.$refs) {
+                if (key.includes("slider")) {
+                    this.$refs[key].isFocused = false;
+                    this.$refs[key].isActive = false;
+                }
+            }
         }
     }
 };
@@ -403,7 +426,7 @@ export default {
                 <v-main
                     id="scenario-builder"
                 >
-                    <v-form>
+                    <div>
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
                             <ScenarioManager />
@@ -459,7 +482,9 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-units"
                                         v-model="neighborhood.housingUnits"
+                                        v-blur
                                         hint="Anzahl der WE"
                                         min="0"
                                         :max="polygonArea / 5"
@@ -484,6 +509,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                    ref="slider-bgf"
                                         v-model="neighborhood.bgf"
                                         hint="m²"
                                         min="0"
@@ -509,6 +535,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-householdsize"
                                         v-model="neighborhood.avgHouseholdSize"
                                         hint="Haushaltsgröße"
                                         min="0"
@@ -535,6 +562,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-gfz"
                                         v-model="neighborhood.gfz"
                                         hint="GFZ"
                                         min="0"
@@ -562,6 +590,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-gfz"
                                         v-model="neighborhood.populationDensity"
                                         hint="EW / km²"
                                         min="0"
@@ -588,6 +617,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-livingspace"
                                         v-model="neighborhood.livingSpace"
                                         hint="m² / EW"
                                         min="0"
@@ -714,7 +744,7 @@ export default {
                                 </v-col>
                             </v-row>
                         </div>
-                    </v-form>
+                    </div>
                     <v-snackbar
                         v-model="editDialog"
                         :timeout="-1"

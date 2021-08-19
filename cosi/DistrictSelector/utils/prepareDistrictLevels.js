@@ -182,6 +182,8 @@ export function getNameList (layer, keyOfAttrName) {
         }
     });
 
+    nameList.sort();
+
     return [...new Set(nameList)];
 }
 
