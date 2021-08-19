@@ -37,12 +37,13 @@
                         "directionLabel": "Richtung:",
                         "directionBoth": "beide",
                         "carsHeaderSuffix": "KFZ abs.",
-                        "trucksHeaderSuffix": "SV-Anteil in %",
+                        "trucksHeaderSuffix": "SV-Anzahl **",
                         "yAxisTextDay": "Anzahl / {{minutes}} Min.",
                         "yAxisTextWeek": "Anzahl / Tag",
                         "yAxisTextYear": "Anzahl / Woche",
                         "reset": "zurücksetzen",
-                        "holidaySign": "Feiertagseinfluss"
+                        "holidaySign": "Feiertagseinfluss",
+                        "trucksStatus": "** SV-Anzahl (Beta-Status)"
                     }
                 }
             }

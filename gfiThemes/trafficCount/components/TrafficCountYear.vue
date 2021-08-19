@@ -107,10 +107,12 @@ export default {
                 switch (meansOfTransports) {
                     // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
                     // use this code to enable Kfz + SV
-                    // case "Anzahl_Kfz":
-                    //    return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
-                    case "Anteil_SV":
+                    /*
+                    case "Anzahl_Kfz":
+                        return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
+                    case "Anzahl_SV":
                         return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix");
+                    */
                     default:
                         return txt;
                 }

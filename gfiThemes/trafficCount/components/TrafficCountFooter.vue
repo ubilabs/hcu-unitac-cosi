@@ -105,16 +105,20 @@ export default {
          * updates the footer of the trafficCount gfi
          * @param {String} currentTabId the id to identify the activated tab as day, week or year
          * @post the footer is updated to show the identified tab
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         updateFooter: function (currentTabId) {
             // Making the postion of indication fixed when scroll
             this.fixIndicationPosition();
 
+            const meansOfTransportSV = this.meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
+
             // tab body
             if (currentTabId === "day") {
                 this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
+                    const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
+
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], dataAnzahlSV, this.currentTabId, this.holidays));
                     if (this.api instanceof DauerzaehlstellenRadApi) {
                         this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
                     }
@@ -139,7 +143,9 @@ export default {
             }
             else if (currentTabId === "week") {
                 this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
+                    const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
+
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], dataAnzahlSV, this.currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Tageswerte");
                     // onerror
                 }, error => {
@@ -159,7 +165,9 @@ export default {
             }
             else if (currentTabId === "year") {
                 this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId, this.holidays));
+                    const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
+
+                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], dataAnzahlSV, this.currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Wochenwerte");
                     // onerror
                 }, error => {
@@ -182,7 +190,7 @@ export default {
 
         /**
          * Making the indication position always fixed when the window is scrolled
-         * @returns {Void} -
+         * @returns {void} -
          */
         fixIndicationPosition: function () {
             const gfiContent = document.querySelector(".gfi-content");
@@ -204,7 +212,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         downloadDataDay: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api,
@@ -225,7 +233,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         downloadDataWeek: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api,
@@ -246,7 +254,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         downloadDataYear: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api;
@@ -264,12 +272,13 @@ export default {
 
         /**
          * converts the data object into an array of objects for the csv download
-         * @param {Object} data - the data for download
+         * @param {Object} data - the whole count of data for download
+         * @param {Object|Boolean} dataAnzahlSV - the count of trucks for download
          * @param {String} tabValue - day | week | year
          * @param {String[]} holidays - the holidays from parent component in array format
          * @returns {Object[]} objArr - converted data
          */
-        prepareDataForDownload: function (data, tabValue, holidays) {
+        prepareDataForDownload: function (data, dataAnzahlSV, tabValue, holidays) {
             const objArr = [];
 
             for (const key in data) {
@@ -280,16 +289,25 @@ export default {
                     obj.Datum = date[0];
                     obj["Uhrzeit von"] = date[1].slice(0, -3);
                     obj.Anzahl = data[key];
+                    if (dataAnzahlSV) {
+                        obj.Anzahl_SV = dataAnzahlSV[key];
+                    }
                     obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "week") {
                     obj.Datum = date[0];
                     obj.Anzahl = data[key];
+                    if (dataAnzahlSV) {
+                        obj.Anzahl_SV = dataAnzahlSV[key];
+                    }
                     obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
                     obj.Anzahl = data[key];
+                    if (dataAnzahlSV) {
+                        obj.Anzahl_SV = dataAnzahlSV[key];
+                    }
                     obj.Feiertag = hasHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 objArr.push(obj);
@@ -300,7 +318,7 @@ export default {
 
         /**
          * trigger the export function from snippet exportButton
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         exportFile: function () {
             this.exportView.export();
@@ -308,7 +326,7 @@ export default {
 
         /**
          * trigger the function of resetting tab
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         reset: function () {
             this.$emit("resetTab");
@@ -320,7 +338,7 @@ export default {
          * @param {String} thingId the thingId to be send to any api call
          * @param {String} meansOfTransport the meansOfTransport to be send with any api call
          * @fires   Alerting#RadioTriggerAlertAlert
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         setFooterLastUpdate: function (api, thingId, meansOfTransport) {
             api.subscribeLastUpdate(thingId, meansOfTransport, datetime => {
@@ -338,7 +356,7 @@ export default {
         /**
          * setter for lastUpdate
          * @param {String} value the datetime of the last update to be shown in the template
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         setLastUpdate: function (value) {
             this.lastUpdate = value;
@@ -355,6 +373,13 @@ export default {
             :style="customStyle"
         >
             * {{ tableIndication }}
+        </div>
+        <div
+            v-if="currentTabId !== 'infos'"
+            class="trucksStatusIndication"
+            :style="customStyle"
+        >
+            {{ $t("additional:modules.tools.gfi.themes.trafficCount.trucksStatus") }}
         </div>
         <div
             v-if="currentTabId !== 'infos'"
@@ -401,62 +426,70 @@ export default {
 </template>
 
 <style lang="less" scoped>
-@import "~variables";
+    @import "~variables";
 
-.tableIndication {
-    font-size: 10px;
-    position: absolute;
-    top: -3px;
-    left: 0px;
-}
+    .tableIndication {
+        font-size: 10px;
+        position: absolute;
+        top: -3px;
+        left: 0px;
+    }
 
-.indication {
-    font-size: 10px;
-    position: absolute;
-    top: 10px;
-    left: 0px;
-}
-.download-container {
-    float: left;
-    padding-top: 30px;
-     @media (max-width: 600px) {
-          padding-top: 45px;
-     }
-}
-.reset-container {
-    float: left;
-    padding-top: 30px;
-    margin-left: 10px;
-    @media (max-width: 600px) {
-        padding-top: 45px;
+    .trucksStatusIndication {
+        font-size: 10px;
+        position: absolute;
+        top: 10px;
+        left: 0px;
     }
-}
-table {
-    margin-bottom: 0;
-    .text-right {
-        text-align: right;
+
+    .indication {
+        font-size: 10px;
+        position: absolute;
+        top: 23px;
+        left: 0px;
     }
-    &:not(.infos) {
-        min-width: 280px;
-        width: 50%;
-        float: right;
-        margin-top: 30px;
+
+    .download-container {
+        float: left;
+        padding-top: 43px;
         @media (max-width: 600px) {
-            margin-top: 35px;
+            padding-top: 58px;
         }
-        @media (max-width: 550px) {
-            margin-top: 10px;
+    }
+    .reset-container {
+        float: left;
+        padding-top: 43px;
+        margin-left: 10px;
+        @media (max-width: 600px) {
+            padding-top: 58px;
         }
-        tbody {
-            tr {
-                &:nth-of-type(odd){
-                    background-color: #ffffff;
-                }
-                td {
-                    border-top: none;
+    }
+    table {
+        margin-bottom: 0;
+        .text-right {
+            text-align: right;
+        }
+        &:not(.infos) {
+            min-width: 280px;
+            width: 50%;
+            float: right;
+            margin-top: 43px;
+            @media (max-width: 600px) {
+                margin-top: 48px;
+            }
+            @media (max-width: 550px) {
+                margin-top: 10px;
+            }
+            tbody {
+                tr {
+                    &:nth-of-type(odd){
+                        background-color: #ffffff;
+                    }
+                    td {
+                        border-top: none;
+                    }
                 }
             }
         }
     }
-}
 </style>
