@@ -187,6 +187,7 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
@@ -656,7 +657,8 @@ export default {
                 dataSet.data.reverse();
             });
 
-            this.setNewDataSet(graphObj);
+            //this.setNewDataSet(graphObj);
+            this.channelGraphData(graphObj);
         },
 
         // the export function from utils
