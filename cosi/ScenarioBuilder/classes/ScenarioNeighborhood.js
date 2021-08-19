@@ -56,6 +56,7 @@ export default class ScenarioNeighborhood {
 
     /**
      * Updates the surrounding districts' statistics based on the stats of the neighborhood
+     * @todo move to district methods?
      * @returns {void}
      */
     modifyDistrictStats () {
@@ -76,9 +77,12 @@ export default class ScenarioNeighborhood {
                         originalVal = parseFloat(districtDatum.get("jahr_" + year)) || 0;
                         districtDatum.set("jahr_" + year, originalVal + Math.round(datum.value * item.coverage));
                     }
+
+                    // store modification date on the statsfeature
+                    districtDatum.set("isModified", completion);
                 }
                 else if (datum.relation) {
-                    //
+                    /** @todo auto generate relative values */
                 }
             }
         }

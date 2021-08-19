@@ -261,16 +261,19 @@ export default {
                 cols = [...c0, ...cSwap, ...c1];
 
             this.districtColumns = cols;
-            console.log(cols, cols.map(c => c.text));
-            console.log(this.columns);
-
             this.setColDividers();
         },
 
         getValue (item, header, timestamp) {
             const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
 
+            console.log(item[header.value], item[header.value].isModified);
+
             return val ? val.toLocaleString(this.currentLocale) : "-";
+        },
+
+        getValueClass (item, header, timestamp) {
+            return item[header.value].isModified <= timestamp ? "modified" : "";
         },
 
         getAverage (item, timestamp) {
@@ -503,12 +506,12 @@ export default {
                                         v-for="year in item.years"
                                         :key="year"
                                     >
-                                        {{ getValue(item, header, year) }}
+                                        <span :class="getValueClass(item, header, year)">{{ getValue(item, header, year) }}</span>
                                     </li>
                                 </ul>
                             </template>
                             <template v-else>
-                                {{ getValue(item, header, currentTimeStamp) }}
+                                <span :class="getValueClass(item, header, currentTimeStamp)">{{ getValue(item, header, currentTimeStamp) }}</span>
                             </template>
                         </div>
                     </template>
@@ -587,6 +590,8 @@ export default {
 </template>
 
 <style lang="less">
+@import "../../utils/variables.less";
+
 .dashboard-table {
     .v-data-table__wrapper {
         padding-top: 10px;
@@ -632,10 +637,13 @@ export default {
             }
         }
         .timestamp {
-            color: #3399CC
+            color: @brightblue;
         }
         .no-wrap {
             white-space: nowrap;
+        }
+        .modified {
+            color: @brightred;
         }
     }
 }
