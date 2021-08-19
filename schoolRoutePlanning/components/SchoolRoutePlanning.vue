@@ -71,6 +71,41 @@ export default {
          */
         inputExists () {
             return !(this.selectedSchoolNumber !== "" || this.inputAddress !== "");
+        },
+        /**
+         * Returns if the print file is ready for download or not
+         * @returns {Boolean} File ready
+         */
+        showPrintFileReady () {
+            return this.$store.state.Tools.Print.printFileReady;
+        },
+         /**
+         * Returns the files donwload url for the link
+         * @returns {string} url
+         */
+        fileDownloadUrl () {
+            return this.$store.state.Tools.Print.fileDownloadUrl;
+        },
+         /**
+         * Returns the file name for the download
+         * @returns {String} File name
+         */
+        filename () {
+            return this.$store.state.Tools.Print.filename;
+        },
+         /**
+         * Returns if the print was started for the progress bar
+         * @returns {Boolean} print started
+         */
+        printStarted () {
+            return this.$store.state.Tools.Print.printStarted;
+        },
+         /**
+         * Returns the progress bar width
+         * @returns {string} progress bar width
+         */
+        progressWidth () {
+            return this.$store.state.Tools.Print.progressWidth;
         }
     },
     watch: {
@@ -119,6 +154,21 @@ export default {
                     this.$refs.input.focus();
                 }
             });
+        },
+        /**
+         * Downloads the pdf for print
+         * @param {Event} event the click event
+         * @returns {void}
+         */
+        downloadFile (event) {
+            event.preventDefault();
+            const a = document.createElement("A");
+
+            a.href = this.$store.state.Tools.Print.fileDownloadUrl;
+            a.download = this.$store.state.Tools.Print.fileDownloadUrl.substr(this.$store.state.Tools.Print.fileDownloadUrl.lastIndexOf("/") + 1);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         },
         /**
          * Closes this tool window by setting active to false.
@@ -257,6 +307,29 @@ export default {
                         {{ $t("additional:modules.tools.schoolRoutePlanning.deleteRoute") }}
                     </button>
                 </div>
+                <div
+                    v-if="printStarted"
+                    class="form-group col-md-12 col-xs-12"
+                >
+                    <div class="progress">
+                        <div
+                            class="progress-bar"
+                            role="progressbar"
+                            :style="progressWidth"
+                        >
+                            <span class="sr-only">30% Complete</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12 col-xs-12">
+                        <button
+                            class="btn btn-lgv-grey btn-block"
+                            :disabled="!showPrintFileReady"
+                            @click="downloadFile"
+                        >
+                            {{ $t("common:modules.tools.print.downloadFile") }}
+                        </button>
+                    </div>
             </div>
             <RouteInformation />
         </template>

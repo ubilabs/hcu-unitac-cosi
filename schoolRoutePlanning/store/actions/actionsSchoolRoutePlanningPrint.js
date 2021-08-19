@@ -1,4 +1,4 @@
-import BuildSpecModel from "../../../../modules/tools/print/buildSpec";
+import SpecModel from "./../../../../src/modules/tools/print/store/utils/buildSpec";
 
 /**
  * Setes the school route layer to end of the visible vector layer list.
@@ -31,12 +31,13 @@ export default {
      * @param {Object} context The vuex context.
      * @returns {void}
      */
-    printRoute ({state, rootGetters}) {
+    printRoute ({state, rootGetters, dispatch}) {
         const routeElements = state.routeElements,
             visibleLayerList = sortVisibleLayerList(rootGetters["Map/visibleLayerList"], state.layerName),
             attributes = {
                 "layout": state.printLayout,
                 "outputFormat": state.printOutputFormat,
+                "outputFilename": "Schulweg",
                 "attributes": {
                     "title": state.printTitle,
                     "length": `${routeElements.kuerzesteStrecke}m`,
@@ -57,11 +58,17 @@ export default {
                 }
             };
 
-        let buildSpec = new BuildSpecModel(attributes);
+        dispatch("Tools/Print/activatePrintStarted", true, { root: true });
+        let spec = SpecModel;
+        spec.setAttributes(attributes);
 
-        buildSpec.buildLayers(visibleLayerList);
-        buildSpec = buildSpec.toJSON();
+        spec.buildLayers(visibleLayerList);
+        const printJob = {
+            "payload": encodeURIComponent(JSON.stringify(spec.defaults)),
+            "printAppId": "schulwegrouting",
+            "currentFormat": state.printOutputFormat
+        };
 
-        Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "schulwegrouting", state.printOutputFormat);
+        dispatch("Tools/Print/createPrintJob", printJob, { root: true });
     }
 };
