@@ -279,10 +279,6 @@ export default {
     .glyphicon {
         font-size: 28px;
         padding: 0 2px;
-        &:hover {
-            cursor: pointer;
-            opacity: 0.5;
-        }
     }
     .glyphicon-star {
         color: @color_2;
