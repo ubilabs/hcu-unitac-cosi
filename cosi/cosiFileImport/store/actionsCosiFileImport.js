@@ -1,6 +1,7 @@
 import { Radio } from "backbone";
 import {KML, GeoJSON, GPX} from "ol/format.js";
-import uniqueId from "../../../src/utils/uniqueId.js";
+import uniqueId from "../../../../src/utils/uniqueId.js";
+import {Fill, Stroke, Style, Text} from "ol/style.js";
 
 const supportedFormats = {
     kml: new KML({extractStyles: true}),
@@ -199,7 +200,12 @@ function getParsedData (rawData, pointImages, textColors, textSizes) {
  * @param {ol.Feature[]} features - all features generated from the imported file
  * @returns {void}
  */
-function addLayerToTree (layerName, layerId, features) {
+function addLayerToTree (newLayer) {
+
+    const layerName = newLayer.name,
+        layerId = newLayer.id,
+        features = newLayer.features;
+
     if (Radio.request("Parser", "getItemByAttributes", {id: "importedData"}) === undefined) {
         Radio.trigger("Parser", "addFolder", "Importierte Daten", "importedData", "tree", 0);
         Radio.trigger("ModelList", "renderTree");
@@ -208,15 +214,33 @@ function addLayerToTree (layerName, layerId, features) {
 
     Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData");
     Radio.trigger("ModelList", "closeAllExpandedFolder");
-    console.log(Radio.request("Modellist", "getModelByAttributes", {id: layerId}));
+    adjustLayerStyling(newLayer);
+}
+
+function adjustLayerStyling (newLayer) {
+    const layer = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.layerId});
+    const layerStyle = layer.getStyle();
+
+    layerStyle.fill = new Fill({color: newLayer.style, 0.25 });
+    layerStyle.stroke = new Stroke({color: newLayer.style});
+
+    layer.setSelectedFiletype(layerStyle);
 }
 
 export default {
+    cosiLayerHandling ({commit}, newLayer) {
+        console.log("Testdata", newLayer.features);
+
+        commit("setNewLayerInformation", newLayer);
+    },
+    passLayer({commit}, newLayer){
+        console.log("passLayerWtF", newLayer);
+        addLayerToTree(newLayer);
+    },
     setSelectedFiletype: ({commit}, newFiletype) => {
         commit("setSelectedFiletype", newFiletype);
 
     },
-
     importKML: ({state, dispatch}, datasrc) => {
         const
             checkSameLayer = datasrc.checkSameLayer,
@@ -232,7 +256,7 @@ export default {
         if (Array.isArray(checkSameLayer) && checkSameLayer.length) {
             alertingMessage = {
                 category: i18next.t("common:modules.alerting.categories.error"),
-                content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.sameName", {filename: datasrc.filename.split(".")[0]})
+                content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.sameName", {filename: datasrc.filename.split(".")[0]})
             };
 
             dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
@@ -249,7 +273,7 @@ export default {
 
             alertingMessage = {
                 category: i18next.t("common:modules.alerting.categories.error"),
-                content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.missingFormat", {format: fileFormat})
+                content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFormat", {format: fileFormat})
             };
 
             dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
@@ -285,7 +309,7 @@ export default {
             console.warn(ex);
             alertingMessage = {
                 category: i18next.t("common:modules.alerting.categories.error"),
-                content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.formatError", {filename: datasrc.filename})
+                content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.formatError", {filename: datasrc.filename})
             };
 
             dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
@@ -295,7 +319,7 @@ export default {
         if (!Array.isArray(features) || features.length === 0) {
             alertingMessage = {
                 category: i18next.t("common:modules.alerting.categories.error"),
-                content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.missingFileContent", {filename: datasrc.filename})
+                content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFileContent", {filename: datasrc.filename})
             };
 
             dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
@@ -309,7 +333,7 @@ export default {
                 featureError = true;
                 alertingMessage = {
                     category: i18next.t("common:modules.alerting.categories.error"),
-                    content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.featureError")
+                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.featureError")
                 };
 
                 dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
@@ -331,19 +355,28 @@ export default {
         if (featureError) {
             alertingMessage = {
                 category: i18next.t("common:modules.alerting.categories.info"),
-                content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.successPartly", {filename: datasrc.filename})
+                content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.successPartly", {filename: datasrc.filename})
             };
         }
         else {
             alertingMessage = {
                 category: i18next.t("common:modules.alerting.categories.info"),
-                content: i18next.t("additional:modules.tools.fileImportAddon.alertingMessages.success", {filename: datasrc.filename})
+                content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: datasrc.filename})
             };
         }
 
         dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
         dispatch("addImportedFilename", datasrc.filename);
-        addLayerToTree(layerName, layerId, features);
+        //addLayerToTree(layerName, layerId, features);
+
+        const newLayer = {
+            name: layerName,
+            id: layerId,
+            features: features
+        };
+
+        console.log("handler", layerName, layerId, features);
+        dispatch("cosiLayerHandling", newLayer);
     },
     /**
      * Adds the name of a successfully imported file to list of imported filenames
