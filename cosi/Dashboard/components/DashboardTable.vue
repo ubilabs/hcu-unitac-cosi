@@ -267,8 +267,6 @@ export default {
         getValue (item, header, timestamp) {
             const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
 
-            console.log(item[header.value], item[header.value].isModified);
-
             return val ? val.toLocaleString(this.currentLocale) : "-";
         },
 

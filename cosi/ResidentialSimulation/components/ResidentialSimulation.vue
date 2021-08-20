@@ -36,6 +36,7 @@ export default {
     },
     data () {
         return {
+            inputsDisabled: false,
             datePicker: false,
             editDialog: false,
             editFeature: null,
@@ -158,7 +159,7 @@ export default {
             this.updateArea(this.polygonArea);
         },
 
-        baseStats () {
+        async baseStats () {
             if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
                 return;
             }
@@ -181,23 +182,22 @@ export default {
              * @todo remove timeout - only used due to issues in ChartGenerator module
              * will be refactored
              */
-            setTimeout(() => {
-                this.visualizeDemographics(
-                    "age",
-                    "Demographie nach Altersgruppen",
-                    ["Anteil", "Alterskohorten"],
-                    [
-                        "Bevölkerung unter 6 Jahren",
-                        "Bevölkerung 6 bis unter 10 Jahren",
-                        "Bevölkerung 10 bis unter 15 Jahren",
-                        "Bevölkerung 15 bis unter 21 Jahren",
-                        "Bevölkerung 21 bis unter 45 Jahren",
-                        "Bevölkerung 45 bis unter 65 Jahren",
-                        "Bevölkerung ab 65 Jahren"
-                    ],
-                    "LineChart"
-                );
-            }, 250);
+            await this.$nextTick();
+            this.visualizeDemographics(
+                "age",
+                "Demographie nach Altersgruppen",
+                ["Anteil", "Alterskohorten"],
+                [
+                    "Bevölkerung unter 6 Jahren",
+                    "Bevölkerung 6 bis unter 10 Jahren",
+                    "Bevölkerung 10 bis unter 15 Jahren",
+                    "Bevölkerung 15 bis unter 21 Jahren",
+                    "Bevölkerung 21 bis unter 45 Jahren",
+                    "Bevölkerung 45 bis unter 65 Jahren",
+                    "Bevölkerung ab 65 Jahren"
+                ],
+                "LineChart"
+            );
 
             this.extrapolateNeighborhoodStatistics();
         },
@@ -249,31 +249,31 @@ export default {
         },
         updateUnits (newUnits) {
             updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateResidents (newResidents) {
             updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateDensity (newDensity) {
             updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-density"]);
         },
         updateLivingSpace (newLivingSpace) {
             updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-livingspace"]);
         },
         updateGfz (newGfz) {
             updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-gfz"]);
         },
         updateBgf (newBgf) {
             updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-bgf"]);
         },
         updateHousholdSize (newHouseholdSize) {
             updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea);
-            this.unfocusInputs();
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-householdsize"]);
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -325,7 +325,6 @@ export default {
         },
 
         async createFeature () {
-            console.log(this.selectedDistrictLevel);
             const feature = new Feature({
                     geometry: this.geometry,
                     ...this.neighborhood,
@@ -396,12 +395,12 @@ export default {
             this.editStatsTable = false;
         },
 
-        unfocusInputs () {
-            for (const key in this.$refs) {
-                if (key.includes("slider")) {
-                    this.$refs[key].isFocused = false;
-                    this.$refs[key].isActive = false;
-                }
+        unfocusInput (evt, ref) {
+            // weird hack to force vuetify to unfocus the slider
+            if (ref.isActive) {
+                ref.isActive = false;
+                ref.onSliderMouseUp(evt);
+
             }
         }
     }
@@ -484,10 +483,10 @@ export default {
                                     <v-slider
                                         ref="slider-units"
                                         v-model="neighborhood.housingUnits"
-                                        v-blur
                                         hint="Anzahl der WE"
                                         min="0"
                                         :max="polygonArea / 5"
+                                        :disabled="inputsDisabled"
                                         @change="updateUnits"
                                     >
                                         <template #append>
@@ -509,11 +508,12 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
-                                    ref="slider-bgf"
+                                        ref="slider-bgf"
                                         v-model="neighborhood.bgf"
                                         hint="m²"
                                         min="0"
                                         :max="polygonArea * 4"
+                                        :disabled="inputsDisabled"
                                         @change="updateBgf"
                                     >
                                         <template #append>
@@ -541,6 +541,7 @@ export default {
                                         min="0"
                                         max="5"
                                         step="0.2"
+                                        :disabled="inputsDisabled"
                                         @change="updateHousholdSize"
                                     >
                                         <template #append>
@@ -568,6 +569,7 @@ export default {
                                         min="0"
                                         max="4"
                                         step="0.1"
+                                        :disabled="inputsDisabled"
                                         @change="updateGfz"
                                     >
                                         <template #append>
@@ -590,11 +592,12 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
-                                        ref="slider-gfz"
+                                        ref="slider-density"
                                         v-model="neighborhood.populationDensity"
                                         hint="EW / km²"
                                         min="0"
                                         max="50000"
+                                        :disabled="inputsDisabled"
                                         @change="updateDensity"
                                     >
                                         <template #append>
@@ -622,6 +625,7 @@ export default {
                                         hint="m² / EW"
                                         min="0"
                                         max="100"
+                                        :disabled="inputsDisabled"
                                         @change="updateLivingSpace"
                                     >
                                         <template #append>
@@ -667,6 +671,7 @@ export default {
                                             type="month"
                                             no-title
                                             scrollable
+                                            @update:active-picker="test"
                                         >
                                             <v-spacer />
                                             <v-btn
