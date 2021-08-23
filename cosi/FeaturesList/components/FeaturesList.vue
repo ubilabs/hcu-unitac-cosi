@@ -44,7 +44,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapState(["configJson"]),
         columns () {
@@ -146,10 +146,11 @@ export default {
 
         /**
          * Updates the list on added/removed scenario features
-         * @listens #change:Tools/ScenarioBuilder/scenario
+         * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
          * @returns {void}
          */
-        scenario () {
+        activeSimulatedFeatures () {
+            console.log(this.activeSimulatedFeatures);
             this.updateFeaturesList();
         },
 
