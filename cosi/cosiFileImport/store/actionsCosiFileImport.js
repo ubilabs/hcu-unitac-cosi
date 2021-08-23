@@ -2,7 +2,7 @@ import { Radio } from "backbone";
 import map from "vuex";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
-import {Fill, Stroke, Style, Text, Circle} from "ol/style.js";
+import {Fill, Stroke, Style, Text, Circle, Icon} from "ol/style.js";
 import {color} from "d3-color";
 
 const supportedFormats = {
@@ -224,10 +224,29 @@ function adjustLayerStyling (newLayer) {
     const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
     const layer = layerNode.attributes.layer;
 
-    const baseColor = color(newLayer.style);
-    baseColor.opacity = 0.25;
+    newLayer.svg = "../../../portal/cosi/assets/svg/geo_pin_A.svg";
 
-    const layerStyle = new Style({
+    //const baseColor = color(newLayer.style);
+    //baseColor.opacity = 0.25;
+    console.log(newLayer.style);
+    if(newLayer.svg.length){
+        const layerStyle = new Style({
+            image:new Icon({
+                src: newLayer.svg,
+                color: newLayer.style.hex,
+                stroke: new Stroke({
+                    width:1,
+                    fill:"#fff"
+                })
+            })
+        });
+
+        
+        layer.setStyle(layerStyle);
+        layer.setZIndex(100);
+    }
+
+    /*const layerStyle = new Style({
         image: new Circle({
             radius:5,
             fill: new Fill({color: baseColor}),
@@ -236,10 +255,8 @@ function adjustLayerStyling (newLayer) {
             }),
             zIndex: 100
         })
-    });
+    });*/
 
-    layer.setStyle(layerStyle);
-    layer.setZIndex(100);
 }
 
 export default {

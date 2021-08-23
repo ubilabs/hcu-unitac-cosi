@@ -20,7 +20,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
-        ...mapGetters("Map", ["layerIds", "layers"]),
+        ...mapGetters("Map", ["layerIds", "layers", "map"]),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -45,6 +45,9 @@ export default {
     },
     created () {
         this.$on("close", this.close);
+    },
+    mounted () {
+        this.map.addEventListener('click', this.onClick);
     },
     methods: {
         ...mapActions("Tools/CosiFileImport", [
@@ -99,6 +102,11 @@ export default {
         },
         addToFacilityMapping(){
             this.setFacilityMappingUpdate(this.newLayer);
+        },
+        onClick(evt){
+            /*Radio.request("Map", "getMap").forEachFeatureAtPixel(evt.pixel, (feature) => {
+                alert(feature);
+            });*/
         },
         close () {
             this.setActive(false);
@@ -214,10 +222,14 @@ export default {
                         <div class="wrapper">
                             <div class="styling">
                                 <div class="btn-grp">
-                                    <v-btn class="style-choice red" @click="newLayer.style = 'red'"></v-btn>
-                                    <v-btn class="style-choice blue" @click="newLayer.style = 'blue'"></v-btn>
-                                    <v-btn class="style-choice green" @click="newLayer.style = 'green'"></v-btn>
-                                    <v-btn class="style-choice yellow" @click="newLayer.style = 'yellow'"></v-btn>
+                                    <v-color-picker
+                                        v-model="newLayer.style"
+                                        dot-size="25"
+                                        hide-inputs
+                                        hide-mode-switch
+                                        mode="rgba"
+                                        swatches-max-height="200"
+                                    ></v-color-picker>
                                 </div>
                             </div>
                             <div class="features"></div>
