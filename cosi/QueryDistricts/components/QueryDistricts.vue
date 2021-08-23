@@ -136,31 +136,43 @@ export default {
                 const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
 
                 if (layer) {
-                    this.allLayerOptions.push({name: m.value, id: layer.id,
-                        group: m.group, valueType: m.valueType});
+                    this.allLayerOptions.push({
+                        name: m.value,
+                        id: layer.id,
+                        group: m.group,
+                        valueType: m.valueType
+                    });
                 }
             }
 
-            for (const name of this.facilityNames) {
-                for (const referenceLayer of this.referenceLayers) {
-                    const layer = layers.find(l=>l.id === referenceLayer.id);
+            for (const facilityLayer of this.facilityNames) {
+                this.allLayerOptions.push({
+                    name: facilityLayer.name,
+                    id: facilityLayer.id,
+                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    valueType: "absolute",
+                    facilityLayerName: facilityLayer.name
+                });
 
-                    if (layer && layer.featureType) {
-                        const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),
-                            cnt = this.$t("additional:modules.tools.cosi.queryDistricts.count"),
-                            layerName = `${mapping.value}/${cnt} ${name}`;
+                // for (const referenceLayer of this.referenceLayers) {
+                //     const layer = layers.find(l=>l.id === referenceLayer.id);
+
+                //     if (layer && layer.featureType) {
+                //         const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),
+                //             cnt = this.$t("additional:modules.tools.cosi.queryDistricts.count"),
+                //             layerName = `${mapping.value}/${cnt} ${name}`;
 
 
-                        this.allLayerOptions.push({
-                            name: layerName,
-                            id: layerName,
-                            group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                            valueType: "absolute",
-                            referenceLayerId: referenceLayer.id,
-                            facilityLayerName: name
-                        });
-                    }
-                }
+                //         this.allLayerOptions.push({
+                //             name: layerName,
+                //             id: layerName,
+                //             group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                //             valueType: "absolute",
+                //             referenceLayerId: referenceLayer.id,
+                //             facilityLayerName: name
+                //         });
+                //     }
+                // }
             }
             this.updateAvailableLayerOptions();
         },
@@ -198,25 +210,35 @@ export default {
                 }
             }
 
-            return [... new Set(ret)];
+            return ret.length > 0 ? [... new Set(ret)] : [prefix + "alle"];
         },
 
         countFacilitiesPerFeature (facilityFeatures, features) {
-
             const fmap = {};
 
             for (const ffeature of facilityFeatures) {
                 for (const feature of features) {
-                    if (turf.booleanPointInPolygon(
-                        turf.point(this.getCoordinate(ffeature)),
-                        turf.polygon(feature.getGeometry().getCoordinates()))) {
+                    let polygon;
 
+                    try {
+                        // expect multipolygon, try polygon if exception
+                        polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                    }
+                    catch (e) {
+                        polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                    }
+
+                    if (
+                        polygon &&
+                        turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
+                    ) {
                         fmap[feature.getId()] = (fmap[feature.getId()] || 0) + 1;
 
                         break;
                     }
                 }
             }
+
             return fmap;
         },
 
@@ -224,38 +246,57 @@ export default {
             if (this.propertiesMap[layer.id]) {
                 return;
             }
+            const features = await this.getAllFeatures(layer.id);
 
-            let fmap;
-            const features = await this.getAllFeatures(
-                layer.referenceLayerId || layer.id
-            );
+            if (layer.facilityLayerName) {
+                const adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
+                    fmap = this.countFacilitiesPerFeature(features, adminFeatures);
 
-            if (layer.referenceLayerId) {
-                const facilityFeatures = await this.getFacilityFeatures(layer.facilityLayerName);
+                this.propertiesMap[layer.id] = adminFeatures.map(feature => {
+                    /**
+                     * @todo Dirty, since facilities might have timelines in the future themselves! Overhaul in "countFacilitiesPerFeature" method
+                     */
+                    const ret = feature.getProperties();
 
-                fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
-            }
-
-            this.propertiesMap[layer.id] = features.map(feature => {
-                const props = feature.getProperties(),
-                    count = fmap ? fmap[feature.getId()] : 1,
-                    ret = {...props};
-
-                for (const p in props) {
-                    if (p.startsWith("jahr_")) {
-                        ret[p] = props[p] / count;
+                    for (let i = 2012; i < new Date().getFullYear(); i++) {
+                        ret["jahr_" + i] = fmap[feature.getId()];
                     }
-                }
-                ret.feature = feature;
-                ret.id = props[this.keyOfAttrNameStats];
-                return ret;
+
+                    return {
+                        ...ret,
+                        feature,
+                        id: ret[this.keyOfAttrNameStats],
+                        [this.selectorField]: this.keyOfAttrNameStats,
+                        isFacility: true
+                    };
+                });
+            }
+            else {
+                this.propertiesMap[layer.id] = features.map(feature => {
+                    const ret = feature.getProperties();
+
+                    ret.feature = feature;
+                    ret.id = ret[this.keyOfAttrNameStats];
+                    return ret;
+                });
+            }
+        },
+
+        cloneDistrictFeatures (districts) {
+            return districts.map(district => {
+                const feature = district.adminFeature.clone();
+
+                feature.setId(feature.get(this.keyOfAttrName));
+                feature.set(this.keyOfAttrNameStats, feature.getId());
+
+                return feature;
             });
         },
 
         createLayerFilterModel: async function (layer) {
             await this.loadFeatures(layer);
 
-            const valueType = layer.referenceLayerId ? "absolute" : layer.valueType,
+            const valueType = layer.valueType,
                 features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
@@ -277,7 +318,7 @@ export default {
                     feature = features.find(f => f[selector] === this.selectedDistrict);
 
                 if (feature) {
-                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(2));
+                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(3));
 
                     if (!isFinite(value)) {
                         model.error = this.$t("additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable");
@@ -301,7 +342,7 @@ export default {
                 max = parseFloat(Math.max(...values)),
                 min = parseFloat(Math.min(...values));
 
-            return {min: Number(Number(min).toFixed(2)), max: Number(Number(max).toFixed(2))};
+            return {min, max};
         },
 
         async computeResults () {
@@ -502,7 +543,10 @@ export default {
         setFacilityNames (models) {
             this.facilityNames = models.filter(
                 (model) => model.get("isFacility") === true
-            ).map((model) => model.get("name").trim());
+            ).map((model) => ({
+                name: model.get("name").trim(),
+                id: model.get("id")
+            }));
         },
 
         async getFacilityFeatures (name) {
@@ -603,6 +647,7 @@ export default {
                             <LayerFilter
                                 id="layer-filter"
                                 :key="filter.layerId"
+                                :locale="currentLocale"
                                 v-bind="filter"
                                 class="layer-filter"
                                 @update="updateFilter"

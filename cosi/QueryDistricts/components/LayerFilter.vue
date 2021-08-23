@@ -54,9 +54,14 @@ export default {
         quotientLayer: {
             type: String,
             default: null
+        },
+        locale: {
+            type: String,
+            default: "de-DE"
         }
     },
     computed: {
+
         values () {
             return this.fieldValues.map(v=>v.replace("jahr_", ""));
         },
@@ -167,8 +172,8 @@ export default {
                             @change="updateFieldValue"
                         />
                     </td>
-                    <td>{{ min }}</td>
-                    <td>{{ max }}</td>
+                    <td>{{ min.toLocaleString(locale) }}</td>
+                    <td>{{ max.toLocaleString(locale) }}</td>
                     <td>
                         <input
                             ref="inputValue"
