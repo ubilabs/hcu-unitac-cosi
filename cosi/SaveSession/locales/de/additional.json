@@ -1,0 +1,11 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "saveSession": {
+                    "save": "Sitzung speichern"
+                }
+            }
+        }
+    }
+}
