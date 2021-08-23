@@ -53,6 +53,7 @@ export default {
             "setSelectedFiletype"
         ]),
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
+        ...mapMutations("Tools/CalculateRatio", ["setFacilityMappingUpdate"]),
         onDZDragenter () {
             this.dzIsDropHovering = true;
         },
@@ -94,6 +95,10 @@ export default {
         },
         addLayer(){
             this.passLayer(this.newLayer);
+            this.addToFacilityMapping();
+        },
+        addToFacilityMapping(){
+            this.setFacilityMappingUpdate(this.newLayer);
         },
         close () {
             this.setActive(false);

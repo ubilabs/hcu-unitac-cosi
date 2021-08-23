@@ -32,7 +32,8 @@ const state = {
     deactivateGFI: true,
     yearSelector: "jahr_",
     dataToColorCodeMap: false,
-    colorCodeMapDataSet: []
+    colorCodeMapDataSet: [],
+    facilityMappingUpdate: []
 };
 
 export default state;

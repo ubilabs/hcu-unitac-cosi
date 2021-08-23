@@ -1,7 +1,9 @@
 import { Radio } from "backbone";
+import map from "vuex";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
-import {Fill, Stroke, Style, Text} from "ol/style.js";
+import {Fill, Stroke, Style, Text, Circle} from "ol/style.js";
+import {color} from "d3-color";
 
 const supportedFormats = {
     kml: new KML({extractStyles: true}),
@@ -214,27 +216,38 @@ function addLayerToTree (newLayer) {
 
     Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData");
     Radio.trigger("ModelList", "closeAllExpandedFolder");
+
     adjustLayerStyling(newLayer);
 }
 
 function adjustLayerStyling (newLayer) {
-    const layer = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.layerId});
-    const layerStyle = layer.getStyle();
+    const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+    const layer = layerNode.attributes.layer;
 
-    layerStyle.fill = new Fill({color: newLayer.style, 0.25 });
-    layerStyle.stroke = new Stroke({color: newLayer.style});
+    const baseColor = color(newLayer.style);
+    baseColor.opacity = 0.25;
 
-    layer.setSelectedFiletype(layerStyle);
+    const layerStyle = new Style({
+        image: new Circle({
+            radius:5,
+            fill: new Fill({color: baseColor}),
+            stroke: new Stroke({
+                color: newLayer.style, width:2
+            }),
+            zIndex: 100
+        })
+    });
+
+    layer.setStyle(layerStyle);
+    layer.setZIndex(100);
 }
 
 export default {
     cosiLayerHandling ({commit}, newLayer) {
-        console.log("Testdata", newLayer.features);
 
         commit("setNewLayerInformation", newLayer);
     },
     passLayer({commit}, newLayer){
-        console.log("passLayerWtF", newLayer);
         addLayerToTree(newLayer);
     },
     setSelectedFiletype: ({commit}, newFiletype) => {

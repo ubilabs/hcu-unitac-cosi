@@ -211,6 +211,7 @@ export default {
 
                 this.generateDynamicLegend(results, colorScale);
                 this.selectedFeatures.forEach(district => {
+                    console.log("gegencheck", district);
                     const getStyling = district.getStyle(),
                         matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 

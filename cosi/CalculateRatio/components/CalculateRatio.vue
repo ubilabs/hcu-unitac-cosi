@@ -171,6 +171,34 @@ export default {
             if (!newState) {
                 this.$store.commit("Tools/CalculateRatio/setDataToColorCodeMap", false);
             }
+        },
+        facilityMappingUpdate(newLayer){
+            const importedProps = this.facilitiesMapping.find(x => x.group === "Importierte Datensätze");
+            if(importedProps){
+                const addLayer = {
+                    id: newLayer.name,
+                    numericalValues: newLayer.numericalValues
+                };
+
+                importedProps.push(addLayer);
+            } else {
+                const layerGroup = {
+                    group: "Importierte Datensätze",
+                    layer: []
+                }
+
+                const addLayer = {
+                    id: newLayer.name,
+                    numericalValues: newLayer.numericalValues
+                };
+
+                layerGroup.layer.push(addLayer);
+
+                this.facilitiesMapping.push(layerGroup);
+                console.log("updated", this.facilitiesMapping);
+            }
+
+            this.updateFacilities();
         }
     },
     created () {
@@ -210,6 +238,7 @@ export default {
                 return list;
             }, []);
 
+            console.log("1",this.facilitiesMapping);
             if (this.facilityList.length !== 0) {
                 this.ASwitch = true;
             }
