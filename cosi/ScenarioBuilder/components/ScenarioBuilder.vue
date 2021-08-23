@@ -192,9 +192,6 @@ export default {
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
             this.$root.$emit("updateFeature");
-
-            console.log(this.activeScenario);
-            console.log(this.activeSimulatedFeatures);
         },
 
         /**

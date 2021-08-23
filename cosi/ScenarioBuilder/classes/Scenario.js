@@ -262,6 +262,22 @@ export default class Scenario {
     }
 
     /**
+     * Returns all simulated features of the scenario as a single list
+     * @returns {ScenarioFeature[]} all simulated an modified features in the scenario
+     */
+    getSimulatedFeatures () {
+        return [...this.simulatedFeatures];
+    }
+
+    /**
+     * Returns all modified features of the scenario as a single list
+     * @returns {ScenarioFeature[]} all simulated an modified features in the scenario
+     */
+    getModifiedFeatures () {
+        return [...this.modifiedFeatures];
+    }
+
+    /**
      * Returns the ScenarioFeature for a given map feature
      * @param {module:ol/Feature} feature - the OL map feature
      * @param {String} [type] - "simulated" or "modified" or undefined
