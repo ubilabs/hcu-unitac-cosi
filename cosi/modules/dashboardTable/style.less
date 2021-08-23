@@ -1,3 +1,5 @@
+@import "../../../../css/mixins.less";
+
 @color_1: #fff;
 @font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
 @background_color_1: rgba(0, 0, 0,.5);
@@ -24,6 +26,7 @@
                 }
             }
             .btn-reset {
+                padding-top: 0px;
                 display: inline-block;
                 height: 26px;
             }
@@ -47,8 +50,8 @@
             border: 1px solid lightgrey;
             border-radius: 4px;
             span {
-                border-right: 1px solid lightgrey;
-                border-bottom: 1px solid lightgrey;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
                 width: 9px;
                 height: 9px;
                 position: absolute;
@@ -110,9 +113,9 @@
                     top: 0;
                     left: 5px;
                     span {
-                        color: lightgrey;
+                        color: white;
                         &:hover {
-                            color:darkblue;
+                            color: @accent_hover;
                             cursor: pointer;
                         }
                     }
@@ -125,9 +128,9 @@
                     width: 10px;
                     height: 10px;
                     transform: rotate(-45deg);
-                    color: lightgrey;
+                    color: white;
                     &:hover {
-                        color:darkblue;
+                        color: @accent_hover;
                         cursor: pointer;
                     }
                 }
@@ -168,6 +171,7 @@
                     }
                 }
                 button.open {
+                    color: black;
                     transform: rotate(180deg);
                 }
             }

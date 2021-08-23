@@ -1,3 +1,5 @@
+@import "../../../../css/mixins.less";
+
 @color_1: #fff;
 @font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
 @background_color_1: rgba(0, 0, 0,.5);
@@ -32,20 +34,57 @@
         width: 100%;
         height: 100%;
         .header, .dashboard-footer {
-            button#help {
-                float: right;
-                border: none;
-                width: auto;
-                padding: 0;
-                opacity: 0.6;
-            }
             div#print-button {
                 float: left;
             }
             button {
+                opacity: 1.0;
+                margin-top: 4px;
+                margin-left: 0px;
+                border: none;
+                padding: 0;
+                background-color: white;
+                span {
+                    padding: 5px;
+                    color: @secondary_icon_button;
+                    font-size: 20px;
+                    &:hover {
+                        .primary_action_hover();
+                    }
+                    &:focus {
+                        .primary_action_focus();
+                    }
+                }
+            }
+            button#help {
+                font-size: 12px;
+                margin: 0px;
+                color: @secondary_icon_button;
+                float: right;
+                border: none;
+                width: auto;
+                padding: 0;
+                &:hover {
+                    .primary_action_hover();
+                }
+                &:focus {
+                    .primary_action_focus();
+                }            
+            }
+            .btn-group button {
                 margin-right: 4px;
-                span.glyphicon {
+                font-size: 14px;
+                span.glyphicon.remove {
+                    font-size: 14px;
+                    padding:5px;
                     margin-right: 5px;
+                    color: @secondary_icon_button;
+                    &:hover {
+                        .primary_action_hover();
+                    }
+                    &:focus {
+                        .primary_action_focus();
+                    }
                 }
             }
         }
