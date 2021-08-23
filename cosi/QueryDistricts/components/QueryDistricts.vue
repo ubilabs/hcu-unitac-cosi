@@ -398,13 +398,17 @@ export default {
 
             root.appendChild(cont);
 
-            Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
-            Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
-                id: "compareDistricts",
-                name: "Vergleichbare Gebiete ermitteln",
-                glyphicon: "glyphicon glyphicon-random",
-                scalable: true
-            });
+            /**
+             * @deprecated
+             * @todo replace with new storage
+             */
+            // Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
+            // Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
+            //     id: "compareDistricts",
+            //     name: "Vergleichbare Gebiete ermitteln",
+            //     glyphicon: "glyphicon glyphicon-random",
+            //     scalable: true
+            // });
 
             if (this.dashboard !== null) {
                 this.dashboard.$destroy();
