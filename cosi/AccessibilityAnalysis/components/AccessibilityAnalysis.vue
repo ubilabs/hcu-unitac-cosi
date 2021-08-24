@@ -7,6 +7,7 @@ import requestIsochrones from "./requestIsochrones";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
+import {exportAsGeoJson} from "../utils/exportResults";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -189,7 +190,8 @@ export default {
         requestInhabitants: function () {
             this.close();
             this.$root.$emit("populationRequest", this.rawGeoJson);
-        }
+        },
+        exportAsGeoJson
     }
 };
 </script>
@@ -333,6 +335,20 @@ export default {
                                         {{ j }}
                                     </span>
                                 </template>
+                            </div>
+                            <div id="download">
+                                <v-btn
+                                    id="download-geojson"
+                                    dense
+                                    small
+                                    tile
+                                    color="green lighten-1"
+                                    title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                                    @click="exportAsGeoJson(mapLayer, coordinate)"
+                                >
+                                    <span class="glyphicon glyphicon-floppy-disk" />
+                                    Download GeoJSON
+                                </v-btn>
                             </div>
                         </div>
                     </div>
