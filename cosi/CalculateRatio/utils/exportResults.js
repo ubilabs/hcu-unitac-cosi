@@ -1,5 +1,5 @@
 
-import {union, featuresToGeoJsonCollection} from "../../utils/geomUtils";
+import {union, featuresToGeoJsonCollection, featureToGeoJson} from "../../utils/geomUtils";
 import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
 
@@ -25,28 +25,38 @@ function getKeyOfAttrName () {
  * @param {*} districts - the district features for geometry
  * @returns {void}
  */
-export function exportAsGeoJson (results, districts) {
+export function exportAsGeoJson (results, districts, layerList, selectedFieldA, selectedFieldB) {
     const projectionCode = getPortalCrs(),
         total = results.find(res => res.scope === "Gesamt"),
         average = results.find(res => res.scope === "Durchschnitt"),
-        featureCollection = featuresToGeoJsonCollection(districts, false, projectionCode),
-        unionFeature = union(districts, true, false, projectionCode);
+        featureCollection = featuresToGeoJsonCollection(districts, false, projectionCode);
+        //unionFeature = union(districts, true, false, projectionCode);
 
     // match the result and add it to the resp. geoJSON
     for (const feature of featureCollection.features) {
         const result = results.find(res => res.scope === feature.properties[getKeyOfAttrName()]);
 
-        feature.properties = {...feature.properties, ...result};
+        feature.properties = {...feature.properties, ...result, total, average};
         delete feature.properties.stats;
     }
 
+    for (const field of [selectedFieldA, selectedFieldB]) {
+        const layerFeatures = layerList.find(layer => layer.get("name") === field.id).getSource().getFeatures();
+        for (const feature of layerFeatures) {
+            const featureGeoJson = featureToGeoJson(feature);
+            featureGeoJson.properties = {};
+            featureCollection.features.push(featureGeoJson);
+        }
+    }
+
     // set the properties of the union to the "totals" of the analysis and adds average as separate property
-    unionFeature.properties = {
-        ...total,
-        average
-    };
+    //unionFeature.properties = {
+    //    ...total,
+    //    average
+    //};
 
     // add the union to the collection
-    featureCollection.features.push(unionFeature);
+    //featureCollection.features.push(unionFeature);
+    console.log(featureCollection);
     downloadJsonToFile(featureCollection, "Versorgungsanalyse_CoSI.geojson");
 }
