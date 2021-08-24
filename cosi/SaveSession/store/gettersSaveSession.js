@@ -1,9 +1,9 @@
 
 import {generateSimpleGetters} from "../../../../src/app-store/utils/generators";
-import stateFeaturesList from "./stateSaveSession";
+import stateSaveSession from "./stateSaveSession";
 
 const getters = {
-    ...generateSimpleGetters(stateFeaturesList)
+    ...generateSimpleGetters(stateSaveSession)
 };
 
 

@@ -4,6 +4,7 @@ import {prepareStatsFeatures} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
+import unifyString from "../../utils/unifyString";
 
 const actions = {
     /**
@@ -34,7 +35,7 @@ const actions = {
             for (let i = 0; i < districts.length; i++) {
                 // check if statFeatures are already loaded
                 if (districts[i].statFeatures.length === 0) {
-                    const districtName = districts[i].getName(),
+                    const districtName = unifyString(districts[i].getName(), false),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Map/projectionCode"],
@@ -43,13 +44,21 @@ const actions = {
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
-                    olFeatures.forEach(prepareStatsFeatures);
+                    if (olFeatures.length > 0) {
+                        olFeatures.forEach(prepareStatsFeatures);
 
-                    // add statFeatures to district
-                    districts[i].statFeatures.push(...olFeatures);
-
-                    // store original data on the district as a copy
-                    districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
+                        // add statFeatures to district
+                        districts[i].statFeatures.push(...olFeatures);
+                        // store original data on the district as a copy
+                        districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
+                    }
+                    else {
+                        dispatch("Alerting/addSingleAlert", {
+                            content: "Es konnten nicht alle Datensätze vollständig geladen werden! Bitte versuchen Sie es später erneut. Sollte der Fehler weiterhin bestehen nutzen Sie bitte das Kontaktformular.",
+                            category: "Warning",
+                            cssClass: "warning"
+                        }, {root: true});
+                    }
                 }
             }
         }

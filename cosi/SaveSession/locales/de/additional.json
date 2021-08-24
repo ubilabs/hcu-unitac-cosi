@@ -3,7 +3,9 @@
         "tools": {
             "cosi": {
                 "saveSession": {
-                    "save": "Sitzung speichern"
+                    "title": "Sitzung speichern",
+                    "save": "Sitzung speichern",
+                    "load": "Sitzung laden"
                 }
             }
         }

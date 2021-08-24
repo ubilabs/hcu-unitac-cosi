@@ -3,9 +3,9 @@
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import getters from "../store/gettersFeaturesList";
-import mutations from "../store/mutationsFeaturesList";
-import actions from "../store/actionsFeaturesList";
+import getters from "../store/gettersSaveSession";
+import mutations from "../store/mutationsSaveSession";
+import actions from "../store/actionsSaveSession";
 
 export default {
     name: "SaveSession",
@@ -14,10 +14,21 @@ export default {
     },
     data () {
         return {
+            storePaths: {
+                Tools: {
+                    CalculateRatio: [
+                        "results"
+                    ],
+                    ScenarioBuilder: [
+                        "scenarios"
+                    ]
+                }
+            },
+            state: null
         };
     },
     computed: {
-        ...mapGetters("Tools/FeaturesList", Object.keys(getters))
+        ...mapGetters("Tools/SaveSession", Object.keys(getters))
     },
     watch: {
         /**
@@ -50,8 +61,40 @@ export default {
          */
     },
     methods: {
-        ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
-        ...mapActions("Tools/FeaturesList", Object.keys(actions))
+        ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
+        ...mapActions("Tools/SaveSession", Object.keys(actions)),
+        save () {
+            const state = JSON.parse(JSON.stringify(this.storePaths));
+
+            this.deepCopyState(state, this.$store.state);
+
+            console.log(state);
+            this.state = state;
+
+            this.parseScenarios();
+        },
+
+        deepCopyState (state, store) {
+            for (const key in state) {
+                if (
+                    Array.isArray(state[key]) &&
+                    state[key].every(e => typeof e === "string")
+                ) {
+                    for (const attr of state[key]) {
+                        state[key][attr] = store[key][attr];
+                    }
+                }
+                else if (state[key].constructor === Object) {
+                    this.deepCopyState(state[key], store[key]);
+                }
+            }
+        },
+
+        parseScenarios () {
+            this.state.Tools.ScenarioBuilder.scenarios.map(scenario => {
+                console.log(scenario);
+            });
+        }
     }
 };
 </script>
@@ -59,7 +102,7 @@ export default {
 <template lang="html">
     <Tool
         ref="tool"
-        :title="$t('additional:modules.tools.cosi.featuresList.title')"
+        :title="$t('additional:modules.tools.cosi.saveSession.title')"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -76,7 +119,7 @@ export default {
                     tile
                     depressed
                     :title="$t('additional:modules.tools.cosi.saveSession.save')"
-                    @click="saveSession"
+                    @click="save"
                 >
                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
                 </v-btn>

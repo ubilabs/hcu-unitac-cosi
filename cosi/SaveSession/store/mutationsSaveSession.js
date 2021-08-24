@@ -1,5 +1,5 @@
 import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
-import stateFeaturesList from "./stateSaveSession";
+import stateSaveSession from "./stateSaveSession";
 
 const mutations = {
     /**
@@ -8,7 +8,7 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateFeaturesList)
+    ...generateSimpleMutations(stateSaveSession)
 };
 
 export default mutations;

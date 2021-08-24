@@ -150,7 +150,6 @@ export default {
          * @returns {void}
          */
         activeSimulatedFeatures () {
-            console.log(this.activeSimulatedFeatures);
             this.updateFeaturesList();
         },
 

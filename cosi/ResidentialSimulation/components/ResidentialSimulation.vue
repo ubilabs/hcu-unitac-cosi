@@ -671,7 +671,6 @@ export default {
                                             type="month"
                                             no-title
                                             scrollable
-                                            @update:active-picker="test"
                                         >
                                             <v-spacer />
                                             <v-btn
