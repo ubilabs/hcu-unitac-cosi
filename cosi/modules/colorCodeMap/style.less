@@ -1,3 +1,5 @@
+@import "../../../../css/mixins.less";
+
 @color_1           : rgb(0, 0, 0);
 @background_color_1: rgba(255, 255, 255);
 
@@ -19,6 +21,9 @@
     .btn-prev-next {
         margin-top: 4px;
         padding   : 6px 10px 5px 8px;
+        &:hover {
+            .primary_action_hover();
+        }
     }
 
     .bootstrap-select {

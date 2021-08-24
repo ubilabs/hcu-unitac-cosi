@@ -43,6 +43,7 @@ export default {
 
 <style lang="less" scoped>
 .solaratlas {
+    padding: 10px;
     max-width: "600px";
 }
 </style>
