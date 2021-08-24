@@ -1,7 +1,7 @@
 import WfsQueryModel from "./query/source/wfs";
 import GeoJsonQueryModel from "./query/source/geojson";
 import Tool from "../../../../modules/core/modelList/tool/model";
-import {updateQueryStringParam} from "../../../../src/utils/parametricUrl/ParametricUrlBrige";
+import {updateQueryStringParam} from "../../../../src/utils/parametricUrl/ParametricUrlBridge";
 import store from "../../../../src/app-store";
 
 const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
