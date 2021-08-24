@@ -1,6 +1,7 @@
 import WfsQueryModel from "./query/source/wfs";
 import GeoJsonQueryModel from "./query/source/geojson";
 import Tool from "../../../../modules/core/modelList/tool/model";
+import {updateQueryStringParam} from "../../../../src/utils/parametricUrl/ParametricUrlBrige";
 import store from "../../../../src/app-store";
 
 const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
@@ -51,7 +52,6 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @listens FilterModel#RadioTriggerCloseFilter
      * @listens FilterModel#RadioTriggerChangeIsLayerVisible
      * @listens Layer#RadioTriggerVectorLayerFeaturesLoaded
-     * @fires Core#RadioTriggerParametricURLUpdateQueryStringParam
      * @fires Core#RadioRequestParametricURLGetFilter
      * @fires Core#RadioRequestUtilGetUiStyle
      * @fires Layer#RadioTriggerVectorLayerFeaturesLoaded
@@ -253,7 +253,6 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
 
     /**
      * builds an array of object that reflects the current filter
-     * @fires Core#RadioTriggerParametricURLUpdateQueryStringParam
      * @return {void}
      */
     updateFilterObject: function () {
@@ -273,7 +272,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
             filterObjects.push({name: query.get("name"), isSelected: query.get("isSelected"), rules: ruleList});
         });
         if (this.get("saveToUrl")) {
-            Radio.trigger("ParametricURL", "updateQueryStringParam", "filter", JSON.stringify(filterObjects));
+            updateQueryStringParam("filter", JSON.stringify(filterObjects));
         }
     },
 
@@ -334,7 +333,7 @@ const FilterModel = Tool.extend(/** @lends FilterModel.prototype */{
      * @return {void}
      */
     createQueries: function (queries) {
-        const queryObjects = Radio.request("ParametricURL", "getFilter");
+        const queryObjects = store.state.urlParam?.filter;
         let queryObject,
             oneQuery;
 
