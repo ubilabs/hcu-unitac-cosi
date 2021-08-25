@@ -2,7 +2,7 @@ import { Radio } from "backbone";
 import map from "vuex";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
-import {Fill, Stroke, Style, Text, Circle, Icon} from "ol/style.js";
+import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
 import {color} from "d3-color";
 
 const supportedFormats = {
@@ -217,59 +217,97 @@ function addLayerToTree (newLayer) {
     Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData");
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
+    const gfiAttributes = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+    gfiAttributes.set("gfiAttributes", "showAll");
+    gfiAttributes.set("gfiTheme", "default");
     adjustLayerStyling(newLayer);
 }
 
 function adjustLayerStyling (newLayer) {
     const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
     const layer = layerNode.attributes.layer;
+    const path = "./assets/svg/" + newLayer.svg;
+    let pointColor,
+        pointOpac,
+        areaColor,
+        areaOpac;
 
-    newLayer.svg = "../../../portal/cosi/assets/svg/geo_pin_A.svg";
+        console.log(newLayer.style);
 
-    //const baseColor = color(newLayer.style);
-    //baseColor.opacity = 0.25;
-    console.log(newLayer.style);
-    if(newLayer.svg.length){
-        const layerStyle = new Style({
-            image:new Icon({
-                src: newLayer.svg,
-                color: newLayer.style.hex,
-                stroke: new Stroke({
-                    width:1,
-                    fill:"#fff"
-                })
-            })
-        });
+    if(newLayer.style.point) {
+        pointColor = color(newLayer.style.point.hex);
+        pointOpac = color(newLayer.style.point.hex);
+        pointOpac.opacity = 0.5;
 
-        
-        layer.setStyle(layerStyle);
-        layer.setZIndex(100);
+        areaColor = pointColor;
+        areaOpac = pointOpac;
     }
-
-    /*const layerStyle = new Style({
+    
+    if(newLayer.style.polygon){
+        areaColor = color(newLayer.style.polygon.hex);
+        areaOpac = color(newLayer.style.polygon.hex);
+        areaOpac.opacity = 0.5;
+    }
+    
+    const svgStyle = new Style({
+        image:new Icon({
+            src: path,
+            color: newLayer.style.svg
+        })
+    });
+    
+    const pointStyle = new Style({
         image: new Circle({
             radius:5,
-            fill: new Fill({color: baseColor}),
-            stroke: new Stroke({
-                color: newLayer.style, width:2
+            fill: new Fill({
+                color: pointOpac
             }),
-            zIndex: 100
+            stroke: new Stroke({
+                color: pointColor,
+                width:2
+            })
         })
-    });*/
+    });
 
+    const areaStyle = new Style({
+        fill: new Fill({
+            color: areaOpac
+        }),
+        stroke: new Stroke({
+            width:3,
+            color: areaColor
+        })
+    });
+
+    layerNode.attributes.features.forEach(feature => {
+        if(feature.getGeometry().getType() === "Point") {
+            if(newLayer.svg){
+                feature.setStyle([svgStyle]);
+                feature.set("originalStyle", svgStyle);
+            } else {
+                feature.setStyle([pointStyle]);
+                feature.set("originalStyle", pointStyle);
+            }
+        } else {
+            feature.setStyle([areaStyle]);
+            feature.set("originalStyle", areaStyle);
+        }
+    });
+    
+    console.log(layer);
+    layer.setZIndex(100);
 }
 
 export default {
     cosiLayerHandling ({commit}, newLayer) {
-
         commit("setNewLayerInformation", newLayer);
     },
     passLayer({commit}, newLayer){
         addLayerToTree(newLayer);
+        commit("setUpdateLayerStyles", true);
     },
     setSelectedFiletype: ({commit}, newFiletype) => {
         commit("setSelectedFiletype", newFiletype);
-
     },
     importKML: ({state, dispatch}, datasrc) => {
         const

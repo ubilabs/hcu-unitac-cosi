@@ -27,7 +27,9 @@
                 },
                 "successfullyImportedLabel": "Erfolgreich importiert:",
                 "title": "Datei importieren",
-                "layerButton": "Layer hinzufügen"
+                "layerButton": "Layer hinzufügen",
+                "featuresInfo": "Hier sehen Sie eine Liste aller möglicher Zahlwerte aus dem geladenen Datensatzen, die Sie in unterschiedlichen Cosi-Tools zu Analysezwecken verwenden können. Wählen Sie die relevanten Werte aus und benennen Sie sie auf Wunsch beliebig um.",
+                "pointsAndPolygons": "In Ihrem Datensatz wurden sowohl Punkt- als auch Polygonfeatures erkannt. Wünschen Sie ein gesonderte Farbe für die Polygone?"
             }
         }
     }

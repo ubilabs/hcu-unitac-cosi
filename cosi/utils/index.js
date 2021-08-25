@@ -22,5 +22,5 @@ export default {
     setBBoxToGeom,
     downloadBlobToFile,
     exportXlsx,
-    getAvailableYears
+    getAvailableYears,
 };

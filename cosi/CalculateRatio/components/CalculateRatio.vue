@@ -177,8 +177,11 @@ export default {
             if(importedProps){
                 const addLayer = {
                     id: newLayer.name,
-                    numericalValues: newLayer.numericalValues
                 };
+
+                if(newLayer.numericalValues.length !== 0){
+                    addLayer.numericalValues = newLayer.numericalValues
+                }
 
                 importedProps.push(addLayer);
             } else {
@@ -189,8 +192,11 @@ export default {
 
                 const addLayer = {
                     id: newLayer.name,
-                    numericalValues: newLayer.numericalValues
                 };
+
+                if(newLayer.numericalValues.length !== 0){
+                    addLayer.numericalValues = newLayer.numericalValues
+                }
 
                 layerGroup.layer.push(addLayer);
 

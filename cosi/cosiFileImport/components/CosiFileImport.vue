@@ -15,7 +15,20 @@ export default {
             dzIsDropHovering: false,
             storePath: this.$store.state.Tools.CosiFileImport,
             imported: false,
-            newLayer: {}
+            newLayer: {},
+            preNumericalValues: [],
+            numericalValues:[],
+            svgFile: "",
+            hexColor:"#ff0000",
+            imgObj: {
+                a:"./assets/svg/geo_pin_A.svg",
+                b:"./assets/svg/geo_pin_B.svg",
+                c:"./assets/svg/geo_pin_C.svg",
+                d:"./assets/svg/geo_pin_D.svg"
+            },
+            pointsandpolygons: false,
+            svgColor: {},
+            polygonColor: {}
         };
     },
     computed: {
@@ -37,17 +50,38 @@ export default {
         console: () => console
     },
     watch: {
-        newLayerInformation (payload) {
-            console.log(this.newLayerInformation);
-            this.newLayer = payload,
-            this.imported = true;
+        newLayerInformation (newValue, oldValue) {
+            if(newValue !== oldValue){
+                this.preNumericalValues = [];
+                this.numericalValues = [];
+                this.newLayer = newValue,
+                this.svgFile = 'geo_pin_D.svg';
+                this.newLayer.style = {};
+                this.newLayer.features.find(feature => feature.getGeometry().getType() === "Point") ? this.newLayer.points = true : this.newLayer.points = false;
+                this.newLayer.features.find(feature => feature.getGeometry().getType() !== "Point") ? this.newLayer.polygons = true : this.newLayer.polygons = false;
+                this.preCheckNumericalValues(this.newLayer.features);
+                this.imported = true;
+                console.log(this.newLayer);
+            }
+        },
+        svgFile(){
+            this,
+            this.newLayer.svg = this.svgFile;
+        },
+        svgColor(){
+            this.hexColor = this.svgColor.hex;
+            this.newLayer.style.svg = this.svgColor.hex;
+            this.newLayer.style.point = this.svgColor;
+        },
+        polygonColor(){
+            this.newLayer.style.polygon = this.polygonColor;
         }
     },
     created () {
         this.$on("close", this.close);
     },
-    mounted () {
-        this.map.addEventListener('click', this.onClick);
+    mounted() {
+        console.log("working as expected");
     },
     methods: {
         ...mapActions("Tools/CosiFileImport", [
@@ -97,16 +131,28 @@ export default {
             });
         },
         addLayer(){
+            this.newLayer.numericalValues = this.numericalValues;
             this.passLayer(this.newLayer);
             this.addToFacilityMapping();
+            this.imported = false;
         },
         addToFacilityMapping(){
             this.setFacilityMappingUpdate(this.newLayer);
         },
-        onClick(evt){
-            /*Radio.request("Map", "getMap").forEachFeatureAtPixel(evt.pixel, (feature) => {
-                alert(feature);
-            });*/
+        preCheckNumericalValues(features){
+            const values = features[0].getProperties();
+            console.log("zz", values);
+            Object.entries(values).forEach(pair => {
+                const [key, value] = pair;
+                if(!isNaN(value) && value !== true && value !== false && value !== null){
+                    this.preNumericalValues.push({id: key, name: key, value: value});
+                }
+            });
+
+            console.log(this.preNumericalValues);
+        },
+        setLayerSVG(file){
+            this.svgFile = file;
         },
         close () {
             this.setActive(false);
@@ -211,43 +257,117 @@ export default {
             >
                 <div class="wrapper">
                     <div class="head">
-                        <p class="meta">{{ newLayer.id }}</p>
+                        <p class="meta"><strong>Datensatz_ID</strong> {{ newLayer.id }}</p>
                         <v-text-field
                             label="Layername"
+                            class="name"
                             v-model="newLayer.name"
                         >
                         </v-text-field>
                     </div>
                     <div class="body">
                         <div class="wrapper">
-                            <div class="styling">
-                                <div class="btn-grp">
+                            <div class="styling points" v-if="newLayer.points && !newLayer.polygons">
+                                <h3>Point Styling</h3>
+                                <div class="grp_wrapper btn">
+                                    <div class="btn_grp">
+                                        <v-btn :class="{highlight: svgFile === 'geo_pin_D.svg'}" @click="setLayerSVG('geo_pin_D.svg')" :style="svgFile === 'geo_pin_D.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.d" /></v-btn>
+                                        <v-btn :class="{highlight: svgFile === 'geo_pin_A.svg'}" @click="setLayerSVG('geo_pin_A.svg')" :style="svgFile === 'geo_pin_A.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.a" /></v-btn>
+                                        <v-btn :class="{highlight: svgFile === 'geo_pin_B.svg'}" @click="setLayerSVG('geo_pin_B.svg')" :style="svgFile === 'geo_pin_B.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.b" /></v-btn>
+                                        <v-btn :class="{highlight: svgFile === 'geo_pin_C.svg'}" @click="setLayerSVG('geo_pin_C.svg')" :style="svgFile === 'geo_pin_C.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.c" /></v-btn>
+                                    </div>
+                                </div>
+                                <div class="grp_wrapper">
                                     <v-color-picker
-                                        v-model="newLayer.style"
+                                        v-model="svgColor"
                                         dot-size="25"
                                         hide-inputs
                                         hide-mode-switch
-                                        mode="rgba"
-                                        swatches-max-height="200"
                                     ></v-color-picker>
                                 </div>
                             </div>
-                            <div class="features"></div>
+                            <div class="styling polygons" v-if="newLayer.polygons && !newLayer.points">
+                                <h3>Polygon Styling</h3>
+                                <div class="grp_wrapper">
+                                    <v-color-picker
+                                        v-model="polygonColor"
+                                        dot-size="25"
+                                        hide-inputs
+                                        hide-mode-switch
+                                    ></v-color-picker>
+                                </div>
+                            </div>
+                            <div class="pointspolygons" v-if="newLayer.points && newLayer.polygons">
+                                <div class="styling points">
+                                    <h3>Point Styling</h3>
+                                    <div class="grp_wrapper btn">
+                                        <div class="btn_grp">
+                                            <v-btn :class="{highlight: svgFile === 'geo_pin_D.svg'}" @click="setLayerSVG('geo_pin_D.svg')" :style="svgFile === 'geo_pin_D.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.d" /></v-btn>
+                                            <v-btn :class="{highlight: svgFile === 'geo_pin_A.svg'}" @click="setLayerSVG('geo_pin_A.svg')" :style="svgFile === 'geo_pin_A.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.a" /></v-btn>
+                                            <v-btn :class="{highlight: svgFile === 'geo_pin_B.svg'}" @click="setLayerSVG('geo_pin_B.svg')" :style="svgFile === 'geo_pin_B.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.b" /></v-btn>
+                                            <v-btn :class="{highlight: svgFile === 'geo_pin_C.svg'}" @click="setLayerSVG('geo_pin_C.svg')" :style="svgFile === 'geo_pin_C.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.c" /></v-btn>
+                                        </div>
+                                    </div>
+                                    <div class="grp_wrapper">
+                                        <v-color-picker
+                                            v-model="svgColor"
+                                            dot-size="25"
+                                            hide-inputs
+                                            hide-mode-switch
+                                        ></v-color-picker>
+                                    </div>
+                                    <div class="both">
+                                        <p class="info">{{ $t("additional:modules.tools.cosiFileImport.pointsAndPolygons") }}</p>
+                                        <v-btn class="switch_btn" :class="{highlight: pointsandpolygons}" @click="pointsandpolygons = true">Zweite Farbe</v-btn>
+                                    </div>
+                                </div>
+                                <div class="styling sub polygons" v-if="pointsandpolygons">
+                                    <h3>Polygon Styling</h3>
+                                    <div class="grp_wrapper">
+                                        <v-color-picker
+                                            v-model="polygonColor"
+                                            dot-size="25"
+                                            hide-inputs
+                                            hide-mode-switch
+                                        ></v-color-picker>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="features">
+                                <p class="featuresInfo">{{ $t("additional:modules.tools.cosiFileImport.featuresInfo") }}</p>
+                                <ul class="preNums">
+                                    <li
+                                        v-for="(data, i) in preNumericalValues"
+                                        :key="i"
+                                    >
+                                        <v-text-field
+                                            class="preNumName"
+                                            label="Name der Eigenschaft"
+                                            v-model="data.name"
+                                        ></v-text-field>
+                                        <label><strong>{{data.id}}</strong> ({{data.value}})</label>
+                                        <input type="checkbox" v-model="numericalValues" :value="data"/>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="submit">
                         <v-btn
+                            class="submit_btn"
                             @click="addLayer"
                         >{{ $t("additional:modules.tools.cosiFileImport.layerButton") }}</v-btn>
                     </div>
                 </div>
             </div>
+            
         </template>
     </Tool>
 </template>
 
 <style lang="less" scoped>
     @import "~variables";
+    @import "../../utils/variables.less";
 
     .h-seperator {
         margin:12px 0 12px 0;
@@ -284,13 +404,12 @@ export default {
 
     .drop-area-fake {
         background-color: #FFFFFF;
-        border-radius: 12px;
-        border: 2px dashed @accent_disabled;
+        border: 2px dashed @brightblue;
         padding:24px;
         transition: background 0.25s, border-color 0.25s;
 
         &.dzReady {
-            background-color:@accent_hover;
+            background-color:@masterportal_blue;
             border-color:transparent;
 
             p.caption {
@@ -346,39 +465,193 @@ export default {
     }
 
     .handler {
+        width:400px;
+        max-width:400px;
+        min-width:400px;
+
         .wrapper {
-            .header {}
+            .head {
+                p.meta {
+                    display:inline-block;
+                    background:#eee;
+                    padding:5px 10px;
+                    margin-top:-10px;
+                    margin-bottom:20px;
+                    font-size:80%;
+
+                    strong {
+                        color:#000;
+                    }
+                }
+
+                .name {
+                    margin:10px 0px;
+
+                    ::v-deep .v-label--active {
+                        left:1px !important;
+                        font-size:80%;
+                        color:@masterportal_blue;
+                        transform-origin:center left;
+                    }
+                }
+            }
             .body {
                 .wrapper {
                     .styling {
+                        display:flex;
+                        flex-flow:row wrap;
+                        justify-content:space-between;
                         width:100%;
+                        max-width:400px;
 
-                        .btn_grp {
+                        h3 {
+                            flex:1 0 100%;
+                            color:#aaa;
+                            font-size:110%;
+                            border:none;
+                            line-height:normal;
+                            order:1;
+                        }
+
+                        .both {
+                            flex:1 0 100%;
+                            order:5;
+                        }
+
+                        .grp_wrapper {
                             display:flex;
-                            flex-flow:row wrap;
-                            justify-content:space-between;
+                            flex:0 0 300px;
+                            order:2;
 
-                            .style-choice {
-                                flex:0 0 24%;
+                            &.btn {
+                                flex:0 0 40px;
+                                padding:0;
+                                order:3;
+                                background:#eee;
+                            }
+                        
+                            .btn_grp {
+                                width:100%;
+                                display:flex;
+                                flex-flow:row wrap;
+                                justify-content:space-between;
+                                margin:5px 0px;
+                                padding:5px 10px;
+                                box-sizing: border-box;
 
-                                &.red {
-                                    background:red;
+                                .v-btn {
+                                    flex:1 0 100%;
+                                    border-radius:0px;
+                                    background:transparent;
+                                    border:1px solid #aaa;
+                                    box-shadow:none;
+                                    margin:2px 0px;
+                                    max-width:60px;
+                                    min-width:0px;
+
+                                    &.highlight {
+                                        border:1px solid #222;
+                                    }
                                 }
-                                
-                                &.blue {
-                                    background:blue;
+                            }
+
+                            .v-color-picker {
+                                ::v-deep .v-color-picker__hue {
+                                    background: linear-gradient(90deg,red,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red);
                                 }
-                                
-                                &.green {
-                                    background:green;
+
+                                ::v-deep .v-color-picker__dot {
+                                    width:50px;
+                                    height:50px;
+                                    border-radius:0px;
+                                    margin-right:10px;
                                 }
-                                
-                                &.yellow {
-                                    background:yellow;
+                            }
+                        }
+
+                        &.sub {
+                            padding-top:10px;
+                            margin-top:10px;
+                            border-top:1px solid #ccc;
+                        }
+                    }
+
+                    .features {
+                        margin:5px 0px;
+
+                        .featuresInfo {
+                            margin: 20px 0px;
+                            padding: 20px 5px 0px 5px;
+                            border-top: 1px solid #ccc;
+                        }
+
+                        ul.preNums {
+                            list-style:none;
+                            li {
+                                flex:1 0 100%;
+                                display:flex;
+                                flex-flow:row wrap;
+                                justify-content:flex-start;
+                                align-items:center;
+                                background:whitesmoke;
+                                margin:3px 0px;
+                                padding:0px 20px;
+                                box-sizing: border-box;
+
+                                .preNumName {
+                                    flex:0 0 160px;
+                                    margin-right:5px;
+                                    font-size:100%;
+                                    padding-top:5px;
+                                    color:#000;
+
+                                    ::v-deep .v-label--active {
+                                        display:none;
+                                        left:1px !important;
+                                        color:@masterportal_blue;
+                                        transform-origin:center left;
+                                    }
+
+                                    ::v-deep .v-input__slot {
+                                        margin:0;
+
+                                        input {
+                                            padding:2px 0px;
+                                        }
+                                    }
+
+
+                                }
+
+                                label {
+                                    margin:0px 10px;
+                                    border-left:2px solid #222;
+                                    padding-left:10px;
+                                }
+
+                                input {
+                                    margin:0 0 0 auto;
+                                    width:24px;
+                                    height:24px;
                                 }
                             }
                         }
                     }
+                }
+            }
+
+            .submit {
+                margin:10px 0px;
+                padding-top:10px;
+                border-top:1px solid #ccc;
+                
+                .submit_btn {
+                    display:block;
+                    margin:0 0 0 auto;
+                    border-radius:0px;
+                    background:@masterportal_blue;
+                    color:white;
+                    box-shadow:none;
                 }
             }
         }
