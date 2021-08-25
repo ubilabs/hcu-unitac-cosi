@@ -846,7 +846,7 @@ export default {
             }
         }
     }
-    
+
     .container {
         max-width: 340px;
     }

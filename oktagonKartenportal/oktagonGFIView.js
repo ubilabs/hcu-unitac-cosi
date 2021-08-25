@@ -78,7 +78,7 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
     /**
      * Hides the sidebar.
      * @fires Sidebar#RadioTriggerSidebarToggle
-     * @param {Event} evt the dom event
+     * @param {Event} event the dom event
      * @returns {void}
      */
     onClose: function (event) {
