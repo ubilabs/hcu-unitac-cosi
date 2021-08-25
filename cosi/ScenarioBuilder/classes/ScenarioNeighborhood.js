@@ -66,7 +66,7 @@ export default class ScenarioNeighborhood {
                 completion = new Date(this.feature.get("year")).getFullYear();
             let year, originalVal;
 
-            for (const datum of this.feature.get("stats")) {
+            for (const datum of this.feature.get("stats") || []) {
                 /**
                  * @todo IT'S JUST A PROTOTYPE
                  */

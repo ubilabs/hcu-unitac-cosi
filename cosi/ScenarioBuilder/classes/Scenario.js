@@ -16,13 +16,31 @@ export default class Scenario {
      * Constructor for class Scenario
      * @param {String} name the name of the scenario
      * @param {module:ol/layer/Vector} [guideLayer] the guideLayer to draw labels to
+     * @param {Object} [opts={}] other attributes to set
      */
-    constructor (name, guideLayer) {
+    constructor (name, guideLayer, opts = {}) {
         this.name = name;
+        this.guideLayer = guideLayer;
         this.simulatedFeatures = [];
         this.modifiedFeatures = [];
         this.neighborhoods = [];
-        this.guideLayer = guideLayer;
+        this.isActive = opts.isActive || false;
+
+        if (opts.simulatedFeatures) {
+            for (const scenarioFeature of opts.simulatedFeatures) {
+                this.addFeature(scenarioFeature, this.isActive);
+            }
+        }
+        if (opts.modifiedFeatures) {
+            for (const modifiedFeature of opts.modifiedFeatures) {
+                this.addModifiedFeature(modifiedFeature.feature, modifiedFeature.layer);
+            }
+        }
+        if (opts.neighborhoods) {
+            for (const neighborhood of opts.simulatedFeatures) {
+                this.addNeighborhood(neighborhood, this.isActive);
+            }
+        }
     }
 
     /**
@@ -313,12 +331,20 @@ export default class Scenario {
     }
 
     /**
-     * Returns the modified ScenarioNeighborhood for a given map feature
+     * Returns the ScenarioNeighborhood for a given map feature
      * @param {module:ol/Feature} feature - the OL map feature
      * @returns {ScenarioNeighborhood} the ScenarioNeighborhood and its scenario specific properties
      */
     getNeighborhood (feature) {
         return this.neighborhoods.find(item => item.feature === feature);
+    }
+
+    /**
+     * Returns all ScenarioNeighborhoods in the scenario
+     * @returns {ScenarioNeighborhood[]} the ScenarioNeighborhood and its scenario specific properties
+     */
+    getNeighborhoods () {
+        return [...this.neighborhoods];
     }
 
     /**
