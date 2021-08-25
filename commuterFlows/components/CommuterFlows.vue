@@ -834,6 +834,19 @@ export default {
 </template>
 
 <style lang="less" scoped>
+    @import "~/css/mixins.less";
+
+    #CommuterFlows {
+        button {
+            &:focus {
+                .primary_action_focus();
+            }
+            &:hover {
+                .primary_action_hover();
+            }
+        }
+    }
+    
     .container {
         max-width: 340px;
     }

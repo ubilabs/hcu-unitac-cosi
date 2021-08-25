@@ -6,7 +6,8 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
     events: {
         "click #oktagonSubmitButton": "onSubmit",
         "click #oktagonCloseButton": "onClose",
-        "click .close": "onClose"
+        "click .close": "onClose",
+        "keydown .close": "onClose"
     },
     /**
      * @class OktagonGetFeatureInformationView
@@ -46,7 +47,15 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
             this.$("#oktagonSubmitButton").prop("disabled", true);
         }
         this.delegateEvents();
+        this.setFocus();
         return this;
+    },
+    /**
+     * Sets the focus to the close.
+     * @returns {void}
+     */
+    setFocus: function () {
+        this.$el.find(".close").trigger("focus");
     },
     /**
      * On map click starts onMapClick in the model.
@@ -69,10 +78,13 @@ const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends Oktagon
     /**
      * Hides the sidebar.
      * @fires Sidebar#RadioTriggerSidebarToggle
+     * @param {Event} evt the dom event
      * @returns {void}
      */
-    onClose: function () {
-        Radio.trigger("Sidebar", "toggle", false);
+    onClose: function (event) {
+        if (event.type === "click" || event.which === 32 || event.which === 13) {
+            Radio.trigger("Sidebar", "toggle", false);
+        }
     }
 });
 

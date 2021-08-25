@@ -176,7 +176,7 @@ export default {
                     <button
                         id="button-selectedDownload"
                         type="button"
-                        class="btn btn-default btn-sm btn-block center-block"
+                        class="btn btn-primary btn-sm btn-block center-block"
                         @click="requestCompressedData"
                     >
                         {{ translate(downloadDataPackage) }}
@@ -231,6 +231,8 @@ export default {
 </template>
 
 <style lang="less" scoped>
+    @import "~/css/mixins.less";
+
 /*sdp download*/
     .content {
         width: 350px;
@@ -247,8 +249,14 @@ export default {
     #button-selectedDownload{
         margin-top: 15px;
     }
-    .btn {
+    .btn, .btn-default, .btn-primary {
         white-space:initial;
+        &:focus {
+            .primary_action_focus();
+        }
+        &:hover {
+            .primary_action_hover();
+        }
     }
     .formatselect{
         width: 100%;
