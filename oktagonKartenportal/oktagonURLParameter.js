@@ -110,7 +110,7 @@ const OktagonURLParameter = Backbone.Model.extend(/** @lends OktagonURLParameter
         if (Object.prototype.hasOwnProperty.call(Config, "zoomToGeometry") && Config.zoomToGeometry?.geometries) {
             geometries = Config.zoomToGeometry.geometries;
 
-            if (geometries.includes(districtFromUrl.toUpperCase())) {
+            if (districtFromUrl && geometries.includes(districtFromUrl.toUpperCase())) {
                 districtNameToZoom = districtFromUrl.toUpperCase();
             }
         }
