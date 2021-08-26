@@ -5,7 +5,9 @@
                 "saveSession": {
                     "title": "Sitzung speichern",
                     "save": "Sitzung speichern",
-                    "load": "Sitzung laden"
+                    "load": "Sitzung laden",
+                    "loadLast": "Letzte Sitzung wiederherstellen?",
+                    "clear": "Sitzungen löschen"
                 }
             }
         }

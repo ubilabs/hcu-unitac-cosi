@@ -12,10 +12,12 @@ export default class ScenarioFeature {
      * Constructor for class ScenarioFeature
      * @param {module:ol/Feature} feature the OpenLayers Feature created
      * @param {module:ol/layer/Vector} layer the OpenLayers Layer the feature is bound to
+     * @param {module:ol/layer/Vector} [guideLayer] the guideLayer to render additional info to
      */
-    constructor (feature, layer) {
+    constructor (feature, layer, guideLayer) {
         this.feature = feature;
         this.layer = layer;
+        this.guideLayer = guideLayer;
         this.scenarioData = {};
 
         storeOriginalFeatureData(this.feature);
@@ -29,6 +31,8 @@ export default class ScenarioFeature {
      */
     renderFeature (guideLayer) {
         getClusterSource(this.layer).addFeature(this.feature);
+
+        console.log(this.layer, this.feature, this.guideLayer);
 
         if (guideLayer || this.guideLayer) {
             this.guideLayer = guideLayer || this.guideLayer;

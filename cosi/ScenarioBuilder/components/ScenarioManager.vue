@@ -53,7 +53,7 @@ export default {
             }
             if (newActiveScenario) {
                 newActiveScenario.restore();
-                oldActiveScenario.isActive = true;
+                newActiveScenario.isActive = true;
             }
         }
     },

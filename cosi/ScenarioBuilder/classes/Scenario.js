@@ -252,11 +252,12 @@ export default class Scenario {
      * @returns {void}
      */
     restore () {
+        console.log(this.simulatedFeatures);
         for (const item of this.simulatedFeatures) {
             if (!getClusterSource(item.layer)
                 .getFeatures()
                 .find(feature => feature === item.feature)) {
-                item.renderFeature();
+                item.renderFeature(this.guideLayer);
             }
             item.restoreScenarioProperties();
         }

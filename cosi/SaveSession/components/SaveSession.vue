@@ -29,13 +29,14 @@ export default {
                     ]
                 }
             },
-            state: null
+            state: null,
+            loadDialog: false
         };
     },
     computed: {
         ...mapGetters("Tools/SaveSession", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
-        ...mapGetters("Map", "layerById")
+        ...mapGetters("Map", ["layerById"])
     },
     watch: {
         /**
@@ -68,7 +69,12 @@ export default {
          */
         this.localStorage = window.localStorage;
 
-        this.loadFromLocalStorage();
+        // this.loadFromLocalStorage();
+
+        if (this.localStorage.getItem("cosi-state")) {
+            this.loadDialog = true;
+        }
+        // this.loadDialog = true;
     },
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
@@ -78,6 +84,15 @@ export default {
             this.storeToLocalStorage();
 
             console.log(this.state);
+        },
+
+        load () {
+            this.loadFromLocalStorage();
+            this.loadDialog = false;
+        },
+
+        clear () {
+            this.localStorage.removeItem("cosi-state");
         },
 
         storeToLocalStorage () {
@@ -91,7 +106,8 @@ export default {
                 this.parseState(this.storePaths, state);
             }
             catch (e) {
-                console.warn("No session has yet been saved");
+                console.error(e);
+                console.warn("No loadable session has yet been saved");
             }
         },
 
@@ -126,12 +142,23 @@ export default {
         },
 
         parseScenario (scenario, parser) {
-            console.log(scenario);
-            const _scenario = new Scenario(
-                scenario.name,
-                this.simGuideLayer,
-                scenario
-            );
+            const simulatedFeatures = scenario.simulatedFeatures.map(scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser)),
+                _scenario = new Scenario(
+                    scenario.name,
+                    this.simGuideLayer,
+                    {
+                        simulatedFeatures
+                    }
+                );
+
+            return _scenario;
+        },
+
+        parseScenarioFeature (scenarioFeature, parser) {
+            const layer = this.getTopicsLayer(scenarioFeature.layer),
+                feature = parser.readFeature(scenarioFeature.feature);
+
+            return new ScenarioFeature(feature, layer);
         },
 
         serializeState () {
@@ -187,6 +214,7 @@ export default {
             return {
                 ...scenario,
                 guideLayer: null,
+                isActive: false,
                 simulatedFeatures,
                 modifiedFeatures,
                 neighborhoods
@@ -197,7 +225,7 @@ export default {
             return {
                 ...scenarioFeature,
                 guideLayer: null,
-                feature: parser.writeFeature(scenarioFeature.feature),
+                feature: parser.writeFeatureObject(scenarioFeature.feature),
                 layer: scenarioFeature.layer.get("id")
             };
         },
@@ -206,44 +234,114 @@ export default {
             return {
                 ...scenarioNeighborhood,
                 layer: null,
-                feature: parser.writeFeature(scenarioNeighborhood.feature),
+                feature: parser.writeFeatureObject(scenarioNeighborhood.feature),
                 districts: scenarioNeighborhood.districts.map(dist => ({
                     ...dist,
                     district: dist.adminFeature.getId()
                 }))
             };
+        },
+
+        getTopicsLayer (layerId) {
+            let layer = this.layerById(layerId);
+
+            if (layer) {
+                return layer.olLayer;
+            }
+
+            const model = this.initializeLayer(layerId);
+
+            if (model) {
+                model.set("isSelected", true);
+                layer = model.get("layer");
+
+                console.log(model);
+            }
+
+            return layer;
+        },
+
+        /**
+         * @description Checks if the layers are added to the ModelList and adds them if not.
+         * @param {String} layerId - the layer id
+         * @todo Refactor to vue when MP Core is updated
+         * @returns {Object} the layer model from the MP core
+         */
+        initializeLayer (layerId) {
+            if (!Radio.request("ModelList", "getModelByAttributes", {id: layerId})) {
+                Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
+            }
+
+            return Radio.request("ModelList", "getModelByAttributes", {id: layerId});
         }
     }
 };
 </script>
 
 <template lang="html">
-    <Tool
-        ref="tool"
-        :title="$t('additional:modules.tools.cosi.saveSession.title')"
-        :icon="glyphicon"
-        :active="active"
-        :render-to-window="renderToWindow"
-        :resizable-window="resizableWindow"
-        :deactivate-gfi="deactivateGFI"
-    >
-        <template
-            v-if="active"
-            #toolBody
+    <div>
+        <Tool
+            ref="tool"
+            :title="$t('additional:modules.tools.cosi.saveSession.title')"
+            :icon="glyphicon"
+            :active="active"
+            :render-to-window="renderToWindow"
+            :resizable-window="resizableWindow"
+            :deactivate-gfi="deactivateGFI"
         >
-            <v-app>
+            <template
+                v-if="active"
+                #toolBody
+            >
+                <v-app>
+                    <v-btn
+                        id="save-session"
+                        tile
+                        depressed
+                        :title="$t('additional:modules.tools.cosi.saveSession.save')"
+                        @click="save"
+                    >
+                        {{ $t('additional:modules.tools.cosi.saveSession.save') }}
+                    </v-btn>
+                    <v-btn
+                        id="load-session"
+                        tile
+                        depressed
+                        :title="$t('additional:modules.tools.cosi.saveSession.load')"
+                        @click="load"
+                    >
+                        {{ $t('additional:modules.tools.cosi.saveSession.load') }}
+                    </v-btn>
+                    <v-btn
+                        id="clear-session"
+                        tile
+                        depressed
+                        :title="$t('additional:modules.tools.cosi.saveSession.clear')"
+                        @click="clear"
+                    >
+                        {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
+                    </v-btn>
+                </v-app>
+            </template>
+        </Tool>
+        <v-snackbar
+            v-model="loadDialog"
+            :timeout="-1"
+            color="lightgrey"
+        >
+            {{ $t('additional:modules.tools.cosi.saveSession.loadLast') }}
+
+            <template #action="{ attrs }">
                 <v-btn
-                    id="save-session"
-                    tile
-                    depressed
-                    :title="$t('additional:modules.tools.cosi.saveSession.save')"
-                    @click="save"
+                    v-bind="attrs"
+                    text
+                    @click="load"
                 >
-                    {{ $t('additional:modules.tools.cosi.saveSession.save') }}
+                    {{ $t("additional:modules.tools.cosi.saveSession.load") }}
                 </v-btn>
-            </v-app>
-        </template>
-    </Tool>
+            </template>
+        </v-snackbar>
+    </div>
 </template>
 
 <style lang="less">

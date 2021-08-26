@@ -5,7 +5,9 @@
                 "saveSession": {
                     "title": "Save Session",
                     "save": "Save",
-                    "load": "Load"
+                    "load": "Load",
+                    "loadLast": "Restore last session?",
+                    "clear": "Clear old sessions"
                 }
             }
         }
