@@ -37,12 +37,13 @@
                         "directionLabel": "Direction:",
                         "directionBoth": "both",
                         "carsHeaderSuffix": "The count of cars",
-                        "trucksHeaderSuffix": "Trucks proportion in %",
+                        "trucksHeaderSuffix": "The count of trucks **",
                         "yAxisTextDay": "Count / {{minutes}} Min.",
                         "yAxisTextWeek": "Count / Day",
                         "yAxisTextYear": "Count / Week",
                         "reset": "Reset",
-                        "holidaySign": "Holiday Influence"
+                        "holidaySign": "Holiday Influence",
+                        "trucksStatus": "** The count of trucks (Beta-Status)"
                     }
                 }
             }

@@ -163,6 +163,7 @@ function initializeBrwAbfrageModel () {
 
             this.unselectLayerModel(this.get("modelList"));
             layerModel = this.selectLayerModelByName(selectedLayername, this.get("modelList"));
+
             if (layerModel.attributes.layers.indexOf("flaeche") > -1) {
                 this.setAreaLayerSelected(true);
             }
@@ -495,10 +496,12 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         unselectLayerModel: function (modelList) {
-            const layerModel = modelList.find(model => model.get("isSelected") === true);
+            const layerModels = modelList.filter(model => model.get("isSelected") === true);
 
-            layerModel.set("isVisibleInMap", false);
-            layerModel.set("isSelected", false);
+            layerModels.forEach(layerModel => {
+                layerModel.set("isVisibleInMap", false);
+                layerModel.set("isSelected", false);
+            });
         },
 
         /**
@@ -631,6 +634,7 @@ function initializeBrwAbfrageModel () {
             if (brw.get("zStrassenLage")) {
                 requestObj = this.setObjectAttribute(requestObj, "ZStrLage", brw.get("zStrassenLage"), "string");
             }
+            requestObj = this.setObjectAttribute(requestObj, "tm_ttl", 50, "integer");
 
             return requestObj;
         },
@@ -924,9 +928,9 @@ function initializeBrwAbfrageModel () {
                 isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
             if (key === "convertedBrw") {
-                const valueDm = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(value, 10) * 1.95583).toFixed(1)) : "";
+                const valueDm = isDMTime ? thousandsSeparator((parseFloat(value, 10) * 1.95583).toFixed(1)) : "";
 
-                feature.setProperties({"convertedBrw": Radio.request("Util", "thousandsSeparator", value)});
+                feature.setProperties({"convertedBrw": thousandsSeparator(value)});
                 feature.setProperties({"convertedBrwDM": valueDm});
             }
             else if (key === "zBauweise") {

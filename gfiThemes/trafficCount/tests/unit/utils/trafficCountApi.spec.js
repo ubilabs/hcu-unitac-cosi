@@ -1425,10 +1425,11 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
 
             expect(lastDataset).to.deep.equal(expectedDataset);
         });
-        /*
+
         // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
         // use this code to test Kfz + SV
-        it("should add Anteil_SV data to dataset if meansOfTransport equals 'Anzahl_Kfz'; should resend data anytime a subscribed message was received", () => {
+        /*
+        it("should add Anzahl_SV data to dataset if meansOfTransport equals 'Anzahl_Kfz'; should resend data anytime a subscribed message was received", () => {
             let lastDataset = false;
 
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -1439,7 +1440,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                 expectedDateTimeC = moment(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
-                        if (url.indexOf("AnzFahrzeuge") !== -1) {
+                        if (url.indexOf("Anzahl_Kfz") !== -1) {
                             onupdate([{
                                 Datastreams: [{
                                     "@iot.id": "foo",
@@ -1449,7 +1450,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                                 }]
                             }]);
                         }
-                        else if (url.indexOf("AntSV") !== -1) {
+                        else if (url.indexOf("Anzahl_SV") !== -1) {
                             onupdate([{
                                 Datastreams: [{
                                     "@iot.id": "bar",
@@ -1462,12 +1463,12 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                meansOfTransport = "AnzFahrzeuge",
+                meansOfTransport = "Anzahl_Kfz",
                 expectedTopicFahrzeuge = "v1234/Datastreams(foo)/Observations",
                 expectedTopicSV = "v1234/Datastreams(bar)/Observations",
                 expectedOutcome = {
-                    AnzFahrzeuge: {},
-                    AntSV: {}
+                    Anzahl_Kfz: {},
+                    Anzahl_SV: {}
                 },
                 timeSettings = {
                     interval: "interval",
@@ -1482,8 +1483,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                 lastDataset = dataset;
             }, "onerror", "onstart", "oncomplete", "2020-03-20");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopicFahrzeuge)).to.be.true;
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopicSV)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopicFahrzeuge)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopicSV)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopicFahrzeuge]).to.be.an("array").that.is.not.empty;
             expect(api.getSubscriptionTopics()[expectedTopicSV]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopicFahrzeuge][0] === "function").to.be.true;
@@ -1491,16 +1492,16 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
 
             // stimulate subscription handler
             api.getSubscriptionTopics()[expectedTopicFahrzeuge][0]({result: 2000, phenomenonTime: phenomenonTimeB});
-            expectedOutcome.AnzFahrzeuge[expectedDateTimeA] = 1000;
-            expectedOutcome.AnzFahrzeuge[expectedDateTimeB] = 2000;
-            expectedOutcome.AntSV[expectedDateTimeA] = 1;
+            expectedOutcome.Anzahl_Kfz[expectedDateTimeA] = 1000;
+            expectedOutcome.Anzahl_Kfz[expectedDateTimeB] = 2000;
+            expectedOutcome.Anzahl_SV[expectedDateTimeA] = 1;
             expect(lastDataset).to.deep.equal(expectedOutcome);
 
             api.getSubscriptionTopics()[expectedTopicSV][0]({result: 2, phenomenonTime: expectedDateTimeC});
-            expectedOutcome.AntSV[expectedDateTimeC] = 2;
+            expectedOutcome.Anzahl_SV[expectedDateTimeC] = 2;
             expect(lastDataset).to.deep.equal(expectedOutcome);
         });
-        */
+         */
     });
 
     describe("TrafficCountApi.subscribeLastUpdate", () => {
