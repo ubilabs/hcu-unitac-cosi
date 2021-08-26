@@ -82,6 +82,25 @@ export default {
             return this.sourceMRH === "tlw" && this.sourceFHH === "nein";
         }
     },
+    watch: {
+        /**
+         * Sets the status for graphicalSelect
+         * @param {Boolean} newValue value deciding whether the tool gets activated or deactivated
+         * @returns {void}
+         */
+        active (newValue) {
+            if (newValue) {
+                this.$nextTick(() => {
+                    this.$refs.graphicalSelectComponent.setStatus(newValue);
+                    this.$refs.graphicalSelectComponent.resetGeographicSelection();
+                });
+            }
+            else {
+                this.$refs.graphicalSelectComponent.setStatus(newValue);
+                this.$refs.graphicalSelectComponent.resetView();
+            }
+        }
+    },
     /**
      * Created hook:
      * @returns {void}
