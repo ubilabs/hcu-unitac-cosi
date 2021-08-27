@@ -514,6 +514,7 @@ export default {
         position: relative;
         display: inline-block;
         width: 100%;
+        padding-bottom: 5px;
     }
 }
 </style>

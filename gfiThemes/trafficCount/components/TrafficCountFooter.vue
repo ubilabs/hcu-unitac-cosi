@@ -92,7 +92,7 @@ export default {
 
         currentTabId: function (newVal) {
             if (newVal !== "infos") {
-                this.updateFooter(newVal);
+                this.updateFooter(newVal, this.meansOfTransport);
             }
         }
     },
@@ -104,21 +104,22 @@ export default {
         /**
          * updates the footer of the trafficCount gfi
          * @param {String} currentTabId the id to identify the activated tab as day, week or year
+         * @param {String} meansOfTransport the means of transportation
          * @post the footer is updated to show the identified tab
          * @returns {void}  -
          */
-        updateFooter: function (currentTabId) {
+        updateFooter: function (currentTabId, meansOfTransport) {
             // Making the postion of indication fixed when scroll
             this.fixIndicationPosition();
 
-            const meansOfTransportSV = this.meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
+            const meansOfTransportSV = meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
 
             // tab body
             if (currentTabId === "day") {
-                this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
+                this.downloadDataDay(this.thingId, meansOfTransport, result => {
                     const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
 
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], dataAnzahlSV, this.currentTabId, this.holidays));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays));
                     if (this.api instanceof DauerzaehlstellenRadApi) {
                         this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
                     }
@@ -145,7 +146,7 @@ export default {
                 this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
                     const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
 
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], dataAnzahlSV, this.currentTabId, this.holidays));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Tageswerte");
                     // onerror
                 }, error => {
@@ -167,7 +168,7 @@ export default {
                 this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
                     const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
 
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], dataAnzahlSV, this.currentTabId, this.holidays));
+                    this.exportModel.set("rawData", this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays));
                     this.exportModel.set("filename", result.title.replace(" ", "_") + "-Wochenwerte");
                     // onerror
                 }, error => {
@@ -272,14 +273,16 @@ export default {
 
         /**
          * converts the data object into an array of objects for the csv download
+         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
          * @param {Object} data - the whole count of data for download
          * @param {Object|Boolean} dataAnzahlSV - the count of trucks for download
          * @param {String} tabValue - day | week | year
          * @param {String[]} holidays - the holidays from parent component in array format
          * @returns {Object[]} objArr - converted data
          */
-        prepareDataForDownload: function (data, dataAnzahlSV, tabValue, holidays) {
-            const objArr = [];
+        prepareDataForDownload: function (meansOfTransport, data, dataAnzahlSV, tabValue, holidays) {
+            const objArr = [],
+                countHeader = meansOfTransport === "Anzahl_Kfz" ? "Anzahl KFZ" : "Anzahl";
 
             for (const key in data) {
                 const obj = {},
@@ -288,25 +291,25 @@ export default {
                 if (tabValue === "day") {
                     obj.Datum = date[0];
                     obj["Uhrzeit von"] = date[1].slice(0, -3);
-                    obj.Anzahl = data[key];
+                    obj[countHeader] = data[key];
                     if (dataAnzahlSV) {
-                        obj.Anzahl_SV = dataAnzahlSV[key];
+                        obj["Anzahl SV"] = dataAnzahlSV[key];
                     }
                     obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "week") {
                     obj.Datum = date[0];
-                    obj.Anzahl = data[key];
+                    obj[countHeader] = data[key];
                     if (dataAnzahlSV) {
-                        obj.Anzahl_SV = dataAnzahlSV[key];
+                        obj["Anzahl SV"] = dataAnzahlSV[key];
                     }
                     obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
-                    obj.Anzahl = data[key];
+                    obj[countHeader] = data[key];
                     if (dataAnzahlSV) {
-                        obj.Anzahl_SV = dataAnzahlSV[key];
+                        obj["Anzahl SV"] = dataAnzahlSV[key];
                     }
                     obj.Feiertag = hasHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
@@ -375,7 +378,7 @@ export default {
             * {{ tableIndication }}
         </div>
         <div
-            v-if="currentTabId !== 'infos'"
+            v-if="currentTabId !== 'infos' && meansOfTransport === 'Anzahl_Kfz'"
             class="trucksStatusIndication"
             :style="customStyle"
         >
@@ -428,41 +431,22 @@ export default {
 <style lang="less" scoped>
     @import "~variables";
 
-    .tableIndication {
+    .tableIndication, .trucksStatusIndication, .indication {
         font-size: 10px;
-        position: absolute;
-        top: -3px;
-        left: 0px;
     }
 
     .trucksStatusIndication {
-        font-size: 10px;
-        position: absolute;
-        top: 10px;
-        left: 0px;
-    }
-
-    .indication {
-        font-size: 10px;
-        position: absolute;
-        top: 23px;
-        left: 0px;
+        display: none;
     }
 
     .download-container {
         float: left;
-        padding-top: 43px;
-        @media (max-width: 600px) {
-            padding-top: 58px;
-        }
+        padding-top: 10px;
     }
     .reset-container {
         float: left;
-        padding-top: 43px;
+        padding-top: 10px;
         margin-left: 10px;
-        @media (max-width: 600px) {
-            padding-top: 58px;
-        }
     }
     table {
         margin-bottom: 0;
@@ -473,13 +457,7 @@ export default {
             min-width: 280px;
             width: 50%;
             float: right;
-            margin-top: 43px;
-            @media (max-width: 600px) {
-                margin-top: 48px;
-            }
-            @media (max-width: 550px) {
-                margin-top: 10px;
-            }
+            margin-top: 10px;
             tbody {
                 tr {
                     &:nth-of-type(odd){

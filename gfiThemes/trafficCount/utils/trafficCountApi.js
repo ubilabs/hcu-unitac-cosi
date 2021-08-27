@@ -580,7 +580,7 @@ export class TrafficCountApi {
 
             // use this code to enable Kfz without SV
             meansOfTransportFahrzeuge = "Anzahl_Kfz_withoutSV",
-            meansOfTransportSV = "Anteil_SV",
+            meansOfTransportSV = "Anzahl_SV",
             url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_" + interval + "';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime le " + endDate + ";$orderby=phenomenonTime asc))",
 
 
