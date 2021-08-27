@@ -20,8 +20,12 @@ export default class ScenarioNeighborhood {
         this.active = false;
 
         this.districts = districts.map(district => {
-            // storeOriginalDistrictStats(district);
-            return {coverage: getIntersectionCoverage(feature, district.adminFeature), district: district};
+            return {
+                coverage: district.adminFeature
+                    ? getIntersectionCoverage(feature, district.adminFeature)
+                    : 1,
+                ...district
+            };
         });
     }
 
@@ -59,8 +63,20 @@ export default class ScenarioNeighborhood {
      * @todo move to district methods?
      * @returns {void}
      */
-    modifyDistrictStats () {
+    async modifyDistrictStats () {
         for (const item of this.districts) {
+            console.log(item);
+            console.log(this);
+            await store.dispatch("Tools/DistrictSelector/getStatsByDistrict", {
+                id: item.district.getId(),
+                districtLevel: store.getters["Tools/DistrictSelector/districtLevels"]
+                    .find(level => level.label === item.districtLevel)
+            });
+
+            if (!item.district.statFeatures) {
+                console.warn(`No statistics have been loaded for ${item.district.getName()}. Cannot apply neighborhood stats.`);
+                continue;
+            }
 
             const years = getAvailableYears(item.district.statFeatures),
                 completion = new Date(this.feature.get("year")).getFullYear();

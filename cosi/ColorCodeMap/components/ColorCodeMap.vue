@@ -484,7 +484,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="loadend && !dashboardOpen"
+        v-if="loadend && selectedFeatures.length > 0 && !dashboardOpen"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
@@ -501,10 +501,10 @@ export default {
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
-                            <span class="glyphicon glyphicon-plus"></span>
+                            <span class="glyphicon glyphicon-plus" />
                         </template>
                         <template v-else>
-                            <span class="glyphicon glyphicon-minus"></span>
+                            <span class="glyphicon glyphicon-minus" />
                         </template>
                     </button>
                     <button
@@ -527,14 +527,14 @@ export default {
                         title="Vorherigen Datensatz auswählen"
                         @click="changeSelector(-1)"
                     >
-                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        <span class="glyphicon glyphicon-chevron-left" />
                     </button>
                     <button
                         class="next btn btn-default btn-sm"
                         title="Nächsten Datensatz auswählen"
                         @click="changeSelector(1)"
                     >
-                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        <span class="glyphicon glyphicon-chevron-right" />
                     </button>
 
                     <Multiselect
@@ -544,9 +544,9 @@ export default {
                         :allow-empty="false"
                         :options="availableYears"
                         :multiple="false"
-                        selectedLabel=""
-                        selectLabel=""
-                        deselectLabel=""
+                        selected-label=""
+                        select-label=""
+                        deselect-label=""
                         placeholder=""
                     >
                         <template>
@@ -561,9 +561,9 @@ export default {
                         :allow-empty="true"
                         :options="availableYears"
                         :multiple="false"
-                        selectedLabel=""
-                        selectLabel=""
-                        deselectLabel="Entfernen"
+                        selected-label=""
+                        select-label=""
+                        deselect-label="Entfernen"
                         placeholder=""
                     >
                         <template>
@@ -578,13 +578,13 @@ export default {
                     :allow-empty="false"
                     :options="featuresList"
                     group-label="group"
-                    :tabIndex="selectorPosition"
+                    :tab-index="selectorPosition"
                     :group-select="false"
                     group-values="data"
                     :multiple="false"
-                    selectedLabel=""
-                    selectLabel=""
-                    deselectLabel=""
+                    selected-label=""
+                    select-label=""
+                    deselect-label=""
                     placeholder=""
                 >
                     <template>
@@ -606,10 +606,10 @@ export default {
                         :key="feature.id"
                         class="legend_mark"
                     >
-                        <div class="mark_tip"></div>
+                        <div class="mark_tip" />
                         <div class="hoverbox">
-                            <p class="district"></p>
-                            <p class="value"></p>
+                            <p class="district" />
+                            <p class="value" />
                         </div>
                     </div>
                 </div>
@@ -628,7 +628,7 @@ export default {
                     title="Werkzeuginformationen"
                     @click="showInfo()"
                 >
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    <span class="glyphicon glyphicon-question-sign" />
                 </button>
                 <div
                     v-if="visualizationState && !minimize"
@@ -641,30 +641,30 @@ export default {
                         @click="setPlayState(!playState)"
                     >
                         <template v-if="!playState">
-                            <span class="glyphicon glyphicon-play"></span>
+                            <span class="glyphicon glyphicon-play" />
                         </template>
                         <template v-else>
-                            <span class="glyphicon glyphicon-pause"></span>
+                            <span class="glyphicon glyphicon-pause" />
                         </template>
                     </button>
                     <input
                         v-model="playSpeed"
                         class="mini_input"
-                    />
+                    >
                 </div>
                 <button
                     class="graph_button"
                     title="Graph aus Datensatz erzeugen"
                     @click="loadToChartGenerator()"
                 >
-                    <span class="glyphicon glyphicon-stats"></span>
+                    <span class="glyphicon glyphicon-stats" />
                 </button>
                 <button
                     class="map_button"
                     title="Gebietsnamen ein-/ ausblenden"
                     @click="setShowMapNames(!showMapNames)"
                 >
-                    <span class="glyphicon glyphicon-map-marker"></span>
+                    <span class="glyphicon glyphicon-map-marker" />
                 </button>
             </div>
         </div>

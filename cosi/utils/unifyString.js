@@ -12,3 +12,14 @@ export default function unifyString (str, toLowerCase = true) {
     }
     return str;
 }
+
+/**
+ * Tidies up weird naming issues in Hamburg's UDP
+ * @todo Make the admins fix this!
+ * @deprecated
+ * @param {String} str The String that is to be modified.
+ * @returns {String} The "fixed" string
+ */
+export function compensateInconsistency (str) {
+    return str.replace(". ", ".");
+}

@@ -4,7 +4,7 @@ import {prepareStatsFeatures} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
-import unifyString from "../../utils/unifyString";
+import {compensateInconsistency} from "../../utils/unifyString";
 
 const actions = {
     /**
@@ -17,9 +17,10 @@ const actions = {
      * @param {Number[]} payload.districtLevel - The district level to which the districts belong.
      * @param {String[]} payload.districts - The districts for which the statistical features are loaded.
      * @param {Function} payload.getStatFeatures - Function for WFS GetFeature-Request via Post.
+     * @param {Boolean} [payload.recursive=true] - Should reference districts be loaded automatically?.
      * @returns {void}
      */
-    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts, getStatFeatures}) {
+    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
         commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         /**
@@ -35,7 +36,7 @@ const actions = {
             for (let i = 0; i < districts.length; i++) {
                 // check if statFeatures are already loaded
                 if (districts[i].statFeatures.length === 0) {
-                    const districtName = unifyString(districts[i].getName(), false),
+                    const districtName = compensateInconsistency(districts[i].getName()),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Map/projectionCode"],
@@ -63,12 +64,14 @@ const actions = {
             }
         }
 
+        console.log(recursive);
+
         // loading reference Districts recursively
-        if (districtLevel.referenceLevel !== null) {
+        if (districtLevel.referenceLevel !== null && recursive) {
             const referenceLevel = districtLevel.referenceLevel,
                 // reference names of the districts
                 refNames = districts.map(district => {
-                    return district.statFeatures[0].get(referenceLevel.stats.keyOfAttrName);
+                    return district.adminFeature.get(districtLevel.referenceLevel.keyOfAttrName);
                 }),
                 // reference districts
                 refDistricts = referenceLevel.districts.filter(district => {
@@ -127,7 +130,8 @@ const actions = {
         await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
             districtLevel: districtLevel,
-            getStatFeatures: getFeaturePost
+            getStatFeatures: getFeaturePost,
+            recursive: false
         });
 
         return foundDistrict.statFeatures;

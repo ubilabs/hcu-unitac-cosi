@@ -37,7 +37,7 @@ export default class Scenario {
             }
         }
         if (opts.neighborhoods) {
-            for (const neighborhood of opts.simulatedFeatures) {
+            for (const neighborhood of opts.neighborhoods) {
                 this.addNeighborhood(neighborhood, this.isActive);
             }
         }
@@ -252,7 +252,6 @@ export default class Scenario {
      * @returns {void}
      */
     restore () {
-        console.log(this.simulatedFeatures);
         for (const item of this.simulatedFeatures) {
             if (!getClusterSource(item.layer)
                 .getFeatures()

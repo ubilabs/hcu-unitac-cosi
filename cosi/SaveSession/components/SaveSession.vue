@@ -10,6 +10,7 @@ import {GeoJSON} from "ol/format";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
+import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 
 export default {
     name: "SaveSession",
@@ -36,6 +37,8 @@ export default {
     computed: {
         ...mapGetters("Tools/SaveSession", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
+        ...mapGetters("Tools/ResidentialSimulation", {simNeighborhoodLayer: "drawingLayer"}),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -143,11 +146,13 @@ export default {
 
         parseScenario (scenario, parser) {
             const simulatedFeatures = scenario.simulatedFeatures.map(scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser)),
+                neighborhoods = scenario.neighborhoods.map(scenarioFeature => this.parseScenarioNeighborhood(scenarioFeature, parser)),
                 _scenario = new Scenario(
                     scenario.name,
                     this.simGuideLayer,
                     {
-                        simulatedFeatures
+                        simulatedFeatures,
+                        neighborhoods
                     }
                 );
 
@@ -159,6 +164,16 @@ export default {
                 feature = parser.readFeature(scenarioFeature.feature);
 
             return new ScenarioFeature(feature, layer);
+        },
+
+        parseScenarioNeighborhood (scenarioNeighborhood, parser) {
+            const feature = parser.readFeature(scenarioNeighborhood.feature),
+                districts = scenarioNeighborhood.districts.map(
+                    id => this.selectedDistrictLevel.districts.find(dist => dist.getId() === id)
+                );
+
+            // console.log(scenarioNeighborhood, feature, districts);
+            return new ScenarioNeighborhood(feature, districts, this.simNeighborhoodLayer);
         },
 
         serializeState () {
@@ -208,7 +223,7 @@ export default {
                     scenarioFeature => this.serializeScenarioFeature(scenarioFeature, parser)
                 ),
                 neighborhoods = scenario.getNeighborhoods().map(
-                    scenarioNeighborhood => this.serzializeNeighborhood(scenarioNeighborhood, parser)
+                    scenarioNeighborhood => this.serializeNeighborhood(scenarioNeighborhood, parser)
                 );
 
             return {
@@ -235,10 +250,7 @@ export default {
                 ...scenarioNeighborhood,
                 layer: null,
                 feature: parser.writeFeatureObject(scenarioNeighborhood.feature),
-                districts: scenarioNeighborhood.districts.map(dist => ({
-                    ...dist,
-                    district: dist.adminFeature.getId()
-                }))
+                districts: scenarioNeighborhood.districts.map(dist => dist.district.adminFeature.getId())
             };
         },
 
@@ -332,13 +344,22 @@ export default {
             {{ $t('additional:modules.tools.cosi.saveSession.loadLast') }}
 
             <template #action="{ attrs }">
-                <v-btn
-                    v-bind="attrs"
-                    text
-                    @click="load"
-                >
-                    {{ $t("additional:modules.tools.cosi.saveSession.load") }}
-                </v-btn>
+                <v-row cols="12">
+                    <v-btn
+                        v-bind="attrs"
+                        text
+                        @click="load"
+                    >
+                        {{ $t("additional:modules.tools.cosi.saveSession.load") }}
+                    </v-btn>
+                    <v-btn
+                        v-bind="attrs"
+                        text
+                        @click="loadDialog = false"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-row>
             </template>
         </v-snackbar>
     </div>
