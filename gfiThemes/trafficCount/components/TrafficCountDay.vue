@@ -37,6 +37,10 @@ export default {
         holidays: {
             type: Array,
             required: true
+        },
+        checkGurlittInsel: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
@@ -138,7 +142,7 @@ export default {
                 this.dayDatepicker = new DatepickerModel({
                     displayName: "Tag",
                     multidate: 5,
-                    preselectedValue: moment().toDate(),
+                    preselectedValue: this.checkGurlittInsel ? moment().subtract(1, "days") : moment().toDate(),
                     startDate: startDate.toDate(),
                     endDate: moment().toDate(),
                     type: "datepicker",
@@ -168,7 +172,8 @@ export default {
                 if (document.querySelector("#dayDateSelector")) {
                     document.querySelector("#dayDateSelector").appendChild(new DatepickerView({model: this.dayDatepicker}).render().el);
                 }
-                this.dayDatepicker.updateValues(moment().toDate());
+
+                this.dayDatepicker.updateValues(this.checkGurlittInsel ? moment().subtract(1, "days") : moment().toDate());
             }
             else if (document.querySelector("#dayDateSelector")) {
                 document.querySelector("#dayDateSelector").appendChild(new DatepickerView({model: this.dayDatepicker}).render().el);

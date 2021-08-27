@@ -52,7 +52,8 @@ export default {
                 "reformationDay",
                 "christmasDay",
                 "secondDayOfChristmas"
-            ]
+            ],
+            checkGurlittInsel: false
         };
     },
     computed: {
@@ -112,9 +113,11 @@ export default {
                         this.createDataConnectionDauerzaehlstellenRad(newVal, errormsg => {
                             console.warn("An error occured constructing Gurlitt Insel:", errormsg);
                         });
+                        this.checkGurlittInsel = true;
                     }
                     else {
                         this.createDataConnection(newVal.getProperties(), null);
+                        this.checkGurlittInsel = false;
                     }
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
                     this.setComponentKey(this.propThingId + this.propMeansOfTransport);
@@ -146,9 +149,11 @@ export default {
     created: function () {
         if (this.isGurlittInsel(this.feature)) {
             this.createDataConnectionDauerzaehlstellenRad(this.feature);
+            this.checkGurlittInsel = true;
         }
         else {
             this.createDataConnection(this.feature.getProperties(), null);
+            this.checkGurlittInsel = false;
         }
     },
     mounted: function () {
@@ -449,6 +454,7 @@ export default {
                     :means-of-transport="propMeansOfTransport"
                     :reset="dayCheckReset"
                     :holidays="holidays"
+                    :check-gurlitt-insel="checkGurlittInsel"
                 />
                 <TrafficCountWeek
                     id="week"
