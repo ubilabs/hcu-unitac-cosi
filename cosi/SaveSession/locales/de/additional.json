@@ -8,6 +8,7 @@
                     "saveToFile": "Datei speichern",
                     "load": "Sitzung laden",
                     "loadFromFile": "Datei öffnen",
+                    "dropFile": "Datei auswählen",
                     "loadLast": "Letzte Sitzung wiederherstellen?",
                     "clear": "Sitzungen löschen"
                 }

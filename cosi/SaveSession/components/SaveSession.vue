@@ -31,7 +31,8 @@ export default {
                 }
             },
             state: null,
-            loadDialog: false
+            loadDialog: false,
+            sessionFile: null
         };
     },
     computed: {
@@ -48,7 +49,14 @@ export default {
          * @returns {void}
          */
         active (state) {
-            if (!state) {
+            if (state) {
+                this.addSingleAlert({
+                    content: "WORK IN PROGRESS! Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!",
+                    category: "Info",
+                    displayClass: "info"
+                });
+            }
+            else {
                 const model = getComponent(this.id);
 
                 if (model) {
@@ -82,20 +90,58 @@ export default {
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
         ...mapActions("Tools/SaveSession", Object.keys(actions)),
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         save () {
             this.serializeState();
             this.storeToLocalStorage();
 
-            console.log(this.state);
+            this.addSingleAlert({
+                content: "Sitzung erfolgreich gespeichert!",
+                category: "Success",
+                displayClass: "success"
+            });
         },
         saveAs () {
             this.save();
-            downloadJsonToFile(this.state);
+            downloadJsonToFile(this.state, "Neues_Session.json");
         },
 
         load () {
             this.loadFromLocalStorage();
             this.loadDialog = false;
+        },
+
+        loadFromFile () {
+            this.$refs["file-prompt"].click();
+        },
+
+        handleFile (evt) {
+            const file = evt.target.files[0],
+                reader = new FileReader();
+
+            reader.onload = res => {
+                try {
+                    const state = JSON.parse(res.target.result);
+
+                    this.parseState(this.storePaths, state);
+                    this.addSingleAlert({
+                        content: "Sitzung erfolgreich geladen.",
+                        category: "Success",
+                        displayClass: "success"
+                    });
+                }
+                catch (e) {
+                    console.error(e);
+                    console.warn("File could not be read");
+
+                    this.addSingleAlert({
+                        content: "Die Datei konnte nicht gelesen werden.",
+                        category: "Warning",
+                        displayClass: "warning"
+                    });
+                }
+            };
+            reader.readAsText(file);
         },
 
         clear () {
@@ -111,6 +157,11 @@ export default {
                 const state = JSON.parse(this.localStorage.getItem("cosi-state"));
 
                 this.parseState(this.storePaths, state);
+                this.addSingleAlert({
+                    content: "Sitzung erfolgreich geladen.",
+                    category: "Success",
+                    displayClass: "success"
+                });
             }
             catch (e) {
                 console.error(e);
@@ -305,67 +356,105 @@ export default {
                 #toolBody
             >
                 <v-app>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-btn
-                                id="save-session"
-                                tile
-                                depressed
-                                :title="$t('additional:modules.tools.cosi.saveSession.save')"
-                                @click="save"
+                    <v-container class="flex btn-grid">
+                        <v-row class="flex">
+                            <v-col
+                                cols="6"
+                                class="flex"
                             >
-                                {{ $t('additional:modules.tools.cosi.saveSession.save') }}
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="6">
-                            <v-btn
-                                id="save-to-file"
-                                tile
-                                depressed
-                                :title="$t('additional:modules.tools.cosi.saveSession.saveToFile')"
-                                @click="saveAs"
+                                <v-btn
+                                    id="save-session"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.save')"
+                                    @click="save"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.saveSession.save') }}
+                                </v-btn>
+                            </v-col>
+                            <v-col
+                                cols="6"
+                                class="flex"
                             >
-                                {{ $t('additional:modules.tools.cosi.saveSession.saveToFile') }}
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-btn
-                                id="load-session"
-                                tile
-                                depressed
-                                :title="$t('additional:modules.tools.cosi.saveSession.load')"
-                                @click="load"
+                                <v-btn
+                                    id="save-to-file"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.saveToFile')"
+                                    @click="saveAs"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.saveSession.saveToFile') }}
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-row class="flex">
+                            <v-col
+                                cols="6"
+                                class="flex"
                             >
-                                {{ $t('additional:modules.tools.cosi.saveSession.load') }}
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="6">
-                            <v-btn
-                                id="load-from-file"
-                                tile
-                                depressed
-                                :title="$t('additional:modules.tools.cosi.saveSession.loadFromFile')"
-                                @click="loadFrom"
+                                <v-btn
+                                    id="load-session"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.load')"
+                                    @click="load"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.saveSession.load') }}
+                                </v-btn>
+                            </v-col>
+                            <v-col
+                                cols="6"
+                                class="flex"
                             >
-                                {{ $t('additional:modules.tools.cosi.saveSession.loadFromFile') }}
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-btn
-                                id="clear-session"
-                                tile
-                                depressed
-                                :title="$t('additional:modules.tools.cosi.saveSession.clear')"
-                                @click="clear"
+                                <v-btn
+                                    id="load-from-file"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.loadFromFile')"
+                                    @click="loadFromFile"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.saveSession.loadFromFile') }}
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-row class="hidden">
+                            <v-col
+                                cols="6"
+                                class="flex"
                             >
-                                {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
-                            </v-btn>
-                        </v-col>
-                    </v-row>
+                                <!-- <v-file-input
+                                    v-model="sessionFile"
+                                    :label="$t('additional:modules.tools.cosi.saveSession.dropFile')"
+                                    tile
+                                    depressed
+                                    accept="text/json;charset=utf-8"
+                                /> -->
+                                <input
+                                    id="file-prompt"
+                                    ref="file-prompt"
+                                    type="file"
+                                    accept="text/json;charset=utf-8"
+                                    @change="handleFile"
+                                >
+                            </v-col>
+                        </v-row>
+                        <v-row class="flex">
+                            <v-col
+                                cols="6"
+                                class="flex"
+                            >
+                                <v-btn
+                                    id="clear-session"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.clear')"
+                                    @click="clear"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-container>
                 </v-app>
             </template>
         </Tool>
@@ -400,6 +489,10 @@ export default {
 
 <style lang="less">
     @import "../../utils/variables.less";
+
+    .hidden {
+        display: hidden;
+    }
 </style>
 
 <style src="vue-select/dist/vue-select.css">
