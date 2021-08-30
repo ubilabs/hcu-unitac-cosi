@@ -16,7 +16,6 @@ import FeatureIcon from "./FeatureIcon.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
-import truncate from '@turf/truncate';
 
 export default {
     name: "FeaturesList",
@@ -92,20 +91,17 @@ export default {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
                     value: "enabled"
                 }
-            ]
+            ],
+            numericalColumns: []
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapState(["configJson"]),
         columns () {
-            console.log([
-                ...this.featureColumns,
-                ...this.numericalColumns,
-                ...this.actionColumns
-            ]);
             return [
                 ...this.featureColumns,
                 ...this.numericalColumns,
@@ -127,24 +123,6 @@ export default {
             set (value) {
                 this.setFeaturesListItems(value);
             }
-        },
-        numericalColumns () {
-            const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
-                return [
-                    ...cols,
-                    ...mappingObj.numericalValues.map(v => ({
-                        text: v.name,
-                        value: v.id
-                    }))
-                ];
-            }, []);
-
-            // add divider to last col
-            if (numCols.length > 0) {
-                numCols[numCols.length - 1].divider = true;
-            }
-
-            return numCols;
         }
     },
     watch: {
@@ -197,6 +175,10 @@ export default {
                     this.updateFeaturesList();
                 });
             }
+        },
+
+        activeLayerMapping () {
+            this.numericalColumns = this.getNumericalColumns();
         }
     },
     created () {
@@ -229,6 +211,24 @@ export default {
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
+        getNumericalColumns () {
+            const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
+                return [
+                    ...cols,
+                    ...mappingObj.numericalValues.map(v => ({
+                        text: v.name,
+                        value: v.id
+                    }))
+                ];
+            }, []);
+
+            // add divider to last col
+            if (numCols.length > 0) {
+                numCols[numCols.length - 1].divider = true;
+            }
+
+            return numCols;
+        },
 
         /**
          * Reads the active vector layers, constructs the list of table items and writes them to the store.
@@ -344,9 +344,55 @@ export default {
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         },
 
+        /**
+         * Toggle a feature on/off and emit the corresponding event to trigger uodated
+         * @param {Object} featureItem - the item from the table
+         * @returns {void}
+         */
         toggleFeature (featureItem) {
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
+        },
+
+        getNumericalValueColor (item, key) {
+            const val = parseFloat(item[key]),
+                maxVal = Math.max(
+                    ...this.items
+                        .map(_item => parseFloat(_item[key]))
+                        .filter(_item => !isNaN(_item))
+                );
+
+            if (isNaN(val)) {
+                return "grey";
+            }
+            if (val / maxVal > 0.9) {
+                return "purple";
+            }
+            if (val / maxVal > 0.8) {
+                return "indigo";
+            }
+            if (val / maxVal > 0.7) {
+                return "blue";
+            }
+            if (val / maxVal > 0.6) {
+                return "cyan";
+            }
+            if (val / maxVal > 0.5) {
+                return "teal";
+            }
+            if (val / maxVal > 0.4) {
+                return "green";
+            }
+            if (val / maxVal > 0.4) {
+                return "light-green";
+            }
+            if (val / maxVal > 0.2) {
+                return "lime";
+            }
+            if (val / maxVal > 0.1) {
+                return "amber";
+            }
+            return "red";
         }
     }
 };
@@ -459,6 +505,20 @@ export default {
                                         dense
                                         @change="toggleFeature(item)"
                                     />
+                                </template>
+                                <template
+                                    v-for="col in numericalColumns"
+                                    #[`item.${col.value}`]="{ item }"
+                                >
+                                    <template v-if="!isNaN(parseFloat(item[col.value]))">
+                                        <v-chip
+                                            :key="col.value"
+                                            :color="getNumericalValueColor(item, col.value)"
+                                            dark
+                                        >
+                                            {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                        </v-chip>
+                                    </template>
                                 </template>
                             </v-data-table>
                         </div>

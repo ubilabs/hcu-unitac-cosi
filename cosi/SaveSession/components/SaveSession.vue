@@ -10,7 +10,7 @@ import {GeoJSON} from "ol/format";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
-import {getContainingDistrictForFeature} from "../../utils/geomUtils";
+import {downloadJsonToFile} from "../../utils/download";
 
 export default {
     name: "SaveSession",
@@ -87,6 +87,10 @@ export default {
             this.storeToLocalStorage();
 
             console.log(this.state);
+        },
+        saveAs () {
+            this.save();
+            downloadJsonToFile(this.state);
         },
 
         load () {
@@ -301,33 +305,67 @@ export default {
                 #toolBody
             >
                 <v-app>
-                    <v-btn
-                        id="save-session"
-                        tile
-                        depressed
-                        :title="$t('additional:modules.tools.cosi.saveSession.save')"
-                        @click="save"
-                    >
-                        {{ $t('additional:modules.tools.cosi.saveSession.save') }}
-                    </v-btn>
-                    <v-btn
-                        id="load-session"
-                        tile
-                        depressed
-                        :title="$t('additional:modules.tools.cosi.saveSession.load')"
-                        @click="load"
-                    >
-                        {{ $t('additional:modules.tools.cosi.saveSession.load') }}
-                    </v-btn>
-                    <v-btn
-                        id="clear-session"
-                        tile
-                        depressed
-                        :title="$t('additional:modules.tools.cosi.saveSession.clear')"
-                        @click="clear"
-                    >
-                        {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
-                    </v-btn>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn
+                                id="save-session"
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.saveSession.save')"
+                                @click="save"
+                            >
+                                {{ $t('additional:modules.tools.cosi.saveSession.save') }}
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn
+                                id="save-to-file"
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.saveSession.saveToFile')"
+                                @click="saveAs"
+                            >
+                                {{ $t('additional:modules.tools.cosi.saveSession.saveToFile') }}
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn
+                                id="load-session"
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.saveSession.load')"
+                                @click="load"
+                            >
+                                {{ $t('additional:modules.tools.cosi.saveSession.load') }}
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn
+                                id="load-from-file"
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.saveSession.loadFromFile')"
+                                @click="loadFrom"
+                            >
+                                {{ $t('additional:modules.tools.cosi.saveSession.loadFromFile') }}
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn
+                                id="clear-session"
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.saveSession.clear')"
+                                @click="clear"
+                            >
+                                {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
+                            </v-btn>
+                        </v-col>
+                    </v-row>
                 </v-app>
             </template>
         </Tool>
