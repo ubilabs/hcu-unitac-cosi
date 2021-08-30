@@ -64,14 +64,12 @@ const actions = {
             }
         }
 
-        console.log(recursive);
-
         // loading reference Districts recursively
         if (districtLevel.referenceLevel !== null && recursive) {
             const referenceLevel = districtLevel.referenceLevel,
                 // reference names of the districts
                 refNames = districts.map(district => {
-                    return district.adminFeature.get(districtLevel.referenceLevel.keyOfAttrName);
+                    return district.statFeatures[0].get(districtLevel.referenceLevel.stats.keyOfAttrName);
                 }),
                 // reference districts
                 refDistricts = referenceLevel.districts.filter(district => {

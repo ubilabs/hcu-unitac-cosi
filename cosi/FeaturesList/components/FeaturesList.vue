@@ -16,6 +16,7 @@ import FeatureIcon from "./FeatureIcon.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
+import truncate from '@turf/truncate';
 
 export default {
     name: "FeaturesList",
@@ -39,16 +40,8 @@ export default {
                 "layerId",
                 "feature",
                 "key"
-            ]
-        };
-    },
-    computed: {
-        ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
-        ...mapState(["configJson"]),
-        columns () {
-            return [
+            ],
+            featureColumns: [
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colIcon"),
                     value: "style",
@@ -88,7 +81,9 @@ export default {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colGroup"),
                     value: "group",
                     divider: true
-                },
+                }
+            ],
+            actionColumns: [
                 // {
                 //     text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
                 //     value: "actions"
@@ -97,6 +92,24 @@ export default {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
                     value: "enabled"
                 }
+            ]
+        };
+    },
+    computed: {
+        ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
+        ...mapState(["configJson"]),
+        columns () {
+            console.log([
+                ...this.featureColumns,
+                ...this.numericalColumns,
+                ...this.actionColumns
+            ]);
+            return [
+                ...this.featureColumns,
+                ...this.numericalColumns,
+                ...this.actionColumns
             ];
         },
         selected: {
@@ -114,6 +127,24 @@ export default {
             set (value) {
                 this.setFeaturesListItems(value);
             }
+        },
+        numericalColumns () {
+            const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
+                return [
+                    ...cols,
+                    ...mappingObj.numericalValues.map(v => ({
+                        text: v.name,
+                        value: v.id
+                    }))
+                ];
+            }, []);
+
+            // add divider to last col
+            if (numCols.length > 0) {
+                numCols[numCols.length - 1].divider = true;
+            }
+
+            return numCols;
         }
     },
     watch: {
@@ -227,7 +258,8 @@ export default {
                             address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,
                             enabled: true,
-                            isSimulation: feature.get("isSimulation") || false
+                            isSimulation: feature.get("isSimulation") || false,
+                            ...Object.fromEntries(layerMap.numericalValues.map(field => [field.id, feature.get(field.id)]))
                         };
                     })];
                 }, []);

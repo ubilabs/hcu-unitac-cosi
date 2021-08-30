@@ -13,7 +13,6 @@ import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
-import {getAllContainingDistricts} from "../../utils/geomUtils";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 
@@ -26,13 +25,6 @@ export default {
         ReferenceDistrictPicker,
         StatisticsTable,
         Modal
-    },
-    directives: {
-        blur: {
-            inserted: function (el) {
-                el.onfocus = (ev) => ev.target.blur();
-            }
-        }
     },
     data () {
         return {
@@ -331,18 +323,8 @@ export default {
                     baseStats: this.baseStats
                 }),
                 // districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
-                districts = getAllContainingDistricts(this.districtLevels, feature, true),
-                neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
-
-            // // fill in missing statistical information if necessary
-            // for (const district of districts) {
-            //     await this.getStatsByDistrict({
-            //         id: district.getId(),
-            //         districtLevel: this.selectedDistrictLevel
-            //     });
-            // }
-
-            console.log(this.baseStats, feature);
+                // districts = getAllContainingDistricts(this.districtLevels, feature, true),
+                neighborhood = new ScenarioNeighborhood(feature, this.drawingLayer, this.districtLevels);
 
             this.activeScenario.addNeighborhood(neighborhood);
 

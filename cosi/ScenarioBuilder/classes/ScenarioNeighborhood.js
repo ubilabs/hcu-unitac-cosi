@@ -1,6 +1,7 @@
 // import storeOriginalDistrictStats from "../utils/storeOriginalDistrictStats";
 import getAvailableYears from "../../utils/getAvailableYears";
 import getIntersectionCoverage from "../../ResidentialSimulation/utils/getIntersectionCoverage";
+import {getAllContainingDistricts} from "../../utils/geomUtils";
 import store from "../../../../src/app-store";
 
 /**
@@ -11,22 +12,16 @@ export default class ScenarioNeighborhood {
     /**
      * Constructor for class ScenarioFeature
      * @param {module:ol/Feature} feature the OpenLayers Feature created
-     * @param {module:ol/Feature[]} districts the OpenLayers features of the surrounding districts
      * @param {module:ol/layer/Vector} layer the OpenLayers layer to render the feature on
+     * @param {Object[]} districtLevels The district levels to compute the containing districts for
      */
-    constructor (feature, districts, layer) {
+    constructor (feature, layer, districtLevels) {
         this.feature = feature;
         this.layer = layer;
         this.active = false;
+        this.activeDistrictLevels = districtLevels;
 
-        this.districts = districts.map(district => {
-            return {
-                coverage: district.adminFeature
-                    ? getIntersectionCoverage(feature, district.adminFeature)
-                    : 1,
-                ...district
-            };
-        });
+        this.computeContainingDistricts(districtLevels);
     }
 
     /**
@@ -59,21 +54,39 @@ export default class ScenarioNeighborhood {
     }
 
     /**
+     * Checks which district contains a given feature
+     * and calculates how much of the neighborhood lies within each district
+     * @param {Object[]} districtLevels - the districtlevels to check
+     * @returns {void}
+     */
+    computeContainingDistricts (districtLevels) {
+        const districts = getAllContainingDistricts(districtLevels, this.feature, true);
+
+        this.districts = districts.map(item => {
+            return {
+                coverage: item.district.adminFeature
+                    ? getIntersectionCoverage(this.feature, item.district.adminFeature)
+                    : 1,
+                ...item
+            };
+        });
+    }
+
+    /**
      * Updates the surrounding districts' statistics based on the stats of the neighborhood
      * @todo move to district methods?
      * @returns {void}
      */
     async modifyDistrictStats () {
         for (const item of this.districts) {
-            console.log(item);
-            console.log(this);
             await store.dispatch("Tools/DistrictSelector/getStatsByDistrict", {
                 id: item.district.getId(),
-                districtLevel: store.getters["Tools/DistrictSelector/districtLevels"]
+                districtLevel: this.activeDistrictLevels
                     .find(level => level.label === item.districtLevel)
             });
 
-            if (!item.district.statFeatures) {
+            // if no stats could been fetche for the district, don't try to alter it
+            if (item.district.statFeatures.length === 0) {
                 console.warn(`No statistics have been loaded for ${item.district.getName()}. Cannot apply neighborhood stats.`);
                 continue;
             }
@@ -88,6 +101,11 @@ export default class ScenarioNeighborhood {
                  */
                 if (datum.valueType === "absolute") {
                     const districtDatum = item.district.statFeatures.find(d => d.get("kategorie") === datum.category);
+
+                    // if a feature is missing, go on
+                    if (!districtDatum) {
+                        continue;
+                    }
 
                     for (year of years.filter(y => y >= completion)) {
                         originalVal = parseFloat(districtDatum.get("jahr_" + year)) || 0;

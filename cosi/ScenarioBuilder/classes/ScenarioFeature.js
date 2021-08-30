@@ -32,8 +32,6 @@ export default class ScenarioFeature {
     renderFeature (guideLayer) {
         getClusterSource(this.layer).addFeature(this.feature);
 
-        console.log(this.layer, this.feature, this.guideLayer);
-
         if (guideLayer || this.guideLayer) {
             this.guideLayer = guideLayer || this.guideLayer;
             addSimulationTag(this.feature, this.guideLayer, this.layer);

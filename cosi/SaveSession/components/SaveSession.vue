@@ -38,7 +38,7 @@ export default {
         ...mapGetters("Tools/SaveSession", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
         ...mapGetters("Tools/ResidentialSimulation", {simNeighborhoodLayer: "drawingLayer"}),
-        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "districtLevels"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -136,6 +136,8 @@ export default {
                     state[key] = this.parseState(map[key], state[key], [...path, key]);
                 }
             }
+
+            console.log(this.$store);
         },
 
         parseScenarios (scenarios) {
@@ -167,13 +169,9 @@ export default {
         },
 
         parseScenarioNeighborhood (scenarioNeighborhood, parser) {
-            const feature = parser.readFeature(scenarioNeighborhood.feature),
-                districts = scenarioNeighborhood.districts.map(
-                    id => this.selectedDistrictLevel.districts.find(dist => dist.getId() === id)
-                );
+            const feature = parser.readFeature(scenarioNeighborhood.feature);
 
-            // console.log(scenarioNeighborhood, feature, districts);
-            return new ScenarioNeighborhood(feature, districts, this.simNeighborhoodLayer);
+            return new ScenarioNeighborhood(feature, this.simNeighborhoodLayer, this.districtLevels);
         },
 
         serializeState () {
@@ -247,10 +245,7 @@ export default {
 
         serializeNeighborhood (scenarioNeighborhood, parser) {
             return {
-                ...scenarioNeighborhood,
-                layer: null,
-                feature: parser.writeFeatureObject(scenarioNeighborhood.feature),
-                districts: scenarioNeighborhood.districts.map(dist => dist.district.adminFeature.getId())
+                feature: parser.writeFeatureObject(scenarioNeighborhood.feature)
             };
         },
 
