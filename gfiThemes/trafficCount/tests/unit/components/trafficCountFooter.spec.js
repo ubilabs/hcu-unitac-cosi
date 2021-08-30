@@ -59,7 +59,8 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                     "reformationDay",
                     "christmasDay",
                     "secondDayOfChristmas"
-                ]
+                ],
+                downloadUrl: false
             },
             localVue
         });

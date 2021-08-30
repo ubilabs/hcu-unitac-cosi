@@ -27,6 +27,10 @@ export default {
         holidays: {
             type: Array,
             required: true
+        },
+        downloadUrl: {
+            type: [String, Boolean],
+            required: true
         }
     },
     data () {
@@ -114,6 +118,9 @@ export default {
 
             const meansOfTransportSV = meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
 
+            if (typeof this.downloadUrl === "string") {
+                return;
+            }
             // tab body
             if (currentTabId === "day") {
                 this.downloadDataDay(this.thingId, meansOfTransport, result => {
@@ -324,6 +331,10 @@ export default {
          * @returns {void}  -
          */
         exportFile: function () {
+            if (typeof this.downloadUrl === "string") {
+                location.href = this.downloadUrl;
+                return;
+            }
             this.exportView.export();
         },
 

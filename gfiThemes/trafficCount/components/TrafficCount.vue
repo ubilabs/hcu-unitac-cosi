@@ -102,6 +102,10 @@ export default {
 
         directionLabel: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.directionLabel");
+        },
+
+        downloadUrl: function () {
+            return this.checkGurlittInsel && this.feature?.getProperties()?.link_download ? this.feature.getProperties().link_download : false;
         }
     },
     watch: {
@@ -485,6 +489,7 @@ export default {
             :thing-id="propThingId"
             :means-of-transport="propMeansOfTransport"
             :holidays="holidays"
+            :download-url="downloadUrl"
             @resetTab="resetTab"
         />
     </div>
