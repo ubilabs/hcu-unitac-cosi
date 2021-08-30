@@ -113,6 +113,7 @@ export default {
 
         loadFromFile () {
             this.$refs["file-prompt"].click();
+            this.loadDialog = false;
         },
 
         handleFile (evt) {
