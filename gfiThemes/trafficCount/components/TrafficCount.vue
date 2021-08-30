@@ -1,6 +1,7 @@
 <script>
 import {mapGetters} from "vuex";
 
+import axios from "axios";
 import {TrafficCountCache} from "../utils/trafficCountCache";
 import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 import TrafficCountInfo from "./TrafficCountInfo.vue";
@@ -120,7 +121,9 @@ export default {
                         this.checkGurlittInsel = true;
                     }
                     else {
-                        this.createDataConnection(newVal.getProperties(), null);
+                        this.createDataConnection(newVal.getProperties(), errormsg => {
+                            console.warn("An error occured constructing SensorThings Api:", errormsg);
+                        }, null);
                         this.checkGurlittInsel = false;
                     }
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
@@ -152,11 +155,15 @@ export default {
     },
     created: function () {
         if (this.isGurlittInsel(this.feature)) {
-            this.createDataConnectionDauerzaehlstellenRad(this.feature);
+            this.createDataConnectionDauerzaehlstellenRad(this.feature, errormsg => {
+                console.warn("An error occured constructing Gurlitt Insel:", errormsg);
+            });
             this.checkGurlittInsel = true;
         }
         else {
-            this.createDataConnection(this.feature.getProperties(), null);
+            this.createDataConnection(this.feature.getProperties(), errormsg => {
+                console.warn("An error occured constructing SensorThings Api:", errormsg);
+            }, null);
             this.checkGurlittInsel = false;
         }
     },
@@ -185,17 +192,32 @@ export default {
          * @returns {void}
          */
         createDataConnectionDauerzaehlstellenRad (feature, onerror) {
-            this.api = new DauerzaehlstellenRadApi(feature, onerror);
+            this.api = new DauerzaehlstellenRadApi(feature, onerror, (link, onsuccess, onAxiosError) => {
+                axios({
+                    method: "get",
+                    url: link,
+                    responseType: "text"
+                }).then(function (response) {
+                    if (typeof onsuccess === "function" && typeof response === "object" && response !== null && Object.prototype.hasOwnProperty.call(response, "data")) {
+                        onsuccess(response.data);
+                    }
+                }).catch(function (error) {
+                    if (typeof onAxiosError === "function") {
+                        onAxiosError(error);
+                    }
+                });
+            });
             this.propThingId = this.api.getThingId(onerror);
             this.propMeansOfTransport = this.api.getMeansOfTransport();
         },
         /**
          * it will make conntection to thing api
          * @param {Object} feature the feature properties from thing
+         * @param {Function} [onerror] a function to call on error
          * @param {Object} [sensorThingsApiOpt=null] an optional api for testing
          * @returns {void}
          */
-        createDataConnection: function (feature, sensorThingsApiOpt = null) {
+        createDataConnection: function (feature, onerror, sensorThingsApiOpt = null) {
             const thingId = feature["@iot.id"],
                 meansOfTransport = this.getMeansOfTransportFromDatastream(feature.Datastreams, Object.keys(this.typeAssoc)),
                 url = feature.requestUrl,
@@ -322,7 +344,7 @@ export default {
         /**
          * setter for title
          * @param {String} value the title to be shown in the template
-         * @returns {Void}  -
+         * @returns {void}
          */
         setTitle: function (value) {
             this.title = value;
@@ -331,7 +353,7 @@ export default {
         /**
          * setter for direction
          * @param {String} value the direction to be shown in the template
-         * @returns {Void}  -
+         * @returns {void}
          */
         setDirection: function (value) {
             this.direction = value;
@@ -340,7 +362,7 @@ export default {
         /**
          * setter for the compoent key
          * @param {String} value the dynamic changed value from watch hook
-         * @returns {Void}  -
+         * @returns {void}
          */
         setComponentKey: function (value) {
             this.keyInfo = value + "info";
@@ -479,6 +501,7 @@ export default {
                     :means-of-transport="propMeansOfTransport"
                     :reset="yearCheckReset"
                     :holidays="holidays"
+                    :check-gurlitt-insel="checkGurlittInsel"
                 />
             </div>
         </div>

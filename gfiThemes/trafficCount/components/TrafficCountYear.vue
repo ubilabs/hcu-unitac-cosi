@@ -36,6 +36,10 @@ export default {
         holidays: {
             type: Array,
             required: true
+        },
+        checkGurlittInsel: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
@@ -140,10 +144,20 @@ export default {
          * Setup of the year tab.
          * This methode creates a datepicker model and triggers the view for rendering. Snippets must be added after view.render.
          * @listens Snippets#ValuesChanged
-         * @returns {Void}  -
+         * @returns {void}
          */
         setYearDatepicker: function () {
-            const startDate = moment("2020-01-01");
+            const startMoment = moment().startOf("year").subtract(10, "years"),
+                startYear = parseInt(startMoment.format("YYYY"), 10);
+
+            if (this.checkGurlittInsel) {
+                if (startYear < 2014) {
+                    startMoment.add(2014 - startYear, "years");
+                }
+            }
+            else if (startYear < 2020) {
+                startMoment.add(2020 - startYear, "years");
+            }
 
             // create datepicker only on first enter of tab
             if (!this.yearDatepicker) {
@@ -151,7 +165,7 @@ export default {
                     displayName: "Tag",
                     preselectedValue: moment().startOf("year").toDate(),
                     multidate: 5,
-                    startDate: startDate.toDate(),
+                    startDate: startMoment.toDate(),
                     endDate: moment().startOf("year").toDate(),
                     type: "datepicker",
                     minViewMode: "years",

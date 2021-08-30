@@ -107,7 +107,7 @@ export default {
          * @param {String} thingId the thingId to be send to any api call
          * @param {String} meansOfTransport the meansOfTransport to be send with any api call
          * @fires   Alerting#RadioTriggerAlertAlert
-         * @returns {Void}  -
+         * @returns {void}
          */
         setupTabInfo: function (api, thingId, meansOfTransport) {
             api.updateTotal(thingId, meansOfTransport, (date, value) => {
@@ -205,7 +205,7 @@ export default {
         /**
          * setter for the description of total
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setTotalDesc: function (value) {
             this.totalDesc = value;
@@ -214,7 +214,7 @@ export default {
         /**
          * setter for the value of total
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setTotalValue: function (value) {
             this.totalValue = value;
@@ -223,7 +223,7 @@ export default {
         /**
          * setter for the description of thisYearDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setThisYearDesc: function (value) {
             this.thisYearDesc = value;
@@ -232,7 +232,7 @@ export default {
         /**
          * setter for the value of thisYearValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setThisYearValue: function (value) {
             this.thisYearValue = value;
@@ -241,7 +241,7 @@ export default {
         /**
          * setter for the description of lastYearDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastYearDesc: function (value) {
             this.lastYearDesc = value;
@@ -250,7 +250,7 @@ export default {
         /**
          * setter for the value of lastYearValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastYearValue: function (value) {
             this.lastYearValue = value;
@@ -259,7 +259,7 @@ export default {
         /**
          * setter for the description of lastDayDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastDayDesc: function (value) {
             this.lastDayDesc = value;
@@ -268,7 +268,7 @@ export default {
         /**
          * setter for the value of lastDayValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastDayValue: function (value) {
             this.lastDayValue = value;
@@ -277,7 +277,7 @@ export default {
         /**
          * setter for the description of highestWorkloadDayDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadDayDesc: function (value) {
             this.highestWorkloadDayDesc = value;
@@ -286,7 +286,7 @@ export default {
         /**
          * setter for the value of highestWorkloadDayValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadDayValue: function (value) {
             this.highestWorkloadDayValue = value;
@@ -295,7 +295,7 @@ export default {
         /**
          * setter for the description of highestWorkloadWeekDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadWeekDesc: function (value) {
             this.highestWorkloadWeekDesc = value;
@@ -304,7 +304,7 @@ export default {
         /**
          * setter for the value of highestWorkloadWeekValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadWeekValue: function (value) {
             this.highestWorkloadWeekValue = value;
@@ -313,7 +313,7 @@ export default {
         /**
          * setter for the description of highestWorkloadMonthDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadMonthDesc: function (value) {
             this.highestWorkloadMonthDesc = value;
@@ -322,7 +322,7 @@ export default {
         /**
          * setter for the value of highestWorkloadMonthValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadMonthValue: function (value) {
             this.highestWorkloadMonthValue = value;
