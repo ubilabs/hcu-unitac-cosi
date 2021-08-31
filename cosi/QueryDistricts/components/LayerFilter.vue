@@ -106,7 +106,6 @@ export default {
             this.$emit("update", {layerId: this.layerId, quotientLayer: newValue});
         },
         updateProperty (newValue) {
-            console.log(newValue);
             this.$emit("update", {layerId: this.layerId, property: newValue});
         },
         close () {
