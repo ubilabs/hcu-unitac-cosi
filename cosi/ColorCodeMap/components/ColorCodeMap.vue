@@ -470,7 +470,7 @@ export default {
         loadToChartGenerator () {
             const graphObj = new ChartDataSet({
                 id: "ccm",
-                name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
+                name: [this.label] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart", "PieChart"],
                 color: "rgb(50,200,120)",
                 source: "Kartenvisualisierungswerkzeug",
@@ -501,7 +501,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="loadend && !dashboardOpen"
+        v-if="loadend && selectedFeatures.length > 0 && !dashboardOpen"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"

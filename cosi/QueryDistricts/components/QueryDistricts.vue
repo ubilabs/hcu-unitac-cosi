@@ -15,6 +15,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import renameKeys from "../../utils/renameKeys.js";
+import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 
 export default {
     name: "QueryDistricts",
@@ -51,7 +52,8 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Map", ["layerById"])
     },
     watch: {
         async layerFilterModels () {
@@ -123,7 +125,11 @@ export default {
         },
 
         getAllFeatures: async function (id) {
-            return _getAllFeatures(id);
+            const features = await _getAllFeatures(id);
+
+            return features.length > 0
+                ? features
+                : this.layerById(id).olLayer.getSource().getFeatures();
         },
 
         setLayerOptions: function () {
@@ -136,31 +142,23 @@ export default {
                 const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
 
                 if (layer) {
-                    this.allLayerOptions.push({name: m.value, id: layer.id,
-                        group: m.group, valueType: m.valueType});
+                    this.allLayerOptions.push({
+                        name: m.value,
+                        id: layer.id,
+                        group: m.group,
+                        valueType: m.valueType
+                    });
                 }
             }
 
-            for (const name of this.facilityNames) {
-                for (const referenceLayer of this.referenceLayers) {
-                    const layer = layers.find(l=>l.id === referenceLayer.id);
-
-                    if (layer && layer.featureType) {
-                        const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),
-                            cnt = this.$t("additional:modules.tools.cosi.queryDistricts.count"),
-                            layerName = `${mapping.value}/${cnt} ${name}`;
-
-
-                        this.allLayerOptions.push({
-                            name: layerName,
-                            id: layerName,
-                            group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                            valueType: "absolute",
-                            referenceLayerId: referenceLayer.id,
-                            facilityLayerName: name
-                        });
-                    }
-                }
+            for (const facilityLayer of this.facilityNames) {
+                this.allLayerOptions.push({
+                    name: facilityLayer.name,
+                    id: facilityLayer.id,
+                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    valueType: "absolute",
+                    facilityLayerName: facilityLayer.name
+                });
             }
             this.updateAvailableLayerOptions();
         },
@@ -198,71 +196,105 @@ export default {
                 }
             }
 
-            return [... new Set(ret)];
+            return ret.length > 0 ? [... new Set(ret)] : [prefix + "alle"];
         },
 
-        countFacilitiesPerFeature (facilityFeatures, features) {
-
+        countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
             const fmap = {};
 
             for (const ffeature of facilityFeatures) {
                 for (const feature of features) {
-                    if (turf.booleanPointInPolygon(
-                        turf.point(this.getCoordinate(ffeature)),
-                        turf.polygon(feature.getGeometry().getCoordinates()))) {
+                    let polygon,
+                        val;
 
-                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + 1;
+                    try {
+                        // expect multipolygon, try polygon if exception
+                        polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                    }
+                    catch (e) {
+                        polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                    }
+
+                    if (
+                        polygon &&
+                        turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
+                    ) {
+                        val = property ? parseFloat(ffeature.get(property)) : 1;
+                        val = !isNaN(val) ? val : 1;
+
+                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + val;
 
                         break;
                     }
                 }
             }
+
             return fmap;
         },
 
         loadFeatures: async function (layer) {
-            if (this.propertiesMap[layer.id]) {
+            if (this.propertiesMap[layer.id] && layer.property === undefined) {
                 return;
             }
+            const features = await this.getAllFeatures(layer.id);
 
-            let fmap;
-            const features = await this.getAllFeatures(
-                layer.referenceLayerId || layer.id
-            );
+            if (layer.facilityLayerName) {
+                const adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
+                    fmap = this.countFacilitiesPerFeature(features, adminFeatures, layer.property);
 
-            if (layer.referenceLayerId) {
-                const facilityFeatures = await this.getFacilityFeatures(layer.facilityLayerName);
+                this.propertiesMap[layer.id] = adminFeatures.map(feature => {
+                    /**
+                     * @todo Dirty, since facilities might have timelines in the future themselves! Overhaul in "countFacilitiesPerFeature" method
+                     */
+                    const ret = feature.getProperties();
 
-                fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
-            }
-
-            this.propertiesMap[layer.id] = features.map(feature => {
-                const props = feature.getProperties(),
-                    count = fmap ? fmap[feature.getId()] : 1,
-                    ret = {...props};
-
-                for (const p in props) {
-                    if (p.startsWith("jahr_")) {
-                        ret[p] = props[p] / count;
+                    for (let i = 2012; i < new Date().getFullYear(); i++) {
+                        ret["jahr_" + i] = fmap[feature.getId()];
                     }
-                }
-                ret.feature = feature;
-                ret.id = props[this.keyOfAttrNameStats];
-                return ret;
+
+                    return {
+                        ...ret,
+                        feature,
+                        id: ret[this.keyOfAttrNameStats],
+                        [this.selectorField]: this.keyOfAttrNameStats,
+                        isFacility: true
+                    };
+                });
+            }
+            else {
+                this.propertiesMap[layer.id] = features.map(feature => {
+                    const ret = feature.getProperties();
+
+                    ret.feature = feature;
+                    ret.id = ret[this.keyOfAttrNameStats];
+                    return ret;
+                });
+            }
+        },
+
+        cloneDistrictFeatures (districts) {
+            return districts.map(district => {
+                const feature = district.adminFeature.clone();
+
+                feature.setId(feature.get(this.keyOfAttrName));
+                feature.set(this.keyOfAttrNameStats, feature.getId());
+
+                return feature;
             });
         },
 
         createLayerFilterModel: async function (layer) {
             await this.loadFeatures(layer);
 
-            const valueType = layer.referenceLayerId ? "absolute" : layer.valueType,
+            const valueType = layer.valueType,
                 features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
                 model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues,
                     referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
-                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name}))
+                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
+                    properties: await this.getFacilityProperties(layer)
                 };
 
             this.setLayerFilterModelValue(model);
@@ -277,7 +309,7 @@ export default {
                     feature = features.find(f => f[selector] === this.selectedDistrict);
 
                 if (feature) {
-                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(2));
+                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(3));
 
                     if (!isFinite(value)) {
                         model.error = this.$t("additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable");
@@ -301,7 +333,7 @@ export default {
                 max = parseFloat(Math.max(...values)),
                 min = parseFloat(Math.min(...values));
 
-            return {min: Number(Number(min).toFixed(2)), max: Number(Number(max).toFixed(2))};
+            return {min, max};
         },
 
         async computeResults () {
@@ -357,13 +389,17 @@ export default {
 
             root.appendChild(cont);
 
-            Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
-            Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
-                id: "compareDistricts",
-                name: "Vergleichbare Gebiete ermitteln",
-                glyphicon: "glyphicon glyphicon-random",
-                scalable: true
-            });
+            /**
+             * @deprecated
+             * @todo replace with new storage
+             */
+            // Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
+            // Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
+            //     id: "compareDistricts",
+            //     name: "Vergleichbare Gebiete ermitteln",
+            //     glyphicon: "glyphicon glyphicon-random",
+            //     scalable: true
+            // });
 
             if (this.dashboard !== null) {
                 this.dashboard.$destroy();
@@ -381,16 +417,24 @@ export default {
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
-                    if (value.field || value.quotientLayer === null || value.quotientLayer) {
+
+                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property) {
+                        let currentLayerId = filters[i].layerId;
 
                         if (value.quotientLayer) {
                             await this.computeQuotientLayer(value);
+                            currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
                         }
-                        const currentLayerId = filters[i].quotientLayer ?
-                            `${filters[i].layerId}/${filters[i].quotientLayer}` : filters[i].layerId;
+                        if (value.property !== undefined) {
+                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
+                        }
 
-                        filters[i] = {...filters[i], currentLayerId,
-                            ...this.getMinMaxForField(currentLayerId, filters[i].field)};
+                        filters[i] = {
+                            ...filters[i],
+                            currentLayerId,
+                            ...this.getMinMaxForField(currentLayerId, filters[i].field)
+                        };
+
                         this.setLayerFilterModelValue(filters[i]);
                     }
                     break;
@@ -502,7 +546,10 @@ export default {
         setFacilityNames (models) {
             this.facilityNames = models.filter(
                 (model) => model.get("isFacility") === true
-            ).map((model) => model.get("name").trim());
+            ).map((model) => ({
+                name: model.get("name").trim(),
+                id: model.get("id")
+            }));
         },
 
         async getFacilityFeatures (name) {
@@ -511,6 +558,27 @@ export default {
             });
 
             return selectedLayerModel ? this.getAllFeatures(selectedLayerModel.id) : [];
+        },
+
+        async getFacilityProperties (layer) {
+            if (layer.facilityLayerName) {
+                let desc = await describeFeatureTypeByLayerId(layer.id);
+
+                if (desc) {
+                    desc = desc.map(prop => prop.name);
+                }
+                else {
+                    desc = Object.keys(
+                        this.layerById(layer.id)?.olLayer
+                            .getSource()
+                            .getFeatures()[0]
+                            .getProperties()
+                    );
+                }
+
+                return desc;
+            }
+            return null;
         },
 
         getCoordinate: function (feature) {
@@ -603,6 +671,7 @@ export default {
                             <LayerFilter
                                 id="layer-filter"
                                 :key="filter.layerId"
+                                :locale="currentLocale"
                                 v-bind="filter"
                                 class="layer-filter"
                                 @update="updateFilter"

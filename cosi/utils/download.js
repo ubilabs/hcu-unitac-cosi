@@ -1,3 +1,5 @@
+import downloadBlobToFile from "./downloadBlobToFile";
+
 /**
  * @description Opens the download/save prompt for given data
  * @param {String} dataUrl - the data to download, encoded as a href URL
@@ -49,4 +51,12 @@ export function downloadCsvToFile (string, filename) {
     const dataStr = "data:text/csv;charset=utf-8," + encodeURI(string);
 
     download(dataStr, filename);
+}
+
+export default {
+    download,
+    downloadCsvToFile,
+    downloadJsonToFile,
+    downloadTextToFile,
+    downloadBlobToFile
 }

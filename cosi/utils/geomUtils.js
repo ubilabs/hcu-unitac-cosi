@@ -3,6 +3,38 @@ import {GeoJSON} from "ol/format";
 
 /**
  * Checks which district contains a given feature
+ * @param {DistrictLevel} districtLevels - the districtLevels to check
+ * @param {module:ol/Feature} feature - the feature to check against
+ * @param {Boolean} [multiple=false] - defines whether multiple results are possible, returns the first result if false
+ * @returns {String|module:ol/Feature} the districts name or the district feature
+ */
+export function getAllContainingDistricts (districtLevels, feature, multiple = false) {
+    const containingDistricts = [];
+
+    for (const districtLevel of districtLevels) {
+        for (const district of districtLevel.districts) {
+            const geom = district.adminFeature?.getGeometry(),
+                featureExtent = feature.getGeometry().getExtent();
+
+            if (!geom || geom.intersectsExtent(featureExtent)) {
+                containingDistricts.push({
+                    districtLevel: districtLevel.label,
+                    district: district
+                });
+
+                if (!multiple) {
+                    break;
+                }
+            }
+        }
+
+    }
+
+    return multiple ? containingDistricts : containingDistricts[0];
+}
+
+/**
+ * Checks which district contains a given feature
  * @param {DistrictLevel} districtLevel - the districtLevel to check
  * @param {module:ol/Feature} feature - the feature to check against
  * @param {Boolean} [returnsFeature=true] - defines whether to return a String or the Feature Object
@@ -130,4 +162,12 @@ export function featuresToGeoJsonCollection (features, asString = false, sourceC
         _features = Array.isArray(features) ? features : [features];
 
     return asString ? parser.writeFeatures(_features) : parser.writeFeaturesObject(_features);
+}
+
+export default {
+    featureToGeoJson,
+    featuresToGeoJsonCollection,
+    intersect,
+    union,
+    getContainingDistrictForFeature
 }

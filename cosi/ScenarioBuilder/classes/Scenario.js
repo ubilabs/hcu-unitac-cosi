@@ -16,13 +16,31 @@ export default class Scenario {
      * Constructor for class Scenario
      * @param {String} name the name of the scenario
      * @param {module:ol/layer/Vector} [guideLayer] the guideLayer to draw labels to
+     * @param {Object} [opts={}] other attributes to set
      */
-    constructor (name, guideLayer) {
+    constructor (name, guideLayer, opts = {}) {
         this.name = name;
+        this.guideLayer = guideLayer;
         this.simulatedFeatures = [];
         this.modifiedFeatures = [];
         this.neighborhoods = [];
-        this.guideLayer = guideLayer;
+        this.isActive = opts.isActive || false;
+
+        if (opts.simulatedFeatures) {
+            for (const scenarioFeature of opts.simulatedFeatures) {
+                this.addFeature(scenarioFeature, this.isActive);
+            }
+        }
+        if (opts.modifiedFeatures) {
+            for (const modifiedFeature of opts.modifiedFeatures) {
+                this.addModifiedFeature(modifiedFeature.feature, modifiedFeature.layer);
+            }
+        }
+        if (opts.neighborhoods) {
+            for (const neighborhood of opts.neighborhoods) {
+                this.addNeighborhood(neighborhood, this.isActive);
+            }
+        }
     }
 
     /**
@@ -238,7 +256,7 @@ export default class Scenario {
             if (!getClusterSource(item.layer)
                 .getFeatures()
                 .find(feature => feature === item.feature)) {
-                item.renderFeature();
+                item.renderFeature(this.guideLayer);
             }
             item.restoreScenarioProperties();
         }
@@ -259,6 +277,22 @@ export default class Scenario {
             ...this.simulatedFeatures,
             ...this.modifiedFeatures
         ];
+    }
+
+    /**
+     * Returns all simulated features of the scenario as a single list
+     * @returns {ScenarioFeature[]} all simulated an modified features in the scenario
+     */
+    getSimulatedFeatures () {
+        return [...this.simulatedFeatures];
+    }
+
+    /**
+     * Returns all modified features of the scenario as a single list
+     * @returns {ScenarioFeature[]} all simulated an modified features in the scenario
+     */
+    getModifiedFeatures () {
+        return [...this.modifiedFeatures];
     }
 
     /**
@@ -297,12 +331,20 @@ export default class Scenario {
     }
 
     /**
-     * Returns the modified ScenarioNeighborhood for a given map feature
+     * Returns the ScenarioNeighborhood for a given map feature
      * @param {module:ol/Feature} feature - the OL map feature
      * @returns {ScenarioNeighborhood} the ScenarioNeighborhood and its scenario specific properties
      */
     getNeighborhood (feature) {
         return this.neighborhoods.find(item => item.feature === feature);
+    }
+
+    /**
+     * Returns all ScenarioNeighborhoods in the scenario
+     * @returns {ScenarioNeighborhood[]} the ScenarioNeighborhood and its scenario specific properties
+     */
+    getNeighborhoods () {
+        return [...this.neighborhoods];
     }
 
     /**
@@ -355,15 +397,31 @@ export default class Scenario {
         downloadJsonToFile(geojson, this.name + "_Simulierte_Einrichtungen.json");
     }
 
+
+    /**
+     * Exports simulated features as geoJson
+     * @returns {void}
+     */
+    exportScenarioNeighborhoods () {
+        const geojson = featuresToGeoJsonCollection(
+            this.neighborhoods.map(scenarioFeature => scenarioFeature.feature)
+        );
+
+        downloadJsonToFile(geojson, this.name + "_Simulierte_Wohnquartiere.json");
+    }
+
     /**
      * Exports simulated features as geoJson
      * @returns {void}
      */
     exportScenario () {
         const geojson = featuresToGeoJsonCollection(
-            this.simulatedFeatures.map(scenarioFeature => scenarioFeature.feature)
+            [
+                ...this.getAllFeatures().map(item => item.feature),
+                ...this.getNeighborhoods().map(item => item.feature)
+            ]
         );
 
-        downloadJsonToFile(geojson, this.name + "_Simulierte_Einrichtungen.json");
+        downloadJsonToFile(geojson, this.name + "_Szenario.json");
     }
 }

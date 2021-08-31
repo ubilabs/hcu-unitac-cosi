@@ -13,7 +13,6 @@ import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
-import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 
@@ -96,6 +95,7 @@ export default {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
         ...mapGetters("Tools/DistrictSelector", {
+            districtLevels: "districtLevels",
             districtLayer: "layer",
             selectedFeatures: "selectedFeatures",
             selectedAdminFeatures: "selectedAdminFeatures",
@@ -151,7 +151,7 @@ export default {
             this.updateArea(this.polygonArea);
         },
 
-        baseStats () {
+        async baseStats () {
             if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
                 return;
             }
@@ -174,23 +174,22 @@ export default {
              * @todo remove timeout - only used due to issues in ChartGenerator module
              * will be refactored
              */
-            setTimeout(() => {
-                this.visualizeDemographics(
-                    "age",
-                    "Demographie nach Altersgruppen",
-                    ["Anteil", "Alterskohorten"],
-                    [
-                        "Bevölkerung unter 6 Jahren",
-                        "Bevölkerung 6 bis unter 10 Jahren",
-                        "Bevölkerung 10 bis unter 15 Jahren",
-                        "Bevölkerung 15 bis unter 21 Jahren",
-                        "Bevölkerung 21 bis unter 45 Jahren",
-                        "Bevölkerung 45 bis unter 65 Jahren",
-                        "Bevölkerung ab 65 Jahren"
-                    ],
-                    "LineChart"
-                );
-            }, 250);
+            await this.$nextTick();
+            this.visualizeDemographics(
+                "age",
+                "Demographie nach Altersgruppen",
+                ["Anteil", "Alterskohorten"],
+                [
+                    "Bevölkerung unter 6 Jahren",
+                    "Bevölkerung 6 bis unter 10 Jahren",
+                    "Bevölkerung 10 bis unter 15 Jahren",
+                    "Bevölkerung 15 bis unter 21 Jahren",
+                    "Bevölkerung 21 bis unter 45 Jahren",
+                    "Bevölkerung 45 bis unter 65 Jahren",
+                    "Bevölkerung ab 65 Jahren"
+                ],
+                "LineChart"
+            );
 
             this.extrapolateNeighborhoodStatistics();
         },
@@ -242,24 +241,31 @@ export default {
         },
         updateUnits (newUnits) {
             updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateResidents (newResidents) {
             updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateDensity (newDensity) {
             updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-density"]);
         },
         updateLivingSpace (newLivingSpace) {
             updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-livingspace"]);
         },
         updateGfz (newGfz) {
             updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-gfz"]);
         },
         updateBgf (newBgf) {
             updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-bgf"]);
         },
         updateHousholdSize (newHouseholdSize) {
             updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-householdsize"]);
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -311,22 +317,14 @@ export default {
         },
 
         async createFeature () {
-            console.log(this.selectedDistrictLevel);
             const feature = new Feature({
                     geometry: this.geometry,
                     ...this.neighborhood,
                     baseStats: this.baseStats
                 }),
-                districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
-                neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
-
-            // fill in missing statistical information if necessary
-            for (const district of districts) {
-                await this.getStatsByDistrict({
-                    id: district.getId(),
-                    districtLevel: this.selectedDistrictLevel
-                });
-            }
+                // districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
+                // districts = getAllContainingDistricts(this.districtLevels, feature, true),
+                neighborhood = new ScenarioNeighborhood(feature, this.drawingLayer, this.districtLevels);
 
             this.activeScenario.addNeighborhood(neighborhood);
 
@@ -380,6 +378,15 @@ export default {
 
         escapeEditStatsTable () {
             this.editStatsTable = false;
+        },
+
+        unfocusInput (evt, ref) {
+            // weird hack to force vuetify to unfocus the slider
+            if (ref.isActive) {
+                ref.isActive = false;
+                ref.onSliderMouseUp(evt);
+
+            }
         }
     }
 };
@@ -403,7 +410,7 @@ export default {
                 <v-main
                     id="scenario-builder"
                 >
-                    <v-form>
+                    <div>
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
                             <ScenarioManager />
@@ -459,6 +466,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-units"
                                         v-model="neighborhood.housingUnits"
                                         hint="Anzahl der WE"
                                         min="0"
@@ -484,6 +492,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-bgf"
                                         v-model="neighborhood.bgf"
                                         hint="m²"
                                         min="0"
@@ -509,6 +518,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-householdsize"
                                         v-model="neighborhood.avgHouseholdSize"
                                         hint="Haushaltsgröße"
                                         min="0"
@@ -535,6 +545,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-gfz"
                                         v-model="neighborhood.gfz"
                                         hint="GFZ"
                                         min="0"
@@ -562,6 +573,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-density"
                                         v-model="neighborhood.populationDensity"
                                         hint="EW / km²"
                                         min="0"
@@ -588,6 +600,7 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-livingspace"
                                         v-model="neighborhood.livingSpace"
                                         hint="m² / EW"
                                         min="0"
@@ -644,7 +657,7 @@ export default {
                                                 color="primary"
                                                 @click="datePicker = false"
                                             >
-                                                {{ $t("additional:modules.tools.cosi.cancel") }}
+                                                {{ $t("common:button.cancel") }}
                                             </v-btn>
                                             <v-btn
                                                 text
@@ -690,7 +703,7 @@ export default {
                                     >
                                         <v-icon>mdi-pencil</v-icon>
                                         <span>
-                                            {{ $t("additional:modules.tools.cosi.edit") }}
+                                            {{ $t("common:button.edit") }}
                                         </span>
                                     </v-btn>
                                 </v-col>
@@ -714,7 +727,7 @@ export default {
                                 </v-col>
                             </v-row>
                         </div>
-                    </v-form>
+                    </div>
                     <v-snackbar
                         v-model="editDialog"
                         :timeout="-1"
@@ -728,7 +741,7 @@ export default {
                                 text
                                 @click="deleteNeighborhood"
                             >
-                                {{ $t("additional:modules.tools.cosi.delete") }}
+                                {{ $t("common:button.delete") }}
                             </v-btn>
                             <!-- NOT IMPLEMENTED -->
                             <!-- <v-btn
@@ -736,7 +749,7 @@ export default {
                                 text
                                 @click="editStatsTable = true; editDialog = false;"
                             >
-                                {{ $t("additional:modules.tools.cosi.edit") }}
+                                {{ $t("common:button.edit") }}
                             </v-btn> -->
                         </template>
                     </v-snackbar>

@@ -21,6 +21,7 @@
                     "count": "Anz.",
                     "selectedDistrictNotAvailable": "Der Referenzwert ist für das Referenzgebiet nicht definiert",
                     "selectQuotientLayer": "Quotient",
+                    "selectProperty": "Attribut der Einrichtung",
                     "rowsPerPage": "Zeilen pro Seite",
                     "exportTable": "Tabelle exportieren",
                     "exportFilename": "CoSI_Vergleichbare_Gebiete"

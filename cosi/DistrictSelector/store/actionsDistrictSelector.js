@@ -4,6 +4,7 @@ import {prepareStatsFeatures} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
+import {compensateInconsistency} from "../../utils/unifyString";
 
 const actions = {
     /**
@@ -16,9 +17,10 @@ const actions = {
      * @param {Number[]} payload.districtLevel - The district level to which the districts belong.
      * @param {String[]} payload.districts - The districts for which the statistical features are loaded.
      * @param {Function} payload.getStatFeatures - Function for WFS GetFeature-Request via Post.
+     * @param {Boolean} [payload.recursive=true] - Should reference districts be loaded automatically?.
      * @returns {void}
      */
-    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts, getStatFeatures}) {
+    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
         commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         /**
@@ -34,7 +36,7 @@ const actions = {
             for (let i = 0; i < districts.length; i++) {
                 // check if statFeatures are already loaded
                 if (districts[i].statFeatures.length === 0) {
-                    const districtName = districts[i].getName(),
+                    const districtName = compensateInconsistency(districts[i].getName()),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Map/projectionCode"],
@@ -43,23 +45,31 @@ const actions = {
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
-                    olFeatures.forEach(prepareStatsFeatures);
+                    if (olFeatures.length > 0) {
+                        olFeatures.forEach(prepareStatsFeatures);
 
-                    // add statFeatures to district
-                    districts[i].statFeatures.push(...olFeatures);
-
-                    // store original data on the district as a copy
-                    districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
+                        // add statFeatures to district
+                        districts[i].statFeatures.push(...olFeatures);
+                        // store original data on the district as a copy
+                        districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
+                    }
+                    else {
+                        dispatch("Alerting/addSingleAlert", {
+                            content: "Es konnten nicht alle Datensätze vollständig geladen werden! Bitte versuchen Sie es später erneut. Sollte der Fehler weiterhin bestehen nutzen Sie bitte das Kontaktformular.",
+                            category: "Warning",
+                            cssClass: "warning"
+                        }, {root: true});
+                    }
                 }
             }
         }
 
         // loading reference Districts recursively
-        if (districtLevel.referenceLevel !== null) {
+        if (districtLevel.referenceLevel !== null && recursive) {
             const referenceLevel = districtLevel.referenceLevel,
                 // reference names of the districts
                 refNames = districts.map(district => {
-                    return district.statFeatures[0].get(referenceLevel.stats.keyOfAttrName);
+                    return district.statFeatures[0].get(districtLevel.referenceLevel.stats.keyOfAttrName);
                 }),
                 // reference districts
                 refDistricts = referenceLevel.districts.filter(district => {
@@ -118,7 +128,8 @@ const actions = {
         await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
             districtLevel: districtLevel,
-            getStatFeatures: getFeaturePost
+            getStatFeatures: getFeaturePost,
+            recursive: false
         });
 
         return foundDistrict.statFeatures;

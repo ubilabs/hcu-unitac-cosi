@@ -15,10 +15,13 @@ const state = {
     renderToWindow: false,
     resizableWindow: false,
     width: 0.45,
-    scenario: [],
     scenarios: [],
     activeScenario: null,
-    guideLayer: null
+    guideLayer: null,
+    areaAttributes: [
+        {key: "flaeche_qm", factorToSqm: 1},
+        {key: "flaeche_ha", factorToSqm: 0.0001}
+    ]
 };
 
 export default state;

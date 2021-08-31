@@ -15,7 +15,6 @@ export default {
                     && props[layerFilter.field] <= layerFilter.value + layerFilter.high
                     // && props[this.keyOfAttrNameStats] !== this.selectedDistrict // Ich würde das Referenzgebiet nicht aus dem Vergleich ausschließen
                     && props[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
-
             }),
             intersection = allFeatures.reduce((a, b) => a.filter(
                 x => b.find(y => y[this.keyOfAttrNameStats]

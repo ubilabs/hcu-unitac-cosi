@@ -49,9 +49,11 @@ export default {
         activeScenario (newActiveScenario, oldActiveScenario) {
             if (oldActiveScenario) {
                 oldActiveScenario.hideScenario();
+                oldActiveScenario.isActive = false;
             }
             if (newActiveScenario) {
                 newActiveScenario.restore();
+                newActiveScenario.isActive = true;
             }
         }
     },
@@ -156,21 +158,89 @@ export default {
                         {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }}
                     </span>
                 </v-btn>
-                <v-btn
-                    tile
-                    depressed
-                    :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
-                    :disabled="!activeScenario"
-                    class="flex-item"
-                    @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
+                <v-menu
+                    open-on-hover
+                    top
+                    offset-y
                 >
-                    <span v-if="useIcons">
-                        <v-icon>mdi-download</v-icon>
-                    </span>
-                    <span v-else>
-                        {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
-                    </span>
-                </v-btn>
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            tile
+                            depressed
+                            :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
+                            :disabled="!activeScenario"
+                            class="flex-item"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="activeScenario ? activeScenario.exportScenario() : null"
+                        >
+                            <span v-if="useIcons">
+                                <v-icon>mdi-download</v-icon>
+                            </span>
+                            <span v-else>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
+                            </span>
+                        </v-btn>
+                    </template>
+
+                    <v-list>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures')"
+                                :disabled="!activeScenario"
+                                class="flex-item"
+                                @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
+                            >
+                                <span v-if="useIcons">
+                                    <v-icon>mdi-map-marker-multiple</v-icon>
+                                </span>
+                                <span v-else>
+                                    {{ $t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures') }}
+                                </span>
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods')"
+                                :disabled="!activeScenario"
+                                class="flex-item"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
+                            >
+                                <span v-if="useIcons">
+                                    <v-icon>mdi-home-group</v-icon>
+                                </span>
+                                <span v-else>
+                                    {{ $t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods') }}
+                                </span>
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
+                                :disabled="!activeScenario"
+                                class="flex-item"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="activeScenario ? activeScenario.exportScenario() : null"
+                            >
+                                <span v-if="useIcons">
+                                    <v-icon>mdi-download</v-icon>
+                                </span>
+                                <span v-else>
+                                    {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
+                                </span>
+                            </v-btn>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
             </v-col>
         </v-row>
         <v-row>

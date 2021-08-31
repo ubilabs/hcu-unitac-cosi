@@ -184,13 +184,7 @@ export default {
                 geom = this.geometry,
                 feature = new Feature({geometry: geom});
 
-            // set properties
-            feature.setProperties(this.featureProperties);
-            // flag as simulated
-            feature.set("isSimulation", true);
-            // create unique hash as ID
-            feature.setId(hash({...this.featureProperties, geom: this.geometry}));
-
+            this.setFeatureProperties(feature, this.featureProperties, geom);
             this.activeScenario.addFeature(
                 new ScenarioFeature(feature, layer)
             );
@@ -198,6 +192,30 @@ export default {
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
             this.$root.$emit("updateFeature");
+        },
+
+        /**
+         * @param {module:ol/Feature} feature - the feature whose properties to set
+         * @param {Object} properties - the dict of properties to add to the feature
+         * @param {module:ol/Geometry} geometry - the feature's geometry
+         * @returns {void}
+         */
+        setFeatureProperties (feature, properties, geometry) {
+            // set properties
+            feature.setProperties(properties);
+            // flag as simulated
+            feature.set("isSimulation", true);
+            // create unique hash as ID
+            feature.setId(hash({...properties, geom: geometry}));
+
+            // set additional attributes based on geometry
+            if (geometry.getType() === "Polygon" || geometry.getType() === "MultiPolygon") {
+                const area = Math.round((geometry.getArea() + Number.EPSILON) * 100) / 100;
+
+                for (const attr of this.areaAttributes) {
+                    feature.set(attr.key, area * attr.factorToSqm);
+                }
+            }
         },
 
         /**

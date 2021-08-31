@@ -40,6 +40,8 @@
                     "noScenarios": "Bislang sind keine Szenarien vorhanden",
                     "selectScenarios": "Szenario auswählen",
                     "exportScenario": "Szenario exportieren (GeoJSON)",
+                    "exportNeighborhoods": "Wohnquartiere exportieren (GeoJSON)",
+                    "exportSimulatedFeatures": "Simulierte Einrichtungen exportieren (GeoJSON)",
                     "restoreAllFeatures": "Alle wiederherstellen",
                     "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
                     "pruneAllFeatures": "Alle löschen",
