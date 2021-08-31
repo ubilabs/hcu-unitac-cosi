@@ -64,6 +64,6 @@ export default {
         }
     },
     title: "KML-Datei laden",
-    newLayerInformation:{},
+    newLayerInformation: {},
     updateLayerStyles: false
 };

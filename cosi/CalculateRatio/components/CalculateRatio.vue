@@ -172,39 +172,8 @@ export default {
                 this.$store.commit("Tools/CalculateRatio/setDataToColorCodeMap", false);
             }
         },
-        facilityMappingUpdate(newLayer){
-            const importedProps = this.facilitiesMapping.find(x => x.group === "Importierte Datensätze");
-            if(importedProps){
-                const addLayer = {
-                    id: newLayer.name,
-                };
-
-                if(newLayer.numericalValues.length !== 0){
-                    addLayer.numericalValues = newLayer.numericalValues
-                }
-
-                importedProps.push(addLayer);
-            } else {
-                const layerGroup = {
-                    group: "Importierte Datensätze",
-                    layer: []
-                }
-
-                const addLayer = {
-                    id: newLayer.name,
-                };
-
-                if(newLayer.numericalValues.length !== 0){
-                    addLayer.numericalValues = newLayer.numericalValues
-                }
-
-                layerGroup.layer.push(addLayer);
-
-                this.facilitiesMapping.push(layerGroup);
-                console.log("updated", this.facilitiesMapping);
-            }
-
-            this.updateFacilities();
+        facilitiesMapping () {
+            // this.updateFacilities();
         }
     },
     created () {
@@ -225,6 +194,7 @@ export default {
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
+         * @todo triggers too often!!! refactor
          * @returns {void}
          */
         updateFacilities () {
@@ -244,7 +214,6 @@ export default {
                 return list;
             }, []);
 
-            console.log("1",this.facilitiesMapping);
             if (this.facilityList.length !== 0) {
                 this.ASwitch = true;
             }
@@ -690,7 +659,7 @@ export default {
                 dataSet.data.reverse();
             });
 
-            //this.setNewDataSet(graphObj);
+            // this.setNewDataSet(graphObj);
             this.channelGraphData(graphObj);
         },
 

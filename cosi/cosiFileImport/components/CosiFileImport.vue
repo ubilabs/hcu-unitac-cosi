@@ -17,14 +17,14 @@ export default {
             imported: false,
             newLayer: {},
             preNumericalValues: [],
-            numericalValues:[],
+            numericalValues: [],
             svgFile: "",
-            hexColor:"#ff0000",
+            hexColor: "#ff0000",
             imgObj: {
-                a:"./assets/svg/geo_pin_A.svg",
-                b:"./assets/svg/geo_pin_B.svg",
-                c:"./assets/svg/geo_pin_C.svg",
-                d:"./assets/svg/geo_pin_D.svg"
+                a: "./assets/svg/geo_pin_A.svg",
+                b: "./assets/svg/geo_pin_B.svg",
+                c: "./assets/svg/geo_pin_C.svg",
+                d: "./assets/svg/geo_pin_D.svg"
             },
             pointsandpolygons: false,
             svgColor: {},
@@ -36,6 +36,7 @@ export default {
         ...mapGetters("Map", ["layerIds", "layers", "map"]),
         selectedFiletype: {
             get () {
+                console.log(this.selectedFiletype, this.storePath.selectedFiletype)
                 return this.storePath.selectedFiletype;
             },
             set (value) {
@@ -51,37 +52,33 @@ export default {
     },
     watch: {
         newLayerInformation (newValue, oldValue) {
-            if(newValue !== oldValue){
+            if (newValue !== oldValue) {
                 this.preNumericalValues = [];
                 this.numericalValues = [];
-                this.newLayer = newValue,
-                this.svgFile = 'geo_pin_D.svg';
+                this.newLayer = newValue;
+                this.svgFile = "geo_pin_D.svg";
                 this.newLayer.style = {};
-                this.newLayer.features.find(feature => feature.getGeometry().getType() === "Point") ? this.newLayer.points = true : this.newLayer.points = false;
-                this.newLayer.features.find(feature => feature.getGeometry().getType() !== "Point") ? this.newLayer.polygons = true : this.newLayer.polygons = false;
+                this.newLayer.points = this.newLayer.features.some(feature => feature.getGeometry().getType() === "Point");
+                this.newLayer.polygons = this.newLayer.features.some(feature => feature.getGeometry().getType() !== "Point");
                 this.preCheckNumericalValues(this.newLayer.features);
                 this.imported = true;
                 console.log(this.newLayer);
             }
         },
-        svgFile(){
-            this,
+        svgFile () {
             this.newLayer.svg = this.svgFile;
         },
-        svgColor(){
+        svgColor () {
             this.hexColor = this.svgColor.hex;
             this.newLayer.style.svg = this.svgColor.hex;
             this.newLayer.style.point = this.svgColor;
         },
-        polygonColor(){
+        polygonColor () {
             this.newLayer.style.polygon = this.polygonColor;
         }
     },
     created () {
         this.$on("close", this.close);
-    },
-    mounted() {
-        console.log("working as expected");
     },
     methods: {
         ...mapActions("Tools/CosiFileImport", [
@@ -89,6 +86,7 @@ export default {
             "passLayer",
             "setSelectedFiletype"
         ]),
+        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping"]),
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
         ...mapMutations("Tools/CalculateRatio", ["setFacilityMappingUpdate"]),
         onDZDragenter () {
@@ -130,28 +128,32 @@ export default {
                 reader.readAsText(file);
             });
         },
-        addLayer(){
+        async addLayer () {
             this.newLayer.numericalValues = this.numericalValues;
-            this.passLayer(this.newLayer);
-            this.addToFacilityMapping();
+
+            const model = await this.passLayer(this.newLayer);
+
+            this.addVectorlayerToMapping(model.attributes);
             this.imported = false;
         },
-        addToFacilityMapping(){
-            this.setFacilityMappingUpdate(this.newLayer);
-        },
-        preCheckNumericalValues(features){
+        // addToFacilityMapping () {
+        //     this.setFacilityMappingUpdate(this.newLayer);
+        // },
+        preCheckNumericalValues (features) {
             const values = features[0].getProperties();
+
             console.log("zz", values);
             Object.entries(values).forEach(pair => {
                 const [key, value] = pair;
-                if(!isNaN(value) && value !== true && value !== false && value !== null){
+
+                if (!isNaN(value) && value !== true && value !== false && value !== null) {
                     this.preNumericalValues.push({id: key, name: key, value: value});
                 }
             });
 
             console.log(this.preNumericalValues);
         },
-        setLayerSVG(file){
+        setLayerSVG (file) {
             this.svgFile = file;
         },
         close () {
@@ -187,8 +189,8 @@ export default {
         <template #toolBody>
             <div
                 v-if="active && !imported"
-                class="importer"
                 id="tool-file-import"
+                class="importer"
             >
                 <p
                     class="cta"
@@ -257,24 +259,52 @@ export default {
             >
                 <div class="wrapper">
                     <div class="head">
-                        <p class="meta"><strong>Datensatz_ID</strong> {{ newLayer.id }}</p>
+                        <p class="meta">
+                            <strong>Datensatz_ID</strong> {{ newLayer.id }}
+                        </p>
                         <v-text-field
+                            v-model="newLayer.name"
                             label="Layername"
                             class="name"
-                            v-model="newLayer.name"
-                        >
-                        </v-text-field>
+                        />
                     </div>
                     <div class="body">
                         <div class="wrapper">
-                            <div class="styling points" v-if="newLayer.points && !newLayer.polygons">
+                            <div
+                                v-if="newLayer.points && !newLayer.polygons"
+                                class="styling points"
+                            >
                                 <h3>Point Styling</h3>
                                 <div class="grp_wrapper btn">
                                     <div class="btn_grp">
-                                        <v-btn :class="{highlight: svgFile === 'geo_pin_D.svg'}" @click="setLayerSVG('geo_pin_D.svg')" :style="svgFile === 'geo_pin_D.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.d" /></v-btn>
-                                        <v-btn :class="{highlight: svgFile === 'geo_pin_A.svg'}" @click="setLayerSVG('geo_pin_A.svg')" :style="svgFile === 'geo_pin_A.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.a" /></v-btn>
-                                        <v-btn :class="{highlight: svgFile === 'geo_pin_B.svg'}" @click="setLayerSVG('geo_pin_B.svg')" :style="svgFile === 'geo_pin_B.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.b" /></v-btn>
-                                        <v-btn :class="{highlight: svgFile === 'geo_pin_C.svg'}" @click="setLayerSVG('geo_pin_C.svg')" :style="svgFile === 'geo_pin_C.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.c" /></v-btn>
+                                        <v-btn
+                                            :class="{highlight: svgFile === 'geo_pin_D.svg'}"
+                                            :style="svgFile === 'geo_pin_D.svg' ? {backgroundColor: hexColor} : {}"
+                                            @click="setLayerSVG('geo_pin_D.svg')"
+                                        >
+                                            <img :src="imgObj.d">
+                                        </v-btn>
+                                        <v-btn
+                                            :class="{highlight: svgFile === 'geo_pin_A.svg'}"
+                                            :style="svgFile === 'geo_pin_A.svg' ? {backgroundColor: hexColor} : {}"
+                                            @click="setLayerSVG('geo_pin_A.svg')"
+                                        >
+                                            <img :src="imgObj.a">
+                                        </v-btn>
+                                        <v-btn
+                                            :class="{highlight: svgFile === 'geo_pin_B.svg'}"
+                                            :style="svgFile === 'geo_pin_B.svg' ? {backgroundColor: hexColor} : {}"
+                                            @click="setLayerSVG('geo_pin_B.svg')"
+                                        >
+                                            <img :src="imgObj.b">
+                                        </v-btn>
+                                        <v-btn
+                                            :class="{highlight: svgFile === 'geo_pin_C.svg'}"
+                                            :style="svgFile === 'geo_pin_C.svg' ? {backgroundColor: hexColor} : {}"
+                                            @click="setLayerSVG('geo_pin_C.svg')"
+                                        >
+                                            <img :src="imgObj.c">
+                                        </v-btn>
                                     </div>
                                 </div>
                                 <div class="grp_wrapper">
@@ -283,10 +313,13 @@ export default {
                                         dot-size="25"
                                         hide-inputs
                                         hide-mode-switch
-                                    ></v-color-picker>
+                                    />
                                 </div>
                             </div>
-                            <div class="styling polygons" v-if="newLayer.polygons && !newLayer.points">
+                            <div
+                                v-if="newLayer.polygons && !newLayer.points"
+                                class="styling polygons"
+                            >
                                 <h3>Polygon Styling</h3>
                                 <div class="grp_wrapper">
                                     <v-color-picker
@@ -294,18 +327,45 @@ export default {
                                         dot-size="25"
                                         hide-inputs
                                         hide-mode-switch
-                                    ></v-color-picker>
+                                    />
                                 </div>
                             </div>
-                            <div class="pointspolygons" v-if="newLayer.points && newLayer.polygons">
+                            <div
+                                v-if="newLayer.points && newLayer.polygons"
+                                class="pointspolygons"
+                            >
                                 <div class="styling points">
                                     <h3>Point Styling</h3>
                                     <div class="grp_wrapper btn">
                                         <div class="btn_grp">
-                                            <v-btn :class="{highlight: svgFile === 'geo_pin_D.svg'}" @click="setLayerSVG('geo_pin_D.svg')" :style="svgFile === 'geo_pin_D.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.d" /></v-btn>
-                                            <v-btn :class="{highlight: svgFile === 'geo_pin_A.svg'}" @click="setLayerSVG('geo_pin_A.svg')" :style="svgFile === 'geo_pin_A.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.a" /></v-btn>
-                                            <v-btn :class="{highlight: svgFile === 'geo_pin_B.svg'}" @click="setLayerSVG('geo_pin_B.svg')" :style="svgFile === 'geo_pin_B.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.b" /></v-btn>
-                                            <v-btn :class="{highlight: svgFile === 'geo_pin_C.svg'}" @click="setLayerSVG('geo_pin_C.svg')" :style="svgFile === 'geo_pin_C.svg' ? {backgroundColor: hexColor} : {}"><img :src="imgObj.c" /></v-btn>
+                                            <v-btn
+                                                :class="{highlight: svgFile === 'geo_pin_D.svg'}"
+                                                :style="svgFile === 'geo_pin_D.svg' ? {backgroundColor: hexColor} : {}"
+                                                @click="setLayerSVG('geo_pin_D.svg')"
+                                            >
+                                                <img :src="imgObj.d">
+                                            </v-btn>
+                                            <v-btn
+                                                :class="{highlight: svgFile === 'geo_pin_A.svg'}"
+                                                :style="svgFile === 'geo_pin_A.svg' ? {backgroundColor: hexColor} : {}"
+                                                @click="setLayerSVG('geo_pin_A.svg')"
+                                            >
+                                                <img :src="imgObj.a">
+                                            </v-btn>
+                                            <v-btn
+                                                :class="{highlight: svgFile === 'geo_pin_B.svg'}"
+                                                :style="svgFile === 'geo_pin_B.svg' ? {backgroundColor: hexColor} : {}"
+                                                @click="setLayerSVG('geo_pin_B.svg')"
+                                            >
+                                                <img :src="imgObj.b">
+                                            </v-btn>
+                                            <v-btn
+                                                :class="{highlight: svgFile === 'geo_pin_C.svg'}"
+                                                :style="svgFile === 'geo_pin_C.svg' ? {backgroundColor: hexColor} : {}"
+                                                @click="setLayerSVG('geo_pin_C.svg')"
+                                            >
+                                                <img :src="imgObj.c">
+                                            </v-btn>
                                         </div>
                                     </div>
                                     <div class="grp_wrapper">
@@ -314,14 +374,25 @@ export default {
                                             dot-size="25"
                                             hide-inputs
                                             hide-mode-switch
-                                        ></v-color-picker>
+                                        />
                                     </div>
                                     <div class="both">
-                                        <p class="info">{{ $t("additional:modules.tools.cosiFileImport.pointsAndPolygons") }}</p>
-                                        <v-btn class="switch_btn" :class="{highlight: pointsandpolygons}" @click="pointsandpolygons = true">Zweite Farbe</v-btn>
+                                        <p class="info">
+                                            {{ $t("additional:modules.tools.cosiFileImport.pointsAndPolygons") }}
+                                        </p>
+                                        <v-btn
+                                            class="switch_btn"
+                                            :class="{highlight: pointsandpolygons}"
+                                            @click="pointsandpolygons = true"
+                                        >
+                                            Zweite Farbe
+                                        </v-btn>
                                     </div>
                                 </div>
-                                <div class="styling sub polygons" v-if="pointsandpolygons">
+                                <div
+                                    v-if="pointsandpolygons"
+                                    class="styling sub polygons"
+                                >
                                     <h3>Polygon Styling</h3>
                                     <div class="grp_wrapper">
                                         <v-color-picker
@@ -329,24 +400,30 @@ export default {
                                             dot-size="25"
                                             hide-inputs
                                             hide-mode-switch
-                                        ></v-color-picker>
+                                        />
                                     </div>
                                 </div>
                             </div>
                             <div class="features">
-                                <p class="featuresInfo">{{ $t("additional:modules.tools.cosiFileImport.featuresInfo") }}</p>
+                                <p class="featuresInfo">
+                                    {{ $t("additional:modules.tools.cosiFileImport.featuresInfo") }}
+                                </p>
                                 <ul class="preNums">
                                     <li
                                         v-for="(data, i) in preNumericalValues"
                                         :key="i"
                                     >
                                         <v-text-field
+                                            v-model="data.name"
                                             class="preNumName"
                                             label="Name der Eigenschaft"
-                                            v-model="data.name"
-                                        ></v-text-field>
-                                        <label><strong>{{data.id}}</strong> ({{data.value}})</label>
-                                        <input type="checkbox" v-model="numericalValues" :value="data"/>
+                                        />
+                                        <label><strong>{{ data.id }}</strong> ({{ data.value }})</label>
+                                        <input
+                                            v-model="numericalValues"
+                                            type="checkbox"
+                                            :value="data"
+                                        >
                                     </li>
                                 </ul>
                             </div>
@@ -356,11 +433,12 @@ export default {
                         <v-btn
                             class="submit_btn"
                             @click="addLayer"
-                        >{{ $t("additional:modules.tools.cosiFileImport.layerButton") }}</v-btn>
+                        >
+                            {{ $t("additional:modules.tools.cosiFileImport.layerButton") }}
+                        </v-btn>
                     </div>
                 </div>
             </div>
-            
         </template>
     </Tool>
 </template>
@@ -529,7 +607,7 @@ export default {
                                 order:3;
                                 background:#eee;
                             }
-                        
+
                             .btn_grp {
                                 width:100%;
                                 display:flex;
@@ -644,7 +722,7 @@ export default {
                 margin:10px 0px;
                 padding-top:10px;
                 border-top:1px solid #ccc;
-                
+
                 .submit_btn {
                     display:block;
                     margin:0 0 0 auto;

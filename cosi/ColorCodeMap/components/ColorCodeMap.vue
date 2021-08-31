@@ -79,7 +79,6 @@ export default {
     },
     watch: {
         selectedFeatures () {
-            console.log("it lives");
             this.updateLegendList += 1;
             if (this.visualizationState) {
                 this.$nextTick(function () {

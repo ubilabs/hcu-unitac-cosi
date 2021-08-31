@@ -1,4 +1,4 @@
-import { Radio } from "backbone";
+import {Radio} from "backbone";
 import map from "vuex";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
@@ -197,13 +197,10 @@ function getParsedData (rawData, pointImages, textColors, textSizes) {
 }
 /**
  * Adds the layer to theme tree under the menu Importierte Daten
- * @param {String} layerName - the name of layer from the imported file
- * @param {String} layerId - the id of layer from the imported file
- * @param {ol.Feature[]} features - all features generated from the imported file
+ * @param {{name: String, id: String, features: module:ol/Feature[]}} newLayer - the layer from the imported file
  * @returns {void}
  */
 function addLayerToTree (newLayer) {
-
     const layerName = newLayer.name,
         layerId = newLayer.id,
         features = newLayer.features;
@@ -214,27 +211,57 @@ function addLayerToTree (newLayer) {
         document.getElementById("Overlayer").parentNode.appendChild(document.getElementById("importedData").parentNode);
     }
 
-    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData");
+    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData", undefined, "showAll");
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
-    const gfiAttributes = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
-    gfiAttributes.set("gfiAttributes", "showAll");
-    gfiAttributes.set("gfiTheme", "default");
+    // eslint-disable-next-line one-var
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+
+    setLayerAttributes(model, newLayer);
     adjustLayerStyling(newLayer);
+
+    Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
+
+    return model;
+
+    // Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
 }
 
+/**
+ * Sets additional attributes on the new layer
+ * @param {Object} model - the layer from the imported file
+ * @param {Object} attrs - the attrs to set
+ * @returns {void}
+ */
+function setLayerAttributes (model, attrs) {
+    model.set({
+        gfiComplex: "true",
+        gfiTheme: "default",
+        typ: "GeoJSON",
+        isFacility: true,
+        alwaysOnTop: true,
+        addressField: ["address"],
+        mouseHoverField: ["name"],
+        searchField: ["name"],
+        group: "Importierte Daten",
+        numericalValues: attrs.numericalValues
+    });
+}
+
+/**
+ * Styles the new layer
+ * @param {{name: String, id: String, features: module:ol/Feature[]}} newLayer - the layer from the imported file
+ * @returns {void}
+ */
 function adjustLayerStyling (newLayer) {
-    const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
-    const layer = layerNode.attributes.layer;
-    const path = "./assets/svg/" + newLayer.svg;
     let pointColor,
         pointOpac,
         areaColor,
         areaOpac;
 
-        console.log(newLayer.style);
+    // console.log(newLayer.style);
 
-    if(newLayer.style.point) {
+    if (newLayer.style.point) {
         pointColor = color(newLayer.style.point.hex);
         pointOpac = color(newLayer.style.point.hex);
         pointOpac.opacity = 0.5;
@@ -242,59 +269,64 @@ function adjustLayerStyling (newLayer) {
         areaColor = pointColor;
         areaOpac = pointOpac;
     }
-    
-    if(newLayer.style.polygon){
+
+    if (newLayer.style.polygon) {
         areaColor = color(newLayer.style.polygon.hex);
         areaOpac = color(newLayer.style.polygon.hex);
         areaOpac.opacity = 0.5;
     }
-    
-    const svgStyle = new Style({
-        image:new Icon({
-            src: path,
-            color: newLayer.style.svg
-        })
-    });
-    
-    const pointStyle = new Style({
-        image: new Circle({
-            radius:5,
+
+    const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
+        layer = layerNode.attributes.layer,
+        path = "./assets/svg/" + newLayer.svg,
+        svgStyle = new Style({
+            image: new Icon({
+                src: path,
+                color: newLayer.style.svg
+            })
+        }),
+
+        pointStyle = new Style({
+            image: new Circle({
+                radius: 5,
+                fill: new Fill({
+                    color: pointOpac
+                }),
+                stroke: new Stroke({
+                    color: pointColor,
+                    width: 2
+                })
+            })
+        }),
+
+        areaStyle = new Style({
             fill: new Fill({
-                color: pointOpac
+                color: areaOpac
             }),
             stroke: new Stroke({
-                color: pointColor,
-                width:2
+                width: 3,
+                color: areaColor
             })
-        })
-    });
-
-    const areaStyle = new Style({
-        fill: new Fill({
-            color: areaOpac
-        }),
-        stroke: new Stroke({
-            width:3,
-            color: areaColor
-        })
-    });
+        });
 
     layerNode.attributes.features.forEach(feature => {
-        if(feature.getGeometry().getType() === "Point") {
-            if(newLayer.svg){
+        if (feature.getGeometry().getType() === "Point") {
+            if (newLayer.svg) {
                 feature.setStyle([svgStyle]);
                 feature.set("originalStyle", svgStyle);
-            } else {
+            }
+            else {
                 feature.setStyle([pointStyle]);
                 feature.set("originalStyle", pointStyle);
             }
-        } else {
+        }
+        else {
             feature.setStyle([areaStyle]);
             feature.set("originalStyle", areaStyle);
         }
     });
-    
-    console.log(layer);
+
+    // console.log(layer);
     layer.setZIndex(100);
 }
 
@@ -302,9 +334,11 @@ export default {
     cosiLayerHandling ({commit}, newLayer) {
         commit("setNewLayerInformation", newLayer);
     },
-    passLayer({commit}, newLayer){
-        addLayerToTree(newLayer);
+    passLayer ({commit}, newLayer) {
+        const model = addLayerToTree(newLayer);
+
         commit("setUpdateLayerStyles", true);
+        return model;
     },
     setSelectedFiletype: ({commit}, newFiletype) => {
         commit("setSelectedFiletype", newFiletype);
@@ -435,16 +469,14 @@ export default {
 
         dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
         dispatch("addImportedFilename", datasrc.filename);
-        //addLayerToTree(layerName, layerId, features);
+        // addLayerToTree(layerName, layerId, features);
 
-        const newLayer = {
+        // console.log("handler", layerName, layerId, features);
+        dispatch("cosiLayerHandling", {
             name: layerName,
             id: layerId,
             features: features
-        };
-
-        console.log("handler", layerName, layerId, features);
-        dispatch("cosiLayerHandling", newLayer);
+        });
     },
     /**
      * Adds the name of a successfully imported file to list of imported filenames

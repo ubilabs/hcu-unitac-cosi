@@ -24,7 +24,7 @@ const state = {
     active: false,
     id: "CalculateRatio",
     // defaults for config.json parameters
-    name: "CalculateRatio (Vue)",
+    name: "Versorgungsanalyse",
     glyphicon: "glyphicon-tasks",
     renderToWindow: true,
     resizableWindow: false,
@@ -33,7 +33,6 @@ const state = {
     yearSelector: "jahr_",
     dataToColorCodeMap: false,
     colorCodeMapDataSet: [],
-    facilityMappingUpdate: [],
     results: []
 };
 
