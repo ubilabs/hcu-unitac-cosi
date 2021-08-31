@@ -72,7 +72,7 @@ export default {
             // Object that helps calculating the data in prepareCoverage function
             calcHelper: {},
             // Results for rendering in the table
-            results: [],
+            // results: [],
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
@@ -375,7 +375,7 @@ export default {
             this.fActive_B = false;
             this.faktorf_A = 1;
             this.faktorf_B = 1;
-            this.results = [];
+            this.setResults([]);
         },
         /**
          * @description Switches all parameters between FieldA and FieldB.
@@ -413,7 +413,7 @@ export default {
          * @returns {void}
          */
         prepareCoverage () {
-            this.results = [];
+            this.setResults([]);
             const allData = [],
 
                 dataArray_A = this.coverageFunction("A"),
@@ -426,7 +426,7 @@ export default {
                 allData.push(combined);
             });
 
-            this.results = utils.calculateRatio(allData, this.selectedYear);
+            this.setResults(utils.calculateRatio(allData, this.selectedYear));
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -535,8 +535,6 @@ export default {
             });
 
             return dataArray;
-
-            // this.results = utils.calculateRatio(dataArray, this.selectedYear);
         },
         /**
          * @description Gets Data for the selected statistical data (features)
@@ -571,12 +569,12 @@ export default {
         recalcData () {
             const dataArray = [];
 
-            this.results = [];
+            this.setResults([]);
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);
             });
 
-            this.results = utils.calculateRatio(dataArray, this.selectedYear);
+            this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.

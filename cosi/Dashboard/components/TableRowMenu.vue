@@ -210,7 +210,7 @@ export default {
                                                 <v-icon>mdi-delete</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                {{ $t('additional:modules.tools.cosi.delete') }}
+                                                {{ $t('common:button.delete') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                     </template>

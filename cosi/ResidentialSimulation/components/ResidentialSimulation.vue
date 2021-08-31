@@ -13,7 +13,6 @@ import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
-import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 
@@ -27,16 +26,8 @@ export default {
         StatisticsTable,
         Modal
     },
-    directives: {
-        blur: {
-            inserted: function (el) {
-                el.onfocus = (ev) => ev.target.blur();
-            }
-        }
-    },
     data () {
         return {
-            inputsDisabled: false,
             datePicker: false,
             editDialog: false,
             editFeature: null,
@@ -104,6 +95,7 @@ export default {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
         ...mapGetters("Tools/DistrictSelector", {
+            districtLevels: "districtLevels",
             districtLayer: "layer",
             selectedFeatures: "selectedFeatures",
             selectedAdminFeatures: "selectedAdminFeatures",
@@ -330,16 +322,9 @@ export default {
                     ...this.neighborhood,
                     baseStats: this.baseStats
                 }),
-                districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
-                neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
-
-            // fill in missing statistical information if necessary
-            for (const district of districts) {
-                await this.getStatsByDistrict({
-                    id: district.getId(),
-                    districtLevel: this.selectedDistrictLevel
-                });
-            }
+                // districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
+                // districts = getAllContainingDistricts(this.districtLevels, feature, true),
+                neighborhood = new ScenarioNeighborhood(feature, this.drawingLayer, this.districtLevels);
 
             this.activeScenario.addNeighborhood(neighborhood);
 
@@ -486,7 +471,6 @@ export default {
                                         hint="Anzahl der WE"
                                         min="0"
                                         :max="polygonArea / 5"
-                                        :disabled="inputsDisabled"
                                         @change="updateUnits"
                                     >
                                         <template #append>
@@ -513,7 +497,6 @@ export default {
                                         hint="m²"
                                         min="0"
                                         :max="polygonArea * 4"
-                                        :disabled="inputsDisabled"
                                         @change="updateBgf"
                                     >
                                         <template #append>
@@ -541,7 +524,6 @@ export default {
                                         min="0"
                                         max="5"
                                         step="0.2"
-                                        :disabled="inputsDisabled"
                                         @change="updateHousholdSize"
                                     >
                                         <template #append>
@@ -569,7 +551,6 @@ export default {
                                         min="0"
                                         max="4"
                                         step="0.1"
-                                        :disabled="inputsDisabled"
                                         @change="updateGfz"
                                     >
                                         <template #append>
@@ -597,7 +578,6 @@ export default {
                                         hint="EW / km²"
                                         min="0"
                                         max="50000"
-                                        :disabled="inputsDisabled"
                                         @change="updateDensity"
                                     >
                                         <template #append>
@@ -625,7 +605,6 @@ export default {
                                         hint="m² / EW"
                                         min="0"
                                         max="100"
-                                        :disabled="inputsDisabled"
                                         @change="updateLivingSpace"
                                     >
                                         <template #append>
@@ -671,7 +650,6 @@ export default {
                                             type="month"
                                             no-title
                                             scrollable
-                                            @update:active-picker="test"
                                         >
                                             <v-spacer />
                                             <v-btn
@@ -679,7 +657,7 @@ export default {
                                                 color="primary"
                                                 @click="datePicker = false"
                                             >
-                                                {{ $t("additional:modules.tools.cosi.cancel") }}
+                                                {{ $t("common:button.cancel") }}
                                             </v-btn>
                                             <v-btn
                                                 text
@@ -725,7 +703,7 @@ export default {
                                     >
                                         <v-icon>mdi-pencil</v-icon>
                                         <span>
-                                            {{ $t("additional:modules.tools.cosi.edit") }}
+                                            {{ $t("common:button.edit") }}
                                         </span>
                                     </v-btn>
                                 </v-col>
@@ -763,7 +741,7 @@ export default {
                                 text
                                 @click="deleteNeighborhood"
                             >
-                                {{ $t("additional:modules.tools.cosi.delete") }}
+                                {{ $t("common:button.delete") }}
                             </v-btn>
                             <!-- NOT IMPLEMENTED -->
                             <!-- <v-btn
@@ -771,7 +749,7 @@ export default {
                                 text
                                 @click="editStatsTable = true; editDialog = false;"
                             >
-                                {{ $t("additional:modules.tools.cosi.edit") }}
+                                {{ $t("common:button.edit") }}
                             </v-btn> -->
                         </template>
                     </v-snackbar>

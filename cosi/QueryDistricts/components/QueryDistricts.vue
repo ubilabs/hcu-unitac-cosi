@@ -15,6 +15,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import renameKeys from "../../utils/renameKeys.js";
+import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 
 export default {
     name: "QueryDistricts",
@@ -51,7 +52,8 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Map", ["layerById"])
     },
     watch: {
         async layerFilterModels () {
@@ -123,7 +125,11 @@ export default {
         },
 
         getAllFeatures: async function (id) {
-            return _getAllFeatures(id);
+            const features = await _getAllFeatures(id);
+
+            return features.length > 0
+                ? features
+                : this.layerById(id).olLayer.getSource().getFeatures();
         },
 
         setLayerOptions: function () {
@@ -153,26 +159,6 @@ export default {
                     valueType: "absolute",
                     facilityLayerName: facilityLayer.name
                 });
-
-                // for (const referenceLayer of this.referenceLayers) {
-                //     const layer = layers.find(l=>l.id === referenceLayer.id);
-
-                //     if (layer && layer.featureType) {
-                //         const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),
-                //             cnt = this.$t("additional:modules.tools.cosi.queryDistricts.count"),
-                //             layerName = `${mapping.value}/${cnt} ${name}`;
-
-
-                //         this.allLayerOptions.push({
-                //             name: layerName,
-                //             id: layerName,
-                //             group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                //             valueType: "absolute",
-                //             referenceLayerId: referenceLayer.id,
-                //             facilityLayerName: name
-                //         });
-                //     }
-                // }
             }
             this.updateAvailableLayerOptions();
         },
@@ -213,12 +199,13 @@ export default {
             return ret.length > 0 ? [... new Set(ret)] : [prefix + "alle"];
         },
 
-        countFacilitiesPerFeature (facilityFeatures, features) {
+        countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
             const fmap = {};
 
             for (const ffeature of facilityFeatures) {
                 for (const feature of features) {
-                    let polygon;
+                    let polygon,
+                        val;
 
                     try {
                         // expect multipolygon, try polygon if exception
@@ -232,7 +219,10 @@ export default {
                         polygon &&
                         turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
                     ) {
-                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + 1;
+                        val = property ? parseFloat(ffeature.get(property)) : 1;
+                        val = !isNaN(val) ? val : 1;
+
+                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + val;
 
                         break;
                     }
@@ -243,14 +233,14 @@ export default {
         },
 
         loadFeatures: async function (layer) {
-            if (this.propertiesMap[layer.id]) {
+            if (this.propertiesMap[layer.id] && layer.property === undefined) {
                 return;
             }
             const features = await this.getAllFeatures(layer.id);
 
             if (layer.facilityLayerName) {
                 const adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
-                    fmap = this.countFacilitiesPerFeature(features, adminFeatures);
+                    fmap = this.countFacilitiesPerFeature(features, adminFeatures, layer.property);
 
                 this.propertiesMap[layer.id] = adminFeatures.map(feature => {
                     /**
@@ -303,7 +293,8 @@ export default {
                 model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues,
                     referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
-                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name}))
+                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
+                    properties: await this.getFacilityProperties(layer)
                 };
 
             this.setLayerFilterModelValue(model);
@@ -426,16 +417,24 @@ export default {
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
-                    if (value.field || value.quotientLayer === null || value.quotientLayer) {
+
+                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property) {
+                        let currentLayerId = filters[i].layerId;
 
                         if (value.quotientLayer) {
                             await this.computeQuotientLayer(value);
+                            currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
                         }
-                        const currentLayerId = filters[i].quotientLayer ?
-                            `${filters[i].layerId}/${filters[i].quotientLayer}` : filters[i].layerId;
+                        if (value.property !== undefined) {
+                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
+                        }
 
-                        filters[i] = {...filters[i], currentLayerId,
-                            ...this.getMinMaxForField(currentLayerId, filters[i].field)};
+                        filters[i] = {
+                            ...filters[i],
+                            currentLayerId,
+                            ...this.getMinMaxForField(currentLayerId, filters[i].field)
+                        };
+
                         this.setLayerFilterModelValue(filters[i]);
                     }
                     break;
@@ -559,6 +558,27 @@ export default {
             });
 
             return selectedLayerModel ? this.getAllFeatures(selectedLayerModel.id) : [];
+        },
+
+        async getFacilityProperties (layer) {
+            if (layer.facilityLayerName) {
+                let desc = await describeFeatureTypeByLayerId(layer.id);
+
+                if (desc) {
+                    desc = desc.map(prop => prop.name);
+                }
+                else {
+                    desc = Object.keys(
+                        this.layerById(layer.id)?.olLayer
+                            .getSource()
+                            .getFeatures()[0]
+                            .getProperties()
+                    );
+                }
+
+                return desc;
+            }
+            return null;
         },
 
         getCoordinate: function (feature) {
