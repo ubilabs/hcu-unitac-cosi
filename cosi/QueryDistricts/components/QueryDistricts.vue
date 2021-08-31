@@ -133,13 +133,13 @@ export default {
         },
 
         setLayerOptions: function () {
-            const url = this.selectedDistrictLevel.stats.baseUrl[0],
+            const url = this.selectedDistrictLevel.stats.baseUrl[0], /** @todo allow multiple sources */
                 layers = this.getLayerList()
                     .filter(layer=> layer.url === url);
 
             this.allLayerOptions = [];
             for (const m of this.mapping) {
-                const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
+                const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category)); /** @todo mapping json extend by featureType? */
 
                 if (layer) {
                     this.allLayerOptions.push({
