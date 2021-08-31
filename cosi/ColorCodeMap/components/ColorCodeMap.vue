@@ -454,7 +454,7 @@ export default {
         loadToChartGenerator () {
             const graphObj = new ChartDataSet({
                 id: "ccm",
-                name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
+                name: [this.label] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart", "PieChart"],
                 color: "blue",
                 source: "Kartenvisualisierungswerkzeug",
