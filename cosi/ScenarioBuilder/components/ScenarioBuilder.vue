@@ -210,7 +210,7 @@ export default {
 
             // set additional attributes based on geometry
             if (geometry.getType() === "Polygon" || geometry.getType() === "MultiPolygon") {
-                const area = geometry.getArea().toFixed(2);
+                const area = Math.round((geometry.getArea() + Number.EPSILON) * 100) / 100;
 
                 for (const attr of this.areaAttributes) {
                     feature.set(attr.key, area * attr.factorToSqm);
