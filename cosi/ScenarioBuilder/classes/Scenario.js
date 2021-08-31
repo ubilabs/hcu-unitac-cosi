@@ -397,15 +397,31 @@ export default class Scenario {
         downloadJsonToFile(geojson, this.name + "_Simulierte_Einrichtungen.json");
     }
 
+
+    /**
+     * Exports simulated features as geoJson
+     * @returns {void}
+     */
+    exportScenarioNeighborhoods () {
+        const geojson = featuresToGeoJsonCollection(
+            this.neighborhoods.map(scenarioFeature => scenarioFeature.feature)
+        );
+
+        downloadJsonToFile(geojson, this.name + "_Simulierte_Wohnquartiere.json");
+    }
+
     /**
      * Exports simulated features as geoJson
      * @returns {void}
      */
     exportScenario () {
         const geojson = featuresToGeoJsonCollection(
-            this.simulatedFeatures.map(scenarioFeature => scenarioFeature.feature)
+            [
+                ...this.getAllFeatures().map(item => item.feature),
+                ...this.getNeighborhoods().map(item => item.feature)
+            ]
         );
 
-        downloadJsonToFile(geojson, this.name + "_Simulierte_Einrichtungen.json");
+        downloadJsonToFile(geojson, this.name + "_Szenario.json");
     }
 }
