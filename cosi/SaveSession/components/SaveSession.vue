@@ -103,7 +103,7 @@ export default {
         },
         saveAs () {
             this.save();
-            downloadJsonToFile(this.state, "Neues_Session.json");
+            downloadJsonToFile(this.state, "Neue_Session.json");
         },
 
         load () {

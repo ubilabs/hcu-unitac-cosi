@@ -194,7 +194,7 @@ export default {
                                 @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
                             >
                                 <span v-if="useIcons">
-                                    <v-icon>mdi-home-group</v-icon>
+                                    <v-icon>mdi-map-marker-multiple</v-icon>
                                 </span>
                                 <span v-else>
                                     {{ $t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures') }}
@@ -213,7 +213,7 @@ export default {
                                 @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
                             >
                                 <span v-if="useIcons">
-                                    <v-icon>mdi-map-marker-multiple</v-icon>
+                                    <v-icon>mdi-home-group</v-icon>
                                 </span>
                                 <span v-else>
                                     {{ $t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods') }}

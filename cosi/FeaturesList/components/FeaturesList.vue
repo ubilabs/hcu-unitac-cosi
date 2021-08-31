@@ -511,13 +511,17 @@ export default {
                                     #[`item.${col.value}`]="{ item }"
                                 >
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
-                                        <v-chip
+                                        <div
                                             :key="col.value"
-                                            :color="getNumericalValueColor(item, col.value)"
-                                            dark
+                                            class="align-right"
                                         >
-                                            {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                        </v-chip>
+                                            <v-chip
+                                                :color="getNumericalValueColor(item, col.value)"
+                                                dark
+                                            >
+                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                            </v-chip>
+                                        </div>
                                     </template>
                                 </template>
                             </v-data-table>
@@ -569,6 +573,9 @@ export default {
             .search {
                 width: 100%;
             }
+        }
+        .align-right {
+            text-align: right;
         }
     }
 </style>
