@@ -9,7 +9,10 @@
                     "groupCol": "Gruppe",
                     "categoryCol": "Kategorie",
                     "timestampCol": "Jahr",
-                    "search": "Tabelle durchsuchen"
+                    "search": "Tabelle durchsuchen",
+                    "exportTable": "Tabelle exportieren",
+                    "exportTableTimeline": "Tabelle exportieren (alle Jahre)",
+                    "exportFilename": "CoSI_Dashboard-Tabelle"
                 }
             }
         }

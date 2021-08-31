@@ -131,3 +131,11 @@ export function featuresToGeoJsonCollection (features, asString = false, sourceC
 
     return asString ? parser.writeFeatures(_features) : parser.writeFeaturesObject(_features);
 }
+
+export default {
+    featureToGeoJson,
+    featuresToGeoJsonCollection,
+    intersect,
+    union,
+    getContainingDistrictForFeature
+}
