@@ -50,6 +50,17 @@ const getters = {
     },
 
     /**
+     * Returns the metadata urls of the regional statistical data.
+     * @param {Object} state - The DistrictSelector state.
+     * @param {Object} getters - The DistrictSelector getters.
+     * @param {Object} getters.selectedDistrictLevel - The selected district level.
+     * @returns {String[]} The metadata urls.
+     */
+    metadataUrls: (state, {selectedDistrictLevel}) => {
+        return selectedDistrictLevel.stats.metadataUrls;
+    },
+
+    /**
      * Returns the selected districts in an array and not as a collection.
      * @param {Object} state - The DistrictSelector state.
      * @param {Object} getters - The DistrictSelector getters.

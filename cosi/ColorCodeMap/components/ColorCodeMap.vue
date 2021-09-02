@@ -57,7 +57,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures", "metadataUrls"]),
         ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
         _selectedFeature: {
@@ -477,6 +477,12 @@ export default {
             graphObj.data.labels.reverse();
 
             this.setNewChartDataSet(graphObj);
+        },
+
+        openMetadata () {
+            this.metadataUrls.forEach(url => {
+                window.open(url);
+            });
         }
     }
 };
@@ -665,6 +671,12 @@ export default {
                     @click="setShowMapNames(!showMapNames)"
                 >
                     <span class="glyphicon glyphicon-map-marker" />
+                </button>
+                <button
+                    title="Metadaten"
+                    @click="openMetadata()"
+                >
+                    <span class="glyphicon glyphicon-info-sign" />
                 </button>
             </div>
         </div>
