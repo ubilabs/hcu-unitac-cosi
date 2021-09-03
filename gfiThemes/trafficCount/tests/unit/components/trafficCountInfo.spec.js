@@ -21,6 +21,9 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
         updateDay: (thingId, meansOfTransport, date, onupdate) => {
             onupdate("2020-02-17", "baz");
         },
+        updateWorkingDayAverage: (thingId, meansOfTransport, days, holidays, onupdate) => {
+            onupdate("2020-01-01", "average");
+        },
         updateHighestWorkloadDay: (thingId, meansOfTransport, year, onupdate) => {
             onupdate("2020-01-17", "qox");
         },
@@ -55,6 +58,8 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
             expect(wrapper.vm.lastYearValue).to.equal("bar");
             expect(wrapper.vm.lastDayDesc).to.equal("17.02.2020");
             expect(wrapper.vm.lastDayValue).to.equal("baz");
+            expect(wrapper.vm.workingDayAverageDesc).to.equal("01.01.2020");
+            expect(wrapper.vm.workingDayAverageValue).to.equal("average");
             expect(wrapper.vm.highestWorkloadDayDesc).to.equal("17.01.2020");
             expect(wrapper.vm.highestWorkloadDayValue).to.equal("qox");
             expect(wrapper.vm.highestWorkloadWeekDesc).to.include("calendarWeek");

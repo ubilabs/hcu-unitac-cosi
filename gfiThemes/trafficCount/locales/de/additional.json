@@ -14,6 +14,7 @@
                         "sinceBeginningOfTheYear": "Seit Jahresbeginn",
                         "overThePastYear": "Im Vorjahr",
                         "onThePreviousDay": "Am Vortag",
+                        "workingDayAverage": "Werktagsmittelwert seit",
                         "highestDay": "Stärkster Tag im Jahr",
                         "highestWeek": "Stärkste Woche im Jahr",
                         "highestMonth": "Stärkster Monat im Jahr",
@@ -43,7 +44,12 @@
                         "yAxisTextYear": "Anzahl / Woche",
                         "reset": "zurücksetzen",
                         "holidaySign": "Feiertagseinfluss",
-                        "trucksStatus": "** SV-Anzahl (Beta-Status)"
+                        "trucksStatus": "** SV-Anzahl (Beta-Status)",
+                        "error": {
+                            "dataNotAvailableA": "(nicht",
+                            "dataNotAvailableB": "empfangen)",
+                            "apiFunction": "Der Wert für \"{{category}}\" wurde wegen eines API-Fehlers nicht empfangen."
+                        }
                     }
                 }
             }

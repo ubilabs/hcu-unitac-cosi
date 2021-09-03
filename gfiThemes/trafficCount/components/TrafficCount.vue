@@ -469,6 +469,7 @@ export default {
                     class="tab-pane fade in active"
                     :api="api"
                     :thing-id="propThingId"
+                    :holidays="holidays"
                     :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountDay

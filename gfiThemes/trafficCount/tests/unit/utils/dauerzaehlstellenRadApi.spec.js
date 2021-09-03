@@ -195,4 +195,55 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
             expect(api.waitingListForCallLinkDownload).to.be.an("array").and.to.have.lengthOf(1);
         });
     });
+    describe("updateWorkingDayAverage", () => {
+        const api = new DauerzaehlstellenRadApi({
+                getProperties: () => false,
+                getId: () => false
+            }, () => {
+                // onerror
+            }, () => {
+                // callLinkDownload
+            }),
+            holidays = ["newYearsDay"],
+            expectedDate = "2020-12-31",
+            expectedResult = 15;
+        let lastResult = false,
+            lastDate = false;
+
+        api.gurlittMomentsWeek = [
+            {
+                "result": 14,
+                "momentStart": moment("2020-12-30T23:00:00.000Z"),
+                "momentEnd": moment("2020-12-31T23:00:00.000Z")
+            },
+            {
+                "result": 1,
+                "momentStart": moment("2020-12-31T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-01T23:00:00.000Z")
+            },
+            {
+                "result": 2,
+                "momentStart": moment("2021-01-01T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-02T23:00:00.000Z")
+            },
+            {
+                "result": 3,
+                "momentStart": moment("2021-01-02T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-03T23:00:00.000Z")
+            },
+            {
+                "result": 16,
+                "momentStart": moment("2021-01-03T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-04T23:00:00.000Z")
+            }
+        ];
+
+        api.updateWorkingDayAverage("thingId", "meansOfTransport", 365, holidays, (date, result) => {
+            lastDate = date;
+            lastResult = result;
+        }, "onerror", "onstart", "oncomplete");
+
+        expect(lastResult).to.equal(expectedResult);
+        expect(lastDate).to.equal(expectedDate);
+    });
 });

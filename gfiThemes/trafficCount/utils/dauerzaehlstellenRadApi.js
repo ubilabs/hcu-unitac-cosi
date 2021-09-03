@@ -1,5 +1,6 @@
 import moment from "moment";
 import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 
 /**
  * the internal format for Gurlitt time is called GurlittMoment
@@ -293,6 +294,59 @@ export class DauerzaehlstellenRadApi {
             onupdate(moment(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
         }
 
+        if (typeof oncomplete === "function") {
+            oncomplete();
+        }
+    }
+    /**
+     * gets the average of working days, excludes saturday, sunday and the given holidays
+     * @param {Integer} thingId the ID of the thing
+     * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
+     * @param {String} days the days from now to load the average from
+     * @param {Object[]} holidays the holidays to exclude from the calculation
+     * @param {Function} onupdate as event function(date, value)
+     * @param {Function} [onerror] as function(error) to fire on error
+     * @param {Function} [onstart] as function() to fire before any async action has started
+     * @param {Function} [oncomplete] as function() to fire after every async action no matter what
+     * @returns {void}
+     */
+    updateWorkingDayAverage (thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete) {
+        if (!this.gurlittMomentsYear.length && !this.gurlittMomentsWeek.length && !this.gurlittMomentsDay.length) {
+            this.waitingListForCallLinkDownload.push(() => {
+                this.updateWorkingDayAverage(thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete);
+            });
+            return;
+        }
+
+        const gurlittMoments = this.gurlittMomentsWeek.slice(Math.abs(days) * -1);
+        let value = 0,
+            workDayCount = 0,
+            firstMoment = null;
+
+        if (typeof onstart === "function") {
+            onstart();
+        }
+        gurlittMoments.forEach(gurlittMoment => {
+            if (typeof gurlittMoment !== "object" || gurlittMoment === null || !(gurlittMoment.momentStart instanceof moment)) {
+                return;
+            }
+            const holiday = getPublicHoliday(gurlittMoment.momentStart, holidays),
+                dayOfWeek = gurlittMoment.momentStart.isoWeekday();
+
+            if (firstMoment === null) {
+                firstMoment = gurlittMoment.momentStart;
+            }
+            if (holiday || dayOfWeek === 6 || dayOfWeek === 7) {
+                return;
+            }
+
+            value += typeof gurlittMoment?.result === "number" ? gurlittMoment.result : 0;
+            workDayCount++;
+        });
+
+        if (typeof onupdate === "function") {
+            onupdate(firstMoment ? firstMoment.format("YYYY-MM-DD") : "", workDayCount !== 0 ? Math.round(value / workDayCount) : 0);
+        }
         if (typeof oncomplete === "function") {
             oncomplete();
         }
@@ -748,14 +802,15 @@ export class DauerzaehlstellenRadApi {
         if (!Array.isArray(parsedCsvData)) {
             return false;
         }
-        const gurlittMoments = [];
+        const gurlittMoments = [],
+            slicedCsvData = parsedCsvData.slice(this.offsetOfCsvDataWeek);
         let result = 0;
 
-        parsedCsvData.slice(this.offsetOfCsvDataWeek).forEach((line, idx) => {
+        slicedCsvData.forEach((line, idx) => {
             if (!Array.isArray(line) || line.length < 3) {
                 return;
             }
-            const nextLine = parsedCsvData[idx + 1],
+            const nextLine = slicedCsvData[idx + 1],
                 dayOfNextLine = nextLine ? nextLine[0] : false,
                 currentDay = line[0];
 

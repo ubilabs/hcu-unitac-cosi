@@ -1,5 +1,6 @@
 import {SensorThingsHttp} from "../../../../modules/core/modelList/layer/sensorThingsHttp.js";
 import {SensorThingsMqtt} from "../../../../modules/core/modelList/layer/sensorThingsMqtt.js";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 import moment from "moment";
 
 // change language from moment.js to german
@@ -430,6 +431,53 @@ export class TrafficCountApi {
                 });
             }, false, oncomplete, onerror || this.defaultErrorHandler);
         }, onstart, false, onerror || this.defaultErrorHandler);
+    }
+
+    /**
+     * gets the average of working days, excludes saturday, sunday and the given holidays
+     * @param {Integer} thingId the ID of the thing
+     * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
+     * @param {String} days the days from now to load the average from
+     * @param {Object[]} holidays the holidays to exclude from the calculation
+     * @param {Function} onupdate as event function(date, value)
+     * @param {Function} [onerror] as function(error) to fire on error
+     * @param {Function} [onstart] as function() to fire before any async action has started
+     * @param {Function} [oncomplete] as function() to fire after every async action no matter what
+     * @returns {void}
+     */
+    updateWorkingDayAverage (thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete) {
+        const startDate = moment().subtract(days, "days").toISOString(),
+            endDate = moment().toISOString(),
+            url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + ";$orderby=phenomenonTime ASC))";
+
+        return this.http.get(url, (dataset) => {
+            if (this.checkForObservations(dataset)) {
+                const date = this.getFirstDate(dataset),
+                    observations = dataset[0].Datastreams[0].Observations;
+                let value = 0,
+                    workDayCount = 0;
+
+                observations.forEach(observation => {
+                    const phenomenonTime = this.parsePhenomenonTime(observation?.phenomenonTime),
+                        holiday = getPublicHoliday(phenomenonTime, holidays),
+                        dayOfWeek = moment(phenomenonTime).isoWeekday();
+
+                    if (holiday || dayOfWeek === 6 || dayOfWeek === 7) {
+                        return;
+                    }
+
+                    value += typeof observation?.result === "number" ? observation.result : 0;
+                    workDayCount++;
+                });
+
+                if (typeof onupdate === "function") {
+                    onupdate(moment(date).format("YYYY-MM-DD"), workDayCount !== 0 ? Math.round(value / workDayCount) : 0);
+                }
+            }
+            else {
+                (onerror || this.defaultErrorHandler)("TrafficCountAPI.updateWorkingDayAverage: dataset does not include a datastream with observations", dataset);
+            }
+        }, onstart, oncomplete, onerror || this.defaultErrorHandler);
     }
 
     /**
