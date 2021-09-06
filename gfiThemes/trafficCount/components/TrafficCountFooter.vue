@@ -4,6 +4,7 @@ import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
 import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
 import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
+import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
 
 export default {
     name: "TrafficCountFooter",
@@ -332,7 +333,7 @@ export default {
          */
         exportFile: function () {
             if (typeof this.downloadUrl === "string") {
-                location.href = this.downloadUrl;
+                location.href = convertHttpLinkToSSL(this.downloadUrl);
                 return;
             }
             this.exportView.export();
