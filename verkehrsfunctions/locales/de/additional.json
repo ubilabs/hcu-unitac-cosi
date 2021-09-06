@@ -2,8 +2,8 @@
     "modules": {
         "tools": {
             "verkehrsfunctions": {
-                "number": "Anzahl",
-                "carsHeaderSuffix": "KFZ abs.",
+                "bicycleHeaderSuffix": "Anzahl Fahrräder",
+                "carsHeaderSuffix": "Anzahl Kfz",
                 "trucksHeaderSuffix": "SV-Anteil in %"
             }
         }

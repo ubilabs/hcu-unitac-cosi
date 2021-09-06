@@ -1,11 +1,12 @@
 import {WFS} from "ol/format.js";
 import moment from "moment";
+import thousandsSeparator from "../../src/utils/thousandsSeparator.js";
 
 const traficChannel = Backbone.Model.extend({
     defaults: {
         proxyURLVerkehrssituation: "",
         proxyURLVerkehrsmeldung: "",
-        number: i18next.t("additional:modules.tools.verkehrsfunctions.number"),
+        bicycleHeaderSuffix: i18next.t("additional:modules.tools.verkehrsfunctions.bicycleHeaderSuffix"),
         carsHeaderSuffix: i18next.t("additional:modules.tools.verkehrsfunctions.carsHeaderSuffix"),
         trucksHeaderSuffix: i18next.t("additional:modules.toolsverkehrsfunctions.trucksHeaderSuffix")
     },
@@ -77,13 +78,13 @@ const traficChannel = Backbone.Model.extend({
 
         if (layerName.includes("Anzahl_Fahrraeder")) {
             // Only the absolute traffic count is needed
-            absTrafficCount = this.get("number") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            absTrafficCount = this.get("bicycleHeaderSuffix") + ": " + thousandsSeparator(absTrafficCount) + " " + direction;
         }
         else if (layerName.includes("Anzahl_Kfz")) {
             // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
             // put the absolute traffic count and proportion in right format
             // absTrafficCount = this.get("carsHeaderSuffix") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
-            absTrafficCount = this.get("number") + ": " + this.addThousandPoints(absTrafficCount) + " " + direction;
+            absTrafficCount = this.get("carsHeaderSuffix") + ": " + thousandsSeparator(absTrafficCount) + " " + direction;
             /**
              * search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
             if (propTrafficCount === "no data") {
@@ -97,19 +98,6 @@ const traficChannel = Backbone.Model.extend({
         // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
         // feature.set("propTrafficCount", propTrafficCount);
         feature.set("phenomenonTimeRange", phenomenonTimeRange);
-    },
-
-    /**
-     * adds thousands points into a absolute number
-     * @param {Integer} value the absolute number as integer
-     * @returns {String} the same number but with thousands points or "No data" if an invalid value was given
-     */
-    addThousandPoints: function (value) {
-        if (typeof value !== "number" && typeof value !== "string") {
-            return "No data";
-        }
-
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
 
     /**
