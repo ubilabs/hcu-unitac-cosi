@@ -240,12 +240,13 @@ export default {
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
+                        // only features that can be seen on the map
+                        visibleFeatures = features.filter(feature => typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle()() !== null),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
                     list.push(...this.checkDisabledFeatures(vectorLayer));
-
-                    return [...list, ...features.map((feature) => {
+                    return [...list, ...visibleFeatures.map((feature) => {
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
