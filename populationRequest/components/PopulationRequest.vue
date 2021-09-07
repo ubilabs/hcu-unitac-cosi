@@ -429,8 +429,8 @@ export default {
         class="PopulationRequest"
     >
         <template
-            #toolBody
             v-if="active"
+            #toolBody
         >
             <div
                 class="form-horizontal"
