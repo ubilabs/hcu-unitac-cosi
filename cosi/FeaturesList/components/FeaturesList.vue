@@ -459,7 +459,7 @@ export default {
                                 item-key="key"
                                 show-select
                                 show-expand
-                                :items-per-page="20"
+                                :items-per-page="15"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
