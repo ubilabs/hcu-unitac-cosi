@@ -580,8 +580,3 @@ export default {
         }
     }
 </style>
-
-<style src="vue-select/dist/vue-select.css">
-</style>
-
-
