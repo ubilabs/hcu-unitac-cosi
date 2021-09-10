@@ -594,9 +594,11 @@ export default {
 </style>
 
 <style lang="less">
+    @import "~/css/mixins.less";
+
     #tooltip-overlay {
         position: relative;
-        background: rgba(51, 153, 204, 0.8);
+        background: @accent_active;
         color: #fff;
         max-width: 200px;
         padding: 4px 8px;
@@ -605,7 +607,7 @@ export default {
     #circle-overlay {
         position: relative;
         top: -20px;
-        background: rgba(51, 153, 204, 0.8);
+        background: @accent_active;
         color: #fff;
         max-width: 70px;
         padding: 4px 8px;

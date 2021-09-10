@@ -152,7 +152,10 @@ export default {
                 </div>
 
                 <div>
-                    <label class="upload-button-wrapper">
+                    <label 
+                        class="upload-button-wrapper"
+                        tabindex="0"
+                     >
                         <input
                             type="file"
                             @change="onInputChange"
@@ -183,7 +186,7 @@ export default {
 </template>
 
 <style lang="less" scoped>
-    @import "~variables";
+    @import "~/css/mixins.less";
 
     .h-seperator {
         margin:12px 0 12px 0;
@@ -198,18 +201,22 @@ export default {
     }
 
     .upload-button-wrapper {
-        border: 2px solid #DDDDDD;
-        background-color:#FFFFFF;
+        color: #FFFFFF;
+        // border: 2px solid #DDDDDD;
+        background-color: @secondary_focus;
         display: block;
         text-align:center;
         padding: 8px 12px;
         cursor: pointer;
         margin:12px 0 0 0;
         font-size: @font_size_big;
-        transition: background 0.25s;
+        // transition: background 0.25s;
 
+        &:focus {
+            .primary_action_focus();
+        }
         &:hover {
-            background-color:#EEEEEE;
+            .primary_action_hover();
         }
     }
 
@@ -221,12 +228,12 @@ export default {
     .drop-area-fake {
         background-color: #FFFFFF;
         border-radius: 12px;
-        border: 2px dashed @accent_disabled;
+        border: 2px dashed @accent;
         padding:24px;
         transition: background 0.25s, border-color 0.25s;
 
         &.dzReady {
-            background-color:@accent_hover;
+            background-color: @accent_hover;
             border-color:transparent;
 
             p.caption {
