@@ -59,7 +59,8 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                     "reformationDay",
                     "christmasDay",
                     "secondDayOfChristmas"
-                ]
+                ],
+                downloadUrl: false
             },
             localVue
         });
@@ -74,7 +75,8 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
 
     describe("prepareDataForDownload", function () {
         it("should return the prepared data for the csv download", function () {
-            const obj = {
+            const meansOfTransport = "Anzahl_Kfz",
+                obj = {
                     "2020-06-23 00:00:01": 0.16,
                     "2020-06-23 00:15:01": 0.07,
                     "2020-06-23 00:30:01": 0.13,
@@ -86,26 +88,26 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                     "2020-06-23 00:30:01": 0.03,
                     "2020-06-23 00:45:01": 0.05
                 },
-                dataDay = wrapper.vm.prepareDataForDownload(obj, objAnzahlSV, "day", wrapper.vm.holidays),
-                dataWeek = wrapper.vm.prepareDataForDownload(obj, objAnzahlSV, "week", wrapper.vm.holidays),
-                dataYear = wrapper.vm.prepareDataForDownload(obj, objAnzahlSV, "year", wrapper.vm.holidays);
+                dataDay = wrapper.vm.prepareDataForDownload(meansOfTransport, obj, objAnzahlSV, "day", wrapper.vm.holidays),
+                dataWeek = wrapper.vm.prepareDataForDownload(meansOfTransport, obj, objAnzahlSV, "week", wrapper.vm.holidays),
+                dataYear = wrapper.vm.prepareDataForDownload(meansOfTransport, obj, objAnzahlSV, "year", wrapper.vm.holidays);
 
-            expect(dataDay[0]).to.have.all.keys("Datum", "Uhrzeit von", "Anzahl", "Anzahl_SV", "Feiertag");
+            expect(dataDay[0]).to.have.all.keys("Datum", "Uhrzeit von", "Anzahl KFZ", "Anzahl SV", "Feiertag");
             expect(dataDay[0].Datum).to.equal("2020-06-23");
             expect(dataDay[1]["Uhrzeit von"]).to.equal("00:15");
             expect(dataDay[1].Feiertag).to.equal("");
-            expect(dataDay[2].Anzahl).to.equal(0.13);
-            expect(dataDay[3].Anzahl_SV).to.equal(0.05);
+            expect(dataDay[2]["Anzahl KFZ"]).to.equal(0.13);
+            expect(dataDay[3]["Anzahl SV"]).to.equal(0.05);
 
-            expect(dataWeek[0]).to.have.all.keys("Datum", "Anzahl", "Anzahl_SV", "Feiertag");
+            expect(dataWeek[0]).to.have.all.keys("Datum", "Anzahl KFZ", "Anzahl SV", "Feiertag");
             expect(dataWeek[0].Datum).to.equal("2020-06-23");
-            expect(dataWeek[2].Anzahl).to.equal(0.13);
-            expect(dataWeek[3].Anzahl_SV).to.equal(0.05);
+            expect(dataWeek[2]["Anzahl KFZ"]).to.equal(0.13);
+            expect(dataWeek[3]["Anzahl SV"]).to.equal(0.05);
 
-            expect(dataYear[0]).to.have.all.keys("Kalenderwoche ab", "Anzahl", "Anzahl_SV", "Feiertag");
+            expect(dataYear[0]).to.have.all.keys("Kalenderwoche ab", "Anzahl KFZ", "Anzahl SV", "Feiertag");
             expect(dataYear[0]["Kalenderwoche ab"]).to.equal("2020-06-23");
-            expect(dataYear[2].Anzahl).to.equal(0.13);
-            expect(dataYear[3].Anzahl_SV).to.equal(0.05);
+            expect(dataYear[2]["Anzahl KFZ"]).to.equal(0.13);
+            expect(dataYear[3]["Anzahl SV"]).to.equal(0.05);
         });
     });
 

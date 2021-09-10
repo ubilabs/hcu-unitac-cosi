@@ -1088,6 +1088,41 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
         });
     });
 
+    describe("TrafficCountApi.updateWorkingDayAverage", () => {
+        it("should call onupdate with the first found date and value", () => {
+            let lastDate = false,
+                lastValue = false;
+            const holidays = ["newYearsDay"],
+                dummySensorThingsHttp = {
+                    get: (url, onupdate) => {
+                        onupdate([{
+                            Datastreams: [{
+                                "@iot.id": "foo",
+                                Observations: [
+                                    {result: 1, phenomenonTime: "2020-12-31T00:00:00.000Z"},
+                                    {result: 2, phenomenonTime: "2021-01-01T00:00:00.000Z"},
+                                    {result: 3, phenomenonTime: "2021-01-02T00:00:00.000Z"},
+                                    {result: 4, phenomenonTime: "2021-01-03T00:00:00.000Z"},
+                                    {result: 5, phenomenonTime: "2021-01-04T00:00:00.000Z"}
+                                ]
+                            }]
+                        }]);
+                    }
+                },
+                api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
+                expectedDate = moment("2020-12-31T00:00:00.000Z").format("YYYY-MM-DD"),
+                expectedValue = 3;
+
+            api.updateWorkingDayAverage("thingId", "meansOfTransport", 365, holidays, (date, value) => {
+                lastDate = date;
+                lastValue = value;
+            }, "onerror", "onstart", "oncomplete");
+
+            expect(lastDate).to.equal(expectedDate);
+            expect(lastValue).to.equal(expectedValue);
+        });
+    });
+
     describe("TrafficCountApi.updateHighestWorkloadDay", () => {
         it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,

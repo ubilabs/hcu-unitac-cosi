@@ -54,10 +54,6 @@
     "path":"gfiThemes/flaecheninfo",
     "type": "gfiTheme"
   },
-  "reisezeiten": {
-    "path":"gfiThemes/reisezeiten",
-    "type": "gfiTheme"
-  },
   "schulinfo": {
     "path":"gfiThemes/schulinfo",
     "type": "gfiTheme"

@@ -18,6 +18,11 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
                 tageslinie: ""
             }),
             getId: () => "testId"
+        }, () => {
+            // onerror
+        },
+        () => {
+            // callLinkDownload
         });
     });
 
@@ -38,170 +43,207 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
             expect(dummyApi.gurlittMomentsDay).to.be.an("array").and.to.be.empty;
         });
     });
-    describe("correctGurlittYearPattern", () => {
-        it("should only work with strings", () => {
-            expect(dummyApi.correctGurlittYearPattern(undefined)).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern(null)).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern(123)).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern(true)).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern(false)).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern([])).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern({})).to.be.a("string").and.to.be.empty;
+    describe("parseCSVData", () => {
+        it("should return false if the given input is not a string", () => {
+            expect(dummyApi.parseCSVData(undefined)).to.be.false;
+            expect(dummyApi.parseCSVData(null)).to.be.false;
+            expect(dummyApi.parseCSVData(1234)).to.be.false;
+            expect(dummyApi.parseCSVData(true)).to.be.false;
+            expect(dummyApi.parseCSVData(false)).to.be.false;
+            expect(dummyApi.parseCSVData([])).to.be.false;
+            expect(dummyApi.parseCSVData({})).to.be.false;
         });
-        it("should only work on strings with '-' in them, should return input otherwise", () => {
-            expect(dummyApi.correctGurlittYearPattern("")).to.be.a("string").and.to.be.empty;
-            expect(dummyApi.correctGurlittYearPattern("gurlittTime")).to.equal("gurlittTime");
+        it("should return an empty array if an empty string is given", () => {
+            expect(dummyApi.parseCSVData("")).to.deep.equal([]);
         });
-        it("should work with a string that includes '-' no matter what the content is", () => {
-            expect(dummyApi.correctGurlittYearPattern("-")).to.equal("NaN,NaN,undefined");
-        });
-        it("should convert a correct gurlittTime from the wrong pattern into the correct pattern", () => {
-            expect(dummyApi.correctGurlittYearPattern("2021,-53,1234")).to.equal("2020,53,1234");
-            expect(dummyApi.correctGurlittYearPattern("2020,-52,5678")).to.equal("2019,52,5678");
-        });
-    });
-    describe("getMomentEndByMomentStart", () => {
-        it("should return the end of an hour as a moment representation if a gurlittTime day pattern is recognized", () => {
-            const gurlittTime = "18.07.2021,0:00:00,104",
-                momentStart = moment("18.07.2021 00:00:00", "DD.MM.YYYY HH:mm:ss"),
-                momentEnd = dummyApi.getMomentEndByMomentStart(gurlittTime, momentStart);
+        it("should return an array representing the csv data of the given string", () => {
+            const csv = "a,b,c\nd,e,f\r\ng,h,i",
+                expected = [
+                    ["a", "b", "c"],
+                    ["d", "e", "f"],
+                    ["g", "h", "i"]
+                ];
 
-            expect(momentEnd).to.be.an("object");
-            expect(momentEnd.format).to.be.a("function");
-            expect(momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("18.07.2021 00:59:59");
-        });
-        it("should return the end of a day as a moment representation if a gurlittTime week pattern is recognized", () => {
-            const gurlittTime = "28,12.07.2021,8564",
-                momentStart = moment("12.07.2021 00:00:00", "DD.MM.YYYY HH:mm:ss"),
-                momentEnd = dummyApi.getMomentEndByMomentStart(gurlittTime, momentStart);
-
-            expect(momentEnd).to.be.an("object");
-            expect(momentEnd.format).to.be.a("function");
-            expect(momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("12.07.2021 23:59:59");
-        });
-        it("should return the end of a week as a moment representation if a gurlittTime year pattern is recognized", () => {
-            const gurlittTime = "2021,-53,5873",
-                momentStart = moment("28.12.2020 00:00:00", "DD.MM.YYYY HH:mm:ss"),
-                momentEnd = dummyApi.getMomentEndByMomentStart(gurlittTime, momentStart);
-
-            expect(momentEnd).to.be.an("object");
-            expect(momentEnd.format).to.be.a("function");
-            expect(momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("03.01.2021 23:59:59");
+            expect(dummyApi.parseCSVData(csv, ",", 0)).to.deep.equal(expected);
         });
     });
-    describe("getMomentStartByGurlittTime", () => {
-        it("should return a moment representation of a day pattern", () => {
-            const gurlittTime = "18.07.2021,0:00:00,104",
-                momentStart = dummyApi.getMomentStartByGurlittTime(gurlittTime);
-
-            expect(momentStart).to.be.an("object");
-            expect(momentStart.format).to.be.a("function");
-            expect(momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("18.07.2021 00:00:00");
+    describe("createGurlittMomentDataDay", () => {
+        it("should return false if anything but an array is given", () => {
+            expect(dummyApi.createGurlittMomentDataDay(undefined)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataDay(null)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataDay("string")).to.be.false;
+            expect(dummyApi.createGurlittMomentDataDay(1234)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataDay(true)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataDay(false)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataDay({})).to.be.false;
         });
-        it("should return a moment representation of a week pattern", () => {
-            const gurlittTime = "28,12.07.2021,8564",
-                momentStart = dummyApi.getMomentStartByGurlittTime(gurlittTime);
-
-            expect(momentStart).to.be.an("object");
-            expect(momentStart.format).to.be.a("function");
-            expect(momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("12.07.2021 00:00:00");
+        it("should return an empty array if an empty array is given", () => {
+            expect(dummyApi.createGurlittMomentDataDay([])).to.be.an("array").and.to.be.empty;
         });
-        it("should return a moment representation of a year pattern", () => {
-            const gurlittTime = "2021,-53,5873",
-                momentStart = dummyApi.getMomentStartByGurlittTime(gurlittTime);
+        it("should return an array of GurlittMoment for days if parsed csv data is given", () => {
+            const parsedCsvData = [
+                    ["29.08.2021", "22:00", 1],
+                    ["29.08.2021", "23:00", 2],
+                    ["30.08.2021", "00:00", 3],
+                    ["30.08.2021", "01:00", 4],
+                    ["30.08.2021", "02:00", 5]
+                ],
+                result = dummyApi.createGurlittMomentDataDay(parsedCsvData);
 
-            expect(momentStart).to.be.an("object");
-            expect(momentStart.format).to.be.a("function");
-            expect(momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("28.12.2020 00:00:00");
-        });
-    });
-    describe("getResultByGurlittTime", () => {
-        it("should return the result found in a gurlitt time day pattern", () => {
-            const gurlittTime = "18.07.2021,0:00:00,104",
-                result = dummyApi.getResultByGurlittTime(gurlittTime);
-
-            expect(result).to.equal(104);
-        });
-        it("should return the result found in a gurlitt time week pattern", () => {
-            const gurlittTime = "28,12.07.2021,8564",
-                result = dummyApi.getResultByGurlittTime(gurlittTime);
-
-            expect(result).to.equal(8564);
-        });
-        it("should return the result found in a gurlitt time year pattern", () => {
-            const gurlittTime = "2021,-53,5873",
-                result = dummyApi.getResultByGurlittTime(gurlittTime);
-
-            expect(result).to.equal(5873);
+            expect(result).to.be.an("array").and.to.have.lengthOf(5);
+            expect(result[0]).to.be.an("object");
+            expect(result[0].result).to.equal(1);
+            expect(result[0].momentStart instanceof moment).to.be.true;
+            expect(result[0].momentEnd instanceof moment).to.be.true;
+            expect(result[1].result).to.equal(2);
+            expect(result[1].momentStart instanceof moment).to.be.true;
+            expect(result[1].momentEnd instanceof moment).to.be.true;
+            expect(result[2].result).to.equal(3);
+            expect(result[2].momentStart instanceof moment).to.be.true;
+            expect(result[2].momentEnd instanceof moment).to.be.true;
+            expect(result[3].result).to.equal(4);
+            expect(result[3].momentStart instanceof moment).to.be.true;
+            expect(result[3].momentEnd instanceof moment).to.be.true;
+            expect(result[4].result).to.equal(5);
+            expect(result[4].momentStart instanceof moment).to.be.true;
+            expect(result[4].momentEnd instanceof moment).to.be.true;
         });
     });
-    describe("convertGurlittTimeToGurlittMoment", () => {
-        it("should return null if anything but a string is given", () => {
-            expect(dummyApi.convertGurlittTimeToGurlittMoment(undefined)).to.be.null;
-            expect(dummyApi.convertGurlittTimeToGurlittMoment(null)).to.be.null;
-            expect(dummyApi.convertGurlittTimeToGurlittMoment(1234)).to.be.null;
-            expect(dummyApi.convertGurlittTimeToGurlittMoment(true)).to.be.null;
-            expect(dummyApi.convertGurlittTimeToGurlittMoment(false)).to.be.null;
-            expect(dummyApi.convertGurlittTimeToGurlittMoment([])).to.be.null;
-            expect(dummyApi.convertGurlittTimeToGurlittMoment({})).to.be.null;
+    describe("createGurlittMomentDataWeek", () => {
+        it("should return false if anything but an array is given", () => {
+            expect(dummyApi.createGurlittMomentDataWeek(undefined)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataWeek(null)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataWeek("string")).to.be.false;
+            expect(dummyApi.createGurlittMomentDataWeek(1234)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataWeek(true)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataWeek(false)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataWeek({})).to.be.false;
         });
-        it("should convert a Gurlitt time into an object of GurlittMoment", () => {
-            const gurlittTime = "18.07.2021,0:00:00,104",
-                gurlittMoment = dummyApi.convertGurlittTimeToGurlittMoment(gurlittTime);
+        it("should return an empty array if an empty array is given", () => {
+            expect(dummyApi.createGurlittMomentDataWeek([])).to.be.an("array").and.to.be.empty;
+        });
+        it("should return an array of GurlittMoment for weeks if parsed csv data is given", () => {
+            const parsedCsvData = [
+                    ["29.08.2021", "22:00", 1],
+                    ["29.08.2021", "23:00", 2],
+                    ["30.08.2021", "00:00", 3],
+                    ["30.08.2021", "01:00", 4],
+                    ["30.08.2021", "02:00", 5]
+                ],
+                result = dummyApi.createGurlittMomentDataWeek(parsedCsvData);
 
-            expect(gurlittMoment).to.be.an("object");
-
-            expect(gurlittMoment.momentStart).to.be.an("object");
-            expect(gurlittMoment.momentStart.format).to.be.a("function");
-            expect(gurlittMoment.momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("18.07.2021 00:00:00");
-
-            expect(gurlittMoment.momentEnd).to.be.an("object");
-            expect(gurlittMoment.momentEnd.format).to.be.a("function");
-            expect(gurlittMoment.momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("18.07.2021 00:59:59");
-
-            expect(gurlittMoment.result).to.equal(104);
+            expect(result).to.be.an("array").and.to.have.lengthOf(2);
+            expect(result[0]).to.be.an("object");
+            expect(result[0].result).to.equal(3);
+            expect(result[0].momentStart instanceof moment).to.be.true;
+            expect(result[0].momentEnd instanceof moment).to.be.true;
+            expect(result[1].result).to.equal(12);
+            expect(result[1].momentStart instanceof moment).to.be.true;
+            expect(result[1].momentEnd instanceof moment).to.be.true;
         });
     });
-    describe("convertGurlittTimeLineToPhenomeonMoment", () => {
-        it("should return an empty array if anything but a string is given", () => {
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment(undefined)).to.be.an("array").and.to.be.empty;
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment(null)).to.be.an("array").and.to.be.empty;
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment(1234)).to.be.an("array").and.to.be.empty;
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment(true)).to.be.an("array").and.to.be.empty;
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment(false)).to.be.an("array").and.to.be.empty;
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment([])).to.be.an("array").and.to.be.empty;
-            expect(dummyApi.convertGurlittTimeLineToPhenomeonMoment({})).to.be.an("array").and.to.be.empty;
+    describe("createGurlittMomentDataYear", () => {
+        it("should return false if anything but an array is given", () => {
+            expect(dummyApi.createGurlittMomentDataYear(undefined)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataYear(null)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataYear("string")).to.be.false;
+            expect(dummyApi.createGurlittMomentDataYear(1234)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataYear(true)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataYear(false)).to.be.false;
+            expect(dummyApi.createGurlittMomentDataYear({})).to.be.false;
         });
-        it("should return an array of GurlitMoment for a piped string of Gurlitt times", () => {
-            const gurlittTimeLine = "18.07.2021,0:00:00,104|28,12.07.2021,8564|2021,-53,5873",
-                gurlittMoments = dummyApi.convertGurlittTimeLineToPhenomeonMoment(gurlittTimeLine);
-
-            expect(gurlittMoments).to.be.an("array").and.to.have.lengthOf(3);
-
-            expect(gurlittMoments[0]).to.be.an("object");
-            expect(gurlittMoments[0].momentEnd).to.be.an("object");
-            expect(gurlittMoments[0].momentEnd.format).to.be.a("function");
-            expect(gurlittMoments[0].momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("18.07.2021 00:59:59");
-            expect(gurlittMoments[0].momentStart).to.be.an("object");
-            expect(gurlittMoments[0].momentStart.format).to.be.a("function");
-            expect(gurlittMoments[0].momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("18.07.2021 00:00:00");
-            expect(gurlittMoments[0].result).to.equal(104);
-
-            expect(gurlittMoments[1].momentEnd).to.be.an("object");
-            expect(gurlittMoments[1].momentEnd.format).to.be.a("function");
-            expect(gurlittMoments[1].momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("12.07.2021 23:59:59");
-            expect(gurlittMoments[1].momentStart).to.be.an("object");
-            expect(gurlittMoments[1].momentStart.format).to.be.a("function");
-            expect(gurlittMoments[1].momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("12.07.2021 00:00:00");
-            expect(gurlittMoments[1].result).to.equal(8564);
-
-            expect(gurlittMoments[2].momentEnd).to.be.an("object");
-            expect(gurlittMoments[2].momentEnd.format).to.be.a("function");
-            expect(gurlittMoments[2].momentEnd.format("DD.MM.YYYY HH:mm:ss")).to.equal("03.01.2021 23:59:59");
-            expect(gurlittMoments[2].momentStart).to.be.an("object");
-            expect(gurlittMoments[2].momentStart.format).to.be.a("function");
-            expect(gurlittMoments[2].momentStart.format("DD.MM.YYYY HH:mm:ss")).to.equal("28.12.2020 00:00:00");
-            expect(gurlittMoments[2].result).to.equal(5873);
+        it("should return an empty array if an empty array is given", () => {
+            expect(dummyApi.createGurlittMomentDataYear([])).to.be.an("array").and.to.be.empty;
         });
+        it("should return an array of GurlittMoment for years if parsed csv data is given", () => {
+            const parsedCsvData = [
+                    ["29.08.2021", "22:00", 1],
+                    ["29.08.2021", "23:00", 2],
+                    ["30.08.2021", "00:00", 3],
+                    ["30.08.2021", "01:00", 4],
+                    ["30.08.2021", "02:00", 5]
+                ],
+                result = dummyApi.createGurlittMomentDataYear(parsedCsvData);
+
+            expect(result).to.be.an("array").and.to.have.lengthOf(2);
+            expect(result[0]).to.be.an("object");
+            expect(result[0].result).to.equal(3);
+            expect(result[0].momentStart instanceof moment).to.be.true;
+            expect(result[0].momentEnd instanceof moment).to.be.true;
+            expect(result[1].result).to.equal(12);
+            expect(result[1].momentStart instanceof moment).to.be.true;
+            expect(result[1].momentEnd instanceof moment).to.be.true;
+        });
+    });
+    describe("waitingListForCallLinkDownload", () => {
+        it("should set a handler for updateDataset if csv data is not loaded yet", () => {
+            const api = new DauerzaehlstellenRadApi({
+                getProperties: () => false,
+                getId: () => false
+            }, () => {
+                // onerror
+            }, () => {
+                // callLinkDownload
+            });
+            let onstartCalled = false;
+
+            api.updateDataset("thingId", "meansOfTransport", "timeSettings", "onupdate", "onerror", () => {
+                onstartCalled = true;
+            }, "oncomplete");
+
+            expect(onstartCalled).to.be.false;
+            expect(api.waitingListForCallLinkDownload).to.be.an("array").and.to.have.lengthOf(1);
+        });
+    });
+    describe("updateWorkingDayAverage", () => {
+        const api = new DauerzaehlstellenRadApi({
+                getProperties: () => false,
+                getId: () => false
+            }, () => {
+                // onerror
+            }, () => {
+                // callLinkDownload
+            }),
+            holidays = ["newYearsDay"],
+            expectedDate = "2020-12-31",
+            expectedResult = 15;
+        let lastResult = false,
+            lastDate = false;
+
+        api.gurlittMomentsWeek = [
+            {
+                "result": 14,
+                "momentStart": moment("2020-12-30T23:00:00.000Z"),
+                "momentEnd": moment("2020-12-31T23:00:00.000Z")
+            },
+            {
+                "result": 1,
+                "momentStart": moment("2020-12-31T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-01T23:00:00.000Z")
+            },
+            {
+                "result": 2,
+                "momentStart": moment("2021-01-01T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-02T23:00:00.000Z")
+            },
+            {
+                "result": 3,
+                "momentStart": moment("2021-01-02T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-03T23:00:00.000Z")
+            },
+            {
+                "result": 16,
+                "momentStart": moment("2021-01-03T23:00:00.000Z"),
+                "momentEnd": moment("2021-01-04T23:00:00.000Z")
+            }
+        ];
+
+        api.updateWorkingDayAverage("thingId", "meansOfTransport", 365, holidays, (date, result) => {
+            lastDate = date;
+            lastResult = result;
+        }, "onerror", "onstart", "oncomplete");
+
+        expect(lastResult).to.equal(expectedResult);
+        expect(lastDate).to.equal(expectedDate);
     });
 });

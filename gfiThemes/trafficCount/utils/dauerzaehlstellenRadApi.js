@@ -1,4 +1,6 @@
 import moment from "moment";
+import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 
 /**
  * the internal format for Gurlitt time is called GurlittMoment
@@ -22,22 +24,45 @@ export class DauerzaehlstellenRadApi {
      * constructor of DauerzaehlstellenRadApi
      * @param {Object} feature the feature to use
      * @param {Function} [onerror] the fucntion to call in case of an error
+     * @param {Function} [callLinkDownload] the function to call the csv file with
      * @constructor
      * @returns {void}
      */
-    constructor (feature, onerror) {
+    constructor (feature, onerror, callLinkDownload) {
+        const link_download = feature.getProperties().link_download,
+            link_download_ssl = convertHttpLinkToSSL(link_download);
+
+        this.waitingListForCallLinkDownload = [];
+
         this.feature = feature;
+        this.offsetOfCsvDataYear = -88000;
+        this.offsetOfCsvDataWeek = -8800;
+        this.offsetOfCsvDataDay = -192;
         this.gurlittMomentsYear = [];
         this.gurlittMomentsWeek = [];
         this.gurlittMomentsDay = [];
 
-        if (this.featureExists()) {
-            this.gurlittMomentsYear = this.convertGurlittTimeLineToPhenomeonMoment(feature.getProperties().jahrgangslinie);
-            this.gurlittMomentsWeek = this.convertGurlittTimeLineToPhenomeonMoment(feature.getProperties().wochenlinie);
-            this.gurlittMomentsDay = this.convertGurlittTimeLineToPhenomeonMoment(feature.getProperties().tageslinie);
+        if (this.featureExists() && typeof callLinkDownload === "function") {
+            callLinkDownload(link_download_ssl, data => {
+                const gurlittCsvData = this.parseCSVData(data, ";");
+
+                this.gurlittMomentsDay = this.createGurlittMomentDataDay(gurlittCsvData);
+                this.gurlittMomentsWeek = this.createGurlittMomentDataWeek(gurlittCsvData);
+                this.gurlittMomentsYear = this.createGurlittMomentDataYear(gurlittCsvData);
+
+                while (this.waitingListForCallLinkDownload.length) {
+                    const handler = this.waitingListForCallLinkDownload.shift();
+
+                    if (typeof handler === "function") {
+                        handler();
+                    }
+                }
+            }, error => {
+                console.warn("error", error);
+            });
         }
         else if (typeof onerror === "function") {
-            onerror("DauerzaehlstellenRadApi.constructor: the feature to use has an unexpected structure", this.feature);
+            onerror("DauerzaehlstellenRadApi.constructor: the feature to use has an unexpected structure or the callLinkDownload function is missing", this.feature);
         }
     }
 
@@ -273,6 +298,59 @@ export class DauerzaehlstellenRadApi {
             oncomplete();
         }
     }
+    /**
+     * gets the average of working days, excludes saturday, sunday and the given holidays
+     * @param {Integer} thingId the ID of the thing
+     * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
+     * @param {String} days the days from now to load the average from
+     * @param {Object[]} holidays the holidays to exclude from the calculation
+     * @param {Function} onupdate as event function(date, value)
+     * @param {Function} [onerror] as function(error) to fire on error
+     * @param {Function} [onstart] as function() to fire before any async action has started
+     * @param {Function} [oncomplete] as function() to fire after every async action no matter what
+     * @returns {void}
+     */
+    updateWorkingDayAverage (thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete) {
+        if (!this.gurlittMomentsYear.length && !this.gurlittMomentsWeek.length && !this.gurlittMomentsDay.length) {
+            this.waitingListForCallLinkDownload.push(() => {
+                this.updateWorkingDayAverage(thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete);
+            });
+            return;
+        }
+
+        const gurlittMoments = this.gurlittMomentsWeek.slice(Math.abs(days) * -1);
+        let value = 0,
+            workDayCount = 0,
+            firstMoment = null;
+
+        if (typeof onstart === "function") {
+            onstart();
+        }
+        gurlittMoments.forEach(gurlittMoment => {
+            if (typeof gurlittMoment !== "object" || gurlittMoment === null || !(gurlittMoment.momentStart instanceof moment)) {
+                return;
+            }
+            const holiday = getPublicHoliday(gurlittMoment.momentStart, holidays),
+                dayOfWeek = gurlittMoment.momentStart.isoWeekday();
+
+            if (firstMoment === null) {
+                firstMoment = gurlittMoment.momentStart;
+            }
+            if (holiday || dayOfWeek === 6 || dayOfWeek === 7) {
+                return;
+            }
+
+            value += typeof gurlittMoment?.result === "number" ? gurlittMoment.result : 0;
+            workDayCount++;
+        });
+
+        if (typeof onupdate === "function") {
+            onupdate(firstMoment ? firstMoment.format("YYYY-MM-DD") : "", workDayCount !== 0 ? Math.round(value / workDayCount) : 0);
+        }
+        if (typeof oncomplete === "function") {
+            oncomplete();
+        }
+    }
 
     /**
      * gets the strongest day in the given year excluding today
@@ -421,6 +499,13 @@ export class DauerzaehlstellenRadApi {
         const result = [],
             timeSettingsList = Array.isArray(timeSettings) ? timeSettings : [timeSettings];
 
+        if (!this.gurlittMomentsYear.length && !this.gurlittMomentsWeek.length && !this.gurlittMomentsDay.length) {
+            this.waitingListForCallLinkDownload.push(() => {
+                this.updateDataset(thingId, meansOfTransport, timeSettings, onupdate, onerror, onstart, oncomplete);
+            });
+            return;
+        }
+
         if (typeof onstart === "function") {
             onstart();
         }
@@ -494,6 +579,13 @@ export class DauerzaehlstellenRadApi {
      * @returns {void}
      */
     subscribeLastUpdate (thingId, meansOfTransport, onupdate, onerror, onstart, oncomplete) {
+        if (!this.gurlittMomentsYear.length && !this.gurlittMomentsWeek.length && !this.gurlittMomentsDay.length) {
+            this.waitingListForCallLinkDownload.push(() => {
+                this.subscribeLastUpdate(thingId, meansOfTransport, onupdate, onerror, onstart, oncomplete);
+            });
+            return;
+        }
+
         if (typeof onstart === "function") {
             onstart();
         }
@@ -613,7 +705,7 @@ export class DauerzaehlstellenRadApi {
     }
 
     /**
-     * gets the first date on a weekly basis ever recorded without subscription
+     * gets the first date ever
      * @param {Integer} thingId the ID of the thing
      * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
      * @param {Function} onsuccess as event function(firstDate) fires once
@@ -623,131 +715,179 @@ export class DauerzaehlstellenRadApi {
      * @returns {void}
      */
     getFirstDateEver (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
-        this.updateTotal(thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete);
+        if (!this.gurlittMomentsYear.length && !this.gurlittMomentsWeek.length && !this.gurlittMomentsDay.length) {
+            this.waitingListForCallLinkDownload.push(() => {
+                this.getFirstDateEver(thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete);
+            });
+            return;
+        }
+
+        if (
+            !Array.isArray(this.gurlittMomentsYear) || !this.gurlittMomentsYear.length
+            || !(this.gurlittMomentsYear[0].momentStart instanceof moment)
+        ) {
+            if (typeof onerror === "function") {
+                onerror("DauerzaehlstellenRadApi.getFirstDateEver: no first date found in gurlittMomentsYear", this.gurlittMomentsYear);
+            }
+        }
+        else if (typeof onsuccess === "function") {
+            onsuccess(this.gurlittMomentsYear[0].momentStart.format("YYYY-MM-DDTHH:mm:ss.SSSZ"));
+        }
     }
 
     /* private */
+
+
     /**
-     * converts a piped string from Gurlitt data into an array of GurlittMoment
-     * @param {String} gurlittTimeLine the Gurlitt time line as piped string of Gurlitt time
-     * @returns {GurlittMoment[]} an array of GurlittMoment
+     * parse the given csv data
+     * @param {String} data the csv string which should be parsed
+     * @param {String} [delim=";"] the delimitor for csv cells
+     * @param {Number} [ignoreRows=2] rows to ignore at the top of the file
+     * @returns {Array[]} returns a two dimensional array which represents the csv data
      */
-    convertGurlittTimeLineToPhenomeonMoment (gurlittTimeLine) {
-        if (typeof gurlittTimeLine !== "string") {
-            return [];
+    parseCSVData (data, delim = ";", ignoreRows = 2) {
+        if (typeof data !== "string") {
+            return false;
         }
-        const parts = gurlittTimeLine.split("|"),
+        const lines = data.replace(/\r/g, "").split("\n"),
             result = [];
 
-        parts.forEach(gurlittTime => {
-            if (gurlittTime) {
-                result.push(this.convertGurlittTimeToGurlittMoment(gurlittTime));
+        lines.forEach((line, rowNr) => {
+            if (rowNr < ignoreRows) {
+                return;
             }
+            const lineValues = line.split(delim);
+
+            result.push(lineValues);
         });
         return result;
     }
 
     /**
-     * converts the data format of a Gurlitt time term into a GurlittMoment
-     * @param {String} gurlittTime the Gurlitt time
-     * @returns {GurlittMoment} the representation of a GurlittMoment
+     * creates the data for the day with the given parsed csv data
+     * @param {Array[]} parsedCsvData the csv data as two dimensional array
+     * @returns {GurlittMoment[]|Boolean} the results as array of GurlittMomment or false on error
      */
-    convertGurlittTimeToGurlittMoment (gurlittTime) {
-        if (typeof gurlittTime !== "string") {
-            return null;
+    createGurlittMomentDataDay (parsedCsvData) {
+        if (!Array.isArray(parsedCsvData)) {
+            return false;
         }
-        const momentStart = this.getMomentStartByGurlittTime(gurlittTime),
-            momentEnd = this.getMomentEndByMomentStart(gurlittTime, momentStart);
+        const gurlittMoments = [];
 
-        return {
-            result: this.getResultByGurlittTime(gurlittTime),
-            momentStart,
-            momentEnd
-        };
+        parsedCsvData.slice(this.offsetOfCsvDataDay).forEach(line => {
+            if (!Array.isArray(line) || line.length < 3) {
+                return;
+            }
+            const date = line[0],
+                time = line[1].substr(0, 5),
+                datetime = date + time,
+                momentStart = moment(datetime, "DD.MM.YYYYHH:mm");
+
+            gurlittMoments.push({
+                result: parseInt(line[2], 10),
+                momentStart,
+                momentEnd: moment(momentStart).add(1, "hours")
+            });
+        });
+
+        return gurlittMoments;
     }
 
     /**
-     * parses the given gurlittTime string and returns the found result
-     * @param {String} gurlittTime the Gurlitt time
-     * @returns {Number} the result als Number
+     * creates the data for the week with the given parsed csv data
+     * @param {Array[]} parsedCsvData the csv data as two dimensional array
+     * @returns {GurlittMoment[]|Boolean} the results as array of GurlittMomment or false on error
      */
-    getResultByGurlittTime (gurlittTime) {
-        const indicator = gurlittTime.substr(0, 3),
-            correctedGurlittTime = this.correctGurlittYearPattern(gurlittTime);
+    createGurlittMomentDataWeek (parsedCsvData) {
+        if (!Array.isArray(parsedCsvData)) {
+            return false;
+        }
+        const gurlittMoments = [],
+            slicedCsvData = parsedCsvData.slice(this.offsetOfCsvDataWeek);
+        let result = 0;
 
-        if (indicator.indexOf(".") !== -1) {
-            // e.g. day "18.07.2021,0:00:00,104"
-            return parseInt(gurlittTime.substr(gurlittTime.lastIndexOf(",") + 1), 10);
-        }
-        else if (indicator.indexOf(",") !== -1) {
-            // e.g. week "28,12.07.2021,8564"
-            return parseInt(gurlittTime.substr(gurlittTime.lastIndexOf(",") + 1), 10);
-        }
-        // e.g. year "2021,-53,5873"
-        return parseInt(correctedGurlittTime.substr(correctedGurlittTime.lastIndexOf(",") + 1), 10);
+        slicedCsvData.forEach((line, idx) => {
+            if (!Array.isArray(line) || line.length < 3) {
+                return;
+            }
+            const nextLine = slicedCsvData[idx + 1],
+                dayOfNextLine = nextLine ? nextLine[0] : false,
+                currentDay = line[0];
+
+            result += parseInt(line[2], 10);
+
+            if (currentDay !== dayOfNextLine) {
+                const momentStart = moment(currentDay + "00:00", "DD.MM.YYYYHH:mm");
+
+                gurlittMoments.push({
+                    result,
+                    momentStart,
+                    momentEnd: moment(momentStart).add(1, "days")
+                });
+                result = 0;
+            }
+        });
+
+        return gurlittMoments;
     }
 
     /**
-     * parses the given gurlittTime string and returns the start date as moment representation
-     * @param {String} gurlittTime the Gurlitt time
-     * @returns {Function} the moment representation to work with
+     * creates the data of the year with the given parsed csv data
+     * @param {Array[]} parsedCsvData the csv data as two dimensional array
+     * @returns {GurlittMoment[]|Boolean} the results as array of GurlittMomment or false on error
      */
-    getMomentStartByGurlittTime (gurlittTime) {
-        const indicator = gurlittTime.substr(0, 3),
-            correctedGurlittTime = this.correctGurlittYearPattern(gurlittTime);
+    createGurlittMomentDataYear (parsedCsvData) {
+        if (!Array.isArray(parsedCsvData)) {
+            return false;
+        }
+        const gurlittMoments = [],
+            daysAssoc = {};
+        let result = 0,
+            currentCalendarWeek = false,
+            calendarWeekOfNextDay = false,
+            daysAssocEntries = [];
 
-        if (indicator.indexOf(".") !== -1) {
-            // e.g. day "18.07.2021,0:00:00,104"
-            return moment(gurlittTime.substr(0, gurlittTime.lastIndexOf(",")), "DD.MM.YYYY,HH:mm:ss");
-        }
-        else if (indicator.indexOf(",") !== -1) {
-            // e.g. week "28,12.07.2021,8564"
-            return moment(gurlittTime.substr(gurlittTime.indexOf(",") + 1, gurlittTime.lastIndexOf(",")), "DD.MM.YYYY");
-        }
-        // e.g. year "2021,-53,5873"
-        return moment(correctedGurlittTime.substr(0, correctedGurlittTime.lastIndexOf(",")), "YYYY,W").startOf("isoWeek");
-    }
+        parsedCsvData.slice(this.offsetOfCsvDataYear).forEach(line => {
+            if (!Array.isArray(line) || line.length < 3) {
+                return;
+            }
+            const key = line[0];
 
-    /**
-     * parses the given gurlittTime string and uses the given moment representation to return the end date as moment representation
-     * @param {String} gurlittTime the Gurlitt time
-     * @param {Function} momentStart the moment representation of the start date
-     * @returns {Function} the moment representation to work with
-     */
-    getMomentEndByMomentStart (gurlittTime, momentStart) {
-        const indicator = gurlittTime.substr(0, 3);
+            if (!Object.prototype.hasOwnProperty.call(daysAssoc, key)) {
+                daysAssoc[key] = 0;
+            }
+            daysAssoc[key] += parseInt(line[2], 10);
+        });
 
-        if (indicator.indexOf(".") !== -1) {
-            // e.g. day "18.07.2021,0:00:00,104"
-            return moment(momentStart).add(1, "hours").subtract(1, "seconds");
-        }
-        else if (indicator.indexOf(",") !== -1) {
-            // e.g. week "28,12.07.2021,8564"
-            return moment(momentStart).add(1, "days").subtract(1, "seconds");
-        }
-        // e.g. year "2021,-53,5873"
-        return moment(momentStart).endOf("week");
-    }
+        daysAssocEntries = Object.entries(daysAssoc);
+        daysAssocEntries.forEach((dataset, idx) => {
+            const currentDay = dataset[0],
+                value = dataset[1],
+                nextLine = daysAssocEntries[idx + 1],
+                nextDay = Array.isArray(nextLine) ? nextLine[0] : false;
 
-    /**
-     * corrects the Gurlitt data year pattern "YYYY,-W,R" into "YYYY-1,W,R"
-     * the weeknumber can be negative. In this case we assume that a calendar week of the previous year is ment.
-     * e.g. "2021,-53,..." -> means: KW53 of 2020
-     * @param {String} gurlittTime the Gurlitt time
-     * @returns {String} the corrected gurlittTime
-     */
-    correctGurlittYearPattern (gurlittTime) {
-        if (typeof gurlittTime !== "string") {
-            return "";
-        }
-        else if (gurlittTime.indexOf("-") === -1) {
-            // nothing to do
-            return gurlittTime;
-        }
-        const parts = gurlittTime.split(","),
-            year = parseInt(parts[0], 10) - 1,
-            weeknumber = Math.abs(parseInt(parts[1], 10));
+            if (currentCalendarWeek === false) {
+                currentCalendarWeek = moment(currentDay, "DD.MM.YYYY").format("WW");
+            }
+            else {
+                currentCalendarWeek = calendarWeekOfNextDay;
+            }
+            calendarWeekOfNextDay = nextDay ? moment(nextDay, "DD.MM.YYYY").format("WW") : false;
 
-        return String(year) + "," + String(weeknumber) + "," + parts[2];
+            result += parseInt(value, 10);
+
+            if (currentCalendarWeek !== calendarWeekOfNextDay) {
+                const momentStart = moment(currentDay, "DD.MM.YYYY").startOf("isoWeek");
+
+                gurlittMoments.push({
+                    result,
+                    momentStart,
+                    momentEnd: moment(momentStart).endOf("isoWeek")
+                });
+                result = 0;
+            }
+        });
+
+        return gurlittMoments;
     }
 }

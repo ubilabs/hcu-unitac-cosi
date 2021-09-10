@@ -1,8 +1,7 @@
-import ParametricURL from "../../modules/core/parametricURL";
 import {extractEventCoordinates} from "../../src/utils/extractEventCoordinates";
 import store from "../../src/app-store";
 
-const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.prototype */{
+const OktagonURLParameter = Backbone.Model.extend(/** @lends OktagonURLParameter.prototype */{
     defaults: {
         rueckURL: "",
         zoomLevel: 9
@@ -10,7 +9,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
     /**
      * @class OktagonURLParameter
      * @description Processes parameters that are specified via the URL.
-     * @extends ParametricURL
+     * @extends Backbone.Model
      * @memberOf Addons.OktagonKartenportal
      * @property {String} rueckURL Parameter for the submit url.
      * @property {String} zoomLevel Parameter for the zoomlevel.
@@ -111,7 +110,7 @@ const OktagonURLParameter = ParametricURL.extend(/** @lends OktagonURLParameter.
         if (Object.prototype.hasOwnProperty.call(Config, "zoomToGeometry") && Config.zoomToGeometry?.geometries) {
             geometries = Config.zoomToGeometry.geometries;
 
-            if (geometries.includes(districtFromUrl.toUpperCase())) {
+            if (districtFromUrl && geometries.includes(districtFromUrl.toUpperCase())) {
                 districtNameToZoom = districtFromUrl.toUpperCase();
             }
         }

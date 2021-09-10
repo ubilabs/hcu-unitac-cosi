@@ -14,6 +14,7 @@
                         "sinceBeginningOfTheYear": "Seit Jahresbeginn",
                         "overThePastYear": "Im Vorjahr",
                         "onThePreviousDay": "Am Vortag",
+                        "workingDayAverage": "Mittlerer Werktag seit",
                         "highestDay": "Stärkster Tag im Jahr",
                         "highestWeek": "Stärkste Woche im Jahr",
                         "highestMonth": "Stärkster Monat im Jahr",
@@ -36,14 +37,19 @@
                         "meansOfTransportLabel": "Verkehrsmittel: ",
                         "directionLabel": "Richtung:",
                         "directionBoth": "beide",
-                        "carsHeaderSuffix": "KFZ abs.",
-                        "trucksHeaderSuffix": "SV-Anzahl **",
+                        "carsHeaderSuffix": "Anzahl KFZ",
+                        "trucksHeaderSuffix": "Anzahl SV **",
                         "yAxisTextDay": "Anzahl / {{minutes}} Min.",
                         "yAxisTextWeek": "Anzahl / Tag",
                         "yAxisTextYear": "Anzahl / Woche",
                         "reset": "zurücksetzen",
                         "holidaySign": "Feiertagseinfluss",
-                        "trucksStatus": "** SV-Anzahl (Beta-Status)"
+                        "trucksStatus": "** SV-Anzahl (Beta-Status)",
+                        "error": {
+                            "dataNotAvailableA": "(nicht",
+                            "dataNotAvailableB": "empfangen)",
+                            "apiFunction": "Der Wert für \"{{category}}\" wurde wegen eines API-Fehlers nicht empfangen."
+                        }
                     }
                 }
             }

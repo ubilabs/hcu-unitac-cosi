@@ -2,8 +2,8 @@
     "modules": {
         "tools": {
             "verkehrsfunctions": {
-                "number": "Number",
-                "carsHeaderSuffix": "The count of cars",
+                "bicycleHeaderSuffix": "Number of bicycles",
+                "carsHeaderSuffix": "Number of cars",
                 "trucksHeaderSuffix": "Trucks proportion in %"
             }
         }

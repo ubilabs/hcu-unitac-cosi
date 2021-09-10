@@ -168,6 +168,36 @@ export class TrafficCountCache {
      * gets the strongest day in the given year excluding today
      * @param {Integer} thingId the ID of the thing
      * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
+     * @param {String} days the days from now to load the average from
+     * @param {Object[]} holidays the holidays to exclude from the calculation
+     * @param {Function} onupdate as event function(date, value)
+     * @param {Function} [onerror] as function(error) to fire on error
+     * @param {Function} [onstart] as function() to fire before any async action has started
+     * @param {Function} [oncomplete] as function() to fire after every async action no matter what
+     * @param {Object} [mocks=null] as object to give mocks into the function
+     * @param {Function} [mocks.simpleCacheCallOpt=null] using this function instead of inner simpleCacheCall (for testing)
+     * @param {TrafficCountApi} [mocks.trafficCountApiOpt=null] the api to use (for testing)
+     * @returns {void}
+     */
+    updateWorkingDayAverage (thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete, mocks = null) {
+        const key = "updateWorkingDayAverage" + thingId + meansOfTransport + days,
+            simpleCacheCallOpt = typeof mocks === "object" && mocks !== null ? mocks.simpleCacheCallOpt : null,
+            trafficCountApiOpt = typeof mocks === "object" && mocks !== null ? mocks.trafficCountApiOpt : null;
+
+        (simpleCacheCallOpt || this.simpleCacheCall).bind(this)(key, (callback) => {
+            (trafficCountApiOpt || this.api).updateWorkingDayAverage(thingId, meansOfTransport, days, holidays, (...args) => {
+                if (typeof callback === "function") {
+                    return callback(...args);
+                }
+                return null;
+            }, onerror);
+        }, onupdate, onupdate, onstart, oncomplete);
+    }
+
+    /**
+     * gets the strongest day in the given year excluding today
+     * @param {Integer} thingId the ID of the thing
+     * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
      * @param {String} year the year as String in format YYYY
      * @param {Function} onupdate as event function(date, value)
      * @param {Function} [onerror] as function(error) to fire on error

@@ -16,10 +16,15 @@ export default {
         meansOfTransport: {
             type: String,
             required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
         }
     },
     data () {
         return {
+            rangeOfWorkingDayAverage: 365,
             totalDesc: "",
             totalValue: "",
             thisYearDesc: "",
@@ -28,6 +33,8 @@ export default {
             lastYearValue: "",
             lastDayDesc: "",
             lastDayValue: "",
+            workingDayAverageDesc: "",
+            workingDayAverageValue: "",
             highestWorkloadDayDesc: "",
             highestWorkloadDayValue: "",
             highestWorkloadWeekDesc: "",
@@ -59,6 +66,10 @@ export default {
 
         onThePreviousDay: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.onThePreviousDay");
+        },
+
+        workingDayAverage: function () {
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.workingDayAverage");
         },
 
         highestDay: function () {
@@ -107,105 +118,94 @@ export default {
          * @param {String} thingId the thingId to be send to any api call
          * @param {String} meansOfTransport the meansOfTransport to be send with any api call
          * @fires   Alerting#RadioTriggerAlertAlert
-         * @returns {Void}  -
+         * @returns {void}
          */
         setupTabInfo: function (api, thingId, meansOfTransport) {
             api.updateTotal(thingId, meansOfTransport, (date, value) => {
                 this.setTotalDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setTotalValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setTotalDesc("(nicht");
-                this.setTotalValue("empfangen)");
+                this.setTotalDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setTotalValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update total is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"insgesamt seit\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.totalSince}));
             });
 
             api.updateYear(thingId, meansOfTransport, moment().format("YYYY"), (year, value) => {
                 this.setThisYearDesc(typeof year === "string" ? "01.01." + year : "");
                 this.setThisYearValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setThisYearDesc("(nicht");
-                this.setThisYearValue("empfangen)");
+                this.setThisYearDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setThisYearValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update year is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"seit Jahresbeginn\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.sinceBeginningOfTheYear}));
             });
 
             api.updateYear(thingId, meansOfTransport, moment().subtract(1, "year").format("YYYY"), (year, value) => {
                 this.setLastYearDesc(typeof year === "string" ? year : "");
                 this.setLastYearValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setLastYearDesc("(nicht");
-                this.setLastYearValue("empfangen)");
+                this.setLastYearDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setLastYearValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update last year is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"im Vorjahr\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.overThePastYear}));
             });
 
             api.updateDay(thingId, meansOfTransport, moment().subtract(1, "day").format("YYYY-MM-DD"), (date, value) => {
                 this.setLastDayDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setLastDayValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setLastDayDesc("(nicht");
-                this.setLastDayValue("empfangen)");
+                this.setLastDayDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setLastDayValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update last day is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"am Vortag\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.onThePreviousDay}));
+            });
+
+            api.updateWorkingDayAverage(thingId, meansOfTransport, this.rangeOfWorkingDayAverage, this.holidays, (date, value) => {
+                this.setWorkingDayAverageDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
+                this.setWorkingDayAverageValue(thousandsSeparator(value));
+            }, errormsg => {
+                this.setWorkingDayAverageDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setWorkingDayAverageValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
+                console.warn("The last update Working day average is incomplete:", errormsg);
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.workingDayAverage}));
             });
 
             api.updateHighestWorkloadDay(thingId, meansOfTransport, moment().format("YYYY"), (date, value) => {
                 this.setHighestWorkloadDayDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setHighestWorkloadDayValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setHighestWorkloadDayDesc("(nicht");
-                this.setHighestWorkloadDayValue("empfangen)");
+                this.setHighestWorkloadDayDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setHighestWorkloadDayValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update HighestWorkloadDay is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"Stärkster Tag im Jahr\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.highestDay}));
             });
 
             api.updateHighestWorkloadWeek(thingId, meansOfTransport, moment().format("YYYY"), (calendarWeek, value) => {
                 this.setHighestWorkloadWeekDesc(!isNaN(calendarWeek) || typeof calendarWeek === "string" ? this.calendarweek + " " + calendarWeek : "");
                 this.setHighestWorkloadWeekValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setHighestWorkloadWeekDesc("(nicht");
-                this.setHighestWorkloadWeekValue("empfangen)");
+                this.setHighestWorkloadWeekDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setHighestWorkloadWeekValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update HighestWorkloadWeek is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"Stärkste Woche im Jahr\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.highestWeek}));
             });
 
             api.updateHighestWorkloadMonth(thingId, meansOfTransport, moment().format("YYYY"), (month, value) => {
                 this.setHighestWorkloadMonthDesc(typeof month === "string" ? month : "");
                 this.setHighestWorkloadMonthValue(thousandsSeparator(value));
             }, errormsg => {
-                this.setHighestWorkloadMonthDesc("(nicht");
-                this.setHighestWorkloadMonthValue("empfangen)");
+                this.setHighestWorkloadMonthDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
+                this.setHighestWorkloadMonthValue(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableB"));
                 console.warn("The last update HighestWorkloadMonth is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Der Wert für \"Stärkster Monat im Jahr\" wurde wegen eines API-Fehlers nicht empfangen.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.highestMonth}));
             });
         },
 
         /**
          * setter for the description of total
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setTotalDesc: function (value) {
             this.totalDesc = value;
@@ -214,7 +214,7 @@ export default {
         /**
          * setter for the value of total
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setTotalValue: function (value) {
             this.totalValue = value;
@@ -223,7 +223,7 @@ export default {
         /**
          * setter for the description of thisYearDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setThisYearDesc: function (value) {
             this.thisYearDesc = value;
@@ -232,7 +232,7 @@ export default {
         /**
          * setter for the value of thisYearValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setThisYearValue: function (value) {
             this.thisYearValue = value;
@@ -241,7 +241,7 @@ export default {
         /**
          * setter for the description of lastYearDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastYearDesc: function (value) {
             this.lastYearDesc = value;
@@ -250,7 +250,7 @@ export default {
         /**
          * setter for the value of lastYearValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastYearValue: function (value) {
             this.lastYearValue = value;
@@ -259,7 +259,7 @@ export default {
         /**
          * setter for the description of lastDayDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastDayDesc: function (value) {
             this.lastDayDesc = value;
@@ -268,16 +268,34 @@ export default {
         /**
          * setter for the value of lastDayValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastDayValue: function (value) {
             this.lastDayValue = value;
         },
 
         /**
+         * setter for the description of WorkingDayAverageDesc
+         * @param {String} value the description
+         * @returns {void}
+         */
+        setWorkingDayAverageDesc: function (value) {
+            this.workingDayAverageDesc = value;
+        },
+
+        /**
+         * setter for the value of WorkingDayAverageValue
+         * @param {String} value the value
+         * @returns {void}
+         */
+        setWorkingDayAverageValue: function (value) {
+            this.workingDayAverageValue = value;
+        },
+
+        /**
          * setter for the description of highestWorkloadDayDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadDayDesc: function (value) {
             this.highestWorkloadDayDesc = value;
@@ -286,7 +304,7 @@ export default {
         /**
          * setter for the value of highestWorkloadDayValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadDayValue: function (value) {
             this.highestWorkloadDayValue = value;
@@ -295,7 +313,7 @@ export default {
         /**
          * setter for the description of highestWorkloadWeekDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadWeekDesc: function (value) {
             this.highestWorkloadWeekDesc = value;
@@ -304,7 +322,7 @@ export default {
         /**
          * setter for the value of highestWorkloadWeekValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadWeekValue: function (value) {
             this.highestWorkloadWeekValue = value;
@@ -313,7 +331,7 @@ export default {
         /**
          * setter for the description of highestWorkloadMonthDesc
          * @param {String} value the description
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadMonthDesc: function (value) {
             this.highestWorkloadMonthDesc = value;
@@ -322,7 +340,7 @@ export default {
         /**
          * setter for the value of highestWorkloadMonthValue
          * @param {String} value the value
-         * @returns {Void}  -
+         * @returns {void}
          */
         setHighestWorkloadMonthValue: function (value) {
             this.highestWorkloadMonthValue = value;
@@ -395,6 +413,17 @@ export default {
                         </td>
                         <td>
                             {{ lastDayValue }}
+                        </td>
+                    </tr>
+                    <tr colspan="3">
+                        <td class="bold">
+                            {{ workingDayAverage }}
+                        </td>
+                        <td>
+                            {{ workingDayAverageDesc }}
+                        </td>
+                        <td>
+                            {{ workingDayAverageValue }}
                         </td>
                     </tr>
                     <tr colspan="3">
