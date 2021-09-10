@@ -95,6 +95,9 @@ export default {
 
         validateNewScenario () {
             this.$refs["new-scenario-form"].validate();
+            if (this.$refs["new-scenario-form"].validate()) {
+                this.createNewScenario();
+            }
         }
     }
 };
@@ -294,7 +297,6 @@ export default {
                 id="new-scenario-form"
                 ref="new-scenario-form"
                 v-model="newScenarioValid"
-                @submit.prevent="createNewScenario"
             >
                 <v-row>
                     <v-col cols="12">
@@ -307,7 +309,6 @@ export default {
                         <v-btn
                             tile
                             depressed
-                            type="submit"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                             :disabled="!newScenarioValid"
                             form="new-scenario-form"
