@@ -5,7 +5,7 @@
                 "accessibilityAnalysis": {
                     "title": "Accessibility Analysis",
                     "dropdownInfo": "Please choose the mode you want to work with:",
-                    "pointOfReference": "Point of reference",
+                    "pointOfReference": "Point of reference: click on the map",
                     "topic": "Topic",
                     "transportType": "Type of transportation",
                     "transportTypes": {
