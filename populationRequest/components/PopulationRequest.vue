@@ -507,8 +507,13 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label @click="triggerRaster(!rasterActive)">{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
+                                <label
+                                    for="rasterCheckBoxPopRE"
+                                    @click="triggerRaster(!rasterActive)"
+                                    @keydown.enter="triggerRaster(!rasterActive)"
+                                >{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
+                                    id="rasterCheckBoxPopRE"
                                     ref="rasterCheckBox"
                                     :default-state="isRasterVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
@@ -522,8 +527,15 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label @click="triggerAlkisAdresses(!alkisAdressesActive)">{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
+                                <label
+                                    for="alkisAdressesCheckBoxPopRe"
+                                    @click="triggerAlkisAdresses(!alkisAdressesActive)"
+                                    @keydown.enter="triggerAlkisAdresses(!alkisAdressesActive)"
+                                >
+                                    {{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}
+                                </label>
                                 <ToggleCheckbox
+                                    id="alkisAdressesCheckBoxPopRe"
                                     ref="alkisAdressesCheckBox"
                                     :default-state="isAlkisAdressesVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"

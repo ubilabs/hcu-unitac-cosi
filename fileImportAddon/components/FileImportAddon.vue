@@ -147,7 +147,8 @@ export default {
                         @dragenter.prevent="onDZDragenter"
                         @dragleave="onDZDragend"
                         @mouseenter="onDZMouseenter"
-                        @mouseleave="onDZMouseleave"
+                        @focusin="onDZMouseenter"
+                        @focusout="onDZMouseleave"
                     />
                 </div>
 
@@ -164,12 +165,16 @@ export default {
                 <div v-if="importedFileNames.length > 0">
                     <div class="h-seperator" />
                     <p class="cta">
-                        <label class="successfullyImportedLabel">
+                        <label
+                            class="successfullyImportedLabel"
+                            for="importFileNames"
+                        >
                             {{ $t("additional:modules.tools.fileImportAddon.successfullyImportedLabel") }}
                         </label>
                         <ul>
                             <li
                                 v-for="(filename, index) in importedFileNames"
+                                id="importFileNames"
                                 :key="index"
                             >
                                 {{ filename }}

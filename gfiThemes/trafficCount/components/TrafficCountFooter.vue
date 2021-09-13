@@ -405,8 +405,10 @@ export default {
         </div>
         <div
             v-if="currentTabId !== 'infos'"
+            tabindex="0"
             class="download-container"
             @click="exportFile"
+            @keydown.enter="exportFile"
             v-html="exportButtonTemplate.innerHTML"
         />
         <div

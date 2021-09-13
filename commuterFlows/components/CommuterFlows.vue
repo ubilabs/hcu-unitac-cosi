@@ -666,7 +666,9 @@ export default {
                             <div
                                 class="form-check form-check-inline"
                                 @mouseover="tooltipOutActive = true"
+                                @focusin="tooltipOutActive = true"
                                 @mouseout="tooltipOutActive = false"
+                                @focusout="tooltipOutActive = false"
                             >
                                 <input
                                     id="idOutChecked"
@@ -694,7 +696,9 @@ export default {
                             <div
                                 class="form-check form-check-inline"
                                 @mouseover="tooltipInActive = true"
+                                @focusin="tooltipInActive = true"
                                 @mouseout="tooltipInActive = false"
+                                @focusout="tooltipInActive = false"
                             >
                                 <input
                                     id="idInChecked"

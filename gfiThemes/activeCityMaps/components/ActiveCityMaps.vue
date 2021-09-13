@@ -58,6 +58,7 @@ export default {
             <tr colspan="1">
                 <td>
                     <iframe
+                        title="gfi iFrame"
                         :src="feature.getGfiUrl()"
                         class="gfi-iFrame"
                     />

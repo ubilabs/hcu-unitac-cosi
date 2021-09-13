@@ -268,6 +268,7 @@ export default {
             <div class="input-group">
                 <input
                     id="weekDateInput"
+                    aria-label="Datum"
                     type="text"
                     class="form-control dpinput"
                     placeholder="Datum"

@@ -104,6 +104,7 @@ export default {
                 <a
                     id="regional-school"
                     @click="selectSchoolNumber(regionalPrimarySchoolNumber)"
+                    @keydown.enter="selectSchoolNumber(regionalPrimarySchoolNumber)"
                 >
                     {{ $t(regionalPrimarySchoolName) }}
                 </a>

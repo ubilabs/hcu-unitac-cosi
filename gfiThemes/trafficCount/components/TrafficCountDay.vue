@@ -256,6 +256,7 @@ export default {
             <div class="input-group">
                 <input
                     id="dayDateInput"
+                    aria-label="Datum"
                     type="text"
                     class="form-control dpinput"
                     placeholder="Datum"
