@@ -211,7 +211,7 @@ export default {
                         <input
                             ref="input"
                             v-model="inputAddress"
-                            aria-label="Adresse"
+                            :aria-label="$t('additional:modules.tools.schoolRoutePlanning.inputPlaceHolder')"
                             type="search"
                             autocomplete="false"
                             class="form-control address-search"

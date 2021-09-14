@@ -1586,7 +1586,7 @@ export default {
                                 <div class="tm-btn-img pull-left">
                                     <img
                                         :src="$t(getIconPath('Vorlage_Mannschaft_F_16.jpg'))"
-                                        alt="Mannschaft FF"
+                                        alt="Mannschaft F"
                                     >
                                 </div>
                                 <div class="tm-btn-txt">
@@ -1901,7 +1901,7 @@ export default {
                                 <div class="tm-btn-img pull-left">
                                     <img
                                         :src="$t(getIconPath('Vorlage_Kran_Feuerwehr_16.jpg'))"
-                                        alt="Kran FF"
+                                        alt="Kran Freiwillige Feuerwehr"
                                     >
                                 </div>
                                 <div class="tm-btn-txt">
@@ -1922,7 +1922,7 @@ export default {
                                 <div class="tm-btn-img pull-left">
                                     <img
                                         :src="$t(getIconPath('Vorlage_Pol_16.jpg'))"
-                                        alt="Polizei"
+                                        alt="Pol"
                                     >
                                 </div>
                                 <div class="tm-btn-txt">
@@ -2279,7 +2279,7 @@ export default {
                                 <div class="tm-btn-img pull-left">
                                     <img
                                         :src="$t(getIconPath('Vorlage_TEL_DV1_16.jpg'))"
-                                        alT="TEL DV1"
+                                        alt="TEL DV1"
                                     >
                                 </div>
                                 <div class="tm-btn-txt">
