@@ -147,6 +147,7 @@ export default {
                         @dragenter.prevent="onDZDragenter"
                         @dragleave="onDZDragend"
                         @mouseenter="onDZMouseenter"
+                        @mouseleave="onDZMouseleave"
                         @focusin="onDZMouseenter"
                         @focusout="onDZMouseleave"
                     />

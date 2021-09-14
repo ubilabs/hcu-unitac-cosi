@@ -232,7 +232,7 @@ export default {
                     </label>
                     <ToggleCheckbox
                         id="rasterCheckBoxSchoolRoute"
-                        ref="rasterCheckBoxSchoolRoute"
+                        ref="rasterCheckBox"
                         class="routing-checkbox-toggle-checkbox"
                         :text-on="$t('common:snippets.checkbox.on')"
                         :text-off="$t('common:snippets.checkbox.off')"
