@@ -92,7 +92,10 @@ export default {
 <template>
     <div class="dipas-gfi-content">
         <div class="dipas-gfi-icon">
-            <img :src="calculateIconPath(feature.getMappedProperties().Kategorie)">
+            <img
+                :src="calculateIconPath(feature.getMappedProperties().Kategorie)"
+                alt=""
+            >
         </div>
         <div class="dipas-gfi-thema">
             {{ feature.getMappedProperties().Kategorie }}
