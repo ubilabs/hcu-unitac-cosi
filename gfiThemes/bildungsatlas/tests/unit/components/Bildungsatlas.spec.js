@@ -19,10 +19,13 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                     getProperties () {
                         return {};
                     },
+                    getTitle () {
+                        return "title";
+                    },
                     getTheme () {
                         return {
                             params: {
-                                subTheme: "subTheme",
+                                subTheme: "",
                                 featureType: "someFeatureType"
                             }
                         };
@@ -34,7 +37,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
     });
     describe("created", () => {
         it("should set the internal value of subTheme to the value found in the feature", () => {
-            expect(wrapper.vm.subTheme).to.equal("subTheme");
+            expect(wrapper.vm.subTheme).to.equal("");
             expect(wrapper.vm.featureType).to.equal("someFeatureType");
         });
     });

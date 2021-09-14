@@ -40,7 +40,19 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
             propsData: {
                 api: dummyApi,
                 thingId: 5508,
-                meansOfTransport: "Anzahl_Fahrraeder"
+                meansOfTransport: "Anzahl_Fahrraeder",
+                holidays: [
+                    "newYearsDay",
+                    "goodFriday",
+                    "easterMonday",
+                    "laborDay",
+                    "ascensionDay",
+                    "pentecostMonday",
+                    "germanUnityDay",
+                    "reformationDay",
+                    "christmasDay",
+                    "secondDayOfChristmas"
+                ]
             },
             localVue
         });

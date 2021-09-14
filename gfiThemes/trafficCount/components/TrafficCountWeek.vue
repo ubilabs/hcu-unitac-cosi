@@ -43,7 +43,7 @@ export default {
             tab: "week",
             weekDatepicker: null,
             apiData: [],
-            showPreviousWeekUntilThisWeekday: 4,
+            showPreviousWeekUntilThisWeekday: 1,
 
             // props for diagram
             setTooltipValue: (tooltipItem) => {
@@ -94,7 +94,7 @@ export default {
                 return pointSize;
             },
             // props for table
-            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek"),
+            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek") ? i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek") : "",
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd");
             },

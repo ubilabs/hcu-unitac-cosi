@@ -41,14 +41,6 @@ export default {
             configApiUrl: "config.api.json"
         };
     },
-    computed: {
-        subThemeComponent () {
-            if (this.subTheme !== "") {
-                return this.subTheme;
-            }
-            return "BildungsatlasTest";
-        }
-    },
     watch: {
         // When the gfi window switched with arrow, the connection will be refreshed
         feature: {
@@ -95,6 +87,9 @@ export default {
 
             this.properties = typeof properties === "object" && properties !== null ? properties : {};
 
+            if (this.subTheme === "") {
+                this.configApiUrl = false;
+            }
             // BildungsatlasApi is a singleton
             this.api = new BildungsatlasApi(this.configApiUrl);
         },
@@ -160,9 +155,12 @@ export default {
                 >{{ $t("additional:addons.gfiThemes.bildungsatlas.general.tabInfo") }}</a>
             </li>
         </ul>
-        <div class="tab-content">
+        <div
+            v-if="subTheme !== ''"
+            class="tab-content"
+        >
             <component
-                :is="subThemeComponent"
+                :is="subTheme"
                 :is-active-tab="isActiveTab"
                 :feature="feature"
                 :properties="properties"
