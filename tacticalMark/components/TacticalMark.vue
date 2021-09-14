@@ -1901,7 +1901,7 @@ export default {
                                 <div class="tm-btn-img pull-left">
                                     <img
                                         :src="$t(getIconPath('Vorlage_Kran_Feuerwehr_16.jpg'))"
-                                        alt="Kran Freiwillige Feuerwehr"
+                                        alt="Kran Feuerwehr"
                                     >
                                 </div>
                                 <div class="tm-btn-txt">
