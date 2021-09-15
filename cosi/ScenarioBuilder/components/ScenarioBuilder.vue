@@ -43,7 +43,8 @@ export default {
             beautifyKey: beautifyKey,
             typesMapping: TypesMapping,
             geometry: null,
-            valuesForFields: {}
+            valuesForFields: {},
+            panel: [0, 1]
         };
     },
     computed: {
@@ -346,9 +347,9 @@ export default {
                             <div class="form-group">
                                 <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.defineFeature') }} </label>
                                 <v-expansion-panels
+                                    v-model="panel"
                                     accordion
                                     multiple
-                                    :value="[0,1]"
                                 >
                                     <v-expansion-panel>
                                         <v-expansion-panel-header>

@@ -582,8 +582,3 @@ export default {
         border-width: 1.25
     }
 </style>
-
-<style src="vue-select/dist/vue-select.css">
-</style>
-
-

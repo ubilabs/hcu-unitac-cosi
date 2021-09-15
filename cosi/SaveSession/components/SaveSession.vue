@@ -495,8 +495,3 @@ export default {
         display: hidden;
     }
 </style>
-
-<style src="vue-select/dist/vue-select.css">
-</style>
-
-
