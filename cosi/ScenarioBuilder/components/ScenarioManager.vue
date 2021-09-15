@@ -211,8 +211,6 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
-                                v-bind="attrs"
-                                v-on="on"
                                 @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
                             >
                                 <span v-if="useIcons">
@@ -230,8 +228,6 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
-                                v-bind="attrs"
-                                v-on="on"
                                 @click="activeScenario ? activeScenario.exportScenario() : null"
                             >
                                 <span v-if="useIcons">
@@ -297,6 +293,7 @@ export default {
                 id="new-scenario-form"
                 ref="new-scenario-form"
                 v-model="newScenarioValid"
+                @submit.prevent="validateNewScenario"
             >
                 <v-row>
                     <v-col cols="12">
@@ -309,10 +306,10 @@ export default {
                         <v-btn
                             tile
                             depressed
+                            type="submit"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                             :disabled="!newScenarioValid"
                             form="new-scenario-form"
-                            @click="validateNewScenario"
                         >
                             {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
                         </v-btn>

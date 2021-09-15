@@ -6,7 +6,7 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
@@ -125,17 +125,26 @@ export default {
 
     watch: {
         /**
-         * If the tool is active, activate the select interaction and add overlay to the districtLayers if necessary
+         * If the tool is active, redraw the geometry if one exists
          * If the tool is not actvie, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
          * and update the extent of the selected features (districts).
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
          */
-        active (newActive) {
+        async active (newActive) {
             this.editFeature = null;
             this.editDialog = false;
 
-            if (!newActive) {
+            if (newActive) {
+                if (this.geometry) {
+                    // wait for 2 ticks for the drawing layer to initialize
+                    await this.$nextTick();
+                    this.$refs["geometry-picker"].geometry.value = this.geometry;
+                    await this.$nextTick();
+                    geomPickerSetGeometry(this.$refs["geometry-picker"], this.geometry);
+                }
+            }
+            else {
                 const model = getComponent(this.id);
 
                 if (model) {
@@ -470,7 +479,8 @@ export default {
                                         v-model="neighborhood.housingUnits"
                                         hint="Anzahl der WE"
                                         min="0"
-                                        :max="polygonArea / 5"
+                                        :max="(polygonArea / 5) || 1"
+                                        :disabled="!geometry"
                                         @change="updateUnits"
                                     >
                                         <template #append>
@@ -496,7 +506,8 @@ export default {
                                         v-model="neighborhood.bgf"
                                         hint="m²"
                                         min="0"
-                                        :max="polygonArea * 4"
+                                        :max="(polygonArea * 4) || 1"
+                                        :disabled="!geometry"
                                         @change="updateBgf"
                                     >
                                         <template #append>
@@ -524,6 +535,7 @@ export default {
                                         min="0"
                                         max="5"
                                         step="0.2"
+                                        :disabled="!geometry"
                                         @change="updateHousholdSize"
                                     >
                                         <template #append>
@@ -551,6 +563,7 @@ export default {
                                         min="0"
                                         max="4"
                                         step="0.1"
+                                        :disabled="!geometry"
                                         @change="updateGfz"
                                     >
                                         <template #append>
@@ -578,6 +591,7 @@ export default {
                                         hint="EW / km²"
                                         min="0"
                                         max="50000"
+                                        :disabled="!geometry"
                                         @change="updateDensity"
                                     >
                                         <template #append>
@@ -605,6 +619,7 @@ export default {
                                         hint="m² / EW"
                                         min="0"
                                         max="100"
+                                        :disabled="!geometry"
                                         @change="updateLivingSpace"
                                     >
                                         <template #append>
@@ -706,10 +721,6 @@ export default {
                                             {{ $t("common:button.edit") }}
                                         </span>
                                     </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
                                     <v-btn
                                         tile
                                         depressed
@@ -724,6 +735,24 @@ export default {
                                             {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
                                         </span>
                                     </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <!-- <v-btn
+                                        tile
+                                        depressed
+                                        color="primary"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
+                                        :disabled="!activeScenario || geometry === null || !neighborhood.stats"
+                                        class="flex-item"
+                                        @click="createFeature"
+                                    >
+                                        <v-icon>mdi-home-plus</v-icon>
+                                        <span>
+                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                        </span>
+                                    </v-btn> -->
                                 </v-col>
                             </v-row>
                         </div>
