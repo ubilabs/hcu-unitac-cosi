@@ -469,15 +469,20 @@ export default {
                                     />
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Wohneinheiten</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.units') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
                                         ref="slider-units"
                                         v-model="neighborhood.housingUnits"
-                                        hint="Anzahl der WE"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
                                         min="0"
                                         :max="(polygonArea / 5) || 1"
                                         :disabled="!geometry"
@@ -496,15 +501,20 @@ export default {
                                     </v-slider>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpGfa')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Bruttogeschossfläche (BGF)</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.gfa') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
                                         ref="slider-bgf"
                                         v-model="neighborhood.bgf"
-                                        hint="m²"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.gfa')"
                                         min="0"
                                         :max="(polygonArea * 4) || 1"
                                         :disabled="!geometry"
@@ -523,15 +533,20 @@ export default {
                                     </v-slider>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Ø Haushaltsgröße</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.householdSize') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
                                         ref="slider-householdsize"
                                         v-model="neighborhood.avgHouseholdSize"
-                                        hint="Haushaltsgröße"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
                                         min="0"
                                         max="5"
                                         step="0.2"
