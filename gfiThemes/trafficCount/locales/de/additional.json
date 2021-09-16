@@ -48,7 +48,8 @@
                         "error": {
                             "dataNotAvailableA": "(nicht",
                             "dataNotAvailableB": "empfangen)",
-                            "apiFunction": "Der Wert für \"{{category}}\" wurde wegen eines API-Fehlers nicht empfangen."
+                            "apiFunction": "Der Wert für \"{{category}}\" wurde wegen eines API-Fehlers nicht empfangen.",
+                            "subscribeLastUpdate": "Das vom Sensor-Server erhaltene Datum der letzten Aktualisierung kann wegen eines API-Fehlers nicht ausgegeben werden."
                         }
                     }
                 }

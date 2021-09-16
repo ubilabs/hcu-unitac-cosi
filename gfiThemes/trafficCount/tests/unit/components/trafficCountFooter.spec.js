@@ -137,10 +137,5 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
         it("should return the last update time", function () {
             expect(wrapper.vm.lastUpdate).to.equal("22.03.2020, 00:00:00");
         });
-
-        it("should return some attributes from snippet exportButton", function () {
-            expect(wrapper.vm.exportModel.attributes.disabled).to.be.false;
-            expect(wrapper.vm.exportModel.attributes.rawData).to.deep.equal([]);
-        });
     });
 });
