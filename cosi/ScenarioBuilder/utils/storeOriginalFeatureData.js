@@ -9,9 +9,9 @@ export default function storeOriginalFeatureData (feature, storeGeometry = true)
         feature.set("originalData", {
             ...feature.getProperties()
         });
-    }
-    if (storeGeometry && !feature.get("originalData").location) {
-        feature.get("originalData").geometry = feature.getGeometry().clone();
+        if (storeGeometry) {
+            feature.get("originalData").geometry = feature.getGeometry().clone();
+        }
     }
 
 }
