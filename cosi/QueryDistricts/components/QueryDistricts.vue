@@ -139,7 +139,7 @@ export default {
 
             this.allLayerOptions = [];
             for (const m of this.mapping) {
-                const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category)); /** @todo mapping json extend by featureType? */
+                const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
                 if (layer) {
                     this.allLayerOptions.push({
