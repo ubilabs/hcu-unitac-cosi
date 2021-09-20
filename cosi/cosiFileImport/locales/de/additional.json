@@ -28,8 +28,15 @@
                 "successfullyImportedLabel": "Erfolgreich importiert:",
                 "title": "Datei importieren",
                 "layerButton": "Layer hinzufügen",
+                "preNum": "Numerische Werte",
+                "address": "Adressdaten",
                 "featuresInfo": "Hier sehen Sie eine Liste aller möglicher Zahlwerte aus dem geladenen Datensatzen, die Sie in unterschiedlichen Cosi-Tools zu Analysezwecken verwenden können. Wählen Sie die relevanten Werte aus und benennen Sie sie auf Wunsch beliebig um.",
-                "pointsAndPolygons": "In Ihrem Datensatz wurden sowohl Punkt- als auch Polygonfeatures erkannt. Wünschen Sie ein gesonderte Farbe für die Polygone?"
+                "featuresInfoAddress": "Es wurde kein Adressdatensatz gefunden. Falls einzelne Angaben wie Straßennamen oder Postleitzahl verfügbar sind, wählen Sie hier bitte die Datensätze aus, aus denen sich die Adresse zusammensetzt.",
+                "preSelectedData": "Aus automatischen erkannten Datensätzen auswählen",
+                "preSelectedDataFound": "Es wurden automatisch bestimmte Datensätze erkannt, die sich Adressdaten zuordnen lassen. Sollte diese Liste unvollständig sein, wählen Sie bitte 'Aus allen Datensätzen auswählen' an",
+                "viewAllData": "Aus allen Datensätzen auswählen",
+                "pointsAndPolygons": "In Ihrem Datensatz wurden sowohl Punkt- als auch Polygonfeatures erkannt. Wünschen Sie ein gesonderte Farbe für die Polygone?",
+                "cancel": "Abbrechen"
             }
         }
     }

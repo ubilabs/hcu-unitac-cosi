@@ -16,8 +16,11 @@ export default {
             storePath: this.$store.state.Tools.CosiFileImport,
             imported: false,
             newLayer: {},
+            newLayerValues: [],
             preNumericalValues: [],
             numericalValues: [],
+            searchField: [],
+            mouseHoverField: [],
             svgFile: "",
             hexColor: "#ff0000",
             imgObj: {
@@ -28,7 +31,12 @@ export default {
             },
             pointsandpolygons: false,
             svgColor: {},
-            polygonColor: {}
+            polygonColor: {},
+            noAddress: false,
+            noPreselectedData: false,
+            addressData: ["adresse", "address", "street", "road", "straße", "strasse", "zip", "zipcode", "plz", "postleitzahl", "city", "town", "village", "stadt", "ort", "county", "country", "state", "Land", "Staat"],
+            preAddress: [],
+            addressSetup: []
         };
     },
     computed: {
@@ -36,14 +44,12 @@ export default {
         ...mapGetters("Map", ["layerIds", "layers", "map"]),
         selectedFiletype: {
             get () {
-                console.log(this.selectedFiletype, this.storePath.selectedFiletype)
                 return this.storePath.selectedFiletype;
             },
             set (value) {
                 this.setSelectedFiletype(value);
             }
         },
-
         dropZoneAdditionalClass: function () {
             return this.dzIsDropHovering ? "dzReady" : "";
         },
@@ -51,6 +57,9 @@ export default {
         console: () => console
     },
     watch: {
+        newLayerValues () {
+            console.log(this.newLayerValues);
+        },
         newLayerInformation (newValue, oldValue) {
             if (newValue !== oldValue) {
                 this.preNumericalValues = [];
@@ -61,9 +70,21 @@ export default {
                 this.newLayer.points = this.newLayer.features.some(feature => feature.getGeometry().getType() === "Point");
                 this.newLayer.polygons = this.newLayer.features.some(feature => feature.getGeometry().getType() !== "Point");
                 this.preCheckNumericalValues(this.newLayer.features);
+                this.checkForAddress();
                 this.imported = true;
-                console.log(this.newLayer);
+
+                Object.entries(newValue.features[0].getProperties()).forEach(pair => {
+                    const [key, value] = pair;
+
+                    this.newLayerValues.push({
+                        key: key,
+                        value: value
+                    });
+                });
             }
+        },
+        noPreselectedData () {
+            this.addressSetup = [];
         },
         svgFile () {
             this.newLayer.svg = this.svgFile;
@@ -84,6 +105,7 @@ export default {
         ...mapActions("Tools/CosiFileImport", [
             "importKML",
             "passLayer",
+            "deleteLayerFromTree",
             "setSelectedFiletype"
         ]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping"]),
@@ -130,6 +152,8 @@ export default {
         },
         async addLayer () {
             this.newLayer.numericalValues = this.numericalValues;
+            this.newLayer.searchField = this.searchField;
+            this.newLayer.mouseHoverField = this.mouseHoverField;
 
             const model = await this.passLayer(this.newLayer);
 
@@ -142,7 +166,6 @@ export default {
         preCheckNumericalValues (features) {
             const values = features[0].getProperties();
 
-            console.log("zz", values);
             Object.entries(values).forEach(pair => {
                 const [key, value] = pair;
 
@@ -150,11 +173,48 @@ export default {
                     this.preNumericalValues.push({id: key, name: key, value: value});
                 }
             });
-
-            console.log(this.preNumericalValues);
         },
+        checkForAddress () {
+            const values = this.newLayer.features[0].getProperties();
+
+            if (!("address" in values)) {
+                this.noAddress = true;
+
+                for (const key in values) {
+                    if (this.addressData.includes(key.replace(/\s+/g, "").replace(/[^a-zA-Z ]/g, ""))) {
+                        this.preAddress.push(key);
+                    }
+                    else {
+                        this.noPreselectedData = true;
+                    }
+                }
+            }
+        },
+        buildAddress () {
+            this.newLayer.features.forEach(feature => {
+                const helperArray = [],
+                    values = feature.getProperties();
+
+                this.addressSetup.forEach(string => {
+                    helperArray.push(values[string]);
+                });
+
+                feature.setProperties({"address": helperArray.join(", ")});
+            });
+        },
+        // setSearchField (data) {
+        //     console.log(this.searchField);
+        //     this.newLayer.searchField = data.key;
+        // },
+        // setMouseHoverField (data) {
+        //     console.log(this.mouseHoverField);
+        //     this.newLayer.mouseHoverField = data.key;
+        // },
         setLayerSVG (file) {
             this.svgFile = file;
+        },
+        removeLayer (filename) {
+            this.deleteLayerFromTree(filename);
         },
         close () {
             this.setActive(false);
@@ -247,6 +307,12 @@ export default {
                                 :key="index"
                             >
                                 {{ filename }}
+                                <v-btn
+                                    class="remove"
+                                    @click="removeLayer(filename)"
+                                >
+                                    <v-icon>mdi-trash-can-outline</v-icon>
+                                </v-btn>
                             </li>
                         </ul>
                     </p>
@@ -404,32 +470,150 @@ export default {
                                     </div>
                                 </div>
                             </div>
-                            <div class="features">
-                                <p class="featuresInfo">
-                                    {{ $t("additional:modules.tools.cosiFileImport.featuresInfo") }}
-                                </p>
-                                <ul class="preNums">
-                                    <li
-                                        v-for="(data, i) in preNumericalValues"
-                                        :key="i"
+                            <div class="type">
+                                <v-select
+                                    v-model="searchField"
+                                    :items="newLayerValues"
+                                    label="Typen-Feld bestimmen"
+                                    multiple
+                                    item-value="key"
+                                >
+                                    <template
+                                        slot="selection"
+                                        slot-scope="data"
                                     >
-                                        <v-text-field
-                                            v-model="data.name"
-                                            class="preNumName"
-                                            label="Name der Eigenschaft"
-                                        />
-                                        <label><strong>{{ data.id }}</strong> ({{ data.value }})</label>
-                                        <input
-                                            v-model="numericalValues"
-                                            type="checkbox"
-                                            :value="data"
+                                        <span>{{ data.item.key }}</span>
+                                    </template>
+                                    <template
+                                        slot="item"
+                                        slot-scope="data"
+                                    >
+                                        <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
+                                    </template>
+                                </v-select>
+                            </div>
+                            <div class="type">
+                                <v-select
+                                    v-model="mouseHoverField"
+                                    :items="newLayerValues"
+                                    label="Namens-Feld bestimmen"
+                                    multiple
+                                    item-value="key"
+                                >
+                                    <template
+                                        slot="selection"
+                                        slot-scope="data"
+                                    >
+                                        <span>{{ data.item.key }}</span>
+                                    </template>
+                                    <template
+                                        slot="item"
+                                        slot-scope="data"
+                                    >
+                                        <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
+                                    </template>
+                                </v-select>
+                            </div>
+                            <div class="features">
+                                <div
+                                    v-if="noAddress"
+                                    class="feat_wrapper address"
+                                    @click="e => e.target.classList.toggle('active')"
+                                >
+                                    <h3>{{ $t("additional:modules.tools.cosiFileImport.address") }}</h3>
+                                    <p class="featuresInfo">
+                                        {{ $t("additional:modules.tools.cosiFileImport.featuresInfoAddress") }}
+                                    </p>
+                                    <template v-if="noPreselectedData">
+                                        <h4>{{ $t("additional:modules.tools.cosiFileImport.preSelectedData") }}</h4>
+                                        <p>{{ $t("additional:modules.tools.cosiFileImport.preSelectedDataFound") }}</p>
+                                        <v-btn
+                                            class="viewall"
+                                            @click="noPreselectedData = false"
                                         >
-                                    </li>
-                                </ul>
+                                            {{ $t("additional:modules.tools.cosiFileImport.viewAllData") }}
+                                        </v-btn>
+
+                                        <ul class="address">
+                                            <li
+                                                v-for="(data, i) in preAddress"
+                                                :key="i"
+                                                class="vis"
+                                            >
+                                                <label><strong>{{ data }}</strong></label>
+                                                <input
+                                                    v-model="addressSetup"
+                                                    type="checkbox"
+                                                    :value="data"
+                                                    @change="buildAddress()"
+                                                >
+                                            </li>
+                                        </ul>
+                                    </template>
+                                    <template v-else>
+                                        <ul class="address">
+                                            <li
+                                                v-for="(data, dataKey, i) in newLayer.features[0].values_"
+                                                :key="i"
+                                                :class="{ vis: dataKey !== 'geometry' && dataKey !== 'address' }"
+                                            >
+                                                <label><strong>{{ dataKey }}</strong></label>
+                                                <input
+                                                    v-model="addressSetup"
+                                                    type="checkbox"
+                                                    :value="dataKey"
+                                                    @change="buildAddress()"
+                                                >
+                                            </li>
+                                        </ul>
+                                    </template>
+                                    <div
+                                        v-if="addressSetup.length"
+                                        class="example"
+                                    >
+                                        <span
+                                            v-for="(string, index) in addressSetup"
+                                            :key="string"
+                                        ><span v-if="index > 0">, </span>{{ newLayer.features[0].getProperties()[string] }}</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="feat_wrapper prenum"
+                                    @click="e => e.target.classList.toggle('active')"
+                                >
+                                    <h3>{{ $t("additional:modules.tools.cosiFileImport.preNum") }}</h3>
+                                    <p class="featuresInfo">
+                                        {{ $t("additional:modules.tools.cosiFileImport.featuresInfo") }}
+                                    </p>
+                                    <ul class="preNums">
+                                        <li
+                                            v-for="(data, i) in preNumericalValues"
+                                            :key="i"
+                                        >
+                                            <v-text-field
+                                                v-model="data.name"
+                                                class="preNumName"
+                                                label="Name der Eigenschaft"
+                                            />
+                                            <label><strong>{{ data.id }}</strong> ({{ data.value }})</label>
+                                            <input
+                                                v-model="numericalValues"
+                                                type="checkbox"
+                                                :value="data"
+                                            >
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="submit">
+                        <v-btn
+                            class="cancel_btn"
+                            @click="imported = false"
+                        >
+                            {{ $t("additional:modules.tools.cosiFileImport.cancel") }}
+                        </v-btn>
                         <v-btn
                             class="submit_btn"
                             @click="addLayer"
@@ -440,6 +624,8 @@ export default {
                 </div>
             </div>
         </template>
+    </tool>
+</template>
     </Tool>
 </template>
 
@@ -657,60 +843,178 @@ export default {
                     .features {
                         margin:5px 0px;
 
-                        .featuresInfo {
-                            margin: 20px 0px;
-                            padding: 20px 5px 0px 5px;
-                            border-top: 1px solid #ccc;
-                        }
+                        .feat_wrapper {
+                            width:100%;
+                            height:60px;
+                            margin:10px 0px;
+                            overflow:hidden;
 
-                        ul.preNums {
-                            list-style:none;
-                            li {
-                                flex:1 0 100%;
-                                display:flex;
-                                flex-flow:row wrap;
-                                justify-content:flex-start;
-                                align-items:center;
-                                background:whitesmoke;
-                                margin:3px 0px;
-                                padding:0px 20px;
-                                box-sizing: border-box;
+                            h3 {
+                                position:relative;
+                                display:block;
+                                height:60px;
+                                line-height:60px;
+                                font-size:110%;
+                                color:#222;
+                                background:#eee;
+                                border-radius:5px;
+                                margin:0;
+                                border-bottom:none;
+                                padding-left:30px;
+                                pointer-events:none;
+                                .drop_shadow();
 
-                                .preNumName {
-                                    flex:0 0 160px;
-                                    margin-right:5px;
-                                    font-size:100%;
-                                    padding-top:5px;
-                                    color:#000;
+                                &:hover {
+                                    cursor:pointer;
+                                }
 
-                                    ::v-deep .v-label--active {
-                                        display:none;
-                                        left:1px !important;
-                                        color:@masterportal_blue;
-                                        transform-origin:center left;
+                                &:before {
+                                    content:'+';
+                                    position:relative;
+                                    margin-left:-20px;
+                                    margin-right:20px;
+                                    height:60px;
+                                    line-height:60px;
+                                    font-size:130%;
+                                    color:#444;
+                                }
+                            }
+
+                            &.active {
+                                background:transparent;
+                                height:auto;
+                                box-shadow:none;
+                                padding:10px;
+                                border:1px solid whitesmoke;
+
+                                h3 {
+                                    width:calc(100% + 20px);
+                                    margin-left:-10px;
+                                    margin-top:-10px;
+                                    height:30px;
+                                    background:#eee;
+                                    line-height: 30px;
+
+                                    &:before {
+                                        content:'-';
+                                        height:30px;
+                                        line-height:30px;
+                                        font-size:110%;
                                     }
+                                }
 
-                                    ::v-deep .v-input__slot {
-                                        margin:0;
+                                h4 {
+                                    font-size:120%;
+                                    font-weight:900;
+                                }
+
+                                .viewall {
+                                    display:block;
+                                    font-size:100%;
+                                    font-weight:900;
+                                    border-radius:0px;
+                                    text-transform: none;
+                                    box-shadow:none;
+                                    margin:5px 0px 5px auto;
+                                }
+
+                                .example {
+                                    padding:5px 10px;
+                                    background:#eee;
+                                    opacity:0.75;
+                                    font-style: italic;
+                                }
+
+                                .featuresInfo {
+                                    margin: 20px 0px;
+                                    padding: 20px 5px 0px 5px;
+                                    border-top: 1px solid #ccc;
+                                }
+
+                                ul.address {
+                                    border-top:1px solid #ccc;
+                                    border-bottom:1px solid #ccc;
+                                    padding:10px 0px;
+                                    margin-top:10px;
+
+                                    li {
+                                        display:none;
+                                        flex-flow:row wrap;
+                                        height:30px;
+                                        margin:5px 0px;
+                                        background:#eee;
+
+                                        label {
+                                            max-width:calc(100% - 54px);
+                                            margin:0px 10px;
+                                            height:30px;
+                                            line-height:30px;
+                                            padding-left:10px;
+                                            overflow:hidden;
+                                        }
 
                                         input {
-                                            padding:2px 0px;
+                                            margin:3px 10px 3px auto;
+                                            width:24px;
+                                            height:24px;
+                                        }
+
+                                        &.vis {
+                                            display:flex;
                                         }
                                     }
-
-
                                 }
 
-                                label {
-                                    margin:0px 10px;
-                                    border-left:2px solid #222;
-                                    padding-left:10px;
-                                }
+                                ul.preNums {
+                                    list-style:none;
+                                    li {
+                                        flex:1 0 100%;
+                                        display:flex;
+                                        flex-flow:row wrap;
+                                        justify-content:flex-start;
+                                        align-items:center;
+                                        background:whitesmoke;
+                                        margin:3px 0px;
+                                        padding:0px 20px;
+                                        box-sizing: border-box;
 
-                                input {
-                                    margin:0 0 0 auto;
-                                    width:24px;
-                                    height:24px;
+                                        .preNumName {
+                                            flex:0 0 160px;
+                                            margin-right:5px;
+                                            font-size:100%;
+                                            padding-top:5px;
+                                            color:#000;
+
+                                            ::v-deep .v-label--active {
+                                                display:none;
+                                                left:1px !important;
+                                                color:@masterportal_blue;
+                                                transform-origin:center left;
+                                            }
+
+                                            ::v-deep .v-input__slot {
+                                                margin:0;
+
+                                                input {
+                                                    padding:2px 0px;
+                                                }
+                                            }
+
+
+                                        }
+
+                                        label {
+                                            margin:0px 10px;
+                                            border-left:2px solid #222;
+                                            padding-left:10px;
+                                        }
+
+                                        input {
+                                            margin:0 0 0 auto;
+                                            width:24px;
+                                            height:24px;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -719,19 +1023,49 @@ export default {
             }
 
             .submit {
+                display:flex;
+                flex-flow:row wrap;
+                justify-content: flex-end;
                 margin:10px 0px;
                 padding-top:10px;
                 border-top:1px solid #ccc;
 
+                .cancel_btn {
+                    display:block;
+                    margin-right:3px;
+                    border-radius:0px;
+                    background:@masterportal_red;
+                    color:white;
+                    box-shadow:none;
+                    opacity:0.75;
+                }
+
                 .submit_btn {
                     display:block;
-                    margin:0 0 0 auto;
                     border-radius:0px;
                     background:@masterportal_blue;
                     color:white;
                     box-shadow:none;
                 }
             }
+        }
+    }
+
+    .v-btn.remove {
+        margin-left:5px;
+        height:24px;
+        width:24px;
+        min-width:0;
+        padding:0;
+        font-size:16px;
+        border-radius:3px;
+        box-shadow:none;
+        color:white;
+        background:@masterportal_red;
+        opacity:0.5;
+
+        .v-icon {
+            font-size:14px;
         }
     }
 </style>

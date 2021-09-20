@@ -26,7 +26,9 @@
                     "sameName": "A File with the same name \"{{filename}}\" is already imported, please insert another file or change the file name"
                 },
                 "successfullyImportedLabel": "Successfully imported:",
-                "title": "Import file"
+                "title": "Import file",
+                "address": "address data",
+                "preNum": "Numerical Values"
             }
         }
     }
