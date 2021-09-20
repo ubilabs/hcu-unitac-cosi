@@ -19,6 +19,8 @@ export default {
             newLayerValues: [],
             preNumericalValues: [],
             numericalValues: [],
+            searchField: [],
+            mouseHoverField: [],
             svgFile: "",
             hexColor: "#ff0000",
             imgObj: {
@@ -32,7 +34,7 @@ export default {
             polygonColor: {},
             noAddress: false,
             noPreselectedData: false,
-            addressData: ["street", "road", "straße", "strasse", "zip", "zipcode", "plz", "postleitzahl", "city", "town", "village", "stadt", "ort", "county", "country", "state", "Land", "Staat"],
+            addressData: ["adresse", "address", "street", "road", "straße", "strasse", "zip", "zipcode", "plz", "postleitzahl", "city", "town", "village", "stadt", "ort", "county", "country", "state", "Land", "Staat"],
             preAddress: [],
             addressSetup: []
         };
@@ -150,6 +152,8 @@ export default {
         },
         async addLayer () {
             this.newLayer.numericalValues = this.numericalValues;
+            this.newLayer.searchField = this.searchField;
+            this.newLayer.mouseHoverField = this.mouseHoverField;
 
             const model = await this.passLayer(this.newLayer);
 
@@ -198,12 +202,14 @@ export default {
                 feature.setProperties({"address": helperArray.join(", ")});
             });
         },
-        setSearchField (data) {
-            this.newLayer.features.forEach(feature => {
-                feature.setProperties({"searchField": data.key});
-            });
-            console.log(this.newLayer.features[0]);
-        },
+        // setSearchField (data) {
+        //     console.log(this.searchField);
+        //     this.newLayer.searchField = data.key;
+        // },
+        // setMouseHoverField (data) {
+        //     console.log(this.mouseHoverField);
+        //     this.newLayer.mouseHoverField = data.key;
+        // },
         setLayerSVG (file) {
             this.svgFile = file;
         },
@@ -464,11 +470,13 @@ export default {
                                     </div>
                                 </div>
                             </div>
-                            <!--<div class="type">
+                            <div class="type">
                                 <v-select
+                                    v-model="searchField"
                                     :items="newLayerValues"
-                                    label="Typ bestimmen"
-                                    @change="setSearchField(item)"
+                                    label="Typen-Feld bestimmen"
+                                    multiple
+                                    item-value="key"
                                 >
                                     <template
                                         slot="selection"
@@ -480,10 +488,32 @@ export default {
                                         slot="item"
                                         slot-scope="data"
                                     >
-                                        <span>{{ data.item.key }}: {{ data.item.value }}</span>
+                                        <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
                                     </template>
                                 </v-select>
-                            </div>-->
+                            </div>
+                            <div class="type">
+                                <v-select
+                                    v-model="mouseHoverField"
+                                    :items="newLayerValues"
+                                    label="Namens-Feld bestimmen"
+                                    multiple
+                                    item-value="key"
+                                >
+                                    <template
+                                        slot="selection"
+                                        slot-scope="data"
+                                    >
+                                        <span>{{ data.item.key }}</span>
+                                    </template>
+                                    <template
+                                        slot="item"
+                                        slot-scope="data"
+                                    >
+                                        <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
+                                    </template>
+                                </v-select>
+                            </div>
                             <div class="features">
                                 <div
                                     v-if="noAddress"

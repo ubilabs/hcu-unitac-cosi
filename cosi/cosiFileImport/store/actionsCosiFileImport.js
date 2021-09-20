@@ -233,6 +233,7 @@ function addLayerToTree (newLayer) {
  * @returns {void}
  */
 function setLayerAttributes (model, attrs) {
+    console.log(attrs)
     model.set({
         gfiComplex: "true",
         gfiTheme: "default",
@@ -240,8 +241,8 @@ function setLayerAttributes (model, attrs) {
         isFacility: true,
         alwaysOnTop: true,
         addressField: ["address"],
-        mouseHoverField: ["name"],
-        searchField: ["name"],
+        mouseHoverField: attrs.mouseHoverField,
+        searchField: attrs.searchField,
         group: "Importierte Daten",
         filename: attrs.filename,
         numericalValues: attrs.numericalValues
