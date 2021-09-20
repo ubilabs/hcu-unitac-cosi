@@ -327,7 +327,9 @@ export default {
                 featureCollection.forEach(feature => {
                     this.select.getFeatures().push(feature);
                 });
-                this.updateExtent();
+                this.$nextTick(() => {
+                    this.updateExtent();
+                })
             }
         },
 
