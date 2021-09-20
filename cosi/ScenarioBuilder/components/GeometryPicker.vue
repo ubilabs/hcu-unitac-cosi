@@ -90,6 +90,10 @@ export default {
      * @returns {void}
      */
     async created () {
+        if (this.geomField.type) {
+            this.geometry.type = this.isGml ? getOlGeomTypeByGmlType(this.geomField.type) : this.geomField.type;
+        }
+
         await this.createDrawingLayer();
     },
     beforeDestroy () {

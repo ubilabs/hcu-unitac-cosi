@@ -203,6 +203,7 @@ export default {
             const fmap = {};
 
             for (const ffeature of facilityFeatures) {
+                console.log(ffeature);
                 for (const feature of features) {
                     let polygon,
                         val;

@@ -27,6 +27,10 @@ export default {
                     ],
                     ScenarioBuilder: [
                         "scenarios"
+                    ],
+                    DistrictSelector: [
+                        "selectedDistrictLevel",
+                        "selectedDistrictsCollection"
                     ]
                 }
             },
@@ -183,6 +187,12 @@ export default {
                             case "ScenarioBuilder/scenarios":
                                 this.$store.commit(mutation, this.parseScenarios(state[key][attr]));
                                 break;
+                            case "DistrictSelector/selectedDistrictLevel":
+                                console.log(state[key][attr]);
+                                break;
+                            case "DistrictSelector/selectedDistrictsCollection":
+                                console.log(state[key][attr]);
+                                break;
                             default:
                                 this.$store.commit(mutation, state[key][attr]);
                         }
@@ -234,6 +244,7 @@ export default {
             const state = this.deepCopyState(this.storePaths, this.$store.state);
 
             this.serializeScenarios(state);
+            this.serializeDistrictSelector(state);
             this.state = state;
 
             this.storeToLocalStorage();
@@ -303,6 +314,24 @@ export default {
             return {
                 feature: parser.writeFeatureObject(scenarioNeighborhood.feature)
             };
+        },
+
+        serializeDistrictSelector (state) {
+            const selectedDistrictLevel = state.Tools.DistrictSelector.selectedDistrictLevel,
+                selectedDistrictsCollection = state.Tools.DistrictSelector.selectedDistrictsCollection;
+
+            console.log(selectedDistrictLevel);
+            console.log(selectedDistrictsCollection);
+
+            state.Tools.DistrictSelector.selectedDistrictLevel = null;
+            state.Tools.DistrictSelector.selectedDistrictLevel = null;
+        },
+
+        serializeSelectedDistrictLevel (districtLevel) {
+            return districtLevel;
+        },
+        serializeSelectedDistrictsCollection (collection) {
+            return collection;
         },
 
         getTopicsLayer (layerId) {
