@@ -259,8 +259,6 @@ function adjustLayerStyling (newLayer) {
         areaColor,
         areaOpac;
 
-    // console.log(newLayer.style);
-
     if (newLayer.style.point) {
         pointColor = color(newLayer.style.point.hex);
         pointOpac = color(newLayer.style.point.hex);

@@ -22,9 +22,7 @@ export default {
     data () {
         return {
             // The current id (layer id) of the selected district level
-            selectedLevelId: "",
-            // The current names of the selected districts
-            // selectedNames: [],
+            // selectedLevelId: "",
             // A buffer for the extent of the selected district(s)
             bufferVal: 0,
             // color for the drag box button
@@ -57,6 +55,15 @@ export default {
             },
             set (v) {
                 this.setSelectedDistrictNames(v);
+            }
+        },
+
+        selectedLevelId: {
+            get () {
+                return this.selectedDistrictLevelId;
+            },
+            set (v) {
+                this.setSelectedDistrictLevelId(v);
             }
         }
     },
