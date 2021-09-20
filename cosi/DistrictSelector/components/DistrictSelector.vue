@@ -469,7 +469,7 @@ export default {
                         outlined
                         dense
                         multiple
-                        chips
+                        small-chips
                         @input="updateSelectedFeatures"
                     />
                     <v-text-field
