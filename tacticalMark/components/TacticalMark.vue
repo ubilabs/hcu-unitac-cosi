@@ -2651,8 +2651,8 @@ export default {
                         <div
                             ref="download"
                             class="tm-btn"
-                            @click="download()"
-                            @keydown.enter="download()"
+                            @click="download();"
+                            @keydown.enter="download();"
                         >
                             <div class="tm-btn-txt">
                                 <span>
