@@ -329,7 +329,7 @@ export default {
                 });
                 this.$nextTick(() => {
                     this.updateExtent();
-                })
+                });
             }
         },
 
