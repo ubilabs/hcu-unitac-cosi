@@ -3,7 +3,8 @@ import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import setBBoxToGeom from "../../utils/setBBoxToGeom";
-import {
+import
+{
     Fill,
     Stroke,
     Style
@@ -12,6 +13,8 @@ import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
+import {createIsochrones} from "./isochronesService";
+import {readFeatures} from "./util";
 
 export const methodConfig = {
     store: null
@@ -23,6 +26,7 @@ export default {
      */
     createIsochrones: async function () {
         this.clear();
+
         try {
             if (this.mode === "point") {
                 await this.createIsochronesPoint();
@@ -164,48 +168,52 @@ export default {
             this.scaleUnit !== "" &&
             range !== 0
         ) {
-            if (this.abortController) {
-                this.abortController.abort();
-            }
-            this.abortController = this.createAbortController();
-            const res = await this.requestIsochrones(
-                    this.transportType,
-                    [this.coordinate],
-                    this.scaleUnit,
-                    [range / 3, range * 2 / 3, range],
-                    this.abortController.signal
-                ),
+            // if (this.abortController) {
+            //     this.abortController.abort();
+            // }
+            const {steps, features} = await createIsochrones(this.mode, this.transportType, this.coordinate, this.scaleUnit, this.distance);
+
+            this.steps = steps;
+
+            // this.abortController = this.createAbortController();
+            // const res = await this.requestIsochrones(
+            //         this.transportType,
+            //         [this.coordinate],
+            //         this.scaleUnit,
+            //         [range / 3, range * 2 / 3, range],
+            //         this.abortController.signal
+            //     ),
 
 
-                distance = parseFloat(this.distance);
+            //     distance = parseFloat(this.distance);
 
-            this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
+            // this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
 
-            // reverse JSON object sequence to render the isochrones in the correct order
-            // eslint-disable-next-line one-var
-            const json = JSON.parse(res),
-                reversedFeatures = [...json.features].reverse(),
-                featureType = "Erreichbarkeit ab einem Referenzpunkt";
+            // // reverse JSON object sequence to render the isochrones in the correct order
+            // // eslint-disable-next-line one-var
+            // const json = JSON.parse(res),
+            //     reversedFeatures = [...json.features].reverse(),
+            //     featureType = "Erreichbarkeit ab einem Referenzpunkt";
 
-            json.features = reversedFeatures;
-            let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
+            // json.features = reversedFeatures;
+            // let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
 
-            newFeatures = this.transformFeatures(
-                newFeatures,
-                "EPSG:4326",
-                "EPSG:25832"
-            );
+            // newFeatures = this.transformFeatures(
+            //     newFeatures,
+            //     "EPSG:4326",
+            //     "EPSG:25832"
+            // );
 
-            newFeatures.forEach((feature) => {
-                feature.set("featureType", featureType);
-            });
+            // newFeatures.forEach((feature) => {
+            //     feature.set("featureType", featureType);
+            // });
 
-            this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
+            this.rawGeoJson = await this.featureToGeoJson(features[0]);
 
-            this.styleFeatures(newFeatures, [this.coordinate]);
+            this.styleFeatures(features, [this.coordinate]);
 
-            this.mapLayer.getSource().addFeatures(newFeatures.reverse());
-            this.isochroneFeatures = newFeatures;
+            this.mapLayer.getSource().addFeatures(features.reverse());
+            this.isochroneFeatures = features;
             this.setIsochroneAsBbox();
             this.showRequestButton = true;
             this.cleanup();
