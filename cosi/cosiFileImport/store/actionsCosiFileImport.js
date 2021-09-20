@@ -1,5 +1,4 @@
 import {Radio} from "backbone";
-import map from "vuex";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
@@ -244,6 +243,7 @@ function setLayerAttributes (model, attrs) {
         mouseHoverField: ["name"],
         searchField: ["name"],
         group: "Importierte Daten",
+        filename: attrs.filename,
         numericalValues: attrs.numericalValues
     });
 }
@@ -334,11 +334,25 @@ export default {
     cosiLayerHandling ({commit}, newLayer) {
         commit("setNewLayerInformation", newLayer);
     },
-    passLayer ({commit}, newLayer) {
+    passLayer ({commit, dispatch}, newLayer) {
+        dispatch("addImportedFilename", newLayer.filename);
         const model = addLayerToTree(newLayer);
 
         commit("setUpdateLayerStyles", true);
         return model;
+    },
+    deleteLayerFromTree ({state, commit, rootGetters}, filename) {
+        const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
+            map = rootGetters["Map/map"],
+            importedFiles = state.importedFileNames.filter(file => file !== filename);
+
+        map.removeLayer(model.get("layer"));
+        Radio.trigger("Parser", "removeItem", model.get("id"));
+        Radio.trigger("ModelList", "removeModelsById", model.get("id"));
+        Radio.trigger("ModelList", "renderTree");
+
+        commit("setImportedFileNames", importedFiles);
+
     },
     setSelectedFiletype: ({commit}, newFiletype) => {
         commit("setSelectedFiletype", newFiletype);
@@ -468,13 +482,14 @@ export default {
         }
 
         dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
-        dispatch("addImportedFilename", datasrc.filename);
+        // dispatch("addImportedFilename", datasrc.filename);
         // addLayerToTree(layerName, layerId, features);
 
         // console.log("handler", layerName, layerId, features);
         dispatch("cosiLayerHandling", {
             name: layerName,
             id: layerId,
+            filename: datasrc.filename,
             features: features
         });
     },
