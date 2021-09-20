@@ -203,7 +203,6 @@ export default {
             const fmap = {};
 
             for (const ffeature of facilityFeatures) {
-                console.log(ffeature);
                 for (const feature of features) {
                     let polygon,
                         val;
@@ -585,10 +584,15 @@ export default {
         getCoordinate: function (feature) {
             const geometry = feature.getGeometry();
 
-            if (geometry.getType() === "Point") {
-                return geometry.getCoordinates().splice(0, 2);
+            if (geometry) {
+                if (geometry.getType() === "Point") {
+                    return geometry.getCoordinates().splice(0, 2);
+                }
+
+                return Extent.getCenter(geometry?.getExtent());
             }
-            return Extent.getCenter(geometry.getExtent());
+
+            return [0, 0];
         },
 
         exportTable: function () {
