@@ -191,9 +191,6 @@ export default {
                             case "ScenarioBuilder/scenarios":
                                 this.$store.commit(mutation, this.parseScenarios(state[key][attr]));
                                 break;
-                            // case "DistrictSelector/selectedDistrictLevelId":
-                            //     this.$store.commit(mutation, this.parseDistrictLevel(state[key][attr]));
-                            //     break;
                             case "DistrictSelector/selectedDistrictsCollection":
                                 this.$nextTick(() => {
                                     this.$store.commit(mutation, this.parseFeatureCollection(state[key][attr]));
@@ -201,7 +198,6 @@ export default {
                                 break;
                             case "Map/layerIds":
                                 this.$nextTick(() => {
-                                    console.log(state[key][attr]);
                                     state[key][attr].forEach(layerId => this.getTopicsLayer(layerId));
                                 });
                                 break;

@@ -233,7 +233,6 @@ function addLayerToTree (newLayer) {
  * @returns {void}
  */
 function setLayerAttributes (model, attrs) {
-    console.log(attrs)
     model.set({
         gfiComplex: "true",
         gfiTheme: "default",
