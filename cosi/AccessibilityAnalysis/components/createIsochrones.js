@@ -1,25 +1,29 @@
 import requestIsochrones from "./requestIsochrones";
 import {readFeatures} from "./util.js";
+import * as turf from "@turf/turf";
 
 /**
-     * create isochrones features
-     * @returns {void}
-     */
-export async function createIsochrones ({mode, transportType, coordinate, scaleUnit, distance}) {
-    if (mode === "point") {
-        return createIsochronesPoint(transportType, coordinate, scaleUnit, distance);
+ * create isochrones features
+ * @returns {void}
+ */
+export async function createIsochrones ({transportType, coordinates, scaleUnit, distance}) {
+    if (coordinates.length === 1) {
+        return createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance);
     }
 
-    // await this.createIsochronesRegion();
+    return createIsochronesRegion(transportType, coordinates, scaleUnit, distance);
 }
 
 let abortController;
 
 /**
-     * TODO: see TODOs in createIsochronesRegion
-     * create isochrones features for selected several coordiantes
-     * @returns {void}
-     */
+ * create isochrones features for selected several coordiantes
+ * @param {*} transportType transportType
+ * @param {*} coordinate coordinate
+ * @param {*} scaleUnit scaleUnit
+ * @param {*} distance distance
+ * @return {*} steps and features
+ */
 async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance) {
     if (abortController) {
         abortController.abort();
@@ -27,9 +31,6 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
     abortController = new AbortController();
 
     const range = scaleUnit === "time" ? distance * 60 : distance,
-
-        // abortController = createAbortController();
-
         json = await requestIsochrones(
             transportType,
             [coordinate],
@@ -37,8 +38,6 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
             [range / 3, range * 2 / 3, range],
             abortController.signal
         ),
-        d = parseFloat(distance),
-        steps = [d / 3, d * 2 / 3, d].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2)),
 
         // reverse JSON object sequence to render the isochrones in the correct order
         reversedFeatures = [...json.features].reverse(),
@@ -58,8 +57,90 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
         feature.set("featureType", featureType);
     });
 
-    return {steps, features: newFeatures};
+    return newFeatures;
+}
 
+/**
+ * create isochrones features for selected several coordiantes
+ * @param {*} transportType transportType
+ * @param {*} coordinates coordinates
+ * @param {*} scaleUnit scaleUnit
+ * @param {*} distance distance
+ * @param {*} selectedFacilityName selectedFacilityName
+ * @return {*} features
+ */
+async function createIsochronesRegion (transportType, coordinates, scaleUnit, distance, selectedFacilityName) {
+
+    if (abortController) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+
+    const range = scaleUnit === "time" ? distance * 60 : distance,
+
+        // TODO: Use store-method - see DistrictSelector component
+        // group coordinates into groups of 5
+        coordinatesList = [],
+        groupedFeaturesList = [];
+
+    for (let i = 0; i < coordinates.length; i += 5) {
+        const arrayItem = coordinates.slice(i, i + 5);
+
+        coordinatesList.push(arrayItem);
+    }
+
+    for (const coords of coordinatesList) {
+        // TODO: make use of new OpenRouteService component
+        const json = await requestIsochrones(transportType, coords, scaleUnit,
+                [range, range * 2 / 3, range / 3], abortController.signal),
+            // reverse JSON object sequence to render the isochrones in the correct order
+            // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
+            reversedFeatures = [...json.features].reverse(),
+            groupedFeatures = [
+                [],
+                [],
+                []
+            ];
+
+        for (let i = 0; i < reversedFeatures.length; i = i + 3) {
+            groupedFeatures[i % 3].push(reversedFeatures[i]);
+            groupedFeatures[(i + 1) % 3].push(reversedFeatures[i + 1]);
+            groupedFeatures[(i + 2) % 3].push(reversedFeatures[i + 2]);
+        }
+        json.features = reversedFeatures;
+        groupedFeaturesList.push(groupedFeatures);
+    }
+    let features = [];
+
+    for (let i = 0; i < 3; i++) {
+        let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
+            layerUnion,
+            layerUnionFeatures;
+
+        layeredList = [].concat(...layeredList);
+        layerUnion = layeredList[0];
+
+        for (let j = 0; j < layeredList.length; j++) {
+            layerUnion = turf.union(layerUnion, layeredList[j]);
+        }
+        layerUnionFeatures = readFeatures(JSON.stringify(layerUnion));
+
+        // TODO: get projections via arguments and/or store
+        layerUnionFeatures = transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
+
+        const featureType = "Erreichbarkeit im Gebiet";
+
+        // TODO: add props to layers, like type of facility, unit of measured distance
+        layerUnionFeatures.forEach(feature => {
+            feature.set("featureType", featureType);
+            feature.set("value", layeredList[0].properties.value);
+            feature.set("mode", transportType);
+            feature.set("unit", scaleUnit);
+            feature.set("topic", selectedFacilityName);
+        });
+        features = features.concat(layerUnionFeatures);
+    }
+    return features;
 }
 
 /**
@@ -79,4 +160,3 @@ function transformFeatures (features, crs, mapCrs) {
     });
     return features;
 }
-

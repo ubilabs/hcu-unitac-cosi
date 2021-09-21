@@ -13,9 +13,9 @@ registerProjections();
 async function onmessage (self, event) {
 
     try {
-        const {steps, features} = await createIsochrones(event.data);
+        const features = await createIsochrones(event.data);
 
-        self.postMessage({steps, features: writeFeatures(features)});
+        self.postMessage(writeFeatures(features));
     }
     catch (error) {
         self.postMessage({error});

@@ -4,30 +4,23 @@ import {readFeatures} from "./util";
 /**
  *
  * */
-export async function createIsochrones (mode, transportType, coordinate, scaleUnit, distance, abortCallback) {
+export async function createIsochrones (transportType, coordinates, scaleUnit, distance) {
     const worker = new Worker();
-
-    if (abortCallback)
-    {
-        
-    }
 
     return new Promise((resolve, reject) => {
         worker.onmessage = event => {
             const data = event.data;
 
-            if (data.error)
-            {
+            if (data.error) {
                 reject(data.error);
             }
-            else
-            {
-                resolve({ steps: data.steps, features: readFeatures(data.features) });
+            else {
+                resolve(readFeatures(data));
             }
         };
         worker.onerror = e => {
             reject(e);
         };
-        worker.postMessage({mode, transportType, coordinate, scaleUnit, distance});
+        worker.postMessage({transportType, coordinates, scaleUnit, distance});
     });
 }

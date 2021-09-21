@@ -1,4 +1,3 @@
-import GeoJSON from "ol/format/GeoJSON";
 import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import GeometryCollection from "ol/geom/GeometryCollection";
@@ -11,7 +10,6 @@ import
 } from "ol/style.js";
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
-import * as turf from "@turf/turf";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import {createIsochrones} from "./isochronesService";
 
@@ -37,7 +35,7 @@ export default {
         }
         catch (err) {
             try {
-                const res = JSON.parse(err.message||err.error.message);
+                const res = JSON.parse(err.message || err.error.message);
 
                 if (res.error.code === 3002 || res.error.code === 3099) {
                     this.showErrorInvalidInput();
@@ -59,86 +57,20 @@ export default {
      * @returns {void}
      */
     createIsochronesRegion: async function () {
-        const range =
-            this.scaleUnit === "time" ? this.distance * 60 : this.distance,
 
-            coordinates = this.getCoordinates();
+        const coordinates = this.getCoordinates();
+        const distance = parseFloat(this.distance);
 
         if (
             coordinates !== null &&
             this.transportType !== "" &&
             this.scaleUnit !== "" &&
-            range !== 0
+            distance !== 0
         ) {
             // TODO: Use store-method - see DistrictSelector component
             this.askUpdate = false;
             this.cleanup();
-            // group coordinates into groups of 5
-            const coordinatesList = [],
-                groupedFeaturesList = [],
-                distance = parseFloat(this.distance);
-
-            for (let i = 0; i < coordinates.length; i += 5) {
-                const arrayItem = coordinates.slice(i, i + 5);
-
-                coordinatesList.push(arrayItem);
-            }
-
-            if (this.abortController) {
-                this.abortController.abort();
-            }
-            this.abortController = this.createAbortController();
-            for (const coords of coordinatesList) {
-                // TODO: make use of new OpenRouteService component
-                const json = await this.requestIsochrones(this.transportType, coords, this.scaleUnit,
-                        [range, range * 2 / 3, range / 3], this.abortController.signal),
-                    // reverse JSON object sequence to render the isochrones in the correct order
-                    // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
-                    reversedFeatures = [...json.features].reverse(),
-                    groupedFeatures = [
-                        [],
-                        [],
-                        []
-                    ];
-
-                for (let i = 0; i < reversedFeatures.length; i = i + 3) {
-                    groupedFeatures[i % 3].push(reversedFeatures[i]);
-                    groupedFeatures[(i + 1) % 3].push(reversedFeatures[i + 1]);
-                    groupedFeatures[(i + 2) % 3].push(reversedFeatures[i + 2]);
-                }
-                json.features = reversedFeatures;
-                groupedFeaturesList.push(groupedFeatures);
-            }
-            let features = [];
-
-            for (let i = 0; i < 3; i++) {
-                let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
-                    layerUnion,
-                    layerUnionFeatures;
-
-                layeredList = [].concat(...layeredList);
-                layerUnion = layeredList[0];
-
-                for (let j = 0; j < layeredList.length; j++) {
-                    layerUnion = turf.union(layerUnion, layeredList[j]);
-                }
-                layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
-
-                // TODO: get projections via arguments and/or store
-                layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
-
-                const featureType = "Erreichbarkeit im Gebiet";
-
-                // TODO: add props to layers, like type of facility, unit of measured distance
-                layerUnionFeatures.forEach(feature => {
-                    feature.set("featureType", featureType);
-                    feature.set("value", layeredList[0].properties.value);
-                    feature.set("mode", this.transportType);
-                    feature.set("unit", this.scaleUnit);
-                    feature.set("topic", this.selectedFacilityName);
-                });
-                features = features.concat(layerUnionFeatures);
-            }
+            const features = await createIsochrones(this.transportType, coordinates, this.scaleUnit, distance);
 
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
@@ -158,60 +90,19 @@ export default {
      * @returns {void}
      */
     createIsochronesPoint: async function () {
-        const range = this.scaleUnit === "time" ? this.distance * 60 : this.distance;
+        const distance = parseFloat(this.distance)
 
         if (
             this.coordinate !== null &&
             this.transportType !== "" &&
             this.scaleUnit !== "" &&
-            range !== 0
+            distance !== 0
         ) {
-            // if (this.abortController) {
-            //     this.abortController.abort();
-            // }
-            const {steps, features} = await createIsochrones(this.mode, this.transportType, this.coordinate, this.scaleUnit, this.distance);
+            const features = await createIsochrones(this.transportType, [this.coordinate], this.scaleUnit, this.distance);
 
-
-            this.steps = steps;
-
-            // this.abortController = this.createAbortController();
-            // const res = await this.requestIsochrones(
-            //         this.transportType,
-            //         [this.coordinate],
-            //         this.scaleUnit,
-            //         [range / 3, range * 2 / 3, range],
-            //         this.abortController.signal
-            //     ),
-
-
-            //     distance = parseFloat(this.distance);
-
-            // this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toString() : n.toFixed(2));
-
-            // // reverse JSON object sequence to render the isochrones in the correct order
-            // // eslint-disable-next-line one-var
-            // const json = JSON.parse(res),
-            //     reversedFeatures = [...json.features].reverse(),
-            //     featureType = "Erreichbarkeit ab einem Referenzpunkt";
-
-            // json.features = reversedFeatures;
-            // let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
-
-            // newFeatures = this.transformFeatures(
-            //     newFeatures,
-            //     "EPSG:4326",
-            //     "EPSG:25832"
-            // );
-
-            // newFeatures.forEach((feature) => {
-            //     feature.set("featureType", featureType);
-            // });
-
-
+            this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
             this.rawGeoJson = await this.featureToGeoJson(features[0]);
-
             this.styleFeatures(features, [this.coordinate]);
-
             this.mapLayer.getSource().addFeatures(features.reverse());
             this.isochroneFeatures = features;
             this.setIsochroneAsBbox();
@@ -221,43 +112,6 @@ export default {
         else {
             this.inputReminder();
         }
-    },
-    /**
-     * Tries to parse data string to ol.format.GeoJson
-     * @param   {string} data string to parse
-     * @throws Will throw an error if the argument cannot be parsed.
-     * @returns {object}    ol/format/GeoJSON/features
-     */
-    parseDataToFeatures: function (data) {
-        const geojsonReader = new GeoJSON();
-        let jsonObjects;
-
-        try {
-            jsonObjects = geojsonReader.readFeatures(data);
-        }
-        catch (err) {
-            console.error(err);
-            this.showError();
-        }
-
-        return jsonObjects;
-    },
-    /**
-     * Transforms features between CRS
-     * @param   {feature[]} features Array of ol.features
-     * @param   {string}    crs      EPSG-Code of feature
-     * @param   {string}    mapCrs   EPSG-Code of ol.map
-     * @returns {void}
-     */
-    transformFeatures: function (features, crs, mapCrs) {
-        features.forEach(function (feature) {
-            const geometry = feature.getGeometry();
-
-            if (geometry) {
-                geometry.transform(crs, mapCrs);
-            }
-        });
-        return features;
     },
     /**
      * add coordinate after user click

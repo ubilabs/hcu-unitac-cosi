@@ -50,6 +50,9 @@ after(() => {
 function expectFeaturesEqual (actualFeatures, expFeatures) {
     expect(actualFeatures.length, expFeatures.length);
 
+    actualFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
+    expFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
+
     for (let i = 0; i < actualFeatures.length; i++) {
         const f1 = turf.polygon(actualFeatures[i].getGeometry().getCoordinates()),
             f2 = turf.polygon(expFeatures[i].getGeometry().getCoordinates());
@@ -191,18 +194,7 @@ describe("AccessibilityAnalysis.vue", () => {
             stubs: {Tool},
             store,
             localVue,
-            vuetify,
-            methods: {
-                requestIsochrones: () => {
-                    if (error) {
-                        return Promise.reject(error);
-                    }
-                    return new Promise(function (resolve) {
-                        resolve(JSON.stringify(data));
-                    });
-                },
-                createAbortController: () => ({abort: sinon.stub})
-            }
+            vuetify
         });
 
 
@@ -276,9 +268,10 @@ describe("AccessibilityAnalysis.vue", () => {
             coordinate: "10.155828082155567, 53.60323024735499",
             transportType: "Auto",
             scaleUnit: "time",
-            distance: 10
+            distance: "10"
         });
 
+        sourceStub.addFeatures.reset();
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
@@ -310,34 +303,37 @@ describe("AccessibilityAnalysis.vue", () => {
             mode: "region",
             transportType: "Auto",
             scaleUnit: "time",
-            distance: 10,
+            distance: "10",
             selectedFacilityName: "familyName"
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
 
         sinon.assert.callCount(sourceStub.addFeatures, 1);
 
-        // expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
-        //     new GeoJSON().readFeatures(featuresRegion));
+        expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
+            new GeoJSON().readFeatures(featuresRegion));
 
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
+        expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
-        // expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
-        // expect(wrapper.vm.currentCoordinates).not.to.be.empty;
+        // check no update on equal coordinates
+        expect(wrapper.vm.askUpdate).to.be.false;
+        wrapper.vm.$root.$emit("updateFeature");
+        expect(wrapper.vm.askUpdate).to.be.false;
 
-        // // check no update on equal coordinates
-        // expect(wrapper.vm.askUpdate).to.be.false;
-        // wrapper.vm.$root.$emit("updateFeature");
-        // expect(wrapper.vm.askUpdate).to.be.false;
+        coordiantes = [1, 1];
+        wrapper.vm.$root.$emit("updateFeature");
+        expect(wrapper.vm.askUpdate).to.be.true;
 
-        // coordiantes = [1, 1];
-        // wrapper.vm.$root.$emit("updateFeature");
-        // expect(wrapper.vm.askUpdate).to.be.true;
-
-        // await wrapper.find("#create-isochrones").trigger("click");
-        // await wrapper.vm.$nextTick();
-        // expect(wrapper.vm.askUpdate).to.be.false;
+        await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.askUpdate).to.be.false;
     });
 
     it("show help for selectedmode", async () => {

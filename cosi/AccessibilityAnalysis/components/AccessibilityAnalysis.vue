@@ -132,7 +132,6 @@ export default {
         ...methods,
 
         requestIsochrones: requestIsochrones,
-        createAbortController: ()=>new AbortController(),
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {
                 const newCoordinates = this.getCoordinates();

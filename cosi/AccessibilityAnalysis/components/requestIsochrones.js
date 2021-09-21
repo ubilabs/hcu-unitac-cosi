@@ -27,6 +27,7 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
         throw Error(JSON.stringify(json));
     }
 
+
     return json;
 
 }
