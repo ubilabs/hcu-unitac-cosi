@@ -34,20 +34,26 @@ describe("ADDON: Verkehrsfunctions", function () {
         });
     });
 
-    /**
-     * search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
-    describe("getPropTrafficCount", function () {
-        it("should return text with 'No data'", function () {
-            const dataStreamValue = null;
+    describe("getKfzTrafficCount", function () {
+        const absTrafficCount = "219 | 35";
 
-            expect(model.getPropTrafficCount(dataStreamValue)).to.equal("No data");
+        let layerName = "Anzahl_Kfz_Zaehlstelle_15-Min | Anzahl_SV_Zaehlstelle_15-Min",
+            type;
+
+        it("should return a value for Kfz", function () {
+            type = "Anzahl_Kfz";
+            expect(model.getKfzTrafficCount(absTrafficCount, layerName, type)).to.equal("219");
         });
 
-        it("should parse the right the proportional count", function () {
-            const dataStreamValue = "0.29";
+        it("should return a value for SV", function () {
+            type = "Anzahl_SV";
+            expect(model.getKfzTrafficCount(absTrafficCount, layerName, type)).to.equal("35");
+        });
 
-            expect(model.getPropTrafficCount(dataStreamValue)).to.equal(29);
+        it("should return a NO data", function () {
+            layerName = "Anzahl_Rad_Zaehlstelle_15-Min | Anzahl_SV_Zaehlstelle_15-Min";
+            type = "Anzahl_Kfz";
+            expect(model.getKfzTrafficCount(absTrafficCount, layerName, type)).to.equal("No data");
         });
     });
-     */
 });

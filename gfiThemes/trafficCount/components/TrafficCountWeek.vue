@@ -43,6 +43,7 @@ export default {
             tab: "week",
             weekDatepicker: null,
             apiData: [],
+            showPreviousWeekUntilThisWeekday: 4,
 
             // props for diagram
             setTooltipValue: (tooltipItem) => {
@@ -143,11 +144,12 @@ export default {
     },
     methods: {
         setWeekdatepicker: function () {
-            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year");
+            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year"),
+                preselectedValue = moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate();
 
             if (!this.weekDatepicker) {
                 this.weekDatepicker = new DatepickerModel({
-                    preselectedValue: moment().toDate(),
+                    preselectedValue: preselectedValue,
                     multidate: 5,
                     startDate: startDate.toDate(),
                     endDate: moment().toDate(),
@@ -188,7 +190,8 @@ export default {
                 if (document.querySelector("#weekDateSelector")) {
                     document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
                 }
-                this.weekDatepicker.updateValues(moment().toDate());
+
+                this.weekDatepicker.updateValues(moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate());
             }
             else if (document.querySelector("#weekDateSelector")) {
                 document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
