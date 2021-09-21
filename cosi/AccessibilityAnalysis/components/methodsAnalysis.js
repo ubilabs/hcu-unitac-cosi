@@ -14,7 +14,7 @@ import InfoTemplateRegion from "text-loader!./info_region.html";
 import * as turf from "@turf/turf";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import {createIsochrones} from "./isochronesService";
-import {readFeatures} from "./util";
+
 
 export const methodConfig = {
     store: null
@@ -36,11 +36,10 @@ export default {
             }
         }
         catch (err) {
-            console.error(err);
             try {
-                const res = JSON.parse(err.response);
+                const res = JSON.parse(err.message||err.error.message);
 
-                if (res.error.code === 3002) {
+                if (res.error.code === 3002 || res.error.code === 3099) {
                     this.showErrorInvalidInput();
                 }
                 else {
@@ -91,11 +90,10 @@ export default {
             this.abortController = this.createAbortController();
             for (const coords of coordinatesList) {
                 // TODO: make use of new OpenRouteService component
-                const res = await this.requestIsochrones(this.transportType, coords, this.scaleUnit,
+                const json = await this.requestIsochrones(this.transportType, coords, this.scaleUnit,
                         [range, range * 2 / 3, range / 3], this.abortController.signal),
                     // reverse JSON object sequence to render the isochrones in the correct order
                     // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
-                    json = JSON.parse(res),
                     reversedFeatures = [...json.features].reverse(),
                     groupedFeatures = [
                         [],
@@ -173,6 +171,7 @@ export default {
             // }
             const {steps, features} = await createIsochrones(this.mode, this.transportType, this.coordinate, this.scaleUnit, this.distance);
 
+
             this.steps = steps;
 
             // this.abortController = this.createAbortController();
@@ -207,6 +206,7 @@ export default {
             // newFeatures.forEach((feature) => {
             //     feature.set("featureType", featureType);
             // });
+
 
             this.rawGeoJson = await this.featureToGeoJson(features[0]);
 
@@ -373,7 +373,6 @@ export default {
         this.steps = [0, 0, 0];
         this.rawGeoJson = null;
         this.isochroneFeatures = [];
-
 
         if (this.mapLayer.getSource().getFeatures().length > 0) {
             this.mapLayer.getSource().clear();

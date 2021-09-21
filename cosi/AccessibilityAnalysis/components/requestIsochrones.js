@@ -20,10 +20,15 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
                 "Content-Type": "application/json"
             },
             signal: signal
-        });
+        }),
+        json = await ret.json();
 
-    // TODO: use json
-    return ret.text();
+    if (json.error) {
+        throw Error(JSON.stringify(json));
+    }
+
+    return json;
+
 }
 
 export default requestIsochrones;
