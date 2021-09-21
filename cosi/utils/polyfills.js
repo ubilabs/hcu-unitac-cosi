@@ -39,7 +39,7 @@ export function addPolyfills () {
     }
 
     // todo - swap not neighboring values
-    Object.defineProperty(Array.prototype, "swap", {
+    Array.prototype.swap || Object.defineProperty(Array.prototype, "swap", {
         value: function (i, j) {
             const itemLow = this[i],
                 itemHigh = this[j],
