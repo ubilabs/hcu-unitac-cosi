@@ -520,39 +520,51 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="isDefaultStyle"
-                >
-                    <hr>
-                    <div class="checkbox">
-                        <div class="checkbox-container">
-                            <div class="form-inline">
-                                <div class="title-checkbox pull-left">
-                                    <label @click="triggerRaster(!rasterActive)">{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
-                                    <ToggleCheckbox
-                                        ref="rasterCheckBox"
-                                        :default-state="isRasterVisibleInMap"
-                                        :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
-                                        :text-on="translate('common:snippets.checkbox.on')"
-                                        :text-off="translate('common:snippets.checkbox.off')"
-                                        @change="triggerRaster"
-                                    />
-                                </div>
+            </div>
+            <div
+                v-if="isDefaultStyle"
+            >
+                <hr>
+                <div class="checkbox">
+                    <div class="checkbox-container">
+                        <div class="form-inline">
+                            <div class="title-checkbox pull-left">
+                                <label
+                                    for="rasterCheckBoxPopRE"
+                                    @click="triggerRaster(!rasterActive)"
+                                    @keydown.enter="triggerRaster(!rasterActive)"
+                                >{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
+                                <ToggleCheckbox
+                                    id="rasterCheckBoxPopRE"
+                                    ref="rasterCheckBox"
+                                    :default-state="isRasterVisibleInMap"
+                                    :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
+                                    :text-on="translate('common:snippets.checkbox.on')"
+                                    :text-off="translate('common:snippets.checkbox.off')"
+                                    @change="triggerRaster"
+                                />
                             </div>
                         </div>
-                        <div class="checkbox-container">
-                            <div class="form-inline">
-                                <div class="title-checkbox pull-left">
-                                    <label @click="triggerAlkisAdresses(!alkisAdressesActive)">{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
-                                    <ToggleCheckbox
-                                        ref="alkisAdressesCheckBox"
-                                        :default-state="isAlkisAdressesVisibleInMap"
-                                        :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
-                                        :text-on="translate('common:snippets.checkbox.on')"
-                                        :text-off="translate('common:snippets.checkbox.off')"
-                                        @change="triggerAlkisAdresses"
-                                    />
-                                </div>
+                    </div>
+                    <div class="checkbox-container">
+                        <div class="form-inline">
+                            <div class="title-checkbox pull-left">
+                                <label
+                                    for="alkisAdressesCheckBoxPopRe"
+                                    @click="triggerAlkisAdresses(!alkisAdressesActive)"
+                                    @keydown.enter="triggerAlkisAdresses(!alkisAdressesActive)"
+                                >
+                                    {{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}
+                                </label>
+                                <ToggleCheckbox
+                                    id="alkisAdressesCheckBoxPopRe"
+                                    ref="alkisAdressesCheckBox"
+                                    :default-state="isAlkisAdressesVisibleInMap"
+                                    :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
+                                    :text-on="translate('common:snippets.checkbox.on')"
+                                    :text-off="translate('common:snippets.checkbox.off')"
+                                    @change="triggerAlkisAdresses"
+                                />
                             </div>
                         </div>
                     </div>

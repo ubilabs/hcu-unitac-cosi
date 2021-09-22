@@ -1,5 +1,5 @@
-import {SensorThingsHttp} from "../../../../modules/core/modelList/layer/sensorThingsHttp.js";
-import {SensorThingsMqtt} from "../../../../modules/core/modelList/layer/sensorThingsMqtt.js";
+import {SensorThingsHttp} from "../../../../src/utils/sensorThingsHttp.js";
+import {SensorThingsMqtt} from "../../../../src/utils/sensorThingsMqtt.js";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 import moment from "moment";
 

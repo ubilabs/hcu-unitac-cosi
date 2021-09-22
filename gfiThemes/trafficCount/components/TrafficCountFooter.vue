@@ -1,13 +1,13 @@
 <script>
 import moment from "moment";
-import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
-import ExportButtonView from "../../../../modules/snippets/exportButton/view";
 import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
-import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
-import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
+import ExportButtonCSV from "../../../../src/share-components/exportButton/components/ExportButtonCSV.vue";
 
 export default {
     name: "TrafficCountFooter",
+    components: {
+        ExportButtonCSV
+    },
     props: {
         currentTabId: {
             type: String,
@@ -32,6 +32,11 @@ export default {
         downloadUrl: {
             type: [String, Boolean],
             required: true
+        },
+        downloadFilename: {
+            type: [String, Boolean],
+            required: false,
+            default: false
         }
     },
     data () {
@@ -41,11 +46,7 @@ export default {
             dayInterval: "15-Min",
             weekInterval: "1-Tag",
             yearInterval: "1-Woche",
-            exportModel: new ExportButtonModel({
-                tag: "Download",
-                rawData: [],
-                fileExtension: "csv"
-            })
+            downloadHandler: false
         };
     },
     computed: {
@@ -63,16 +64,6 @@ export default {
 
         tableClass: function () {
             return this.currentTabId + " table table-hover table-striped";
-        },
-
-        exportView: function () {
-            return new ExportButtonView({
-                model: this.exportModel
-            });
-        },
-
-        exportButtonTemplate: function () {
-            return this.exportView.render().el;
         }
     },
     watch: {
@@ -111,95 +102,65 @@ export default {
          * @param {String} currentTabId the id to identify the activated tab as day, week or year
          * @param {String} meansOfTransport the means of transportation
          * @post the footer is updated to show the identified tab
-         * @returns {void}  -
+         * @returns {void}
          */
         updateFooter: function (currentTabId, meansOfTransport) {
+            const meansOfTransportSV = meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
+
             // Making the postion of indication fixed when scroll
             this.fixIndicationPosition();
 
-            const meansOfTransportSV = meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
-
             if (typeof this.downloadUrl === "string") {
+                this.downloadHandler = false;
                 return;
             }
-            // tab body
-            if (currentTabId === "day") {
-                this.downloadDataDay(this.thingId, meansOfTransport, result => {
-                    const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
 
-                    this.exportModel.set("rawData", this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays));
-                    if (this.api instanceof DauerzaehlstellenRadApi) {
-                        this.exportModel.set("filename", result.title.replace(" ", "_") + "-Stunden_Werte");
-                    }
-                    else {
-                        this.exportModel.set("filename", result.title.replace(" ", "_") + "-15min_Werte");
-                    }
-                }, error => {
-                    // onerror
-                    console.warn("error", "downloadDataDay", error);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die Daten können im Moment nicht heruntergeladen werden",
-                        category: "Info"
+            this.downloadHandler = onsuccess => {
+                if (currentTabId === "day") {
+                    this.downloadDataDay(this.thingId, meansOfTransport, result => {
+                        const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false,
+                            jsonData = this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays);
+
+                        if (typeof onsuccess === "function") {
+                            onsuccess(jsonData);
+                        }
+                    }, error => {
+                        console.warn("error", "downloadDataDay", error);
+                        this.$store.dispatch("Alerting/addSingleAlert", i18next.t("common:modules.exportButton.error.download"));
                     });
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // onstart
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // oncomplete
-                    this.exportModel.set("disabled", false);
-                });
-            }
-            else if (currentTabId === "week") {
-                this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
-                    const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
+                }
+                else if (currentTabId === "week") {
+                    this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
+                        const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false,
+                            jsonData = this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays);
 
-                    this.exportModel.set("rawData", this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-Tageswerte");
-                    // onerror
-                }, error => {
-                    console.warn("error", "downloadDataWeek", error);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die Daten können im Moment nicht heruntergeladen werden",
-                        category: "Info"
+                        if (typeof onsuccess === "function") {
+                            onsuccess(jsonData);
+                        }
+                    }, error => {
+                        console.warn("error", "downloadDataWeek", error);
+                        this.$store.dispatch("Alerting/addSingleAlert", i18next.t("common:modules.exportButton.error.download"));
                     });
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // onstart
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // oncomplete
-                    this.exportModel.set("disabled", false);
-                });
-            }
-            else if (currentTabId === "year") {
-                this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
-                    const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false;
+                }
+                else if (currentTabId === "year") {
+                    this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
+                        const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false,
+                            jsonData = this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays);
 
-                    this.exportModel.set("rawData", this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-Wochenwerte");
-                    // onerror
-                }, error => {
-                    console.warn("error", "downloadDataYear", error);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die Daten können im Moment nicht heruntergeladen werden",
-                        category: "Info"
+                        if (typeof onsuccess === "function") {
+                            onsuccess(jsonData);
+                        }
+                    }, error => {
+                        console.warn("error", "downloadDataYear", error);
+                        this.$store.dispatch("Alerting/addSingleAlert", i18next.t("common:modules.exportButton.error.download"));
                     });
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // onstart
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // oncomplete
-                    this.exportModel.set("disabled", false);
-                });
-
-            }
+                }
+            };
         },
 
         /**
          * Making the indication position always fixed when the window is scrolled
-         * @returns {void} -
+         * @returns {void}
          */
         fixIndicationPosition: function () {
             const gfiContent = document.querySelector(".gfi-content");
@@ -221,7 +182,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {void}  -
+         * @returns {void}
          */
         downloadDataDay: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api,
@@ -263,7 +224,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {void}  -
+         * @returns {void}
          */
         downloadDataYear: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api;
@@ -328,20 +289,8 @@ export default {
         },
 
         /**
-         * trigger the export function from snippet exportButton
-         * @returns {void}  -
-         */
-        exportFile: function () {
-            if (typeof this.downloadUrl === "string") {
-                location.href = convertHttpLinkToSSL(this.downloadUrl);
-                return;
-            }
-            this.exportView.export();
-        },
-
-        /**
          * trigger the function of resetting tab
-         * @returns {void}  -
+         * @returns {void}
          */
         reset: function () {
             this.$emit("resetTab");
@@ -352,8 +301,7 @@ export default {
          * @param {Object} api instance of TrafficCountApi
          * @param {String} thingId the thingId to be send to any api call
          * @param {String} meansOfTransport the meansOfTransport to be send with any api call
-         * @fires   Alerting#RadioTriggerAlertAlert
-         * @returns {void}  -
+         * @returns {void}
          */
         setFooterLastUpdate: function (api, thingId, meansOfTransport) {
             api.subscribeLastUpdate(thingId, meansOfTransport, datetime => {
@@ -361,17 +309,14 @@ export default {
             }, errormsg => {
                 this.setLastUpdate("(aktuell keine Zeitangabe)");
                 console.warn("The last update received is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Das vom Sensor-Server erhaltene Datum der letzten Aktualisierung kann wegen eines API-Fehlers nicht ausgegeben werden.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.subscribeLastUpdate"));
             });
         },
 
         /**
          * setter for lastUpdate
          * @param {String} value the datetime of the last update to be shown in the template
-         * @returns {void}  -
+         * @returns {void}
          */
         setLastUpdate: function (value) {
             this.lastUpdate = value;
@@ -405,10 +350,15 @@ export default {
         </div>
         <div
             v-if="currentTabId !== 'infos'"
+            tabindex="0"
             class="download-container"
-            @click="exportFile"
-            v-html="exportButtonTemplate.innerHTML"
-        />
+        >
+            <ExportButtonCSV
+                :url="downloadUrl"
+                :filename="downloadFilename"
+                :handler="downloadHandler"
+            />
+        </div>
         <div
             v-if="currentTabId !== 'infos'"
             class="reset-container"

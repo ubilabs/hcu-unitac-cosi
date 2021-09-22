@@ -139,7 +139,7 @@ export default {
                             {{ $t("additional:modules.tools.fileImportAddon.captions.dropzone") }}
                         </p>
                     </div>
-
+                    <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
                     <div
                         class="drop-area"
                         @drop.prevent="onDrop"
@@ -149,6 +149,10 @@ export default {
                         @mouseenter="onDZMouseenter"
                         @mouseleave="onDZMouseleave"
                     />
+                    <!-- The previous element does not provide a @focusin or @focus reaction as would
+                        be considered correct by the linting rule set. Since it's a drop-area for file
+                        dropping by mouse, the concept does not apply. Keyboard users may use the
+                        matching input fields. -->
                 </div>
 
                 <div>
@@ -167,12 +171,16 @@ export default {
                 <div v-if="importedFileNames.length > 0">
                     <div class="h-seperator" />
                     <p class="cta">
-                        <label class="successfullyImportedLabel">
+                        <label
+                            class="successfullyImportedLabel"
+                            for="importFileNames"
+                        >
                             {{ $t("additional:modules.tools.fileImportAddon.successfullyImportedLabel") }}
                         </label>
                         <ul>
                             <li
                                 v-for="(filename, index) in importedFileNames"
+                                id="importFileNames"
                                 :key="index"
                             >
                                 {{ filename }}

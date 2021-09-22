@@ -43,6 +43,9 @@ describe("addons/trafficCount/components/TrafficCountCompDiagram.vue", () => {
                 },
                 renderPointStyle: (datetime) => {
                     return datetime;
+                },
+                renderPointSize: (datetime) => {
+                    return datetime;
                 }
             }
         });

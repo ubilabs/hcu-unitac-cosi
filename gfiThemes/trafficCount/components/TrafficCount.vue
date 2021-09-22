@@ -9,6 +9,7 @@ import TrafficCountDay from "./TrafficCountDay.vue";
 import TrafficCountWeek from "./TrafficCountWeek.vue";
 import TrafficCountYear from "./TrafficCountYear.vue";
 import TrafficCountFooter from "./TrafficCountFooter.vue";
+import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
 
 export default {
     name: "TrafficCount",
@@ -106,7 +107,15 @@ export default {
         },
 
         downloadUrl: function () {
-            return this.checkGurlittInsel && this.feature?.getProperties()?.link_download ? this.feature.getProperties().link_download : false;
+            if (this.checkGurlittInsel && this.feature?.getProperties()?.link_download) {
+                return convertHttpLinkToSSL(this.feature.getProperties().link_download);
+            }
+
+            return false;
+        },
+
+        downloadFilename () {
+            return this.propMeansOfTransport + "_" + this.propThingId + "_" + this.direction;
         }
     },
     watch: {
@@ -433,6 +442,7 @@ export default {
             <ul
                 class="nav nav-pills"
                 @click="setCurrentTabId"
+                @keydown.enter="setCurrentTabId"
             >
                 <li
                     value="infos"
@@ -514,6 +524,7 @@ export default {
             :means-of-transport="propMeansOfTransport"
             :holidays="holidays"
             :download-url="downloadUrl"
+            :download-filename="downloadFilename"
             @resetTab="resetTab"
         />
     </div>

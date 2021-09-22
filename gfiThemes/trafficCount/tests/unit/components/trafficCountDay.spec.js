@@ -51,7 +51,8 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
                     "reformationDay",
                     "christmasDay",
                     "secondDayOfChristmas"
-                ]
+                ],
+                checkGurlittInsel: false
             },
             localVue
         });

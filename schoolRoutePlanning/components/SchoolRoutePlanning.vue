@@ -211,6 +211,7 @@ export default {
                         <input
                             ref="input"
                             v-model="inputAddress"
+                            :aria-label="$t('additional:modules.tools.schoolRoutePlanning.inputPlaceHolder')"
                             type="search"
                             autocomplete="false"
                             class="form-control address-search"
@@ -223,10 +224,14 @@ export default {
                 </div>
                 <Schools :layer="layer" />
                 <div class="routing-checkbox-container col-md-12 col-xs-12">
-                    <label class="routing-checkbox-label">
+                    <label
+                        class="routing-checkbox-label"
+                        for="rasterCheckBoxSchoolRoute"
+                    >
                         {{ $t("additional:modules.tools.schoolRoutePlanning.transportNetwork") }}
                     </label>
                     <ToggleCheckbox
+                        id="rasterCheckBoxSchoolRoute"
                         ref="rasterCheckBox"
                         class="routing-checkbox-toggle-checkbox"
                         :text-on="$t('common:snippets.checkbox.on')"

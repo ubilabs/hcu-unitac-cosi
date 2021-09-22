@@ -43,6 +43,7 @@ export default {
             tab: "week",
             weekDatepicker: null,
             apiData: [],
+            showPreviousWeekUntilThisWeekday: 1,
 
             // props for diagram
             setTooltipValue: (tooltipItem) => {
@@ -93,7 +94,7 @@ export default {
                 return pointSize;
             },
             // props for table
-            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek"),
+            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek") ? i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek") : "",
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd");
             },
@@ -143,11 +144,12 @@ export default {
     },
     methods: {
         setWeekdatepicker: function () {
-            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year");
+            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year"),
+                preselectedValue = moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate();
 
             if (!this.weekDatepicker) {
                 this.weekDatepicker = new DatepickerModel({
-                    preselectedValue: moment().toDate(),
+                    preselectedValue: preselectedValue,
                     multidate: 5,
                     startDate: startDate.toDate(),
                     endDate: moment().toDate(),
@@ -188,7 +190,8 @@ export default {
                 if (document.querySelector("#weekDateSelector")) {
                     document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
                 }
-                this.weekDatepicker.updateValues(moment().toDate());
+
+                this.weekDatepicker.updateValues(moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate());
             }
             else if (document.querySelector("#weekDateSelector")) {
                 document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
@@ -268,6 +271,7 @@ export default {
             <div class="input-group">
                 <input
                     id="weekDateInput"
+                    aria-label="Datum"
                     type="text"
                     class="form-control dpinput"
                     placeholder="Datum"
