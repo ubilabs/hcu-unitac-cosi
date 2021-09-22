@@ -79,8 +79,8 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.deleteScenarioWarning"))) {
                 this.activeScenario.prune();
-                this.setActiveScenario(null);
                 this.setScenarios(this.scenarios.filter(scenario => scenario !== this.activeScenario));
+                this.setActiveScenario(null);
             }
         },
 

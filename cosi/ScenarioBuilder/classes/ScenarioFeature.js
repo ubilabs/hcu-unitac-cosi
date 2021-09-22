@@ -2,6 +2,7 @@ import getClusterSource from "../../utils/getClusterSource";
 import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
 import storeOriginalFeatureData from "../utils/storeOriginalFeatureData";
 import translateFeature from "../../utils/translateFeature";
+import {unByKey} from "ol/Observable";
 
 /**
  * @description Stores the scenario specific properties of a feature
@@ -20,13 +21,15 @@ export default class ScenarioFeature {
         this.guideLayer = guideLayer;
         this.scenarioData = {};
         this.scenario = null;
+        this.eventKeys = {};
 
         // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
-        this.layer.getSource().on("change", () => {
-            if (!this.layer.getSource().hasFeature(this.feature) && this.scenario?.isActive) {
+        this.eventKeys[feature.getId()] = this.layer.getSource().on("change", () => {
+            if (!this.layer.getSource().hasFeature(this.feature)) {
                 this.layer.getSource().addFeature(this.feature);
             }
         });
+
         storeOriginalFeatureData(this.feature);
     }
 
@@ -53,6 +56,8 @@ export default class ScenarioFeature {
     hideFeature () {
         const source = getClusterSource(this.layer);
 
+        // unbind the listener
+        unByKey(this.eventKeys[this.feature.getId()]);
         source.removeFeature(this.feature);
 
         if (this.guideLayer) {

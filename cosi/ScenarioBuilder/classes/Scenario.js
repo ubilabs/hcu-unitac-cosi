@@ -215,8 +215,6 @@ export default class Scenario {
      */
     prune () {
         this.hideScenario();
-        this.resetAllFeatures();
-        this.resetAllDistricts();
         this.simulatedFeatures = [];
         this.modifiedFeatures = [];
         this.neighborhoods = [];

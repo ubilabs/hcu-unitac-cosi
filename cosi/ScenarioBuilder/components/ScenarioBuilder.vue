@@ -199,6 +199,7 @@ export default {
             this.activeScenario.addFeature(
                 new ScenarioFeature(feature, layer)
             );
+
             geomPickerUnlisten(this.$refs["geometry-picker"]);
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
