@@ -44,9 +44,11 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
                 holidays: [
                     "newYearsDay",
                     "goodFriday",
+                    "easterSunday",
                     "easterMonday",
                     "laborDay",
                     "ascensionDay",
+                    "pentecostSunday",
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",

@@ -51,9 +51,11 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                 holidays: [
                     "newYearsDay",
                     "goodFriday",
+                    "easterSunday",
                     "easterMonday",
                     "laborDay",
                     "ascensionDay",
+                    "pentecostSunday",
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
@@ -121,9 +123,11 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                 holidays: [
                     "newYearsDay",
                     "goodFriday",
+                    "easterSunday",
                     "easterMonday",
                     "laborDay",
                     "ascensionDay",
+                    "pentecostSunday",
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
