@@ -7,6 +7,7 @@ import getters from "../store/gettersSaveSession";
 import mutations from "../store/mutationsSaveSession";
 import actions from "../store/actionsSaveSession";
 import {GeoJSON} from "ol/format";
+import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
@@ -221,7 +222,7 @@ export default {
                                 this.$store.dispatch(mutation, state[key][attr]);
                                 break;
                             default:
-                                this.$store.commit(mutation, state[key][attr]);
+                                this.$store.commit(mutation, this.parseFeatures(state[key][attr]));
                         }
 
                     }
@@ -232,6 +233,24 @@ export default {
             }
 
             console.log(this.$store);
+        },
+
+        parseFeatures (val) {
+            const parser = new GeoJSON();
+
+            if (!Array.isArray(val)) {
+                if (val?.constructor === Object && val?.properties?.isOlFeature) {
+                    return parser.readFeature(val);
+                }
+                return val;
+            }
+
+            return val.map(el => {
+                if (el?.constructor === Object && el?.properties?.isOlFeature) {
+                    return parser.readFeature(el);
+                }
+                return el;
+            });
         },
 
         parseScenarios (scenarios) {
@@ -272,15 +291,6 @@ export default {
             return this.districtLevels.find(districtLevel => districtLevel.label === districtLevelLabel);
         },
 
-        // parseFeatureCollection (collectionObject) {
-        //     const parser = new GeoJSON(),
-        //         collection = new Collection(parser.readFeatures(collectionObject));
-
-        //     collection.set("fromExternal", true);
-
-        //     return collection;
-        // },
-
         serializeState () {
             const state = this.deepCopyState(this.storePaths, this.$store.state);
 
@@ -302,7 +312,9 @@ export default {
                 ) {
                     state[key] = {};
                     for (const attr of map[key]) {
-                        state[key][attr] = store[key][attr];
+                        const val = this.serializeFeatures(store[key][attr]);
+
+                        state[key][attr] = val;
                     }
                 }
                 else if (map[key].constructor === Object) {
@@ -311,6 +323,39 @@ export default {
             }
 
             return state;
+        },
+
+        serializeFeatures (val) {
+            const parser = new GeoJSON();
+            let res;
+
+            if (!Array.isArray(val)) {
+                if (val.constructor === Feature) {
+                    res = parser.writeFeatureObject(val);
+
+                    res.properties.isOlFeature = true;
+                }
+                else {
+                    res = val;
+                }
+            }
+            else {
+                res = [];
+
+                for (let i = 0; i < val.length; i++) {
+                    if (val[i].constructor === Feature) {
+                        const geojson = parser.writeFeatureObject(val[i]);
+
+                        geojson.properties.isOlFeature = true;
+                        res.push(geojson);
+                    }
+                    else {
+                        res.push(val[i]);
+                    }
+                }
+            }
+
+            return res;
         },
 
         serializeScenarios (state) {

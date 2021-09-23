@@ -315,9 +315,6 @@ export default {
      */
     styleFeatures: function (features, coordinate) {
         for (let i = 0; i < features.length; i++) {
-            features[i].setProperties({
-                coordinate
-            });
             features[i].setStyle(
                 new Style({
                     fill: new Fill({
