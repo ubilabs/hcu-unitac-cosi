@@ -39,7 +39,9 @@ const state = {
             type: "region",
             text: "Erreichbarkeit im Gebiet"
         }
-    ]
+    ],
+    rawGeoJson: null,
+    isochroneFeatures: []
 };
 
 export default state;

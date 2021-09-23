@@ -11,7 +11,7 @@ import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighbor
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
 import {downloadJsonToFile} from "../../utils/download";
-import Collection from "ol/Collection";
+// import Collection from "ol/Collection";
 
 export default {
     name: "SaveSession",
@@ -23,7 +23,9 @@ export default {
             localStorage,
             storePaths: {
                 Map: [
-                    "layerIds"
+                    "layerIds",
+                    "center",
+                    "zoomLevel"
                 ],
                 Tools: {
                     CalculateRatio: [
@@ -34,7 +36,10 @@ export default {
                     ],
                     DistrictSelector: [
                         "selectedDistrictLevelId",
-                        "selectedDistrictsCollection"
+                        "selectedDistrictNames"
+                    ],
+                    AccessibilityAnalysis: [
+                        "isochroneFeatures"
                     ]
                 }
             },
@@ -88,20 +93,21 @@ export default {
          */
         this.localStorage = window.localStorage;
 
-        // this.loadFromLocalStorage();
-
         if (this.localStorage.getItem("cosi-state")) {
             this.loadDialog = true;
         }
-        // this.loadDialog = true;
     },
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
         ...mapActions("Tools/SaveSession", Object.keys(actions)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         save () {
+            console.log(this.$store.state);
             this.serializeState();
             this.storeToLocalStorage();
+
+            console.log(this.state);
 
             this.addSingleAlert({
                 content: "Sitzung erfolgreich gespeichert!",
@@ -165,6 +171,8 @@ export default {
             try {
                 const state = JSON.parse(this.localStorage.getItem("cosi-state"));
 
+                console.log(state);
+
                 this.parseState(this.storePaths, state);
                 this.addSingleAlert({
                     content: "Sitzung erfolgreich geladen.",
@@ -185,21 +193,32 @@ export default {
                     map[key].every(e => typeof e === "string")
                 ) {
                     for (const attr of map[key]) {
-                        const mutation = `${path.join("/")}/${key}/set${attr[0].toUpperCase() + attr.substring(1)}`;
+                        let mutation = `${key}/set${attr[0].toUpperCase() + attr.substring(1)}`;
+
+                        // add parent nodes for nested states
+                        if (path.length > 0) {
+                            mutation = path.join("/") + "/" + mutation;
+                        }
 
                         switch (`${key}/${attr}`) {
                             case "ScenarioBuilder/scenarios":
                                 this.$store.commit(mutation, this.parseScenarios(state[key][attr]));
                                 break;
-                            case "DistrictSelector/selectedDistrictsCollection":
+                            case "DistrictSelector/selectedDistrictNames":
                                 this.$nextTick(() => {
-                                    this.$store.commit(mutation, this.parseFeatureCollection(state[key][attr]));
+                                    this.setDistrictsByName({
+                                        districtNames: state[key][attr],
+                                        zoomToExtent: false
+                                    });
                                 });
                                 break;
                             case "Map/layerIds":
                                 this.$nextTick(() => {
                                     state[key][attr].forEach(layerId => this.getTopicsLayer(layerId));
                                 });
+                                break;
+                            case "Map/zoomLevel":
+                                this.$store.dispatch(mutation, state[key][attr]);
                                 break;
                             default:
                                 this.$store.commit(mutation, state[key][attr]);
@@ -253,20 +272,20 @@ export default {
             return this.districtLevels.find(districtLevel => districtLevel.label === districtLevelLabel);
         },
 
-        parseFeatureCollection (collectionObject) {
-            const parser = new GeoJSON(),
-                collection = new Collection(parser.readFeatures(collectionObject));
+        // parseFeatureCollection (collectionObject) {
+        //     const parser = new GeoJSON(),
+        //         collection = new Collection(parser.readFeatures(collectionObject));
 
-            collection.set("fromExternal", true);
+        //     collection.set("fromExternal", true);
 
-            return collection;
-        },
+        //     return collection;
+        // },
 
         serializeState () {
             const state = this.deepCopyState(this.storePaths, this.$store.state);
 
             this.serializeScenarios(state);
-            this.serializeDistrictSelector(state);
+            // this.serializeDistrictSelector(state);
             // this.serializeLayers(state);
             this.state = state;
 
@@ -339,19 +358,19 @@ export default {
             };
         },
 
-        serializeDistrictSelector (state) {
-            const selectedDistrictsCollection = this.serializeFeatureCollection(state.Tools.DistrictSelector.selectedDistrictsCollection);
+        // serializeDistrictSelector (state) {
+        //     const selectedDistrictsCollection = this.serializeFeatureCollection(state.Tools.DistrictSelector.selectedDistrictsCollection);
 
-            state.Tools.DistrictSelector.selectedDistrictsCollection = selectedDistrictsCollection;
-        },
+        //     state.Tools.DistrictSelector.selectedDistrictsCollection = selectedDistrictsCollection;
+        // },
 
-        serializeDistrictLevel (districtLevel) {
-            return districtLevel.label;
-        },
+        // serializeDistrictLevel (districtLevel) {
+        //     return districtLevel.label;
+        // },
 
-        serializeFeatureCollection (collection) {
-            return new GeoJSON().writeFeaturesObject(collection.getArray());
-        },
+        // serializeFeatureCollection (collection) {
+        //     return new GeoJSON().writeFeaturesObject(collection.getArray());
+        // },
 
         // serializeLayers (state) {
         //     console.log(state.Map.layerIds);

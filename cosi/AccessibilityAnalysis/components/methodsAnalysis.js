@@ -122,12 +122,13 @@ export default {
                 }
                 layerUnionFeatures = this.parseDataToFeatures(JSON.stringify(layerUnion));
 
-                // TODO: get projections via arguments and/or store
+                /** @todo get projections via arguments and/or store */
                 layerUnionFeatures = this.transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
 
+                /** @todo featureType via i18n */
                 const featureType = "Erreichbarkeit im Gebiet";
 
-                // TODO: add props to layers, like type of facility, unit of measured distance
+                /** @todo add props to layers, like type of facility, unit of measured distance */
                 layerUnionFeatures.forEach(feature => {
                     feature.set("featureType", featureType);
                     feature.set("value", layeredList[0].properties.value);
@@ -137,10 +138,7 @@ export default {
                 });
                 features = features.concat(layerUnionFeatures);
             }
-
-            this.styleFeatures(features);
-            this.mapLayer.getSource().addFeatures(features);
-            this.isochroneFeatures = features;
+            this.setIsochroneFeatures(features);
             this.currentCoordinates = coordinates;
 
             // TODO: get locale from store
@@ -188,6 +186,7 @@ export default {
                 featureType = "Erreichbarkeit ab einem Referenzpunkt";
 
             json.features = reversedFeatures;
+
             let newFeatures = this.parseDataToFeatures(JSON.stringify(json));
 
             newFeatures = this.transformFeatures(
@@ -198,14 +197,13 @@ export default {
 
             newFeatures.forEach((feature) => {
                 feature.set("featureType", featureType);
+                feature.set("coordinate", [this.coordinate]);
             });
 
-            this.rawGeoJson = await this.featureToGeoJson(newFeatures[0]);
+            this.setRawGeoJson(await this.featureToGeoJson(newFeatures[0]));
+            this.setIsochroneFeatures(newFeatures);
 
-            this.styleFeatures(newFeatures, [this.coordinate]);
-
-            this.mapLayer.getSource().addFeatures(newFeatures.reverse());
-            this.isochroneFeatures = newFeatures;
+            await this.$nextTick();
             this.setIsochroneAsBbox();
             this.showRequestButton = true;
             this.cleanup();
@@ -213,6 +211,10 @@ export default {
         else {
             this.inputReminder();
         }
+    },
+    renderIsochrones (newFeatures) {
+        this.styleFeatures(newFeatures);
+        this.mapLayer.getSource().addFeatures(newFeatures);
     },
     /**
      * Tries to parse data string to ol.format.GeoJson
@@ -337,7 +339,8 @@ export default {
      */
     setIsochroneAsBbox: function () {
         const polygonGeometry = this.isochroneFeatures[
-                this.steps.length - 1
+                // this.steps.length - 1
+                0
             ].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
@@ -363,8 +366,8 @@ export default {
         this.layers = null;
         this.showRequestButton = false;
         this.steps = [0, 0, 0];
-        this.rawGeoJson = null;
-        this.isochroneFeatures = [];
+        this.setRawGeoJson(null);
+        this.setIsochroneFeatures([]);
 
 
         if (this.mapLayer.getSource().getFeatures().length > 0) {

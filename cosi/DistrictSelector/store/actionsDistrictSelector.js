@@ -99,13 +99,14 @@ const actions = {
         }
     },
 
-    setDistrictsByName ({getters, commit}, districtNames) {
+    setDistrictsByName ({getters, commit}, {districtNames, fromExternal = true, zoomToExtent = true}) {
         const districtFeatures = getters.selectedDistrictLevel.districts,
             newSelection = districtFeatures.filter(dist => districtNames.includes(dist.getName())),
             adminFeatures = newSelection.map(dist => dist.adminFeature),
             collection = new Collection(adminFeatures);
 
-        collection.set("fromExternal", true);
+        collection.set("fromExternal", fromExternal);
+        collection.set("zoomToExtent", zoomToExtent);
         commit("setSelectedDistrictsCollection", collection);
     },
 

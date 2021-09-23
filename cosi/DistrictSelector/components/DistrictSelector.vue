@@ -327,7 +327,7 @@ export default {
                 featureCollection.forEach(feature => {
                     this.select.getFeatures().push(feature);
                 });
-                this.updateExtent();
+                this.updateExtent(featureCollection.get("zoomToExtent"));
             }
         },
 
@@ -335,18 +335,23 @@ export default {
          * Sets the extent and zoom to it, if not empty.
          * Sets the BBox of all Vector Layers to the selected districts
          * If the extent is empty (this means no features are selected), a warning appears.
+         * @param {Boolean} zoomToExtent - Should the camera zoom to the selection?
          * @returns {void}
          */
-        updateExtent () {
+        updateExtent (zoomToExtent = true) {
             const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
                 bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal);
 
             if (extent) {
                 this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
-                this.zoomTo(extent);
                 this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom(bboxGeom);
+
+                if (zoomToExtent) {
+                    this.zoomTo(extent);
+                }
+
                 this.loadStatFeatures({
                     districts: this.selectedDistricts,
                     districtLevel: this.selectedDistrictLevel,

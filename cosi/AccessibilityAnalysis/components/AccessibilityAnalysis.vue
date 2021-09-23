@@ -63,8 +63,8 @@ export default {
                 }
             ],
             distance: "",
-            rawGeoJson: null,
-            isochroneFeatures: [],
+            // rawGeoJson: null,
+            // isochroneFeatures: [],
             steps: [0, 0, 0],
             layers: null,
             selectedFacilityName: null,
@@ -96,6 +96,12 @@ export default {
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
                 this.removePointMarker();
             }
+        },
+        isochroneFeatures (newFeatures) {
+            if (newFeatures.length === 0) {
+                return;
+            }
+            this.renderIsochrones(newFeatures);
         }
     },
     /**

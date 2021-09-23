@@ -374,7 +374,9 @@ export default {
         changeDistrictSelection: function () {
             const refDistrictName = this.refDistrict?.get(this.keyOfAttrName);
 
-            this.setDistrictsByName(refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames);
+            this.setDistrictsByName({
+                districtNames: refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames
+            });
         },
 
         /**
