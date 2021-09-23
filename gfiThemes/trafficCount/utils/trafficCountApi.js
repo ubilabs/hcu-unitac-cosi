@@ -583,7 +583,7 @@ export class TrafficCountApi {
                 });
 
                 if (typeof onupdate === "function") {
-                    onupdate(moment(bestMonth, "MM").format("MMMM"), bestSum);
+                    onupdate(bestMonth, bestSum);
                 }
             }
             else {

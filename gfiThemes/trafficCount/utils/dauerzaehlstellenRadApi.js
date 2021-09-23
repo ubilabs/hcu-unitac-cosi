@@ -473,7 +473,7 @@ export class DauerzaehlstellenRadApi {
             // e.g. "06|269544"
             const parts = this.feature.getProperties().max_radfahrende_monat_jahr.split("|");
 
-            onupdate(moment(parts[0], "MM").format("MMMM"), parseInt(parts[1], 10));
+            onupdate(parts[0], parseInt(parts[1], 10));
         }
 
         if (typeof oncomplete === "function") {
