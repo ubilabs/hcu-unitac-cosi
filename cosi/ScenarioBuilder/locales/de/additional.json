@@ -26,7 +26,7 @@
                     "title": "Einrichtungen verschieben",
                     "toggleOnlySimulated": "Nur Simulierte",
                     "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
-                    "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen werden sind nur temporär und werden nach der Sitzung nicht gespeichert.",
+                    "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen sind nur temporär und werden nach der Sitzung nicht gespeichert.",
                     "resetFeatureLocations": "Zurücksetzen"
                 },
                 "scenarioManager": {

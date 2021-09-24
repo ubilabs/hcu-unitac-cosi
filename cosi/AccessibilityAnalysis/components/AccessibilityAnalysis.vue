@@ -277,6 +277,7 @@ export default {
                             <v-row>
                                 <v-col cols="12">
                                     <v-btn
+                                        id="create-isochrones"
                                         dense
                                         small
                                         tile
@@ -286,6 +287,7 @@ export default {
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
                                     <v-icon
+                                        id="help"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
                                         @click="showHelp()"
                                     >
@@ -298,6 +300,7 @@ export default {
                             >
                                 <v-col cols="12">
                                     <v-btn
+                                        id="clear"
                                         dense
                                         small
                                         tile
