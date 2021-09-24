@@ -23,13 +23,6 @@ export default class ScenarioFeature {
         this.scenario = null;
         this.eventKeys = {};
 
-        // // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
-        // this.eventKeys[feature.getId()] = this.layer.getSource().on("change", () => {
-        //     if (!this.layer.getSource().hasFeature(this.feature)) {
-        //         this.layer.getSource().addFeature(this.feature);
-        //     }
-        // });
-
         storeOriginalFeatureData(this.feature);
     }
 
@@ -43,9 +36,9 @@ export default class ScenarioFeature {
         getClusterSource(this.layer).addFeature(this.feature);
 
         // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
-        this.eventKeys[this.feature.getId()] = this.layer.getSource().on("change", () => {
-            if (!this.layer.getSource().hasFeature(this.feature)) {
-                this.layer.getSource().addFeature(this.feature);
+        this.eventKeys[this.feature.getId()] = getClusterSource(this.layer).on("change", () => {
+            if (!getClusterSource(this.layer).hasFeature(this.feature)) {
+                getClusterSource(this.layer).addFeature(this.feature);
             }
         });
 
@@ -65,7 +58,9 @@ export default class ScenarioFeature {
 
         // unbind the listener
         unByKey(this.eventKeys[this.feature.getId()]);
-        source.removeFeature(this.feature);
+        if (source.getFeatureById(this.feature.getId())) {
+            source.removeFeature(this.feature);
+        }
 
         if (this.guideLayer) {
             removeSimulationTag(this.feature, this.guideLayer);
