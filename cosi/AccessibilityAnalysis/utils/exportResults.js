@@ -4,7 +4,6 @@ import store from "../../../../src/app-store";
 import methods from "../components/methodsAnalysis";
 import {Point} from "ol/geom.js";
 import Feature from "ol/Feature.js";
-import {GeoJSON} from "ol/format";
 import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 
@@ -16,6 +15,12 @@ function getPortalCrs () {
     return store.getters["Map/projectionCode"];
 }
 
+/**
+ * Gets the coordinates of the selected facility
+ * @param {*} selectedFacilityName - the selected facility for analysis
+ * @param {*} isFeatureDisabled - isFeatureDisabled function
+ * @returns {Array} the coordinates of all facilities
+ */
 function getCoordinates (selectedFacilityName, isFeatureDisabled) {
     const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
         name: selectedFacilityName,
@@ -42,8 +47,10 @@ function getCoordinates (selectedFacilityName, isFeatureDisabled) {
 }
 /**
  * Exports the results of the supply analysis as geojson
- * @param {*} results - the results of the analysis
- * @param {*} districts - the district features for geometry
+ * @param {*} mapLayer - the components mapLayer
+ * @param {*} coordinate - eventual coordinate
+ * @param {*} selectedFacilityName - the selected facility for analysis
+ * @param {*} isFeatureDisabled - isFeatureDisabled function
  * @returns {void}
  */
 export function exportAsGeoJson (mapLayer, coordinate, selectedFacilityName, isFeatureDisabled) {
@@ -55,8 +62,7 @@ export function exportAsGeoJson (mapLayer, coordinate, selectedFacilityName, isF
         },
         styles = [],
         colors = methods.getFeatureColors(),
-        stylesJson = {},
-        parser = new GeoJSON();
+        stylesJson = {};
 
     for (let i = 0; i < featureCollection.features.length; i++) {
         const style = {
@@ -64,7 +70,8 @@ export function exportAsGeoJson (mapLayer, coordinate, selectedFacilityName, isF
                 color: colors[i]
             },
             stroke: stroke
-        }
+        };
+
         featureCollection.features[i].style = style;
         styles.push(style);
     }
@@ -76,13 +83,17 @@ export function exportAsGeoJson (mapLayer, coordinate, selectedFacilityName, isF
     if (coordinate !== null) {
         const feature = new Feature(new Point(coordinate)),
             featureGeoJson = featureToGeoJson(feature, false, "EPSG:4326");
+
         featureCollection.features.push(featureGeoJson);
-    } else {
+    }
+    else {
+        // TODO: try to use the getCoordinates of methodsAnalysis.js - "this" has wrong context and the function will return null
         const coordinates = getCoordinates(selectedFacilityName, isFeatureDisabled);
-        console.log(coordinates);
+
         for (let i = 0; i < coordinates.length; i++) {
-            const feature = new Feature(new Point(coordinates[i]));
-            const featureGeoJson = featureToGeoJson(feature, false, "EPSG:4326");
+            const feature = new Feature(new Point(coordinates[i])),
+                featureGeoJson = featureToGeoJson(feature, false, "EPSG:4326");
+
             featureCollection.features.push(featureGeoJson);
         }
     }
