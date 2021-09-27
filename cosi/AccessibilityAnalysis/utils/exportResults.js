@@ -5,6 +5,8 @@ import methods from "../components/methodsAnalysis";
 import {Point} from "ol/geom.js";
 import Feature from "ol/Feature.js";
 import {GeoJSON} from "ol/format";
+import * as Proj from "ol/proj.js";
+import * as Extent from "ol/extent";
 
 /**
  * Gets the map's CRS from the app-store
@@ -14,13 +16,37 @@ function getPortalCrs () {
     return store.getters["Map/projectionCode"];
 }
 
+function getCoordinates (selectedFacilityName, isFeatureDisabled) {
+    const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
+        name: selectedFacilityName,
+        type: "layer"
+    });
+
+    if (selectedLayerModel) {
+        const features = selectedLayerModel.get("layer")
+            .getSource().getFeatures()
+            .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !isFeatureDisabled(f));
+
+        return features
+            .map((feature) => {
+                const geometry = feature.getGeometry();
+
+                if (geometry.getType() === "Point") {
+                    return geometry.getCoordinates().splice(0, 2);
+                }
+                return Extent.getCenter(geometry.getExtent());
+
+            }).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
+    }
+    return null;
+}
 /**
  * Exports the results of the supply analysis as geojson
  * @param {*} results - the results of the analysis
  * @param {*} districts - the district features for geometry
  * @returns {void}
  */
-export function exportAsGeoJson (mapLayer, coordinate) {
+export function exportAsGeoJson (mapLayer, coordinate, selectedFacilityName, isFeatureDisabled) {
     const projectionCode = getPortalCrs(),
         featureCollection = featuresToGeoJsonCollection(mapLayer.getSource().getFeatures(), false, projectionCode),
         stroke = {
@@ -52,11 +78,10 @@ export function exportAsGeoJson (mapLayer, coordinate) {
             featureGeoJson = featureToGeoJson(feature, false, "EPSG:4326");
         featureCollection.features.push(featureGeoJson);
     } else {
-        const coordinates = methods.getCoordinates();
+        const coordinates = getCoordinates(selectedFacilityName, isFeatureDisabled);
         console.log(coordinates);
-        for (let i = 0; i < coordinates.length; i += 5) {
-            const arrayItem = coordinates.slice(i, i + 5);
-            const feature = new Feature(new Point(arrayItem));
+        for (let i = 0; i < coordinates.length; i++) {
+            const feature = new Feature(new Point(coordinates[i]));
             const featureGeoJson = featureToGeoJson(feature, false, "EPSG:4326");
             featureCollection.features.push(featureGeoJson);
         }

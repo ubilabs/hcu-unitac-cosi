@@ -344,7 +344,7 @@ export default {
                                     tile
                                     color="green lighten-1"
                                     title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
-                                    @click="exportAsGeoJson(mapLayer, coordinate)"
+                                    @click="exportAsGeoJson(mapLayer, coordinate, selectedFacilityName, isFeatureDisabled)"
                                 >
                                     <span class="glyphicon glyphicon-floppy-disk" />
                                     Download GeoJSON
