@@ -61,9 +61,9 @@ export default {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
 
-        escapeCreateNewScenario () {
-            // ...
-        },
+        // escapeCreateNewScenario () {
+        //     // ...
+        // },
 
         createNewScenario () {
             const newScenario = new Scenario(this.newScenarioName, this.guideLayer);
@@ -284,9 +284,6 @@ export default {
         </v-row>
         <Modal
             :show-modal="createNewScenarioModalOpen"
-            @modalHid="escapeCreateNewScenario"
-            @clickedOnX="escapeCreateNewScenario"
-            @clickedOutside="escapeCreateNewScenario"
         >
             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
             <v-form

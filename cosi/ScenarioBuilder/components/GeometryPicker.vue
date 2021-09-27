@@ -99,6 +99,7 @@ export default {
     beforeDestroy () {
         this.unlisten();
         this.clearDrawPolygon();
+        this.removePointMarker();
     },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),

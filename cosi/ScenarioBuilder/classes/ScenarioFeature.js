@@ -19,10 +19,11 @@ export default class ScenarioFeature {
         this.layer = layer;
         this.guideLayer = guideLayer;
         this.scenarioData = {};
+        this.scenario = null;
 
         // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
         this.layer.getSource().on("change", () => {
-            if (!this.layer.getSource().hasFeature(this.feature)) {
+            if (!this.layer.getSource().hasFeature(this.feature) && this.scenario?.isActive) {
                 this.layer.getSource().addFeature(this.feature);
             }
         });
@@ -38,8 +39,10 @@ export default class ScenarioFeature {
     renderFeature (guideLayer) {
         getClusterSource(this.layer).addFeature(this.feature);
 
+        console.log(this.guideLayer, guideLayer);
         if (guideLayer || this.guideLayer) {
             this.guideLayer = guideLayer || this.guideLayer;
+            console.log(this.feature);
             addSimulationTag(this.feature, this.guideLayer, this.layer);
         }
     }
@@ -88,6 +91,7 @@ export default class ScenarioFeature {
         let prop;
 
         for (prop of props || Object.keys(originalProperties)) {
+            console.log(prop, originalProperties[prop])
             this.feature.set(prop, originalProperties[prop]);
 
             if (prop === "geometry") {

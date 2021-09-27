@@ -310,10 +310,9 @@ export default {
     /**
      * style isochrone features
      * @param {ol.Feature} features isochone features (polygons)
-     * @param {array} coordinate todo
      * @returns {void}
      */
-    styleFeatures: function (features, coordinate) {
+    styleFeatures: function (features) {
         for (let i = 0; i < features.length; i++) {
             features[i].setStyle(
                 new Style({

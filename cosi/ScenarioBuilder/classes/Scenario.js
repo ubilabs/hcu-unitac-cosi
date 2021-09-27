@@ -28,6 +28,7 @@ export default class Scenario {
 
         if (opts.simulatedFeatures) {
             for (const scenarioFeature of opts.simulatedFeatures) {
+                console.log(scenarioFeature, this.isActive);
                 this.addFeature(scenarioFeature, this.isActive);
             }
         }
@@ -55,6 +56,9 @@ export default class Scenario {
             console.error(`Scenario.addFeature: feature must be of Type ScenarioFeature. Got ${scenarioFeature?.constructor} instead.`);
             return null;
         }
+
+        scenarioFeature.scenario = this;
+
         if (!this.simulatedFeatures.find(item => item === scenarioFeature)) {
             this.simulatedFeatures.push(scenarioFeature);
         }
