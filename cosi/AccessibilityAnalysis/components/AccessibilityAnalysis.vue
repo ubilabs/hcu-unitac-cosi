@@ -98,9 +98,6 @@ export default {
             }
         },
         isochroneFeatures (newFeatures) {
-            if (newFeatures.length === 0) {
-                return;
-            }
             this.renderIsochrones(newFeatures);
         }
     },
@@ -289,7 +286,7 @@ export default {
                                     <v-icon
                                         id="help"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
-                                        @click="showHelp()"
+                                        @click.native="showHelp()"
                                     >
                                         mdi-help-circle-outline
                                     </v-icon>
@@ -305,7 +302,7 @@ export default {
                                         small
                                         tile
                                         color="grey lighten-1"
-                                        @click="clear()"
+                                        @click.native="clear()"
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>

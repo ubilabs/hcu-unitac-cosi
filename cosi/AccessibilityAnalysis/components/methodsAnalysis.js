@@ -72,13 +72,10 @@ export default {
             this.cleanup();
             const features = await this.getIsochrones({transportType: this.transportType, coordinates, scaleUnit: this.scaleUnit, distance: this.distance});
 
-            this.styleFeatures(features);
-            this.mapLayer.getSource().addFeatures(features);
-            this.isochroneFeatures = features;
-            this.currentCoordinates = coordinates;
-
             // TODO: get locale from store
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
+            this.setIsochroneFeatures(features);
+            this.currentCoordinates = coordinates;
         }
         else {
             this.inputReminder();
@@ -102,11 +99,8 @@ export default {
             const features = await this.getIsochrones({transportType: this.transportType, coordinates: [this.coordinate], scaleUnit: this.scaleUnit, distance: this.distance});
 
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
-            this.rawGeoJson = await this.featureToGeoJson(features[0]);
-            this.styleFeatures(features, [this.coordinate]);
-            this.mapLayer.getSource().addFeatures(features.reverse());
-            this.isochroneFeatures = features;
-            this.setIsochroneAsBbox();
+            this.setRawGeoJson(await this.featureToGeoJson(features[0]));
+            this.setIsochroneFeatures(features);
             this.showRequestButton = true;
             this.cleanup();
         }
@@ -115,8 +109,19 @@ export default {
         }
     },
     renderIsochrones (newFeatures) {
+        this.mapLayer.getSource().clear();
+
+        if (newFeatures.length === 0) {
+            if (this.extent?.length > 0) {
+                setBBoxToGeom(this.boundingGeometry);
+            }
+            return;
+        }
         this.styleFeatures(newFeatures);
         this.mapLayer.getSource().addFeatures(newFeatures);
+        if (this.mode === "point") {
+            this.setIsochroneAsBbox();
+        }
     },
     /**
      * add coordinate after user click
@@ -178,7 +183,7 @@ export default {
      * @param {array} coordinate todo
      * @returns {void}
      */
-    styleFeatures: function (features, coordinate) {
+    styleFeatures: function (features) {
         for (let i = 0; i < features.length; i++) {
             features[i].setStyle(
                 new Style({
@@ -230,13 +235,6 @@ export default {
         this.steps = [0, 0, 0];
         this.setRawGeoJson(null);
         this.setIsochroneFeatures([]);
-
-        if (this.mapLayer.getSource().getFeatures().length > 0) {
-            this.mapLayer.getSource().clear();
-            if (this.extent?.length > 0) {
-                setBBoxToGeom(this.boundingGeometry);
-            }
-        }
     },
     getFeatureColors: function () {
         return [
