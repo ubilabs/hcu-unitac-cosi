@@ -36,7 +36,8 @@ export function exportAsGeoJson (results, districts, layerList, selectedFieldA, 
     for (const feature of featureCollection.features) {
         const result = results.find(res => res.scope === feature.properties[getKeyOfAttrName()]);
 
-        feature.properties = {...feature.properties, ...result, total, average};
+        feature.properties = {...feature.properties, paramA_name: selectedFieldA.id,
+            paramB_name: selectedFieldB.id, ...result, total, average};
         delete feature.properties.stats;
     }
 
