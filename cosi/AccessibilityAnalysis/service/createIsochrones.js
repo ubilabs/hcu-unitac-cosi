@@ -1,5 +1,5 @@
 import requestIsochrones from "./requestIsochrones";
-import {readFeatures} from "./util.js";
+import {readFeatures} from "../components/util.js";
 import * as turf from "@turf/turf";
 
 /**

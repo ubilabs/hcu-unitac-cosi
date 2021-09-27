@@ -3,7 +3,7 @@ import Tool from "../../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
-import requestIsochrones from "./requestIsochrones";
+import requestIsochrones from "../service/requestIsochrones";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";

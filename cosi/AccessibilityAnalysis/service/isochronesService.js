@@ -1,5 +1,5 @@
 import Worker from "worker-loader!./isochronesWorker.js";
-import {readFeatures} from "./util";
+import {readFeatures} from "../components/util";
 
 /**
  *

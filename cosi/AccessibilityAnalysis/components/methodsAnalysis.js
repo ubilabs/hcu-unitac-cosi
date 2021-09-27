@@ -11,7 +11,7 @@ import
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
-import {createIsochrones} from "./isochronesService";
+import {createIsochrones} from "../service/isochronesService";
 
 
 export const methodConfig = {
@@ -58,8 +58,8 @@ export default {
      */
     createIsochronesRegion: async function () {
 
-        const coordinates = this.getCoordinates();
-        const distance = parseFloat(this.distance);
+        const coordinates = this.getCoordinates(),
+            distance = parseFloat(this.distance);
 
         if (
             coordinates !== null &&
@@ -90,7 +90,7 @@ export default {
      * @returns {void}
      */
     createIsochronesPoint: async function () {
-        const distance = parseFloat(this.distance)
+        const distance = parseFloat(this.distance);
 
         if (
             this.coordinate !== null &&

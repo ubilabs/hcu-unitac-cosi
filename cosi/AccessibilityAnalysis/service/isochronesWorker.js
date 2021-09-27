@@ -1,4 +1,4 @@
-import {writeFeatures, registerProjections} from "./util.js";
+import {writeFeatures, registerProjections} from "../components/util.js";
 import {createIsochrones} from "./createIsochrones";
 import "regenerator-runtime/runtime";
 

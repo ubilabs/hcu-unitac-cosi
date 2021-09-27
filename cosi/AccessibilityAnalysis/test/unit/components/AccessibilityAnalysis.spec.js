@@ -21,7 +21,7 @@ import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import * as turf from "@turf/turf";
-import {Worker} from "../../../components/isochronesWorker";
+import {Worker} from "../../../service/isochronesWorker";
 
 global.Worker = Worker;
 

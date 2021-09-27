@@ -1,7 +1,7 @@
 import {
     expect
 } from "chai";
-import requestIsochrones from "../../components/requestIsochrones";
+import requestIsochrones from "../../service/requestIsochrones";
 // import fetch from 'node-fetch';
 
 
