@@ -11,7 +11,6 @@ import
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
-import {createIsochrones} from "../service/isochronesService";
 
 
 export const methodConfig = {
@@ -34,6 +33,7 @@ export default {
             }
         }
         catch (err) {
+            console.error(err);
             try {
                 const res = JSON.parse(err.message || err.error.message);
 
@@ -70,7 +70,7 @@ export default {
             // TODO: Use store-method - see DistrictSelector component
             this.askUpdate = false;
             this.cleanup();
-            const features = await createIsochrones(this.transportType, coordinates, this.scaleUnit, distance);
+            const features = await this.getIsochrones({transportType: this.transportType, coordinates, scaleUnit: this.scaleUnit, distance: this.distance});
 
             this.styleFeatures(features);
             this.mapLayer.getSource().addFeatures(features);
@@ -98,7 +98,8 @@ export default {
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
-            const features = await createIsochrones(this.transportType, [this.coordinate], this.scaleUnit, this.distance);
+
+            const features = await this.getIsochrones({transportType: this.transportType, coordinates: [this.coordinate], scaleUnit: this.scaleUnit, distance: this.distance});
 
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
             this.rawGeoJson = await this.featureToGeoJson(features[0]);

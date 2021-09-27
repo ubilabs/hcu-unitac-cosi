@@ -3,8 +3,10 @@ import {readFeatures} from "../components/util";
 
 /**
  *
- * */
-export async function createIsochrones (transportType, coordinates, scaleUnit, distance) {
+ * @param {*} params parameters
+ * @return {*} isochrones
+ */
+export async function createIsochrones (params) {
     const worker = new Worker();
 
     return new Promise((resolve, reject) => {
@@ -21,6 +23,6 @@ export async function createIsochrones (transportType, coordinates, scaleUnit, d
         worker.onerror = e => {
             reject(e);
         };
-        worker.postMessage({transportType, coordinates, scaleUnit, distance});
+        worker.postMessage(params);
     });
 }

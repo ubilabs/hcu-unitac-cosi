@@ -5,6 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
+import {createIsochrones} from "../../../service/isochronesService";
 import AccessibilityAnalysis from "../../../store/index";
 import {
     expect
@@ -136,6 +137,14 @@ describe("AccessibilityAnalysis.vue", () => {
                             getters: {
                                 isFeatureDisabled: () => sinon.stub()
                             }
+                        },
+                        AccessibilityAnalysisService: {
+                            namespaced: true,
+                            actions: {
+                                async getIsochrones ({_getters, commit}, params) {
+                                    return createIsochrones(params);
+                                }
+                            }
                         }
                     }
                 },
@@ -250,6 +259,7 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         sinon.assert.callCount(addSingleAlertStub, 1);
         expect(addSingleAlertStub.firstCall.args[1]).to.eql(
@@ -273,6 +283,7 @@ describe("AccessibilityAnalysis.vue", () => {
 
         sourceStub.addFeatures.reset();
         await wrapper.find("#create-isochrones").trigger("click");
+        await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
