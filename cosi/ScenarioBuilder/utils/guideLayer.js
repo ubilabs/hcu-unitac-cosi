@@ -47,6 +47,8 @@ export function addSimulationTag (feature, layer, featureLayer) {
     clonedFeature.setGeometry(feature.getGeometry());
     // link the original layer for later use
     clonedFeature.set("featureLayer", featureLayer);
+    // remove feature's style if exists (automatically replace with layer style)
+    clonedFeature.setStyle(null);
 
     source.addFeature(clonedFeature);
 

@@ -63,8 +63,8 @@ export default {
                 }
             ],
             distance: "",
-            rawGeoJson: null,
-            isochroneFeatures: [],
+            // rawGeoJson: null,
+            // isochroneFeatures: [],
             steps: [0, 0, 0],
             layers: null,
             selectedFacilityName: null,
@@ -96,6 +96,12 @@ export default {
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
                 this.removePointMarker();
             }
+        },
+        isochroneFeatures (newFeatures) {
+            if (newFeatures.length === 0) {
+                return;
+            }
+            this.renderIsochrones(newFeatures);
         }
     },
     /**
@@ -268,35 +274,53 @@ export default {
                                 outlined
                                 dense
                             />
-                            <v-btn
-                                id="create-isochrones"
-                                dense
-                                small
-                                tile
-                                color="grey lighten-1"
-                                @click.native="createIsochrones()"
-                            >
-                                {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
-                            </v-btn>
-                            <v-icon
-                                id="help"
-                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
-                                @click="showHelp()"
-                            >
-                                mdi-help-circle-outline
-                            </v-icon>
-                            <v-btn
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-btn
+                                        id="create-isochrones"
+                                        dense
+                                        small
+                                        tile
+                                        color="grey lighten-1"
+                                        @click.native="createIsochrones()"
+                                    >
+                                        {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
+                                    </v-btn>
+                                    <v-icon
+                                        id="help"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
+                                        @click="showHelp()"
+                                    >
+                                        mdi-help-circle-outline
+                                    </v-icon>
+                                </v-col>
+                            </v-row>
+                            <v-row
                                 v-if="isochroneFeatures.length > 0"
-                                id="clear"
-                                dense
-                                small
-                                tile
-                                color="grey lighten-1"
-                                class="float-right"
-                                @click.native="clear()"
                             >
-                                {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
-                            </v-btn>
+                                <v-col cols="12">
+                                    <v-btn
+                                        id="clear"
+                                        dense
+                                        small
+                                        tile
+                                        color="grey lighten-1"
+                                        @click="clear()"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
+                                    </v-btn>
+                                    <v-btn
+                                        v-if="mode === 'point'"
+                                        dense
+                                        small
+                                        tile
+                                        color="grey lighten-1"
+                                        @click="requestInhabitants"
+                                    >
+                                        {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.requestInhabitants') }}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
                         </v-form>
                         <hr>
                         <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>

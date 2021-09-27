@@ -1,3 +1,29 @@
+
+/**
+ * @description creates a new layer mapping object
+ * @param {Object[]} layer the layer to map
+ * @returns {Object} the mapped and filtered vectorlayer
+ */
+export function createVectorLayerMappingObject (layer) {
+    const keyOfAttrName = layer.mouseHoverField || "name",
+        addressField = layer.addressField || "adresse";
+
+    return {
+        layerId: layer.id,
+        id: layer.name,
+        numericalValues: layer.numericalValues || [],
+        addressField: Array.isArray(addressField) // the address can be a single or multiple fields that will be combined for the table view
+            ? addressField
+            : [addressField],
+        categoryField: Array.isArray(layer.searchField) // last search field, must be set in config.json
+            ? layer.searchField[layer.searchField.length - 1]
+            : layer.searchField,
+        keyOfAttrName: Array.isArray(keyOfAttrName) // first mouse hover field
+            ? keyOfAttrName[0]
+            : keyOfAttrName
+    };
+}
+
 /**
  * @description Reducer function for the layers in a folder
  * @param {Object[]} layers the layers in the folder
@@ -7,23 +33,7 @@
 function mapVectorLayersInFolder (layers, condition) {
     return layers.reduce((layerlist, layer) => {
         if (layer[condition]) {
-            const keyOfAttrName = layer.mouseHoverField || "name",
-                addressField = layer.addressField || "adresse";
-
-            layerlist.push({
-                layerId: layer.id,
-                id: layer.name,
-                numericalValues: layer.numericalValues || [],
-                addressField: Array.isArray(addressField) // the address can be a single or multiple fields that will be combined for the table view
-                    ? addressField
-                    : [addressField],
-                categoryField: Array.isArray(layer.searchField) // last search field, must be set in config.json
-                    ? layer.searchField[layer.searchField.length - 1]
-                    : layer.searchField,
-                keyOfAttrName: Array.isArray(keyOfAttrName) // first mouse hover field
-                    ? keyOfAttrName[0]
-                    : keyOfAttrName
-            });
+            layerlist.push(createVectorLayerMappingObject(layer));
         }
         return layerlist;
     }, []);

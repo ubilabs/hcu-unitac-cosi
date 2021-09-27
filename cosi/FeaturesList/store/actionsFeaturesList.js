@@ -1,4 +1,5 @@
 import getClusterSource from "../../utils/getClusterSource";
+import {createVectorLayerMappingObject} from "../utils/getVectorlayerMapping";
 
 const actions = {
     /**
@@ -26,6 +27,34 @@ const actions = {
                 commit("removeDisabledFeatureItem", featureItem);
             }
         }
+    },
+    /**
+     * @description adds a layer to the mapping on runtime
+     * @param {Function} store.commit - Function to commit a mutation.
+     * @param {Object} store.getters - the featuresList getters
+     * @param {Object} layer - The layer object to add
+     * @returns {void}
+     */
+    addVectorlayerToMapping ({commit, getters}, layer) {
+        const {mapping} = getters,
+            layerMap = createVectorLayerMappingObject(layer);
+        let group = mapping.find(x => x.group === layer.group || layer.parentId),
+            _mapping = mapping;
+
+        if (group) {
+            group.layer.push(layerMap);
+        }
+        else {
+            group = {
+                group: "Importierte Datensätze",
+                layer: [
+                    layerMap
+                ]
+            };
+            _mapping = [..._mapping, group];
+        }
+
+        commit("setMapping", [..._mapping]);
     }
 };
 

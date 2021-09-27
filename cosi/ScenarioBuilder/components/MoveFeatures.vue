@@ -3,6 +3,7 @@ import {Select, Translate} from "ol/interaction";
 import {mapGetters, mapActions} from "vuex";
 import {unpackCluster} from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
+import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
 
 export default {
     name: "MoveFeatures",
@@ -195,7 +196,11 @@ export default {
                 // modify the feature on the scenario. Update features already stored in the scenario
                 // use the cloned geometry of the point or polygon as reference
                 this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
-                // this.activeScenario.modifyFeature(originalFeature, {location: originalFeature.getGeometry().getCoordinates()});
+
+                if (originalFeature.get("isSimulation")) {
+                    removeSimulationTag(originalFeature, this.guideLayer);
+                    addSimulationTag(originalFeature, this.guideLayer, this.layer);
+                }
             }
         },
 

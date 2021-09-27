@@ -109,12 +109,7 @@ export default class Scenario {
         }
 
         // store the altered properties in the scenario
-        for (const prop in properties) {
-            // store the scenario specific value for a prop on the scenario
-            scenarioFeature.scenarioData[prop] = properties[prop];
-            // store the currently active values on the feature
-            scenarioFeature.feature.set(prop, properties[prop]);
-        }
+        scenarioFeature.setProperties(properties);
     }
 
     /**

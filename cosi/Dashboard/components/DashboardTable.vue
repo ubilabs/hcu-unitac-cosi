@@ -97,7 +97,8 @@ export default {
             "keyOfAttrNameStats",
             "districtLevels",
             "mapping",
-            "loadend"
+            "loadend",
+            "metadataUrls"
         ]),
         ...mapGetters("Map", ["layerById"]),
         ...mapGetters("Language", ["currentLocale"]),
@@ -357,6 +358,12 @@ export default {
             exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
         },
 
+        openMetadata () {
+            this.metadataUrls.forEach(url => {
+                window.open(url);
+            });
+        },
+
         calculateStats,
         calculateCorrelation,
         groupMapping
@@ -405,6 +412,14 @@ export default {
                     outlined
                     dense
                 />
+            </v-col>
+            <v-col cols="4">
+                <v-icon
+                    title="Metadaten"
+                    @click="openMetadata()"
+                >
+                    mdi-information
+                </v-icon>
             </v-col>
         </v-row>
         <v-row>
