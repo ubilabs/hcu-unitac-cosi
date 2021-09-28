@@ -529,6 +529,7 @@ export default {
                         </template>
                     </button>
                     <button
+                        id="switch"
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         title="Visualisierung an/ aus"

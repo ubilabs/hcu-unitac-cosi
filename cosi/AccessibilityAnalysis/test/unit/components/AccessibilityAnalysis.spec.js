@@ -42,17 +42,22 @@ before(() => {
 function expectFeaturesEqual (actualFeatures, expFeatures) {
     expect(actualFeatures.length, expFeatures.length);
 
+    actualFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
+    expFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
+    const parser = new GeoJSON();
+
     for (let i = 0; i < actualFeatures.length; i++) {
         const f1 = turf.polygon(actualFeatures[i].getGeometry().getCoordinates()),
             f2 = turf.polygon(expFeatures[i].getGeometry().getCoordinates());
 
         expect(turf.booleanEqual(f1, f2)).to.be.true;
+        expect(parser.writeFeature(actualFeatures[i]).properties).to.deep.equal(parser.writeFeature(expFeatures[i]).properties);
     }
 }
 
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify,
+    let component, store, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify,
 
         coordiantes = [0, 0];
 
@@ -161,6 +166,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     afterEach(function () {
+        component.destroy();
         sandbox.restore();
     });
 
@@ -178,7 +184,7 @@ describe("AccessibilityAnalysis.vue", () => {
             }
             return null;
         });
-        const ret = shallowMount(AccessibilityAnalysisComponent, {
+        component = shallowMount(AccessibilityAnalysisComponent, {
             stubs: {Tool},
             store,
             localVue,
@@ -196,8 +202,8 @@ describe("AccessibilityAnalysis.vue", () => {
             }
         });
 
-        await ret.vm.$nextTick();
-        return ret;
+        await component.vm.$nextTick();
+        return component;
     }
 
     it("renders Component", async () => {
@@ -251,13 +257,13 @@ describe("AccessibilityAnalysis.vue", () => {
             scaleUnit: "time",
             distance: 10
         });
-
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
-        sinon.assert.callCount(sourceStub.addFeatures, 1);
-        expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
-            JSON.stringify(features));
+        expect(sourceStub.addFeatures.callCount).to.equal(1);
+        expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
+            new GeoJSON().readFeatures(features));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
 
@@ -284,7 +290,7 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
 
-        sinon.assert.callCount(sourceStub.addFeatures, 1);
+        expect(sourceStub.addFeatures.callCount).to.equal(1);
 
         expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
             new GeoJSON().readFeatures(featuresRegion));

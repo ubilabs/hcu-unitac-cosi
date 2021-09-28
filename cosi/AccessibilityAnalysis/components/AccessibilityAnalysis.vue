@@ -305,7 +305,7 @@ export default {
                                         small
                                         tile
                                         color="grey lighten-1"
-                                        @click="clear()"
+                                        @click.native="clear()"
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>
