@@ -82,9 +82,10 @@ export default class ScenarioFeature {
     /**
      * Resets a features properties to the original data
      * @param {String[]} [props] - the props to restore
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetProperties (props) {
+    resetProperties (props, purge = false) {
         const originalProperties = this.feature.get("originalData");
         let prop;
 
@@ -98,14 +99,17 @@ export default class ScenarioFeature {
             }
         }
 
-        this.scenarioData = {};
+        if (purge) {
+            this.clearScenarioData();
+        }
     }
 
     /**
      * Retrieves the original location of a feature and resets its position on the map
+     * @param {Boolean} [purge=false] - whether to clear the stored scenario geometry definitively
      * @returns {void}
      */
-    resetLocation () {
+    resetLocation (purge = false) {
         const originalGeom = this.feature.get("originalData").geometry;
 
         if (originalGeom) {
@@ -116,8 +120,18 @@ export default class ScenarioFeature {
                 addSimulationTag(this.feature, this.guideLayer);
             }
 
-            delete this.scenarioData.geometry;
+            if (purge) {
+                delete this.scenarioData.geometry;
+            }
         }
+    }
+
+    /**
+     * Clears scenario data
+     * @returns {void}
+     */
+    clearScenarioData () {
+        this.scenarioData = {};
     }
 
     /**

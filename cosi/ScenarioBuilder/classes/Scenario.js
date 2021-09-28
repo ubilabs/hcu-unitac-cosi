@@ -165,7 +165,7 @@ export default class Scenario {
         let item;
 
         for (item of scenarioFeatures) {
-            item.resetProperties();
+            item.resetLocation(true);
         }
     }
 
