@@ -73,8 +73,7 @@ export default {
             const features = await this.getIsochrones({transportType: this.transportType, coordinates, scaleUnit: this.scaleUnit, distance: this.distance});
 
             this.styleFeatures(features);
-            this.mapLayer.getSource().addFeatures(features);
-            this.isochroneFeatures = features;
+            this.setIsochroneFeatures(features);
             this.currentCoordinates = coordinates;
 
             // TODO: get locale from store
@@ -104,8 +103,7 @@ export default {
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
             this.rawGeoJson = await this.featureToGeoJson(features[0]);
             this.styleFeatures(features, [this.coordinate]);
-            this.mapLayer.getSource().addFeatures(features.reverse());
-            this.isochroneFeatures = features;
+            this.setIsochroneFeatures(features);
             this.setIsochroneAsBbox();
             this.showRequestButton = true;
             this.cleanup();
@@ -178,7 +176,7 @@ export default {
      * @param {array} coordinate todo
      * @returns {void}
      */
-    styleFeatures: function (features, coordinate) {
+    styleFeatures: function (features) {
         for (let i = 0; i < features.length; i++) {
             features[i].setStyle(
                 new Style({
