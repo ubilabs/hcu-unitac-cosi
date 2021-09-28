@@ -31,7 +31,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe.only("addons/cosi/QueryDistricts/", () => {
+describe("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
