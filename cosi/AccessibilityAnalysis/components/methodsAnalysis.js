@@ -201,6 +201,7 @@ export default {
             });
 
             this.setRawGeoJson(await this.featureToGeoJson(newFeatures[0]));
+
             this.setIsochroneFeatures(newFeatures);
 
             await this.$nextTick();
