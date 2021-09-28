@@ -53,18 +53,20 @@ function expectFeaturesEqual (actualFeatures, expFeatures) {
 
     actualFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
     expFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
+    const parser = new GeoJSON();
 
     for (let i = 0; i < actualFeatures.length; i++) {
         const f1 = turf.polygon(actualFeatures[i].getGeometry().getCoordinates()),
             f2 = turf.polygon(expFeatures[i].getGeometry().getCoordinates());
 
         expect(turf.booleanEqual(f1, f2)).to.be.true;
+        expect(parser.writeFeature(actualFeatures[i]).properties).to.deep.equal(parser.writeFeature(expFeatures[i]).properties);
     }
 }
 
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let store, sandbox, sourceStub, clearStub, addSingleAlertStub, cleanupStub, vuetify,
+    let component, store, clearStub, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify,
 
         coordiantes = [0, 0];
 
@@ -141,6 +143,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         AccessibilityAnalysisService: {
                             namespaced: true,
                             actions: {
+                                // eslint-disable-next-line no-unused-vars
                                 async getIsochrones ({_getters, commit}, params) {
                                     return createIsochrones(params);
                                 }
@@ -182,6 +185,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     afterEach(function () {
+        component.destroy();
         sandbox.restore();
     });
 
@@ -199,7 +203,7 @@ describe("AccessibilityAnalysis.vue", () => {
             }
             return null;
         });
-        const ret = shallowMount(AccessibilityAnalysisComponent, {
+        component = shallowMount(AccessibilityAnalysisComponent, {
             stubs: {Tool},
             store,
             localVue,
@@ -218,8 +222,8 @@ describe("AccessibilityAnalysis.vue", () => {
             });
         };
 
-        await ret.vm.$nextTick();
-        return ret;
+        await component.vm.$nextTick();
+        return component;
     }
 
     it("renders Component", async () => {
@@ -290,13 +294,10 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
 
-        sinon.assert.callCount(clearStub, 1);
-        sinon.assert.callCount(sourceStub.addFeatures, 1);
-        // console.log(sourceStub.addFeatures.getCall(0).args[0]);
-        // expect(new GeoJSON().writeFeatures(sourceStub.addFeatures.getCall(0).args[0])).to.equal(
-        //     JSON.stringify(features));
-        // expect(sourceStub.addFeatures.getCall(0).args[0].features.length).to.equal(
-        //     features.length);
+
+        expect(sourceStub.addFeatures.callCount).to.equal(1);
+        expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
+            new GeoJSON().readFeatures(features));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
 
@@ -328,7 +329,7 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
 
-        sinon.assert.callCount(sourceStub.addFeatures, 1);
+        expect(sourceStub.addFeatures.callCount).to.equal(1);
 
         expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
             new GeoJSON().readFeatures(featuresRegion));
