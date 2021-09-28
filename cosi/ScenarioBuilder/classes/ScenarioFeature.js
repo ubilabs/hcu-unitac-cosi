@@ -39,10 +39,8 @@ export default class ScenarioFeature {
     renderFeature (guideLayer) {
         getClusterSource(this.layer).addFeature(this.feature);
 
-        console.log(this.guideLayer, guideLayer);
         if (guideLayer || this.guideLayer) {
             this.guideLayer = guideLayer || this.guideLayer;
-            console.log(this.feature);
             addSimulationTag(this.feature, this.guideLayer, this.layer);
         }
     }
@@ -91,13 +89,16 @@ export default class ScenarioFeature {
         let prop;
 
         for (prop of props || Object.keys(originalProperties)) {
-            console.log(prop, originalProperties[prop])
-            this.feature.set(prop, originalProperties[prop]);
 
             if (prop === "geometry") {
                 this.resetLocation();
             }
+            else {
+                this.feature.set(prop, originalProperties[prop]);
+            }
         }
+
+        this.scenarioData = {};
     }
 
     /**
@@ -114,6 +115,8 @@ export default class ScenarioFeature {
                 removeSimulationTag(this.feature, this.guideLayer);
                 addSimulationTag(this.feature, this.guideLayer);
             }
+
+            delete this.scenarioData.geometry;
         }
     }
 

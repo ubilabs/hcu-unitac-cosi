@@ -49,11 +49,9 @@ export default {
         activeScenario (newActiveScenario, oldActiveScenario) {
             if (oldActiveScenario) {
                 oldActiveScenario.hideScenario();
-                oldActiveScenario.isActive = false;
             }
             if (newActiveScenario) {
                 newActiveScenario.restore();
-                newActiveScenario.isActive = true;
             }
         }
     },

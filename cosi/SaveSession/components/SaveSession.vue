@@ -108,8 +108,6 @@ export default {
             this.serializeState();
             this.storeToLocalStorage();
 
-            console.log(this.state);
-
             this.addSingleAlert({
                 content: "Sitzung erfolgreich gespeichert!",
                 category: "Success",
@@ -165,6 +163,7 @@ export default {
         },
 
         storeToLocalStorage () {
+            console.log(this.state);
             this.localStorage.setItem("cosi-state", JSON.stringify(this.state));
         },
 
@@ -389,10 +388,19 @@ export default {
         },
 
         serializeScenarioFeature (scenarioFeature, parser) {
+            const feature = parser.writeFeatureObject(scenarioFeature.feature);
+
+            // feature.properties.originalData = null;
+            if (Object.hasOwnProperty.call(feature.properties, "originalData")) {
+                console.log("isses wech?");
+                delete feature.properties.originalData;
+            }
+
             return {
                 ...scenarioFeature,
                 guideLayer: null,
-                feature: parser.writeFeatureObject(scenarioFeature.feature),
+                scenario: null,
+                feature: feature,
                 layer: scenarioFeature.layer.get("id")
             };
         },

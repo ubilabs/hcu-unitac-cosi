@@ -57,6 +57,7 @@ export default class Scenario {
             return null;
         }
 
+        /** @todo is this the right place? */
         scenarioFeature.scenario = this;
 
         if (!this.simulatedFeatures.find(item => item === scenarioFeature)) {
@@ -198,11 +199,14 @@ export default class Scenario {
     hideScenario () {
         let item;
 
+        this.isActive = false;
         this.resetAllFeatures();
         this.resetAllDistricts();
         for (item of this.simulatedFeatures) {
             item.hideFeature();
         }
+
+        console.log(this);
     }
 
     /**
@@ -251,6 +255,8 @@ export default class Scenario {
      * @returns {void}
      */
     restore () {
+        this.isActive = true;
+
         for (const item of this.simulatedFeatures) {
             if (!getClusterSource(item.layer)
                 .getFeatures()

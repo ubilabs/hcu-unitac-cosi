@@ -197,6 +197,8 @@ export default {
                 // use the cloned geometry of the point or polygon as reference
                 this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
 
+                console.log(this.activeScenario);
+
                 if (originalFeature.get("isSimulation")) {
                     removeSimulationTag(originalFeature, this.guideLayer);
                     addSimulationTag(originalFeature, this.guideLayer, this.layer);
