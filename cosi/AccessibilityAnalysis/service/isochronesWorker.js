@@ -45,4 +45,9 @@ export class Worker {
             }
         }, {data: args});
     }
+
+    // eslint-disable-next-line require-jsdoc
+    terminate () {
+        this.status = "terminated";
+    }
 }
