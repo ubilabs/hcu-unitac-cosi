@@ -41,13 +41,6 @@
           [563409.0877987837, 5933654.577426535]
         ]
       ]
-    },
-    "properties": {
-      "group_index": 0,
-      "value": 198,
-      "center": [9.98924303775824, 53.54993984587356],
-      "featureType": "Erreichbarkeit ab einem Referenzpunkt",
-      "coordinate": ["10.155828082155567, 53.60323024735499"]
     }
   }, {
     "type": "Feature",
@@ -125,14 +118,7 @@
           [561008.2255414154, 5933462.371612946]
         ]
       ]
-    },
-    "properties": {
-      "group_index": 0,
-      "value": 402,
-      "center": [9.98924303775824, 53.54993984587356],
-      "featureType": "Erreichbarkeit ab einem Referenzpunkt",
-      "coordinate": ["10.155828082155567, 53.60323024735499"]
-    }
+}
   }, {
     "type": "Feature",
     "geometry": {
@@ -281,13 +267,6 @@
           [558559.555864421, 5933238.419117829]
         ]
       ]
-    },
-    "properties": {
-      "group_index": 0,
-      "value": 600,
-      "center": [9.98924303775824, 53.54993984587356],
-      "featureType": "Erreichbarkeit ab einem Referenzpunkt",
-      "coordinate": ["10.155828082155567, 53.60323024735499"]
     }
   }]
 }

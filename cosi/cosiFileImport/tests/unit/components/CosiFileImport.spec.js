@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
-import CosiFileImportComponent from "../../../../components/CosiFileImport.vue";
-import CosiFileImport from "../../../../store/indexCosiFileImport";
+import CosiFileImportComponent from "../../../components/CosiFileImport.vue";
+import CosiFileImport from "../../../store/indexCosiFileImport";
 import {expect} from "chai";
 
 const localVue = createLocalVue();

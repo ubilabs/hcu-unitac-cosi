@@ -20,7 +20,7 @@ export function setWorkerFactory (factory) {
  * @param {*} progress progress callback
  * @return {*} isochrones
  */
-async function createIsochrones (params, progress) {
+export async function createIsochrones (params, progress) {
     if (worker) {
         worker.terminate();
     }

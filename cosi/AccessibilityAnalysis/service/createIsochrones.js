@@ -63,6 +63,7 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
 
     newFeatures.forEach((feature) => {
         feature.set("featureType", featureType);
+        feature.set("coordinate", [coordinate]);
     });
 
     return newFeatures;

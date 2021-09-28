@@ -19,7 +19,7 @@ after(() => {
     global.fetch = undefined;
 });
 
-describe.only("createIsochrones", () => {
+describe("createIsochrones", () => {
 
     // eslint-disable-next-line require-jsdoc
     async function mockFetch (error = undefined) {
