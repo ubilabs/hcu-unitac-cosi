@@ -1,21 +1,31 @@
 import {createIsochrones} from "./isochronesService";
 
 const id = "AccessibilityAnalysisService",
-    getters = {
-    },
     actions = {
         // eslint-disable-next-line no-unused-vars
-        async getIsochrones ({_getters, commit}, params) {
-            return createIsochrones(params);
+        async getIsochrones ({getters, commit}, params) {
+            const ret = await createIsochrones(params, (p) => commit("setProgress", p));
+
+            commit("setProgress", 0);
+            return ret;
         }
+
     },
     store = {
         namespaced: true,
         state: {
             active: false,
-            id
+            id,
+            progress: 0
         },
-        getters,
+        getters: {progress: s => {
+            return s.progress;
+        }},
+        mutations: {
+            "setProgress": (moduleState, payload) => {
+                moduleState.progress = payload;
+            }
+        },
         actions
     };
 

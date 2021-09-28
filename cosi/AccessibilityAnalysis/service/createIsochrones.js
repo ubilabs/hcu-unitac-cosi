@@ -4,14 +4,22 @@ import * as turf from "@turf/turf";
 
 /**
  * create isochrones features
- * @returns {void}
+ * @export
+ * @param {*} {transportType, coordinates, scaleUnit, distance} parameters
+ * @param {*} progress progress callback
+ * @return {*} features
  */
-export async function createIsochrones ({transportType, coordinates, scaleUnit, distance}) {
+export async function createIsochrones ({transportType, coordinates, scaleUnit, distance}, progress) {
+    let ret;
+
     if (coordinates.length === 1) {
-        return createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance);
+        progress(50);
+        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance);
+        progress(100);
+        return ret;
     }
 
-    return createIsochronesRegion(transportType, coordinates, scaleUnit, distance);
+    return createIsochronesRegion(transportType, coordinates, scaleUnit, distance, null, progress);
 }
 
 let abortController;
@@ -67,9 +75,10 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
  * @param {*} scaleUnit scaleUnit
  * @param {*} distance distance
  * @param {*} selectedFacilityName selectedFacilityName
+ * @param {*} progress progress callback
  * @return {*} features
  */
-async function createIsochronesRegion (transportType, coordinates, scaleUnit, distance, selectedFacilityName) {
+async function createIsochronesRegion (transportType, coordinates, scaleUnit, distance, selectedFacilityName, progress) {
 
     if (abortController) {
         abortController.abort();
@@ -88,6 +97,9 @@ async function createIsochronesRegion (transportType, coordinates, scaleUnit, di
 
         coordinatesList.push(arrayItem);
     }
+
+    let k = 0,
+        features = [];
 
     for (const coords of coordinatesList) {
         // TODO: make use of new OpenRouteService component
@@ -109,8 +121,9 @@ async function createIsochronesRegion (transportType, coordinates, scaleUnit, di
         }
         json.features = reversedFeatures;
         groupedFeaturesList.push(groupedFeatures);
+        progress(((k + 1) / coordinatesList.length) * 90);
+        k++;
     }
-    let features = [];
 
     for (let i = 0; i < 3; i++) {
         let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
@@ -140,6 +153,7 @@ async function createIsochronesRegion (transportType, coordinates, scaleUnit, di
         });
         features = features.concat(layerUnionFeatures);
     }
+    progress(100);
     return features;
 }
 

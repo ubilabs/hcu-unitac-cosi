@@ -80,6 +80,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
+        ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
@@ -321,6 +322,11 @@ export default {
                                 </span>
                             </template>
                         </div>
+                        <v-progress-linear
+                            v-if="progress > 0"
+                            v-model="progress"
+                            background-color="white"
+                        />
                     </div>
                 </v-app>
             </template>

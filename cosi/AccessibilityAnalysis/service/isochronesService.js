@@ -6,7 +6,7 @@ import {readFeatures} from "../components/util";
  * @param {*} params parameters
  * @return {*} isochrones
  */
-export async function createIsochrones (params) {
+export async function createIsochrones (params, progress) {
     const worker = new Worker();
 
     return new Promise((resolve, reject) => {
@@ -16,8 +16,11 @@ export async function createIsochrones (params) {
             if (data.error) {
                 reject(data.error);
             }
-            else {
-                resolve(readFeatures(data));
+            else if (data.result) {
+                resolve(readFeatures(data.result));
+            }
+            else if (data.progress) {
+                progress(data.progress);
             }
         };
         worker.onerror = e => {
