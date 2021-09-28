@@ -90,6 +90,10 @@ export default {
      * @returns {void}
      */
     async created () {
+        if (this.geomField.type) {
+            this.geometry.type = this.isGml ? getOlGeomTypeByGmlType(this.geomField.type) : this.geomField.type;
+        }
+
         await this.createDrawingLayer();
     },
     beforeDestroy () {
@@ -213,11 +217,10 @@ export default {
          * @returns {void}
          */
         pickPolygonBySearchbar () {
-            const geometry = getSearchResultsGeometry(),
-                type = geometry?.getType();
+            const geometry = getSearchResultsGeometry();
 
-            if (type === "Polygon" || type === "MultiPolygon") {
-                this.geometry.value = geometry;
+            if (geometry) {
+                this.setGeometry(geometry);
             }
         },
 
@@ -294,6 +297,18 @@ export default {
         },
 
         /**
+         * Sets the visible geom on the drawLayer by geom
+         * @param {module:ol/Geometry} geom - the geom
+         * @returns {void}
+         */
+        setDrawPolygon (geom) {
+            this.clearDrawPolygon();
+            this.drawLayer.getSource().addFeature(new Feature({
+                geometry: geom
+            }));
+        },
+
+        /**
          * Undoes the last drawing step from the draw interaction
          * @returns {void}
          */
@@ -329,12 +344,10 @@ export default {
          */
         drawPolygonByCoords (coords) {
             try {
-                const polygon = new Polygon(coords),
-                    feature = new Feature({geometry: this.geometry.value});
+                const polygon = new Polygon(coords);
 
-                this.clearDrawPolygon();
+                this.setDrawPolygon(polygon);
                 this.geometry.value = polygon;
-                this.drawLayer.getSource().addFeature(feature);
             }
             catch (e) {
                 console.warn("GeometryPicker: The entered geometry is not a valid Polygon. Please check the List of Coordinates.");
@@ -377,6 +390,19 @@ export default {
             }
             if (this.geometry.type === "Polygon") {
                 this.drawPolygonByCoords(coords);
+            }
+        },
+
+        setGeometry (geometry) {
+            const type = geometry.getType();
+
+            this.geometry.value = geometry;
+
+            if (this.geometry.type === "Point" && type === "Point") {
+                this.placingPointMarker(geometry.getCoordinates());
+            }
+            else if (this.geometry.type === "Polygon" && (type === "Polygon" || type === "MultiPolygon")) {
+                this.setDrawPolygon(geometry);
             }
         }
     }

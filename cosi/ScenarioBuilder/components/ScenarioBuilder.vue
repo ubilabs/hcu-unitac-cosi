@@ -19,7 +19,7 @@ import MoveFeatures from "./MoveFeatures.vue";
 import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
-import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon} from "../utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../utils/geomPickerHandler";
 
 export default {
     name: "ScenarioBuilder",
@@ -105,14 +105,24 @@ export default {
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
          */
-        active (newActive) {
-            if (!newActive) {
+        async active (newActive) {
+            if (newActive) {
+                console.log(this.geometry);
+                if (this.geometry) {
+                    // wait for 2 ticks for the drawing layer to initialize
+                    await this.$nextTick();
+                    this.$refs["geometry-picker"].geometry.value = this.geometry;
+                    await this.$nextTick();
+                    geomPickerSetGeometry(this.$refs["geometry-picker"], this.geometry);
+                }
+            }
+            else {
                 const model = getComponent(this.id);
 
                 if (model) {
                     model.set("isActive", false);
                 }
-                this.removePointMarker();
+                geomPickerUnlisten(this.$refs["geometry-picker"]);
             }
         },
 
@@ -137,6 +147,7 @@ export default {
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("Map", ["createLayer"]),
+        ...mapMutations("Map", ["setCenter"]),
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules

@@ -6,7 +6,12 @@
   "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
-  "fileImportAddon": {
+  "cosiFileImport": {
+    "path": "cosi/cosiFileImport",
+    "type": "tool"
+  },
+  "ImportedFeatureHandler": {
+    "path": "cosi/ImportedFeatureHandler",
     "type": "tool"
   },
   "populationRequest": {

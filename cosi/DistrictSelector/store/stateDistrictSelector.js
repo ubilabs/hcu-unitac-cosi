@@ -34,6 +34,7 @@ const state = {
     renderToWindow: true,
     resizableWindow: false,
     selectedDistrictLevel: {},
+    selectedDistrictLevelId: "",
     selectedDistrictsCollection: null,
     selectedDistrictNames: [],
     additionalInfoLayers: {},

@@ -374,7 +374,9 @@ export default {
         changeDistrictSelection: function () {
             const refDistrictName = this.refDistrict?.get(this.keyOfAttrName);
 
-            this.setDistrictsByName(refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames);
+            this.setDistrictsByName({
+                districtNames: refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames
+            });
         },
 
         /**
@@ -584,10 +586,15 @@ export default {
         getCoordinate: function (feature) {
             const geometry = feature.getGeometry();
 
-            if (geometry.getType() === "Point") {
-                return geometry.getCoordinates().splice(0, 2);
+            if (geometry) {
+                if (geometry.getType() === "Point") {
+                    return geometry.getCoordinates().splice(0, 2);
+                }
+
+                return Extent.getCenter(geometry?.getExtent());
             }
-            return Extent.getCenter(geometry.getExtent());
+
+            return [0, 0];
         },
 
         exportTable: function () {

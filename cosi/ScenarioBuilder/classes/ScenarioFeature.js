@@ -72,7 +72,7 @@ export default class ScenarioFeature {
 
                 if (this.guideLayer) {
                     removeSimulationTag(this.feature, this.guideLayer);
-                    addSimulationTag(this.feature, this.guideLayer);
+                    addSimulationTag(this.feature, this.guideLayer, this.layer);
                 }
             }
         }
@@ -114,13 +114,36 @@ export default class ScenarioFeature {
     }
 
     /**
+     * Edits the scenario feature's properties
+     * CAUTION: Does not yet work for geometries
+     * @param {Object} properties - the prop key to store a value to
+     * @returns {void}
+     */
+    setProperties (properties) {
+        for (const prop in properties) {
+            this.set(prop, properties[prop]);
+        }
+    }
+
+    /**
+     * Retrieves the feature's original properties
+     * @returns {Object} the stored original properties
+     */
+    getOriginalProperties () {
+        return this.feature.get("originalData");
+    }
+
+    /**
      * Stores a key/value pair specific to the scenario
      * @param {String} prop - the prop key to store a value to
      * @param {*} val - the value to store
      * @returns {void}
      */
     set (prop, val) {
+        // store the scenario specific value for a prop on the scenario
         this.scenarioData[prop] = val;
+        // store the currently active values on the feature
+        this.feature.set(prop, val);
     }
 
     /**

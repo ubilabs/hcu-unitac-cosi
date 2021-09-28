@@ -171,6 +171,9 @@ export default {
             if (!newState) {
                 this.$store.commit("Tools/CalculateRatio/setDataToColorCodeMap", false);
             }
+        },
+        facilitiesMapping () {
+            // this.updateFacilities();
         }
     },
     created () {
@@ -187,9 +190,11 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
+         * @todo triggers too often!!! refactor
          * @returns {void}
          */
         updateFacilities () {
@@ -654,7 +659,8 @@ export default {
                 dataSet.data.reverse();
             });
 
-            this.setNewDataSet(graphObj);
+            // this.setNewDataSet(graphObj);
+            this.channelGraphData(graphObj);
         },
 
         // the export function from utils

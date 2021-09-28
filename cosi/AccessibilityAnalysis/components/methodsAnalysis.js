@@ -114,6 +114,10 @@ export default {
             this.inputReminder();
         }
     },
+    renderIsochrones (newFeatures) {
+        this.styleFeatures(newFeatures);
+        this.mapLayer.getSource().addFeatures(newFeatures);
+    },
     /**
      * add coordinate after user click
      * @param {event} evt Event from User click
@@ -176,9 +180,6 @@ export default {
      */
     styleFeatures: function (features, coordinate) {
         for (let i = 0; i < features.length; i++) {
-            features[i].setProperties({
-                coordinate
-            });
             features[i].setStyle(
                 new Style({
                     fill: new Fill({
@@ -200,7 +201,8 @@ export default {
      */
     setIsochroneAsBbox: function () {
         const polygonGeometry = this.isochroneFeatures[
-                this.steps.length - 1
+                // this.steps.length - 1
+                0
             ].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
@@ -226,8 +228,8 @@ export default {
         this.layers = null;
         this.showRequestButton = false;
         this.steps = [0, 0, 0];
-        this.rawGeoJson = null;
-        this.isochroneFeatures = [];
+        this.setRawGeoJson(null);
+        this.setIsochroneFeatures([]);
 
         if (this.mapLayer.getSource().getFeatures().length > 0) {
             this.mapLayer.getSource().clear();
