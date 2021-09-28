@@ -273,8 +273,7 @@ describe("AccessibilityAnalysis.vue", () => {
             });
     });
 
-
-    it.only("trigger button with user input and point selected", async () => {
+    it("trigger button with user input and point selected", async () => {
         const wrapper = await mount([]);
 
         await wrapper.setData({

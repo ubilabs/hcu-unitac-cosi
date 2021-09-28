@@ -286,7 +286,7 @@ export default {
                                     <v-icon
                                         id="help"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
-                                        @click.native="showHelp()"
+                                        @click="showHelp()"
                                     >
                                         mdi-help-circle-outline
                                     </v-icon>
