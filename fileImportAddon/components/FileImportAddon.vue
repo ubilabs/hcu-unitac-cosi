@@ -210,7 +210,6 @@ export default {
 
     .upload-button-wrapper {
         color: #FFFFFF;
-        // border: 2px solid #DDDDDD;
         background-color: @secondary_focus;
         display: block;
         text-align:center;
@@ -218,7 +217,6 @@ export default {
         cursor: pointer;
         margin:12px 0 0 0;
         font-size: @font_size_big;
-        // transition: background 0.25s;
 
         &:focus {
             .primary_action_focus();
@@ -255,7 +253,7 @@ export default {
             transition: color 0.35s;
             font-family: @font_family_accent;
             font-size: @font_size_huge;
-            color: @accent_disabled;
+            color: @secondary_focus;
         }
     }
     .drop-area {
