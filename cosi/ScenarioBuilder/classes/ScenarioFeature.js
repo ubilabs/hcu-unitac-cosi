@@ -12,12 +12,21 @@ export default class ScenarioFeature {
      * Constructor for class ScenarioFeature
      * @param {module:ol/Feature} feature the OpenLayers Feature created
      * @param {module:ol/layer/Vector} layer the OpenLayers Layer the feature is bound to
+     * @param {module:ol/layer/Vector} [guideLayer] the guideLayer to render additional info to
      */
-    constructor (feature, layer) {
+    constructor (feature, layer, guideLayer) {
         this.feature = feature;
         this.layer = layer;
+        this.guideLayer = guideLayer;
         this.scenarioData = {};
+        this.scenario = null;
 
+        // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
+        this.layer.getSource().on("change", () => {
+            if (!this.layer.getSource().hasFeature(this.feature) && this.scenario?.isActive) {
+                this.layer.getSource().addFeature(this.feature);
+            }
+        });
         storeOriginalFeatureData(this.feature);
     }
 
@@ -64,7 +73,7 @@ export default class ScenarioFeature {
 
                 if (this.guideLayer) {
                     removeSimulationTag(this.feature, this.guideLayer);
-                    addSimulationTag(this.feature, this.guideLayer);
+                    addSimulationTag(this.feature, this.guideLayer, this.layer);
                 }
             }
         }
@@ -73,26 +82,34 @@ export default class ScenarioFeature {
     /**
      * Resets a features properties to the original data
      * @param {String[]} [props] - the props to restore
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetProperties (props) {
+    resetProperties (props, purge = false) {
         const originalProperties = this.feature.get("originalData");
         let prop;
 
         for (prop of props || Object.keys(originalProperties)) {
-            this.feature.set(prop, originalProperties[prop]);
 
             if (prop === "geometry") {
-                this.resetLocation();
+                this.resetLocation(purge);
             }
+            else {
+                this.feature.set(prop, originalProperties[prop]);
+            }
+        }
+
+        if (purge) {
+            this.clearScenarioData();
         }
     }
 
     /**
      * Retrieves the original location of a feature and resets its position on the map
+     * @param {Boolean} [purge=false] - whether to clear the stored scenario geometry definitively
      * @returns {void}
      */
-    resetLocation () {
+    resetLocation (purge = false) {
         const originalGeom = this.feature.get("originalData").geometry;
 
         if (originalGeom) {
@@ -102,7 +119,39 @@ export default class ScenarioFeature {
                 removeSimulationTag(this.feature, this.guideLayer);
                 addSimulationTag(this.feature, this.guideLayer);
             }
+
+            if (purge) {
+                delete this.scenarioData.geometry;
+            }
         }
+    }
+
+    /**
+     * Clears scenario data
+     * @returns {void}
+     */
+    clearScenarioData () {
+        this.scenarioData = {};
+    }
+
+    /**
+     * Edits the scenario feature's properties
+     * CAUTION: Does not yet work for geometries
+     * @param {Object} properties - the prop key to store a value to
+     * @returns {void}
+     */
+    setProperties (properties) {
+        for (const prop in properties) {
+            this.set(prop, properties[prop]);
+        }
+    }
+
+    /**
+     * Retrieves the feature's original properties
+     * @returns {Object} the stored original properties
+     */
+    getOriginalProperties () {
+        return this.feature.get("originalData");
     }
 
     /**
@@ -112,7 +161,10 @@ export default class ScenarioFeature {
      * @returns {void}
      */
     set (prop, val) {
+        // store the scenario specific value for a prop on the scenario
         this.scenarioData[prop] = val;
+        // store the currently active values on the feature
+        this.feature.set(prop, val);
     }
 
     /**

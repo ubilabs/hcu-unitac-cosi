@@ -8,8 +8,11 @@ import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
-import {calculateStats, calculateCorrelation} from "../utils/operations";
+import {calculateStats, calculateCorrelation, getTotal, getAverage} from "../utils/operations";
 import {generateChartForDistricts, generateChartForCorrelation} from "../utils/chart";
+import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/export";
+import composeFilename from "../../utils/composeFilename";
+import exportXlsx from "../../utils/exportXlsx";
 
 export default {
     name: "DashboardTable",
@@ -58,14 +61,18 @@ export default {
                     value: "average",
                     align: "end",
                     sortable: false,
-                    groupable: false
+                    groupable: false,
+                    selected: false,
+                    isAggregation: true
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.dashboard.totalCol"),
                     value: "total",
                     align: "end",
                     sortable: false,
-                    groupable: false
+                    groupable: false,
+                    selected: false,
+                    isAggregation: true
                 }
             ],
             districtColumns: [],
@@ -90,7 +97,8 @@ export default {
             "keyOfAttrNameStats",
             "districtLevels",
             "mapping",
-            "loadend"
+            "loadend",
+            "metadataUrls"
         ]),
         ...mapGetters("Map", ["layerById"]),
         ...mapGetters("Language", ["currentLocale"]),
@@ -106,8 +114,10 @@ export default {
             return this.groupMapping(this.mapping);
         },
         selectedColumnNames () {
-            const selectedCols = this.districtColumns.filter(col => col.selected),
-                districtNames = selectedCols.length > 0 ? selectedCols.map(col => col.text) : this.districtColumns.map(col => col.text);
+            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected),
+                districtNames = selectedCols.length > 0
+                    ? selectedCols.map(col => col.text)
+                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.text);
 
             return districtNames;
         }
@@ -203,6 +213,7 @@ export default {
                     value: district.getLabel(),
                     align: "end",
                     district,
+                    districtLevel: districtLevel.label,
                     sortable: false,
                     groupable: false,
                     selected: false
@@ -224,38 +235,59 @@ export default {
             return colList;
         },
 
+        setColDividers () {
+            for (let i = 0; i < this.districtColumns.length; i++) {
+                if (this.districtColumns[i].districtLevel !== this.districtColumns[i + 1]?.districtLevel) {
+                    this.districtColumns[i].divider = true;
+                }
+                else {
+                    this.districtColumns[i].divider = false;
+                }
+            }
+        },
+
+        /**
+         * Moves a district column left/right
+         * @param {Object} col - the column to move
+         * @param {0 | 1} [dir=0] - the direction to move, 0 = left, 1 = right
+         * @returns {void}
+         */
+        moveCol (col, dir = 0) {
+            // dont move left if index is 0
+            if (this.districtColumns.findIndex(_col => _col === col) === 0 && dir === 0) {
+                return;
+            }
+
+            const i = this.districtColumns.findIndex(_col => _col === col),
+                c0 = this.districtColumns.slice(0, i - 1 + dir),
+                c1 = this.districtColumns.slice(i + 1 + dir),
+                cSwap = this.districtColumns.slice(i - 1 + dir, i + 1 + dir).reverse(),
+                cols = [...c0, ...cSwap, ...c1];
+
+            this.districtColumns = cols;
+            this.setColDividers();
+        },
+
         getValue (item, header, timestamp) {
             const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
 
             return val ? val.toLocaleString(this.currentLocale) : "-";
         },
 
+        getValueClass (item, header, timestamp) {
+            return item[header.value].isModified <= timestamp ? "modified" : "";
+        },
+
         getAverage (item, timestamp) {
-            if (item.valueType !== "absolute") {
-                return "-";
-            }
-            let result = 0;
+            const average = getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
-            for (const district of this.selectedDistrictsNames) {
-                result += parseFloat(item[district][this.timestampPrefix + timestamp]);
-            }
-
-            result /= this.selectedDistrictsNames.length;
-
-            return result.toLocaleString(this.currentLocale);
+            return average.toLocaleString(this.currentLocale);
         },
 
         getTotal (item, timestamp) {
-            if (item.valueType !== "absolute") {
-                return "-";
-            }
-            let result = 0;
+            const total = getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
-            for (const district of this.selectedDistrictsNames) {
-                result += parseFloat(item[district][this.timestampPrefix + timestamp]);
-            }
-
-            return result.toLocaleString(this.currentLocale);
+            return total.toLocaleString(this.currentLocale);
         },
 
         setField (field, item) {
@@ -269,7 +301,29 @@ export default {
         },
 
         renderCharts (item) {
-            const chart = generateChartForDistricts(item, this.selectedColumnNames, this.selectedDistrictLevel.label, this.timestampPrefix);
+            const total = Object.fromEntries(
+                    item.years.map(timestamp => [
+                        this.timestampPrefix + timestamp,
+                        getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                    ])
+                ),
+                average = Object.fromEntries(
+                    item.years.map(timestamp => [
+                        this.timestampPrefix + timestamp,
+                        getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                    ])
+                ),
+                data = {
+                    ...item,
+                    Gesamt: total,
+                    Durchschnitt: average
+                },
+                chart = generateChartForDistricts(
+                    data,
+                    this.selectedColumnNames,
+                    this.selectedDistrictLevel.label,
+                    this.timestampPrefix
+                );
 
             this.setNewChartDataSet(chart);
         },
@@ -287,6 +341,27 @@ export default {
             for (item of this.items) {
                 item.visualized = false;
             }
+        },
+
+        /**
+         * Export the table as XLSX
+         * Either the simple view for the selected or all years
+         * @param {Boolean} exportTimeline - whether to include all years
+         * @returns {void}
+         */
+        exportTable (exportTimeline = false) {
+            const data = exportTimeline
+                    ? prepareTableExportWithTimeline(this.items, this.timestamps, this.timestampPrefix)
+                    : prepareTableExport(this.items, this.selectedYear, this.timestampPrefix),
+                filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
+
+            exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
+        },
+
+        openMetadata () {
+            this.metadataUrls.forEach(url => {
+                window.open(url);
+            });
         },
 
         calculateStats,
@@ -338,195 +413,258 @@ export default {
                     dense
                 />
             </v-col>
+            <v-col cols="4">
+                <v-icon
+                    title="Metadaten"
+                    @click="openMetadata()"
+                >
+                    mdi-information
+                </v-icon>
+            </v-col>
         </v-row>
-        <v-data-table
-            :headers="columns"
-            :items="items"
-            group-by="group"
-            show-group-by
-            :items-per-page="-1"
-            :search="search"
-            hide-default-footer
-            dense
-            show-select
-            item-key="category"
-            class="dashboard-table"
-        >
-            <!-- Header for years selector -->
-            <template #header.years="{ header }">
-                <v-select
-                    v-model="currentTimeStamp"
-                    :items="timestamps"
-                    dense
-                >
-                    <template #prepend>
-                        <span>{{ $t('additional:modules.tools.cosi.dashboard.timestampCol') }}</span>
-                    </template>
-                </v-select>
-            </template>
-
-            <!-- Header for districts -->
-            <template
-                v-for="district in districtColumns"
-                #[`header.${district.value}`]="{ header }"
+        <v-row>
+            <v-data-table
+                :headers="columns"
+                :items="items"
+                group-by="group"
+                show-group-by
+                :items-per-page="-1"
+                :search="search"
+                hide-default-footer
+                dense
+                show-select
+                item-key="category"
+                class="dashboard-table"
             >
-                <div :key="district.value">
-                    <v-checkbox
-                        v-model="header.selected"
-                        :label="header.text"
+                <!-- Header for years selector -->
+                <template #header.years="{ header }">
+                    <v-select
+                        v-model="currentTimeStamp"
+                        :items="timestamps"
                         dense
-                        hide-details
-                    />
-                </div>
-            </template>
+                    >
+                        <template #prepend>
+                            <span>{{ $t('additional:modules.tools.cosi.dashboard.timestampCol') }}</span>
+                        </template>
+                    </v-select>
+                </template>
 
-            <!-- Base Columns -->
-            <template #item.years="{ item }">
-                <div class="text-end">
-                    <template v-if="item.expanded">
-                        <ul class="timeline">
-                            <li
-                                v-for="year in item.years"
-                                :key="year"
+                <!-- Header for districts -->
+                <template
+                    v-for="district in [...districtColumns, ...aggregateColumns]"
+                    #[`header.${district.value}`]="{ header }"
+                >
+                    <div
+                        :key="district.value"
+                        class="district-header"
+                    >
+                        <v-checkbox
+                            v-model="header.selected"
+                            :label="header.text"
+                            dense
+                            hide-details
+                        />
+                        <template v-if="!district.isAggregation">
+                            <v-icon
+                                class="move-col left"
+                                @click="moveCol(district, 0)"
                             >
-                                <small class="timestamp">{{ year }}</small>
-                            </li>
-                        </ul>
-                    </template>
-                    <template v-else>
-                        <span><small class="timestamp">{{ currentTimeStamp }}</small></span>
-                    </template>
-                </div>
-            </template>
-            <template #item.menu="{ item }">
-                <TableRowMenu
-                    :item="item"
-                    :fields="fields"
-                    @setField="setField"
-                    @resetFields="resetFields"
-                    @add="calculateStats('add')"
-                    @subtract="calculateStats('subtract')"
-                    @multiply="calculateStats('multiply')"
-                    @divide="calculateStats('divide')"
-                    @correlate="renderScatterplot"
-                    @visualizationChanged="onVisualizationChanged"
-                    @renderCharts="renderCharts"
-                />
-            </template>
+                                mdi-chevron-left
+                            </v-icon>
+                            <v-icon
+                                class="move-col right"
+                                @click="moveCol(district, 1)"
+                            >
+                                mdi-chevron-right
+                            </v-icon>
+                        </template>
+                    </div>
+                </template>
 
-            <!-- Columns of all Districts -->
-            <template
-                v-for="district in districtColumns"
-                #[`item.${district.value}`]="{ item, header }"
-            >
-                <!--eslint-disable-next-line-->
-                <v-tooltip
-                    :key="district.value"
-                    bottom
-                    :nudge-top="60"
-                >
-                    <template #activator="{ on, attrs }">
-                        <div
-                            class="text-end"
-                            v-bind="attrs"
-                            v-on="on"
-                        >
-                            <template v-if="item.expanded">
-                                <ul class="timeline">
-                                    <li
-                                        v-for="year in item.years"
-                                        :key="year"
-                                    >
-                                        {{ getValue(item, header, year) }}
-                                    </li>
-                                </ul>
-                            </template>
-                            <template v-else>
-                                {{ getValue(item, header, currentTimeStamp) }}
-                            </template>
-                        </div>
-                    </template>
-                    <span>{{ header.text }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
-                </v-tooltip>
-            </template>
+                <!-- Base Columns -->
+                <template #item.years="{ item }">
+                    <div class="text-end">
+                        <template v-if="item.expanded">
+                            <ul class="timeline">
+                                <li
+                                    v-for="year in item.years"
+                                    :key="year"
+                                >
+                                    <small class="timestamp">{{ year }}</small>
+                                </li>
+                            </ul>
+                        </template>
+                        <template v-else>
+                            <span><small class="timestamp">{{ currentTimeStamp }}</small></span>
+                        </template>
+                    </div>
+                </template>
+                <template #item.menu="{ item }">
+                    <TableRowMenu
+                        :item="item"
+                        :fields="fields"
+                        @setField="setField"
+                        @resetFields="resetFields"
+                        @add="calculateStats('add')"
+                        @subtract="calculateStats('subtract')"
+                        @multiply="calculateStats('multiply')"
+                        @divide="calculateStats('divide')"
+                        @correlate="renderScatterplot"
+                        @visualizationChanged="onVisualizationChanged"
+                        @renderCharts="renderCharts"
+                    />
+                </template>
 
-            <!-- Columns for aggregated data -->
-            <template
-                #item.average="{ item }"
-            >
-                <!--eslint-disable-next-line-->
-                <v-tooltip
-                    bottom
-                    :nudge-top="60"
+                <!-- Columns of all Districts -->
+                <template
+                    v-for="district in districtColumns"
+                    #[`item.${district.value}`]="{ item, header }"
                 >
-                    <template #activator="{ on, attrs }">
-                        <div
-                            class="text-end"
-                            v-bind="attrs"
-                            v-on="on"
-                        >
-                            <template v-if="item.expanded">
-                                <ul class="timeline">
-                                    <li
-                                        v-for="year in item.years"
-                                        :key="year"
-                                    >
-                                        {{ getAverage(item, year) }}
-                                    </li>
-                                </ul>
-                            </template>
-                            <template v-else>
-                                {{ getAverage(item, currentTimeStamp) }}
-                            </template>
-                        </div>
-                    </template>
-                    <span>{{ $t('additional:modules.tools.cosi.dashboard.avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
-                </v-tooltip>
-            </template>
+                    <!--eslint-disable-next-line-->
+                    <v-tooltip
+                        :key="district.value"
+                        bottom
+                        :nudge-top="60"
+                    >
+                        <template #activator="{ on, attrs }">
+                            <div
+                                class="text-end"
+                                v-bind="attrs"
+                                v-on="on"
+                            >
+                                <template v-if="item.expanded">
+                                    <ul class="timeline">
+                                        <li
+                                            v-for="year in item.years"
+                                            :key="year"
+                                        >
+                                            <span :class="getValueClass(item, header, year)">{{ getValue(item, header, year) }}</span>
+                                        </li>
+                                    </ul>
+                                </template>
+                                <template v-else>
+                                    <span :class="getValueClass(item, header, currentTimeStamp)">{{ getValue(item, header, currentTimeStamp) }}</span>
+                                </template>
+                            </div>
+                        </template>
+                        <span>{{ header.text }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
+                    </v-tooltip>
+                </template>
 
-            <template
-                #item.total="{ item }"
-            >
-                <v-tooltip
-                    bottom
-                    :nudge-top="60"
+                <!-- Columns for aggregated data -->
+                <template
+                    #item.average="{ item }"
                 >
-                    <template #activator="{ on, attrs }">
-                        <!--eslint-disable-next-line-->
-                        <div
-                            class="text-end"
-                            v-bind="attrs"
-                            v-on="on"
-                        >
-                            <template v-if="item.expanded">
-                                <ul class="timeline">
-                                    <li
-                                        v-for="year in item.years"
-                                        :key="year"
-                                    >
-                                        {{ getTotal(item, year) }}
-                                    </li>
-                                </ul>
-                            </template>
-                            <template v-else>
-                                <span>{{ getTotal(item, currentTimeStamp) }}</span>
-                            </template>
-                        </div>
-                    </template>
-                    <span>{{ $t('additional:modules.tools.cosi.dashboard.totalCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
-                </v-tooltip>
-            </template>
-        </v-data-table>
+                    <!--eslint-disable-next-line-->
+                    <v-tooltip
+                        bottom
+                        :nudge-top="60"
+                    >
+                        <template #activator="{ on, attrs }">
+                            <div
+                                class="text-end"
+                                v-bind="attrs"
+                                v-on="on"
+                            >
+                                <template v-if="item.expanded">
+                                    <ul class="timeline">
+                                        <li
+                                            v-for="year in item.years"
+                                            :key="year"
+                                        >
+                                            {{ getAverage(item, year) }}
+                                        </li>
+                                    </ul>
+                                </template>
+                                <template v-else>
+                                    {{ getAverage(item, currentTimeStamp) }}
+                                </template>
+                            </div>
+                        </template>
+                        <span>{{ $t('additional:modules.tools.cosi.dashboard.avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
+                    </v-tooltip>
+                </template>
+
+                <template
+                    #item.total="{ item }"
+                >
+                    <v-tooltip
+                        bottom
+                        :nudge-top="60"
+                    >
+                        <template #activator="{ on, attrs }">
+                            <!--eslint-disable-next-line-->
+                            <div
+                                class="text-end"
+                                v-bind="attrs"
+                                v-on="on"
+                            >
+                                <template v-if="item.expanded">
+                                    <ul class="timeline">
+                                        <li
+                                            v-for="year in item.years"
+                                            :key="year"
+                                        >
+                                            {{ getTotal(item, year) }}
+                                        </li>
+                                    </ul>
+                                </template>
+                                <template v-else>
+                                    <span>{{ getTotal(item, currentTimeStamp) }}</span>
+                                </template>
+                            </div>
+                        </template>
+                        <span>{{ $t('additional:modules.tools.cosi.dashboard.totalCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
+                    </v-tooltip>
+                </template>
+            </v-data-table>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-btn
+                    tile
+                    depressed
+                    :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
+                    @click="exportTable(false)"
+                >
+                    {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
+                </v-btn>
+                <v-btn
+                    tile
+                    depressed
+                    :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+                    @click="exportTable(true)"
+                >
+                    {{ $t('additional:modules.tools.cosi.dashboard.exportTableTimeline') }}
+                </v-btn>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
 <style lang="less">
+@import "../../utils/variables.less";
+
 .dashboard-table {
     .v-data-table__wrapper {
         padding-top: 10px;
     }
 
     thead {
+        .district-header {
+            position: relative;
+            .move-col {
+                position: absolute;
+                top: -10px;
+                font-size: 16px;
+                &.left {
+                    right: 0;
+                }
+                &.right {
+                    right: -10px;
+                }
+            }
+        }
         .v-input {
             font-size: unset;
             label {
@@ -552,10 +690,13 @@ export default {
             }
         }
         .timestamp {
-            color: #3399CC
+            color: @brightblue;
         }
         .no-wrap {
             white-space: nowrap;
+        }
+        .modified {
+            color: @brightred;
         }
     }
 }

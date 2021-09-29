@@ -1,0 +1,43 @@
+{
+    "modules": {
+        "tools": {
+            "cosiFileImport": {
+                "captions": {
+                    "introInfo": "Importieren Sie Ihre gewünschte Datei einfach per Drag and Drop oder alternativ mit dem Öffnen-Dialog des Browsers.",
+                    "introFormats": "Es können KML-Dateien (*.kml), GPX-Dateien (*.gpx) oder GeoJson-Dateien (*.geojson, *.json) importiert werden.",
+                    "introDrawTool": "Importierte Geometrien können im Nachhinein verändert werden. Nutzen Sie hierfür das Werkzeug &quot;$t(common:menu.tools.draw)&quot;.",
+                    "drawTool": "$t(common:menu.tools.draw) öffnen",
+                    "dropzone": "Datei hier ablegen",
+                    "browse": "Datei auswählen",
+                    "supportedFiletypes": {
+                        "auto": "Automatische Erkennung",
+                        "kml": "KML-Datei (*.kml)",
+                        "gpx": "GPX-Datei (*.gpx)",
+                        "geojson": "GeoJson-Datei (*.geojson, *.json)"
+                    }
+                },
+                "alertingMessages": {
+                    "success": "Die Datei \"{{filename}}\" wurde erfolgreich importiert.",
+                    "successPartly": "Die Datei \"{{filename}}\" wurde teilweise importiert.",
+                    "formatError": "Die Datei \"{{filename}}\" konnte nicht gelesen werden. Bitte prüfen Sie, ob die Datei das Format *.kml. *.gpx, *.geojson oder *.json hat.",
+                    "missingFileContent": "Fehler beim Lesen der Datei \"{{filename}}\". Bitte überprüfen Sie den Dateityp sowie den Inhalt der Datei. Falls die Datei fehlerfrei ist, wenden Sie sich bitte an den Support.",
+                    "missingFormat": "Das Dateiformat {{format}} wird nicht unterstützt. Bitte wenden Sie sich an den Support.",
+                    "featureError": "Ein Feature in dieser Datei konnte nicht gelesen werden.",
+                    "sameName": "Eine Datei mit dem Namen \"{{filename}}\" wurde bereits importiert. Bitte importieren Sie eine andere Datei oder ändern Sie den Dateinamen."
+                },
+                "successfullyImportedLabel": "Erfolgreich importiert:",
+                "title": "Datei importieren",
+                "layerButton": "Layer hinzufügen",
+                "preNum": "Numerische Werte",
+                "address": "Adressdaten",
+                "featuresInfo": "Hier sehen Sie eine Liste aller möglicher Zahlwerte aus dem geladenen Datensatzen, die Sie in unterschiedlichen Cosi-Tools zu Analysezwecken verwenden können. Wählen Sie die relevanten Werte aus und benennen Sie sie auf Wunsch beliebig um.",
+                "featuresInfoAddress": "Es wurde kein Adressdatensatz gefunden. Falls einzelne Angaben wie Straßennamen oder Postleitzahl verfügbar sind, wählen Sie hier bitte die Datensätze aus, aus denen sich die Adresse zusammensetzt.",
+                "preSelectedData": "Aus automatischen erkannten Datensätzen auswählen",
+                "preSelectedDataFound": "Es wurden automatisch bestimmte Datensätze erkannt, die sich Adressdaten zuordnen lassen. Sollte diese Liste unvollständig sein, wählen Sie bitte 'Aus allen Datensätzen auswählen' an",
+                "viewAllData": "Aus allen Datensätzen auswählen",
+                "pointsAndPolygons": "In Ihrem Datensatz wurden sowohl Punkt- als auch Polygonfeatures erkannt. Wünschen Sie ein gesonderte Farbe für die Polygone?",
+                "cancel": "Abbrechen"
+            }
+        }
+    }
+}

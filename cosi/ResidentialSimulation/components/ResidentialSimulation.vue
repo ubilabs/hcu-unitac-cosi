@@ -6,14 +6,13 @@ import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
 import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
-import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 
@@ -96,6 +95,7 @@ export default {
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
         ...mapGetters("Tools/DistrictSelector", {
+            districtLevels: "districtLevels",
             districtLayer: "layer",
             selectedFeatures: "selectedFeatures",
             selectedAdminFeatures: "selectedAdminFeatures",
@@ -125,17 +125,26 @@ export default {
 
     watch: {
         /**
-         * If the tool is active, activate the select interaction and add overlay to the districtLayers if necessary
+         * If the tool is active, redraw the geometry if one exists
          * If the tool is not actvie, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
          * and update the extent of the selected features (districts).
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
          */
-        active (newActive) {
+        async active (newActive) {
             this.editFeature = null;
             this.editDialog = false;
 
-            if (!newActive) {
+            if (newActive) {
+                if (this.geometry) {
+                    // wait for 2 ticks for the drawing layer to initialize
+                    await this.$nextTick();
+                    this.$refs["geometry-picker"].geometry.value = this.geometry;
+                    await this.$nextTick();
+                    geomPickerSetGeometry(this.$refs["geometry-picker"], this.geometry);
+                }
+            }
+            else {
                 const model = getComponent(this.id);
 
                 if (model) {
@@ -151,7 +160,7 @@ export default {
             this.updateArea(this.polygonArea);
         },
 
-        baseStats () {
+        async baseStats () {
             if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
                 return;
             }
@@ -174,23 +183,22 @@ export default {
              * @todo remove timeout - only used due to issues in ChartGenerator module
              * will be refactored
              */
-            setTimeout(() => {
-                this.visualizeDemographics(
-                    "age",
-                    "Demographie nach Altersgruppen",
-                    ["Anteil", "Alterskohorten"],
-                    [
-                        "Bevölkerung unter 6 Jahren",
-                        "Bevölkerung 6 bis unter 10 Jahren",
-                        "Bevölkerung 10 bis unter 15 Jahren",
-                        "Bevölkerung 15 bis unter 21 Jahren",
-                        "Bevölkerung 21 bis unter 45 Jahren",
-                        "Bevölkerung 45 bis unter 65 Jahren",
-                        "Bevölkerung ab 65 Jahren"
-                    ],
-                    "LineChart"
-                );
-            }, 250);
+            await this.$nextTick();
+            this.visualizeDemographics(
+                "age",
+                "Demographie nach Altersgruppen",
+                ["Anteil", "Alterskohorten"],
+                [
+                    "Bevölkerung unter 6 Jahren",
+                    "Bevölkerung 6 bis unter 10 Jahren",
+                    "Bevölkerung 10 bis unter 15 Jahren",
+                    "Bevölkerung 15 bis unter 21 Jahren",
+                    "Bevölkerung 21 bis unter 45 Jahren",
+                    "Bevölkerung 45 bis unter 65 Jahren",
+                    "Bevölkerung ab 65 Jahren"
+                ],
+                "LineChart"
+            );
 
             this.extrapolateNeighborhoodStatistics();
         },
@@ -242,24 +250,31 @@ export default {
         },
         updateUnits (newUnits) {
             updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateResidents (newResidents) {
             updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateDensity (newDensity) {
             updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-density"]);
         },
         updateLivingSpace (newLivingSpace) {
             updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-livingspace"]);
         },
         updateGfz (newGfz) {
             updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-gfz"]);
         },
         updateBgf (newBgf) {
             updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-bgf"]);
         },
         updateHousholdSize (newHouseholdSize) {
             updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.unfocusInput(new Event("endaction"), this.$refs["slider-householdsize"]);
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -311,22 +326,14 @@ export default {
         },
 
         async createFeature () {
-            console.log(this.selectedDistrictLevel);
             const feature = new Feature({
                     geometry: this.geometry,
                     ...this.neighborhood,
                     baseStats: this.baseStats
                 }),
-                districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
-                neighborhood = new ScenarioNeighborhood(feature, districts, this.drawingLayer);
-
-            // fill in missing statistical information if necessary
-            for (const district of districts) {
-                await this.getStatsByDistrict({
-                    id: district.getId(),
-                    districtLevel: this.selectedDistrictLevel
-                });
-            }
+                // districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
+                // districts = getAllContainingDistricts(this.districtLevels, feature, true),
+                neighborhood = new ScenarioNeighborhood(feature, this.drawingLayer, this.districtLevels);
 
             this.activeScenario.addNeighborhood(neighborhood);
 
@@ -380,6 +387,15 @@ export default {
 
         escapeEditStatsTable () {
             this.editStatsTable = false;
+        },
+
+        unfocusInput (evt, ref) {
+            // weird hack to force vuetify to unfocus the slider
+            if (ref.isActive) {
+                ref.isActive = false;
+                ref.onSliderMouseUp(evt);
+
+            }
         }
     }
 };
@@ -403,7 +419,7 @@ export default {
                 <v-main
                     id="scenario-builder"
                 >
-                    <v-form>
+                    <div>
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
                             <ScenarioManager />
@@ -453,16 +469,23 @@ export default {
                                     />
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Wohneinheiten</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.units') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-units"
                                         v-model="neighborhood.housingUnits"
-                                        hint="Anzahl der WE"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
                                         min="0"
-                                        :max="polygonArea / 5"
+                                        :max="(polygonArea / 5) || 1"
+                                        :disabled="!geometry"
                                         @change="updateUnits"
                                     >
                                         <template #append>
@@ -478,16 +501,23 @@ export default {
                                     </v-slider>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpGfa')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Bruttogeschossfläche (BGF)</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.gfa') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-bgf"
                                         v-model="neighborhood.bgf"
-                                        hint="m²"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.gfa')"
                                         min="0"
-                                        :max="polygonArea * 4"
+                                        :max="(polygonArea * 4) || 1"
+                                        :disabled="!geometry"
                                         @change="updateBgf"
                                     >
                                         <template #append>
@@ -503,17 +533,24 @@ export default {
                                     </v-slider>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Ø Haushaltsgröße</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.householdSize') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-householdsize"
                                         v-model="neighborhood.avgHouseholdSize"
-                                        hint="Haushaltsgröße"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
                                         min="0"
                                         max="5"
                                         step="0.2"
+                                        :disabled="!geometry"
                                         @change="updateHousholdSize"
                                     >
                                         <template #append>
@@ -535,11 +572,13 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-gfz"
                                         v-model="neighborhood.gfz"
                                         hint="GFZ"
                                         min="0"
                                         max="4"
                                         step="0.1"
+                                        :disabled="!geometry"
                                         @change="updateGfz"
                                     >
                                         <template #append>
@@ -562,10 +601,12 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-density"
                                         v-model="neighborhood.populationDensity"
                                         hint="EW / km²"
                                         min="0"
                                         max="50000"
+                                        :disabled="!geometry"
                                         @change="updateDensity"
                                     >
                                         <template #append>
@@ -588,10 +629,12 @@ export default {
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
+                                        ref="slider-livingspace"
                                         v-model="neighborhood.livingSpace"
                                         hint="m² / EW"
                                         min="0"
                                         max="100"
+                                        :disabled="!geometry"
                                         @change="updateLivingSpace"
                                     >
                                         <template #append>
@@ -644,7 +687,7 @@ export default {
                                                 color="primary"
                                                 @click="datePicker = false"
                                             >
-                                                {{ $t("additional:modules.tools.cosi.cancel") }}
+                                                {{ $t("common:button.cancel") }}
                                             </v-btn>
                                             <v-btn
                                                 text
@@ -690,13 +733,9 @@ export default {
                                     >
                                         <v-icon>mdi-pencil</v-icon>
                                         <span>
-                                            {{ $t("additional:modules.tools.cosi.edit") }}
+                                            {{ $t("common:button.edit") }}
                                         </span>
                                     </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
                                     <v-btn
                                         tile
                                         depressed
@@ -713,8 +752,26 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <!-- <v-btn
+                                        tile
+                                        depressed
+                                        color="primary"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
+                                        :disabled="!activeScenario || geometry === null || !neighborhood.stats"
+                                        class="flex-item"
+                                        @click="createFeature"
+                                    >
+                                        <v-icon>mdi-home-plus</v-icon>
+                                        <span>
+                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                        </span>
+                                    </v-btn> -->
+                                </v-col>
+                            </v-row>
                         </div>
-                    </v-form>
+                    </div>
                     <v-snackbar
                         v-model="editDialog"
                         :timeout="-1"
@@ -728,7 +785,7 @@ export default {
                                 text
                                 @click="deleteNeighborhood"
                             >
-                                {{ $t("additional:modules.tools.cosi.delete") }}
+                                {{ $t("common:button.delete") }}
                             </v-btn>
                             <!-- NOT IMPLEMENTED -->
                             <!-- <v-btn
@@ -736,7 +793,7 @@ export default {
                                 text
                                 @click="editStatsTable = true; editDialog = false;"
                             >
-                                {{ $t("additional:modules.tools.cosi.edit") }}
+                                {{ $t("common:button.edit") }}
                             </v-btn> -->
                         </template>
                     </v-snackbar>

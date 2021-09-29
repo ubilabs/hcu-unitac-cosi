@@ -66,8 +66,9 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
         return [];
     }
 
+    // special case for FHH
     if (label === "Hamburg") {
-        return [getHamburgDistrict()];
+        getHamburgDistrict(layer);
     }
 
     const districts = [];
@@ -127,23 +128,27 @@ export function getFeatureTypes (urls) {
  * Returns the district object for the district level Hamburg.
  * This is a special case, because there is no own 'adminFeature' for this level.
  * The statistical features are get via the source of the Bezirke.
- * @returns {Object} d
+ * @param {module:ol/layer/Vector} layer - The geometry layer
+ * @returns {void}
  */
-export function getHamburgDistrict () {
-    return {
-        // the administration feature (district), for hamburg not present
-        adminFeature: undefined,
-        // an array for all statistical features of this district
-        statFeatures: [],
-        // flag district is selected
-        isSelected: false,
-        // id of the district
-        getId: () => "Hamburg",
-        // label of the district
-        getLabel: () => "Hamburg (gesamt)",
-        // name of the district
-        getName: () => "hamburg_gesamt"
-    };
+export function getHamburgDistrict (layer) {
+    layer.getSource().getFeatures().forEach(feature => {
+        feature.set("verwaltungseinheit", "hamburg_gesamt");
+    });
+    // return {
+    //     // the administration feature (district), for hamburg not present
+    //     adminFeature: undefined,
+    //     // an array for all statistical features of this district
+    //     statFeatures: [],
+    //     // flag district is selected
+    //     isSelected: false,
+    //     // id of the district
+    //     getId: () => "Hamburg",
+    //     // label of the district
+    //     getLabel: () => "Hamburg (gesamt)",
+    //     // name of the district
+    //     getName: () => "hamburg_gesamt"
+    // };
 }
 
 /**
@@ -181,6 +186,8 @@ export function getNameList (layer, keyOfAttrName) {
             nameList.push(feature.get(keyOfAttrName));
         }
     });
+
+    nameList.sort();
 
     return [...new Set(nameList)];
 }

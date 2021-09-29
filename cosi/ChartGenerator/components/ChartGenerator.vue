@@ -6,7 +6,7 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
 import {scaleLinear} from "d3-scale";
-import {color} from "d3-color";
+import {color, hsl} from "d3-color";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
@@ -298,7 +298,24 @@ export default {
          * @returns {Array} ColorScale Array.
          */
         generateColorScale (dataSet) {
-            const range = ["light" + dataSet.color, "dark" + dataSet.color];
+            const d3Color = hsl(dataSet.color);
+            let colorA = "",
+                colorB = "",
+                range = "";
+
+            d3Color.h += 20;
+            d3Color.s += 0.3;
+            d3Color.l += 0.15;
+
+            colorA = String(d3Color);
+
+            d3Color.h -= 40;
+            d3Color.s -= 0.6;
+            d3Color.l -= 0.3;
+
+            colorB = String(d3Color);
+
+            range = [colorA, String(d3Color), colorB];
 
             return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
         },

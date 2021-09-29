@@ -17,7 +17,8 @@ const state = {
     isVisibleInMenu: true,
     name: "Dashboard",
     renderToWindow: false,
-    resizableWindow: true
+    resizableWindow: true,
+    excludedPropsForExport: ["visualized", "expanded", "years"]
 };
 
 export default state;

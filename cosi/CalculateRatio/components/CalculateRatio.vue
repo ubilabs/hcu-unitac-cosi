@@ -72,7 +72,7 @@ export default {
             // Object that helps calculating the data in prepareCoverage function
             calcHelper: {},
             // Results for rendering in the table
-            results: [],
+            // results: [],
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
@@ -171,6 +171,9 @@ export default {
             if (!newState) {
                 this.$store.commit("Tools/CalculateRatio/setDataToColorCodeMap", false);
             }
+        },
+        facilitiesMapping () {
+            // this.updateFacilities();
         }
     },
     created () {
@@ -187,9 +190,11 @@ export default {
     methods: {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
+         * @todo triggers too often!!! refactor
          * @returns {void}
          */
         updateFacilities () {
@@ -375,7 +380,7 @@ export default {
             this.fActive_B = false;
             this.faktorf_A = 1;
             this.faktorf_B = 1;
-            this.results = [];
+            this.setResults([]);
         },
         /**
          * @description Switches all parameters between FieldA and FieldB.
@@ -413,7 +418,7 @@ export default {
          * @returns {void}
          */
         prepareCoverage () {
-            this.results = [];
+            this.setResults([]);
             const allData = [],
 
                 dataArray_A = this.coverageFunction("A"),
@@ -426,7 +431,7 @@ export default {
                 allData.push(combined);
             });
 
-            this.results = utils.calculateRatio(allData, this.selectedYear);
+            this.setResults(utils.calculateRatio(allData, this.selectedYear));
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -535,8 +540,6 @@ export default {
             });
 
             return dataArray;
-
-            // this.results = utils.calculateRatio(dataArray, this.selectedYear);
         },
         /**
          * @description Gets Data for the selected statistical data (features)
@@ -571,12 +574,12 @@ export default {
         recalcData () {
             const dataArray = [];
 
-            this.results = [];
+            this.setResults([]);
             this.resultsClone.forEach(result => {
                 dataArray.push(result.data);
             });
 
-            this.results = utils.calculateRatio(dataArray, this.selectedYear);
+            this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -656,7 +659,8 @@ export default {
                 dataSet.data.reverse();
             });
 
-            this.setNewDataSet(graphObj);
+            // this.setNewDataSet(graphObj);
+            this.channelGraphData(graphObj);
         },
 
         // the export function from utils

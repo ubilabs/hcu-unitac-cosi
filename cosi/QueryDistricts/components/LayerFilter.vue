@@ -54,9 +54,22 @@ export default {
         quotientLayer: {
             type: String,
             default: null
+        },
+        properties: {
+            type: Array,
+            default: null
+        },
+        property: {
+            type: String,
+            default: null
+        },
+        locale: {
+            type: String,
+            default: "de-DE"
         }
     },
     computed: {
+
         values () {
             return this.fieldValues.map(v=>v.replace("jahr_", ""));
         },
@@ -91,6 +104,9 @@ export default {
         },
         updateQLayer (newValue) {
             this.$emit("update", {layerId: this.layerId, quotientLayer: newValue});
+        },
+        updateProperty (newValue) {
+            this.$emit("update", {layerId: this.layerId, property: newValue});
         },
         close () {
             this.$emit("close", {layerId: this.layerId});
@@ -167,8 +183,8 @@ export default {
                             @change="updateFieldValue"
                         />
                     </td>
-                    <td>{{ min }}</td>
-                    <td>{{ max }}</td>
+                    <td>{{ min.toLocaleString(locale) }}</td>
+                    <td>{{ max.toLocaleString(locale) }}</td>
                     <td>
                         <input
                             ref="inputValue"
@@ -221,19 +237,38 @@ export default {
                 </tr>
             </tbody>
         </table>
-        <v-select
-            class="quotient-layer-select"
-            :label="$t('additional:modules.tools.cosi.queryDistricts.selectQuotientLayer')"
-            :value="quotientLayer"
-            :items="quotientLayers"
-            item-text="name"
-            item-value="id"
-            outlined
-            dense
-            hide-details
-            :clearable="true"
-            @change="updateQLayer"
-        />
+        <v-row>
+            <v-col>
+                <template v-if="properties">
+                    <v-select
+                        class="property-select val-select"
+                        :label="$t('additional:modules.tools.cosi.queryDistricts.selectProperty')"
+                        :value="property"
+                        :items="properties"
+                        outlined
+                        dense
+                        hide-details
+                        :clearable="true"
+                        @change="updateProperty"
+                    />
+                </template>
+            </v-col>
+            <v-col>
+                <v-select
+                    class="quotient-layer-select val-select"
+                    :label="$t('additional:modules.tools.cosi.queryDistricts.selectQuotientLayer')"
+                    :value="quotientLayer"
+                    :items="quotientLayers"
+                    item-text="name"
+                    item-value="id"
+                    outlined
+                    dense
+                    hide-details
+                    :clearable="true"
+                    @change="updateQLayer"
+                />
+            </v-col>
+        </v-row>
         <div class="error-msg">
             {{ error }}
         </div>
@@ -253,8 +288,8 @@ export default {
 .v-select.fit  .v-select__selection--comma {
     text-overflow: unset;
 }
-.quotient-layer-select{
-    padding-left: 8px;
+.val-select{
+    // padding-left: 8px;
 }
 </style>
 

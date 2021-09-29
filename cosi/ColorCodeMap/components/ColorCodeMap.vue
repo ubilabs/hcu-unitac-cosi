@@ -57,7 +57,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures", "metadataUrls"]),
         ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
         _selectedFeature: {
@@ -79,7 +79,6 @@ export default {
     },
     watch: {
         selectedFeatures () {
-            this.graphData = [];
             this.updateLegendList += 1;
             if (this.visualizationState) {
                 this.$nextTick(function () {
@@ -116,6 +115,7 @@ export default {
             }
         },
         selectedFeature () {
+            this.generateGraphData();
             this.renderVisualization();
         },
         showMapNames () {
@@ -134,6 +134,7 @@ export default {
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
         ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         /**
          * @description Updates featuresList when selection of district changes and finds all available years for data.
@@ -173,6 +174,7 @@ export default {
                 }
             });
 
+            this.generateGraphData();
             this.renderVisualization();
         },
         /**
@@ -202,7 +204,6 @@ export default {
          * @returns {void}
          */
         renderVisualization () {
-            this.graphData = [];
             if (this.visualizationState) {
                 const results = this.selectedStatFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
                     resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
@@ -220,7 +221,7 @@ export default {
 
                         const styleArray = [];
 
-                        this.prepareGraphData(matchResults);
+                        // this.prepareGraphData(matchResults);
                         getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
@@ -430,6 +431,20 @@ export default {
             });
         },
         /**
+         * @description Filters the feature data sets and pass them to the prepareGraphData() for graph visualization.
+         * @returns {Void} Function returns nothing.
+         */
+        generateGraphData () {
+            this.graphData = [];
+            const results = this.selectedStatFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature);
+
+            this.selectedFeatures.forEach(district => {
+                const matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+
+                this.prepareGraphData(matchResults);
+            });
+        },
+        /**
          * @description Adjusting CCM data for Graph Generator Tool.
          * @param {Object} dataSet dataSet from renderVisualization function.
          * @returns {void}
@@ -454,9 +469,9 @@ export default {
         loadToChartGenerator () {
             const graphObj = new ChartDataSet({
                 id: "ccm",
-                name: [this.keyOfAttrNameStats] + " - " + this.dataCategory,
+                name: [this.label] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart", "PieChart"],
-                color: "blue",
+                color: "rgb(50,200,120)",
                 source: "Kartenvisualisierungswerkzeug",
                 scaleLabels: [this.selectedFeature, "Jahre"],
                 data: {
@@ -476,7 +491,13 @@ export default {
 
             graphObj.data.labels.reverse();
 
-            this.setNewChartDataSet(graphObj);
+            this.channelGraphData(graphObj);
+        },
+
+        openMetadata () {
+            this.metadataUrls.forEach(url => {
+                window.open(url);
+            });
         }
     }
 };
@@ -484,7 +505,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="loadend && !dashboardOpen"
+        v-if="loadend && selectedFeatures.length > 0 && !dashboardOpen"
         id="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
@@ -501,13 +522,14 @@ export default {
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
-                            <span class="glyphicon glyphicon-plus"></span>
+                            <span class="glyphicon glyphicon-plus" />
                         </template>
                         <template v-else>
-                            <span class="glyphicon glyphicon-minus"></span>
+                            <span class="glyphicon glyphicon-minus" />
                         </template>
                     </button>
                     <button
+                        id="switch"
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         title="Visualisierung an/ aus"
@@ -527,14 +549,14 @@ export default {
                         title="Vorherigen Datensatz auswählen"
                         @click="changeSelector(-1)"
                     >
-                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        <span class="glyphicon glyphicon-chevron-left" />
                     </button>
                     <button
                         class="next btn btn-default btn-sm"
                         title="Nächsten Datensatz auswählen"
                         @click="changeSelector(1)"
                     >
-                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        <span class="glyphicon glyphicon-chevron-right" />
                     </button>
 
                     <Multiselect
@@ -544,9 +566,9 @@ export default {
                         :allow-empty="false"
                         :options="availableYears"
                         :multiple="false"
-                        selectedLabel=""
-                        selectLabel=""
-                        deselectLabel=""
+                        selected-label=""
+                        select-label=""
+                        deselect-label=""
                         placeholder=""
                     >
                         <template>
@@ -561,9 +583,9 @@ export default {
                         :allow-empty="true"
                         :options="availableYears"
                         :multiple="false"
-                        selectedLabel=""
-                        selectLabel=""
-                        deselectLabel="Entfernen"
+                        selected-label=""
+                        select-label=""
+                        deselect-label="Entfernen"
                         placeholder=""
                     >
                         <template>
@@ -578,13 +600,13 @@ export default {
                     :allow-empty="false"
                     :options="featuresList"
                     group-label="group"
-                    :tabIndex="selectorPosition"
+                    :tab-index="selectorPosition"
                     :group-select="false"
                     group-values="data"
                     :multiple="false"
-                    selectedLabel=""
-                    selectLabel=""
-                    deselectLabel=""
+                    selected-label=""
+                    select-label=""
+                    deselect-label=""
                     placeholder=""
                 >
                     <template>
@@ -606,10 +628,10 @@ export default {
                         :key="feature.id"
                         class="legend_mark"
                     >
-                        <div class="mark_tip"></div>
+                        <div class="mark_tip" />
                         <div class="hoverbox">
-                            <p class="district"></p>
-                            <p class="value"></p>
+                            <p class="district" />
+                            <p class="value" />
                         </div>
                     </div>
                 </div>
@@ -628,7 +650,7 @@ export default {
                     title="Werkzeuginformationen"
                     @click="showInfo()"
                 >
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    <span class="glyphicon glyphicon-question-sign" />
                 </button>
                 <div
                     v-if="visualizationState && !minimize"
@@ -641,30 +663,36 @@ export default {
                         @click="setPlayState(!playState)"
                     >
                         <template v-if="!playState">
-                            <span class="glyphicon glyphicon-play"></span>
+                            <span class="glyphicon glyphicon-play" />
                         </template>
                         <template v-else>
-                            <span class="glyphicon glyphicon-pause"></span>
+                            <span class="glyphicon glyphicon-pause" />
                         </template>
                     </button>
                     <input
                         v-model="playSpeed"
                         class="mini_input"
-                    />
+                    >
                 </div>
                 <button
                     class="graph_button"
                     title="Graph aus Datensatz erzeugen"
                     @click="loadToChartGenerator()"
                 >
-                    <span class="glyphicon glyphicon-stats"></span>
+                    <span class="glyphicon glyphicon-stats" />
                 </button>
                 <button
                     class="map_button"
                     title="Gebietsnamen ein-/ ausblenden"
                     @click="setShowMapNames(!showMapNames)"
                 >
-                    <span class="glyphicon glyphicon-map-marker"></span>
+                    <span class="glyphicon glyphicon-map-marker" />
+                </button>
+                <button
+                    title="Metadaten"
+                    @click="openMetadata()"
+                >
+                    <span class="glyphicon glyphicon-info-sign" />
                 </button>
             </div>
         </div>

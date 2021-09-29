@@ -6,12 +6,20 @@
  */
 export default function storeOriginalFeatureData (feature, storeGeometry = true) {
     if (!feature.get("originalData")) {
+        const data = feature.getProperties();
+
+        // make sure there is no recursive originalData key stored on the properties
+        if (Object.hasOwnProperty.call(data, "originalData")) {
+            delete data.originalData;
+        }
+
         feature.set("originalData", {
-            ...feature.getProperties()
+            ...data
         });
-    }
-    if (storeGeometry && !feature.get("originalData").location) {
-        feature.get("originalData").geometry = feature.getGeometry().clone();
+
+        if (storeGeometry) {
+            feature.get("originalData").geometry = feature.getGeometry().clone();
+        }
     }
 
 }
