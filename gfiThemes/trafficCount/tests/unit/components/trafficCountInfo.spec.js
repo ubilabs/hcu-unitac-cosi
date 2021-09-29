@@ -31,7 +31,7 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
             onupdate("calendarWeek", "quix");
         },
         updateHighestWorkloadMonth: (thingId, meansOfTransport, year, onupdate) => {
-            onupdate("month", "foobar");
+            onupdate("01", "foobar");
         }
     };
 
@@ -44,9 +44,11 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
                 holidays: [
                     "newYearsDay",
                     "goodFriday",
+                    "easterSunday",
                     "easterMonday",
                     "laborDay",
                     "ascensionDay",
+                    "pentecostSunday",
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
@@ -54,6 +56,17 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
                     "secondDayOfChristmas"
                 ]
             },
+            store: new Vuex.Store({
+                namespaced: true,
+                modules: {
+                    Language: {
+                        namespaced: true,
+                        getters: {
+                            currentLocale: () => "de"
+                        }
+                    }
+                }
+            }),
             localVue
         });
     });
@@ -76,7 +89,7 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
             expect(wrapper.vm.highestWorkloadDayValue).to.equal("qox");
             expect(wrapper.vm.highestWorkloadWeekDesc).to.include("calendarWeek");
             expect(wrapper.vm.highestWorkloadWeekValue).to.equal("quix");
-            expect(wrapper.vm.highestWorkloadMonthDesc).to.equal("month");
+            expect(wrapper.vm.highestWorkloadMonthDesc).to.equal("Januar");
             expect(wrapper.vm.highestWorkloadMonthValue).to.equal("foobar");
         });
     });

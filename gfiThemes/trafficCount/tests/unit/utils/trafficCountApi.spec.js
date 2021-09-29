@@ -1287,7 +1287,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                expectedMonth = "Februar",
+                expectedMonth = "02",
                 expectedValue = 9;
 
             api.updateHighestWorkloadMonth("thingId", "meansOfTransport", "2020", (date, value) => {

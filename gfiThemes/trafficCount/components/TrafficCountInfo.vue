@@ -1,6 +1,7 @@
 <script>
 import moment from "moment";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator";
+import {mapGetters} from "vuex";
 
 export default {
     name: "TrafficCountInfo",
@@ -44,6 +45,8 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
+
         period: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.period");
         },
@@ -121,6 +124,8 @@ export default {
          * @returns {void}
          */
         setupTabInfo: function (api, thingId, meansOfTransport) {
+            moment.locale(this.currentLocale);
+
             api.updateTotal(thingId, meansOfTransport, (date, value) => {
                 this.setTotalDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setTotalValue(thousandsSeparator(value));
@@ -192,7 +197,7 @@ export default {
             });
 
             api.updateHighestWorkloadMonth(thingId, meansOfTransport, moment().format("YYYY"), (month, value) => {
-                this.setHighestWorkloadMonthDesc(typeof month === "string" ? month : "");
+                this.setHighestWorkloadMonthDesc(typeof month === "string" ? moment(month, "MM").format("MMMM") : "");
                 this.setHighestWorkloadMonthValue(thousandsSeparator(value));
             }, errormsg => {
                 this.setHighestWorkloadMonthDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
