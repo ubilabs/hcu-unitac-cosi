@@ -92,7 +92,7 @@ export default class ScenarioFeature {
         for (prop of props || Object.keys(originalProperties)) {
 
             if (prop === "geometry") {
-                this.resetLocation();
+                this.resetLocation(purge);
             }
             else {
                 this.feature.set(prop, originalProperties[prop]);

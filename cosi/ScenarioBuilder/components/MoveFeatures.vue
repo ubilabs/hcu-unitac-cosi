@@ -211,7 +211,8 @@ export default {
          * @returns {void}
          */
         resetFeatureLocations () {
-            this.activeScenario.resetFeaturesByLayer(this.layer);
+            console.log(this.layer);
+            this.activeScenario.resetFeaturesByLayer(this.layer, ["geometry"], true);
         },
 
         /**

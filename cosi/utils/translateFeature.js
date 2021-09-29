@@ -16,6 +16,6 @@ export default function translateFeature (feature, geometry) {
         originalGeom.translate(deltaX, deltaY);
     }
     else {
-        feature.setGeometry(geometry);
+        feature.setGeometry(geometry.clone());
     }
 }

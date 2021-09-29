@@ -121,13 +121,14 @@ export default class Scenario {
      * Resets a modified feature to its original properties
      * @param {module:ol/Feature} feature - the feature from the map to reset
      * @param {String[]} [props] - the props to reset, resets all if none are provided
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetFeature (feature, props) {
+    resetFeature (feature, props, purge = false) {
         const scenarioFeature = this.getScenarioFeature(feature);
 
         if (scenarioFeature) {
-            scenarioFeature.resetProperties(props);
+            scenarioFeature.resetProperties(props, purge);
         }
     }
 
@@ -158,14 +159,17 @@ export default class Scenario {
     /**
      * Resets all modified features of a layer to their original state
      * @param {module:ol/layer/Vector} layer - the layer to reset
+     * @param {String[]} [props] - the props to reset, resets all if none are provided
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetFeaturesByLayer (layer) {
+    resetFeaturesByLayer (layer, props, purge = false) {
         const scenarioFeatures = this.getScenarioFeaturesByLayer(layer);
         let item;
 
         for (item of scenarioFeatures) {
-            item.resetLocation(true);
+            console.log(purge, item);
+            item.resetProperties(props, purge);
         }
     }
 
