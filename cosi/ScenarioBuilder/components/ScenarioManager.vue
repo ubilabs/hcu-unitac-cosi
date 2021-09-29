@@ -25,6 +25,10 @@ export default {
             return this.scenarios.map(scenario => scenario.name);
         },
 
+        validScenarioName () {
+            return this.newScenarioName.length === 0 || this.scenarioNames.includes(this.newScenarioName);
+        },
+
         scenarioByName: () => name => {
             return this.scenarios.find(scenario => scenario.name === name);
         },
@@ -68,6 +72,7 @@ export default {
 
             this.scenarios.push(newScenario);
             this.createNewScenarioModalOpen = false;
+            this.newScenarioName = "";
 
             // set the new scenario active, if no other scenario is selected
             if (!this.activeScenario) {
@@ -88,13 +93,6 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
                 this.activeScenario.prune();
-            }
-        },
-
-        validateNewScenario () {
-            this.$refs["new-scenario-form"].validate();
-            if (this.$refs["new-scenario-form"].validate()) {
-                this.createNewScenario();
             }
         }
     }
@@ -284,33 +282,32 @@ export default {
             :show-modal="createNewScenarioModalOpen"
         >
             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
-            <v-form
-                id="new-scenario-form"
-                ref="new-scenario-form"
-                v-model="newScenarioValid"
-                @submit.prevent="validateNewScenario"
-            >
-                <v-row>
-                    <v-col cols="12">
-                        <v-text-field
-                            v-model="newScenarioName"
-                            required
-                            :rules="newScenarioRules"
-                            :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
-                        />
-                        <v-btn
-                            tile
-                            depressed
-                            type="submit"
-                            :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
-                            :disabled="!newScenarioValid"
-                            form="new-scenario-form"
-                        >
-                            {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-form>
+            <form id="new-scenario-form">
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field
+                                v-model="newScenarioName"
+                                required
+                                dense
+                                :rules="newScenarioRules"
+                                :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
+                            />
+                            <v-btn
+                                tile
+                                depressed
+                                type="button"
+                                dense
+                                :disabled="validScenarioName"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
+                                @click="createNewScenario"
+                            >
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </form>
         </Modal>
     </div>
 </template>
