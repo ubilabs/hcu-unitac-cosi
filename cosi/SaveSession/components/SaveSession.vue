@@ -392,7 +392,6 @@ export default {
 
             // feature.properties.originalData = null;
             if (Object.hasOwnProperty.call(feature.properties, "originalData")) {
-                console.log("isses wech?");
                 delete feature.properties.originalData;
             }
 

@@ -28,7 +28,6 @@ export default class Scenario {
 
         if (opts.simulatedFeatures) {
             for (const scenarioFeature of opts.simulatedFeatures) {
-                console.log(scenarioFeature, this.isActive);
                 this.addFeature(scenarioFeature, this.isActive);
             }
         }
@@ -168,7 +167,6 @@ export default class Scenario {
         let item;
 
         for (item of scenarioFeatures) {
-            console.log(purge, item);
             item.resetProperties(props, purge);
         }
     }
@@ -209,8 +207,6 @@ export default class Scenario {
         for (item of this.simulatedFeatures) {
             item.hideFeature();
         }
-
-        console.log(this);
     }
 
     /**
