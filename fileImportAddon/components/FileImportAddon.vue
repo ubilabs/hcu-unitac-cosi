@@ -156,10 +156,10 @@ export default {
                 </div>
 
                 <div>
-                    <label 
+                    <label
                         class="upload-button-wrapper"
                         tabindex="0"
-                     >
+                    >
                         <input
                             type="file"
                             @change="onInputChange"
