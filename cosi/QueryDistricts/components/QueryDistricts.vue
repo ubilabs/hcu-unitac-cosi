@@ -138,6 +138,7 @@ export default {
                     .filter(layer=> layer.url === url);
 
             this.allLayerOptions = [];
+
             for (const m of this.mapping) {
                 const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
@@ -200,7 +201,8 @@ export default {
         },
 
         countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
-            const fmap = {};
+            // const fmap = {};
+            const fmap = Object.fromEntries(features.map(feat => [feat.getId(), 0]));
 
             for (const ffeature of facilityFeatures) {
                 for (const feature of features) {
@@ -222,7 +224,7 @@ export default {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
 
-                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + val;
+                        fmap[feature.getId()] = fmap[feature.getId()] + val;
 
                         break;
                     }
@@ -290,14 +292,14 @@ export default {
                 features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
-                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues,
-                    referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName,
+                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
                     quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
                     properties: await this.getFacilityProperties(layer)
                 };
 
             this.setLayerFilterModelValue(model);
+            console.log(model);
             return model;
         },
 
@@ -448,6 +450,8 @@ export default {
         async computeQuotientLayer (value) {
 
             await this.loadFeatures({id: value.quotientLayer});
+
+            console.log("da wollmer hin")
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
