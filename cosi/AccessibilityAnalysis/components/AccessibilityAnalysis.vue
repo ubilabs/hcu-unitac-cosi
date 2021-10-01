@@ -84,7 +84,8 @@ export default {
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"])
     },
     watch: {
         active () {
@@ -100,6 +101,10 @@ export default {
         },
         isochroneFeatures (newFeatures) {
             this.renderIsochrones(newFeatures);
+        },
+        async activeSimulatedFeatures () {
+            await this.$nextTick();
+            this.tryUpdateIsochrones();
         }
     },
     /**
