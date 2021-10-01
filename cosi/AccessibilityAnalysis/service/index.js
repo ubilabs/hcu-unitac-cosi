@@ -49,15 +49,13 @@ export async function createIsochrones (params, progress) {
 
 const id = "AccessibilityAnalysisService",
     actions = {
-        // eslint-disable-next-line no-unused-vars
-        async getIsochrones ({getters, commit}, params) {
+        async getIsochrones ({commit}, params) {
             let ret;
 
             try {
                 ret = await createIsochrones(params, (p) => commit("setProgress", p));
             }
             finally {
-
                 commit("setProgress", 0);
             }
             return ret;
@@ -75,11 +73,13 @@ const id = "AccessibilityAnalysisService",
             id,
             progress: 0
         },
-        getters: {progress: s => {
-            return s.progress;
-        }},
+        getters: {
+            progress: s => {
+                return s.progress;
+            }
+        },
         mutations: {
-            "setProgress": (moduleState, payload) => {
+            setProgress: (moduleState, payload) => {
                 moduleState.progress = payload;
             }
         },
