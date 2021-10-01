@@ -201,7 +201,6 @@ export default {
         },
 
         countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
-            // const fmap = {};
             const fmap = Object.fromEntries(features.map(feat => [feat.getId(), 0]));
 
             for (const ffeature of facilityFeatures) {
@@ -299,7 +298,6 @@ export default {
                 };
 
             this.setLayerFilterModelValue(model);
-            console.log(model);
             return model;
         },
 
@@ -422,15 +420,15 @@ export default {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
 
-                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property) {
+                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property || value.property === null) {
                         let currentLayerId = filters[i].layerId;
 
+                        if (value.property !== undefined) {
+                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
+                        }
                         if (value.quotientLayer) {
                             await this.computeQuotientLayer(value);
                             currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
-                        }
-                        if (value.property !== undefined) {
-                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
                         }
 
                         filters[i] = {
@@ -448,30 +446,25 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-
             await this.loadFeatures({id: value.quotientLayer});
-
-            console.log("da wollmer hin")
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
                 qid = `${value.layerId}/${value.quotientLayer}`;
 
-            if (!(qid in this.propertiesMap)) {
-                this.propertiesMap[qid] = lprops.map(entry => {
+            this.propertiesMap[qid] = lprops.map(entry => {
 
-                    const props = qprops.find(p=>p.id === entry.id),
-                        ret = {...props};
+                const props = qprops.find(p=>p.id === entry.id),
+                    ret = {...props};
 
-                    for (const p in props) {
-                        if (p.startsWith("jahr_")) {
-                            ret[p] = entry[p] / props[p];
-                        }
+                for (const p in props) {
+                    if (p.startsWith("jahr_")) {
+                        ret[p] = entry[p] / props[p];
                     }
-                    ret.feature = entry.feature;
-                    return ret;
-                });
-            }
+                }
+                ret.feature = entry.feature;
+                return ret;
+            });
         },
 
         closeFilter (value) {
