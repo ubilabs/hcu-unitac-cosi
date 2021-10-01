@@ -100,6 +100,7 @@ export default {
     },
     created () {
         this.$on("close", this.close);
+        console.log(this.$store);
     },
     methods: {
         ...mapActions("Tools/CosiFileImport", [

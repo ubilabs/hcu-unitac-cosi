@@ -23,7 +23,7 @@ export default {
                 .sort().filter((x, i, a) => !i || x !== a[i - 1]), // sort and without duplicates
             table = resultNames.map(n => ({
                 name: n,
-                ...allFeatures.map((p, i) => p.find(f => f[this.keyOfAttrNameStats] === n)[layerFilterList[i].field])
+                ...allFeatures.map((p, i) => parseFloat(p.find(f => f[this.keyOfAttrNameStats] === n)[layerFilterList[i].field]))
             })),
             features = intersection.map(r => r.feature);
 

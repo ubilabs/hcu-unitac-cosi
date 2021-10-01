@@ -180,7 +180,6 @@ export default {
     /**
      * style isochrone features
      * @param {ol.Feature} features isochone features (polygons)
-     * @param {array} coordinate todo
      * @returns {void}
      */
     styleFeatures: function (features) {

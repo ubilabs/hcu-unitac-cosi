@@ -170,4 +170,5 @@ export default {
     intersect,
     union,
     getContainingDistrictForFeature
-}
+};
+

@@ -2,7 +2,7 @@ import {Radio} from "backbone";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
-import {color} from "d3-color";
+import {color as d3Color} from "d3-color";
 
 const supportedFormats = {
     kml: new KML({extractStyles: true}),
@@ -260,8 +260,8 @@ function adjustLayerStyling (newLayer) {
         areaOpac;
 
     if (newLayer.style.point) {
-        pointColor = color(newLayer.style.point.hex);
-        pointOpac = color(newLayer.style.point.hex);
+        pointColor = d3Color(newLayer.style.point.hex);
+        pointOpac = d3Color(newLayer.style.point.hex);
         pointOpac.opacity = 0.5;
 
         areaColor = pointColor;
@@ -269,8 +269,8 @@ function adjustLayerStyling (newLayer) {
     }
 
     if (newLayer.style.polygon) {
-        areaColor = color(newLayer.style.polygon.hex);
-        areaOpac = color(newLayer.style.polygon.hex);
+        areaColor = d3Color(newLayer.style.polygon.hex);
+        areaOpac = d3Color(newLayer.style.polygon.hex);
         areaOpac.opacity = 0.5;
     }
 

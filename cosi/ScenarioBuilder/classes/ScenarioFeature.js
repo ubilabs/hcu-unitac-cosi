@@ -19,10 +19,11 @@ export default class ScenarioFeature {
         this.layer = layer;
         this.guideLayer = guideLayer;
         this.scenarioData = {};
+        this.scenario = null;
 
         // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
         this.layer.getSource().on("change", () => {
-            if (!this.layer.getSource().hasFeature(this.feature)) {
+            if (!this.layer.getSource().hasFeature(this.feature) && this.scenario?.isActive) {
                 this.layer.getSource().addFeature(this.feature);
             }
         });
@@ -81,26 +82,34 @@ export default class ScenarioFeature {
     /**
      * Resets a features properties to the original data
      * @param {String[]} [props] - the props to restore
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetProperties (props) {
+    resetProperties (props, purge = false) {
         const originalProperties = this.feature.get("originalData");
         let prop;
 
         for (prop of props || Object.keys(originalProperties)) {
-            this.feature.set(prop, originalProperties[prop]);
 
             if (prop === "geometry") {
-                this.resetLocation();
+                this.resetLocation(purge);
             }
+            else {
+                this.feature.set(prop, originalProperties[prop]);
+            }
+        }
+
+        if (purge) {
+            this.clearScenarioData();
         }
     }
 
     /**
      * Retrieves the original location of a feature and resets its position on the map
+     * @param {Boolean} [purge=false] - whether to clear the stored scenario geometry definitively
      * @returns {void}
      */
-    resetLocation () {
+    resetLocation (purge = false) {
         const originalGeom = this.feature.get("originalData").geometry;
 
         if (originalGeom) {
@@ -110,7 +119,19 @@ export default class ScenarioFeature {
                 removeSimulationTag(this.feature, this.guideLayer);
                 addSimulationTag(this.feature, this.guideLayer);
             }
+
+            if (purge) {
+                delete this.scenarioData.geometry;
+            }
         }
+    }
+
+    /**
+     * Clears scenario data
+     * @returns {void}
+     */
+    clearScenarioData () {
+        this.scenarioData = {};
     }
 
     /**

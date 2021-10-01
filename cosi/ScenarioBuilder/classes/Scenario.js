@@ -55,6 +55,10 @@ export default class Scenario {
             console.error(`Scenario.addFeature: feature must be of Type ScenarioFeature. Got ${scenarioFeature?.constructor} instead.`);
             return null;
         }
+
+        /** @todo is this the right place? */
+        scenarioFeature.scenario = this;
+
         if (!this.simulatedFeatures.find(item => item === scenarioFeature)) {
             this.simulatedFeatures.push(scenarioFeature);
         }
@@ -116,13 +120,14 @@ export default class Scenario {
      * Resets a modified feature to its original properties
      * @param {module:ol/Feature} feature - the feature from the map to reset
      * @param {String[]} [props] - the props to reset, resets all if none are provided
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetFeature (feature, props) {
+    resetFeature (feature, props, purge = false) {
         const scenarioFeature = this.getScenarioFeature(feature);
 
         if (scenarioFeature) {
-            scenarioFeature.resetProperties(props);
+            scenarioFeature.resetProperties(props, purge);
         }
     }
 
@@ -153,14 +158,16 @@ export default class Scenario {
     /**
      * Resets all modified features of a layer to their original state
      * @param {module:ol/layer/Vector} layer - the layer to reset
+     * @param {String[]} [props] - the props to reset, resets all if none are provided
+     * @param {Boolean} [purge=false] - whether to clear the stored scenarioData definitively
      * @returns {void}
      */
-    resetFeaturesByLayer (layer) {
+    resetFeaturesByLayer (layer, props, purge = false) {
         const scenarioFeatures = this.getScenarioFeaturesByLayer(layer);
         let item;
 
         for (item of scenarioFeatures) {
-            item.resetProperties();
+            item.resetProperties(props, purge);
         }
     }
 
@@ -194,6 +201,7 @@ export default class Scenario {
     hideScenario () {
         let item;
 
+        this.isActive = false;
         this.resetAllFeatures();
         this.resetAllDistricts();
         for (item of this.simulatedFeatures) {
@@ -247,6 +255,8 @@ export default class Scenario {
      * @returns {void}
      */
     restore () {
+        this.isActive = true;
+
         for (const item of this.simulatedFeatures) {
             if (!getClusterSource(item.layer)
                 .getFeatures()

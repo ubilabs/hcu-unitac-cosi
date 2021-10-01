@@ -15,7 +15,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import renameKeys from "../../utils/renameKeys.js";
-import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 
 export default {
     name: "QueryDistricts",
@@ -52,7 +51,7 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -138,6 +137,7 @@ export default {
                     .filter(layer=> layer.url === url);
 
             this.allLayerOptions = [];
+
             for (const m of this.mapping) {
                 const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
@@ -200,7 +200,7 @@ export default {
         },
 
         countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
-            const fmap = {};
+            const fmap = Object.fromEntries(features.map(feat => [feat.getId(), 0]));
 
             for (const ffeature of facilityFeatures) {
                 for (const feature of features) {
@@ -222,7 +222,7 @@ export default {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
 
-                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + val;
+                        fmap[feature.getId()] = fmap[feature.getId()] + val;
 
                         break;
                     }
@@ -290,8 +290,7 @@ export default {
                 features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
-                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues,
-                    referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName,
+                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
                     quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
                     properties: await this.getFacilityProperties(layer)
@@ -420,15 +419,15 @@ export default {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
 
-                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property) {
+                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property || value.property === null) {
                         let currentLayerId = filters[i].layerId;
 
+                        if (value.property !== undefined) {
+                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
+                        }
                         if (value.quotientLayer) {
                             await this.computeQuotientLayer(value);
                             currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
-                        }
-                        if (value.property !== undefined) {
-                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
                         }
 
                         filters[i] = {
@@ -446,28 +445,25 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-
             await this.loadFeatures({id: value.quotientLayer});
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
                 qid = `${value.layerId}/${value.quotientLayer}`;
 
-            if (!(qid in this.propertiesMap)) {
-                this.propertiesMap[qid] = lprops.map(entry => {
+            this.propertiesMap[qid] = lprops.map(entry => {
 
-                    const props = qprops.find(p=>p.id === entry.id),
-                        ret = {...props};
+                const props = qprops.find(p=>p.id === entry.id),
+                    ret = {...props};
 
-                    for (const p in props) {
-                        if (p.startsWith("jahr_")) {
-                            ret[p] = entry[p] / props[p];
-                        }
+                for (const p in props) {
+                    if (p.startsWith("jahr_")) {
+                        ret[p] = entry[p] / props[p];
                     }
-                    ret.feature = entry.feature;
-                    return ret;
-                });
-            }
+                }
+                ret.feature = entry.feature;
+                return ret;
+            });
         },
 
         closeFilter (value) {
@@ -564,21 +560,9 @@ export default {
 
         async getFacilityProperties (layer) {
             if (layer.facilityLayerName) {
-                let desc = await describeFeatureTypeByLayerId(layer.id);
+                const layerMap = this.layerMapById(layer.id);
 
-                if (desc) {
-                    desc = desc.map(prop => prop.name);
-                }
-                else {
-                    desc = Object.keys(
-                        this.layerById(layer.id)?.olLayer
-                            .getSource()
-                            .getFeatures()[0]
-                            .getProperties()
-                    );
-                }
-
-                return desc;
+                return layerMap?.numericalValues || null;
             }
             return null;
         },

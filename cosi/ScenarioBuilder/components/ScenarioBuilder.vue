@@ -107,7 +107,6 @@ export default {
          */
         async active (newActive) {
             if (newActive) {
-                console.log(this.geometry);
                 if (this.geometry) {
                     // wait for 2 ticks for the drawing layer to initialize
                     await this.$nextTick();
