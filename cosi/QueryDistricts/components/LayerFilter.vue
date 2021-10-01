@@ -79,7 +79,7 @@ export default {
     },
     methods: {
         updateFieldValue (newValue) {
-            this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue});
+            this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue, quotientLayer: this.quotientLayer});
         },
         updateLow () {
             const v = parseFloat(this.$refs.inputLow.value);
@@ -245,10 +245,13 @@ export default {
                         :label="$t('additional:modules.tools.cosi.queryDistricts.selectProperty')"
                         :value="property"
                         :items="properties"
+                        item-text="name"
+                        item-value="id"
                         outlined
                         dense
                         hide-details
                         :clearable="true"
+                        :disabled="properties.length === 0"
                         @change="updateProperty"
                     />
                 </template>

@@ -15,7 +15,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import renameKeys from "../../utils/renameKeys.js";
-import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 
 export default {
     name: "QueryDistricts",
@@ -52,7 +51,7 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -561,21 +560,9 @@ export default {
 
         async getFacilityProperties (layer) {
             if (layer.facilityLayerName) {
-                let desc = await describeFeatureTypeByLayerId(layer.id);
+                const layerMap = this.layerMapById(layer.id);
 
-                if (desc) {
-                    desc = desc.map(prop => prop.name);
-                }
-                else {
-                    desc = Object.keys(
-                        this.layerById(layer.id)?.olLayer
-                            .getSource()
-                            .getFeatures()[0]
-                            .getProperties()
-                    );
-                }
-
-                return desc;
+                return layerMap?.numericalValues || null;
             }
             return null;
         },
