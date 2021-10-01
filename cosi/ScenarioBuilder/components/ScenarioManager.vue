@@ -5,13 +5,11 @@ import actions from "../store/actionsScenarioBuilder";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 import Scenario from "../classes/Scenario";
-import Multiselect from "vue-multiselect";
 
 export default {
     name: "ScenarioManager",
     components: {
-        Modal,
-        Multiselect
+        Modal
     },
     data: () => ({
         newScenarioName: "",
@@ -101,28 +99,20 @@ export default {
 
 <template>
     <div>
-        <v-row>
+        <v-row dense>
             <v-col cols="6">
-                <Multiselect
+                <v-select
                     v-model="_activeScenario"
-                    class="layer_selection selection"
-                    :options="scenarios"
-                    track-by="name"
-                    label="name"
-                    :multiple="false"
-                    :allow-empty="false"
-                    selected-label=""
-                    select-label=""
-                    deselect-label=""
-                    :placeholder="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
-                >
-                    <template slot="singleLabel">
-                        <strong v-if="_activeScenario">{{ _activeScenario.name }}</strong>
-                    </template>
-                    <template slot="noOptions">
-                        <span>{{ $t('additional:modules.tools.cosi.scenarioManager.noScenarios') }}</span>
-                    </template>
-                </Multiselect>
+                    :items="scenarios"
+                    item-text="name"
+                    item-value="name"
+                    return-object
+                    :no-data-text="$t('additional:modules.tools.cosi.scenarioManager.noScenarios')"
+                    :label="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
+                    outlined
+                    dense
+                />
             </v-col>
             <v-col
                 class="flex"
@@ -238,7 +228,7 @@ export default {
                 </v-menu>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row dense>
             <v-col
                 class="flex"
                 cols="12"
@@ -271,7 +261,7 @@ export default {
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row dense>
             <v-col cols="12">
                 <label v-if="!activeScenario">
                     {{ $t('additional:modules.tools.cosi.scenarioManager.noActiveScenario') }}

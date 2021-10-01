@@ -259,7 +259,7 @@ export default {
         <div class="mb-5 overline">
             {{ $t('additional:modules.tools.cosi.residentialSimulation.titleReference') }}
         </div>
-        <v-row>
+        <v-row dense>
             <v-col cols="12">
                 <v-select
                     v-model="workingDistrictLevel"
@@ -288,12 +288,12 @@ export default {
                 />
             </v-col>
         </v-row> -->
-        <v-row>
+        <v-row dense>
             <v-col cols="6">
                 <v-btn
                     tile
                     depressed
-                    :color="referencePickerActive ? 'warning' : ''"
+                    :color="referencePickerActive ? 'primary' : 'grey lighten-1'"
                     :title="$t('additional:modules.tools.cosi.residentialSimulation.pickReference')"
                     @click="togglePickReference"
                 >

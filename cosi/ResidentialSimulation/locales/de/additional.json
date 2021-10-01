@@ -4,6 +4,7 @@
             "cosi": {
                 "residentialSimulation": {
                     "title": "Wohnungsbauquartiere anlegen",
+                    "subTitle": "Quartier anlegen",
                     "help": "Lorem Ipsum",
                     "geom": "Geometrie",
                     "noGeomWarning": "Bitte erst Geometrie festlegen!",
@@ -28,7 +29,7 @@
                     "editStatsField": "Wert bearbeiten",
                     "editStatsInfo": "Bitte beachten Sie, dass nach der Veränderung eines Wertes keine Sicherheit mehr besteht, dass relative und absolute Werte zueinander passen oder Abhängigkeiten zwischen Werten realistisch abgebildet werden.",
                     "isNotNumber": "Muss eine Zahl sein",
-                    "createFeature": "Wohnquartier anlegen",
+                    "createFeature": "Anlegen",
                     "createFeatureHelp": "Wohnquartier anlegen - Statistische Daten werden dem umliegenden Gebiet zugerechnet",
                     "resetFeature": "Zurücksetzen",
                     "editFeature": "Wohnquartier bearbeiten",
