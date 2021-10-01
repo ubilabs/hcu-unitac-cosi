@@ -23,7 +23,9 @@ export default {
         referencePickerActive: false,
         workingDistrictLevel: null,
         selectedStatsFeature: null,
-        layer: null
+        layer: null,
+        // name of the selected reference district
+        selectedName: null
     }),
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
@@ -31,6 +33,17 @@ export default {
 
         statsMapping () {
             return groupMapping(this.mapping);
+        },
+
+        /**
+         * Gets the names of the districts of the selected district level.
+         * @returns {String[]} The district names or an empty array.
+         */
+        namesOfDistricts: function () {
+            if (this.workingDistrictLevel?.nameList) {
+                return this.workingDistrictLevel.nameList;
+            }
+            return [];
         }
     },
     watch: {
@@ -136,7 +149,33 @@ export default {
                 this.$emit("pickReference", baseStats);
             }
 
+            this.selectedName = feature.get(this.workingDistrictLevel.keyOfAttrName);
             this.referencePickerActive = false;
+        },
+
+        /**
+         * Find the reference district by name and get the related statistical features.
+         * @param {String} districtName - The name of the reference district.
+         * @returns {void}
+         */
+        async findReference (districtName) {
+            const sdistrict = this.workingDistrictLevel.districts.find(district => {
+                    return district.getName() === districtName;
+                }),
+                stats = await this.getStatsByDistrict({
+                    id: sdistrict.getId(),
+                    districtLevel: this.workingDistrictLevel
+                }),
+                baseStats = this.processStats(
+                    districtName,
+                    this.workingDistrictLevel.label,
+                    stats,
+                    "Bevölkerung insgesamt"
+                );
+
+            if (baseStats) {
+                this.$emit("pickReference", baseStats);
+            }
         },
 
         /**
@@ -217,6 +256,9 @@ export default {
 
 <template>
     <v-form>
+        <div class="mb-5 overline">
+            {{ $t('additional:modules.tools.cosi.residentialSimulation.titleReference') }}
+        </div>
         <v-row>
             <v-col cols="12">
                 <v-select
@@ -227,6 +269,8 @@ export default {
                     :label="$t('additional:modules.tools.cosi.districtSelector.districtLevel')"
                     :title="$t('additional:modules.tools.cosi.districtSelector.districtLevel')"
                     append-icon="mdi-layers"
+                    outlined
+                    dense
                 />
             </v-col>
         </v-row>
@@ -245,7 +289,7 @@ export default {
             </v-col>
         </v-row> -->
         <v-row>
-            <v-col cols="12">
+            <v-col cols="6">
                 <v-btn
                     tile
                     depressed
@@ -259,9 +303,16 @@ export default {
                     </span>
                 </v-btn>
             </v-col>
+            <v-col cols="6">
+                <v-autocomplete
+                    :value="selectedName"
+                    :items="namesOfDistricts"
+                    :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
+                    outlined
+                    dense
+                    @change="findReference"
+                />
+            </v-col>
         </v-row>
     </v-form>
 </template>
-
-<style lang="less" scoped>
-</style>

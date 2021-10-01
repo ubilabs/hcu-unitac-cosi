@@ -290,10 +290,10 @@ export default {
             #toolBody
         >
             <v-app>
-                <div class="form-group">
-                    <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
-                    <ScenarioManager />
+                <div class="mb-5 overline">
+                    {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
                 </div>
+                <ScenarioManager />
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"

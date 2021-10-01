@@ -420,10 +420,17 @@ export default {
                     id="scenario-builder"
                 >
                     <div>
-                        <div class="form-group">
-                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
-                            <ScenarioManager />
+                        <div class="mb-5 overline">
+                            {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
                         </div>
+                        <ScenarioManager />
+                        <v-divider />
+                        <ReferenceDistrictPicker
+                            :groups-list="groupsList"
+                            :timeline-prefix="timelinePrefix"
+                            @referencePickerActive="onReferencePickerActive"
+                            @pickReference="onPickReference"
+                        />
                         <v-divider />
                         <div class="form-group">
                             <v-row dense>
@@ -700,13 +707,6 @@ export default {
                                     </v-menu>
                                 </v-col>
                             </v-row>
-                            <v-divider />
-                            <ReferenceDistrictPicker
-                                :groups-list="groupsList"
-                                :timeline-prefix="timelinePrefix"
-                                @referencePickerActive="onReferencePickerActive"
-                                @pickReference="onPickReference"
-                            />
                             <v-divider />
                             <v-row dense>
                                 <v-col

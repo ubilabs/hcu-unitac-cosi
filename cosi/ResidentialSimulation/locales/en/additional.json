@@ -4,6 +4,8 @@
             "cosi": {
                 "residentialSimulation": {
                     "title": "Create Residential Projects",
+                    "titleReference": "Select reference area",
+                    "pickReference": "Select area",
                     "help": "Lorem Ipsum"
                 }
             }
