@@ -348,19 +348,19 @@ export default {
                             </template>
                         </div>
                         <div id="download">
-                                <v-btn
-                                    id="download-geojson"
-                                    dense
-                                    small
-                                    tile
-                                    color="green lighten-1"
-                                    title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
-                                    @click="exportAsGeoJson(mapLayer, coordinate)"
-                                >
-                                    <span class="glyphicon glyphicon-floppy-disk" />
-                                    Download GeoJSON
-                                </v-btn>
-                            </div>
+                            <v-btn
+                                id="download-geojson"
+                                dense
+                                small
+                                tile
+                                color="green lighten-1"
+                                title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                                @click="exportAsGeoJson(mapLayer, coordinate)"
+                            >
+                                <span class="glyphicon glyphicon-floppy-disk" />
+                                Download GeoJSON
+                            </v-btn>
+                        </div>
                     </div>
                 </v-app>
             </template>
