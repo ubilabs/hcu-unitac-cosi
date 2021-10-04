@@ -31,7 +31,7 @@ const actions = {
 
         const wfsFormat = new WFS(),
             urls = districtLevel.stats.baseUrl;
-
+        console.log(districtLevel)
         for (let j = 0; j < urls.length; j++) {
             for (let i = 0; i < districts.length; i++) {
                 // check if statFeatures are already loaded
