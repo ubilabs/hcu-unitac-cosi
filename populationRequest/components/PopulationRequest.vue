@@ -91,13 +91,16 @@ export default {
         active (newValue) {
             if (newValue) {
                 this.$nextTick(() => {
-                    this.$refs.graphicalSelectComponent.setStatus(newValue);
-                    this.$refs.graphicalSelectComponent.resetGeographicSelection();
+                    this.$refs.graphicalSelection.resetView();
+                    this.$refs.graphicalSelection.setStatus(newValue);
+                    this.$refs.graphicalSelection.resetGeographicSelection();
                 });
             }
             else {
-                this.$refs.graphicalSelectComponent.setStatus(newValue);
-                this.$refs.graphicalSelectComponent.resetView();
+                this.$refs.graphicalSelection.setStatus(newValue);
+                this.$refs.graphicalSelection.resetView();
+                this.$refs.graphicalSelection.resetGeographicSelection();
+                $("#tooltip-overlay").remove();
             }
         }
     },
@@ -147,7 +150,7 @@ export default {
          * @returns {void}
          */
         resetView: function () {
-            this.$refs.graphicalSelectComponent.resetView();
+            this.$refs.graphicalSelection.resetView();
         },
         /**
          * Called when the wps modules returns a request
@@ -425,9 +428,20 @@ export default {
         class="PopulationRequest"
     >
         <template
-            v-if="active"
             #toolBody
+            v-if="active"
         >
+<<<<<<< HEAD
+=======
+            <div>{{ translate("additional:modules.tools.populationRequest.select.info") }}</div>
+            <div class="dropdown">
+                <GraphicalSelect
+                    ref="graphicalSelection"
+                    :select-element="'Dropdown'"
+                    :focus-on-creation="true"
+                />
+            </div>
+>>>>>>> 34b0e27 (added forced removal of tooltip-overlay)
             <div
                 class="form-horizontal"
                 role="form"
