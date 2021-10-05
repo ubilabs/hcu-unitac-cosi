@@ -10,7 +10,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import {getAllFeatures as _getAllFeatures} from "../utils/getAllFeatures.js";
+import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";

@@ -16,6 +16,7 @@ import FeatureIcon from "./FeatureIcon.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
+import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 
 export default {
     name: "FeaturesList",
@@ -394,6 +395,21 @@ export default {
                 return "amber";
             }
             return "red";
+        },
+        getLayerList () {
+            const groups = this.mapping,
+                allLayers = [];
+
+            for (const g of groups) {
+                for (const l of g.layer) {
+                    const layer = getLayerWhere({id: l.layerId});
+
+                    if (layer) {
+                        allLayers.push({id: l.id, layerId: l.layerId, url: layer.url, group: g.group, featureType: layer.featureType});
+                    }
+                }
+            }
+            return allLayers;
         }
     }
 };

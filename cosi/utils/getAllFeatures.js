@@ -1,6 +1,6 @@
 import {WFS} from "ol/format.js";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
-import {getFeature} from "../../../../src/api/wfs/getFeature.js";
+import {getFeature} from "../../../src/api/wfs/getFeature.js";
 
 /**
  * Returns all features of a layer by the given layer id.
