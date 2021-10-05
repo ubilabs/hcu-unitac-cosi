@@ -30,7 +30,6 @@ export default {
     },
     data () {
         return {
-            // isReferenceDistrictChoosen
             datePicker: false,
             editDialog: false,
             editFeature: null,

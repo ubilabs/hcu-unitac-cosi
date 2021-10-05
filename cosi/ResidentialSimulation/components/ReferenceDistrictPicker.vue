@@ -16,13 +16,6 @@ export default {
             type: String,
             required: false,
             default: "jahr_"
-        },
-        geometry: {
-            type: Object,
-            required: false,
-            default: () => {
-                return {};
-            }
         }
     },
     data: () => ({
