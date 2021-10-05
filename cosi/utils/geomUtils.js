@@ -61,6 +61,32 @@ export function getContainingDistrictForFeature (districtLevel, feature, returns
 }
 
 /**
+ * Checks which district contains a given extent
+ * @param {DistrictLevel} districtLevel - the districtLevel to check
+ * @param {module:ol/extent} extent - the extent to check against
+ * @param {Boolean} [returnsFeature=true] - defines whether to return a String or the Feature Object
+ * @param {Boolean} [multiple=false] - defines whether multiple results are possible, returns the first result if false
+ * @returns {String|module:ol/Feature} the districts name or the district feature
+ */
+export function getContainingDistrictForExtent (districtLevel, extent, returnsFeature = true, multiple = false) {
+    const containingDistricts = [];
+
+    for (const district of districtLevel.districts) {
+        const geom = district.adminFeature.getGeometry();
+
+        if (geom.intersectsExtent(extent)) {
+            containingDistricts.push(returnsFeature ? district : district.getName());
+
+            if (!multiple) {
+                break;
+            }
+        }
+    }
+
+    return multiple ? containingDistricts : containingDistricts[0];
+}
+
+/**
  * Creates a new feature as a boolean union of a set of features
  * @param {module:ol/Feature[]} features - the OL features to join
  * @param {Boolean} [resetProperties=false] - defines whether to reset the new feature's properties to empty

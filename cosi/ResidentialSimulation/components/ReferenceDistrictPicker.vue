@@ -1,8 +1,8 @@
 <script>
 import {Select} from "ol/interaction";
 import {mapActions, mapGetters} from "vuex";
-import getAvailableYears from "../../utils/getAvailableYears";
 import groupMapping from "../../utils/groupMapping";
+import processStats from "../utils/processStats";
 
 export default {
     name: "ReferenceDistrictPicker",
@@ -16,6 +16,13 @@ export default {
             type: String,
             required: false,
             default: "jahr_"
+        },
+        geometry: {
+            type: Object,
+            required: false,
+            default: () => {
+                return {};
+            }
         }
     },
     data: () => ({
@@ -25,7 +32,8 @@ export default {
         selectedStatsFeature: null,
         layer: null,
         // name of the selected reference district
-        selectedName: null
+        selectedName: null,
+        checkbox: false
     }),
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
@@ -72,6 +80,12 @@ export default {
             if (this.referencePickerActive) {
                 this.unlisten();
                 this.listen();
+            }
+        },
+
+        checkbox () {
+            if (!this.checkbox) {
+                this.$emit("resetReference");
             }
         }
     },
@@ -137,13 +151,23 @@ export default {
                 stats = await this.getStatsByDistrict({
                     id: feature.getId(),
                     districtLevel: this.workingDistrictLevel
-                }),
-                baseStats = this.processStats(
+                });
+            let baseStats;
+
+            if (!stats) {
+                this.alertError();
+                baseStats = null;
+            }
+            else {
+                baseStats = processStats(
                     feature.get(this.workingDistrictLevel.keyOfAttrName),
                     this.workingDistrictLevel.label,
                     stats,
-                    "Bevölkerung insgesamt"
+                    "Bevölkerung insgesamt",
+                    this.timelinePrefix,
+                    this.groupsList
                 );
+            }
 
             if (baseStats) {
                 this.$emit("pickReference", baseStats);
@@ -165,82 +189,28 @@ export default {
                 stats = await this.getStatsByDistrict({
                     id: sdistrict.getId(),
                     districtLevel: this.workingDistrictLevel
-                }),
-                baseStats = this.processStats(
+                });
+
+            let baseStats;
+
+            if (!stats) {
+                this.alertError();
+                baseStats = null;
+            }
+            else {
+                baseStats = processStats(
                     districtName,
                     this.workingDistrictLevel.label,
                     stats,
-                    "Bevölkerung insgesamt"
+                    "Bevölkerung insgesamt",
+                    this.timelinePrefix,
+                    this.groupsList
                 );
+            }
 
             if (baseStats) {
                 this.$emit("pickReference", baseStats);
             }
-        },
-
-        /**
-         * @todo ONLY PROTOTYPE!!!! refactor
-         * @param {String} districtName -
-         * @param {String} districtLevel -
-         * @param {module:ol/Feature[]} statsFeatures -
-         * @param {String} basePopulationProp -
-         * @returns {Object} - the base stats for the picked reference district
-         */
-        processStats (districtName, districtLevel, statsFeatures, basePopulationProp) {
-            if (!statsFeatures) {
-                this.alertError();
-                return null;
-            }
-            const stats = statsFeatures.map(feature => feature.getProperties()),
-                years = getAvailableYears(statsFeatures),
-                latestYear = this.timelinePrefix + years[0],
-                populationStats = this.groupsList.length > 0 ? this.mapping.filter(mappingObj => this.groupsList.includes(mappingObj.group)) : this.mapping,
-                basePopulationFeature = statsFeatures.find(feature => feature.get("kategorie") === basePopulationProp),
-                basePopulation = parseFloat(basePopulationFeature.get(latestYear)),
-                baseStats = {
-                    reference: {
-                        districtName,
-                        districtLevel
-                    },
-                    absolute: [],
-                    relative: []
-                };
-
-            for (const mappingObj of populationStats) {
-                const datum = stats.find(d => d.kategorie === mappingObj.value);
-                let value;
-
-                if (mappingObj.valueType === "absolute") {
-                    const refValue = parseFloat(datum[latestYear]);
-
-                    /**
-                     * @todo Das ist sehr unschön... wir müssen uns da was schlaues überlegen,
-                     * aber so hard-coded, reingehackt ist das super statisch und nicht skalierbar
-                     * Eine Idee wäre den Referenzwert auch in der mapping.json zu hinterlegen...
-                     */
-                    if (mappingObj.value.includes("Frauen")) {
-                        value = refValue / stats.find(d => d.kategorie === "Bevölkerung weiblich")[latestYear];
-                    }
-                    else if (mappingObj.value.includes("Männer")) {
-                        value = refValue / stats.find(d => d.kategorie === "Bevölkerung männlich")[latestYear];
-                    }
-                    else {
-                        value = refValue / basePopulation;
-                    }
-                }
-                else {
-                    value = parseFloat(datum[latestYear]);
-                }
-
-                baseStats[mappingObj.valueType].push({
-                    group: datum.group,
-                    category: datum.kategorie,
-                    value: value,
-                    valueType: mappingObj.valueType
-                });
-            }
-
-            return baseStats;
         },
 
         alertError () {
@@ -256,10 +226,21 @@ export default {
 
 <template>
     <v-form>
-        <div class="mb-5 overline">
-            {{ $t('additional:modules.tools.cosi.residentialSimulation.titleReference') }}
-        </div>
         <v-row dense>
+            <v-col>
+                <div class="overline float-left">
+                    {{ $t('additional:modules.tools.cosi.residentialSimulation.titleReference') }}
+                </div>
+                <v-checkbox
+                    v-model="checkbox"
+                    class="mt-0 pl-2"
+                />
+            </v-col>
+        </v-row>
+        <v-row
+            v-if="checkbox"
+            dense
+        >
             <v-col cols="12">
                 <v-select
                     v-model="workingDistrictLevel"
@@ -288,7 +269,10 @@ export default {
                 />
             </v-col>
         </v-row> -->
-        <v-row dense>
+        <v-row
+            v-if="checkbox"
+            dense
+        >
             <v-col cols="6">
                 <v-btn
                     tile

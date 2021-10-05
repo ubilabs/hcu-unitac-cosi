@@ -16,7 +16,7 @@
                     "householdSize": "Ø Haushaltsgröße",
                     "helpHouseholdSize": " Durchschnittliche Haushaltsgröße festlegen",
                     "reference": "Referenzgebiet",
-                    "titleReference": "Referenzgebiet auswählen",
+                    "titleReference": "Referenzgebiet auswählen (optional)",
                     "pickReference": "Gebiet auswählen",
                     "helpPickReference": "Statistische Daten aus einem Referenzgebiet extrapolieren",
                     "errorPickReference": "Statistische Daten des Referenzgebiets konnten nicht geladen werden. Bitte versuchen Sie es erneut oder laden Sie die Anwendung neu.",

@@ -5,7 +5,7 @@
                 "residentialSimulation": {
                     "title": "Create Residential Projects",
                     "subTitle": "Create Residential",
-                    "titleReference": "Select reference area",
+                    "titleReference": "Select reference area (optional)",
                     "pickReference": "Select area",
                     "help": "Lorem Ipsum",
                     "createFeature": "Create"

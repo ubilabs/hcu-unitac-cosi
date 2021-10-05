@@ -15,6 +15,8 @@ import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
+import processStats from "../utils/processStats";
+import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 
 export default {
     name: "ResidentialSimulation",
@@ -28,6 +30,7 @@ export default {
     },
     data () {
         return {
+            // isReferenceDistrictChoosen
             datePicker: false,
             editDialog: false,
             editFeature: null,
@@ -120,6 +123,10 @@ export default {
 
         stats () {
             return this.neighborhood.stats;
+        },
+
+        hasReference () {
+            return Object.keys(this.baseStats.reference).length !== 0;
         }
     },
 
@@ -155,12 +162,19 @@ export default {
             }
         },
 
-        geometry () {
+        async geometry () {
+            if (!this.hasReference && this.geometry !== null) {
+                this.getBaseStats();
+            }
             this.neighborhood.area = this.polygonArea;
             this.updateArea(this.polygonArea);
+
         },
 
         async baseStats () {
+            if (!this.hasReference && this.geometry !== null) {
+                this.getBaseStats();
+            }
             if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
                 return;
             }
@@ -236,6 +250,25 @@ export default {
             return newLayer;
         },
 
+        async getBaseStats () {
+            const district = getContainingDistrictForExtent(this.selectedDistrictLevel, this.geometry.getExtent()),
+                stats = await this.getStatsByDistrict({
+                    id: district.getId(),
+                    districtLevel: this.selectedDistrictLevel
+                }),
+                baseStats = processStats(
+                    district.getName(),
+                    this.selectedDistrictLevel.label,
+                    stats,
+                    "Bevölkerung insgesamt",
+                    this.timelinePrefix,
+                    this.groupsList
+                );
+
+            if (baseStats) {
+                this.onPickReference(baseStats);
+            }
+        },
         /**
          * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature
          * @param {module:ol/Geometry} geom the new geometry object
@@ -355,15 +388,19 @@ export default {
             this.fallbacks.populationDensity = this.defaults.populationDensity;
             this.fallbacks.livingSpace = this.defaults.livingSpace;
 
-            // reset baseStats from reference
+            this.resetBaseStats();
+
+            // reset geometry
+            geomPickerResetLocation(this.$refs["geometry-picker"]);
+        },
+
+        // reset baseStats from reference
+        resetBaseStats () {
             this.baseStats = {
                 reference: {},
                 absolute: [],
                 relative: []
             };
-
-            // reset geometry
-            geomPickerResetLocation(this.$refs["geometry-picker"]);
         },
 
         openEditDialog (evt) {
@@ -430,6 +467,7 @@ export default {
                             :timeline-prefix="timelinePrefix"
                             @referencePickerActive="onReferencePickerActive"
                             @pickReference="onPickReference"
+                            @resetReference="resetBaseStats"
                         />
                         <v-divider />
                         <div class="mb-5 overline">
