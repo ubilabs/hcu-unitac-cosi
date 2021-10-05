@@ -428,12 +428,12 @@ export default {
         class="PopulationRequest"
     >
         <template
-            v-if="active"
             #toolBody
+            v-if="active"
         >
-<<<<<<< HEAD
-=======
-            <div>{{ translate("additional:modules.tools.populationRequest.select.info") }}</div>
+            <div>
+                {{ translate("additional:modules.tools.populationRequest.select.info") }}
+            </div>
             <div class="dropdown">
                 <GraphicalSelect
                     ref="graphicalSelection"
@@ -441,7 +441,6 @@ export default {
                     :focus-on-creation="true"
                 />
             </div>
->>>>>>> 34b0e27 (added forced removal of tooltip-overlay)
             <div
                 class="form-horizontal"
                 role="form"
