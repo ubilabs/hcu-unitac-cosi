@@ -33,7 +33,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("addons/cosi/QueryDistricts/", () => {
+describe.only("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
@@ -43,43 +43,86 @@ describe("addons/cosi/QueryDistricts/", () => {
         ha_features = new GeoJSON().readFeatures(features_ha),
         geo_features = new GeoJSON().readFeatures(features_ha_with_geo),
         bib_features = new GeoJSON().readFeatures(features_bibs),
-        districtMock = {
-            adminFeature: new Feature({
-                id: "123",
-                statgebiet: "Wolkenkuckucksheim",
-                stadtteil_name: "Wolkenkuckucksheim",
-                geometry: new Polygon([
-                    [
+        districtsMock = [
+            {
+                adminFeature: new Feature({
+                    id: "123",
+                    statgebiet: "Andernorts",
+                    stadtteil_name: "Andernorts",
+                    geometry: new Polygon([
                         [
-                            10.051116943359375,
-                            53.592504809039376
-                        ],
-                        [
-                            10.030517578125,
-                            53.53214572511981
-                        ],
-                        [
-                            10.136260986328125,
-                            53.528880618043225
-                        ],
-                        [
-                            10.139007568359375,
-                            53.585168439492456
-                        ],
-                        [
-                            10.051116943359375,
-                            53.592504809039376
+                            [
+                                9.880828857421875,
+                                53.592097266365904
+                            ],
+                            [
+                                9.85748291015625,
+                                53.55907325414039
+                            ],
+                            [
+                                9.943313598632812,
+                                53.53500248731208
+                            ],
+                            [
+                                10.009231567382812,
+                                53.564375142037896
+                            ],
+                            [
+                                10.050430297851562,
+                                53.60717372752561
+                            ],
+                            [
+                                9.880828857421875,
+                                53.592097266365904
+                            ]
                         ]
-                    ]
-                ])
-            }),
-            statFeatures: [],
-            originalStatFeatures: [],
-            isSelected: true,
-            getId: () => "123",
-            getName: () => "Wolkenkuckucksheim",
-            getLabel: () => "Wolkenkuckucksheim (Bezirk)"
-        };
+                    ])
+                }),
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "321",
+                getName: () => "Andernorts",
+                getLabel: () => "Andernorts (Bezirk)"
+            },
+            {
+                adminFeature: new Feature({
+                    id: "123",
+                    statgebiet: "Wolkenkuckucksheim",
+                    stadtteil_name: "Wolkenkuckucksheim",
+                    geometry: new Polygon([
+                        [
+                            [
+                                10.051116943359375,
+                                53.592504809039376
+                            ],
+                            [
+                                10.030517578125,
+                                53.53214572511981
+                            ],
+                            [
+                                10.136260986328125,
+                                53.528880618043225
+                            ],
+                            [
+                                10.139007568359375,
+                                53.585168439492456
+                            ],
+                            [
+                                10.051116943359375,
+                                53.592504809039376
+                            ]
+                        ]
+                    ])
+                }),
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "123",
+                getName: () => "Wolkenkuckucksheim",
+                getLabel: () => "Wolkenkuckucksheim (Bezirk)"
+            }
+        ];
 
 
     // eslint-disable-next-line require-jsdoc
@@ -134,7 +177,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                                 }),
                                 selectedDistrictLevel: () => ({
                                     districts: [
-                                        districtMock
+                                        districtsMock
                                     ],
                                     stats: {
                                         baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
@@ -149,7 +192,20 @@ describe("addons/cosi/QueryDistricts/", () => {
                         FeaturesList: {
                             namespaced: true,
                             getters: {
-                                isFeatureDisabled: () => () => false
+                                isFeatureDisabled: () => () => false,
+                                layerMapById: () => () => ({
+                                    addressField: [
+                                        "adresse"
+                                    ],
+                                    categoryField: null,
+                                    id: "Öffentliche Bibliotheken",
+                                    keyOfAttrName: "bezeichnung",
+                                    layerId: "bib_layer",
+                                    numericalValues: [{
+                                        id: "ente",
+                                        name: "Entenart"
+                                    }]
+                                })
                             }
                         }
                     }
@@ -409,7 +465,6 @@ describe("addons/cosi/QueryDistricts/", () => {
                     "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                     "error": undefined,
                     "facilityLayerName": undefined,
-                    "referenceLayerId": undefined,
                     "quotientLayers": [],
                     "properties": null
                 }
@@ -538,8 +593,14 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "fieldValues": ["jahr_2012", "jahr_2013", "jahr_2014", "jahr_2015", "jahr_2016", "jahr_2017", "jahr_2018", "jahr_2019", "jahr_2020"],
                 "error": undefined,
                 "facilityLayerName": "Öffentliche Bibliotheken",
-                "quotientLayers": [],
-                "properties": ["ente"]
+                "quotientLayers": [{
+                    "id": "19034",
+                    "name": "Bevölkerung insgesamt"
+                }],
+                "properties": [{
+                    "id": "ente",
+                    "name": "Entenart"
+                }]
             },
             expModelRahlstedt = {
                 ...expModel,
@@ -561,7 +622,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Rahlstedt"]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Wolkenkuckucksheim"]);
 
         // act: select district
         await wrapper.setData({
@@ -589,7 +650,10 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // act
         await wrapper.setData({
-            facilityNames: ["Öffentliche Bibliotheken"],
+            facilityNames: [{
+                name: "Öffentliche Bibliotheken",
+                id: "bib_layer"
+            }],
             referenceLayers: [{"id": "19042"}]
         });
         await setActive(true);
@@ -609,9 +673,8 @@ describe("addons/cosi/QueryDistricts/", () => {
             {
                 "facilityLayerName": "Öffentliche Bibliotheken",
                 "group": "additional:modules.tools.cosi.queryDistricts.funcData",
-                "id": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "name": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "referenceLayerId": "19034",
+                "id": "bib_layer",
+                "name": "Öffentliche Bibliotheken",
                 "valueType": "absolute"
             }
         ]);

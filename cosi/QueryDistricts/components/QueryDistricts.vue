@@ -339,6 +339,13 @@ export default {
             if (this.layerFilterModels.length) {
                 const result = await this.setComparableFeatures(this.layerFilterModels);
 
+                console.log("result")
+                console.log(Object.keys(this.propertiesMap));
+                if ('bib_layer' in Object.keys(this.propertiesMap)) {
+                    console.log(this.propertiesMap);
+                }
+                console.log(result)
+
                 this.resultNames = result.resultNames;
                 this.results = result.table;
                 this.resultTableHeaders = [{text: "Name", align: "start", value: "name"}];
@@ -414,6 +421,9 @@ export default {
 
         async updateFilter (value) {
             const filters = [...this.layerFilterModels];
+
+            console.log("update")
+            console.log(value);
 
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
