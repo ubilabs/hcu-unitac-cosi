@@ -428,8 +428,8 @@ export default {
         class="PopulationRequest"
     >
         <template
-            #toolBody
             v-if="active"
+            #toolBody
         >
             <div>
                 {{ translate("additional:modules.tools.populationRequest.select.info") }}
