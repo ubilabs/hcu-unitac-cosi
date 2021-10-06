@@ -72,10 +72,7 @@ export default {
             this.createNewScenarioModalOpen = false;
             this.newScenarioName = "";
 
-            // set the new scenario active, if no other scenario is selected
-            if (!this.activeScenario) {
-                this.setActiveScenario(newScenario);
-            }
+            this.setActiveScenario(newScenario);
         },
 
         deleteScenario () {
