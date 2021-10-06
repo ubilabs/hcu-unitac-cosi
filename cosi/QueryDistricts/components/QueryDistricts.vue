@@ -196,7 +196,7 @@ export default {
                 }
             }
 
-            return ret.length > 0 ? [... new Set(ret)] : [prefix + "alle"];
+            return ret.length > 0 ? [... new Set(ret)].sort().reverse() : [prefix + "alle"];
         },
 
         countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
@@ -210,11 +210,12 @@ export default {
                     try {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
                     catch (e) {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
-
                     if (
                         polygon &&
                         turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
@@ -339,13 +340,6 @@ export default {
             if (this.layerFilterModels.length) {
                 const result = await this.setComparableFeatures(this.layerFilterModels);
 
-                console.log("result")
-                console.log(Object.keys(this.propertiesMap));
-                if ('bib_layer' in Object.keys(this.propertiesMap)) {
-                    console.log(this.propertiesMap);
-                }
-                console.log(result)
-
                 this.resultNames = result.resultNames;
                 this.results = result.table;
                 this.resultTableHeaders = [{text: "Name", align: "start", value: "name"}];
@@ -421,9 +415,6 @@ export default {
 
         async updateFilter (value) {
             const filters = [...this.layerFilterModels];
-
-            console.log("update")
-            console.log(value);
 
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {

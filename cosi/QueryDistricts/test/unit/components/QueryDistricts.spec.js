@@ -22,8 +22,6 @@ import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import features_ha_with_geo from "./features_ha_with_geo.json";
 import GeoJSON from "ol/format/GeoJSON";
-import Feature from "ol/Feature";
-import Polygon from "ol/geom/Polygon";
 
 Vue.use(Vuetify);
 
@@ -45,82 +43,31 @@ describe.only("addons/cosi/QueryDistricts/", () => {
         bib_features = new GeoJSON().readFeatures(features_bibs),
         districtsMock = [
             {
-                adminFeature: new Feature({
-                    id: "123",
-                    statgebiet: "Andernorts",
-                    stadtteil_name: "Andernorts",
-                    geometry: new Polygon([
-                        [
-                            [
-                                9.880828857421875,
-                                53.592097266365904
-                            ],
-                            [
-                                9.85748291015625,
-                                53.55907325414039
-                            ],
-                            [
-                                9.943313598632812,
-                                53.53500248731208
-                            ],
-                            [
-                                10.009231567382812,
-                                53.564375142037896
-                            ],
-                            [
-                                10.050430297851562,
-                                53.60717372752561
-                            ],
-                            [
-                                9.880828857421875,
-                                53.592097266365904
-                            ]
-                        ]
-                    ])
-                }),
+                adminFeature: geo_features[0],
                 statFeatures: [],
                 originalStatFeatures: [],
                 isSelected: true,
-                getId: () => "321",
-                getName: () => "Andernorts",
-                getLabel: () => "Andernorts (Bezirk)"
+                getId: () => "Rahlstedt",
+                getName: () => "Rahlstedt",
+                getLabel: () => "Rahlstedt"
             },
             {
-                adminFeature: new Feature({
-                    id: "123",
-                    statgebiet: "Wolkenkuckucksheim",
-                    stadtteil_name: "Wolkenkuckucksheim",
-                    geometry: new Polygon([
-                        [
-                            [
-                                10.051116943359375,
-                                53.592504809039376
-                            ],
-                            [
-                                10.030517578125,
-                                53.53214572511981
-                            ],
-                            [
-                                10.136260986328125,
-                                53.528880618043225
-                            ],
-                            [
-                                10.139007568359375,
-                                53.585168439492456
-                            ],
-                            [
-                                10.051116943359375,
-                                53.592504809039376
-                            ]
-                        ]
-                    ])
-                }),
+                adminFeature: geo_features[1],
                 statFeatures: [],
                 originalStatFeatures: [],
                 isSelected: true,
-                getId: () => "123",
-                getName: () => "Wolkenkuckucksheim",
-                getLabel: () => "Wolkenkuckucksheim (Bezirk)"
+                getId: () => "Farmsen-Berne",
+                getName: () => "Farmsen-Berne",
+                getLabel: () => "Farmsen-Berne"
+            },
+            {
+                adminFeature: geo_features[2],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Horn",
+                getName: () => "Horn",
+                getLabel: () => "Horn"
             }
         ];
 
@@ -176,9 +123,7 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                                     })
                                 }),
                                 selectedDistrictLevel: () => ({
-                                    districts: [
-                                        districtsMock
-                                    ],
+                                    districts: districtsMock,
                                     stats: {
                                         baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
                                     }
@@ -588,9 +533,9 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                 "layerId": "bib_layer",
                 "currentLayerId": "bib_layer",
                 "name": "Öffentliche Bibliotheken",
-                "field": "jahr_2012", "max": 0, "min": 0, "value": 0, high: 0, low: 0,
+                "field": "jahr_2020", "max": 1, "min": 0, "value": 0, high: 0, low: 0,
                 "valueType": "absolute",
-                "fieldValues": ["jahr_2012", "jahr_2013", "jahr_2014", "jahr_2015", "jahr_2016", "jahr_2017", "jahr_2018", "jahr_2019", "jahr_2020"],
+                "fieldValues": ["jahr_2020", "jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                 "error": undefined,
                 "facilityLayerName": "Öffentliche Bibliotheken",
                 "quotientLayers": [{
@@ -604,25 +549,25 @@ describe.only("addons/cosi/QueryDistricts/", () => {
             },
             expModelRahlstedt = {
                 ...expModel,
-                "value": 35, high: 1000, low: 1000
+                "value": 1, high: 1, low: 1
             },
             expModelHorn = {
                 ...expModel,
-                "value": NaN, high: 1000, low: 1000,
+                "value": 0, high: 1, low: 1,
                 "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable"
             };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
-        expect(wrapper.vm.resultNames).to.deep.equal([]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn"]);
 
         // act: update filter
         await wrapper.setData({
-            layerFilterModels: [{...expModel, high: 1000, low: 1000}]
+            layerFilterModels: [{...expModel, high: 1, low: 1}]
         });
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.resultNames).to.deep.equal(["Wolkenkuckucksheim"]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn", "Rahlstedt"]);
 
         // act: select district
         await wrapper.setData({
@@ -709,9 +654,9 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                 "currentLayerId": "19041/19034",
                 "name": "Layer", "field": "jahr_2019", "value": 0, "valueType": "relative", "high": 0, "low": 0,
                 "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
-                "min": 0.01, "max": 1.37,
+                "min": 0.00535555414960923, "max": 1.3710088339920947,
+                "properties": [null],
                 "quotientLayers": [{"id": "19034", "name": "Bevölkerung insgesamt"}], "quotientLayer": "19034",
-                "referenceLayerId": undefined,
                 "error": undefined,
                 "facilityLayerName": undefined
             }
