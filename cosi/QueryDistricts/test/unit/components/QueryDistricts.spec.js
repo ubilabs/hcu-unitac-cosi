@@ -405,7 +405,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                     "layerId": "19034",
                     "currentLayerId": "19034",
                     "name": "Bevölkerung insgesamt",
-                    "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, "high": 0, "low": 0,
+                    "field": "jahr_2019", "max": 92087, "min": 506, "invalidFeatures": [], "value": 0, "high": 0, "low": 0,
                     "valueType": "relative",
                     "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                     "error": undefined,
@@ -455,7 +455,7 @@ describe("addons/cosi/QueryDistricts/", () => {
     it("compareFeatures one filter", async () => {
         // arrange
         const value = [
-                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
+                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54, "invalidFeatures": []}
             ],
             self = {
                 propertiesMap: {"19041": getAllFeatures("19041").map(f => f.getProperties())},
@@ -481,8 +481,8 @@ describe("addons/cosi/QueryDistricts/", () => {
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
             },
-            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
-            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506},
+            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54, "invalidFeatures": []},
+            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506, "invalidFeatures": []},
             // act
             ret1 = await self.setComparableFeatures([layer1]),
             ret2 = await self.setComparableFeatures([layer2]),
@@ -533,7 +533,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "layerId": "bib_layer",
                 "currentLayerId": "bib_layer",
                 "name": "Öffentliche Bibliotheken",
-                "field": "jahr_2020", "max": 1, "min": 0, "value": 0, high: 0, low: 0,
+                "field": "jahr_2020", "max": 1, "min": 0, "invalidFeatures": [], "value": 0, high: 0, low: 0,
                 "valueType": "absolute",
                 "fieldValues": ["jahr_2020", "jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                 "error": undefined,
@@ -654,7 +654,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "currentLayerId": "19041/19034",
                 "name": "Layer", "field": "jahr_2019", "value": 0, "valueType": "relative", "high": 0, "low": 0,
                 "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
-                "min": 0.00535555414960923, "max": 1.3710088339920947,
+                "min": 0.00535555414960923, "max": 1.3710088339920947, "invalidFeatures": [],
                 "properties": [null],
                 "quotientLayers": [{"id": "19034", "name": "Bevölkerung insgesamt"}], "quotientLayer": "19034",
                 "error": undefined,

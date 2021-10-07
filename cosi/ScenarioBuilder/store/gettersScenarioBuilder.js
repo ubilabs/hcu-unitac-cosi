@@ -6,7 +6,7 @@ const getters = {
     ...generateSimpleGetters(scenarioBuilderState),
 
     activeSimulatedFeatures (state, {activeScenario}) {
-        return activeScenario?.getSimulatedFeatures().filter();
+        return activeScenario?.getSimulatedFeatures();
     }
 };
 

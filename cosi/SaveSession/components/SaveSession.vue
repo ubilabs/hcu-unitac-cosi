@@ -124,12 +124,15 @@ export default {
             this.session.meta.created = new Date().toLocaleString();
             this.session.meta.date = new Date();
 
-            this.storeToLocalStorage();
             this.addSingleAlert({
                 content: "Sitzung erfolgreich gespeichert!",
                 category: "Success",
                 displayClass: "success"
             });
+        },
+        quickSave () {
+            this.save();
+            this.storeToLocalStorage();
         },
         saveAs () {
             this.save();
@@ -552,7 +555,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.saveSession.save')"
-                                    @click="save"
+                                    @click="quickSave"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
                                 </v-btn>

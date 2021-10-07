@@ -279,7 +279,7 @@ export default {
         },
 
         getValueTooltip (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.featuresList.modifiedTooltip") : undefined;
+            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
         },
 
         getAverage (item, timestamp) {

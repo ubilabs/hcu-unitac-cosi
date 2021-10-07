@@ -328,12 +328,21 @@ export default {
         },
 
         getMinMaxForField (layerId, field) {
-            const features = this.propertiesMap[layerId],
-                values = features.map(f => parseFloat(f[field])).filter(v => isFinite(v)),
-                max = parseFloat(Math.max(...values)),
-                min = parseFloat(Math.min(...values));
+            const invalidFeatures = [],
+                features = this.propertiesMap[layerId],
+                values = features.reduce((res, f) => {
+                    const v = parseFloat(f[field]);
 
-            return {min, max};
+                    if (isNaN(v)) {
+                        invalidFeatures.push(f[this.keyOfAttrName]);
+                        return res;
+                    }
+                    return [...res, v];
+                }, []),
+                max = Math.max(...values),
+                min = Math.min(...values);
+
+            return {min, max, invalidFeatures};
         },
 
         async computeResults () {
@@ -446,7 +455,10 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-            await this.loadFeatures({id: value.quotientLayer});
+            await this.loadFeatures({
+                id: value.quotientLayer,
+                facilityLayerName: this.facilityNames.find(item => item.id === value.quotientLayer)?.name
+            });
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
