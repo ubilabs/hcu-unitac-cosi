@@ -100,7 +100,7 @@ export default {
                 this.$refs.graphicalSelection.setStatus(newValue);
                 this.$refs.graphicalSelection.resetView();
                 this.$refs.graphicalSelection.resetGeographicSelection();
-                $("#tooltip-overlay").remove();
+                // $("#tooltip-overlay").remove();
             }
         }
     },
