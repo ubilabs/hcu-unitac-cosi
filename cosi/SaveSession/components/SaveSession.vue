@@ -58,6 +58,7 @@ export default {
                 },
                 state: null
             },
+            latestDate: null,
             loadDialog: false,
             sessionFile: null,
             showTemplates: false,
@@ -105,11 +106,20 @@ export default {
     },
     mounted () {
         this.localStorage = window.localStorage;
-        this.loadTemplates()
+        this.loadTemplates();
 
-        if (this.localStorage.getItem("cosi-state")) {
+        try {
+            const lastSession = JSON.parse(this.localStorage.getItem("cosi-state"));
+
             this.loadDialog = true;
+            this.latestDate = lastSession?.meta?.created;
         }
+        catch (e) {
+            this.loadDialog = false;
+        }
+        // if (this.localStorage.getItem("cosi-state")) {
+        //     this.loadDialog = true;
+        // }
     },
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
@@ -271,8 +281,7 @@ export default {
                                 this.$store.dispatch(mutation, state[key][attr]);
                                 break;
                             default:
-                                this.$store.commit(mutation, this.parseFeatures(state[key][attr]));
-                                this.activateBackboneTools(mutation, attr, state[key][attr]);
+                                this.commitState(mutation, attr, state[key][attr]);
                         }
                     }
                 }
@@ -284,14 +293,21 @@ export default {
             console.log(this.$store);
         },
 
-        activateBackboneTools (mutation, attr, state) {
+        commitState (mutation, attr, state) {
             if (attr === "active") {
-                const key = mutation.replace("/setActive", "/id"),
-                    model = getComponent(this.$store.getters[key]);
+                if (state) {
+                    this.$store.commit(mutation, state);
 
-                if (model) {
-                    model.set("isActive", state);
+                    const key = mutation.replace("/setActive", "/id"),
+                        model = getComponent(this.$store.getters[key]);
+
+                    if (model) {
+                        model.set("isActive", state);
+                    }
                 }
+            }
+            else {
+                this.$store.commit(mutation, this.parseFeatures(state));
             }
         },
 
@@ -716,6 +732,9 @@ export default {
             color="lightgrey"
         >
             {{ $t('additional:modules.tools.cosi.saveSession.loadLast') }}
+            <template v-if="latestDate">
+                ({{ latestDate }})
+            </template>
 
             <template #action="{ attrs }">
                 <v-row cols="12">

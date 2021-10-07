@@ -90,14 +90,15 @@ export default {
         const distance = parseFloat(this.distance);
 
         if (
-            this.coordinate !== null &&
+            this.coordinate.length > 0 &&
             this.transportType !== "" &&
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
 
-            const features = await this.getIsochrones({transportType: this.transportType, coordinates: [this.coordinate], scaleUnit: this.scaleUnit, distance: this.distance});
+            const features = await this.getIsochrones({transportType: this.transportType, coordinates: this.coordinate, scaleUnit: this.scaleUnit, distance: this.distance});
 
+            console.log(features);
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
             this.setRawGeoJson(await this.featureToGeoJson(features[0]));
             this.setIsochroneFeatures(features);
@@ -129,16 +130,40 @@ export default {
      * @returns {void}
      */
     setCoordinateFromClick: function (evt) {
-        const coordinate = Proj.transform(
-            evt.coordinate,
-            "EPSG:25832",
-            "EPSG:4326"
-        );
+        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(evt) : [evt.coordinate],
+            coordinates = rawCoords.map(coord => Proj.transform(
+                coord,
+                "EPSG:25832",
+                "EPSG:4326"
+            ));
 
-        this.coordinate = coordinate;
+        this.coordinate = coordinates;
         this.placingPointMarker(evt.coordinate);
         this.setBySearch = false;
     },
+
+    setCoordinatesByFeatures: function (evt) {
+        const feature = this.map.getFeaturesAtPixel(evt.pixel, {
+            layerFilter: layer => this.activeVectorLayerList.includes(layer)
+        })[0];
+
+        if (feature) {
+            const geom = feature.getGeometry();
+
+            if (geom.getType() === "Polygon") {
+                return geom.getCoordinates().flat(1).map(p => [p[0], p[1]]);
+            }
+            if (geom.getType() === "MultiPolygon") {
+                return geom.getCoordinates().flat(2).map(p => [p[0], p[1]]);
+            }
+            if (geom.getType() === "Point") {
+                return [[geom.getCoordinates()[0], geom.getCoordinates()[1]]];
+            }
+        }
+
+        return [evt.coordinate];
+    },
+
     /**
      * TODO: replace calls to this function with /addons/cosi/utils/getSearchResultsCoordinate.js
      * @returns {void}
@@ -147,7 +172,7 @@ export default {
         const coord = getSearchResultsCoordinates();
 
         if (coord) {
-            this.coordinate = coord;
+            this.coordinate = [coord];
             this.setBySearch = true;
         }
     },

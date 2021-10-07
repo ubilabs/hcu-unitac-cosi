@@ -18,8 +18,9 @@ export default {
             mode: "point",
             facilityNames: [],
             mapLayer: null,
-            coordinate: null,
+            coordinate: [],
             setBySearch: false,
+            setByFeature: false,
             transportType: "",
             transportTypes: [
                 {
@@ -84,7 +85,7 @@ export default {
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "activeVectorLayerList"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"])
     },
     watch: {
@@ -155,7 +156,7 @@ export default {
         },
 
         resetMarkerAndZoom: function () {
-            const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
+            const icoord = Proj.transform(this.coordinate[0], "EPSG:4326", "EPSG:25832");
 
             this.placingPointMarker(icoord);
             this.setCenter(icoord);
@@ -229,7 +230,19 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
-                            />
+                            >
+                                <template
+                                    v-if="mode === 'point'"
+                                    #append
+                                >
+                                    <v-switch
+                                        v-model="setByFeature"
+                                        dense
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                        class="inline-switch"
+                                    />
+                                </template>
+                            </v-select>
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
@@ -331,22 +344,23 @@ export default {
                         <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
                         <div id="legend">
                             <template v-for="(j, i) in steps">
-                                <svg
-                                    :key="i"
-                                    width="15"
-                                    height="15"
-                                >
-                                    <circle
-                                        cx="7.5"
-                                        cy="7.5"
-                                        r="7.5"
-                                        :style="`fill: ${
-                                            legendColors[i]
-                                        }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                    />
-                                </svg>
-                                <span :key="i * 2 + steps.length">
-                                    {{ j }}
+                                <span :key="i">
+                                    <svg
+                                        width="15"
+                                        height="15"
+                                    >
+                                        <circle
+                                            cx="7.5"
+                                            cy="7.5"
+                                            r="7.5"
+                                            :style="`fill: ${
+                                                legendColors[i]
+                                            }; stroke-width: 0.5; stroke: #e3e3e3;`"
+                                        />
+                                    </svg>
+                                    <span :key="i * 2 + steps.length">
+                                        {{ j }}
+                                    </span>
                                 </span>
                             </template>
                         </div>
@@ -395,6 +409,11 @@ export default {
 #accessibilityanalysis {
   width: 400px;
   min-height: 100px;
+
+  .inline-switch {
+    margin-top: 0px;
+    height: 40px;
+  }
 }
 
 .snackbar-text{
