@@ -354,7 +354,7 @@ export default {
                                 small
                                 tile
                                 color="green lighten-1"
-                                title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
                                 @click="exportAsGeoJson(mapLayer, coordinate)"
                             >
                                 <span class="glyphicon glyphicon-floppy-disk" />
