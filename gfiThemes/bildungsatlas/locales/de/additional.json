@@ -13,7 +13,7 @@
                 },
                 "okja": {
                     "typ_der_einrichtung": "Typ der Einrichtung",
-                    "durchsch_stammnutzer": "Durchschnittliche Anzahl der Stammnutzer",
+                    "durchsch_stammnutzer": "Durchschnittliche Anzahl der Stammnutzer*innen",
                     "angebotsstunden_pro_jahr": "Angebotsstunden pro Jahr",
                     "table": {
                         "title": "Angebote für Zielgruppen",
@@ -307,7 +307,7 @@
                                 },
                                 "betr_quote_4_proz": {
                                     "title": "Betreuungsquote der 4-Jährigen in den Stadtteilen",
-                                    "text": "Bei der Betreuungsquote der 4-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich der stadteigene Kitas) in Anspruch nehmen. Stichtag ist der 01.03.2018."
+                                    "text": "Bei der Betreuungsquote der 4-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich der stadteigenen Kitas) in Anspruch nehmen. Stichtag ist der 01.03.2018."
                                 },
                                 "betr_quote_unter3_proz": {
                                     "title": "Betreuungsquote der unter 3-Jährigen in den Stadtteilen",
@@ -452,7 +452,7 @@
                 },
                 "SchulenEinzugsGebiete": {
                     "address": "Adresse",
-                    "totalCount": "Gesamtzahl der Schüler:",
+                    "totalCount": "Gesamtzahl der Schüler*innen:",
                     "primaryCount": "davon in der Primarstufe:",
                     "secondaryCount": "davon in der Sekundarstufe I:",
                     "countInArea": "The count of students in statistischen Gebiet in",
