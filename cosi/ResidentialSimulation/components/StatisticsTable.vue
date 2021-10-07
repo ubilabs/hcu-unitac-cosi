@@ -36,17 +36,17 @@ export default {
         save () {
             this.snack = true;
             this.snackColor = "success";
-            this.snackText = this.$t("additional:modules.tools.cosi.success");
+            this.snackText = this.$t("common:general.success");
         },
         cancel () {
             this.snack = true;
             this.snackColor = "error";
-            this.snackText = this.$t("additional:modules.tools.cosi.cancelled");
+            this.snackText = this.$t("common:general.error");
         },
         open () {
             this.snack = true;
             this.snackColor = "info";
-            this.snackText = this.$t("additional:modules.tools.cosi.open");
+            this.snackText = this.$t("common:general.opened");
         }
     }
 };
@@ -102,7 +102,7 @@ export default {
                     text
                     @click="snack = false"
                 >
-                    {{ $t("additional:modules.tools.cosi.close") }}
+                    {{ $t("common:button.close") }}
                 </v-btn>
             </template>
         </v-snackbar>

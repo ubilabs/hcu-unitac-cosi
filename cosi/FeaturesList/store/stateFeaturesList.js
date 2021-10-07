@@ -33,7 +33,8 @@ const state = {
         "lat",
         "lon",
         "latlon",
-        "lonlat"
+        "lonlat",
+        "originalData"
     ],
     disabledFeatureItems: []
 };

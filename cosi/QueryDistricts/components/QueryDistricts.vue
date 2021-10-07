@@ -10,9 +10,11 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import {getAllFeatures} from "../utils/getAllFeatures.js";
+import {getAllFeatures as _getAllFeatures} from "../utils/getAllFeatures.js";
+import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
+import renameKeys from "../../utils/renameKeys.js";
 
 export default {
     name: "QueryDistricts",
@@ -30,13 +32,16 @@ export default {
             layerFilterModels: [],
             selectorField: "verwaltungseinheit",
             resultNames: null,
+            results: null,
             refDistrict: null,
             dashboard: null,
             facilityNames: [],
-            propertiesMap: {}
+            propertiesMap: {},
+            resultTableHeaders: null
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/QueryDistricts", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", [
             "keyOfAttrName",
@@ -46,7 +51,8 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"])
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById"]),
+        ...mapGetters("Map", ["layerById"])
     },
     watch: {
         async layerFilterModels () {
@@ -117,41 +123,42 @@ export default {
             return _getLayerList();
         },
 
+        getAllFeatures: async function (id) {
+            const features = await _getAllFeatures(id);
+
+            return features.length > 0
+                ? features
+                : this.layerById(id).olLayer.getSource().getFeatures();
+        },
+
         setLayerOptions: function () {
-            const url = this.selectedDistrictLevel.stats.baseUrl[0],
+            const url = this.selectedDistrictLevel.stats.baseUrl[0], /** @todo allow multiple sources */
                 layers = this.getLayerList()
                     .filter(layer=> layer.url === url);
 
             this.allLayerOptions = [];
+
             for (const m of this.mapping) {
-                const layer = layers.find(l=>l.featureType && l.featureType.includes(m.category));
+                const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
                 if (layer) {
-                    this.allLayerOptions.push({name: m.value, id: layer.id,
-                        group: m.group, valueType: m.valueType});
+                    this.allLayerOptions.push({
+                        name: m.value,
+                        id: layer.id,
+                        group: m.group,
+                        valueType: m.valueType
+                    });
                 }
             }
 
-            for (const name of this.facilityNames) {
-                for (const referenceLayer of this.referenceLayers) {
-                    const layer = layers.find(l=>l.id === referenceLayer.id);
-
-                    if (layer && layer.featureType) {
-                        const mapping = this.mapping.find(m=>layer.featureType.includes(m.category)),
-                            cnt = this.$t("additional:modules.tools.cosi.queryDistricts.count"),
-                            layerName = `${mapping.value}/${cnt} ${name}`;
-
-
-                        this.allLayerOptions.push({
-                            name: layerName,
-                            id: layerName,
-                            group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                            valueType: "absolute",
-                            referenceLayerId: referenceLayer.id,
-                            facilityLayerName: name
-                        });
-                    }
-                }
+            for (const facilityLayer of this.facilityNames) {
+                this.allLayerOptions.push({
+                    name: facilityLayer.name,
+                    id: facilityLayer.id,
+                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    valueType: "absolute",
+                    facilityLayerName: facilityLayer.name
+                });
             }
             this.updateAvailableLayerOptions();
         },
@@ -189,71 +196,104 @@ export default {
                 }
             }
 
-            return [... new Set(ret)];
+            return ret.length > 0 ? [... new Set(ret)] : [prefix + "alle"];
         },
 
-        countFacilitiesPerFeature (facilityFeatures, features) {
-
-            const fmap = {};
+        countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
+            const fmap = Object.fromEntries(features.map(feat => [feat.getId(), 0]));
 
             for (const ffeature of facilityFeatures) {
                 for (const feature of features) {
-                    if (turf.booleanPointInPolygon(
-                        turf.point(this.getCoordinate(ffeature)),
-                        turf.polygon(feature.getGeometry().getCoordinates()))) {
+                    let polygon,
+                        val;
 
-                        fmap[feature.getId()] = (fmap[feature.getId()] || 0) + 1;
+                    try {
+                        // expect multipolygon, try polygon if exception
+                        polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                    }
+                    catch (e) {
+                        polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                    }
+
+                    if (
+                        polygon &&
+                        turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
+                    ) {
+                        val = property ? parseFloat(ffeature.get(property)) : 1;
+                        val = !isNaN(val) ? val : 1;
+
+                        fmap[feature.getId()] = fmap[feature.getId()] + val;
 
                         break;
                     }
                 }
             }
+
             return fmap;
         },
 
         loadFeatures: async function (layer) {
-            if (Object.prototype.hasOwnProperty.call(this.propertiesMap, layer.id)) {
+            if (this.propertiesMap[layer.id] && layer.property === undefined) {
                 return;
             }
+            const features = await this.getAllFeatures(layer.id);
 
-            let fmap;
-            const features = await getAllFeatures(
-                layer.referenceLayerId || layer.id
-            );
+            if (layer.facilityLayerName) {
+                const adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
+                    fmap = this.countFacilitiesPerFeature(features, adminFeatures, layer.property);
 
-            if (layer.referenceLayerId) {
-                const facilityFeatures = this.getFacilityFeatures(layer.facilityLayerName);
+                this.propertiesMap[layer.id] = adminFeatures.map(feature => {
+                    /**
+                     * @todo Dirty, since facilities might have timelines in the future themselves! Overhaul in "countFacilitiesPerFeature" method
+                     */
+                    const ret = feature.getProperties();
 
-                fmap = this.countFacilitiesPerFeature(facilityFeatures, features);
-            }
-
-            this.propertiesMap[layer.id] = features.map(feature => {
-                const props = feature.getProperties(),
-                    count = fmap ? fmap[feature.getId()] : 1,
-                    ret = {...props};
-
-                for (const p in props) {
-                    if (p.startsWith("jahr_")) {
-                        ret[p] = props[p] / count;
+                    for (let i = 2012; i < new Date().getFullYear(); i++) {
+                        ret["jahr_" + i] = fmap[feature.getId()];
                     }
-                }
-                ret.feature = feature;
-                ret.id = props[this.keyOfAttrNameStats];
-                return ret;
+
+                    return {
+                        ...ret,
+                        feature,
+                        id: ret[this.keyOfAttrNameStats],
+                        [this.selectorField]: this.keyOfAttrNameStats,
+                        isFacility: true
+                    };
+                });
+            }
+            else {
+                this.propertiesMap[layer.id] = features.map(feature => {
+                    const ret = feature.getProperties();
+
+                    ret.feature = feature;
+                    ret.id = ret[this.keyOfAttrNameStats];
+                    return ret;
+                });
+            }
+        },
+
+        cloneDistrictFeatures (districts) {
+            return districts.map(district => {
+                const feature = district.adminFeature.clone();
+
+                feature.setId(feature.get(this.keyOfAttrName));
+                feature.set(this.keyOfAttrNameStats, feature.getId());
+
+                return feature;
             });
         },
 
         createLayerFilterModel: async function (layer) {
             await this.loadFeatures(layer);
 
-            const valueType = layer.referenceLayerId ? "absolute" : layer.valueType,
+            const valueType = layer.valueType,
                 features = this.propertiesMap[layer.id],
                 fieldValues = this.getFieldValues(features, "jahr_"),
                 field = fieldValues[0],
-                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues,
-                    referenceLayerId: layer.referenceLayerId, facilityLayerName: layer.facilityLayerName,
+                model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
-                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name}))
+                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
+                    properties: await this.getFacilityProperties(layer)
                 };
 
             this.setLayerFilterModelValue(model);
@@ -268,7 +308,7 @@ export default {
                     feature = features.find(f => f[selector] === this.selectedDistrict);
 
                 if (feature) {
-                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(2));
+                    const value = Number(Number(parseFloat(feature[model.field])).toFixed(3));
 
                     if (!isFinite(value)) {
                         model.error = this.$t("additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable");
@@ -292,7 +332,7 @@ export default {
                 max = parseFloat(Math.max(...values)),
                 min = parseFloat(Math.min(...values));
 
-            return {min: Number(Number(min).toFixed(2)), max: Number(Number(max).toFixed(2))};
+            return {min, max};
         },
 
         async computeResults () {
@@ -300,22 +340,28 @@ export default {
                 const result = await this.setComparableFeatures(this.layerFilterModels);
 
                 this.resultNames = result.resultNames;
+                this.results = result.table;
+                this.resultTableHeaders = [{text: "Name", align: "start", value: "name"}];
+                for (let i = 0; i < this.layerFilterModels.length; i++) {
+                    this.resultTableHeaders.push({text: this.layerFilterModels[i].name, value: i.toString(), align: "center"});
+                }
                 this.showDistrictFeatures(result.features);
             }
             else {
                 this.resultNames = null;
+                this.results = null;
                 this.showSelectedDistrict();
             }
         },
 
-        zoomToDistrict: function (districtName) {
+        zoomToDistrict: function (row) {
             const selectedDistrictLayer = this.layer,
                 attributeSelector = this.keyOfAttrName,
                 districtFeatures = selectedDistrictLayer.getSource().getFeatures();
 
 
             for (const feature of districtFeatures) {
-                if (feature.getProperties()[attributeSelector] === districtName) {
+                if (feature.getProperties()[attributeSelector] === row.name) {
                     const extent = feature.getGeometry().getExtent();
 
                     this.zoomTo(extent, {padding: [20, 20, 20, 20]});
@@ -327,7 +373,9 @@ export default {
         changeDistrictSelection: function () {
             const refDistrictName = this.refDistrict?.get(this.keyOfAttrName);
 
-            this.setDistrictsByName(refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames);
+            this.setDistrictsByName({
+                districtNames: refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames
+            });
         },
 
         /**
@@ -342,14 +390,17 @@ export default {
 
             root.appendChild(cont);
 
-
-            Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
-            Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
-                id: "compareDistricts",
-                name: "Vergleichbare Gebiete ermitteln",
-                glyphicon: "glyphicon glyphicon-random",
-                scalable: true
-            });
+            /**
+             * @deprecated
+             * @todo replace with new storage
+             */
+            // Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
+            // Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
+            //     id: "compareDistricts",
+            //     name: "Vergleichbare Gebiete ermitteln",
+            //     glyphicon: "glyphicon glyphicon-random",
+            //     scalable: true
+            // });
 
             if (this.dashboard !== null) {
                 this.dashboard.$destroy();
@@ -357,7 +408,7 @@ export default {
             }
 
             this.dashboard = new Ctor({
-                propsData: {layerFilterModels: this.layerFilterModels, districtNames: this.resultNames, i18n}
+                propsData: {resultTableHeaders: this.resultTableHeaders, results: this.results, i18n}
             }).$mount(cont);
         },
 
@@ -367,16 +418,24 @@ export default {
             for (let i = 0; i < filters.length; i++) {
                 if (filters[i].layerId === value.layerId) {
                     filters[i] = {...filters[i], ...value};
-                    if (value.field || value.quotientLayer === null || value.quotientLayer) {
 
+                    if (value.field || value.quotientLayer === null || value.quotientLayer || value.property || value.property === null) {
+                        let currentLayerId = filters[i].layerId;
+
+                        if (value.property !== undefined) {
+                            await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
+                        }
                         if (value.quotientLayer) {
                             await this.computeQuotientLayer(value);
+                            currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
                         }
-                        const currentLayerId = filters[i].quotientLayer ?
-                            `${filters[i].layerId}/${filters[i].quotientLayer}` : filters[i].layerId;
 
-                        filters[i] = {...filters[i], currentLayerId,
-                            ...this.getMinMaxForField(currentLayerId, filters[i].field)};
+                        filters[i] = {
+                            ...filters[i],
+                            currentLayerId,
+                            ...this.getMinMaxForField(currentLayerId, filters[i].field)
+                        };
+
                         this.setLayerFilterModelValue(filters[i]);
                     }
                     break;
@@ -386,28 +445,25 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-
             await this.loadFeatures({id: value.quotientLayer});
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
                 qid = `${value.layerId}/${value.quotientLayer}`;
 
-            if (!(qid in this.propertiesMap)) {
-                this.propertiesMap[qid] = lprops.map(entry => {
+            this.propertiesMap[qid] = lprops.map(entry => {
 
-                    const props = qprops.find(p=>p.id === entry.id),
-                        ret = {...props};
+                const props = qprops.find(p=>p.id === entry.id),
+                    ret = {...props};
 
-                    for (const p in props) {
-                        if (p.startsWith("jahr_")) {
-                            ret[p] = entry[p] / props[p];
-                        }
+                for (const p in props) {
+                    if (p.startsWith("jahr_")) {
+                        ret[p] = entry[p] / props[p];
                     }
-                    ret.feature = entry.feature;
-                    return ret;
-                });
-            }
+                }
+                ret.feature = entry.feature;
+                return ret;
+            });
         },
 
         closeFilter (value) {
@@ -426,6 +482,16 @@ export default {
 
         close () {
             this.setActive(false);
+
+            // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
+            // else the menu-entry for this tool is always highlighted
+            const model = Radio.request("ModelList", "getModelByAttributes", {
+                id: this.$store.state.Tools.QueryDistricts.id
+            });
+
+            if (model) {
+                model.set("isActive", false);
+            }
         },
 
         createDistrictStyle () {
@@ -478,31 +544,50 @@ export default {
         setFacilityNames (models) {
             this.facilityNames = models.filter(
                 (model) => model.get("isFacility") === true
-            ).map((model) => model.get("name").trim());
+            ).map((model) => ({
+                name: model.get("name").trim(),
+                id: model.get("id")
+            }));
         },
 
-        getFacilityFeatures: function (name) {
+        async getFacilityFeatures (name) {
             const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
                 name: name
             });
 
-            if (selectedLayerModel) {
-                const features = selectedLayerModel.get("layer")
-                    .getSource().getFeatures()
-                    .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
+            return selectedLayerModel ? this.getAllFeatures(selectedLayerModel.id) : [];
+        },
 
-                return features;
+        async getFacilityProperties (layer) {
+            if (layer.facilityLayerName) {
+                const layerMap = this.layerMapById(layer.id);
+
+                return layerMap?.numericalValues || null;
             }
-            return [];
+            return null;
         },
 
         getCoordinate: function (feature) {
             const geometry = feature.getGeometry();
 
-            if (geometry.getType() === "Point") {
-                return geometry.getCoordinates().splice(0, 2);
+            if (geometry) {
+                if (geometry.getType() === "Point") {
+                    return geometry.getCoordinates().splice(0, 2);
+                }
+
+                return Extent.getCenter(geometry?.getExtent());
             }
-            return Extent.getCenter(geometry.getExtent());
+
+            return [0, 0];
+        },
+
+        exportTable: function () {
+            const exportData = this.results.map(r=>renameKeys(
+                    Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))), r)),
+                date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
+                filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
+
+            exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         }
     }
 };
@@ -525,7 +610,7 @@ export default {
                     class="compare-districts"
                 >
                     <div class="selectors">
-                        <v-select
+                        <v-autocomplete
                             id="layerfilter-selector-container"
                             v-model="selectedLayer"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
@@ -538,7 +623,7 @@ export default {
                             return-object
                             class="qd-select"
                         />
-                        <v-select
+                        <v-autocomplete
                             id="district-selector-container"
                             v-model="selectedDistrict"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
@@ -577,6 +662,7 @@ export default {
                             <LayerFilter
                                 id="layer-filter"
                                 :key="filter.layerId"
+                                :locale="currentLocale"
                                 v-bind="filter"
                                 class="layer-filter"
                                 @update="updateFilter"
@@ -594,7 +680,7 @@ export default {
                             <span
                                 id="reference-district-button"
                                 class="name-tag district-name"
-                                @click="zoomToDistrict(selectedDistrict)"
+                                @click="zoomToDistrict({'name': selectedDistrict})"
                             >{{ selectedDistrict }}</span>
                         </div>
                         <div
@@ -606,13 +692,26 @@ export default {
                                     {{ $t('additional:modules.tools.cosi.queryDistricts.comparableResults') }}:
                                 </strong>
                             </p>
-                            <span
-                                v-for="name in resultNames"
-                                :id="'result-'+name"
-                                :key="name"
-                                class="name-tag district-name"
-                                @click="zoomToDistrict(name)"
-                            >{{ name }}</span>
+                            <v-data-table
+                                v-if="resultNames.length > 0"
+                                id="result-table"
+                                dense
+                                :headers="resultTableHeaders"
+                                :items="results"
+                                item-key="name"
+                                class="elevation-1"
+                                :footer-props="{
+                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage')
+                                }"
+                                @click:row="zoomToDistrict"
+                            >
+                                <template
+                                    v-for="col in resultTableHeaders.filter(e => e.value !== 'name')"
+                                    #[`item.${col.value}`]="{ item, header }"
+                                >
+                                    {{ parseFloat(item[header.value]).toLocaleString(currentLocale) }}
+                                </template>
+                            </v-data-table>
                         </div>
                     </div>
                     <br>
@@ -628,14 +727,23 @@ export default {
                     </div>
                     <br>
                     <div>
-                        <button
+                        <!-- <button
                             v-if="resultNames && resultNames.length"
                             id="show-in-dashboard"
                             class="btn btn-lgv-grey measure-delete"
                             @click="showInDashboard()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.showInDashboardLable') }}
-                        </button>
+                        </button> -->
+                        <v-btn
+                            v-if="resultNames && resultNames.length"
+                            tile
+                            depressed
+                            :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
+                            @click="exportTable()"
+                        >
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
+                        </v-btn>
                     </div>
                 </div>
             </v-app>
@@ -757,5 +865,12 @@ export default {
 #reference-district {
     color: #646262;
     margin-bottom: 10px;
+}
+.download-container {
+    float: left;
+    padding-top: 25px;
+     @media (max-width: 600px) {
+          padding-top: 35px;
+     }
 }
 </style>

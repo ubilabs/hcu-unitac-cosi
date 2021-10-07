@@ -22,9 +22,7 @@ export default {
     data () {
         return {
             // The current id (layer id) of the selected district level
-            selectedLevelId: "",
-            // The current names of the selected districts
-            selectedNames: [],
+            // selectedLevelId: "",
             // A buffer for the extent of the selected district(s)
             bufferVal: 0,
             // color for the drag box button
@@ -49,6 +47,24 @@ export default {
                 return this.selectedDistrictLevel.nameList;
             }
             return [];
+        },
+
+        selectedNames: {
+            get () {
+                return this.selectedDistrictNames;
+            },
+            set (v) {
+                this.setSelectedDistrictNames(v);
+            }
+        },
+
+        selectedLevelId: {
+            get () {
+                return this.selectedDistrictLevelId;
+            },
+            set (v) {
+                this.setSelectedDistrictLevelId(v);
+            }
         }
     },
 
@@ -311,7 +327,7 @@ export default {
                 featureCollection.forEach(feature => {
                     this.select.getFeatures().push(feature);
                 });
-                this.updateExtent();
+                this.updateExtent(featureCollection.get("zoomToExtent"));
             }
         },
 
@@ -319,18 +335,23 @@ export default {
          * Sets the extent and zoom to it, if not empty.
          * Sets the BBox of all Vector Layers to the selected districts
          * If the extent is empty (this means no features are selected), a warning appears.
+         * @param {Boolean} zoomToExtent - Should the camera zoom to the selection?
          * @returns {void}
          */
-        updateExtent () {
+        updateExtent (zoomToExtent = true) {
             const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
                 bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal);
 
             if (extent) {
                 this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
-                this.zoomTo(extent);
                 this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom(bboxGeom);
+
+                if (zoomToExtent) {
+                    this.zoomTo(extent);
+                }
+
                 this.loadStatFeatures({
                     districts: this.selectedDistricts,
                     districtLevel: this.selectedDistrictLevel,
@@ -453,14 +474,14 @@ export default {
                         outlined
                         dense
                     />
-                    <v-select
+                    <v-autocomplete
                         :value="selectedNames"
                         :items="namesOfDistricts"
                         :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
                         outlined
                         dense
                         multiple
-                        chips
+                        small-chips
                         @input="updateSelectedFeatures"
                     />
                     <v-text-field
@@ -573,8 +594,3 @@ export default {
         border-width: 1.25
     }
 </style>
-
-<style src="vue-select/dist/vue-select.css">
-</style>
-
-

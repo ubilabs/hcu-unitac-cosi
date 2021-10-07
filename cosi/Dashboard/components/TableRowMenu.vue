@@ -210,7 +210,7 @@ export default {
                                                 <v-icon>mdi-delete</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                {{ $t('additional:modules.tools.cosi.delete') }}
+                                                {{ $t('common:button.delete') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                     </template>
@@ -240,7 +240,7 @@ export default {
             </v-card>
         </v-menu>
         <v-icon @click="renderVisualization">
-            {{ _item.visualized ? 'mdi-eye-off' : 'mdi-eye' }}
+            {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
         </v-icon>
         <v-icon @click="_item.expanded = !_item.expanded">
             {{ _item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}

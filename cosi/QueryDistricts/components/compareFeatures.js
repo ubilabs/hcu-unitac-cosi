@@ -11,22 +11,26 @@ export default {
                     `${layerFilter.layerId}/${layerFilter.quotientLayer}` : layerFilter.layerId;
 
                 return this.propertiesMap[id]
-                    .filter(feature => feature[layerFilter.field] >= layerFilter.value - layerFilter.low
-                    && feature[layerFilter.field] <= layerFilter.value + layerFilter.high
-                    && feature[this.keyOfAttrNameStats] !== this.selectedDistrict
-                    && feature[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
-
+                    .filter(props => props[layerFilter.field] >= layerFilter.value - layerFilter.low
+                    && props[layerFilter.field] <= layerFilter.value + layerFilter.high
+                    // && props[this.keyOfAttrNameStats] !== this.selectedDistrict // Ich würde das Referenzgebiet nicht aus dem Vergleich ausschließen
+                    && props[this.selectorField].indexOf(this.keyOfAttrNameStats) !== -1);
             }),
             intersection = allFeatures.reduce((a, b) => a.filter(
                 x => b.find(y => y[this.keyOfAttrNameStats]
                     === x[this.keyOfAttrNameStats]))),
-
-            resultNames = intersection.map(f => f[this.keyOfAttrNameStats])
-                .sort().filter((x, i, a) => !i || x !== a[i - 1]); // sort and without duplicates
+            resultNames = intersection.map(p => p[this.keyOfAttrNameStats])
+                .sort().filter((x, i, a) => !i || x !== a[i - 1]), // sort and without duplicates
+            table = resultNames.map(n => ({
+                name: n,
+                ...allFeatures.map((p, i) => parseFloat(p.find(f => f[this.keyOfAttrNameStats] === n)[layerFilterList[i].field]))
+            })),
+            features = intersection.map(r => r.feature);
 
         return {
             resultNames,
-            features: resultNames.map(n => intersection.find(f => f[this.keyOfAttrNameStats] === n).feature)
+            features,
+            table
         };
     }
 };

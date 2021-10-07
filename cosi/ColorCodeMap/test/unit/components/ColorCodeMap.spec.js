@@ -117,7 +117,6 @@ describe("ColorCodeMap.vue", () => {
         expect(wrapper.find("#ccm").exists()).to.be.false;
     });
 
-
     it("showMapNames", async () => {
         selectedStatsFeaturesStub.returns([{
             getProperties: () => ({kategorie: "feature"})
@@ -145,7 +144,8 @@ describe("ColorCodeMap.vue", () => {
         expect(wrapper.find("#ccm").exists()).to.be.true;
         expect(wrapper.find("#ccm").html()).to.not.be.empty;
 
+
         await wrapper.find("#switch").trigger("click");
-        expect(addFeatureStub.callCount).to.equal(1);
+        expect(wrapper.vm.visualizationState).to.equal(true);
     });
 });

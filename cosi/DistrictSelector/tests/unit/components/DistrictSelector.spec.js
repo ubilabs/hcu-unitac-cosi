@@ -18,7 +18,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe.only("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
+describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
     let vuetify, store;
 
     const mockMapGetters = {
@@ -208,7 +208,7 @@ describe.only("addons/cosi/DistrictSelector/components/DistrictSelector.vue", ()
             spyClearFeatures.restore();
         });
 
-        //keine Ahnung warum der Test nicht funktioniert
+        // keine Ahnung warum der Test nicht funktioniert
         // it("should call 'updateSelectedFeatures' if user selects district names", async () => {
         //     const spyUpdateSelectedFeatures = sinon.spy(DistrictSelector.methods, "updateSelectedFeatures"),
         //         wrapper = factory.getShallowMount(),

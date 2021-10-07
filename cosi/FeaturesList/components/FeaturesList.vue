@@ -39,17 +39,8 @@ export default {
                 "layerId",
                 "feature",
                 "key"
-            ]
-        };
-    },
-    computed: {
-        ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["scenario"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
-        ...mapGetters("Map", ["layerById", "visibleLayerList"]),
-        ...mapState(["configJson"]),
-        columns () {
-            return [
+            ],
+            featureColumns: [
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colIcon"),
                     value: "style",
@@ -89,22 +80,34 @@ export default {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colGroup"),
                     value: "group",
                     divider: true
-                },
-                {
-                    text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
-                    value: "actions"
-                },
+                }
+            ],
+            actionColumns: [
+                // {
+                //     text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
+                //     value: "actions"
+                // },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
                     value: "enabled"
                 }
+            ],
+            numericalColumns: []
+        };
+    },
+    computed: {
+        ...mapGetters("Language", ["currentLocale"]),
+        ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
+        ...mapState(["configJson"]),
+        columns () {
+            return [
+                ...this.featureColumns,
+                ...this.numericalColumns,
+                ...this.actionColumns
             ];
         },
-        // districtFeatures () {
-        //     return this.selectedDistrictFeatures.length > 0 && this.bufferValue === 0
-        //         ? this.selectedDistrictFeatures
-        //         : this.districtLayer.getSource().getFeatures();
-        // },
         selected: {
             get () {
                 return this.selectedFeatureItems;
@@ -152,10 +155,10 @@ export default {
 
         /**
          * Updates the list on added/removed scenario features
-         * @listens #change:Tools/ScenarioBuilder/scenario
+         * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
          * @returns {void}
          */
-        scenario () {
+        activeSimulatedFeatures () {
             this.updateFeaturesList();
         },
 
@@ -172,6 +175,10 @@ export default {
                     this.updateFeaturesList();
                 });
             }
+        },
+
+        activeLayerMapping () {
+            this.numericalColumns = this.getNumericalColumns();
         }
     },
     created () {
@@ -185,7 +192,8 @@ export default {
     },
     mounted () {
         // initally set the facilities mapping based on the config.json
-        this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
+        this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
+        this.updateFeaturesList();
 
         /**
          * @description Listen to newly loaded VectorLayer Features to update the FeaturesList
@@ -202,6 +210,26 @@ export default {
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Map", ["removeHighlightFeature"]),
 
+        getVectorlayerMapping,
+        getNumericalColumns () {
+            const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
+                return [
+                    ...cols,
+                    ...mappingObj.numericalValues.map(v => ({
+                        text: v.name,
+                        value: v.id
+                    }))
+                ];
+            }, []);
+
+            // add divider to last col
+            if (numCols.length > 0) {
+                numCols[numCols.length - 1].divider = true;
+            }
+
+            return numCols;
+        },
+
         /**
          * Reads the active vector layers, constructs the list of table items and writes them to the store.
          * Finds the containing district from districtSelector for each feature
@@ -212,12 +240,15 @@ export default {
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
+                        // only features that can be seen on the map
+                        visibleFeatures = features.filter(feature => typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle()() !== null),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
-                    return [...list, ...features.map((feature, i) => {
+                    list.push(...this.checkDisabledFeatures(vectorLayer));
+                    return [...list, ...visibleFeatures.map((feature) => {
                         return {
-                            key: layerMap.id + i,
+                            key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
                             style: layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
@@ -228,7 +259,8 @@ export default {
                             address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,
                             enabled: true,
-                            isSimulation: feature.get("isSimulation") || false
+                            isSimulation: feature.get("isSimulation") || false,
+                            ...Object.fromEntries(layerMap.numericalValues.map(field => [field.id, feature.get(field.id)]))
                         };
                     })];
                 }, []);
@@ -236,6 +268,10 @@ export default {
             else {
                 this.items = [];
             }
+        },
+
+        checkDisabledFeatures (layer) {
+            return this.disabledFeatureItems.filter(item => item.layerId === layer.get("id"));
         },
 
         /**
@@ -308,9 +344,56 @@ export default {
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         },
+
+        /**
+         * Toggle a feature on/off and emit the corresponding event to trigger uodated
+         * @param {Object} featureItem - the item from the table
+         * @returns {void}
+         */
         toggleFeature (featureItem) {
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
+        },
+
+        getNumericalValueColor (item, key) {
+            const val = parseFloat(item[key]),
+                maxVal = Math.max(
+                    ...this.items
+                        .map(_item => parseFloat(_item[key]))
+                        .filter(_item => !isNaN(_item))
+                );
+
+            if (isNaN(val)) {
+                return "grey";
+            }
+            if (val / maxVal > 0.9) {
+                return "purple";
+            }
+            if (val / maxVal > 0.8) {
+                return "indigo";
+            }
+            if (val / maxVal > 0.7) {
+                return "blue";
+            }
+            if (val / maxVal > 0.6) {
+                return "cyan";
+            }
+            if (val / maxVal > 0.5) {
+                return "teal";
+            }
+            if (val / maxVal > 0.4) {
+                return "green";
+            }
+            if (val / maxVal > 0.4) {
+                return "light-green";
+            }
+            if (val / maxVal > 0.2) {
+                return "lime";
+            }
+            if (val / maxVal > 0.1) {
+                return "amber";
+            }
+            return "red";
         }
     }
 };
@@ -376,7 +459,7 @@ export default {
                                 item-key="key"
                                 show-select
                                 show-expand
-                                :items-per-page="20"
+                                :items-per-page="15"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -424,12 +507,31 @@ export default {
                                         @change="toggleFeature(item)"
                                     />
                                 </template>
+                                <template
+                                    v-for="col in numericalColumns"
+                                    #[`item.${col.value}`]="{ item }"
+                                >
+                                    <template v-if="!isNaN(parseFloat(item[col.value]))">
+                                        <div
+                                            :key="col.value"
+                                            class="align-right"
+                                        >
+                                            <v-chip
+                                                :color="getNumericalValueColor(item, col.value)"
+                                                dark
+                                            >
+                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                            </v-chip>
+                                        </div>
+                                    </template>
+                                </template>
                             </v-data-table>
                         </div>
                         <div class="form-group">
                             <v-row>
                                 <v-col cols="12">
                                     <v-btn
+                                        id="export-table"
                                         tile
                                         depressed
                                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
@@ -438,6 +540,7 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                                     </v-btn>
                                     <v-btn
+                                        id="export-detail"
                                         tile
                                         depressed
                                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
@@ -472,10 +575,8 @@ export default {
                 width: 100%;
             }
         }
+        .align-right {
+            text-align: right;
+        }
     }
 </style>
-
-<style src="vue-select/dist/vue-select.css">
-</style>
-
-

@@ -30,3 +30,13 @@ export function geomPickerResetLocation (geomPicker) {
 export function geomPickerClearDrawPolygon (geomPicker) {
     geomPicker.clearDrawPolygon();
 }
+
+/**
+ * Sets the visible geom on the drawLayer by geom
+ * @param {Vue} geomPicker - the geomPicker component
+ * @param {module:ol/Geometry} geom - the geom
+ * @returns {void}
+ */
+export function geomPickerSetGeometry (geomPicker, geom) {
+    geomPicker.setGeometry(geom);
+}

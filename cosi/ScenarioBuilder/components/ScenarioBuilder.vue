@@ -19,7 +19,7 @@ import MoveFeatures from "./MoveFeatures.vue";
 import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
-import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon} from "../utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../utils/geomPickerHandler";
 
 export default {
     name: "ScenarioBuilder",
@@ -43,7 +43,8 @@ export default {
             beautifyKey: beautifyKey,
             typesMapping: TypesMapping,
             geometry: null,
-            valuesForFields: {}
+            valuesForFields: {},
+            panel: [0, 1]
         };
     },
     computed: {
@@ -104,14 +105,23 @@ export default {
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
          */
-        active (newActive) {
-            if (!newActive) {
+        async active (newActive) {
+            if (newActive) {
+                if (this.geometry) {
+                    // wait for 2 ticks for the drawing layer to initialize
+                    await this.$nextTick();
+                    this.$refs["geometry-picker"].geometry.value = this.geometry;
+                    await this.$nextTick();
+                    geomPickerSetGeometry(this.$refs["geometry-picker"], this.geometry);
+                }
+            }
+            else {
                 const model = getComponent(this.id);
 
                 if (model) {
                     model.set("isActive", false);
                 }
-                this.removePointMarker();
+                geomPickerUnlisten(this.$refs["geometry-picker"]);
             }
         },
 
@@ -136,6 +146,7 @@ export default {
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("Map", ["createLayer"]),
+        ...mapMutations("Map", ["setCenter"]),
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules
@@ -184,13 +195,7 @@ export default {
                 geom = this.geometry,
                 feature = new Feature({geometry: geom});
 
-            // set properties
-            feature.setProperties(this.featureProperties);
-            // flag as simulated
-            feature.set("isSimulation", true);
-            // create unique hash as ID
-            feature.setId(hash({...this.featureProperties, geom: this.geometry}));
-
+            this.setFeatureProperties(feature, this.featureProperties, geom);
             this.activeScenario.addFeature(
                 new ScenarioFeature(feature, layer)
             );
@@ -198,6 +203,30 @@ export default {
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
             this.$root.$emit("updateFeature");
+        },
+
+        /**
+         * @param {module:ol/Feature} feature - the feature whose properties to set
+         * @param {Object} properties - the dict of properties to add to the feature
+         * @param {module:ol/Geometry} geometry - the feature's geometry
+         * @returns {void}
+         */
+        setFeatureProperties (feature, properties, geometry) {
+            // set properties
+            feature.setProperties(properties);
+            // flag as simulated
+            feature.set("isSimulation", true);
+            // create unique hash as ID
+            feature.setId(hash({...properties, geom: geometry}));
+
+            // set additional attributes based on geometry
+            if (geometry.getType() === "Polygon" || geometry.getType() === "MultiPolygon") {
+                const area = Math.round((geometry.getArea() + Number.EPSILON) * 100) / 100;
+
+                for (const attr of this.areaAttributes) {
+                    feature.set(attr.key, area * attr.factorToSqm);
+                }
+            }
         },
 
         /**
@@ -260,6 +289,10 @@ export default {
             #toolBody
         >
             <v-app>
+                <div class="form-group">
+                    <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
+                    <ScenarioManager />
+                </div>
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"
@@ -273,10 +306,6 @@ export default {
                     id="scenario-builder"
                 >
                     <form class="form-inline features-list-controls">
-                        <div class="form-group">
-                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
-                            <ScenarioManager />
-                        </div>
                         <v-divider />
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>
@@ -328,9 +357,9 @@ export default {
                             <div class="form-group">
                                 <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.defineFeature') }} </label>
                                 <v-expansion-panels
+                                    v-model="panel"
                                     accordion
                                     multiple
-                                    :value="[0,1]"
                                 >
                                     <v-expansion-panel>
                                         <v-expansion-panel-header>

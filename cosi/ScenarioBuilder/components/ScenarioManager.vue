@@ -59,9 +59,9 @@ export default {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
 
-        escapeCreateNewScenario () {
-            // ...
-        },
+        // escapeCreateNewScenario () {
+        //     // ...
+        // },
 
         createNewScenario () {
             const newScenario = new Scenario(this.newScenarioName, this.guideLayer);
@@ -93,6 +93,9 @@ export default {
 
         validateNewScenario () {
             this.$refs["new-scenario-form"].validate();
+            if (this.$refs["new-scenario-form"].validate()) {
+                this.createNewScenario();
+            }
         }
     }
 };
@@ -156,21 +159,85 @@ export default {
                         {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }}
                     </span>
                 </v-btn>
-                <v-btn
-                    tile
-                    depressed
-                    :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
-                    :disabled="!activeScenario || activeScenario.simulatedFeatures.length === 0"
-                    class="flex-item"
-                    @click="activeScenario ? activeScenario.exportSzenarioFeatures() : null"
+                <v-menu
+                    open-on-hover
+                    top
+                    offset-y
                 >
-                    <span v-if="useIcons">
-                        <v-icon>mdi-download</v-icon>
-                    </span>
-                    <span v-else>
-                        {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
-                    </span>
-                </v-btn>
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            tile
+                            depressed
+                            :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
+                            :disabled="!activeScenario"
+                            class="flex-item"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="activeScenario ? activeScenario.exportScenario() : null"
+                        >
+                            <span v-if="useIcons">
+                                <v-icon>mdi-download</v-icon>
+                            </span>
+                            <span v-else>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
+                            </span>
+                        </v-btn>
+                    </template>
+
+                    <v-list>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures')"
+                                :disabled="!activeScenario"
+                                class="flex-item"
+                                @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
+                            >
+                                <span v-if="useIcons">
+                                    <v-icon>mdi-map-marker-multiple</v-icon>
+                                </span>
+                                <span v-else>
+                                    {{ $t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures') }}
+                                </span>
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods')"
+                                :disabled="!activeScenario"
+                                class="flex-item"
+                                @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
+                            >
+                                <span v-if="useIcons">
+                                    <v-icon>mdi-home-group</v-icon>
+                                </span>
+                                <span v-else>
+                                    {{ $t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods') }}
+                                </span>
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
+                                :disabled="!activeScenario"
+                                class="flex-item"
+                                @click="activeScenario ? activeScenario.exportScenario() : null"
+                            >
+                                <span v-if="useIcons">
+                                    <v-icon>mdi-download</v-icon>
+                                </span>
+                                <span v-else>
+                                    {{ $t('additional:modules.tools.cosi.scenarioManager.exportScenario') }}
+                                </span>
+                            </v-btn>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
             </v-col>
         </v-row>
         <v-row>
@@ -215,17 +282,13 @@ export default {
         </v-row>
         <Modal
             :show-modal="createNewScenarioModalOpen"
-            @modalHid="escapeCreateNewScenario"
-            @clickedOnX="escapeCreateNewScenario"
-            @clickedOutside="escapeCreateNewScenario"
         >
             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
             <v-form
                 id="new-scenario-form"
                 ref="new-scenario-form"
                 v-model="newScenarioValid"
-                on-submit="return false;"
-                @submit="createNewScenario"
+                @submit.prevent="validateNewScenario"
             >
                 <v-row>
                     <v-col cols="12">
@@ -242,7 +305,6 @@ export default {
                             :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                             :disabled="!newScenarioValid"
                             form="new-scenario-form"
-                            @click="validateNewScenario"
                         >
                             {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
                         </v-btn>
