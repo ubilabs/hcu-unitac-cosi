@@ -377,6 +377,14 @@ export default {
                     >
                         Ok
                     </v-btn>
+                    <v-btn
+                        color="black"
+                        text
+                        v-bind="attrs"
+                        @click="askUpdate = false"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
                 </template>
             </v-snackbar>
         </v-app>

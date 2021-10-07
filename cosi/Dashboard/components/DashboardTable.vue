@@ -278,6 +278,10 @@ export default {
             return item[header.value].isModified <= timestamp ? "modified" : "";
         },
 
+        getValueTooltip (item, header, timestamp) {
+            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.featuresList.modifiedTooltip") : undefined;
+        },
+
         getAverage (item, timestamp) {
             const average = getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
 
@@ -538,12 +542,22 @@ export default {
                                             v-for="year in item.years"
                                             :key="year"
                                         >
-                                            <span :class="getValueClass(item, header, year)">{{ getValue(item, header, year) }}</span>
+                                            <span
+                                                :title="getValueTooltip(item, header, year)"
+                                                :class="getValueClass(item, header, year)"
+                                            >
+                                                {{ getValue(item, header, year) }}
+                                            </span>
                                         </li>
                                     </ul>
                                 </template>
                                 <template v-else>
-                                    <span :class="getValueClass(item, header, currentTimeStamp)">{{ getValue(item, header, currentTimeStamp) }}</span>
+                                    <span
+                                        :title="getValueTooltip(item, header, currentTimeStamp)"
+                                        :class="getValueClass(item, header, currentTimeStamp)"
+                                    >
+                                        {{ getValue(item, header, currentTimeStamp) }}
+                                    </span>
                                 </template>
                             </div>
                         </template>

@@ -394,6 +394,21 @@ export default {
                 return "amber";
             }
             return "red";
+        },
+
+        getNumericalValueStyle (item, key) {
+            const val = parseFloat(item[key]),
+                maxVal = Math.max(
+                    ...this.items
+                        .map(_item => parseFloat(_item[key]))
+                        .filter(_item => !isNaN(_item))
+                );
+
+            return {
+                padding: 0,
+                height: "10px",
+                width: Math.round(100 * val / maxVal) + "%"
+            };
         }
     }
 };
@@ -516,12 +531,23 @@ export default {
                                             :key="col.value"
                                             class="align-right"
                                         >
-                                            <v-chip
+                                            <div>
+                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                            </div>
+                                            <div>
+                                                <v-chip
+                                                    :style="getNumericalValueStyle(item, col.value)"
+                                                    :color="getNumericalValueColor(item, col.value)"
+                                                    dark
+                                                    dense
+                                                />
+                                            </div>
+                                            <!-- <v-chip
                                                 :color="getNumericalValueColor(item, col.value)"
                                                 dark
                                             >
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                            </v-chip>
+                                            </v-chip> -->
                                         </div>
                                     </template>
                                 </template>
