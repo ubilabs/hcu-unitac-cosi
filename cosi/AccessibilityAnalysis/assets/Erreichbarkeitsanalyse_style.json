@@ -9,7 +9,10 @@
             },
             "style": {
                 "polygonStrokeColor": [
-                    "White"
+                    255,
+                    255,
+                    255,
+                    1
                 ],
                 "polygonStrokeWidth": 1,
                 "polygonFillColor": [
@@ -28,7 +31,10 @@
             },
             "style": {
                 "polygonStrokeColor": [
-                    "White"
+                    255,
+                    255,
+                    255,
+                    1
                 ],
                 "polygonStrokeWidth": 1,
                 "polygonFillColor": [
@@ -47,7 +53,10 @@
             },
             "style": {
                 "polygonStrokeColor": [
-                    "White"
+                    255,
+                    255,
+                    255,
+                    1
                 ],
                 "polygonStrokeWidth": 1,
                 "polygonFillColor": [
