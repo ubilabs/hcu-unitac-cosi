@@ -316,7 +316,6 @@ export default {
                     if (this.originalStyling === null) {
                         this.originalStyling = getStyling;
                     }
-
                     getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.data), 0.75)});
                     getStyling.zIndex = 1;
                     getStyling.text = new Text({
