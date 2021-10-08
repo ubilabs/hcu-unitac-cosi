@@ -157,18 +157,18 @@ export default {
         return [evt.coordinate];
     },
 
-    simplifyGeometry (geom) {
+    simplifyGeometry (geom, tolerance = 1) {
         let simplified, geojson;
 
         if (geom.getType() === "Polygon") {
             geojson = turf.polygon(geom.getCoordinates());
-            simplified = turf.simplify(geojson);
+            simplified = turf.simplify(geojson, {tolerance});
 
             return simplified.geometry.coordinates.flat(1).map(p => [p[0], p[1]]);
         }
         if (geom.getType() === "MultiPolygon") {
             geojson = turf.multiPolygon(geom.getCoordinates());
-            simplified = turf.simplify(geojson);
+            simplified = turf.simplify(geojson, {tolerance});
 
             return simplified.geometry.coordinates.flat(2).map(p => [p[0], p[1]]);
         }
@@ -294,15 +294,18 @@ export default {
                 .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
 
             return features
-                .map((feature) => {
+                .reduce((res, feature) => {
                     const geometry = feature.getGeometry();
 
                     if (geometry.getType() === "Point") {
-                        return geometry.getCoordinates().splice(0, 2);
+                        return [...res, geometry.getCoordinates().splice(0, 2)];
                     }
-                    return Extent.getCenter(geometry.getExtent());
+                    if (this.setByFeature) {
+                        return [...res, ...this.simplifyGeometry(geometry, 10) || [Extent.getCenter(geometry.getExtent())]];
+                    }
+                    return [...res, Extent.getCenter(geometry.getExtent())];
 
-                }).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
+                }, []).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
         }
         return null;
     }

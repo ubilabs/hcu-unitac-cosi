@@ -109,8 +109,11 @@ export default {
             await this.$nextTick();
             this.tryUpdateIsochrones();
         },
+        mode () {
+            this.setByFeature = false;
+        },
         setByFeature (val) {
-            if (val) {
+            if (val && this.mode === "point") {
                 this.map.addInteraction(this.select);
             }
             else {
@@ -251,10 +254,7 @@ export default {
                                 dense
                                 @click:append="$refs.mode.blur()"
                             >
-                                <template
-                                    v-if="mode === 'point'"
-                                    #append
-                                >
+                                <template #append>
                                     <v-switch
                                         v-model="setByFeature"
                                         dense
