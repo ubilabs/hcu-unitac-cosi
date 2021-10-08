@@ -7,6 +7,9 @@ import requestIsochrones from "../service/requestIsochrones";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
+import {Select} from "ol/interaction";
+// import {singleClick} from "ol/events/condition";
+// import {Fill, Stroke, Style} from "ol/style.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -64,8 +67,6 @@ export default {
                 }
             ],
             distance: "",
-            // rawGeoJson: null,
-            // isochroneFeatures: [],
             steps: [0, 0, 0],
             layers: null,
             selectedFacilityName: null,
@@ -76,7 +77,8 @@ export default {
             ],
             askUpdate: false,
             abortController: null,
-            currentCoordinates: null
+            currentCoordinates: null,
+            select: null
         };
     },
     computed: {
@@ -106,6 +108,15 @@ export default {
         async activeSimulatedFeatures () {
             await this.$nextTick();
             this.tryUpdateIsochrones();
+        },
+        setByFeature (val) {
+            if (val) {
+                this.map.addInteraction(this.select);
+            }
+            else {
+                this.select.getFeatures().removeAt(0);
+                this.map.removeInteraction(this.select);
+            }
         }
     },
     /**
@@ -114,6 +125,9 @@ export default {
     created () {
         this.$on("close", this.close);
         Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
+        this.select = new Select({
+            filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
+        });
     },
     /**
    * Put initialize here if mounting occurs after config parsing
@@ -200,6 +214,10 @@ export default {
         requestInhabitants: function () {
             this.close();
             this.$root.$emit("populationRequest", this.rawGeoJson);
+        },
+
+        preventDefault (evt) {
+            evt.stopPropagation();
         }
     }
 };
@@ -223,6 +241,7 @@ export default {
                     >
                         <v-form>
                             <v-select
+                                ref="mode"
                                 v-model="mode"
                                 :items="availableModes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo')"
@@ -230,6 +249,7 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                @click:append="$refs.mode.blur()"
                             >
                                 <template
                                     v-if="mode === 'point'"

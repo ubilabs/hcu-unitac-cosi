@@ -11,6 +11,7 @@ import
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
+import * as turf from "@turf/turf";
 
 
 export const methodConfig = {
@@ -95,10 +96,10 @@ export default {
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
+            this.setByFeature = false;
 
             const features = await this.getIsochrones({transportType: this.transportType, coordinates: this.coordinate, scaleUnit: this.scaleUnit, distance: this.distance});
 
-            console.log(features);
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
             this.setRawGeoJson(await this.featureToGeoJson(features[0]));
             this.setIsochroneFeatures(features);
@@ -150,18 +151,32 @@ export default {
         if (feature) {
             const geom = feature.getGeometry();
 
-            if (geom.getType() === "Polygon") {
-                return geom.getCoordinates().flat(1).map(p => [p[0], p[1]]);
-            }
-            if (geom.getType() === "MultiPolygon") {
-                return geom.getCoordinates().flat(2).map(p => [p[0], p[1]]);
-            }
-            if (geom.getType() === "Point") {
-                return [[geom.getCoordinates()[0], geom.getCoordinates()[1]]];
-            }
+            return this.simplifyGeometry(geom) || [evt.coordinate];
         }
 
         return [evt.coordinate];
+    },
+
+    simplifyGeometry (geom) {
+        let simplified, geojson;
+
+        if (geom.getType() === "Polygon") {
+            geojson = turf.polygon(geom.getCoordinates());
+            simplified = turf.simplify(geojson);
+
+            return simplified.geometry.coordinates.flat(1).map(p => [p[0], p[1]]);
+        }
+        if (geom.getType() === "MultiPolygon") {
+            geojson = turf.multiPolygon(geom.getCoordinates());
+            simplified = turf.simplify(geojson);
+
+            return simplified.geometry.coordinates.flat(2).map(p => [p[0], p[1]]);
+        }
+        if (geom.getType() === "Point") {
+            return [[geom.getCoordinates()[0], geom.getCoordinates()[1]]];
+        }
+
+        return null;
     },
 
     /**
