@@ -1,6 +1,6 @@
 <script>
 import {mapGetters} from "vuex";
-import {omit} from "../../../../src/utils/objectHelpers";
+import omit from "../../../../src/utils/omit";
 import ContinuousCountingBikeInfo from "./ContinuousCountingBikeInfo.vue";
 import ContinuousCountingBikeChart from "./ContinuousCountingBikeChart.vue";
 import {collectYearData} from "../utils/collectYearData";
