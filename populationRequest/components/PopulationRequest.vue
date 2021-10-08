@@ -100,6 +100,7 @@ export default {
                 this.$refs.graphicalSelection.setStatus(newValue);
                 this.$refs.graphicalSelection.resetView();
                 this.$refs.graphicalSelection.resetGeographicSelection();
+                // forced delete of tooltip overlay
                 $("#tooltip-overlay").remove();
             }
         }
