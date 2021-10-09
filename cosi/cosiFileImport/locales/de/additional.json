@@ -36,7 +36,10 @@
                 "preSelectedDataFound": "Es wurden automatisch bestimmte Datensätze erkannt, die sich Adressdaten zuordnen lassen. Sollte diese Liste unvollständig sein, wählen Sie bitte 'Aus allen Datensätzen auswählen' an",
                 "viewAllData": "Aus allen Datensätzen auswählen",
                 "pointsAndPolygons": "In Ihrem Datensatz wurden sowohl Punkt- als auch Polygonfeatures erkannt. Wünschen Sie ein gesonderte Farbe für die Polygone?",
-                "cancel": "Abbrechen"
+                "cancel": "Abbrechen",
+                "autoStyle": "Thematische Farbgebung",
+                "manualStyle": "Farbgebung definieren",
+                "autoStyleInfo": "Sie können hier einen Datensatz aus dem von Ihnen hochgeladenen File wählen, auf Basis dessen Werten das Styling automatisch generiert wird."
             }
         }
     }

@@ -2,7 +2,8 @@ import {Radio} from "backbone";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
-import {color as d3Color} from "d3-color";
+import {color as d3Color, hsl} from "d3-color";
+import {scaleLinear} from "d3-scale";
 
 const supportedFormats = {
     kml: new KML({extractStyles: true}),
@@ -216,14 +217,25 @@ function addLayerToTree (newLayer) {
     // eslint-disable-next-line one-var
     const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
 
+    // model.get("layer").setProperties({"typ": "WFS"});
     setLayerAttributes(model, newLayer);
     adjustLayerStyling(newLayer);
 
+    // eslint-disable-next-line one-var
+    const filterModel = {
+            attributeWhiteList: model.get("attributeWhiteList"),
+            isActive: false,
+            isSelected: false,
+            layerId: newLayer.id,
+            name: newLayer.name,
+            useConfigName: true
+        },
+        filterQuery = Radio.request("Filter", "getFilters");
+
+    filterQuery.push(filterModel);
     Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
 
     return model;
-
-    // Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
 }
 
 /**
@@ -244,7 +256,8 @@ function setLayerAttributes (model, attrs) {
         searchField: attrs.searchField,
         group: "Importierte Daten",
         filename: attrs.filename,
-        numericalValues: attrs.numericalValues
+        numericalValues: attrs.numericalValues,
+        attributeWhiteList: [attrs.mouseHoverField, attrs.searchField]
     });
 }
 
@@ -254,78 +267,188 @@ function setLayerAttributes (model, attrs) {
  * @returns {void}
  */
 function adjustLayerStyling (newLayer) {
-    let pointColor,
-        pointOpac,
-        areaColor,
-        areaOpac;
+    if (!newLayer.autoStyle) {
+        let pointColor,
+            pointOpac,
+            areaColor,
+            areaOpac;
 
-    if (newLayer.style.point) {
-        pointColor = d3Color(newLayer.style.point.hex);
-        pointOpac = d3Color(newLayer.style.point.hex);
-        pointOpac.opacity = 0.5;
+        if (newLayer.style.point) {
+            pointColor = d3Color(newLayer.style.point.hex);
+            pointOpac = d3Color(newLayer.style.point.hex);
+            pointOpac.opacity = 0.5;
 
-        areaColor = pointColor;
-        areaOpac = pointOpac;
-    }
+            areaColor = pointColor;
+            areaOpac = pointOpac;
+        }
 
-    if (newLayer.style.polygon) {
-        areaColor = d3Color(newLayer.style.polygon.hex);
-        areaOpac = d3Color(newLayer.style.polygon.hex);
-        areaOpac.opacity = 0.5;
-    }
+        if (newLayer.style.polygon) {
+            areaColor = d3Color(newLayer.style.polygon.hex);
+            areaOpac = d3Color(newLayer.style.polygon.hex);
+            areaOpac.opacity = 0.5;
+        }
 
-    const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
-        layer = layerNode.attributes.layer,
-        path = "./assets/svg/" + newLayer.svg,
-        svgStyle = new Style({
-            image: new Icon({
-                src: path,
-                color: newLayer.style.svg
-            })
-        }),
+        const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
+            layer = layerNode.attributes.layer,
+            path = "./assets/svg/" + newLayer.svg,
+            svgStyle = new Style({
+                image: new Icon({
+                    src: path,
+                    color: newLayer.style.svg
+                })
+            }),
 
-        pointStyle = new Style({
-            image: new Circle({
-                radius: 5,
+            pointStyle = new Style({
+                image: new Circle({
+                    radius: 5,
+                    fill: new Fill({
+                        color: pointOpac
+                    }),
+                    stroke: new Stroke({
+                        color: pointColor,
+                        width: 2
+                    })
+                })
+            }),
+
+            areaStyle = new Style({
                 fill: new Fill({
-                    color: pointOpac
+                    color: areaOpac
                 }),
                 stroke: new Stroke({
-                    color: pointColor,
-                    width: 2
+                    width: 3,
+                    color: areaColor
                 })
-            })
-        }),
+            });
 
-        areaStyle = new Style({
-            fill: new Fill({
-                color: areaOpac
-            }),
-            stroke: new Stroke({
-                width: 3,
-                color: areaColor
-            })
+        layer.setStyle(function (feature) {
+            if (feature.getGeometry().getType() === "Point") {
+                if (newLayer.svg) {
+                    feature.set("originalStyle", svgStyle);
+                    return svgStyle;
+                }
+
+                feature.set("originalStyle", pointStyle);
+                return pointStyle;
+
+            }
+
+            feature.set("originalStyle", areaStyle);
+            return areaStyle;
         });
 
-    layerNode.attributes.features.forEach(feature => {
-        if (feature.getGeometry().getType() === "Point") {
-            if (newLayer.svg) {
-                feature.setStyle([svgStyle]);
-                feature.set("originalStyle", svgStyle);
+        layer.setZIndex(100);
+    }
+    else {
+        const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
+            layer = layerNode.attributes.layer,
+            features = layerNode.attributes.features,
+            path = "./assets/svg/" + newLayer.svg,
+            randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+
+        if (Number.isInteger(features[0].get(newLayer.autoStyleValue))) {
+            const sortingArray = features.map(feature => feature.get(newLayer.autoStyleValue)),
+                colorScale = generateColorScale(randomColor, 10);
+            let difference = 0,
+                chunk = 0;
+
+            sortingArray.sort(function (a, b) {
+                return a - b;
+            });
+
+            difference = Math.abs(sortingArray[0] - sortingArray[sortingArray.length - 1]);
+            if (difference >= 10) {
+                chunk = difference / 10;
+            }
+            else if (difference >= 100) {
+                chunk = difference / 20;
+            }
+            else if (difference >= 1000) {
+                chunk = difference / 50;
             }
             else {
-                feature.setStyle([pointStyle]);
-                feature.set("originalStyle", pointStyle);
+                chunk = 1;
             }
+
+            layer.setStyle(function (feature) {
+                const chunkNode = checkChunkNode(feature, newLayer, chunk),
+                    autoStyle = new Style({
+                        image: new Icon({
+                            src: path,
+                            color: d3Color(colorScale(chunkNode)).toString()
+                        })
+                    });
+
+                return autoStyle;
+            });
+
+            layer.setZIndex(100);
         }
         else {
-            feature.setStyle([areaStyle]);
-            feature.set("originalStyle", areaStyle);
-        }
-    });
+            const sortingArray = [...new Set(features.map(feature => feature.get(newLayer.autoStyleValue)))],
+                colorScale = generateColorScale(randomColor, sortingArray.length);
 
-    // console.log(layer);
-    layer.setZIndex(100);
+            layer.setStyle(feature => {
+                const position = sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
+                    autoStyle = new Style({
+                        image: new Icon({
+                            src: path,
+                            color: d3Color(colorScale(position)).toString()
+                        })
+                    });
+
+                return autoStyle;
+            });
+
+            layer.setZIndex(100);
+        }
+    }
+}
+
+/**
+ * Checks for chunk of ten in int array
+ * @param {Object} feature - feature of imported layer
+ * @param {Object} newLayer - imported layer
+ * @param {Int} chunk - chunk size
+ * @returns {void}
+ * */
+function checkChunkNode (feature, newLayer, chunk) {
+    for (let i = 1; i < 11; i++) {
+        if (feature.get(newLayer.autoStyleValue) <= chunk * i) {
+            return i;
+        }
+    }
+
+    return 1;
+}
+
+/**
+ * @description Generates colorScale for given length on base color.
+ * @param {String} color color from which colorscale is generated
+ * @param {Int} length Number of colors to be generated in colorscale.
+ * @returns {Array} ColorScale Array.
+ */
+function generateColorScale (color, length) {
+    const hslColor = hsl(color);
+    let colorA = "",
+        colorB = "",
+        range = "";
+
+    hslColor.h += 40;
+    hslColor.s = 100;
+    hslColor.l = 80;
+    hslColor.opacity = 1;
+
+    colorA = String(hslColor);
+
+    hslColor.h -= 80;
+    hslColor.s = 0;
+    hslColor.l -= 10;
+    hslColor.opacity = 0.75;
+
+    colorB = String(hslColor);
+    range = [colorB, colorA];
+    return scaleLinear().domain([0, length]).range(range);
 }
 
 export default {
@@ -483,7 +606,6 @@ export default {
         // dispatch("addImportedFilename", datasrc.filename);
         // addLayerToTree(layerName, layerId, features);
 
-        // console.log("handler", layerName, layerId, features);
         dispatch("cosiLayerHandling", {
             name: layerName,
             id: layerId,

@@ -368,10 +368,25 @@ export default {
          */
         downloadGraph (event) {
             const canvasContainer = event.target.parentNode.previousElementSibling,
-                canvas = canvasContainer.lastChild,
-                canvasPNG = canvas.toDataURL("image/png");
+                canvas = canvasContainer.lastChild;
 
-            this.downloadFile(canvasPNG);
+            if (canvas.classList.contains("pie_chart")) {
+                const nodes = canvasContainer.childNodes;
+
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].nodeName.toLowerCase() === "div") {
+                        const canvasPNG = nodes[i].lastChild.toDataURL("image/png");
+
+                        this.downloadFile(canvasPNG);
+                    }
+                }
+            }
+            else {
+                const canvasPNG = canvas.toDataURL("image/png");
+
+                this.downloadFile(canvasPNG);
+            }
+
         },
         /**
          * @description Triggers Download function for every Chart Canvas available.
