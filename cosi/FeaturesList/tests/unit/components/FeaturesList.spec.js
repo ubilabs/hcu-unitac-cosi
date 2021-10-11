@@ -20,6 +20,7 @@ import Point from "ol/geom/Point";
 import mockConfigJson from "./mock.config.json";
 import Multiselect from "vue-multiselect";
 import districtLevel from "./mock.districtLevel";
+import {initializeLayerList} from "../../../../utils/initializeLayerList";
 
 Vue.use(Vuetify);
 
@@ -31,25 +32,25 @@ config.mocks.$t = key => key;
 
 global.requestAnimationFrame = (fn) => fn();
 
-describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub;
 
-    const layer1 = new Layer({
+
+    const feature = new Feature({
+            schulname: "feature 1",
+            anzahl_schueler: 42,
+            adresse_strasse_hausnr: "Hauptstraße",
+            adresse_ort: "Hamburg",
+            kapitelbezeichnung: "Grundschule",
+            geometry: new Point([
+                10.086822509765625,
+                53.55825752009741
+            ])
+        }),
+        layer1 = new Layer({
             id: "1234",
             source: new Source({
-                features: [
-                    new Feature({
-                        schulname: "feature 1",
-                        anzahl_schueler: 42,
-                        adresse_strasse_hausnr: "Hauptstraße",
-                        adresse_ort: "Hamburg",
-                        kapitelbezeichnung: "Grundschule",
-                        geometry: new Point([
-                            10.086822509765625,
-                            53.55825752009741
-                        ])
-                    })
-                ]
+                features: [feature]
             })
         }),
         expMapping = [{
@@ -107,6 +108,12 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                                 selectedFeatures: sinon.stub().returns(districtLevel.layer.getSource().getFeatures()),
                                 districtLayer: sinon.stub().returns(districtLevel.layer),
                                 bufferValue: () => 0
+                            }
+                        },
+                        DistanceScoreService: {
+                            namespaced: true,
+                            actions: {
+                                getDistanceScore: ()=>Promise.resolve(1)
                             }
                         }
                     }
@@ -188,11 +195,12 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.vm.$nextTick();
 
+
             // flatActiveLayerMapping has length 1 if 1 layer is active
             expect(wrapper.vm.flatActiveLayerMapping).to.have.lengthOf(1);
             // first item in the layer filter dropdown has value "Mein Layer"
             expect(layerFilterWrapper.findAll(".multiselect__element").at(1).text()).to.equal("Mein Layer");
-
+            expect(wrapper.vm.filteredItems).to.have.lengthOf(1);
         });
 
         it("items array should hold one item with relevant properties", async () => {
@@ -200,6 +208,40 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             expect(wrapper.vm.items).to.have.lengthOf(1);
             expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isSimulation");
+        });
+
+        it("should show layers for distance score", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+
+            const wrapper = await mountComponent(true, [layer1]);
+
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.layerOptions).to.deep.equal(
+                [{"header": "Bildung und Wissenschaft"},
+                    {
+                        "featureType": "type",
+                        "group": "Bildung und Wissenschaft",
+                        "id": "Mein Layer",
+                        "layerId": "1234",
+                        "url": "url"
+                    }
+                ]
+
+            );
+        });
+
+        it("should compute distance score on select layer", async () => {
+            feature.key = 1;
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+
+            const wrapper = await mountComponent(true, [layer1]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.distanceScores[1]).to.be.equal(1);
         });
 
         it("headers should have all fields", async () => {
