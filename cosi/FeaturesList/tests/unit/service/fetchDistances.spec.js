@@ -1,5 +1,8 @@
 import {fetchDistances} from "../../../service/fetchDistances";
 import {expect} from "chai";
+import {getAllFeatures} from "../../../../utils/getAllFeatures";
+import * as Proj from "ol/proj.js";
+import {initializeLayerList} from "../../../../utils/initializeLayerList";
 
 describe("fetchDistances", () => {
     it("fetchDistances many to many points", async () => {
@@ -49,21 +52,21 @@ describe("fetchDistances", () => {
 
         expect(dists).to.deep.equal([[26681.29, 26681.29], null, null, [26681.29, 26681.29]]);
     });
-    // it("fetchDistances many features", async () => {
+    it.skip("fetchDistances many features", async function () {
+        // results in network error
+        this.timeout(120000);
 
-    //     // "https://geodienste.hamburg.de/HH_WFS_Schulen?REQUEST=GetFeature&SERVICE=WFS&SRSNAME=EPSG:25832&TYPENAME=oeffentliche_bibs&VERSION=1.1.0"
-    //     const ret = await axios.get("https://geodienste.hamburg.de/HH_WFS_Oeffentliche_Bibliotheken?REQUEST=GetFeature&SERVICE=WFS&SRSNAME=EPSG:25832&TYPENAME=oeffentliche_bibs&VERSION=1.1.0"),
-    //         // const ret = await axios.get("https://geodienste.hamburg.de/HH_WFS_Oeffentliche_Bibliotheken?REQUEST=GetFeature&SERVICE=WFS&SRSNAME=EPSG:4326&TYPENAME=oeffentliche_bibs&VERSION=1.1.0")
-    //         features = readFeatures(ret.data),
-    //         coords_ = features.map(f => Proj.transform(f.getGeometry().flatCoordinates, "EPSG:25832", "EPSG:4326").slice(0, 2)
-    //         ),
-    //         // let coords: any = []
-    //         // for (let i = 0; i < 10; i++) {
-    //         //     coords = [...coords, ...coords_]
-    //         // }
+        await initializeLayerList();
 
-    //         dists = await fetchDistances(coords_, coords_.map(c => [c[0] + 0.001, c[1] + 0.0001]));
+        const features = await getAllFeatures("16601"),
+            coords_ = features.map(f => Proj.transform(f.getGeometry().flatCoordinates, "EPSG:25832", "EPSG:4326").slice(0, 2));
 
-    //     expect(dists.length).toBe(coords_.length);
-    // });
+        try {
+            await fetchDistances(coords_, coords_.map(c => [c[0] + 0.0001, c[1] + 0.0001]));
+        }
+        catch (err) {
+            console.error(err);
+            console.error(err.toJSON());
+        }
+    });
 });

@@ -28,6 +28,8 @@ export default {
     },
     data () {
         return {
+            selectedLayers: [],
+            distanceScores: {},
             search: "",
             layerFilter: [],
             expanded: [],
@@ -106,6 +108,7 @@ export default {
             return [
                 ...this.featureColumns,
                 ...this.numericalColumns,
+                ...[{text: "score", value: "key"}],
                 ...this.actionColumns
             ];
         },
@@ -123,6 +126,21 @@ export default {
             },
             set (value) {
                 this.setFeaturesListItems(value);
+            }
+        },
+        layerOptions: {
+
+            get () {
+                const layers = this.getLayerList(),
+                    groups = layers.reduce((acc, el)=> ({...acc, [el.group]: [...acc[el.group] || [], el]}), {});
+
+                let ret = [];
+
+                for (const g in groups) {
+                    ret.push({header: g});
+                    ret = ret.concat(groups[g]);
+                }
+                return ret;
             }
         }
     },
@@ -209,6 +227,7 @@ export default {
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
+        ...mapActions("Tools/DistanceScoreService", ["getDistanceScore"]),
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
@@ -410,6 +429,15 @@ export default {
                 }
             }
             return allLayers;
+        },
+        async updateSelectedLayers (layerIds) {
+
+            for (const item of this.filteredItems) {
+                const dist = await this.getDistanceScore({feature: item.feature, layerIds,
+                    weights: layerIds.map(()=>1)});
+
+                this.distanceScores = {...this.distanceScores, [item.key]: dist};
+            }
         }
     }
 };
@@ -523,6 +551,9 @@ export default {
                                         @change="toggleFeature(item)"
                                     />
                                 </template>
+                                <template #item.key="{ item }">
+                                    {{ distanceScores[item.key] }}
+                                </template>
                                 <template
                                     v-for="col in numericalColumns"
                                     #[`item.${col.value}`]="{ item }"
@@ -567,6 +598,17 @@ export default {
                                 </v-col>
                             </v-row>
                         </div>
+                        <v-autocomplete
+                            :value="selectedLayers"
+                            :items="layerOptions"
+                            outlined
+                            dense
+                            multiple
+                            small-chips
+                            item-text="id"
+                            item-value="layerId"
+                            @input="updateSelectedLayers"
+                        />
                     </form>
                 </div>
             </v-app>

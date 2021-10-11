@@ -4,8 +4,8 @@ import {fetchDistances} from "./fetchDistances";
 
 /**
  *
- * @param {*} features
- * @return {*}
+ * @param {*} features features
+ * @return {*} transformed features
  */
 function transformedCoordinates (features) {
     return features.map(f => Proj.transform(f.getGeometry().flatCoordinates, "EPSG:25832", "EPSG:4326").slice(0, 2));
@@ -13,9 +13,10 @@ function transformedCoordinates (features) {
 
 /**
  *
- * @export
- * @param {*} features
- * @param {*} layerIds
+ * @param {*} feature feature
+ * @param {*} layerIds layerIds
+ * @param {*} weights weights
+ * @return {*} score
  */
 export async function distanceScore (feature, layerIds, weights) {
 

@@ -10,7 +10,7 @@ export function readFeatures (data, featureNS) {
     return new WFS({featureNS: featureNS || "http://www.deegree.org/app"}).readFeatures(data);
 }
 
-describe.only("distanceScore", () => {
+describe("distanceScore", () => {
     before(async function () {
         await initializeLayerList();
     });
@@ -22,7 +22,7 @@ describe.only("distanceScore", () => {
 
         expect(score).to.be.equal(191.82);
     });
-    it.only("distanceScore large layer", async function () {
+    it("distanceScore large layer", async function () {
         this.timeout(120000);
 
         const features = await getAllFeatures("19951"),
