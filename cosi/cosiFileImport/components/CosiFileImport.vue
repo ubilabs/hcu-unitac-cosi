@@ -85,14 +85,19 @@ export default {
         console: () => console
     },
     watch: {
+        imported () {
+            if (!this.imported) {
+                this.addNewLayer = true;
+            }
+        },
         // check if layer is added or deleted
         importedLayers () {
-            if (this.importedLayers.length > 0) {
+            /*if (this.importedLayers.length > 0) {
                 this.addNewLayer = false;
             }
             else {
                 this.addNewLayer = true;
-            }
+            }*/
         },
         // set all relevant properties on layer object when new file is imported
         newLayerInformation (newValue, oldValue) {
@@ -212,7 +217,7 @@ export default {
 
             this.addVectorlayerToMapping(model.attributes);
             this.imported = false;
-            this.addNewLayer = false;
+            this.addNewLayer = true;
             layerArray.push({name: this.newLayer.name, id: this.newLayer.id, filename: this.newLayer.filename, icon: this.newLayer.svg, type: this.newLayer.type, color: this.hexColor});
             this.setImportedLayers(layerArray);
         },
@@ -405,7 +410,7 @@ export default {
                 v-if="active && !addNewLayer"
                 id="cosi-layer-handler"
                 class="handler"
-                :class="{expand: importedLayers.length }"
+                :class="{expand: importedLayers.length}"
             >
                 <!--New Layer Handling-->
                 <template v-if="imported">
@@ -836,7 +841,7 @@ export default {
                     </div>
                 </template>
                 <!--Edit Layer Handling-->
-                <template v-if="!imported && importedLayers.length">
+                <!-- <template v-if="!imported && importedLayers.length">
                     <div class="wrapper">
                         <v-btn
                             class="newLayerButton"
@@ -851,7 +856,7 @@ export default {
                     class="manager"
                 >
                     <ImportManager />
-                </div>
+                </div>-->
             </div>
         </template>
     </Tool>
@@ -971,7 +976,7 @@ export default {
             opacity:0.75;
         }
 
-        &.expand {
+        /*&.expand {
             display:flex;
             flex-flow:row wrap;
             justify-content:flex-start;
@@ -988,7 +993,7 @@ export default {
                 background:whitesmoke;
                 box-shadow: inset 10px 0px 25px -16px rgba(0,0,0,0.75);
             }
-        }
+        }*/
 
         .wrapper {
             .head {
