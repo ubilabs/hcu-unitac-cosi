@@ -429,8 +429,8 @@ export default {
         class="PopulationRequest"
     >
         <template
-            v-if="active"
             #toolBody
+            v-if="active"
         >
             <div
                 class="form-horizontal"
@@ -444,7 +444,7 @@ export default {
                 </div>
                 <div class="form-group form-group-sm">
                     <label
-                        for="graphicalSelectComponent"
+                        for="graphicalSelection"
                         class="col-md-5 col-sm-5 control-label"
                     >
                         {{ translate("additional:modules.tools.populationRequest.select.action") }}
@@ -452,7 +452,7 @@ export default {
                     <div class="col-md-7 col-sm-7">
                         <div class="dropdown">
                             <GraphicalSelect
-                                ref="graphicalSelectComponent"
+                                ref="graphicalSelection"
                                 :select-element="'Dropdown'"
                                 :focus-on-creation="true"
                             />
