@@ -363,8 +363,6 @@ export default {
                     ...this.neighborhood,
                     baseStats: this.baseStats
                 }),
-                // districts = getContainingDistrictForFeature(this.selectedDistrictLevel, feature, true, true),
-                // districts = getAllContainingDistricts(this.districtLevels, feature, true),
                 neighborhood = new ScenarioNeighborhood(feature, this.drawingLayer, this.districtLevels);
 
             this.activeScenario.addNeighborhood(neighborhood);

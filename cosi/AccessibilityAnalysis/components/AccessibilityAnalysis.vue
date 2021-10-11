@@ -7,6 +7,8 @@ import requestIsochrones from "../service/requestIsochrones";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
+import {exportAsGeoJson} from "../utils/exportResults";
+import {Select} from "ol/interaction";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -18,8 +20,9 @@ export default {
             mode: "point",
             facilityNames: [],
             mapLayer: null,
-            coordinate: null,
+            coordinate: [],
             setBySearch: false,
+            setByFeature: false,
             transportType: "",
             transportTypes: [
                 {
@@ -63,8 +66,6 @@ export default {
                 }
             ],
             distance: "",
-            // rawGeoJson: null,
-            // isochroneFeatures: [],
             steps: [0, 0, 0],
             layers: null,
             selectedFacilityName: null,
@@ -75,7 +76,9 @@ export default {
             ],
             askUpdate: false,
             abortController: null,
-            currentCoordinates: null
+            currentCoordinates: null,
+            clickCoordinate: null,
+            select: null
         };
     },
     computed: {
@@ -84,7 +87,7 @@ export default {
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "activeVectorLayerList"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"])
     },
     watch: {
@@ -105,6 +108,18 @@ export default {
         async activeSimulatedFeatures () {
             await this.$nextTick();
             this.tryUpdateIsochrones();
+        },
+        mode () {
+            this.setByFeature = false;
+        },
+        setByFeature (val) {
+            if (val && this.mode === "point") {
+                this.map.addInteraction(this.select);
+            }
+            else {
+                this.select.getFeatures().removeAt(0);
+                this.map.removeInteraction(this.select);
+            }
         }
     },
     /**
@@ -113,6 +128,9 @@ export default {
     created () {
         this.$on("close", this.close);
         Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
+        this.select = new Select({
+            filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
+        });
     },
     /**
    * Put initialize here if mounting occurs after config parsing
@@ -146,7 +164,7 @@ export default {
         requestIsochrones: requestIsochrones,
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {
-                const newCoordinates = this.getCoordinates();
+                const newCoordinates = this.getCoordinates(this.setByFeature);
 
                 if (!deepEqual(this.currentCoordinates.map(e=>[e[0], e[1]]), newCoordinates)) {
                     this.askUpdate = true;
@@ -155,7 +173,7 @@ export default {
         },
 
         resetMarkerAndZoom: function () {
-            const icoord = Proj.transform(this.coordinate, "EPSG:4326", "EPSG:25832");
+            const icoord = Proj.transform(this.coordinate[0], "EPSG:4326", "EPSG:25832");
 
             this.placingPointMarker(icoord);
             this.setCenter(icoord);
@@ -199,7 +217,8 @@ export default {
         requestInhabitants: function () {
             this.close();
             this.$root.$emit("populationRequest", this.rawGeoJson);
-        }
+        },
+        exportAsGeoJson
     }
 };
 </script>
@@ -222,6 +241,7 @@ export default {
                     >
                         <v-form>
                             <v-select
+                                ref="mode"
                                 v-model="mode"
                                 :items="availableModes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo')"
@@ -229,7 +249,17 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
-                            />
+                                @click:append="$refs.mode.blur()"
+                            >
+                                <template #append>
+                                    <v-switch
+                                        v-model="setByFeature"
+                                        dense
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                        class="inline-switch"
+                                    />
+                                </template>
+                            </v-select>
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
@@ -328,28 +358,54 @@ export default {
                             </v-row>
                         </v-form>
                         <hr>
-                        <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
-                        <div id="legend">
-                            <template v-for="(j, i) in steps">
-                                <svg
-                                    :key="i"
-                                    width="15"
-                                    height="15"
+                        <v-row dense>
+                            <v-col cols="6">
+                                <h5 id="legend-header">
+                                    <strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong>
+                                </h5>
+                                <div id="legend">
+                                    <template v-for="(j, i) in steps">
+                                        <span :key="i">
+                                            <svg
+                                                width="15"
+                                                height="15"
+                                            >
+                                                <circle
+                                                    cx="7.5"
+                                                    cy="7.5"
+                                                    r="7.5"
+                                                    :style="`fill: ${
+                                                        legendColors[i]
+                                                    }; stroke-width: 0.5; stroke: #e3e3e3;`"
+                                                />
+                                            </svg>
+                                            <span :key="i * 2 + steps.length">
+                                                {{ j }}
+                                            </span>
+                                        </span>
+                                    </template>
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div
+                                    id="download"
                                 >
-                                    <circle
-                                        cx="7.5"
-                                        cy="7.5"
-                                        r="7.5"
-                                        :style="`fill: ${
-                                            legendColors[i]
-                                        }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                    />
-                                </svg>
-                                <span :key="i * 2 + steps.length">
-                                    {{ j }}
-                                </span>
-                            </template>
-                        </div>
+                                    <v-btn
+                                        id="download-geojson"
+                                        dense
+                                        small
+                                        tile
+                                        color="green lighten-1"
+                                        :disabled="isochroneFeatures.length === 0"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
+                                        @click="exportAsGeoJson(mapLayer)"
+                                    >
+                                        <span class="glyphicon glyphicon-floppy-disk" />
+                                        Download GeoJSON
+                                    </v-btn>
+                                </div>
+                            </v-col>
+                        </v-row>
                         <v-progress-linear
                             v-if="progress > 0"
                             v-model="progress"
@@ -377,16 +433,37 @@ export default {
                     >
                         Ok
                     </v-btn>
+                    <v-btn
+                        color="black"
+                        text
+                        v-bind="attrs"
+                        @click="askUpdate = false"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
                 </template>
             </v-snackbar>
         </v-app>
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 #accessibilityanalysis {
   width: 400px;
   min-height: 100px;
+
+  .inline-switch {
+    margin-top: 0px;
+    height: 40px;
+  }
+
+  #legend-header {
+      margin-top: 0;
+  }
+
+  #download {
+      margin-top: 8px;
+  }
 }
 
 .snackbar-text{

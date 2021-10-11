@@ -11,6 +11,7 @@ import
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
+import * as turf from "@turf/turf";
 
 
 export const methodConfig = {
@@ -58,7 +59,7 @@ export default {
      */
     createIsochronesRegion: async function () {
 
-        const coordinates = this.getCoordinates(),
+        const coordinates = this.getCoordinates(this.setByFeature),
             distance = parseFloat(this.distance);
 
         if (
@@ -90,13 +91,14 @@ export default {
         const distance = parseFloat(this.distance);
 
         if (
-            this.coordinate !== null &&
+            this.coordinate.length > 0 &&
             this.transportType !== "" &&
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
+            this.setByFeature = false;
 
-            const features = await this.getIsochrones({transportType: this.transportType, coordinates: [this.coordinate], scaleUnit: this.scaleUnit, distance: this.distance});
+            const features = await this.getIsochrones({transportType: this.transportType, coordinates: this.coordinate, scaleUnit: this.scaleUnit, distance: this.distance});
 
             this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
             this.setRawGeoJson(await this.featureToGeoJson(features[0]));
@@ -111,7 +113,7 @@ export default {
     renderIsochrones (newFeatures) {
         this.mapLayer.getSource().clear();
 
-        if (newFeatures.length === 0) {
+        if (newFeatures.length === 0 && this.mode === "point") {
             if (this.extent?.length > 0) {
                 setBBoxToGeom(this.boundingGeometry);
             }
@@ -129,16 +131,55 @@ export default {
      * @returns {void}
      */
     setCoordinateFromClick: function (evt) {
-        const coordinate = Proj.transform(
-            evt.coordinate,
-            "EPSG:25832",
-            "EPSG:4326"
-        );
+        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(evt) : [evt.coordinate],
+            coordinates = rawCoords.map(coord => Proj.transform(
+                coord,
+                "EPSG:25832",
+                "EPSG:4326"
+            ));
 
-        this.coordinate = coordinate;
+        this.coordinate = coordinates;
+        this.clickCoordinate = evt.coordinate;
         this.placingPointMarker(evt.coordinate);
         this.setBySearch = false;
     },
+
+    setCoordinatesByFeatures: function (evt) {
+        const feature = this.map.getFeaturesAtPixel(evt.pixel, {
+            layerFilter: layer => this.activeVectorLayerList.includes(layer)
+        })[0];
+
+        if (feature) {
+            const geom = feature.getGeometry();
+
+            return this.simplifyGeometry(geom) || [evt.coordinate];
+        }
+
+        return [evt.coordinate];
+    },
+
+    simplifyGeometry (geom, tolerance = 1) {
+        let simplified, geojson;
+
+        if (geom.getType() === "Polygon") {
+            geojson = turf.polygon(geom.getCoordinates());
+            simplified = turf.simplify(geojson, {tolerance});
+
+            return simplified.geometry.coordinates.flat(1).map(p => [p[0], p[1]]);
+        }
+        if (geom.getType() === "MultiPolygon") {
+            geojson = turf.multiPolygon(geom.getCoordinates());
+            simplified = turf.simplify(geojson, {tolerance});
+
+            return simplified.geometry.coordinates.flat(2).map(p => [p[0], p[1]]);
+        }
+        if (geom.getType() === "Point") {
+            return [[geom.getCoordinates()[0], geom.getCoordinates()[1]]];
+        }
+
+        return null;
+    },
+
     /**
      * TODO: replace calls to this function with /addons/cosi/utils/getSearchResultsCoordinate.js
      * @returns {void}
@@ -147,7 +188,8 @@ export default {
         const coord = getSearchResultsCoordinates();
 
         if (coord) {
-            this.coordinate = coord;
+            this.coordinate = [coord];
+            this.clickCoordinate = coord;
             this.setBySearch = true;
         }
     },
@@ -242,7 +284,7 @@ export default {
             "rgba(0, 200, 3, 0.2)"
         ];
     },
-    getCoordinates: function () {
+    getCoordinates: function (setByFeature) {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
             name: this.selectedFacilityName,
             type: "layer"
@@ -254,15 +296,18 @@ export default {
                 .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
 
             return features
-                .map((feature) => {
+                .reduce((res, feature) => {
                     const geometry = feature.getGeometry();
 
                     if (geometry.getType() === "Point") {
-                        return geometry.getCoordinates().splice(0, 2);
+                        return [...res, geometry.getCoordinates().splice(0, 2)];
                     }
-                    return Extent.getCenter(geometry.getExtent());
+                    if (setByFeature) {
+                        return [...res, ...this.simplifyGeometry(geometry, 10) || [Extent.getCenter(geometry.getExtent())]];
+                    }
+                    return [...res, Extent.getCenter(geometry.getExtent())];
 
-                }).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
+                }, []).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
         }
         return null;
     }

@@ -27,6 +27,10 @@ export default {
             type: Number,
             default: NaN
         },
+        invalidFeatures: {
+            type: Array,
+            default: () => []
+        },
         value: {
             type: Number,
             default: NaN
@@ -137,7 +141,9 @@ export default {
                         scope="col"
                     >
                         {{ $t('additional:modules.tools.cosi.queryDistricts.year') }}
-                    </th><th
+                    </th>
+                    <th />
+                    <th
                         id="minmax"
                         scope="col"
                     >
@@ -182,6 +188,14 @@ export default {
                             hide-details
                             @change="updateFieldValue"
                         />
+                    </td>
+                    <td class="missing-val-alert">
+                        <v-icon
+                            v-if="invalidFeatures.length > 0"
+                            :title="$t('additional:modules.tools.cosi.queryDistricts.invalidFeaturesWarning') + ' (' + invalidFeatures.join(', ') + ')'"
+                        >
+                            mdi-alert
+                        </v-icon>
                     </td>
                     <td>{{ min.toLocaleString(locale) }}</td>
                     <td>{{ max.toLocaleString(locale) }}</td>
@@ -291,8 +305,8 @@ export default {
 .v-select.fit  .v-select__selection--comma {
     text-overflow: unset;
 }
-.val-select{
-    // padding-left: 8px;
+.missing-val-alert{
+    width: 20px;
 }
 </style>
 
