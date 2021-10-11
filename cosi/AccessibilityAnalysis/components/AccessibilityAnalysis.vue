@@ -147,7 +147,6 @@ export default {
         this.$root.$on("updateFeature", this.tryUpdateIsochrones);
         Radio.on("ModelList", "showFeaturesById", this.tryUpdateIsochrones);
         Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones);
-        Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones);
         Radio.on("VectorLayer", "featuresLoaded", this.tryUpdateIsochrones);
     },
     methods: {

@@ -201,9 +201,9 @@ export default {
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
          * @deprecated
          */
-        Radio.on("VectorLayer", "featuresLoaded", () => {
-            this.updateFeaturesList();
-        });
+        Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
+        Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
+        Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
@@ -238,6 +238,7 @@ export default {
          */
         updateFeaturesList () {
             if (this.activeLayerMapping.length > 0) {
+                console.log("doing it");
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
