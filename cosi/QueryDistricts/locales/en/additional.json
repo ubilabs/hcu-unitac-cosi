@@ -24,7 +24,8 @@
                     "selectProperty": "Attribute",
                     "rowsPerPage": "rows per page",
                     "exportTable": "export table",
-                    "exportFilename": "CoSI_query_districts"
+                    "exportFilename": "CoSI_query_districts",
+                    "invalidFeaturesWarning": "There are districts without valid results for this filter."
                 }
             }
         }

@@ -10,7 +10,11 @@
                     "loadFromFile": "Datei öffnen",
                     "dropFile": "Datei auswählen",
                     "loadLast": "Letzte Sitzung wiederherstellen?",
-                    "clear": "Sitzungen löschen"
+                    "clear": "Sitzungen löschen",
+                    "templates": "Vorlagen",
+                    "loadFromTemplate": "Vorlage laden",
+                    "infoLoadFromTemplates": "Laden Sie eine thematische Basis-Konfiguration für fachspezifische Analysen.",
+                    "noInfo": "Keine Beschreibung verfügbar"
                 }
             }
         }
