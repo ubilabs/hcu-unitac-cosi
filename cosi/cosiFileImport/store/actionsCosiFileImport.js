@@ -257,7 +257,7 @@ function setLayerAttributes (model, attrs) {
         group: "Importierte Daten",
         filename: attrs.filename,
         numericalValues: attrs.numericalValues,
-        attributeWhiteList: [attrs.mouseHoverField, attrs.searchField]
+        attributeWhiteList: [...attrs.mouseHoverField, attrs.searchField, ...attrs.numericalValues.map(v => v.id)]
     });
 }
 

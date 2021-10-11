@@ -9,7 +9,7 @@ export default {
     },
     data () {
         return {
-        }
+        };
     },
     computed: {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
@@ -22,7 +22,7 @@ export default {
     },
     watch: {
         activeLayer () {
-            console.log("zzup", this.activeLayer);
+            // console.log("zzup", this.activeLayer);
         }
     },
     methods: {

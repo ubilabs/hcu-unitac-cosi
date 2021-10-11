@@ -67,7 +67,7 @@ export default {
             const prevEl = this.dragEl.previousElementSibling,
                 nextEl = this.placeholder.nextElementSibling;
 
-            console.log("try", prevEl, nextEl);
+            // console.log("try", prevEl, nextEl);
 
             if (prevEl && prevEl.previousElementSibling && this.checkPosition(this.dragEl, prevEl)) {
                 this.swapRows(this.placeholder, this.dragEl);
@@ -111,7 +111,6 @@ export default {
             this.clone.style.left = `${rect.left}px`;
             this.clone.style.top = `${rect.top}px`;
             this.layerList.parentNode.insertBefore(this.clone, this.layerList);
-            //this.layerList.style.visibility = "hidden";
             this.layerList.querySelectorAll("li").forEach(row => {
                 const item = document.createElement("div"),
                     newList = document.createElement("ul"),

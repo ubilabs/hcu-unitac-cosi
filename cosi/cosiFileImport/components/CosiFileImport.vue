@@ -92,12 +92,12 @@ export default {
         },
         // check if layer is added or deleted
         importedLayers () {
-            /*if (this.importedLayers.length > 0) {
+            /* if (this.importedLayers.length > 0) {
                 this.addNewLayer = false;
             }
             else {
                 this.addNewLayer = true;
-            }*/
+            } */
         },
         // set all relevant properties on layer object when new file is imported
         newLayerInformation (newValue, oldValue) {
@@ -486,7 +486,7 @@ export default {
                                             <v-select
                                                 v-model="autoStyleValue"
                                                 :items="newLayerValues"
-                                                label="Typen-Feld bestimmen"
+                                                label="Styling Feld bestimmen"
                                                 item-value="key"
                                                 solo
                                             >
