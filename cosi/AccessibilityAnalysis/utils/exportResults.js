@@ -15,12 +15,11 @@ function getPortalCrs () {
 /**
  * Exports the results of the supply analysis as geojson
  * @param {*} mapLayer - the components mapLayer
- * @param {*} coordinate - eventual coordinate
  * @param {*} selectedFacilityName - the selected facility for analysis
  * @param {*} isFeatureDisabled - isFeatureDisabled function
  * @returns {void}
  */
-export function exportAsGeoJson (mapLayer, coordinate) {
+export function exportAsGeoJson (mapLayer) {
     const projectionCode = getPortalCrs(),
         featureCollection = featuresToGeoJsonCollection(mapLayer.getSource().getFeatures(), false, projectionCode),
         stroke = {
@@ -41,8 +40,8 @@ export function exportAsGeoJson (mapLayer, coordinate) {
         featureCollection.features[i].properties.index = i;
     }
 
-    if (coordinate !== null) {
-        const feature = new Feature(new Point(coordinate)),
+    if (this.mode === "point") {
+        const feature = new Feature(new Point(this.clickCoordinate)),
             featureGeoJson = featureToGeoJson(feature, false, "EPSG:4326");
 
         featureCollection.features.push(featureGeoJson);

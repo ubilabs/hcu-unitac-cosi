@@ -59,7 +59,7 @@ export default {
      */
     createIsochronesRegion: async function () {
 
-        const coordinates = this.getCoordinates(),
+        const coordinates = this.getCoordinates(this.setByFeature),
             distance = parseFloat(this.distance);
 
         if (
@@ -139,6 +139,7 @@ export default {
             ));
 
         this.coordinate = coordinates;
+        this.clickCoordinate = evt.coordinate;
         this.placingPointMarker(evt.coordinate);
         this.setBySearch = false;
     },
@@ -188,6 +189,7 @@ export default {
 
         if (coord) {
             this.coordinate = [coord];
+            this.clickCoordinate = coord;
             this.setBySearch = true;
         }
     },
@@ -282,7 +284,7 @@ export default {
             "rgba(0, 200, 3, 0.2)"
         ];
     },
-    getCoordinates: function () {
+    getCoordinates: function (setByFeature) {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
             name: this.selectedFacilityName,
             type: "layer"
@@ -300,7 +302,7 @@ export default {
                     if (geometry.getType() === "Point") {
                         return [...res, geometry.getCoordinates().splice(0, 2)];
                     }
-                    if (this.setByFeature) {
+                    if (setByFeature) {
                         return [...res, ...this.simplifyGeometry(geometry, 10) || [Extent.getCenter(geometry.getExtent())]];
                     }
                     return [...res, Extent.getCenter(geometry.getExtent())];

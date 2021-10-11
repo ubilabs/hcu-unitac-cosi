@@ -77,6 +77,7 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
+            clickCoordinate: null,
             select: null
         };
     },
@@ -163,7 +164,7 @@ export default {
         requestIsochrones: requestIsochrones,
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {
-                const newCoordinates = this.getCoordinates();
+                const newCoordinates = this.getCoordinates(this.setByFeature);
 
                 if (!deepEqual(this.currentCoordinates.map(e=>[e[0], e[1]]), newCoordinates)) {
                     this.askUpdate = true;
@@ -388,7 +389,7 @@ export default {
                                 tile
                                 color="green lighten-1"
                                 :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
-                                @click="exportAsGeoJson(mapLayer, coordinate)"
+                                @click="exportAsGeoJson(mapLayer)"
                             >
                                 <span class="glyphicon glyphicon-floppy-disk" />
                                 Download GeoJSON
