@@ -27,6 +27,8 @@ export default {
             layerIdList: [],
             // List of all available "facilites" (theme layers)
             facilityList: [],
+            // filter IDs for facility list
+            filters: {},
             // Sorted an grouped list of availabke features
             featuresList: [],
             // List with summable features like "age 10-15" etc
@@ -174,6 +176,10 @@ export default {
         },
         facilitiesMapping () {
             // this.updateFacilities();
+        },
+        filters () {
+            console.log("this has changed?");
+            this.prepareCoverage();
         }
     },
     created () {
@@ -181,6 +187,10 @@ export default {
     },
     mounted () {
         this.applyTranslationKey(this.name);
+
+        Radio.on("Filter", "filteredIdsChanged", (layerId, featureIds) => {
+            this.filters[layerId] = featureIds;
+        });
 
         if (this.facilityList.length === 0) {
             this.ASwitch = false;
@@ -347,10 +357,13 @@ export default {
             if (this[letter + "Switch"]) {
                 this["facilityPropertyList_" + letter] = [];
                 const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
+                    layerId = findLayer.get("id"),
                     layerFeatures = findLayer.getSource().getFeatures(),
                     countData = {
                         name: "Anzahl",
-                        count: layerFeatures.length
+                        // count: layerFeatures.length,
+                        count: layerId in this.filters ? this.filters[layerId][0].ids.length : layerFeatures.length,
+                        filter: layerId in this.filters ? this.filters[layerId][0].ids : ""
                     };
 
                 this["facilityPropertyList_" + letter].push(countData);
@@ -453,28 +466,31 @@ export default {
                     const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = findLayer.getSource().getFeatures();
 
+                    this.checkFilters(findLayer.get("id"), layerFeatures);
                     this.calcHelper["type_" + letter] = "facility";
                     this.featureVals = [];
                     layerFeatures.forEach(feature => {
-                        const layerGeometry = feature.getGeometry().getExtent();
+                        if (this.filters[findLayer.get("id")][0].ids.includes(feature.getId())) {
+                            const layerGeometry = feature.getGeometry().getExtent();
 
-                        if (geometry.intersectsExtent(layerGeometry)) {
-                            if (this.paramFieldA.name !== "Anzahl") {
-                                if (
-                                    typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
-                                    typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
-                                ) {
-                                    const value = feature.getProperties()[this["paramField" + letter].id],
-                                        valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
+                            if (geometry.intersectsExtent(layerGeometry)) {
+                                if (this.paramFieldA.name !== "Anzahl") {
+                                    if (
+                                        typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
+                                        typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
+                                    ) {
+                                        const value = feature.getProperties()[this["paramField" + letter].id],
+                                            valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
 
-                                    this.featureVals.push(valueTransformed);
+                                        this.featureVals.push(valueTransformed);
+                                    }
+                                    else {
+                                        this.featureVals.push("");
+                                    }
                                 }
                                 else {
-                                    this.featureVals.push("");
+                                    this.featureVals.push(0);
                                 }
-                            }
-                            else {
-                                this.featureVals.push(0);
                             }
                         }
                     });
@@ -540,6 +556,18 @@ export default {
             });
 
             return dataArray;
+        },
+        /**
+         * @description Checks if filter is set and whitelists all features if not
+         * @param {String} layerId Id of the layer.
+         * @param {Array} features Features of the layer.
+         * @returns {void}
+         */
+        checkFilters (layerId, features) {
+            if (!(layerId in this.filters)) {
+                this.filters[layerId] = [{ids: []}];
+                this.filters[layerId][0].ids = features.map(feature => feature.getId());
+            }
         },
         /**
          * @description Gets Data for the selected statistical data (features)
