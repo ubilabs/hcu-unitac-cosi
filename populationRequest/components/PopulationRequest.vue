@@ -432,16 +432,6 @@ export default {
             v-if="active"
             #toolBody
         >
-            <div>
-                {{ translate("additional:modules.tools.populationRequest.select.info") }}
-            </div>
-            <div class="dropdown">
-                <GraphicalSelect
-                    ref="graphicalSelection"
-                    :select-element="'Dropdown'"
-                    :focus-on-creation="true"
-                />
-            </div>
             <div
                 class="form-horizontal"
                 role="form"
