@@ -6,6 +6,7 @@
                     "title": "Erreichbarkeitsanalyse",
                     "dropdownInfo": "Bitte wählen Sie den Modus, in dem Sie arbeiten möchten",
                     "pointOfReference": "Referenzpunkt: Klicken Sie auf die Karte",
+                    "setByFeature": "Einrichtungen als Referenzpunkt wählen (Außengrenzen bei Flächen)",
                     "topic": "Thema",
                     "transportType": "Verkehrsmittel",
                     "transportTypes": {

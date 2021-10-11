@@ -17,7 +17,12 @@ const state = {
     isVisibleInMenu: true,
     name: "Sitzung speichern",
     renderToWindow: true,
-    resizableWindow: true
+    resizableWindow: true,
+    templatePath: "./assets/session_templates",
+    templateFiles: [
+        "Erhaltungsmanagement_Spielplaetze",
+        "Bildung_Bergedorf"
+    ]
 };
 
 export default state;

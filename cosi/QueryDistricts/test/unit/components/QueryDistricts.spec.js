@@ -31,16 +31,45 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe.only("addons/cosi/QueryDistricts/", () => {
+describe("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
-        addSingleAlertStub, cleanupStub, addFeatureStub;
+        addSingleAlertStub, cleanupStub, addFeatureStub, layerByIdStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
         geo_features = new GeoJSON().readFeatures(features_ha_with_geo),
-        bib_features = new GeoJSON().readFeatures(features_bibs);
+        bib_features = new GeoJSON().readFeatures(features_bibs),
+        districtsMock = [
+            {
+                adminFeature: geo_features[0],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Rahlstedt",
+                getName: () => "Rahlstedt",
+                getLabel: () => "Rahlstedt"
+            },
+            {
+                adminFeature: geo_features[1],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Farmsen-Berne",
+                getName: () => "Farmsen-Berne",
+                getLabel: () => "Farmsen-Berne"
+            },
+            {
+                adminFeature: geo_features[2],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Horn",
+                getName: () => "Horn",
+                getLabel: () => "Horn"
+            }
+        ];
 
 
     // eslint-disable-next-line require-jsdoc
@@ -73,6 +102,7 @@ describe.only("addons/cosi/QueryDistricts/", () => {
         addSingleAlertStub = sandbox.stub();
         cleanupStub = sandbox.stub();
         addFeatureStub = sandbox.stub();
+        layerByIdStub = sandbox.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -93,6 +123,7 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                                     })
                                 }),
                                 selectedDistrictLevel: () => ({
+                                    districts: districtsMock,
                                     stats: {
                                         baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
                                     }
@@ -106,7 +137,20 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                         FeaturesList: {
                             namespaced: true,
                             getters: {
-                                isFeatureDisabled: () => () => false
+                                isFeatureDisabled: () => () => false,
+                                layerMapById: () => () => ({
+                                    addressField: [
+                                        "adresse"
+                                    ],
+                                    categoryField: null,
+                                    id: "Öffentliche Bibliotheken",
+                                    keyOfAttrName: "bezeichnung",
+                                    layerId: "bib_layer",
+                                    numericalValues: [{
+                                        id: "ente",
+                                        name: "Entenart"
+                                    }]
+                                })
                             }
                         }
                     }
@@ -126,6 +170,9 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                                 })
                             });
                         }
+                    },
+                    getters: {
+                        layerById: () => layerByIdStub
                     }
                 },
                 Alerting: {
@@ -133,6 +180,11 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                     actions: {
                         addSingleAlert: addSingleAlertStub,
                         cleanup: cleanupStub
+                    }
+                },
+                Language: {
+                    getters: {
+                        currentLocale: () => "de-DE"
                     }
                 }
             }
@@ -169,7 +221,10 @@ describe.only("addons/cosi/QueryDistricts/", () => {
             value: "Bevölkerung insgesamt",
             category: "bev_insgesamt",
             group: "Bevölkerung",
-            valueType: "relative"
+            valueType: "relative",
+            statgebiet: "15563",
+            stadtteil: "19034",
+            bezirk: "18970"
         }]);
         keyOfAttrNameStub.returns("stadtteil_name");
         keyOfAttrNameStatsStub.returns("stadtteil");
@@ -192,6 +247,19 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                 setStyle: sandbox.stub()
             })
         }]);
+        layerByIdStub.returns({
+            olLayer: {
+                getSource: () => ({
+                    getFeatures: () => [
+                        {
+                            getProperties: () => ({
+                                "ente": "Donald"
+                            })
+                        }
+                    ]
+                })
+            }
+        });
 
         sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "ModelList" && a2 === "getModelByAttributes") {
@@ -332,19 +400,21 @@ describe.only("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.selectedLayer).to.be.null;
         expect(wrapper.vm.layerOptions).to.deep.equal([]);
         expect(wrapper.vm.layerFilterModels).to.deep.equal(
-            [{
-                "layerId": "19034",
-                "currentLayerId": "19034",
-                "name": "Bevölkerung insgesamt",
-                "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, high: 0, low: 0,
-                "valueType": "relative",
-                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
-                "error": undefined,
-                "facilityLayerName": undefined,
-                "referenceLayerId": undefined,
-                "quotientLayers": []
-            }]);
-        expect(wrapper.vm.resultNames).to.deep.equal([]);
+            [
+                {
+                    "layerId": "19034",
+                    "currentLayerId": "19034",
+                    "name": "Bevölkerung insgesamt",
+                    "field": "jahr_2019", "max": 92087, "min": 506, "invalidFeatures": [], "value": 0, "high": 0, "low": 0,
+                    "valueType": "relative",
+                    "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                    "error": undefined,
+                    "facilityLayerName": undefined,
+                    "quotientLayers": [],
+                    "properties": null
+                }
+            ]);
+        expect(wrapper.vm.resultNames).to.deep.equal(null);
 
         // act: update filter
         await wrapper.setData({
@@ -385,7 +455,7 @@ describe.only("addons/cosi/QueryDistricts/", () => {
     it("compareFeatures one filter", async () => {
         // arrange
         const value = [
-                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
+                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54, "invalidFeatures": []}
             ],
             self = {
                 propertiesMap: {"19041": getAllFeatures("19041").map(f => f.getProperties())},
@@ -411,8 +481,8 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
             },
-            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
-            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506},
+            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54, "invalidFeatures": []},
+            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506, "invalidFeatures": []},
             // act
             ret1 = await self.setComparableFeatures([layer1]),
             ret2 = await self.setComparableFeatures([layer2]),
@@ -424,7 +494,7 @@ describe.only("addons/cosi/QueryDistricts/", () => {
         expect(ret.resultNames).to.deep.equal(
             ["Cranz"]
         );
-        expect(ret.table).to.deep.equal([{"0": "133.28764", "1": "133.28764", "name": "Cranz"}]);
+        expect(ret.table).to.deep.equal([{"0": 133.28764, "1": 804, "name": "Cranz"}]);
     });
     it("show help", async () => {
         // arrange
@@ -450,8 +520,7 @@ describe.only("addons/cosi/QueryDistricts/", () => {
         // act
         await wrapper.setData({
             selectedLayer: {
-                id: "Öffentliche Bibliotheken", name: "Öffentliche Bibliotheken", valueType: "relative",
-                referenceLayerId: "19042"
+                id: "bib_layer", name: "Öffentliche Bibliotheken", valueType: "absolute", group: "Fachdaten", facilityLayerName: "Öffentliche Bibliotheken"
             }
         });
 
@@ -461,43 +530,44 @@ describe.only("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
 
         const expModel = {
-                "layerId": "Öffentliche Bibliotheken",
-                "currentLayerId": "Öffentliche Bibliotheken",
-                "referenceLayerId": "19042",
+                "layerId": "bib_layer",
+                "currentLayerId": "bib_layer",
                 "name": "Öffentliche Bibliotheken",
-                "field": "jahr_2019", "max": 43, "min": 35, "value": 0, high: 0, low: 0,
+                "field": "jahr_2020", "max": 1, "min": 0, "invalidFeatures": [], "value": 0, high: 0, low: 0,
                 "valueType": "absolute",
-                "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                "fieldValues": ["jahr_2020", "jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                 "error": undefined,
-                "facilityLayerName": undefined,
-                "quotientLayers": [
-                    {
-                        "id": "19034",
-                        "name": "Bevölkerung insgesamt"
-                    }
-                ]
+                "facilityLayerName": "Öffentliche Bibliotheken",
+                "quotientLayers": [{
+                    "id": "19034",
+                    "name": "Bevölkerung insgesamt"
+                }],
+                "properties": [{
+                    "id": "ente",
+                    "name": "Entenart"
+                }]
             },
             expModelRahlstedt = {
                 ...expModel,
-                "value": 35, high: 1000, low: 1000
+                "value": 1, high: 1, low: 1
             },
             expModelHorn = {
                 ...expModel,
-                "value": NaN, high: 1000, low: 1000,
+                "value": 0, high: 1, low: 1,
                 "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable"
             };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
-        expect(wrapper.vm.resultNames).to.deep.equal([]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn"]);
 
         // act: update filter
         await wrapper.setData({
-            layerFilterModels: [{...expModel, high: 1000, low: 1000}]
+            layerFilterModels: [{...expModel, high: 1, low: 1}]
         });
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Rahlstedt"]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn", "Rahlstedt"]);
 
         // act: select district
         await wrapper.setData({
@@ -525,7 +595,10 @@ describe.only("addons/cosi/QueryDistricts/", () => {
 
         // act
         await wrapper.setData({
-            facilityNames: ["Öffentliche Bibliotheken"],
+            facilityNames: [{
+                name: "Öffentliche Bibliotheken",
+                id: "bib_layer"
+            }],
             referenceLayers: [{"id": "19042"}]
         });
         await setActive(true);
@@ -545,9 +618,8 @@ describe.only("addons/cosi/QueryDistricts/", () => {
             {
                 "facilityLayerName": "Öffentliche Bibliotheken",
                 "group": "additional:modules.tools.cosi.queryDistricts.funcData",
-                "id": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "name": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "referenceLayerId": "19034",
+                "id": "bib_layer",
+                "name": "Öffentliche Bibliotheken",
                 "valueType": "absolute"
             }
         ]);
@@ -582,9 +654,9 @@ describe.only("addons/cosi/QueryDistricts/", () => {
                 "currentLayerId": "19041/19034",
                 "name": "Layer", "field": "jahr_2019", "value": 0, "valueType": "relative", "high": 0, "low": 0,
                 "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
-                "min": 0.01, "max": 1.37,
+                "min": 0.00535555414960923, "max": 1.3710088339920947, "invalidFeatures": [],
+                "properties": [null],
                 "quotientLayers": [{"id": "19034", "name": "Bevölkerung insgesamt"}], "quotientLayer": "19034",
-                "referenceLayerId": undefined,
                 "error": undefined,
                 "facilityLayerName": undefined
             }

@@ -5,6 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
+import {createIsochrones} from "../../../service/index";
 import AccessibilityAnalysis from "../../../store/index";
 import {
     expect
@@ -21,6 +22,9 @@ import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import * as turf from "@turf/turf";
+import {Worker} from "../../../service/isochronesWorker";
+
+global.Worker = Worker;
 
 Vue.use(Vuetify);
 
@@ -33,6 +37,11 @@ config.mocks.$t = key => key;
 before(() => {
     registerProjections();
 });
+
+after(() => {
+    global.fetch = undefined;
+});
+
 
 /**
 * @param {object} actualFeatures actual features
@@ -57,8 +66,7 @@ function expectFeaturesEqual (actualFeatures, expFeatures) {
 
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let component, store, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify,
-
+    let component, store, clearStub, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify, progressStub,
         coordiantes = [0, 0];
 
     const mockConfigJson = {
@@ -107,8 +115,9 @@ describe("AccessibilityAnalysis.vue", () => {
     beforeEach(() => {
         vuetify = new Vuetify();
         sandbox = sinon.createSandbox();
+        clearStub = sinon.stub();
         sourceStub = {
-            clear: sinon.stub(),
+            clear: clearStub,
             addFeatures: sinon.stub(),
             getFeatures: sinon.stub().returns([
                 []
@@ -116,6 +125,7 @@ describe("AccessibilityAnalysis.vue", () => {
         };
         addSingleAlertStub = sinon.stub();
         cleanupStub = sinon.stub();
+        progressStub = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -128,6 +138,15 @@ describe("AccessibilityAnalysis.vue", () => {
                             namespaced: true,
                             getters: {
                                 isFeatureDisabled: () => sinon.stub()
+                            }
+                        },
+                        AccessibilityAnalysisService: {
+                            namespaced: true,
+                            actions: {
+                                // eslint-disable-next-line no-unused-vars
+                                async getIsochrones ({getters, commit}, params) {
+                                    return createIsochrones(params, progressStub);
+                                }
                             }
                         }
                     }
@@ -188,19 +207,20 @@ describe("AccessibilityAnalysis.vue", () => {
             stubs: {Tool},
             store,
             localVue,
-            vuetify,
-            methods: {
-                requestIsochrones: () => {
-                    if (error) {
-                        return Promise.reject(error);
-                    }
-                    return new Promise(function (resolve) {
-                        resolve(JSON.stringify(data));
-                    });
-                },
-                createAbortController: () => ({abort: sinon.stub})
-            }
+            vuetify
         });
+
+
+        global.fetch = () => {
+            if (error) {
+                return new Promise(function (resolve) {
+                    resolve({json: () => error});
+                });
+            }
+            return new Promise(function (resolve) {
+                resolve({json: () => data});
+            });
+        };
 
         await component.vm.$nextTick();
         return component;
@@ -228,7 +248,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button with wrong input", async () => {
-        const wrapper = await mount(undefined, {response: JSON.stringify({error: {code: 3002}})});
+        const wrapper = await mount(undefined, {error: {code: 3002}});
 
         await wrapper.setData({
             coordinate: "10.155828082155567, 53.60323024735499",
@@ -239,6 +259,11 @@ describe("AccessibilityAnalysis.vue", () => {
 
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
         sinon.assert.callCount(addSingleAlertStub, 1);
         expect(addSingleAlertStub.firstCall.args[1]).to.eql(
             {
@@ -255,11 +280,19 @@ describe("AccessibilityAnalysis.vue", () => {
             coordinate: "10.155828082155567, 53.60323024735499",
             transportType: "Auto",
             scaleUnit: "time",
-            distance: 10
+            distance: "10"
         });
+
+        sourceStub.addFeatures.reset();
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
+
 
         expect(sourceStub.addFeatures.callCount).to.equal(1);
         expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
@@ -267,8 +300,9 @@ describe("AccessibilityAnalysis.vue", () => {
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
 
+        clearStub.reset();
         await wrapper.find("#clear").trigger("click");
-        sinon.assert.callCount(sourceStub.clear, 2);
+        sinon.assert.callCount(clearStub, 1);
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("000");
 
         expect(wrapper.vm.askUpdate).to.be.false;
@@ -283,18 +317,21 @@ describe("AccessibilityAnalysis.vue", () => {
             mode: "region",
             transportType: "Auto",
             scaleUnit: "time",
-            distance: 10,
+            distance: "10",
             selectedFacilityName: "familyName"
         });
 
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
 
         expect(sourceStub.addFeatures.callCount).to.equal(1);
 
         expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
             new GeoJSON().readFeatures(featuresRegion));
-
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;

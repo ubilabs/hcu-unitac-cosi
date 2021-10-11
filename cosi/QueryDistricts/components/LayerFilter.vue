@@ -27,6 +27,10 @@ export default {
             type: Number,
             default: NaN
         },
+        invalidFeatures: {
+            type: Array,
+            default: () => []
+        },
         value: {
             type: Number,
             default: NaN
@@ -79,7 +83,7 @@ export default {
     },
     methods: {
         updateFieldValue (newValue) {
-            this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue});
+            this.$emit("update", {layerId: this.layerId, field: "jahr_" + newValue, quotientLayer: this.quotientLayer});
         },
         updateLow () {
             const v = parseFloat(this.$refs.inputLow.value);
@@ -106,7 +110,7 @@ export default {
             this.$emit("update", {layerId: this.layerId, quotientLayer: newValue});
         },
         updateProperty (newValue) {
-            this.$emit("update", {layerId: this.layerId, property: newValue});
+            this.$emit("update", {layerId: this.layerId, property: newValue, quotientLayer: this.quotientLayer});
         },
         close () {
             this.$emit("close", {layerId: this.layerId});
@@ -137,7 +141,9 @@ export default {
                         scope="col"
                     >
                         {{ $t('additional:modules.tools.cosi.queryDistricts.year') }}
-                    </th><th
+                    </th>
+                    <th />
+                    <th
                         id="minmax"
                         scope="col"
                     >
@@ -182,6 +188,14 @@ export default {
                             hide-details
                             @change="updateFieldValue"
                         />
+                    </td>
+                    <td class="missing-val-alert">
+                        <v-icon
+                            v-if="invalidFeatures.length > 0"
+                            :title="$t('additional:modules.tools.cosi.queryDistricts.invalidFeaturesWarning') + ' (' + invalidFeatures.join(', ') + ')'"
+                        >
+                            mdi-alert
+                        </v-icon>
                     </td>
                     <td>{{ min.toLocaleString(locale) }}</td>
                     <td>{{ max.toLocaleString(locale) }}</td>
@@ -245,10 +259,13 @@ export default {
                         :label="$t('additional:modules.tools.cosi.queryDistricts.selectProperty')"
                         :value="property"
                         :items="properties"
+                        item-text="name"
+                        item-value="id"
                         outlined
                         dense
                         hide-details
                         :clearable="true"
+                        :disabled="properties.length === 0"
                         @change="updateProperty"
                     />
                 </template>
@@ -288,8 +305,8 @@ export default {
 .v-select.fit  .v-select__selection--comma {
     text-overflow: unset;
 }
-.val-select{
-    // padding-left: 8px;
+.missing-val-alert{
+    width: 20px;
 }
 </style>
 

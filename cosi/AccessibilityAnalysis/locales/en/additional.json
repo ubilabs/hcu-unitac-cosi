@@ -6,6 +6,7 @@
                     "title": "Accessibility Analysis",
                     "dropdownInfo": "Please choose the mode you want to work with:",
                     "pointOfReference": "Point of reference: click on the map",
+                    "setByFeature": "Select facilities as location (use perimeter of polygons)",
                     "topic": "Topic",
                     "transportType": "Type of transportation",
                     "transportTypes": {

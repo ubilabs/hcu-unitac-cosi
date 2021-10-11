@@ -113,6 +113,10 @@
     "path": "cosi/AccessibilityAnalysis",
     "type": "tool"
   },
+  "AccessibilityAnalysisService": {
+    "path": "cosi/AccessibilityAnalysis/service",
+    "type": "tool"
+  },
   "QueryDistricts": {
     "path": "cosi/QueryDistricts",
     "type": "tool"
