@@ -59,4 +59,4 @@ export default {
     downloadJsonToFile,
     downloadTextToFile,
     downloadBlobToFile
-}
+};

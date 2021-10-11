@@ -7,9 +7,8 @@ import requestIsochrones from "../service/requestIsochrones";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
+import {exportAsGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
-// import {singleClick} from "ol/events/condition";
-// import {Fill, Stroke, Style} from "ol/style.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -78,6 +77,7 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
+            clickCoordinate: null,
             select: null
         };
     },
@@ -164,7 +164,7 @@ export default {
         requestIsochrones: requestIsochrones,
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {
-                const newCoordinates = this.getCoordinates();
+                const newCoordinates = this.getCoordinates(this.setByFeature);
 
                 if (!deepEqual(this.currentCoordinates.map(e=>[e[0], e[1]]), newCoordinates)) {
                     this.askUpdate = true;
@@ -218,10 +218,7 @@ export default {
             this.close();
             this.$root.$emit("populationRequest", this.rawGeoJson);
         },
-
-        preventDefault (evt) {
-            evt.stopPropagation();
-        }
+        exportAsGeoJson
     }
 };
 </script>
@@ -361,29 +358,54 @@ export default {
                             </v-row>
                         </v-form>
                         <hr>
-                        <h5><strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong></h5>
-                        <div id="legend">
-                            <template v-for="(j, i) in steps">
-                                <span :key="i">
-                                    <svg
-                                        width="15"
-                                        height="15"
+                        <v-row dense>
+                            <v-col cols="6">
+                                <h5 id="legend-header">
+                                    <strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong>
+                                </h5>
+                                <div id="legend">
+                                    <template v-for="(j, i) in steps">
+                                        <span :key="i">
+                                            <svg
+                                                width="15"
+                                                height="15"
+                                            >
+                                                <circle
+                                                    cx="7.5"
+                                                    cy="7.5"
+                                                    r="7.5"
+                                                    :style="`fill: ${
+                                                        legendColors[i]
+                                                    }; stroke-width: 0.5; stroke: #e3e3e3;`"
+                                                />
+                                            </svg>
+                                            <span :key="i * 2 + steps.length">
+                                                {{ j }}
+                                            </span>
+                                        </span>
+                                    </template>
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div
+                                    id="download"
+                                >
+                                    <v-btn
+                                        id="download-geojson"
+                                        dense
+                                        small
+                                        tile
+                                        color="green lighten-1"
+                                        :disabled="isochroneFeatures.length === 0"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
+                                        @click="exportAsGeoJson(mapLayer)"
                                     >
-                                        <circle
-                                            cx="7.5"
-                                            cy="7.5"
-                                            r="7.5"
-                                            :style="`fill: ${
-                                                legendColors[i]
-                                            }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                        />
-                                    </svg>
-                                    <span :key="i * 2 + steps.length">
-                                        {{ j }}
-                                    </span>
-                                </span>
-                            </template>
-                        </div>
+                                        <span class="glyphicon glyphicon-floppy-disk" />
+                                        Download GeoJSON
+                                    </v-btn>
+                                </div>
+                            </v-col>
+                        </v-row>
                         <v-progress-linear
                             v-if="progress > 0"
                             v-model="progress"
@@ -425,7 +447,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 #accessibilityanalysis {
   width: 400px;
   min-height: 100px;
@@ -433,6 +455,14 @@ export default {
   .inline-switch {
     margin-top: 0px;
     height: 40px;
+  }
+
+  #legend-header {
+      margin-top: 0;
+  }
+
+  #download {
+      margin-top: 8px;
   }
 }
 
