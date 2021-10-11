@@ -1024,7 +1024,7 @@ export default {
                             <button
                                 class="btn btn-default xl_btn"
                                 title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
-                                @click="exportAsGeoJson(results, selectedFeatures, layerList, selectedFieldA, selectedFieldB)"
+                                @click="exportAsGeoJson()"
                             >
                                 <span class="glyphicon glyphicon-floppy-disk" />
                                 Download GeoJSON

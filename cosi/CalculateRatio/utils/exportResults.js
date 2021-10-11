@@ -1,4 +1,4 @@
-import {union, featuresToGeoJsonCollection, featureToGeoJson} from "../../utils/geomUtils";
+import {featuresToGeoJsonCollection, featureToGeoJson} from "../../utils/geomUtils";
 import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
 import getColorScale from "../../../utils/colorScale.js";
@@ -23,58 +23,52 @@ function getKeyOfAttrName () {
 
 /**
  * Exports the results of the supply analysis as geojson
- * @param {*} results - the results of the analysis
- * @param {*} districts - the district features for geometry
  * @returns {void}
  */
-export function exportAsGeoJson (results, districts, layerList, selectedFieldA, selectedFieldB) {
+export function exportAsGeoJson () {
     const projectionCode = getPortalCrs(),
-        total = results.find(res => res.scope === "Gesamt"),
-        average = results.find(res => res.scope === "Durchschnitt"),
-        featureCollection = featuresToGeoJsonCollection(districts, false, projectionCode),
-        values = results.map(x => { return x.coverage }),
+        total = this.results.find(res => res.scope === "Gesamt"),
+        average = this.results.find(res => res.scope === "Durchschnitt"),
+        featureCollection = featuresToGeoJsonCollection(this.selectedFeatures, false, projectionCode),
+        values = this.results.map(x => {
+            return x.coverage;
+        }),
         colorScale = getColorScale(values);
-    
+
     // match the result and add it to the resp. geoJSON
     for (const feature of featureCollection.features) {
-        const result = results.find(res => res.scope === feature.properties[getKeyOfAttrName()]),
-            getStyling = new Object();
-        
-        getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(result.coverage), 0.75)});
-        getStyling.zIndex = 1;
-        getStyling.text = new Text({
-            font: "16px Calibri,sans-serif",
-            fill: new Fill({
-                color: [255, 255, 255]
-            }),
-            stroke: new Stroke({
-                color: [0, 0, 0],
-                width: 3
-            }),
-            text: result.coverage ? parseFloat(result.coverage).toLocaleString("de-DE") : "Keine Daten vorhanden"
-        });
-        const style = new Style(getStyling);
-        feature.properties = {...feature.properties, paramA_name: selectedFieldA.id,
-            paramB_name: selectedFieldB.id, ...result, total, average, style};
+        const result = this.results.find(res => res.scope === feature.properties[getKeyOfAttrName()]),
+            style = new Style({
+                fill: new Fill({color: utils.getRgbArray(colorScale.scale(result.coverage), 0.75)}),
+                zIndex: 1,
+                text: new Text({
+                    font: "16px Calibri,sans-serif",
+                    fill: new Fill({
+                        color: [255, 255, 255]
+                    }),
+                    stroke: new Stroke({
+                        color: [0, 0, 0],
+                        width: 3
+                    }),
+                    text: result.coverage ? parseFloat(result.coverage).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                })
+            });
+
+        feature.properties = {...feature.properties, paramA_name: this.selectedFieldA.id,
+            paramB_name: this.selectedFieldB.id, ...result, total, average, style};
         delete feature.properties.stats;
     }
 
-    for (const field of [selectedFieldA, selectedFieldB]) {
-        const layerFeatures = layerList.find(layer => layer.get("name") === field.id).getSource().getFeatures();
+    for (const field of [this.selectedFieldA, this.selectedFieldB]) {
+        const layerFeatures = this.layerList.find(layer => layer.get("name") === field.id).getSource().getFeatures();
+
         for (const feature of layerFeatures) {
             const featureGeoJson = featureToGeoJson(feature);
+
             featureGeoJson.properties = {};
             featureCollection.features.push(featureGeoJson);
         }
     }
 
-    // set the properties of the union to the "totals" of the analysis and adds average as separate property
-    //unionFeature.properties = {
-    //    ...total,
-    //    average
-    //};
-
-    // add the union to the collection
-    //featureCollection.features.push(unionFeature);
     downloadJsonToFile(featureCollection, "Versorgungsanalyse_CoSI.geojson");
 }
