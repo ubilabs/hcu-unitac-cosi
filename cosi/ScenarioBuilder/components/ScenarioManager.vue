@@ -5,13 +5,11 @@ import actions from "../store/actionsScenarioBuilder";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 import Scenario from "../classes/Scenario";
-import Multiselect from "vue-multiselect";
 
 export default {
     name: "ScenarioManager",
     components: {
-        Modal,
-        Multiselect
+        Modal
     },
     data: () => ({
         newScenarioName: "",
@@ -23,6 +21,10 @@ export default {
 
         scenarioNames () {
             return this.scenarios.map(scenario => scenario.name);
+        },
+
+        validScenarioName () {
+            return this.newScenarioName.length === 0 || this.scenarioNames.includes(this.newScenarioName);
         },
 
         scenarioByName: () => name => {
@@ -68,19 +70,17 @@ export default {
 
             this.scenarios.push(newScenario);
             this.createNewScenarioModalOpen = false;
+            this.newScenarioName = "";
 
-            // set the new scenario active, if no other scenario is selected
-            if (!this.activeScenario) {
-                this.setActiveScenario(newScenario);
-            }
+            this.setActiveScenario(newScenario);
         },
 
         deleteScenario () {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.deleteScenarioWarning"))) {
                 this.activeScenario.prune();
-                this.setActiveScenario(null);
                 this.setScenarios(this.scenarios.filter(scenario => scenario !== this.activeScenario));
+                this.setActiveScenario(null);
             }
         },
 
@@ -89,13 +89,6 @@ export default {
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
                 this.activeScenario.prune();
             }
-        },
-
-        validateNewScenario () {
-            this.$refs["new-scenario-form"].validate();
-            if (this.$refs["new-scenario-form"].validate()) {
-                this.createNewScenario();
-            }
         }
     }
 };
@@ -103,28 +96,20 @@ export default {
 
 <template>
     <div>
-        <v-row>
+        <v-row dense>
             <v-col cols="6">
-                <Multiselect
+                <v-select
                     v-model="_activeScenario"
-                    class="layer_selection selection"
-                    :options="scenarios"
-                    track-by="name"
-                    label="name"
-                    :multiple="false"
-                    :allow-empty="false"
-                    selected-label=""
-                    select-label=""
-                    deselect-label=""
-                    :placeholder="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
-                >
-                    <template slot="singleLabel">
-                        <strong v-if="_activeScenario">{{ _activeScenario.name }}</strong>
-                    </template>
-                    <template slot="noOptions">
-                        <span>{{ $t('additional:modules.tools.cosi.scenarioManager.noScenarios') }}</span>
-                    </template>
-                </Multiselect>
+                    :items="scenarios"
+                    item-text="name"
+                    item-value="name"
+                    return-object
+                    :no-data-text="$t('additional:modules.tools.cosi.scenarioManager.noScenarios')"
+                    :label="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
+                    outlined
+                    dense
+                />
             </v-col>
             <v-col
                 class="flex"
@@ -240,7 +225,7 @@ export default {
                 </v-menu>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row dense>
             <v-col
                 class="flex"
                 cols="12"
@@ -273,7 +258,7 @@ export default {
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row dense>
             <v-col cols="12">
                 <label v-if="!activeScenario">
                     {{ $t('additional:modules.tools.cosi.scenarioManager.noActiveScenario') }}
@@ -284,33 +269,32 @@ export default {
             :show-modal="createNewScenarioModalOpen"
         >
             <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
-            <v-form
-                id="new-scenario-form"
-                ref="new-scenario-form"
-                v-model="newScenarioValid"
-                @submit.prevent="validateNewScenario"
-            >
-                <v-row>
-                    <v-col cols="12">
-                        <v-text-field
-                            v-model="newScenarioName"
-                            required
-                            :rules="newScenarioRules"
-                            :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
-                        />
-                        <v-btn
-                            tile
-                            depressed
-                            type="submit"
-                            :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
-                            :disabled="!newScenarioValid"
-                            form="new-scenario-form"
-                        >
-                            {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-form>
+            <form id="new-scenario-form">
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field
+                                v-model="newScenarioName"
+                                required
+                                dense
+                                :rules="newScenarioRules"
+                                :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
+                            />
+                            <v-btn
+                                tile
+                                depressed
+                                type="button"
+                                dense
+                                :disabled="validScenarioName"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
+                                @click="createNewScenario"
+                            >
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.createNewSubmit') }}
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </form>
         </Modal>
     </div>
 </template>

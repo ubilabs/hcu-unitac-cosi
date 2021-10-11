@@ -15,6 +15,8 @@ import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import Modal from "../../../../src/share-components/modals/Modal.vue";
+import processStats from "../utils/processStats";
+import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 
 export default {
     name: "ResidentialSimulation",
@@ -120,6 +122,10 @@ export default {
 
         stats () {
             return this.neighborhood.stats;
+        },
+
+        hasReference () {
+            return Object.keys(this.baseStats.reference).length !== 0;
         }
     },
 
@@ -155,12 +161,19 @@ export default {
             }
         },
 
-        geometry () {
+        async geometry () {
+            if (!this.hasReference && this.geometry !== null) {
+                this.getBaseStats();
+            }
             this.neighborhood.area = this.polygonArea;
             this.updateArea(this.polygonArea);
+
         },
 
         async baseStats () {
+            if (!this.hasReference && this.geometry !== null) {
+                this.getBaseStats();
+            }
             if (!(this.baseStats.reference?.districtName && this.baseStats.reference?.districtLevel)) {
                 return;
             }
@@ -236,6 +249,25 @@ export default {
             return newLayer;
         },
 
+        async getBaseStats () {
+            const district = getContainingDistrictForExtent(this.selectedDistrictLevel, this.geometry.getExtent()),
+                stats = await this.getStatsByDistrict({
+                    id: district.getId(),
+                    districtLevel: this.selectedDistrictLevel
+                }),
+                baseStats = processStats(
+                    district.getName(),
+                    this.selectedDistrictLevel.label,
+                    stats,
+                    "Bevölkerung insgesamt",
+                    this.timelinePrefix,
+                    this.groupsList
+                );
+
+            if (baseStats) {
+                this.onPickReference(baseStats);
+            }
+        },
         /**
          * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature
          * @param {module:ol/Geometry} geom the new geometry object
@@ -353,15 +385,19 @@ export default {
             this.fallbacks.populationDensity = this.defaults.populationDensity;
             this.fallbacks.livingSpace = this.defaults.livingSpace;
 
-            // reset baseStats from reference
+            this.resetBaseStats();
+
+            // reset geometry
+            geomPickerResetLocation(this.$refs["geometry-picker"]);
+        },
+
+        // reset baseStats from reference
+        resetBaseStats () {
             this.baseStats = {
                 reference: {},
                 absolute: [],
                 relative: []
             };
-
-            // reset geometry
-            geomPickerResetLocation(this.$refs["geometry-picker"]);
         },
 
         openEditDialog (evt) {
@@ -418,357 +454,359 @@ export default {
                     id="scenario-builder"
                 >
                     <div>
-                        <div class="form-group">
-                            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.title') }} </label>
-                            <ScenarioManager />
+                        <div class="mb-5 overline">
+                            {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
                         </div>
+                        <ScenarioManager />
                         <v-divider />
-                        <div class="form-group">
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>Name</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-text-field
-                                        v-model="neighborhood.name"
-                                        label="Quartiername"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <GeometryPicker
-                                ref="geometry-picker"
-                                :geom-field="geomField"
-                                :is-gml="false"
-                                @updateGeometry="updateGeometry"
-                            />
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>Grundfläche</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-text-field
-                                        v-model="polygonArea"
-                                        readonly
-                                        label="Fläche"
-                                        suffix="m²"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>Bewohnerzahl insgesamt</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-text-field
-                                        v-model="neighborhood.residents"
-                                        label="Einwohner gesamt"
-                                        suffix="EW"
-                                        @change="updateResidents"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <v-row
-                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
-                                dense
-                            >
-                                <v-col cols="3">
-                                    <v-subheader>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.units') }}
-                                    </v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-slider
-                                        ref="slider-units"
-                                        v-model="neighborhood.housingUnits"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
-                                        min="0"
-                                        :max="(polygonArea / 5) || 1"
-                                        :disabled="!geometry"
-                                        @change="updateUnits"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.housingUnits"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateUnits"
-                                            />
-                                        </template>
-                                    </v-slider>
-                                </v-col>
-                            </v-row>
-                            <v-row
-                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpGfa')"
-                                dense
-                            >
-                                <v-col cols="3">
-                                    <v-subheader>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.gfa') }}
-                                    </v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-slider
-                                        ref="slider-bgf"
-                                        v-model="neighborhood.bgf"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.gfa')"
-                                        min="0"
-                                        :max="(polygonArea * 4) || 1"
-                                        :disabled="!geometry"
-                                        @change="updateBgf"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.bgf"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateBgf"
-                                            />
-                                        </template>
-                                    </v-slider>
-                                </v-col>
-                            </v-row>
-                            <v-row
-                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
-                                dense
-                            >
-                                <v-col cols="3">
-                                    <v-subheader>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.householdSize') }}
-                                    </v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-slider
-                                        ref="slider-householdsize"
-                                        v-model="neighborhood.avgHouseholdSize"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
-                                        min="0"
-                                        max="5"
-                                        step="0.2"
-                                        :disabled="!geometry"
-                                        @change="updateHousholdSize"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.avgHouseholdSize"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateHousholdSize"
-                                            />
-                                        </template>
-                                    </v-slider>
-                                </v-col>
-                            </v-row>
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>GFZ</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-slider
-                                        ref="slider-gfz"
-                                        v-model="neighborhood.gfz"
-                                        hint="GFZ"
-                                        min="0"
-                                        max="4"
-                                        step="0.1"
-                                        :disabled="!geometry"
-                                        @change="updateGfz"
-                                    >
-                                        <template #append>
-                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                            <v-text-field
-                                                v-model="neighborhood.gfz"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateGfz"
-                                            />
-                                        </template>
-                                    </v-slider>
-                                </v-col>
-                            </v-row>
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>Bevölkerungsdichte</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-slider
-                                        ref="slider-density"
-                                        v-model="neighborhood.populationDensity"
-                                        hint="EW / km²"
-                                        min="0"
-                                        max="50000"
-                                        :disabled="!geometry"
-                                        @change="updateDensity"
-                                    >
-                                        <template #append>
-                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                            <v-text-field
-                                                v-model="neighborhood.populationDensity"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateDensity"
-                                            />
-                                        </template>
-                                    </v-slider>
-                                </v-col>
-                            </v-row>
-                            <v-row dense>
-                                <v-col cols="3">
-                                    <v-subheader>Wohnfläche pro Person</v-subheader>
-                                </v-col>
-                                <v-col cols="9">
-                                    <v-slider
-                                        ref="slider-livingspace"
-                                        v-model="neighborhood.livingSpace"
-                                        hint="m² / EW"
-                                        min="0"
-                                        max="100"
-                                        :disabled="!geometry"
-                                        @change="updateLivingSpace"
-                                    >
-                                        <template #append>
-                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                            <v-text-field
-                                                v-model="neighborhood.livingSpace"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateLivingSpace"
-                                            />
-                                        </template>
-                                    </v-slider>
-                                </v-col>
-                            </v-row>
-                            <v-divider />
-                            <v-row dense>
-                                <v-col cols="12">
-                                    <v-menu
-                                        ref="datePicker"
-                                        v-model="datePicker"
-                                        :close-on-content-click="false"
-                                        :return-value.sync="neighborhood.year"
-                                        transition="scale-transition"
-                                        offset-y
-                                        max-width="290px"
-                                        min-width="auto"
-                                    >
-                                        <template #activator="{ on, attrs }">
-                                            <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                            <v-text-field
-                                                v-model="neighborhood.year"
-                                                :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
-                                                prepend-icon="mdi-calendar"
-                                                readonly
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            />
-                                        </template>
-                                        <v-date-picker
-                                            v-model="neighborhood.year"
-                                            type="month"
-                                            no-title
-                                            scrollable
-                                        >
-                                            <v-spacer />
-                                            <v-btn
-                                                text
-                                                color="primary"
-                                                @click="datePicker = false"
-                                            >
-                                                {{ $t("common:button.cancel") }}
-                                            </v-btn>
-                                            <v-btn
-                                                text
-                                                color="primary"
-                                                @click="$refs.datePicker.save(neighborhood.year)"
-                                            >
-                                                OK
-                                            </v-btn>
-                                        </v-date-picker>
-                                    </v-menu>
-                                </v-col>
-                            </v-row>
-                            <v-divider />
-                            <ReferenceDistrictPicker
-                                :groups-list="groupsList"
-                                :timeline-prefix="timelinePrefix"
-                                @referencePickerActive="onReferencePickerActive"
-                                @pickReference="onPickReference"
-                            />
-                            <v-divider />
-                            <v-row dense>
-                                <v-col
-                                    class="flex"
-                                    cols="12"
-                                >
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        class="flex-item"
-                                        @click="resetFeature"
-                                    >
-                                        <v-icon>mdi-eraser</v-icon>
-                                        <span>
-                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.resetFeature') }}
-                                        </span>
-                                    </v-btn>
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        class="flex-item"
-                                        :disabled="!neighborhood.stats || geometry === null"
-                                        @click="editStatsTable = true"
-                                    >
-                                        <v-icon>mdi-pencil</v-icon>
-                                        <span>
-                                            {{ $t("common:button.edit") }}
-                                        </span>
-                                    </v-btn>
-                                    <v-btn
-                                        tile
-                                        depressed
-                                        color="primary"
-                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
-                                        :disabled="!activeScenario || geometry === null || !neighborhood.stats"
-                                        class="flex-item"
-                                        @click="createFeature"
-                                    >
-                                        <v-icon>mdi-home-plus</v-icon>
-                                        <span>
-                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
-                                        </span>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <!-- <v-btn
-                                        tile
-                                        depressed
-                                        color="primary"
-                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
-                                        :disabled="!activeScenario || geometry === null || !neighborhood.stats"
-                                        class="flex-item"
-                                        @click="createFeature"
-                                    >
-                                        <v-icon>mdi-home-plus</v-icon>
-                                        <span>
-                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
-                                        </span>
-                                    </v-btn> -->
-                                </v-col>
-                            </v-row>
+                        <ReferenceDistrictPicker
+                            :groups-list="groupsList"
+                            :timeline-prefix="timelinePrefix"
+                            @referencePickerActive="onReferencePickerActive"
+                            @pickReference="onPickReference"
+                            @resetReference="resetBaseStats"
+                        />
+                        <v-divider />
+                        <div class="mb-5 overline">
+                            {{ $t('additional:modules.tools.cosi.residentialSimulation.subTitle') }}
                         </div>
+                        <v-row dense>
+                            <v-col cols="3">
+                                <v-subheader>Name</v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-text-field
+                                    v-model="neighborhood.name"
+                                    label="Quartiername"
+                                />
+                            </v-col>
+                        </v-row>
+                        <GeometryPicker
+                            ref="geometry-picker"
+                            :geom-field="geomField"
+                            :is-gml="false"
+                            @updateGeometry="updateGeometry"
+                        />
+                        <v-row dense>
+                            <v-col cols="3">
+                                <v-subheader>Grundfläche</v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-text-field
+                                    v-model="polygonArea"
+                                    readonly
+                                    label="Fläche"
+                                    suffix="m²"
+                                />
+                            </v-col>
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="3">
+                                <v-subheader>Bewohnerzahl insgesamt</v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-text-field
+                                    v-model="neighborhood.residents"
+                                    label="Einwohner gesamt"
+                                    suffix="EW"
+                                    @change="updateResidents"
+                                />
+                            </v-col>
+                        </v-row>
+                        <v-row
+                            :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
+                            dense
+                        >
+                            <v-col cols="3">
+                                <v-subheader>
+                                    {{ $t('additional:modules.tools.cosi.residentialSimulation.units') }}
+                                </v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-slider
+                                    ref="slider-units"
+                                    v-model="neighborhood.housingUnits"
+                                    :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
+                                    min="0"
+                                    :max="(polygonArea / 5) || 1"
+                                    :disabled="!geometry"
+                                    @change="updateUnits"
+                                >
+                                    <template #append>
+                                        <v-text-field
+                                            v-model="neighborhood.housingUnits"
+                                            class="mt-0 pt-0 slider-val"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            @change="updateUnits"
+                                        />
+                                    </template>
+                                </v-slider>
+                            </v-col>
+                        </v-row>
+                        <v-row
+                            :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpGfa')"
+                            dense
+                        >
+                            <v-col cols="3">
+                                <v-subheader>
+                                    {{ $t('additional:modules.tools.cosi.residentialSimulation.gfa') }}
+                                </v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-slider
+                                    ref="slider-bgf"
+                                    v-model="neighborhood.bgf"
+                                    :hint="$t('additional:modules.tools.cosi.residentialSimulation.gfa')"
+                                    min="0"
+                                    :max="(polygonArea * 4) || 1"
+                                    :disabled="!geometry"
+                                    @change="updateBgf"
+                                >
+                                    <template #append>
+                                        <v-text-field
+                                            v-model="neighborhood.bgf"
+                                            class="mt-0 pt-0 slider-val"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            @change="updateBgf"
+                                        />
+                                    </template>
+                                </v-slider>
+                            </v-col>
+                        </v-row>
+                        <v-row
+                            :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
+                            dense
+                        >
+                            <v-col cols="3">
+                                <v-subheader>
+                                    {{ $t('additional:modules.tools.cosi.residentialSimulation.householdSize') }}
+                                </v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-slider
+                                    ref="slider-householdsize"
+                                    v-model="neighborhood.avgHouseholdSize"
+                                    :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
+                                    min="0"
+                                    max="5"
+                                    step="0.2"
+                                    :disabled="!geometry"
+                                    @change="updateHousholdSize"
+                                >
+                                    <template #append>
+                                        <v-text-field
+                                            v-model="neighborhood.avgHouseholdSize"
+                                            class="mt-0 pt-0 slider-val"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            @change="updateHousholdSize"
+                                        />
+                                    </template>
+                                </v-slider>
+                            </v-col>
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="3">
+                                <v-subheader>GFZ</v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-slider
+                                    ref="slider-gfz"
+                                    v-model="neighborhood.gfz"
+                                    hint="GFZ"
+                                    min="0"
+                                    max="4"
+                                    step="0.1"
+                                    :disabled="!geometry"
+                                    @change="updateGfz"
+                                >
+                                    <template #append>
+                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                        <v-text-field
+                                            v-model="neighborhood.gfz"
+                                            class="mt-0 pt-0 slider-val"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            @change="updateGfz"
+                                        />
+                                    </template>
+                                </v-slider>
+                            </v-col>
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="3">
+                                <v-subheader>Bevölkerungsdichte</v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-slider
+                                    ref="slider-density"
+                                    v-model="neighborhood.populationDensity"
+                                    hint="EW / km²"
+                                    min="0"
+                                    max="50000"
+                                    :disabled="!geometry"
+                                    @change="updateDensity"
+                                >
+                                    <template #append>
+                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                        <v-text-field
+                                            v-model="neighborhood.populationDensity"
+                                            class="mt-0 pt-0 slider-val"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            @change="updateDensity"
+                                        />
+                                    </template>
+                                </v-slider>
+                            </v-col>
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="3">
+                                <v-subheader>Wohnfläche pro Person</v-subheader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-slider
+                                    ref="slider-livingspace"
+                                    v-model="neighborhood.livingSpace"
+                                    hint="m² / EW"
+                                    min="0"
+                                    max="100"
+                                    :disabled="!geometry"
+                                    @change="updateLivingSpace"
+                                >
+                                    <template #append>
+                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                        <v-text-field
+                                            v-model="neighborhood.livingSpace"
+                                            class="mt-0 pt-0 slider-val"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            @change="updateLivingSpace"
+                                        />
+                                    </template>
+                                </v-slider>
+                            </v-col>
+                        </v-row>
+                        <v-divider />
+                        <v-row dense>
+                            <v-col cols="12">
+                                <v-menu
+                                    ref="datePicker"
+                                    v-model="datePicker"
+                                    :close-on-content-click="false"
+                                    :return-value.sync="neighborhood.year"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="auto"
+                                >
+                                    <template #activator="{ on, attrs }">
+                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                        <v-text-field
+                                            v-model="neighborhood.year"
+                                            :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
+                                            prepend-icon="mdi-calendar"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        />
+                                    </template>
+                                    <v-date-picker
+                                        v-model="neighborhood.year"
+                                        type="month"
+                                        no-title
+                                        scrollable
+                                    >
+                                        <v-spacer />
+                                        <v-btn
+                                            text
+                                            color="primary"
+                                            @click="datePicker = false"
+                                        >
+                                            {{ $t("common:button.cancel") }}
+                                        </v-btn>
+                                        <v-btn
+                                            text
+                                            color="primary"
+                                            @click="$refs.datePicker.save(neighborhood.year)"
+                                        >
+                                            OK
+                                        </v-btn>
+                                    </v-date-picker>
+                                </v-menu>
+                            </v-col>
+                        </v-row>
+                        <v-divider />
+                        <v-row dense>
+                            <v-col
+                                class="flex"
+                                cols="12"
+                            >
+                                <v-btn
+                                    tile
+                                    depressed
+                                    class="flex-item"
+                                    @click="resetFeature"
+                                >
+                                    <v-icon>mdi-eraser</v-icon>
+                                    <span>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.resetFeature') }}
+                                    </span>
+                                </v-btn>
+                                <v-btn
+                                    tile
+                                    depressed
+                                    class="flex-item"
+                                    :disabled="!neighborhood.stats || geometry === null"
+                                    @click="editStatsTable = true"
+                                >
+                                    <v-icon>mdi-pencil</v-icon>
+                                    <span>
+                                        {{ $t("common:button.edit") }}
+                                    </span>
+                                </v-btn>
+                                <v-btn
+                                    tile
+                                    depressed
+                                    color="primary"
+                                    :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
+                                    :disabled="!activeScenario || geometry === null || !neighborhood.stats"
+                                    class="flex-item"
+                                    @click="createFeature"
+                                >
+                                    <v-icon>mdi-home-plus</v-icon>
+                                    <span>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                    </span>
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12">
+                                <!-- <v-btn
+                                    tile
+                                    depressed
+                                    color="primary"
+                                    :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
+                                    :disabled="!activeScenario || geometry === null || !neighborhood.stats"
+                                    class="flex-item"
+                                    @click="createFeature"
+                                >
+                                    <v-icon>mdi-home-plus</v-icon>
+                                    <span>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                    </span>
+                                </v-btn> -->
+                            </v-col>
+                        </v-row>
                     </div>
                     <v-snackbar
                         v-model="editDialog"
