@@ -3,7 +3,7 @@
         "tools": {
             "cosi": {
                 "scenarioBuilder": {
-                    "title": "Scenario Builder",
+                    "title": "Simulate Facilities",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Select topic",
                     "pickReference": "Pick reference facility",

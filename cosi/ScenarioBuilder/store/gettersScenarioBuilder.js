@@ -7,6 +7,10 @@ const getters = {
 
     activeSimulatedFeatures (state, {activeScenario}) {
         return activeScenario?.getSimulatedFeatures();
+    },
+
+    activeModifiedFeatures (state, {activeScenario}) {
+        return activeScenario?.getModifiedFeatures();
     }
 };
 

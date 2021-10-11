@@ -19,7 +19,9 @@
                     "inactiveFeature": "Die ausgewählte Einrichtung ist gegenwärtig inaktiv geschaltet.",
                     "exportTable": "Tabelle exportieren",
                     "exportDetails": "Detailansicht exportieren",
-                    "exportFilename": "CoSI_Einrichtungsübersicht"
+                    "exportFilename": "CoSI_Einrichtungsübersicht",
+                    "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
+                    "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert"
                 }
             }
         }

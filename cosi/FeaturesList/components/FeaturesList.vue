@@ -52,6 +52,9 @@ export default {
                     value: "name"
                 },
                 {
+                    value: "warning"
+                },
+                {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colDistrict"),
                     value: "district"
                 },
@@ -98,7 +101,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "activeModifiedFeatures"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapState(["configJson"]),
         columns () {
@@ -159,6 +162,15 @@ export default {
          * @returns {void}
          */
         activeSimulatedFeatures () {
+            this.updateFeaturesList();
+        },
+
+        /**
+         * Updates the list on added/removed modified features
+         * @listens #change:Tools/ScenarioBuilder/activeModifiedFeatures
+         * @returns {void}
+         */
+        activeModifiedFeatures () {
             this.updateFeaturesList();
         },
 
@@ -238,7 +250,6 @@ export default {
          */
         updateFeaturesList () {
             if (this.activeLayerMapping.length > 0) {
-                console.log("doing it");
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
@@ -261,6 +272,7 @@ export default {
                             feature: feature,
                             enabled: true,
                             isSimulation: feature.get("isSimulation") || false,
+                            isModified: feature.get("isModified") || false,
                             ...Object.fromEntries(layerMap.numericalValues.map(field => [field.id, feature.get(field.id)]))
                         };
                     })];
@@ -492,6 +504,20 @@ export default {
                                             @filterProps="updateFilterProps"
                                         />
                                     </td>
+                                </template>
+                                <template #item.warning="{ item }">
+                                    <v-icon
+                                        v-if="item.isModified"
+                                        :title="$t('additional:modules.tools.cosi.featuresList.warningIsModified')"
+                                    >
+                                        mdi-alert
+                                    </v-icon>
+                                    <v-icon
+                                        v-if="item.isSimulated"
+                                        :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
+                                    >
+                                        mdi-sprout
+                                    </v-icon>
                                 </template>
                                 <template #item.style="{ item }">
                                     <FeatureIcon :item="item" />

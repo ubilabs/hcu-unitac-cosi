@@ -3,7 +3,7 @@
         "tools": {
             "cosi": {
                 "scenarioBuilder": {
-                    "title": "Scenario Builder",
+                    "title": "Einrichtungen anlegen",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
                     "pickReference": "Referenzeinrichtung wählen",

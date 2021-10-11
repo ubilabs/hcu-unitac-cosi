@@ -139,6 +139,7 @@ export default class ScenarioFeature {
      */
     clearScenarioData () {
         this.scenarioData = {};
+        this.feature.unset("isModified");
     }
 
     /**
@@ -151,6 +152,7 @@ export default class ScenarioFeature {
         for (const prop in properties) {
             this.set(prop, properties[prop]);
         }
+        this.feature.set("isModified", true);
     }
 
     /**
