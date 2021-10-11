@@ -12,7 +12,8 @@
                     "search": "Tabelle durchsuchen",
                     "exportTable": "Tabelle exportieren",
                     "exportTableTimeline": "Tabelle exportieren (alle Jahre)",
-                    "exportFilename": "CoSI_Dashboard-Tabelle"
+                    "exportFilename": "CoSI_Dashboard-Tabelle",
+                    "modifiedTooltip": "Dieses Datum wurde durch Simulationsfunktionen verändert."
                 }
             }
         }

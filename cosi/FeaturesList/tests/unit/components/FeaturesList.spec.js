@@ -77,7 +77,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "layerName",
             "type",
             "group",
-            // "actions",
+            "anzahl_schueler", // numerical Values get their own columns
             "enabled"
         ],
         layersMock = [];
@@ -199,7 +199,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const wrapper = await mountComponent(true, [layer1]);
 
             expect(wrapper.vm.items).to.have.lengthOf(1);
-            expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isSimulation");
+            expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isSimulation", "anzahl_schueler");
         });
 
         it("headers should have all fields", async () => {

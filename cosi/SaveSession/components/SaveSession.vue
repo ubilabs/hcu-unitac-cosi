@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable new-cap */
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
@@ -12,12 +11,13 @@ import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighbor
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
 import {downloadJsonToFile} from "../../utils/download";
-// import Collection from "ol/Collection";
+import Modal from "../../../../src/share-components/modals/Modal.vue";
 
 export default {
     name: "SaveSession",
     components: {
-        Tool
+        Tool,
+        Modal
     },
     data () {
         return {
@@ -30,23 +30,39 @@ export default {
                 ],
                 Tools: {
                     CalculateRatio: [
-                        "results"
+                        "results",
+                        "active"
                     ],
                     ScenarioBuilder: [
-                        "scenarios"
+                        "scenarios",
+                        "active"
                     ],
                     DistrictSelector: [
                         "selectedDistrictLevelId",
-                        "selectedDistrictNames"
+                        "selectedDistrictNames",
+                        "active"
                     ],
                     AccessibilityAnalysis: [
-                        "isochroneFeatures"
+                        "isochroneFeatures",
+                        "active"
                     ]
                 }
             },
             state: null,
+            session: {
+                meta: {
+                    title: null,
+                    info: null,
+                    created: null,
+                    date: null
+                },
+                state: null
+            },
+            latestDate: null,
             loadDialog: false,
-            sessionFile: null
+            sessionFile: null,
+            showTemplates: false,
+            templates: []
         };
     },
     computed: {
@@ -89,14 +105,21 @@ export default {
         });
     },
     mounted () {
-        /**
-         * Load data here (LocalStorage / Import)
-         */
         this.localStorage = window.localStorage;
+        this.loadTemplates();
 
-        if (this.localStorage.getItem("cosi-state")) {
+        try {
+            const lastSession = JSON.parse(this.localStorage.getItem("cosi-state"));
+
             this.loadDialog = true;
+            this.latestDate = lastSession?.meta?.created;
         }
+        catch (e) {
+            this.loadDialog = false;
+        }
+        // if (this.localStorage.getItem("cosi-state")) {
+        //     this.loadDialog = true;
+        // }
     },
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
@@ -106,7 +129,10 @@ export default {
         save () {
             console.log(this.$store.state);
             this.serializeState();
-            this.storeToLocalStorage();
+
+            this.session.state = this.state;
+            this.session.meta.created = new Date().toLocaleString();
+            this.session.meta.date = new Date();
 
             this.addSingleAlert({
                 content: "Sitzung erfolgreich gespeichert!",
@@ -114,14 +140,64 @@ export default {
                 displayClass: "success"
             });
         },
+        quickSave () {
+            this.save();
+            this.storeToLocalStorage();
+        },
         saveAs () {
             this.save();
-            downloadJsonToFile(this.state, "Neue_Session.json");
+            downloadJsonToFile(this.session, "Neue_Session.json");
         },
 
-        load () {
+        clear () {
+            this.localStorage.removeItem("cosi-state");
+        },
+
+        storeToLocalStorage () {
+            console.log(this.session);
+            this.localStorage.setItem("cosi-state", JSON.stringify(this.session));
+        },
+
+        async loadTemplates () {
+            let path, res;
+            const templates = [];
+
+            for (const filename of this.templateFiles) {
+                path = `${this.templatePath}/${filename}.json`;
+
+                try {
+                    res = await fetch(path);
+                    templates.push(await res.json());
+                }
+                catch (e) {
+                    console.warn(`Template at ${path} could not be loaded. Please check that it is a valid JSON file.`)
+                }
+            }
+
+            this.templates = templates;
+        },
+
+        async loadFromTemplate (template) {
+            this.showTemplates = false;
+            await this.$nextTick();
+            this.load(template);
+        },
+
+        loadLastSession () {
             this.loadFromLocalStorage();
             this.loadDialog = false;
+        },
+
+        loadFromLocalStorage () {
+            try {
+                const session = JSON.parse(this.localStorage.getItem("cosi-state"));
+
+                this.load(session);
+            }
+            catch (e) {
+                console.error(e);
+                console.warn("No loadable session has yet been saved");
+            }
         },
 
         loadFromFile () {
@@ -135,14 +211,9 @@ export default {
 
             reader.onload = res => {
                 try {
-                    const state = JSON.parse(res.target.result);
+                    const session = JSON.parse(res.target.result);
 
-                    this.parseState(this.storePaths, state);
-                    this.addSingleAlert({
-                        content: "Sitzung erfolgreich geladen.",
-                        category: "Success",
-                        displayClass: "success"
-                    });
+                    this.load(session);
                 }
                 catch (e) {
                     console.error(e);
@@ -158,41 +229,30 @@ export default {
             reader.readAsText(file);
         },
 
-        clear () {
-            this.localStorage.removeItem("cosi-state");
-        },
+        load (session) {
+            const state = session.state || session; // fallback for old saves
 
-        storeToLocalStorage () {
-            console.log(this.state);
-            this.localStorage.setItem("cosi-state", JSON.stringify(this.state));
-        },
-
-        loadFromLocalStorage () {
-            try {
-                const state = JSON.parse(this.localStorage.getItem("cosi-state"));
-
-                console.log(state);
-
-                this.parseState(this.storePaths, state);
-                this.addSingleAlert({
-                    content: "Sitzung erfolgreich geladen.",
-                    category: "Success",
-                    displayClass: "success"
-                });
-            }
-            catch (e) {
-                console.error(e);
-                console.warn("No loadable session has yet been saved");
-            }
+            this.setActive(false);
+            this.parseState(this.storePaths, state);
+            this.addSingleAlert({
+                content: `Sitzung ${session.meta?.title} vom ${session.meta?.created} erfolgreich geladen.`,
+                category: "Success",
+                displayClass: "success"
+            });
         },
 
         parseState (map, state, path = []) {
             for (const key in map) {
                 if (
                     Array.isArray(map[key]) &&
+                    Object.hasOwnProperty.call(state, key) &&
                     map[key].every(e => typeof e === "string")
                 ) {
                     for (const attr of map[key]) {
+                        // continue if prop doesn't exist on the save state
+                        if (!Object.hasOwnProperty.call(state[key], attr)) {
+                            continue;
+                        }
                         let mutation = `${key}/set${attr[0].toUpperCase() + attr.substring(1)}`;
 
                         // add parent nodes for nested states
@@ -221,9 +281,8 @@ export default {
                                 this.$store.dispatch(mutation, state[key][attr]);
                                 break;
                             default:
-                                this.$store.commit(mutation, this.parseFeatures(state[key][attr]));
+                                this.commitState(mutation, attr, state[key][attr]);
                         }
-
                     }
                 }
                 else if (map[key].constructor === Object) {
@@ -232,6 +291,24 @@ export default {
             }
 
             console.log(this.$store);
+        },
+
+        commitState (mutation, attr, state) {
+            if (attr === "active") {
+                if (state) {
+                    this.$store.commit(mutation, state);
+
+                    const key = mutation.replace("/setActive", "/id"),
+                        model = getComponent(this.$store.getters[key]);
+
+                    if (model) {
+                        model.set("isActive", state);
+                    }
+                }
+            }
+            else {
+                this.$store.commit(mutation, this.parseFeatures(state));
+            }
         },
 
         parseFeatures (val) {
@@ -294,11 +371,8 @@ export default {
             const state = this.deepCopyState(this.storePaths, this.$store.state);
 
             this.serializeScenarios(state);
-            // this.serializeDistrictSelector(state);
-            // this.serializeLayers(state);
+            this.serializeBackboneModules(state);
             this.state = state;
-
-            this.storeToLocalStorage();
         },
 
         deepCopyState (map, store) {
@@ -410,25 +484,17 @@ export default {
             };
         },
 
-        // serializeDistrictSelector (state) {
-        //     const selectedDistrictsCollection = this.serializeFeatureCollection(state.Tools.DistrictSelector.selectedDistrictsCollection);
+        serializeBackboneModules (state) {
+            state.Backbone = {};
 
-        //     state.Tools.DistrictSelector.selectedDistrictsCollection = selectedDistrictsCollection;
-        // },
+            state.Backbone.Filter = this.serializeFilters();
+        },
 
-        // serializeDistrictLevel (districtLevel) {
-        //     return districtLevel.label;
-        // },
+        serializeFilters () {
+            const model = Radio.request("ModelList", "getModelByAttributes", {id: "filter"});
 
-        // serializeFeatureCollection (collection) {
-        //     return new GeoJSON().writeFeaturesObject(collection.getArray());
-        // },
-
-        // serializeLayers (state) {
-        //     console.log(state.Map.layerIds);
-
-        //     state.Map.layerIds = [];
-        // },
+            console.log(model);
+        },
 
         getTopicsLayer (layerId) {
             let layer = this.layerById(layerId);
@@ -461,6 +527,18 @@ export default {
             }
 
             return Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+        },
+
+        showTemplateInfo (template) {
+            this.addSingleAlert({
+                content: template.meta?.info,
+                category: "Info",
+                displayClass: "info"
+            });
+        },
+
+        escapeSelectFromTemplates () {
+            this.showTemplates = false;
         }
     }
 };
@@ -493,7 +571,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.saveSession.save')"
-                                    @click="save"
+                                    @click="quickSave"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
                                 </v-btn>
@@ -523,7 +601,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.saveSession.load')"
-                                    @click="load"
+                                    @click="loadLastSession"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.load') }}
                                 </v-btn>
@@ -579,8 +657,72 @@ export default {
                                     {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
                                 </v-btn>
                             </v-col>
+                            <v-col
+                                cols="6"
+                                class="flex"
+                            >
+                                <v-btn
+                                    id="load-from-templates"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.templates')"
+                                    @click="showTemplates = true"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.saveSession.templates') }}
+                                </v-btn>
+                            </v-col>
                         </v-row>
                     </v-container>
+                    <Modal
+                        :show-modal="showTemplates"
+                        @modalHid="escapeSelectFromTemplates"
+                        @clickedOnX="escapeSelectFromTemplates"
+                        @clickedOutside="escapeSelectFromTemplates"
+                    >
+                        <v-container>
+                            <v-card-title primary-title>
+                                <v-icon
+                                    class="template-info-button"
+                                >
+                                    mdi-file-cog
+                                </v-icon>
+                                {{ $t("additional:modules.tools.cosi.saveSession.loadFromTemplate") }}
+                            </v-card-title>
+                            <v-subheader>
+                                {{ $t("additional:modules.tools.cosi.saveSession.infoLoadFromTemplates") }}
+                            </v-subheader>
+                            <v-list dense>
+                                <v-list-item-group
+                                    color="primary"
+                                >
+                                    <v-list-item
+                                        v-for="(template, i) in templates"
+                                        :key="i"
+                                        @click="loadFromTemplate(template)"
+                                    >
+                                        <v-list-item-icon>
+                                            <v-tooltip left>
+                                                <template #activator="{ on, attrs }">
+                                                    <v-icon
+                                                        class="template-info-button"
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        mdi-help-circle
+                                                    </v-icon>
+                                                </template>
+                                                {{ template.meta ? template.meta.info : $t("additional:modules.tools.cosi.saveSession.noInfo") }}
+                                            </v-tooltip>
+                                        </v-list-item-icon>
+                                        <v-list-item-content>
+                                            <v-list-item-title v-text="template.meta.title" />
+                                            <v-list-item-subtitle v-text="template.meta.created" />
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-list-item-group>
+                            </v-list>
+                        </v-container>
+                    </Modal>
                 </v-app>
             </template>
         </Tool>
@@ -590,13 +732,16 @@ export default {
             color="lightgrey"
         >
             {{ $t('additional:modules.tools.cosi.saveSession.loadLast') }}
+            <template v-if="latestDate">
+                ({{ latestDate }})
+            </template>
 
             <template #action="{ attrs }">
                 <v-row cols="12">
                     <v-btn
                         v-bind="attrs"
                         text
-                        @click="load"
+                        @click="loadLastSession"
                     >
                         {{ $t("additional:modules.tools.cosi.saveSession.load") }}
                     </v-btn>
@@ -618,5 +763,9 @@ export default {
 
     .hidden {
         display: hidden;
+    }
+
+    .template-info-button {
+        margin-right: 20px;
     }
 </style>

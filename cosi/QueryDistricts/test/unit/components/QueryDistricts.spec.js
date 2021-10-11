@@ -22,8 +22,6 @@ import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
 import features_ha_with_geo from "./features_ha_with_geo.json";
 import GeoJSON from "ol/format/GeoJSON";
-import Feature from "ol/Feature";
-import Polygon from "ol/geom/Polygon";
 
 Vue.use(Vuetify);
 
@@ -43,43 +41,35 @@ describe("addons/cosi/QueryDistricts/", () => {
         ha_features = new GeoJSON().readFeatures(features_ha),
         geo_features = new GeoJSON().readFeatures(features_ha_with_geo),
         bib_features = new GeoJSON().readFeatures(features_bibs),
-        districtMock = {
-            adminFeature: new Feature({
-                id: "123",
-                statgebiet: "Wolkenkuckucksheim",
-                stadtteil_name: "Wolkenkuckucksheim",
-                geometry: new Polygon([
-                    [
-                        [
-                            10.051116943359375,
-                            53.592504809039376
-                        ],
-                        [
-                            10.030517578125,
-                            53.53214572511981
-                        ],
-                        [
-                            10.136260986328125,
-                            53.528880618043225
-                        ],
-                        [
-                            10.139007568359375,
-                            53.585168439492456
-                        ],
-                        [
-                            10.051116943359375,
-                            53.592504809039376
-                        ]
-                    ]
-                ])
-            }),
-            statFeatures: [],
-            originalStatFeatures: [],
-            isSelected: true,
-            getId: () => "123",
-            getName: () => "Wolkenkuckucksheim",
-            getLabel: () => "Wolkenkuckucksheim (Bezirk)"
-        };
+        districtsMock = [
+            {
+                adminFeature: geo_features[0],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Rahlstedt",
+                getName: () => "Rahlstedt",
+                getLabel: () => "Rahlstedt"
+            },
+            {
+                adminFeature: geo_features[1],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Farmsen-Berne",
+                getName: () => "Farmsen-Berne",
+                getLabel: () => "Farmsen-Berne"
+            },
+            {
+                adminFeature: geo_features[2],
+                statFeatures: [],
+                originalStatFeatures: [],
+                isSelected: true,
+                getId: () => "Horn",
+                getName: () => "Horn",
+                getLabel: () => "Horn"
+            }
+        ];
 
 
     // eslint-disable-next-line require-jsdoc
@@ -133,9 +123,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                                     })
                                 }),
                                 selectedDistrictLevel: () => ({
-                                    districts: [
-                                        districtMock
-                                    ],
+                                    districts: districtsMock,
                                     stats: {
                                         baseUrl: ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile"]
                                     }
@@ -149,7 +137,20 @@ describe("addons/cosi/QueryDistricts/", () => {
                         FeaturesList: {
                             namespaced: true,
                             getters: {
-                                isFeatureDisabled: () => () => false
+                                isFeatureDisabled: () => () => false,
+                                layerMapById: () => () => ({
+                                    addressField: [
+                                        "adresse"
+                                    ],
+                                    categoryField: null,
+                                    id: "Öffentliche Bibliotheken",
+                                    keyOfAttrName: "bezeichnung",
+                                    layerId: "bib_layer",
+                                    numericalValues: [{
+                                        id: "ente",
+                                        name: "Entenart"
+                                    }]
+                                })
                             }
                         }
                     }
@@ -404,12 +405,11 @@ describe("addons/cosi/QueryDistricts/", () => {
                     "layerId": "19034",
                     "currentLayerId": "19034",
                     "name": "Bevölkerung insgesamt",
-                    "field": "jahr_2019", "max": 92087, "min": 506, "value": 0, "high": 0, "low": 0,
+                    "field": "jahr_2019", "max": 92087, "min": 506, "invalidFeatures": [], "value": 0, "high": 0, "low": 0,
                     "valueType": "relative",
                     "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                     "error": undefined,
                     "facilityLayerName": undefined,
-                    "referenceLayerId": undefined,
                     "quotientLayers": [],
                     "properties": null
                 }
@@ -455,7 +455,7 @@ describe("addons/cosi/QueryDistricts/", () => {
     it("compareFeatures one filter", async () => {
         // arrange
         const value = [
-                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54}
+                {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54, "invalidFeatures": []}
             ],
             self = {
                 propertiesMap: {"19041": getAllFeatures("19041").map(f => f.getProperties())},
@@ -481,8 +481,8 @@ describe("addons/cosi/QueryDistricts/", () => {
                 keyOfAttrNameStats: "stadtteil",
                 ...compareFeatures
             },
-            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54},
-            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506},
+            layer1 = {"layerId": "19041", low: 100, high: 200, "field": "jahr_2019", "value": 0, "max": 3538, "min": 54, "invalidFeatures": []},
+            layer2 = {"layerId": "19034", low: 1000, high: 1000, "field": "jahr_2019", "value": 0, "max": 92087, "min": 506, "invalidFeatures": []},
             // act
             ret1 = await self.setComparableFeatures([layer1]),
             ret2 = await self.setComparableFeatures([layer2]),
@@ -533,35 +533,41 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "layerId": "bib_layer",
                 "currentLayerId": "bib_layer",
                 "name": "Öffentliche Bibliotheken",
-                "field": "jahr_2012", "max": 0, "min": 0, "value": 0, high: 0, low: 0,
+                "field": "jahr_2020", "max": 1, "min": 0, "invalidFeatures": [], "value": 0, high: 0, low: 0,
                 "valueType": "absolute",
-                "fieldValues": ["jahr_2012", "jahr_2013", "jahr_2014", "jahr_2015", "jahr_2016", "jahr_2017", "jahr_2018", "jahr_2019", "jahr_2020"],
+                "fieldValues": ["jahr_2020", "jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                 "error": undefined,
                 "facilityLayerName": "Öffentliche Bibliotheken",
-                "quotientLayers": [],
-                "properties": ["ente"]
+                "quotientLayers": [{
+                    "id": "19034",
+                    "name": "Bevölkerung insgesamt"
+                }],
+                "properties": [{
+                    "id": "ente",
+                    "name": "Entenart"
+                }]
             },
             expModelRahlstedt = {
                 ...expModel,
-                "value": 35, high: 1000, low: 1000
+                "value": 1, high: 1, low: 1
             },
             expModelHorn = {
                 ...expModel,
-                "value": NaN, high: 1000, low: 1000,
+                "value": 0, high: 1, low: 1,
                 "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable"
             };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
-        expect(wrapper.vm.resultNames).to.deep.equal([]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn"]);
 
         // act: update filter
         await wrapper.setData({
-            layerFilterModels: [{...expModel, high: 1000, low: 1000}]
+            layerFilterModels: [{...expModel, high: 1, low: 1}]
         });
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Rahlstedt"]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn", "Rahlstedt"]);
 
         // act: select district
         await wrapper.setData({
@@ -589,7 +595,10 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // act
         await wrapper.setData({
-            facilityNames: ["Öffentliche Bibliotheken"],
+            facilityNames: [{
+                name: "Öffentliche Bibliotheken",
+                id: "bib_layer"
+            }],
             referenceLayers: [{"id": "19042"}]
         });
         await setActive(true);
@@ -609,9 +618,8 @@ describe("addons/cosi/QueryDistricts/", () => {
             {
                 "facilityLayerName": "Öffentliche Bibliotheken",
                 "group": "additional:modules.tools.cosi.queryDistricts.funcData",
-                "id": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "name": "Bevölkerung insgesamt/additional:modules.tools.cosi.queryDistricts.count Öffentliche Bibliotheken",
-                "referenceLayerId": "19034",
+                "id": "bib_layer",
+                "name": "Öffentliche Bibliotheken",
                 "valueType": "absolute"
             }
         ]);
@@ -646,9 +654,9 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "currentLayerId": "19041/19034",
                 "name": "Layer", "field": "jahr_2019", "value": 0, "valueType": "relative", "high": 0, "low": 0,
                 "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
-                "min": 0.01, "max": 1.37,
+                "min": 0.00535555414960923, "max": 1.3710088339920947, "invalidFeatures": [],
+                "properties": [null],
                 "quotientLayers": [{"id": "19034", "name": "Bevölkerung insgesamt"}], "quotientLayer": "19034",
-                "referenceLayerId": undefined,
                 "error": undefined,
                 "facilityLayerName": undefined
             }
