@@ -198,6 +198,14 @@ export default {
 
         activeLayerMapping () {
             this.numericalColumns = this.getNumericalColumns();
+        },
+
+        selectedLayers () {
+            this.updateDistanceScores();
+        },
+
+        filteredItems () {
+            this.updateDistanceScores();
         }
     },
     created () {
@@ -431,12 +439,21 @@ export default {
             return allLayers;
         },
         async updateSelectedLayers (layerIds) {
+            this.selectedLayers = layerIds;
+        },
+        async updateDistanceScores () {
+            if (this.filteredItems && this.filteredItems.length) {
+                this.distanceScores = this.filteredItems.reduce((acc, e) => ({...acc, [e.key]: "na"}));
 
-            for (const item of this.filteredItems) {
-                const dist = await this.getDistanceScore({feature: item.feature, layerIds,
-                    weights: layerIds.map(()=>1)});
+                if (this.selectedLayers.length) {
+                    for (const item of this.filteredItems) {
+                        const dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers,
+                            weights: this.selectedLayers.map(()=>1)});
 
-                this.distanceScores = {...this.distanceScores, [item.key]: dist};
+
+                        this.distanceScores = {...this.distanceScores, [item.key]: dist !== null ? dist : "na"};
+                    }
+                }
             }
         }
     }
