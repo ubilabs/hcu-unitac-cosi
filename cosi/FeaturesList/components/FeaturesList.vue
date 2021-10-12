@@ -101,7 +101,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "activeModifiedFeatures"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapState(["configJson"]),
         columns () {
@@ -161,16 +161,7 @@ export default {
          * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
          * @returns {void}
          */
-        activeSimulatedFeatures () {
-            this.updateFeaturesList();
-        },
-
-        /**
-         * Updates the list on added/removed modified features
-         * @listens #change:Tools/ScenarioBuilder/activeModifiedFeatures
-         * @returns {void}
-         */
-        activeModifiedFeatures () {
+        scenarioUpdated () {
             this.updateFeaturesList();
         },
 
@@ -513,7 +504,7 @@ export default {
                                         mdi-alert
                                     </v-icon>
                                     <v-icon
-                                        v-if="item.isSimulated"
+                                        v-if="item.isSimulation"
                                         :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
                                     >
                                         mdi-sprout

@@ -178,7 +178,6 @@ export default {
             // this.updateFacilities();
         },
         filters () {
-            console.log("this has changed?");
             this.prepareCoverage();
         }
     },
