@@ -215,7 +215,7 @@ export default {
             this.updateDistanceScores();
         },
 
-        filteredItems () {
+        items () {
             this.updateDistanceScores();
         },
 
@@ -457,11 +457,11 @@ export default {
             this.selectedLayers = layerIds;
         },
         async updateDistanceScores () {
-            if (this.filteredItems && this.filteredItems.length) {
-                this.distanceScores = this.filteredItems.reduce((acc, e) => ({...acc, [e.feature.key]: "na"}), {});
+            if (this.items && this.items.length) {
+                this.distanceScores = this.items.reduce((acc, e) => ({...acc, [e.feature.key]: "na"}), {});
 
                 if (this.selectedLayers.length) {
-                    this.distanceScoreQueue = [...this.filteredItems];
+                    this.distanceScoreQueue = [...this.items];
                     while (this.distanceScoreQueue.length) {
                         const item = this.distanceScoreQueue.shift(),
                             dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
@@ -672,7 +672,7 @@ export default {
                             </v-col>
                             <v-progress-linear
                                 v-if="distanceScoreQueue.length>0"
-                                :value="100-(distanceScoreQueue.length/filteredItems.length)*100"
+                                :value="100-(distanceScoreQueue.length/items.length)*100"
                                 background-color="white"
                             />
                         </v-row>
