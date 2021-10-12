@@ -21,7 +21,8 @@
                     "exportDetails": "Detailansicht exportieren",
                     "exportFilename": "CoSI_Einrichtungsübersicht",
                     "weighting": "Gewichtung",
-                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung (SB)"
+                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung (SB)",
+                    "abort": "Abbrechen"
                 }
             }
         }

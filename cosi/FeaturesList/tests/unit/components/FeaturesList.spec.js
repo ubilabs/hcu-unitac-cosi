@@ -79,6 +79,8 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "layerName",
             "type",
             "group",
+            "anzahl_schueler",
+            "key",
             // "actions",
             "enabled"
         ],
@@ -210,7 +212,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const wrapper = await mountComponent(true, [layer1]);
 
             expect(wrapper.vm.items).to.have.lengthOf(1);
-            expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isSimulation");
+            expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "anzahl_schueler", "feature", "enabled", "isSimulation");
         });
 
         it("should show layers for distance score", async () => {
@@ -246,7 +248,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.distanceScores.id).to.be.equal(1);
+            expect(wrapper.vm.distanceScores.id).to.be.equal("1.0");
 
             // eslint-disable-next-line one-var
             const args = getDistanceScoreStub.firstCall.args[1];
@@ -256,7 +258,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(args.weights).to.be.eql([1]);
         });
 
-        it.only("should recompute distance score after weight change", async () => {
+        it("should recompute distance score after weight change", async () => {
             // arrange
             feature.setId("id");
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"},
@@ -267,6 +269,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}, {layerId: "1235"}]});
             getDistanceScoreStub.reset();
+            getDistanceScoreStub.returns(Promise.resolve(1));
 
             // act
             await wrapper.vm.updateWeights({"1234": 0.5, "1235": 1});
@@ -306,7 +309,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             // expand the table on expand button click
             expect(tableWrapper.findAll(".v-data-table__expanded")).to.have.lengthOf(2);
             // render detail view in the expanded row
-            expect(wrapper.findComponent(DetailView).findAll("tr")).to.have.lengthOf(5);
+            expect(wrapper.findComponent(DetailView).findAll("tr")).to.have.lengthOf(6);
         });
 
         it("selecting a field in expanded view should emit the 'filterProps' event", async () => {

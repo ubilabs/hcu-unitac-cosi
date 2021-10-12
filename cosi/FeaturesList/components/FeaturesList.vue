@@ -30,6 +30,7 @@ export default {
     },
     data () {
         return {
+            distanceScoreQueue: [],
             weight: 0,
             showWeightsDialog: false,
             layerWeights: {},
@@ -113,7 +114,7 @@ export default {
             return [
                 ...this.featureColumns,
                 ...this.numericalColumns,
-                ...[{text: "SB", value: "key"}],
+                ...[{text: "SB", value: "key", divider: true}],
                 ...this.actionColumns
             ];
         },
@@ -460,11 +461,13 @@ export default {
                 this.distanceScores = this.filteredItems.reduce((acc, e) => ({...acc, [e.feature.key]: "na"}), {});
 
                 if (this.selectedLayers.length) {
-                    for (const item of this.filteredItems) {
-                        const dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
-                            weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId])});
+                    this.distanceScoreQueue = [...this.filteredItems];
+                    while (this.distanceScoreQueue.length) {
+                        const item = this.distanceScoreQueue.shift(),
+                            dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
+                                weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId])});
 
-                        this.distanceScores = {...this.distanceScores, [item.feature.getId()]: dist !== null ? dist : "na"};
+                        this.distanceScores = {...this.distanceScores, [item.feature.getId()]: dist !== null ? dist.toFixed(1) : "na"};
                     }
                 }
             }
@@ -657,7 +660,21 @@ export default {
                                 >
                                     {{ $t('additional:modules.tools.cosi.featuresList.weighting') }}
                                 </v-btn>
+                                <v-btn
+                                    v-if="distanceScoreQueue.length>0"
+                                    id="weights"
+                                    depressed
+                                    tile
+                                    @click.native="distanceScoreQueue=[]"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.featuresList.abort') }}
+                                </v-btn>
                             </v-col>
+                            <v-progress-linear
+                                v-if="distanceScoreQueue.length>0"
+                                :value="100-(distanceScoreQueue.length/filteredItems.length)*100"
+                                background-color="white"
+                            />
                         </v-row>
                     </form>
                 </div>
