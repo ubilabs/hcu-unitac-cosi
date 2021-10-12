@@ -92,13 +92,13 @@ export default {
             if (newValue) {
                 this.$nextTick(() => {
                     if (this.$refs.graphicalSelection) {
-                        if (typeof this.$refs.graphicalSelection.resetView === 'function') {
+                        if (typeof this.$refs.graphicalSelection.resetView === "function") {
                             this.$refs.graphicalSelection.resetView();
                         }
-                        if (typeof this.$refs.graphicalSelection.setStatus === 'function') {
+                        if (typeof this.$refs.graphicalSelection.setStatus === "function") {
                             this.$refs.graphicalSelection.setStatus(newValue);
                         }
-                        if (typeof this.$refs.graphicalSelection.resetGeographicSelection === 'function') {
+                        if (typeof this.$refs.graphicalSelection.resetGeographicSelection === "function") {
                             this.$refs.graphicalSelection.resetGeographicSelection();
                         }
                     }
@@ -106,13 +106,13 @@ export default {
             }
             else {
                 if (this.$refs.graphicalSelection) {
-                    if (typeof this.$refs.graphicalSelection.setStatus === 'function') {
+                    if (typeof this.$refs.graphicalSelection.setStatus === "function") {
                         this.$refs.graphicalSelection.setStatus(newValue);
                     }
-                    if (typeof this.$refs.graphicalSelection.resetView === 'function') {
+                    if (typeof this.$refs.graphicalSelection.resetView === "function") {
                         this.$refs.graphicalSelection.resetView();
                     }
-                    if (typeof this.$refs.graphicalSelection.resetGeographicSelection === 'function') {
+                    if (typeof this.$refs.graphicalSelection.resetGeographicSelection === "function") {
                         this.$refs.graphicalSelection.resetGeographicSelection();
                     }
                 }
