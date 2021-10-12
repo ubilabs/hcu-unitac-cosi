@@ -18,6 +18,8 @@ export default {
         return {
             dzIsDropHovering: false,
             storePath: this.$store.state.Tools.CosiFileImport,
+            // available CRS
+            availableCrs: ["EPSG:4326", "EPSG:25832"],
             // set addNewLayer true to change to upload view
             addNewLayer: true,
             // set imported true while adjustments are made to layer that is about to be implemented
@@ -390,6 +392,21 @@ export default {
                         {{ $t("additional:modules.tools.cosiFileImport.captions.browse") }}
                     </label>
                 </div>
+                <div class="h-seperator" />
+                <v-row>
+                    <v-col cols="12">
+                        <p
+                            class="caption"
+                        >
+                            {{ $t("additional:modules.tools.cosiFileImport.captions.selectCrs") }}
+                        </p>
+                        <v-select
+                            v-model="currentCrs"
+                            dense
+                            :items="availableCrs"
+                        />
+                    </v-col>
+                </v-row>
 
                 <div v-if="importedFileNames.length > 0">
                     <div class="h-seperator" />
@@ -423,26 +440,16 @@ export default {
                 <!--New Layer Handling-->
                 <template v-if="imported">
                     <div class="wrapper">
-                        <v-row dense>
-                            <v-col cols="6">
-                                <div class="head">
-                                    <p class="meta">
-                                        <strong>Datensatz_ID</strong> {{ newLayer.id }}
-                                    </p>
-                                    <v-text-field
-                                        v-model="newLayer.name"
-                                        label="Layername"
-                                        class="name"
-                                    />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <v-select
-                                    v-model="currentCrs"
-                                    :items="['EPSG:4326', 'EPSG:25832']"
-                                />
-                            </v-col>
-                        </v-row>
+                        <div class="head">
+                            <p class="meta">
+                                <strong>Datensatz_ID</strong> {{ newLayer.id }}
+                            </p>
+                            <v-text-field
+                                v-model="newLayer.name"
+                                label="Layername"
+                                class="name"
+                            />
+                        </div>
                         <div class="body">
                             <div class="wrapper">
                                 <div class="style_select">

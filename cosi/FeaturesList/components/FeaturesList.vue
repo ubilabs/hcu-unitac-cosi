@@ -240,11 +240,21 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
+            console.log(this.activeLayerMapping);
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
+                    console.log(vectorLayer);
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
-                        visibleFeatures = features.filter(feature => typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle()() !== null),
+                        visibleFeatures = features.filter(feature => {
+                            if (typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle() !== null) {
+                                return true;
+                            }
+                            if (typeof vectorLayer.getStyleFunction() === "function") {
+                                return true;
+                            }
+                            return false;
+                        }),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 

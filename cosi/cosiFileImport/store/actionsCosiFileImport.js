@@ -221,6 +221,7 @@ function addLayerToTree (newLayer) {
     setLayerAttributes(model, newLayer);
     adjustLayerStyling(newLayer);
 
+    console.log(model.get("attributeWhiteList"));
     // eslint-disable-next-line one-var
     const filterModel = {
             attributeWhiteList: model.get("attributeWhiteList"),
