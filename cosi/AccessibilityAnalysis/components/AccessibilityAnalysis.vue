@@ -117,7 +117,9 @@ export default {
                 this.map.addInteraction(this.select);
             }
             else {
-                this.select.getFeatures().removeAt(0);
+                if (this.select?.getFeatures().getLength() > 0) {
+                    this.select.getFeatures().removeAt(0);
+                }
                 this.map.removeInteraction(this.select);
             }
         }
