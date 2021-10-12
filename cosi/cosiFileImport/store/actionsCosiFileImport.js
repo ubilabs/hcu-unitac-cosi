@@ -584,7 +584,7 @@ export default {
                 }
 
                 geometries.forEach(geometry => {
-                    geometry.transform("EPSG:4326", "EPSG:25832");
+                    geometry.transform(state.crs, "EPSG:25832");
                 });
             }
         });

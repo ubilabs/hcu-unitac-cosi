@@ -78,6 +78,14 @@ export default {
                 this.setSelectedFiletype(value);
             }
         },
+        currentCrs: {
+            get () {
+                return this.crs;
+            },
+            set (value) {
+                this.setCrs(value);
+            }
+        },
         dropZoneAdditionalClass: function () {
             return this.dzIsDropHovering ? "dzReady" : "";
         },
@@ -415,16 +423,26 @@ export default {
                 <!--New Layer Handling-->
                 <template v-if="imported">
                     <div class="wrapper">
-                        <div class="head">
-                            <p class="meta">
-                                <strong>Datensatz_ID</strong> {{ newLayer.id }}
-                            </p>
-                            <v-text-field
-                                v-model="newLayer.name"
-                                label="Layername"
-                                class="name"
-                            />
-                        </div>
+                        <v-row dense>
+                            <v-col cols="6">
+                                <div class="head">
+                                    <p class="meta">
+                                        <strong>Datensatz_ID</strong> {{ newLayer.id }}
+                                    </p>
+                                    <v-text-field
+                                        v-model="newLayer.name"
+                                        label="Layername"
+                                        class="name"
+                                    />
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-select
+                                    v-model="currentCrs"
+                                    :items="['EPSG:4326', 'EPSG:25832']"
+                                />
+                            </v-col>
+                        </v-row>
                         <div class="body">
                             <div class="wrapper">
                                 <div class="style_select">
