@@ -54,8 +54,10 @@ export default {
                 "pentecostMonday",
                 "germanUnityDay",
                 "reformationDay",
+                "christmasEve",
                 "christmasDay",
-                "secondDayOfChristmas"
+                "secondDayOfChristmas",
+                "newYearsEve"
             ],
             checkGurlittInsel: false
         };

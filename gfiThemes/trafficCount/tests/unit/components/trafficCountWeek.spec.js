@@ -51,8 +51,10 @@ describe("addons/trafficCount/components/TrafficCountWeek.vue", () => {
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
+                    "christmasEve",
                     "christmasDay",
-                    "secondDayOfChristmas"
+                    "secondDayOfChristmas",
+                    "newYearsEve"
                 ]
             },
             localVue

@@ -51,8 +51,10 @@ describe("addons/trafficCount/components/TraffiCountInfo.vue", () => {
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
+                    "christmasEve",
                     "christmasDay",
-                    "secondDayOfChristmas"
+                    "secondDayOfChristmas",
+                    "newYearsEve"
                 ],
                 checkGurlittInsel: false
             },

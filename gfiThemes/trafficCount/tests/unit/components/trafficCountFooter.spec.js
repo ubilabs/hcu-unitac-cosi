@@ -59,8 +59,10 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
+                    "christmasEve",
                     "christmasDay",
-                    "secondDayOfChristmas"
+                    "secondDayOfChristmas",
+                    "newYearsEve"
                 ],
                 downloadUrl: false
             },
@@ -131,8 +133,10 @@ describe("addons/trafficCount/components/trafficCountFooter.vue", () => {
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
+                    "christmasEve",
                     "christmasDay",
-                    "secondDayOfChristmas"
+                    "secondDayOfChristmas",
+                    "newYearsEve"
                 ],
                 downloadUrl: false
             },

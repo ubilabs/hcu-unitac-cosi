@@ -52,8 +52,10 @@ describe("addons/trafficCount/components/TrafficCountCompTable.vue", () => {
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
+                    "christmasEve",
                     "christmasDay",
-                    "secondDayOfChristmas"
+                    "secondDayOfChristmas",
+                    "newYearsEve"
                 ],
                 currentTabId: "day"
             }
@@ -203,8 +205,10 @@ describe("addons/trafficCount/components/TrafficCountCompTable.vue", () => {
                     "pentecostMonday",
                     "germanUnityDay",
                     "reformationDay",
+                    "christmasEve",
                     "christmasDay",
-                    "secondDayOfChristmas"
+                    "secondDayOfChristmas",
+                    "newYearsEve"
                 ],
                 currentTabId: "week"
             }
