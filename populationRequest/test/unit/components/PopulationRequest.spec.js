@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {config, shallowMount, createLocalVue} from "@vue/test-utils";
+import {config, mount, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
 
@@ -65,7 +65,8 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
                 }
             },
             getters: {
-                isDefaultStyle: () => true
+                isDefaultStyle: () => true,
+                uiStyle: () => true
             }
         });
 
@@ -87,7 +88,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
 
     it("should not render if active is false", async () => {
         store.commit("Tools/PopulationRequest/setActive", false);
-        const wrapper = shallowMount(Component, {store, localVue});
+        const wrapper = mount(Component, {store, localVue});
 
         expect(wrapper.find("div.dropdown").exists()).to.be.false;
     });

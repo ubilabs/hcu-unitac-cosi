@@ -91,15 +91,31 @@ export default {
         active (newValue) {
             if (newValue) {
                 this.$nextTick(() => {
-                    this.$refs.graphicalSelection.resetView();
-                    this.$refs.graphicalSelection.setStatus(newValue);
-                    this.$refs.graphicalSelection.resetGeographicSelection();
+                    if (this.$refs.graphicalSelection) {
+                        if (typeof this.$refs.graphicalSelection.resetView === 'function') {
+                            this.$refs.graphicalSelection.resetView();
+                        }
+                        if (typeof this.$refs.graphicalSelection.setStatus === 'function') {
+                            this.$refs.graphicalSelection.setStatus(newValue);
+                        }
+                        if (typeof this.$refs.graphicalSelection.resetGeographicSelection === 'function') {
+                            this.$refs.graphicalSelection.resetGeographicSelection();
+                        }
+                    }
                 });
             }
             else {
-                this.$refs.graphicalSelection.setStatus(newValue);
-                this.$refs.graphicalSelection.resetView();
-                this.$refs.graphicalSelection.resetGeographicSelection();
+                if (this.$refs.graphicalSelection) {
+                    if (typeof this.$refs.graphicalSelection.setStatus === 'function') {
+                        this.$refs.graphicalSelection.setStatus(newValue);
+                    }
+                    if (typeof this.$refs.graphicalSelection.resetView === 'function') {
+                        this.$refs.graphicalSelection.resetView();
+                    }
+                    if (typeof this.$refs.graphicalSelection.resetGeographicSelection === 'function') {
+                        this.$refs.graphicalSelection.resetGeographicSelection();
+                    }
+                }
                 // forced delete of tooltip overlay
                 $("#tooltip-overlay").remove();
             }
