@@ -19,7 +19,9 @@
                     "inactiveFeature": "Die ausgewählte Einrichtung ist gegenwärtig inaktiv geschaltet.",
                     "exportTable": "Tabelle exportieren",
                     "exportDetails": "Detailansicht exportieren",
-                    "exportFilename": "CoSI_Einrichtungsübersicht"
+                    "exportFilename": "CoSI_Einrichtungsübersicht",
+                    "weighting": "Gewichtung",
+                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung (SB)"
                 }
             }
         }

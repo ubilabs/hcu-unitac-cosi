@@ -13,6 +13,7 @@ import getClusterSource from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
+import LayerWeights from "./LayerWeights.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
@@ -24,10 +25,14 @@ export default {
         Tool,
         Multiselect,
         DetailView,
-        FeatureIcon
+        FeatureIcon,
+        LayerWeights
     },
     data () {
         return {
+            weight: 0,
+            showWeightsDialog: false,
+            layerWeights: {},
             selectedLayers: [],
             distanceScores: {},
             search: "",
@@ -108,7 +113,7 @@ export default {
             return [
                 ...this.featureColumns,
                 ...this.numericalColumns,
-                ...[{text: "score", value: "key"}],
+                ...[{text: "SB", value: "key"}],
                 ...this.actionColumns
             ];
         },
@@ -201,10 +206,19 @@ export default {
         },
 
         selectedLayers () {
+            for (const layer of this.selectedLayers) {
+                if (this.layerWeights[layer.layerId] === undefined) {
+                    this.layerWeights[layer.layerId] = 1;
+                }
+            }
             this.updateDistanceScores();
         },
 
         filteredItems () {
+            this.updateDistanceScores();
+        },
+
+        layerWeights () {
             this.updateDistanceScores();
         }
     },
@@ -447,13 +461,16 @@ export default {
 
                 if (this.selectedLayers.length) {
                     for (const item of this.filteredItems) {
-                        const dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers,
-                            weights: this.selectedLayers.map(()=>1)});
+                        const dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
+                            weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId])});
 
-                        this.distanceScores = {...this.distanceScores, [item.feature.key]: dist !== null ? dist : "na"};
+                        this.distanceScores = {...this.distanceScores, [item.feature.getId()]: dist !== null ? dist : "na"};
                     }
                 }
             }
+        },
+        updateWeights (weights) {
+            this.layerWeights = {...weights};
         }
     }
 };
@@ -614,22 +631,42 @@ export default {
                                 </v-col>
                             </v-row>
                         </div>
-                        <v-autocomplete
-                            id="selectedLayers"
-                            :value="selectedLayers"
-                            :items="layerOptions"
-                            outlined
-                            dense
-                            multiple
-                            small-chips
-                            item-text="id"
-                            item-value="layerId"
-                            @input="updateSelectedLayers"
-                        />
+                        <v-row>
+                            <v-col>
+                                <v-autocomplete
+                                    id="selectedLayers"
+                                    :value="selectedLayers"
+                                    :items="layerOptions"
+                                    :label="$t('additional:modules.tools.cosi.featuresList.distanceScoreLayerLabel')"
+                                    outlined
+                                    dense
+                                    multiple
+                                    small-chips
+                                    item-text="id"
+                                    return-object
+                                    @input="updateSelectedLayers"
+                                />
+                            </v-col>
+                            <v-col>
+                                <v-btn
+                                    v-if="selectedLayers.length>0"
+                                    id="weights"
+                                    depressed
+                                    tile
+                                    @click.native="showWeightsDialog=true"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.featuresList.weighting') }}
+                                </v-btn>
+                            </v-col>
+                        </v-row>
                     </form>
                 </div>
-                </form>
-                </div>
+                <LayerWeights
+                    v-model="showWeightsDialog"
+                    :weights="layerWeights"
+                    :layers="selectedLayers"
+                    @update="updateWeights"
+                />
             </v-app>
         </template>
     </Tool>
@@ -657,3 +694,5 @@ export default {
         }
     }
 </style>
+
+                                    // v-model="layerWeights[layer.layerId].weight"

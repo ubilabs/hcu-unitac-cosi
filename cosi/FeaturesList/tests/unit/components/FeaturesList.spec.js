@@ -33,10 +33,11 @@ config.mocks.$t = key => key;
 global.requestAnimationFrame = (fn) => fn();
 
 describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
-    let store, sandbox, vuetify, layerListStub;
+    let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
 
 
     const feature = new Feature({
+            id: "id",
             schulname: "feature 1",
             anzahl_schueler: 42,
             adresse_strasse_hausnr: "Hauptstraße",
@@ -87,6 +88,8 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         vuetify = new Vuetify();
         sandbox = sinon.createSandbox();
         layerListStub = sinon.stub();
+        getDistanceScoreStub = sinon.stub();
+        getDistanceScoreStub.returns(Promise.resolve(1));
 
         store = new Vuex.Store({
             namespaces: true,
@@ -113,7 +116,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                         DistanceScoreService: {
                             namespaced: true,
                             actions: {
-                                getDistanceScore: ()=>Promise.resolve(1)
+                                getDistanceScore: getDistanceScoreStub
                             }
                         }
                     }
@@ -229,10 +232,12 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 ]
 
             );
+            expect(wrapper.vm.layerWeights).to.deep.equal({});
+            expect(wrapper.vm.selectedLayers).to.deep.equal([]);
         });
 
         it("should compute distance score on select layer", async () => {
-            feature.key = 1;
+            feature.setId("id");
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
             const wrapper = await mountComponent(true, [layer1]);
@@ -241,7 +246,36 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.distanceScores[1]).to.be.equal(1);
+            expect(wrapper.vm.distanceScores.id).to.be.equal(1);
+
+            // eslint-disable-next-line one-var
+            const args = getDistanceScoreStub.firstCall.args[1];
+
+            expect(args.feature.getId()).to.be.equal("id");
+            expect(args.layerIds).to.be.eql(["1234"]);
+            expect(args.weights).to.be.eql([1]);
+        });
+
+        it.only("should recompute distance score after weight change", async () => {
+            // arrange
+            feature.setId("id");
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"},
+                {"id": "1235", "url": "url", "featureType": "type"}
+            ]);
+
+            const wrapper = await mountComponent(true, [layer1]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}, {layerId: "1235"}]});
+            getDistanceScoreStub.reset();
+
+            // act
+            await wrapper.vm.updateWeights({"1234": 0.5, "1235": 1});
+
+            // assert
+            // eslint-disable-next-line one-var
+            const args = getDistanceScoreStub.firstCall.args[1];
+
+            expect(args.weights).to.be.eql([0.5, 1]);
         });
 
         it("headers should have all fields", async () => {
@@ -328,6 +362,19 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             expect(wrapper.vm.items[0].enabled).to.be.true;
             expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
+        });
+        it("should update weights and recompute score", async () => {
+            feature.key = 1;
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const wrapper = await mountComponent(true, [layer1]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.layerWeights).to.deep.equal({"1234": 1});
+
+            await wrapper.find("#weights").trigger("click");
+            expect(wrapper.vm.showWeightsDialog).to.be.true;
         });
     });
 
