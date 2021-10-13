@@ -67,5 +67,6 @@ export default {
     newLayerInformation: {},
     importedLayers: [],
     activeLayer: 0,
-    updateLayerStyles: false
+    updateLayerStyles: false,
+    crs: "EPSG:4326"
 };

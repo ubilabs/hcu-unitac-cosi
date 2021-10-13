@@ -117,7 +117,9 @@ export default {
                 this.map.addInteraction(this.select);
             }
             else {
-                this.select.getFeatures().removeAt(0);
+                if (this.select?.getFeatures().getLength() > 0) {
+                    this.select.getFeatures().removeAt(0);
+                }
                 this.map.removeInteraction(this.select);
             }
         }
@@ -127,11 +129,23 @@ export default {
     */
     created () {
         this.$on("close", this.close);
-        Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
+        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
         this.select = new Select({
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });
     },
+
+    /**
+     * Listens to the layers change on the map to refresh the list
+     * @listens #change:FeaturesList/activeVectorLayerList
+     * @returns {void}
+     */
+    async activeVectorLayerList () {
+        await this.$nextTick(() => {
+            this.setFacilityLayers();
+        });
+    },
+
     /**
    * Put initialize here if mounting occurs after config parsing
    * @returns {void}

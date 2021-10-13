@@ -8,6 +8,7 @@
                     "introDrawTool": "Importierte Geometrien können im Nachhinein verändert werden. Nutzen Sie hierfür das Werkzeug &quot;$t(common:menu.tools.draw)&quot;.",
                     "drawTool": "$t(common:menu.tools.draw) öffnen",
                     "dropzone": "Datei hier ablegen",
+                    "selectCrs": "Projektionssystem auswählen",
                     "browse": "Datei auswählen",
                     "supportedFiletypes": {
                         "auto": "Automatische Erkennung",

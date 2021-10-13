@@ -142,6 +142,7 @@ export default class ScenarioFeature {
     checkScenarioData () {
         if (Object.keys(this.scenarioData).length === 0) {
             this.feature.unset("isModified");
+            unByKey(this.eventKeys.modifier);
         }
     }
 
@@ -164,6 +165,23 @@ export default class ScenarioFeature {
         for (const prop in properties) {
             this.set(prop, properties[prop]);
         }
+
+        /**
+         * @todo outsource to own method, merge with render event?
+         */
+        this.eventKeys.modifier = getClusterSource(this.layer).on("change", () => {
+            const source = getClusterSource(this.layer);
+
+            if (!source.hasFeature(this.feature) && this.scenario.isActive) {
+                const replace = source.getFeatureById(this.feature.getId());
+
+                if (replace) {
+                    source.removeFeature(replace);
+                }
+
+                source.addFeature(this.feature);
+            }
+        });
         this.feature.set("isModified", true);
     }
 

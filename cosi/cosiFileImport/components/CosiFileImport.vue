@@ -18,6 +18,8 @@ export default {
         return {
             dzIsDropHovering: false,
             storePath: this.$store.state.Tools.CosiFileImport,
+            // available CRS
+            availableCrs: ["EPSG:4326", "EPSG:25832"],
             // set addNewLayer true to change to upload view
             addNewLayer: true,
             // set imported true while adjustments are made to layer that is about to be implemented
@@ -76,6 +78,14 @@ export default {
             },
             set (value) {
                 this.setSelectedFiletype(value);
+            }
+        },
+        currentCrs: {
+            get () {
+                return this.crs;
+            },
+            set (value) {
+                this.setCrs(value);
             }
         },
         dropZoneAdditionalClass: function () {
@@ -382,6 +392,21 @@ export default {
                         {{ $t("additional:modules.tools.cosiFileImport.captions.browse") }}
                     </label>
                 </div>
+                <div class="h-seperator" />
+                <v-row>
+                    <v-col cols="12">
+                        <p
+                            class="caption"
+                        >
+                            {{ $t("additional:modules.tools.cosiFileImport.captions.selectCrs") }}
+                        </p>
+                        <v-select
+                            v-model="currentCrs"
+                            dense
+                            :items="availableCrs"
+                        />
+                    </v-col>
+                </v-row>
 
                 <div v-if="importedFileNames.length > 0">
                     <div class="h-seperator" />

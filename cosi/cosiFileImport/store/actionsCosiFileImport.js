@@ -221,6 +221,7 @@ function addLayerToTree (newLayer) {
     setLayerAttributes(model, newLayer);
     adjustLayerStyling(newLayer);
 
+    console.log(model.get("attributeWhiteList"));
     // eslint-disable-next-line one-var
     const filterModel = {
             attributeWhiteList: model.get("attributeWhiteList"),
@@ -584,7 +585,7 @@ export default {
                 }
 
                 geometries.forEach(geometry => {
-                    geometry.transform("EPSG:4326", "EPSG:25832");
+                    geometry.transform(state.crs, "EPSG:25832");
                 });
             }
         });

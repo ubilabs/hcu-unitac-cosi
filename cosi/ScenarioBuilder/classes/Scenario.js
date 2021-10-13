@@ -84,6 +84,9 @@ export default class Scenario {
         }
         const scenarioFeature = new ScenarioFeature(feature, layer);
 
+        /** @todo is this the right place? */
+        scenarioFeature.scenario = this;
+
         this.modifiedFeatures.push(scenarioFeature);
 
         return scenarioFeature;
