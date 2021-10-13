@@ -15,12 +15,12 @@ function transformedCoordinates (features) {
  *
  * @param {*} feature feature
  * @param {*} layerId layerId
+ * @param {*} extend extend
  * @return {*} score
  */
-async function layerScore (feature, layerId) {
-
+async function layerScore (feature, layerId, extend) {
     const featureCoords = transformedCoordinates([feature]),
-        coords = transformedCoordinates(await getAllFeatures(layerId)),
+        coords = transformedCoordinates(await getAllFeatures(layerId, extend)),
         dists = (await fetchDistances(featureCoords, coords))[0];
 
     if (dists === null) {
@@ -45,7 +45,7 @@ async function layerScore (feature, layerId) {
  * @param {*} weights weights
  * @return {*} score
  */
-async function distanceScore ({getters, commit}, {feature, weights, layerIds}) {
+async function distanceScore ({getters, commit}, {feature, weights, layerIds, extend}) {
     if (weights === undefined || weights.length !== layerIds.length) {
         throw Error("invalid argument: weights");
     }
@@ -54,12 +54,12 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds}) {
         wsum = 0;
 
     for (let j = 0; j < layerIds.length; j++) {
-        const id = feature.getId().toString() + layerIds[j].toString();
+        const id = feature.getId().toString() + layerIds[j].toString() + (extend ? extend.toString() : "");
 
         let mindist = getters.mindists[id];
 
         if (mindist === undefined) {
-            mindist = await layerScore(feature, layerIds[j]);
+            mindist = await layerScore(feature, layerIds[j], extend);
             commit("setMindists", {...getters.mindists, [id]: mindist});
         }
 
@@ -82,15 +82,6 @@ const id = "DistanceScoreService",
     actions = {
         async getDistanceScore (store, params) {
             return distanceScore(store, params);
-            // let ret;
-
-            // try {
-            //     ret = await distanceScoreWrap(params, (p) => commit("setProgress", p));
-            // }
-            // finally {
-            //     commit("setProgress", 0);
-            // }
-            // return ret;
         }
     },
     store = {

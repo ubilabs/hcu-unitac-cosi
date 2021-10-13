@@ -108,7 +108,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extend: "extend"}),
         ...mapState(["configJson"]),
         columns () {
             return [
@@ -220,6 +220,10 @@ export default {
         },
 
         layerWeights () {
+            this.updateDistanceScores();
+        },
+
+        extend () {
             this.updateDistanceScores();
         }
     },
@@ -465,7 +469,8 @@ export default {
                     while (this.distanceScoreQueue.length) {
                         const item = this.distanceScoreQueue.shift(),
                             dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
-                                weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId])});
+                                weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId]),
+                                extend: this.extend ? this.extend : undefined});
 
                         this.distanceScores = {...this.distanceScores, [item.feature.getId()]: dist !== null ? dist.toFixed(1) : "na"};
                     }
