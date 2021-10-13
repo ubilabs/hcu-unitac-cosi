@@ -2,8 +2,6 @@
 /* eslint-disable new-cap */
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDashboard";
-// import mutations from "../store/mutationsDashboard";
-// import actions from "../store/actionsDashboard";
 import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
