@@ -2,6 +2,7 @@ import {expect} from "chai";
 import {
     optimizeComplexTypeValues,
     changeMetadata,
+    confineComplexTypeValues,
     convertComplexTypeToPiechart,
     convertComplexTypeToBarchart,
     convertComplexTypeToLinechart,
@@ -142,6 +143,110 @@ describe("addons/utils/complexType.js", () => {
 
             expect(convertComplexTypeToPiechart(complexData)).to.deep.equal(chartJSData);
         });
+        it("should confine the number of elements from the complexType values", () => {
+            const complexData = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    },
+                    values: [
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2015/16", value: 384}
+                    ]
+                },
+                confinedComplexData = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    },
+                    values: [
+                        {key: "2016/17", value: 381},
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2015/16", value: 384}
+                    ]
+                };
+
+            expect(confineComplexTypeValues(complexData)).to.deep.equal(confinedComplexData);
+        });
+        it("should return the given complexData, if toConfineNumber is not a number", () => {
+            const complexData = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    },
+                    values: [
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2015/16", value: 372}
+                    ]
+                },
+                confinedComplexData = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    },
+                    values: [
+                        {key: "2019/20", value: 372},
+                        {key: "2018/19", value: 392},
+                        {key: "2017/18", value: 398},
+                        {key: "2016/17", value: 381},
+                        {key: "2015/16", value: 372}
+                    ]
+                };
+
+            expect(confineComplexTypeValues(complexData, "string")).to.deep.equal(confinedComplexData);
+        });
+        it("should return the given complexData, if complexData is not a complexType", () => {
+            const complexData = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    },
+                    values: {}
+                },
+                confinedComplexData = {
+                    metadata: {
+                        type: "timeseries",
+                        format: "YYYY/YY",
+                        description: "Anzahl"
+                    },
+                    values: {}
+                };
+
+            expect(confineComplexTypeValues(complexData)).to.deep.equal(confinedComplexData);
+            expect(confineComplexTypeValues({})).to.deep.equal({});
+            expect(confineComplexTypeValues([])).to.deep.equal([]);
+            expect(confineComplexTypeValues(null)).to.deep.equal(null);
+            expect(confineComplexTypeValues("string")).to.deep.equal("string");
+            expect(confineComplexTypeValues(123)).to.deep.equal(123);
+            expect(confineComplexTypeValues(undefined)).to.deep.equal(undefined);
+        });
+
         it("should convert complex data to chartJS data, if one value is undefined", () => {
             const complexData = {
                     metadata: {

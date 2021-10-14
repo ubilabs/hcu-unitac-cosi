@@ -6,6 +6,8 @@ import {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
     changeMetadata,
+    confineComplexTypeValues,
+    confineComplexTypeArrayValues,
     convertComplexTypeToBarchart,
     convertComplexTypesToMultilinechart,
     compareComplexTypesAndFillDataGaps,
@@ -198,7 +200,7 @@ export default {
                 this.anteil_sus_abi = "g.F.";
             }
             if (hasComplexTypeValues(this.properties?.anteil_sus_abi)) {
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2)));
+                this.barchartData = convertComplexTypeToBarchart(confineComplexTypeValues(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_abi, 2))));
                 this.barchartDataOptions = getChartOptions("anteil_sus_abi", this.chartOptions);
                 if (this.barchartDataOptions === false) {
                     this.barchartDataOptions = getChartOptionsForPercentage("anteil_sus_abi", this.chartOptions);
@@ -241,7 +243,7 @@ export default {
                 this.anteil_sus_ohneabschluss = "g.F.";
             }
             if (hasComplexTypeValues(this.properties?.anteil_sus_ohneabschluss)) {
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2)));
+                this.barchartData = convertComplexTypeToBarchart(confineComplexTypeValues(sortComplexType(optimizeComplexTypeValues(this.properties.anteil_sus_ohneabschluss, 2))));
                 this.barchartDataOptions = getChartOptions("anteil_sus_ohneabschluss", this.chartOptions);
                 if (this.barchartDataOptions === false) {
                     this.barchartDataOptions = getChartOptionsForPercentage("anteil_sus_ohneabschluss", this.chartOptions);
@@ -313,14 +315,16 @@ export default {
                                     changeMetadata(complexTypeGesamt, "description", this.translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.linechart.labelGesamt"));
 
                                     this.linechartData = convertComplexTypesToMultilinechart(
-                                        sortComplexTypes(
-                                            compareComplexTypesAndFillDataGaps([
-                                                optimizeComplexTypeValues(complexTypeABI, 2),
-                                                optimizeComplexTypeValues(complexTypeMSA, 2),
-                                                optimizeComplexTypeValues(complexTypeESA, 2),
-                                                optimizeComplexTypeValues(complexTypeOSA, 2),
-                                                optimizeComplexTypeValues(complexTypeGesamt, 2)
-                                            ])
+                                        confineComplexTypeArrayValues(
+                                            sortComplexTypes(
+                                                compareComplexTypesAndFillDataGaps([
+                                                    optimizeComplexTypeValues(complexTypeABI, 2),
+                                                    optimizeComplexTypeValues(complexTypeMSA, 2),
+                                                    optimizeComplexTypeValues(complexTypeESA, 2),
+                                                    optimizeComplexTypeValues(complexTypeOSA, 2),
+                                                    optimizeComplexTypeValues(complexTypeGesamt, 2)
+                                                ])
+                                            )
                                         )
                                     );
                                 }

@@ -85,6 +85,41 @@ function changeMetadata (complexType, key, value) {
 }
 
 /**
+ * limits the number of elements from the complexType values to the given parameter confineNumber
+ * @param {ComplexType} complexType the complexType to be shortened its values
+ * @param {Number} toConfineNumber the number of elements to be present in complexType values
+ * @returns {ComplexType} complexType with restricted values
+ */
+function confineComplexTypeValues (complexType, toConfineNumber = 10) {
+    const confinedComplexType = cloneComplexType(complexType);
+
+    if (typeof toConfineNumber === "number" && isComplexType(confinedComplexType)
+        && confinedComplexType.values.length > toConfineNumber) {
+        confinedComplexType.values = confinedComplexType.values.slice(-toConfineNumber);
+    }
+
+    return confinedComplexType;
+}
+
+/**
+ * limits the number of elements from the complexType values to the given parameter confineNumber
+ * @param {ComplexType[]} complexTypeArray an array of the complexType to be shortened its values
+ * @param {Number} toConfineNumber the number of elements to be present in complexType values
+ * @returns {ComplexType[]} complexType array with restricted values
+ */
+function confineComplexTypeArrayValues (complexTypeArray) {
+    const clonedComplexTypeArray = cloneComplexType(complexTypeArray),
+        confinedComplexTypeArray = [];
+
+    if (Array.isArray(clonedComplexTypeArray)) {
+        clonedComplexTypeArray.forEach(ComplexType => {
+            confinedComplexTypeArray.push(confineComplexTypeValues(ComplexType));
+        });
+    }
+    return confinedComplexTypeArray.length === 0 ? clonedComplexTypeArray : confinedComplexTypeArray;
+}
+
+/**
  * converter for complexTypes to pie chart data for ChartJS
  * @param {ComplexType} complexType the complexType to convert - sort complexTypes beforehand with sortComplexType
  * @param {Object} [options=null] options to apply to each pice of pie
@@ -158,6 +193,7 @@ function convertComplexTypesToMultilinechart (complexTypes, options = null, line
     if (!Array.isArray(complexTypes)) {
         return false;
     }
+
     const labelsets = [],
         datasets = [],
         // default colors - see  https://jfly.uni-koeln.de/color/
@@ -486,6 +522,8 @@ export {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
     changeMetadata,
+    confineComplexTypeValues,
+    confineComplexTypeArrayValues,
     convertComplexTypeToPiechart,
     convertComplexTypeToLinechart,
     convertComplexTypeToBarchart,

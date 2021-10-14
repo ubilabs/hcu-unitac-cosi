@@ -4,6 +4,7 @@ import {getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
+    confineComplexTypeValues,
     convertComplexTypeToBarchart,
     sortComplexType,
     isComplexType,
@@ -122,7 +123,7 @@ export default {
             const complexType = this.properties[this.propertyName];
 
             if (hasComplexTypeValues(complexType)) {
-                this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
+                this.barchartData = convertComplexTypeToBarchart(confineComplexTypeValues(sortComplexType(optimizeComplexTypeValues(complexType, 2))));
                 this.barchartDataOptions = getChartOptionsForPercentage(this.propertyName, this.chartOptions);
                 if (this.barchartDataOptions === false) {
                     this.barchartDataOptions = {};
