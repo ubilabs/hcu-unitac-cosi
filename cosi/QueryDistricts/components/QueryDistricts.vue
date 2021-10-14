@@ -388,6 +388,11 @@ export default {
             });
         },
 
+        resetDistrictSelection: function () {
+            this.layerFilterModels = [];
+            this.updateAvailableLayerOptions();
+        },
+
         /**
          * @deprecated
          * @returns {void}
@@ -727,37 +732,51 @@ export default {
                             </v-data-table>
                         </div>
                     </div>
-                    <br>
-                    <div>
-                        <button
+                    <v-divider />
+                    <v-row
+                        justify="start"
+                    >
+                        <v-btn
                             v-if="resultNames && resultNames.length"
                             id="set-selected-district"
-                            class="btn btn-lgv-grey measure-delete"
+                            dense
+                            small
+                            tile
+                            color="grey lighten-1"
+                            class="ma-2"
                             @click="changeDistrictSelection()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
-                        </button>
-                    </div>
-                    <br>
-                    <div>
-                        <!-- <button
-                            v-if="resultNames && resultNames.length"
-                            id="show-in-dashboard"
-                            class="btn btn-lgv-grey measure-delete"
-                            @click="showInDashboard()"
-                        >
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.showInDashboardLable') }}
-                        </button> -->
+                        </v-btn>
                         <v-btn
                             v-if="resultNames && resultNames.length"
+                            id="reset-district"
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
+                            class="ma-2"
+                            @click="resetDistrictSelection()"
+                        >
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
+                        </v-btn>
+                    </v-row>
+                    <v-row
+                        justify="start"
+                    >
+                        <v-btn
+                            v-if="resultNames && resultNames.length"
+                            dense
+                            small
+                            tile
+                            color="grey lighten-1"
+                            class="ma-2"
                             :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
                             @click="exportTable()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
                         </v-btn>
-                    </div>
+                    </v-row>
                 </div>
             </v-app>
         </template>
@@ -857,11 +876,6 @@ export default {
 
 .compare-districts {
     min-height: 300px;
-}
-
-#show-in-dashboard,
-#set-selected-district {
-    width: 100%;
 }
 
 .table {
