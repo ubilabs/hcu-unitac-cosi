@@ -34,10 +34,10 @@ export default {
                     sortable: false,
                     groupable: false
                 },
-                {
-                    value: "group",
-                    text: this.$t("additional:modules.tools.cosi.dashboard.groupCol")
-                },
+                // {
+                //     value: "group",
+                //     text: this.$t("additional:modules.tools.cosi.dashboard.groupCol")
+                // },
                 {
                     value: "category",
                     text: this.$t("additional:modules.tools.cosi.dashboard.categoryCol"),
@@ -182,7 +182,9 @@ export default {
             this.currentTimeStamp = this.timestamps[0];
         },
         getRows () {
-            return this.mapping.reduce((rows, category) => {
+            let counter = 0;
+
+            return this.mapping.reduce((rows, category, index, array) => {
                 if (!category[this.keyOfAttrNameStats]) {
                     return rows;
                 }
@@ -194,7 +196,8 @@ export default {
                         expanded: false,
                         category: category.value,
                         group: category.group,
-                        valueType: category.valueType
+                        valueType: category.valueType,
+                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
                     }
                 ];
             }, []);
@@ -442,7 +445,7 @@ export default {
                             <v-data-table
                                 :headers="columns"
                                 :items="items"
-                                group-by="group"
+                                group-by="groupIndex"
                                 show-group-by
                                 :items-per-page="-1"
                                 :search="search"
@@ -495,6 +498,17 @@ export default {
                                             </v-icon>
                                         </template>
                                     </div>
+                                </template>
+                                <template #group.header="{items, isOpen, toggle, headers}">
+                                    <th
+                                        :colspan="headers.length"
+                                        class="text-start"
+                                    >
+                                        <v-icon @click="toggle">
+                                            {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
+                                        </v-icon>
+                                        {{ items[0].group }}
+                                    </th>
                                 </template>
 
                                 <!-- Base Columns -->
@@ -610,7 +624,6 @@ export default {
                                         <span>{{ $t('additional:modules.tools.cosi.dashboard.avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
                                     </v-tooltip>
                                 </template>
-
                                 <template
                                     #item.total="{ item }"
                                 >
@@ -672,8 +685,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
-
+<style lang="less">
 @import "../../utils/variables.less";
 
 .dashboard-table {
@@ -731,6 +743,28 @@ export default {
         }
     }
 }
+td {
+        vertical-align: top;
+
+        div.text-end {
+            text-align: right;
+        }
+        ul.timeline {
+            list-style: none;
+            li {
+                text-align: right;
+            }
+        }
+        .timestamp {
+            color: @brightblue;
+        }
+        .no-wrap {
+            white-space: nowrap;
+        }
+        .modified {
+            color: @brightred;
+        }
+    }
 </style>
 
 
