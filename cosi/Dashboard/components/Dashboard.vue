@@ -98,7 +98,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", [
             "selectedFeatures",
             "selectedDistrictLevel",
-            "selectedDistrictsNames",
+            "selectedDistrictNames",
             "keyOfAttrNameStats",
             "districtLevels",
             "mapping",
@@ -176,7 +176,7 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["updateDistricts"]),
         generateTable () {
             this.timestamps = [];
-            this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictsNames, []);
+            this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictNames, []);
             this.rows = this.getRows();
             this.items = this.getData();
             this.currentTimeStamp = this.timestamps[0];
@@ -310,13 +310,13 @@ export default {
         },
 
         getAverage (item, timestamp) {
-            const average = getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
+            const average = getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
 
             return average.toLocaleString(this.currentLocale);
         },
 
         getTotal (item, timestamp) {
-            const total = getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
+            const total = getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
 
             return total.toLocaleString(this.currentLocale);
         },
@@ -335,13 +335,13 @@ export default {
             const total = Object.fromEntries(
                     item.years.map(timestamp => [
                         this.timestampPrefix + timestamp,
-                        getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                        getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
                     ])
                 ),
                 average = Object.fromEntries(
                     item.years.map(timestamp => [
                         this.timestampPrefix + timestamp,
-                        getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                        getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
                     ])
                 ),
                 data = {

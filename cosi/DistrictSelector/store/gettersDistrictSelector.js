@@ -99,17 +99,6 @@ const getters = {
     },
 
     /**
-     * Returns an array with all names of the selected districts.
-     * @param {Object} state - The DistrictSelector state.
-     * @param {Object} getters - The DistrictSelector getters.
-     * @param {Object} getters.selectedDistrictLevel - The selected district level.
-     * @returns {String[]} The districts names.
-     */
-    selectedDistrictsNames: (state, {selectedDistricts}) => {
-        return selectedDistricts.map(district => district.getName());
-    },
-
-    /**
      * Returns the statistical features of the selected districts.
      * @param {Object} state - The DistrictSelector state.
      * @param {Object} getters - The DistrictSelector getters.
