@@ -352,7 +352,7 @@ export default {
                 if (zoomToExtent) {
                     this.zoomTo(extent);
                 }
-                console.info(this.selectedDistricts);
+
                 this.loadStatFeatures({
                     districts: selectedDistricts,
                     districtLevel: this.selectedDistrictLevel,

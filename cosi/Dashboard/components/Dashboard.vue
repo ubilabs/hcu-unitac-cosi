@@ -230,7 +230,6 @@ export default {
             const districts = districtLevel.displayAll
                     ? districtLevel.districts
                     : districtLevel.districts.filter(dist => districtNames.includes(dist.getName())),
-                refKeyOfAttrName = districtLevel.referenceLevel?.keyOfAttrName,
                 refDistrictNames = [];
             let district, refDistrictName;
 
@@ -246,7 +245,8 @@ export default {
                     selected: false
                 });
 
-                refDistrictName = district.adminFeature?.get(refKeyOfAttrName);
+                refDistrictName = district.getReferencDistrictName();
+
                 if (refDistrictName) {
                     refDistrictNames.push(refDistrictName);
                 }
