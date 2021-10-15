@@ -340,7 +340,8 @@ export default {
          */
         updateExtent (zoomToExtent = true) {
             const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
-                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal);
+                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal),
+                selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             if (extent) {
                 this.setBufferValue(this.bufferVal);
@@ -351,9 +352,9 @@ export default {
                 if (zoomToExtent) {
                     this.zoomTo(extent);
                 }
-
+                console.info(this.selectedDistricts);
                 this.loadStatFeatures({
-                    districts: this.selectedDistricts,
+                    districts: selectedDistricts,
                     districtLevel: this.selectedDistrictLevel,
                     getStatFeatures: getFeaturePost
                 });
