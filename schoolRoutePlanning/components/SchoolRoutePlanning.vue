@@ -12,6 +12,7 @@ import ToggleCheckbox from "../../../src/share-components/toggleCheckbox/compone
 
 import getComponent from "../../../src/utils/getComponent";
 import {addRouteFeatures, routeStyle} from "../utils/routeLayer";
+import axios from "axios";
 
 export default {
     name: "SchoolRoutePlanning",
@@ -235,6 +236,15 @@ export default {
                     isVisibleInMap: visible
                 });
             });
+        },
+        /**
+         * starts the print route.
+         * @returns {void}
+         */
+        startPrintRoute () {
+            this.printRoute(async (url, payload) => {
+                return axios.post(url, payload);
+            });
         }
     }
 };
@@ -294,7 +304,7 @@ export default {
                         type="button"
                         class="btn btn-default btn-sm print-route pull-left"
                         :disabled="routeIsCalculated"
-                        @click="printRoute"
+                        @click="startPrintRoute"
                     >
                         {{ $t("additional:modules.tools.schoolRoutePlanning.printRouteName") }}
                     </button>

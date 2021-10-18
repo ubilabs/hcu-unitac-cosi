@@ -31,7 +31,7 @@ export default {
      * @param {Object} context The vuex context.
      * @returns {void}
      */
-    printRoute ({state, rootGetters, dispatch}) {
+    printRoute ({state, rootGetters, dispatch}, getResponse) {
         const routeElements = state.routeElements,
             visibleLayerList = sortVisibleLayerList(rootGetters["Map/visibleLayerList"], state.layerName),
             attributes = {
@@ -64,9 +64,10 @@ export default {
 
         spec.buildLayers(visibleLayerList);
         const printJob = {
-            "payload": encodeURIComponent(JSON.stringify(spec.defaults)),
-            "printAppId": "schulwegrouting",
-            "currentFormat": state.printOutputFormat
+            payload: encodeURIComponent(JSON.stringify(spec.defaults)),
+            printAppId: "schulwegrouting",
+            currentFormat: state.printOutputFormat,
+            getResponse: getResponse
         };
 
         dispatch("Tools/Print/createPrintJob", printJob, { root: true });
