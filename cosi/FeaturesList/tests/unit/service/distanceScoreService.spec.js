@@ -4,7 +4,7 @@ import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import sinon from "sinon";
 import {expect} from "chai";
 
-describe.only("distanceScoreService", () => {
+describe("distanceScoreService", () => {
     before(async function () {
         await initializeLayerList();
     });

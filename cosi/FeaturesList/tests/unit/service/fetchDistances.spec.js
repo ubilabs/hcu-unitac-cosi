@@ -21,11 +21,18 @@ describe("fetchDistances", () => {
         expect(dists).to.deep.equal([[null]]);
     });
     it("fetchDistances one to one", async () => {
-        const p1 = [10.155828082155567, 53.60323024735499],
-            p2 = [9.929228790987056, 53.62844116644285],
-            dists = await fetchDistances([p1], [p2]);
+        const p1 = [10.156270265579225, 53.60289900228011],
+            p2 = [10.156677961349489, 53.603936689424884],
+            dists = await fetchDistances([p1], [p2]),
 
-        expect(dists).to.deep.equal([[17981.68]]);
+            u1 = Proj.transform(p1, "EPSG:4326", "EPSG:25832"),
+            u2 = Proj.transform(p2, "EPSG:4326", "EPSG:25832"),
+
+            x = u1[0] - u2[0],
+            y = u1[1] - u2[1];
+
+        // check if distances are reasonable
+        expect(dists[0][0]).to.closeTo(Math.sqrt(x * x + y * y), 0.1);
     });
     it("fetchDistances one to outside hamburg", async () => {
         const p1 = [10.155828082155567, 53.60323024735499],

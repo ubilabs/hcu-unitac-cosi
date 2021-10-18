@@ -1,5 +1,4 @@
 import {buffer, createEmpty, extend} from "ol/extent";
-import Feature from "ol/Feature";
 
 /**
  * Calculates the extent of a set of features.
@@ -17,7 +16,7 @@ export default function calculateExtent (features, bufferValue = 0) {
         let extent = createEmpty();
 
         features.forEach(feature => {
-            if (feature instanceof Feature) {
+            if (feature.getGeometry) {
                 // modify the extent to include the feature extent
                 extent = extend(extent, feature.getGeometry().getExtent());
             }
