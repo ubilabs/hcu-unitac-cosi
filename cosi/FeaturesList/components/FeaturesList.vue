@@ -470,7 +470,7 @@ export default {
                         const item = this.distanceScoreQueue.shift(),
                             dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
                                 weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId]),
-                                extend: this.extend ? this.extend : undefined});
+                                extent: this.extend ? this.extend : undefined});
 
                         this.distanceScores = {...this.distanceScores, [item.feature.getId()]: dist !== null ? dist.toFixed(1) : "na"};
                     }

@@ -8,10 +8,22 @@ describe("distanceScoreService", () => {
     before(async function () {
         await initializeLayerList();
     });
+
+    /**
+     * @return {*}  default getters
+     */
+    function defaultGetters () {
+        return {
+            mindists: {},
+            initialBuffer: 5000,
+            bufferIncrement: 10000
+        };
+    }
+
     it("getDistanceScore with small layer", async () => {
         const features = await getAllFeatures("20569"),
             commitStub = sinon.stub(),
-            getters = {mindists: {}},
+            getters = defaultGetters(),
 
             score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
                 {
@@ -29,11 +41,11 @@ describe("distanceScoreService", () => {
     it("getDistanceScore feature outside hamburg", async () => {
         const p = [9.818415798420284, 53.26231927558228],
             commitStub = sinon.stub(),
-            getters = {mindists: {}},
+            getters = defaultGetters(),
 
             score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
                 {
-                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p})},
+                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p, getExtent: ()=>[p[0], p[1], p[0], p[1]]})},
                     layerIds: ["19862"],
                     weights: [1]
                 });
@@ -43,16 +55,16 @@ describe("distanceScoreService", () => {
     });
     it("getDistanceScore with small layer inside extend", async () => {
         const commitStub = sinon.stub(),
-            getters = {mindists: {}},
-            extend = [566074.67, 5933911.077, 567996.251, 5935623.892], // St. Georg
+            getters = {...defaultGetters(), useUserExtent: true},
+            extent = [566074.67, 5933911.077, 567996.251, 5935623.892], // St. Georg
             p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
 
             score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
                 {
-                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1})},
+                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1, getExtent: ()=>[p1[0], p1[1], p1[0], p1[1]]})},
                     layerIds: ["20569"], // one feature insdie St. Georg
                     weights: [1],
-                    extend
+                    extent
                 });
 
         expect(score).to.be.equal(157.41);
@@ -61,19 +73,20 @@ describe("distanceScoreService", () => {
                 "id20569566074.67,5933911.077,567996.251,5935623.892": 157.41
             });
     });
-    it("getDistanceScore with small layer outside extend", async () => {
+    it("getDistanceScore with small layer outside extent", async () => {
+        // current implementation ignores extent
 
         const commitStub = sinon.stub(),
-            getters = {mindists: {}},
-            extend = [563262.057, 5941046.992, 568546.555, 5944993.724], // Fuhlsbuettel
+            getters = {...defaultGetters(), useUserExtent: true},
+            extent = [563262.057, 5941046.992, 568546.555, 5944993.724], // Fuhlsbuettel
             p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
 
             score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
                 {
-                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1})},
+                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1, getExtent: ()=>[p1[0], p1[1], p1[0], p1[1]]})},
                     layerIds: ["20569"], // one feature insdie St. Georg
                     weights: [1],
-                    extend
+                    extent
                 });
 
         expect(score).to.be.equal(null);
@@ -87,7 +100,7 @@ describe("distanceScoreService", () => {
 
         const features = await getAllFeatures("19951"),
             commitStub = sinon.stub(),
-            getters = {mindists: {}},
+            getters = defaultGetters(),
 
             score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
                 {

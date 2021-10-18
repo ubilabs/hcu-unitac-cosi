@@ -4,7 +4,7 @@ import {findNearestFeatures} from "../findNearestFeatures";
 import {expect} from "chai";
 import * as Proj from "ol/proj.js";
 
-describe.only("findNearestFeature", () => {
+describe("findNearestFeature", () => {
     before(async function () {
         await initializeLayerList();
     });

@@ -1,6 +1,7 @@
 import {getAllFeatures} from "../../utils/getAllFeatures";
 import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
+import {findNearestFeatures} from "../../utils/findNearestFeatures";
 
 /**
  *
@@ -13,14 +14,18 @@ function transformedCoordinates (features) {
 
 /**
  *
+ *
  * @param {*} feature feature
  * @param {*} layerId layerId
- * @param {*} extend extend
+ * @param {*} extent extent
+ * @param {*} initialBuffer initial buffer
+ * @param {*} bufferIncrement buffer increment
  * @return {*} score
  */
-async function layerScore (feature, layerId, extend) {
+async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement) {
     const featureCoords = transformedCoordinates([feature]),
-        coords = transformedCoordinates(await getAllFeatures(layerId, extend)),
+        coords = extent ? transformedCoordinates(await getAllFeatures(layerId, extent))
+            : transformedCoordinates(await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement)),
         dists = (await fetchDistances(featureCoords, coords))[0];
 
     if (dists === null) {
@@ -45,7 +50,7 @@ async function layerScore (feature, layerId, extend) {
  * @param {*} weights weights
  * @return {*} score
  */
-async function distanceScore ({getters, commit}, {feature, weights, layerIds, extend}) {
+async function distanceScore ({getters, commit}, {feature, weights, layerIds, extent}) {
     if (weights === undefined || weights.length !== layerIds.length) {
         throw Error("invalid argument: weights");
     }
@@ -54,12 +59,12 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
         wsum = 0;
 
     for (let j = 0; j < layerIds.length; j++) {
-        const id = feature.getId().toString() + layerIds[j].toString() + (extend ? extend.toString() : "");
+        const id = feature.getId().toString() + layerIds[j].toString() + (extent && getters.useUserExtent ? extent.toString() : "");
 
         let mindist = getters.mindists[id];
 
         if (mindist === undefined) {
-            mindist = await layerScore(feature, layerIds[j], extend);
+            mindist = await layerScore(feature, layerIds[j], extent, getters.initialBuffer, getters.bufferIncrement);
             commit("setMindists", {...getters.mindists, [id]: mindist});
         }
 
@@ -89,11 +94,23 @@ const id = "DistanceScoreService",
         state: {
             active: true,
             id,
-            mindists: {}
+            mindists: {},
+            useUserExtent: false,
+            initialBuffer: 5000,
+            bufferIncrement: 10000
         },
         getters: {
             mindists: s => {
                 return s.mindists;
+            },
+            useUserExtent: s => {
+                return s.useUserExtent;
+            },
+            initialBuffer: s => {
+                return s.initialBuffer;
+            },
+            bufferIncrement: s => {
+                return s.bufferIncrement;
             }
         },
         mutations: {
