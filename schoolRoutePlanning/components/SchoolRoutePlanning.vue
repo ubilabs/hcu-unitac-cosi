@@ -80,28 +80,28 @@ export default {
         showPrintFileReady () {
             return this.$store.state.Tools.Print.printFileReady;
         },
-         /**
+        /**
          * Returns the files donwload url for the link
          * @returns {string} url
          */
         fileDownloadUrl () {
             return this.$store.state.Tools.Print.fileDownloadUrl;
         },
-         /**
+        /**
          * Returns the file name for the download
          * @returns {String} File name
          */
         filename () {
             return this.$store.state.Tools.Print.filename;
         },
-         /**
+        /**
          * Returns if the print was started for the progress bar
          * @returns {Boolean} print started
          */
         printStarted () {
             return this.$store.state.Tools.Print.printStarted;
         },
-         /**
+        /**
          * Returns the progress bar width
          * @returns {string} progress bar width
          */
@@ -332,14 +332,14 @@ export default {
                     </div>
                 </div>
                 <div class="form-group col-md-12 col-xs-12">
-                        <button
-                            class="btn btn-lgv-grey btn-block"
-                            :disabled="!showPrintFileReady"
-                            @click="downloadFile"
-                        >
-                            {{ $t("common:modules.tools.print.downloadFile") }}
-                        </button>
-                    </div>
+                    <button
+                        class="btn btn-lgv-grey btn-block"
+                        :disabled="!showPrintFileReady"
+                        @click="downloadFile"
+                    >
+                        {{ $t("common:modules.tools.print.downloadFile") }}
+                    </button>
+                </div>
             </div>
             <RouteInformation />
         </template>

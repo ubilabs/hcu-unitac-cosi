@@ -29,6 +29,7 @@ export default {
     /**
      * Prints the route via the print module.
      * @param {Object} context The vuex context.
+     * @param {Function} getResponse a function to receive the response with
      * @returns {void}
      */
     printRoute ({state, rootGetters, dispatch}, getResponse) {
@@ -56,20 +57,21 @@ export default {
                         }
                     }]
                 }
-            };
+            },
+            spec = SpecModel;
+        let printJob = null;
 
-        dispatch("Tools/Print/activatePrintStarted", true, { root: true });
-        let spec = SpecModel;
+        dispatch("Tools/Print/activatePrintStarted", true, {root: true});
         spec.setAttributes(attributes);
 
         spec.buildLayers(visibleLayerList);
-        const printJob = {
+        printJob = {
             payload: encodeURIComponent(JSON.stringify(spec.defaults)),
             printAppId: "schulwegrouting",
             currentFormat: state.printOutputFormat,
             getResponse: getResponse
         };
 
-        dispatch("Tools/Print/createPrintJob", printJob, { root: true });
+        dispatch("Tools/Print/createPrintJob", printJob, {root: true});
     }
 };

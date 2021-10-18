@@ -9,6 +9,7 @@ import AddressList from "../../../components/SchoolRoutePlanningAddressList.vue"
 import RouteInformation from "../../../components/SchoolRoutePlanningRouteInformation.vue";
 import Schools from "../../../components/SchoolRoutePlanningSchools.vue";
 import ToggleCheckbox from "../../../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
+import Print from "../../../../../src/modules/tools/print/components/Print.vue";
 
 import VectorLayer from "ol/layer/Vector.js";
 import VectorSource from "ol/source/Vector.js";
@@ -39,7 +40,8 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
                 Tools: {
                     namespaced: true,
                     modules: {
-                        SchoolRoutePlanning
+                        SchoolRoutePlanning,
+                        Print
                     }
                 }
             },
