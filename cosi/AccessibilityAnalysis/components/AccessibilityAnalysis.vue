@@ -3,7 +3,6 @@ import Tool from "../../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
-import requestIsochrones from "../service/requestIsochrones";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
@@ -122,6 +121,10 @@ export default {
                 }
                 this.map.removeInteraction(this.select);
             }
+        },
+
+        activeVectorLayerList (newValues) {
+            this.setFacilityLayers(newValues);
         }
     },
     /**
@@ -132,17 +135,6 @@ export default {
         // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
         this.select = new Select({
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
-        });
-    },
-
-    /**
-     * Listens to the layers change on the map to refresh the list
-     * @listens #change:FeaturesList/activeVectorLayerList
-     * @returns {void}
-     */
-    async activeVectorLayerList () {
-        await this.$nextTick(() => {
-            this.setFacilityLayers();
         });
     },
 
@@ -173,7 +165,6 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
-        requestIsochrones: requestIsochrones,
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {
                 const newCoordinates = this.getCoordinates(this.setByFeature);
@@ -210,17 +201,11 @@ export default {
         },
         /**
         * set facilityNames in model, trigger renderDropDownView
-        * @param {Object} models layer models of updated selected layer
+        * @param {Object} vectorLayers layer models of updated selected layer
         * @returns {void}
         */
-        setFacilityLayers: function (models) {
-            const facilityLayerModels = models.filter(
-                    (model) => model.get("isFacility") === true
-                ),
-                facilityNames = facilityLayerModels.map((model) => model.get("name").trim()
-                );
-
-            this.facilityNames = facilityNames;
+        setFacilityLayers: function (vectorLayers) {
+            this.facilityNames = vectorLayers.map(v=>v.getProperties().name);
         },
         /**
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
