@@ -207,22 +207,22 @@ export default {
                     let polygon,
                         val;
 
-                    try {
+                    if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
                         // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
-                    catch (e) {
+                    else if (feature.getGeometry().getType() === "Polygon") {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
                         // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
+
                     if (
                         polygon &&
                         turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
                     ) {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
-
                         fmap[feature.getId()] = fmap[feature.getId()] + val;
 
                         break;
@@ -592,7 +592,6 @@ export default {
                 if (geometry.getType() === "Point") {
                     return geometry.getCoordinates().splice(0, 2);
                 }
-
                 return Extent.getCenter(geometry?.getExtent());
             }
 
