@@ -132,7 +132,6 @@ export default {
     */
     created () {
         this.$on("close", this.close);
-        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
         this.select = new Select({
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });

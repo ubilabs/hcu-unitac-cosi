@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 /**
  * send request to get Isochrone geoJSON
  * @param {String} pathType type of transportation

@@ -12,6 +12,10 @@ import features from "./featuresPoint.json";
 import featuresRegion from "./featuresRegion.json";
 import GeoJSON from "ol/format/GeoJSON";
 import * as turf from "@turf/turf";
+import {initializeLayerList} from "../../../../utils/initializeLayerList";
+import {getAllFeatures} from "../../../../utils/getAllFeatures";
+import * as Proj from "ol/proj.js";
+import layers from "./layers.json";
 
 
 /**
@@ -40,11 +44,11 @@ before(() => {
     setWorkerFactory(() => new Worker());
 });
 
-describe("createIsochrones", () => {
+describe.only("createIsochrones", () => {
 
     it("createIsochrones point", async () => {
         const commitStub = sinon.stub(),
-            ret = await service.store.actions.getIsochrones({getters: null, commit: commitStub},
+            ret = await service.store.actions.getIsochrones({getters: {}, commit: commitStub},
                 {
                     coordinates: [[10.155828082155567, 53.60323024735499]],
                     transportType: "driving-car",
@@ -61,7 +65,7 @@ describe("createIsochrones", () => {
     it("createIsochrones several points", async () => {
 
         const commitStub = sinon.stub(),
-            ret = await service.store.actions.getIsochrones({getters: null, commit: commitStub},
+            ret = await service.store.actions.getIsochrones({getters: {}, commit: commitStub},
                 {
                     coordinates: [[10.044398219793916, 53.58614195023027],
                         [10.00047212535128, 53.59431305465069],
@@ -76,13 +80,34 @@ describe("createIsochrones", () => {
         expect(new GeoJSON().writeFeatures(ret)).to.be.equal(JSON.stringify(featuresRegion));
     });
 
+    it("should get filter poly", async () => {
+        await service.store.actions.getIsochrones({
+            getters: {
+                filterUrl: "https://geodienste.hamburg.de/HH_WFS_Verwaltungsgrenzen",
+                filterFeatureType: "landesgrenze"
+            }, commit: sinon.stub()},
+        {
+            coordinates: [[10.044398219793916, 53.58614195023027],
+                [10.00047212535128, 53.59431305465069],
+                [10.009020188268527, 53.54967920652423],
+                [10.042859099930093, 53.57695084241739]],
+            transportType: "driving-car",
+            scaleUnit: "time",
+            distance: 10
+        });
+
+        const ret = await service.store.actions.getFilterPoly();
+
+        expect(ret.type).to.be.equal("Feature");
+    });
+
     it("createIsochrones point error", async () => {
         const commitStub = sinon.stub();
 
         let fail = false;
 
         try {
-            await service.store.actions.getIsochrones({getters: null, commit: commitStub},
+            await service.store.actions.getIsochrones({getters: {}, commit: commitStub},
                 {
                     coordinates: [[9.744273174491198, "b"]],
                     transportType: "driving-car",
@@ -92,10 +117,93 @@ describe("createIsochrones", () => {
         }
         catch (err) {
             fail = true;
-            expect(err.error.response.data.error.code).to.be.equal(3002);
+            expect(err.response.data.error.code).to.be.equal(3002);
         }
 
         expect(fail).to.equal(true);
         expect(service.store.state.progress).to.equal(0);
     });
+    it("should not fail if one point is outside hamburg", async () => {
+        const commitStub = sinon.stub(),
+            ret = await service.store.actions.getIsochrones({getters: {batchSize: 1}, commit: commitStub},
+                {
+                    coordinates:
+                        [
+                            [9.744273174491198, 53.86052854494209], // outside HH
+                            [10.044398219793916, 53.58614195023027],
+                            [10.00047212535128, 53.59431305465069],
+                            [10.009020188268527, 53.54967920652423],
+                            [10.042859099930093, 53.57695084241739]
+                        ],
+                    transportType: "driving-car",
+                    scaleUnit: "time",
+                    distance: 10
+                });
+
+        expect(ret.length).to.equal(3);
+    });
+    it.skip("should create isochrones for alle schulen hamburg", async function () {
+        this.timeout(205000);
+
+        await initializeLayerList();
+
+        const commitStub = sinon.stub(),
+            allFeatures = await getAllFeatures("1732"),
+            coords = allFeatures.map(f => Proj.transform(f.getGeometry().flatCoordinates.slice(0, 2), "EPSG:25832", "EPSG:4326")),
+
+            ret = await service.store.actions.getIsochrones({getters: {batchSize: 10}, commit: commitStub},
+                {
+                    coordinates: coords,
+                    transportType: "driving-car",
+                    scaleUnit: "time",
+                    distance: 10
+                });
+
+        expect(ret.length).to.equal(3);
+    });
+    it.skip("should work on all layers", async function () {
+        this.timeout(Number.MAX_SAFE_INTEGER);
+
+        const commitStub = sinon.stub();
+
+        await initializeLayerList();
+
+        for (const layer of layers) {
+            console.log("start: " + layer.layerId.toString());
+            try {
+                if (["5246", "16601"].indexOf(layer.layerId) < 0) {
+                    const allFeatures = await getAllFeatures(layer.layerId),
+                        coords = allFeatures.map(f => Proj.transform(f.getGeometry().flatCoordinates.slice(0, 2), "EPSG:25832", "EPSG:4326")),
+
+                        ret = await service.store.actions.getIsochrones({getters: {}, commit: commitStub},
+                            {
+                                coordinates: coords,
+                                transportType: "driving-car",
+                                scaleUnit: "time",
+                                distance: 10
+                            });
+
+                    expect(ret.length).to.equal(3);
+                }
+
+            }
+            catch (e) {
+                console.log(e);
+                console.log("fail: " + layer.layerId.toString());
+            }
+        }
+    });
+    // it.only("should create city limits", async function () {
+
+    //     this.timeout(205000);
+
+    //     await initializeLayerList();
+
+    //     const ret = await getFeatures("https://geodienste.hamburg.de/HH_WFS_Verwaltungsgrenzen", "landesgrenze"),
+    //         wfsReader = new WFS({}),
+    //         feature = wfsReader.readFeatures(ret)[0],
+    //         poly = turf.polygon(feature.getGeometry().getPolygon(0).getCoordinates());
+
+    //     console.log(poly);
+    // });
 });
