@@ -21,6 +21,9 @@
   "tacticalMark": {
     "type": "tool"
   },
+  "resetTree": {
+    "type": "tool"
+  },
   "geoAnalyze": {
     "type": "tool"
   },
