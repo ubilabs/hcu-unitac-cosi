@@ -164,6 +164,8 @@ function initializeBrwAbfrageModel () {
             this.unselectLayerModel(this.get("modelList"));
             layerModel = this.selectLayerModelByName(selectedLayername, this.get("modelList"));
 
+            store.dispatch("MapMarker/removePolygonMarker", null, {root: true});
+
             if (layerModel.attributes.layers.indexOf("flaeche") > -1) {
                 this.setAreaLayerSelected(true);
             }
@@ -417,11 +419,14 @@ function initializeBrwAbfrageModel () {
             else if (yearInt <= 2008) {
                 typeName = "lgv_brw_lagetypisch_alle";
             }
+            else if (yearInt <= 2014) {
+                typeName = "lgv_brw_zoniert_" + year;
+            }
             else {
                 typeName = "lgv_brw_zonen_" + year;
             }
             urlParams = "typeName=" + typeName + "&featureID=" + featureId;
-
+            
             xhttp.open("GET", url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
             xhttp.onload = event => {
                 const feature = new WFS().readFeature(event.target.responseText);
