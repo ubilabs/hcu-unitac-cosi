@@ -92,15 +92,9 @@ export default {
             if (newValue) {
                 this.$nextTick(() => {
                     if (this.$refs.graphicalSelection) {
-                        if (typeof this.$refs.graphicalSelection.resetView === "function") {
-                            this.$refs.graphicalSelection.resetView();
-                        }
-                        if (typeof this.$refs.graphicalSelection.setStatus === "function") {
-                            this.$refs.graphicalSelection.setStatus(newValue);
-                        }
-                        if (typeof this.$refs.graphicalSelection.resetGeographicSelection === "function") {
-                            this.$refs.graphicalSelection.resetGeographicSelection();
-                        }
+                        this.$refs.graphicalSelection.resetView();
+                        this.$refs.graphicalSelection.setStatus(newValue);
+                        this.$refs.graphicalSelection.resetGeographicSelection();
                     }
                 });
             }
