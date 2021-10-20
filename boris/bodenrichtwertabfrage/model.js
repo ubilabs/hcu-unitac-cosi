@@ -426,7 +426,7 @@ function initializeBrwAbfrageModel () {
                 typeName = "lgv_brw_zonen_" + year;
             }
             urlParams = "typeName=" + typeName + "&featureID=" + featureId;
-            
+
             xhttp.open("GET", url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
             xhttp.onload = event => {
                 const feature = new WFS().readFeature(event.target.responseText);
