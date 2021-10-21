@@ -1,5 +1,10 @@
 {
     "addons": {
+        "menu": {
+            "tools": {
+                "layerClusterToggler": "Open(Close) school locations"
+            }
+        },
         "gfiThemes": {
             "bildungsatlas": {
                 "searchbarPlaceholder": "Search address, district, topics",
