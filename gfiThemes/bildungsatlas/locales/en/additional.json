@@ -2,7 +2,7 @@
     "addons": {
         "gfiThemes": {
             "bildungsatlas": {
-                "searchbarPlaceholder": "Search address, district, School, topics",
+                "searchbarPlaceholder": "Search address, district, topics",
                 "general": {
                     "tabData": "Data",
                     "tabInfo": "Info",
