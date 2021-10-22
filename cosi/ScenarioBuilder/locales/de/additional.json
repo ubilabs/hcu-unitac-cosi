@@ -47,7 +47,7 @@
                     "pruneAllFeatures": "Alle löschen",
                     "helpPruneAllFeatures": "Alle erstellten Features löschen",
                     "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
-                    "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie eins an."
+                    "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie ein neues an."
                 }
             }
         }
