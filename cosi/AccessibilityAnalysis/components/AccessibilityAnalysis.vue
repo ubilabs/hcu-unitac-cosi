@@ -164,7 +164,6 @@ export default {
         Radio.on("VectorLayer", "featuresLoaded", this.tryUpdateIsochrones);
     },
     methods: {
-        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
         ...mapMutations("Map", ["setCenter"]),
