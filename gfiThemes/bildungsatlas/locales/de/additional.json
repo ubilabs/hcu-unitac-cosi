@@ -103,8 +103,8 @@
                     "title": "Anzahl der Zu- bzw. Fortzüge (+/-) der unter 6-Jährigen je 100 Kinder unter 6 Jahren",
                     "table": {
                         "statgeb": "Im Statistischen Gebiet",
-                        "sozialraum": "In {{sozialraum_name}}",
-                        "stadtteil": "In {{stadtteil_name}}",
+                        "sozialraum": "In {{- sozialraum_name}}",
+                        "stadtteil": "In {{- stadtteil_name}}",
                         "ausUmland": "Anteil der Zuzüge aus dem Umland",
                         "insUmland": "Anteil der Fortzüge ins Umland"
                     },
