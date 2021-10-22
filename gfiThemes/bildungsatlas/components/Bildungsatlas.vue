@@ -7,7 +7,6 @@ import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
 import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
 import BildungsatlasSchulenEinzugsgebiete from "./BildungsatlasSchulenEinzugsgebiete.vue";
-import BildungsatlasVorschulischeSF from "./BildungsatlasVorschulischeSF.vue";
 
 export default {
     name: "Bildungsatlas",
@@ -18,8 +17,7 @@ export default {
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
         BildungsatlasSchulenWohnort,
-        BildungsatlasSchulenEinzugsgebiete,
-        BildungsatlasVorschulischeSF
+        BildungsatlasSchulenEinzugsgebiete
     },
     props: {
         /**
