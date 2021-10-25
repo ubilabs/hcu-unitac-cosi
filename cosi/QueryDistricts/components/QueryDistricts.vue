@@ -196,7 +196,7 @@ export default {
                 }
             }
 
-            return ret.length > 0 ? [... new Set(ret)] : [prefix + "alle"];
+            return ret.length > 0 ? [... new Set(ret)].sort().reverse() : [prefix + "alle"];
         },
 
         countFacilitiesPerFeature (facilityFeatures, features, property = undefined) {
@@ -207,12 +207,14 @@ export default {
                     let polygon,
                         val;
 
-                    try {
+                    if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
-                    catch (e) {
+                    else if (feature.getGeometry().getType() === "Polygon") {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
 
                     if (
@@ -221,7 +223,6 @@ export default {
                     ) {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
-
                         fmap[feature.getId()] = fmap[feature.getId()] + val;
 
                         break;
@@ -327,12 +328,21 @@ export default {
         },
 
         getMinMaxForField (layerId, field) {
-            const features = this.propertiesMap[layerId],
-                values = features.map(f => parseFloat(f[field])).filter(v => isFinite(v)),
-                max = parseFloat(Math.max(...values)),
-                min = parseFloat(Math.min(...values));
+            const invalidFeatures = [],
+                features = this.propertiesMap[layerId],
+                values = features.reduce((res, f) => {
+                    const v = parseFloat(f[field]);
 
-            return {min, max};
+                    if (isNaN(v)) {
+                        invalidFeatures.push(f[this.keyOfAttrName]);
+                        return res;
+                    }
+                    return [...res, v];
+                }, []),
+                max = Math.max(...values),
+                min = Math.min(...values);
+
+            return {min, max, invalidFeatures};
         },
 
         async computeResults () {
@@ -376,6 +386,11 @@ export default {
             this.setDistrictsByName({
                 districtNames: refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames
             });
+        },
+
+        resetDistrictSelection: function () {
+            this.layerFilterModels = [];
+            this.updateAvailableLayerOptions();
         },
 
         /**
@@ -445,7 +460,10 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-            await this.loadFeatures({id: value.quotientLayer});
+            await this.loadFeatures({
+                id: value.quotientLayer,
+                facilityLayerName: this.facilityNames.find(item => item.id === value.quotientLayer)?.name
+            });
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
@@ -574,7 +592,6 @@ export default {
                 if (geometry.getType() === "Point") {
                     return geometry.getCoordinates().splice(0, 2);
                 }
-
                 return Extent.getCenter(geometry?.getExtent());
             }
 
@@ -714,37 +731,51 @@ export default {
                             </v-data-table>
                         </div>
                     </div>
-                    <br>
-                    <div>
-                        <button
+                    <v-divider />
+                    <v-row
+                        justify="start"
+                    >
+                        <v-btn
                             v-if="resultNames && resultNames.length"
                             id="set-selected-district"
-                            class="btn btn-lgv-grey measure-delete"
+                            dense
+                            small
+                            tile
+                            color="grey lighten-1"
+                            class="ma-2"
                             @click="changeDistrictSelection()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
-                        </button>
-                    </div>
-                    <br>
-                    <div>
-                        <!-- <button
-                            v-if="resultNames && resultNames.length"
-                            id="show-in-dashboard"
-                            class="btn btn-lgv-grey measure-delete"
-                            @click="showInDashboard()"
-                        >
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.showInDashboardLable') }}
-                        </button> -->
+                        </v-btn>
                         <v-btn
                             v-if="resultNames && resultNames.length"
+                            id="reset-district"
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
+                            class="ma-2"
+                            @click="resetDistrictSelection()"
+                        >
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
+                        </v-btn>
+                    </v-row>
+                    <v-row
+                        justify="start"
+                    >
+                        <v-btn
+                            v-if="resultNames && resultNames.length"
+                            dense
+                            small
+                            tile
+                            color="grey lighten-1"
+                            class="ma-2"
                             :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
                             @click="exportTable()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
                         </v-btn>
-                    </div>
+                    </v-row>
                 </div>
             </v-app>
         </template>
@@ -844,11 +875,6 @@ export default {
 
 .compare-districts {
     min-height: 300px;
-}
-
-#show-in-dashboard,
-#set-selected-district {
-    width: 100%;
 }
 
 .table {

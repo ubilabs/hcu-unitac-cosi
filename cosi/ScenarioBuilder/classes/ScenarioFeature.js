@@ -2,6 +2,7 @@ import getClusterSource from "../../utils/getClusterSource";
 import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
 import storeOriginalFeatureData from "../utils/storeOriginalFeatureData";
 import translateFeature from "../../utils/translateFeature";
+import {unByKey} from "ol/Observable";
 
 /**
  * @description Stores the scenario specific properties of a feature
@@ -20,13 +21,8 @@ export default class ScenarioFeature {
         this.guideLayer = guideLayer;
         this.scenarioData = {};
         this.scenario = null;
+        this.eventKeys = {};
 
-        // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
-        this.layer.getSource().on("change", () => {
-            if (!this.layer.getSource().hasFeature(this.feature) && this.scenario?.isActive) {
-                this.layer.getSource().addFeature(this.feature);
-            }
-        });
         storeOriginalFeatureData(this.feature);
     }
 
@@ -38,6 +34,13 @@ export default class ScenarioFeature {
      */
     renderFeature (guideLayer) {
         getClusterSource(this.layer).addFeature(this.feature);
+
+        // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
+        this.eventKeys[this.feature.getId()] = getClusterSource(this.layer).on("change", () => {
+            if (!getClusterSource(this.layer).hasFeature(this.feature) && this.scenario.isActive) {
+                getClusterSource(this.layer).addFeature(this.feature);
+            }
+        });
 
         if (guideLayer || this.guideLayer) {
             this.guideLayer = guideLayer || this.guideLayer;
@@ -53,7 +56,11 @@ export default class ScenarioFeature {
     hideFeature () {
         const source = getClusterSource(this.layer);
 
-        source.removeFeature(this.feature);
+        // unbind the listener
+        unByKey(this.eventKeys[this.feature.getId()]);
+        if (source.getFeatureById(this.feature.getId())) {
+            source.removeFeature(this.feature);
+        }
 
         if (this.guideLayer) {
             removeSimulationTag(this.feature, this.guideLayer);
@@ -96,12 +103,13 @@ export default class ScenarioFeature {
             }
             else {
                 this.feature.set(prop, originalProperties[prop]);
+                if (purge) {
+                    delete this.scenarioData[prop];
+                }
             }
         }
 
-        if (purge) {
-            this.clearScenarioData();
-        }
+        this.checkScenarioData();
     }
 
     /**
@@ -122,7 +130,19 @@ export default class ScenarioFeature {
 
             if (purge) {
                 delete this.scenarioData.geometry;
+                this.checkScenarioData();
             }
+        }
+    }
+
+    /**
+     * Checks if the scenario data has any content
+     * @returns {void}
+     */
+    checkScenarioData () {
+        if (Object.keys(this.scenarioData).length === 0) {
+            this.feature.unset("isModified");
+            unByKey(this.eventKeys.modifier);
         }
     }
 
@@ -132,6 +152,7 @@ export default class ScenarioFeature {
      */
     clearScenarioData () {
         this.scenarioData = {};
+        this.feature.unset("isModified");
     }
 
     /**
@@ -144,6 +165,24 @@ export default class ScenarioFeature {
         for (const prop in properties) {
             this.set(prop, properties[prop]);
         }
+
+        /**
+         * @todo outsource to own method, merge with render event?
+         */
+        this.eventKeys.modifier = getClusterSource(this.layer).on("change", () => {
+            const source = getClusterSource(this.layer);
+
+            if (!source.hasFeature(this.feature) && this.scenario.isActive) {
+                const replace = source.getFeatureById(this.feature.getId());
+
+                if (replace) {
+                    source.removeFeature(replace);
+                }
+
+                source.addFeature(this.feature);
+            }
+        });
+        this.feature.set("isModified", true);
     }
 
     /**

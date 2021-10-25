@@ -74,6 +74,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         expCols = [
             "style",
             "name",
+            "warning",
             "district",
             "address",
             "layerName",
@@ -81,7 +82,6 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "group",
             "anzahl_schueler",
             "key",
-            // "actions",
             "enabled"
         ],
         layersMock = [];
@@ -212,7 +212,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const wrapper = await mountComponent(true, [layer1]);
 
             expect(wrapper.vm.items).to.have.lengthOf(1);
-            expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "anzahl_schueler", "feature", "enabled", "isSimulation");
+            expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isModified", "isSimulation", "anzahl_schueler");
         });
 
         it("should show layers for distance score", async () => {

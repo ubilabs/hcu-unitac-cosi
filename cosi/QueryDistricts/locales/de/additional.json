@@ -8,6 +8,7 @@
                     "districtDropdownLabel": "Referenzgebiet",
                     "showInDashboardLable": "Im Dashboard anzeigen",
                     "resultAsSelection": "Ergebnis als Gebietauswahl setzen",
+                    "resetSelection": "Zurücksetzen",
                     "comparableResults": "Vergleichbare Gebiete",
                     "referenceDistrict": "Referenzgebiet",
                     "referenceValueType": "Typ",
@@ -24,7 +25,8 @@
                     "selectProperty": "Attribut der Einrichtung",
                     "rowsPerPage": "Zeilen pro Seite",
                     "exportTable": "Tabelle exportieren",
-                    "exportFilename": "CoSI_Vergleichbare_Gebiete"
+                    "exportFilename": "CoSI_Vergleichbare_Gebiete",
+                    "invalidFeaturesWarning": "Für diesen Filter gibt es Gebiete für die keine gültigen Werte Vorliegen."
                 }
             }
         }

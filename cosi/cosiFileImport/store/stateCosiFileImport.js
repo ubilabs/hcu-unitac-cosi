@@ -65,5 +65,8 @@ export default {
     },
     title: "KML-Datei laden",
     newLayerInformation: {},
-    updateLayerStyles: false
+    importedLayers: [],
+    activeLayer: 0,
+    updateLayerStyles: false,
+    crs: "EPSG:4326"
 };

@@ -88,7 +88,10 @@ const id = "AccessibilityAnalysisService",
 
 export default {
     component: {
-        name: id
+        name: id,
+        render () {
+            return null;
+        }
     },
     store
 };

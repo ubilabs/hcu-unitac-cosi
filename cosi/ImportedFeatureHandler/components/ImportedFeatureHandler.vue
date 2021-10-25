@@ -12,7 +12,7 @@ export default {
     data () {
         return {
             featureActive: false,
-            importedLayers: [],
+            importedLayerIds: [],
             importedFeatures: [],
             importedFeaturesFull: [],
             openFeature: {},
@@ -26,7 +26,7 @@ export default {
     },
     watch: {
         newLayerInformation (payload) {
-            this.importedLayers.push(payload.id);
+            this.importedLayerIds.push(payload.id);
             payload.features.forEach(feature => {
                 this.importedFeatures.push(feature.ol_uid);
                 this.importedFeaturesFull.push(feature);
@@ -62,7 +62,7 @@ export default {
                     if (match) {
                         const originalStyle = feature.get("originalStyle");
 
-                        if (originalStyle !== "undefined" || originalStyle !== empty) {
+                        if (originalStyle !== "undefined") {
                             feature.setStyle(originalStyle);
                         }
 

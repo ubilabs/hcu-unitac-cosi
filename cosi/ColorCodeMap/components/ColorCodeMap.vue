@@ -52,12 +52,14 @@ export default {
             // Helper to pass data to the graph generator
             graphData: [],
             // Helper to store type of feature dataSet
-            dataCategory: ""
+            dataCategory: "",
+            // Statistical features of the selected districts
+            selectedStatFeatures: []
         };
     },
     computed: {
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "selectedStatFeatures", "metadataUrls"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"]),
         ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
         _selectedFeature: {
@@ -92,6 +94,9 @@ export default {
             }
         },
         loadend (newValue) {
+            const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
+
+            this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
             if (newValue && this.selectedFeatures.length > 0) {
                 this.updateSelectedDistricts();
             }
@@ -316,7 +321,6 @@ export default {
                     if (this.originalStyling === null) {
                         this.originalStyling = getStyling;
                     }
-
                     getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.data), 0.75)});
                     getStyling.zIndex = 1;
                     getStyling.text = new Text({

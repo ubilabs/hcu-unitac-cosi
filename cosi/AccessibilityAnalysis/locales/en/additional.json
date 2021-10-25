@@ -6,6 +6,7 @@
                     "title": "Accessibility Analysis",
                     "dropdownInfo": "Please choose the mode you want to work with:",
                     "pointOfReference": "Point of reference: click on the map",
+                    "setByFeature": "Select facilities as location (use perimeter of polygons)",
                     "topic": "Topic",
                     "transportType": "Type of transportation",
                     "transportTypes": {
@@ -31,7 +32,10 @@
                     "inputReminder": "Please fill out all input fields.",
                     "showError": "The request could not be executed correctly. Please verify all inputs.",
                     "askUpdate": "Do you want to update the current accessibility analysis?",
-                    "showErrorInvalidInput": "The request could not be executed correctly: One parameter has wrong format or is invalid."
+                    "showErrorInvalidInput": "The request could not be executed correctly: One parameter has wrong format or is invalid.",
+                    "download": {
+                        "title": "Download results as geodata (GeoJSON)"
+                    }
                 }
             }
         }

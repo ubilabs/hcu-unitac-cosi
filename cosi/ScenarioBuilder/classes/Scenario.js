@@ -25,6 +25,7 @@ export default class Scenario {
         this.modifiedFeatures = [];
         this.neighborhoods = [];
         this.isActive = opts.isActive || false;
+        this.updated = new Date();
 
         if (opts.simulatedFeatures) {
             for (const scenarioFeature of opts.simulatedFeatures) {
@@ -66,6 +67,7 @@ export default class Scenario {
             scenarioFeature.renderFeature(this.guideLayer);
         }
 
+        this.updateScenario();
         return scenarioFeature;
     }
 
@@ -81,6 +83,9 @@ export default class Scenario {
             return null;
         }
         const scenarioFeature = new ScenarioFeature(feature, layer);
+
+        /** @todo is this the right place? */
+        scenarioFeature.scenario = this;
 
         this.modifiedFeatures.push(scenarioFeature);
 
@@ -114,6 +119,7 @@ export default class Scenario {
 
         // store the altered properties in the scenario
         scenarioFeature.setProperties(properties);
+        this.updateScenario();
     }
 
     /**
@@ -129,6 +135,7 @@ export default class Scenario {
         if (scenarioFeature) {
             scenarioFeature.resetProperties(props, purge);
         }
+        this.updateScenario();
     }
 
     /**
@@ -141,6 +148,7 @@ export default class Scenario {
         for (item of this.getAllFeatures()) {
             item.resetProperties();
         }
+        this.updateScenario();
     }
 
     /**
@@ -153,6 +161,7 @@ export default class Scenario {
         for (item of this.neighborhoods) {
             item.hideFeature();
         }
+        this.updateScenario();
     }
 
     /**
@@ -169,6 +178,7 @@ export default class Scenario {
         for (item of scenarioFeatures) {
             item.resetProperties(props, purge);
         }
+        this.updateScenario();
     }
 
     /**
@@ -191,6 +201,7 @@ export default class Scenario {
             scenarioNeighborhood.renderFeature();
         }
 
+        this.updateScenario();
         return scenarioNeighborhood;
     }
 
@@ -207,6 +218,7 @@ export default class Scenario {
         for (item of this.simulatedFeatures) {
             item.hideFeature();
         }
+        this.updateScenario();
     }
 
     /**
@@ -215,8 +227,6 @@ export default class Scenario {
      */
     prune () {
         this.hideScenario();
-        this.resetAllFeatures();
-        this.resetAllDistricts();
         this.simulatedFeatures = [];
         this.modifiedFeatures = [];
         this.neighborhoods = [];
@@ -234,6 +244,7 @@ export default class Scenario {
             neighborhood.hideFeature();
             this.neighborhoods = this.neighborhoods.filter(item => item !== neighborhood);
         }
+        this.updateScenario();
     }
 
     /**
@@ -248,6 +259,7 @@ export default class Scenario {
             scenarioFeature.hideFeature();
             this.simulatedFeatures = this.simulatedFeatures.filter(item => item !== scenarioFeature);
         }
+        this.updateScenario();
     }
 
     /**
@@ -271,6 +283,7 @@ export default class Scenario {
         for (const item of this.neighborhoods) {
             item.renderFeature();
         }
+        this.updateScenario();
     }
 
     /**
@@ -428,5 +441,21 @@ export default class Scenario {
         );
 
         downloadJsonToFile(geojson, this.name + "_Szenario.json");
+    }
+
+    /**
+     * stores last update
+     * @returns {void}
+     */
+    updateScenario () {
+        this.updated = new Date();
+    }
+
+    /**
+     * Returns last update time
+     * @returns {Date} the last update
+     */
+    getUpdated () {
+        return this.updated;
     }
 }

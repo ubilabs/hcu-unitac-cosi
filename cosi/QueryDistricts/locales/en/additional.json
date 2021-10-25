@@ -8,6 +8,7 @@
                     "districtDropdownLabel": "reference district",
                     "showInDashboardLable": "show in dashboard",
                     "resultAsSelection": "set result as selection",
+                    "resetSelection": "Reset",
                     "comparableResults": "comparable results",
                     "referenceDistrict": "reference district",
                     "valueTypeAbsolute": "absolute",
@@ -24,7 +25,8 @@
                     "selectProperty": "Attribute",
                     "rowsPerPage": "rows per page",
                     "exportTable": "export table",
-                    "exportFilename": "CoSI_query_districts"
+                    "exportFilename": "CoSI_query_districts",
+                    "invalidFeaturesWarning": "There are districts without valid results for this filter."
                 }
             }
         }

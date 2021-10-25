@@ -7,6 +7,18 @@ const getters = {
 
     activeSimulatedFeatures (state, {activeScenario}) {
         return activeScenario?.getSimulatedFeatures();
+    },
+
+    activeModifiedFeatures (state, {activeScenario}) {
+        return activeScenario?.getModifiedFeatures();
+    },
+
+    activeModifiedFeaturesCount (state, {activeScenario}) {
+        return activeScenario?.getModifiedFeatures().filter(f => f.feature.get("isModified"));
+    },
+
+    scenarioUpdated (state, {activeScenario}) {
+        return activeScenario?.getUpdated();
     }
 };
 

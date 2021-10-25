@@ -1,6 +1,7 @@
 import {unByKey} from "ol/Observable";
 import {describeFeatureType, getFeatureDescription} from "../../../../src/api/wfs/describeFeatureType.js";
 import {getLayerList} from "masterportalAPI/src/rawLayerList";
+import {getContainingDistrictForExtent} from "../../utils/geomUtils.js";
 
 const eventKeys = {};
 
@@ -12,11 +13,11 @@ const eventKeys = {};
  * @param {module:ol/layer[]} layerList - An array of layers.
  * @returns {void}
  */
-export function prepareDistrictLevels (districtLevels, layerList) {
+export async function prepareDistrictLevels (districtLevels, layerList) {
     const filteredDistrictLevels = getAllDistrictsWithoutLayer(districtLevels);
 
     if (filteredDistrictLevels.length > 0) {
-        filteredDistrictLevels.forEach((districtLevel, index) => {
+        filteredDistrictLevels.forEach(async (districtLevel, index) => {
             // the reference level, null if there is none reference level
             districtLevel.referenceLevel = index < districtLevels.length - 1 ? districtLevels[index + 1] : null;
             // the layer for the district level
@@ -24,7 +25,7 @@ export function prepareDistrictLevels (districtLevels, layerList) {
             // the names of all avaible districts
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
             // property names for the WFS GetFeature request for the stats features, without geometry
-            districtLevel.propertyNameList = getPropertyNameList(districtLevel.stats.baseUrl);
+            districtLevel.propertyNameList = await getPropertyNameList(districtLevel.stats.baseUrl);
             // all featureTypes for the WFS GetFeature request for the stats features
             districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl);
             // all districts at this level
@@ -58,9 +59,11 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
  * @param {String} districtLevel.keyOfAttrName - The key for the attribute containing the name of the district.
  * @param {String} districtLevel.label - The label of the district level.
  * @param {String[]|undefined} districtLevel.duplicateDistrictNames - Names of districts that trigger conflicts.
+ * @param {Object} referenceLevel - The reference level from the district level.
+ * @param {String} layerId - The id of the layer for the district level.
  * @returns {Object[]} The districts.
  */
-export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
+export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames, referenceLevel, layerId}) {
     if (typeof layer !== "object" || layer === null || Array.isArray(layer) || typeof keyOfAttrName !== "string" || typeof label !== "string") {
         console.error(`prepareDistrictLevels.getDistricts: ${layer} has to be defined and an object. ${keyOfAttrName} has to be defined and a string. ${label} has to be defined and a string`);
         return [];
@@ -96,7 +99,23 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
                 return districtName;
             },
             // name of the district
-            getName: () => feature.get(keyOfAttrName)
+            getName: () => feature.get(keyOfAttrName),
+            // name of the reference (parent) district
+            getReferencDistrictName: () => {
+                // Districtlevel = Hamburg
+                if (referenceLevel === null) {
+                    return null;
+                }
+                // Districtlevel = Stadtteile/Bezirke
+                // The info for this can be found already at the admin feautre
+                if (layerId !== "6071") {
+                    return feature.get(referenceLevel.keyOfAttrName);
+                }
+                // Districtlevel = Stat.Gebiete
+                const referenceDistrict = getContainingDistrictForExtent(referenceLevel, feature.getGeometry().getInteriorPoint().getExtent());
+
+                return referenceDistrict.getName();
+            }
         });
     });
 
@@ -135,20 +154,6 @@ export function getHamburgDistrict (layer) {
     layer.getSource().getFeatures().forEach(feature => {
         feature.set("verwaltungseinheit", "hamburg_gesamt");
     });
-    // return {
-    //     // the administration feature (district), for hamburg not present
-    //     adminFeature: undefined,
-    //     // an array for all statistical features of this district
-    //     statFeatures: [],
-    //     // flag district is selected
-    //     isSelected: false,
-    //     // id of the district
-    //     getId: () => "Hamburg",
-    //     // label of the district
-    //     getLabel: () => "Hamburg (gesamt)",
-    //     // name of the district
-    //     getName: () => "hamburg_gesamt"
-    // };
 }
 
 /**
@@ -195,7 +200,7 @@ export function getNameList (layer, keyOfAttrName) {
 /**
  * Returns a list of all property names for the given WFS sources (urls), without geometries.
  * @param {String[]} urls - The urls of the WFS`s.
- * @returns {Array.<String[]>} The property name for each url.
+ * @returns {Promise<Array.<String[]>>} The property name for each url.
  */
 export async function getPropertyNameList (urls) {
     if (!Array.isArray(urls)) {

@@ -61,6 +61,9 @@ export default {
                     value: "name"
                 },
                 {
+                    value: "warning"
+                },
+                {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colDistrict"),
                     value: "district"
                 },
@@ -107,7 +110,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extend: "extend"}),
         ...mapState(["configJson"]),
         columns () {
@@ -183,7 +186,7 @@ export default {
          * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
          * @returns {void}
          */
-        activeSimulatedFeatures () {
+        scenarioUpdated () {
             this.updateFeaturesList();
         },
 
@@ -247,9 +250,9 @@ export default {
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
          * @deprecated
          */
-        Radio.on("VectorLayer", "featuresLoaded", () => {
-            this.updateFeaturesList();
-        });
+        Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
+        Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
+        Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
@@ -288,7 +291,15 @@ export default {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
-                        visibleFeatures = features.filter(feature => typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle()() !== null),
+                        visibleFeatures = features.filter(feature => {
+                            if (typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle() !== null) {
+                                return true;
+                            }
+                            if (typeof vectorLayer.getStyleFunction() === "function") {
+                                return true;
+                            }
+                            return false;
+                        }),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
@@ -307,6 +318,7 @@ export default {
                             feature: feature,
                             enabled: true,
                             isSimulation: feature.get("isSimulation") || false,
+                            isModified: feature.get("isModified") || false,
                             ...Object.fromEntries(layerMap.numericalValues.map(field => [field.id, feature.get(field.id)]))
                         };
                     })];
@@ -479,6 +491,20 @@ export default {
         },
         updateWeights (weights) {
             this.layerWeights = {...weights};
+        },
+        getNumericalValueStyle (item, key) {
+            const val = parseFloat(item[key]),
+                maxVal = Math.max(
+                    ...this.items
+                        .map(_item => parseFloat(_item[key]))
+                        .filter(_item => !isNaN(_item))
+                );
+
+            return {
+                padding: 0,
+                height: "10px",
+                width: Math.round(100 * val / maxVal) + "%"
+            };
         }
     }
 };
@@ -562,6 +588,20 @@ export default {
                                         />
                                     </td>
                                 </template>
+                                <template #item.warning="{ item }">
+                                    <v-icon
+                                        v-if="item.isModified"
+                                        :title="$t('additional:modules.tools.cosi.featuresList.warningIsModified')"
+                                    >
+                                        mdi-alert
+                                    </v-icon>
+                                    <v-icon
+                                        v-if="item.isSimulation"
+                                        :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
+                                    >
+                                        mdi-sprout
+                                    </v-icon>
+                                </template>
                                 <template #item.style="{ item }">
                                     <FeatureIcon :item="item" />
                                 </template>
@@ -604,12 +644,23 @@ export default {
                                             :key="col.value"
                                             class="align-right"
                                         >
-                                            <v-chip
+                                            <div>
+                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                            </div>
+                                            <div>
+                                                <v-chip
+                                                    :style="getNumericalValueStyle(item, col.value)"
+                                                    :color="getNumericalValueColor(item, col.value)"
+                                                    dark
+                                                    dense
+                                                />
+                                            </div>
+                                            <!-- <v-chip
                                                 :color="getNumericalValueColor(item, col.value)"
                                                 dark
                                             >
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                            </v-chip>
+                                            </v-chip> -->
                                         </div>
                                     </template>
                                 </template>

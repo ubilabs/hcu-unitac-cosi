@@ -93,7 +93,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", [
             "selectedFeatures",
             "selectedDistrictLevel",
-            "selectedDistrictsNames",
+            "selectedDistrictNames",
             "keyOfAttrNameStats",
             "districtLevels",
             "mapping",
@@ -152,7 +152,7 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["updateDistricts"]),
         generateTable () {
             this.timestamps = [];
-            this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictsNames, []);
+            this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictNames, []);
             this.rows = this.getRows();
             this.items = this.getData();
             this.currentTimeStamp = this.timestamps[0];
@@ -278,14 +278,18 @@ export default {
             return item[header.value].isModified <= timestamp ? "modified" : "";
         },
 
+        getValueTooltip (item, header, timestamp) {
+            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
+        },
+
         getAverage (item, timestamp) {
-            const average = getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
+            const average = getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
 
             return average.toLocaleString(this.currentLocale);
         },
 
         getTotal (item, timestamp) {
-            const total = getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix);
+            const total = getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
 
             return total.toLocaleString(this.currentLocale);
         },
@@ -304,13 +308,13 @@ export default {
             const total = Object.fromEntries(
                     item.years.map(timestamp => [
                         this.timestampPrefix + timestamp,
-                        getTotal(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                        getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
                     ])
                 ),
                 average = Object.fromEntries(
                     item.years.map(timestamp => [
                         this.timestampPrefix + timestamp,
-                        getAverage(item, this.selectedDistrictsNames, timestamp, this.timestampPrefix)
+                        getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
                     ])
                 ),
                 data = {
@@ -538,12 +542,22 @@ export default {
                                             v-for="year in item.years"
                                             :key="year"
                                         >
-                                            <span :class="getValueClass(item, header, year)">{{ getValue(item, header, year) }}</span>
+                                            <span
+                                                :title="getValueTooltip(item, header, year)"
+                                                :class="getValueClass(item, header, year)"
+                                            >
+                                                {{ getValue(item, header, year) }}
+                                            </span>
                                         </li>
                                     </ul>
                                 </template>
                                 <template v-else>
-                                    <span :class="getValueClass(item, header, currentTimeStamp)">{{ getValue(item, header, currentTimeStamp) }}</span>
+                                    <span
+                                        :title="getValueTooltip(item, header, currentTimeStamp)"
+                                        :class="getValueClass(item, header, currentTimeStamp)"
+                                    >
+                                        {{ getValue(item, header, currentTimeStamp) }}
+                                    </span>
                                 </template>
                             </div>
                         </template>
