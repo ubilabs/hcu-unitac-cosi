@@ -32,7 +32,7 @@ config.mocks.$t = key => key;
 
 global.requestAnimationFrame = (fn) => fn();
 
-describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
 
 
@@ -81,7 +81,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "type",
             "group",
             "anzahl_schueler",
-            "key",
+            "distanceScore",
             "enabled"
         ],
         layersMock = [];
@@ -248,14 +248,13 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.distanceScores.id).to.be.equal("1.0");
-
             // eslint-disable-next-line one-var
             const args = getDistanceScoreStub.firstCall.args[1];
 
             expect(args.feature.getId()).to.be.equal("id");
             expect(args.layerIds).to.be.eql(["1234"]);
             expect(args.weights).to.be.eql([1]);
+            expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
         });
 
         it("should recompute distance score after weight change", async () => {
@@ -279,6 +278,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const args = getDistanceScoreStub.firstCall.args[1];
 
             expect(args.weights).to.be.eql([0.5, 1]);
+            expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
         });
 
         it("headers should have all fields", async () => {

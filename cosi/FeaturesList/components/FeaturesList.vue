@@ -18,6 +18,7 @@ import {prepareTableExport, prepareDetailsExport, composeFilename} from "../util
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import deepEqual from "deep-equal";
 
 export default {
     name: "FeaturesList",
@@ -35,7 +36,6 @@ export default {
             showWeightsDialog: false,
             layerWeights: {},
             selectedLayers: [],
-            distanceScores: {},
             search: "",
             layerFilter: [],
             expanded: [],
@@ -117,7 +117,6 @@ export default {
             return [
                 ...this.featureColumns,
                 ...this.numericalColumns,
-                ...[{text: "SB", value: "key", divider: true}],
                 ...this.actionColumns
             ];
         },
@@ -218,8 +217,10 @@ export default {
             this.updateDistanceScores();
         },
 
-        items () {
-            this.updateDistanceScores();
+        items (newItems) {
+            if (!deepEqual(newItems.map(i=>i.key), this.items.map(i=>i.key))) {
+                this.updateDistanceScores();
+            }
         },
 
         layerWeights () {
@@ -276,6 +277,8 @@ export default {
             if (numCols.length > 0) {
                 numCols[numCols.length - 1].divider = true;
             }
+
+            numCols.push({text: "SB", value: "distanceScore", divider: true});
 
             return numCols;
         },
@@ -474,7 +477,7 @@ export default {
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
-                this.distanceScores = this.items.reduce((acc, e) => ({...acc, [e.feature.key]: "na"}), {});
+                const items = [];
 
                 if (this.selectedLayers.length) {
                     this.distanceScoreQueue = [...this.items];
@@ -484,8 +487,10 @@ export default {
                                 weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId]),
                                 extent: this.extend ? this.extend : undefined});
 
-                        this.distanceScores = {...this.distanceScores, [item.feature.getId()]: dist !== null ? dist.toFixed(1) : "na"};
+                        items.push({...item, distanceScore: dist !== null ? dist.toFixed(1) : "na"});
                     }
+
+                    this.items = items;
                 }
             }
         },
@@ -631,9 +636,6 @@ export default {
                                         dense
                                         @change="toggleFeature(item)"
                                     />
-                                </template>
-                                <template #item.key="{ item }">
-                                    {{ distanceScores[item.key] }}
                                 </template>
                                 <template
                                     v-for="col in numericalColumns"
