@@ -16,6 +16,15 @@ export function setWorkerFactory (factory) {
     workerFactory = factory;
 }
 
+/**
+ *
+ * @param {*} newWorker new worker
+ * @return {void}
+ */
+export function setWorker (newWorker) {
+    worker = newWorker;
+}
+
 // eslint-disable-next-line require-jsdoc
 async function getFeatures (url, featureType, version = "1.1.0") {
     const ret = await axios.get(url, {
@@ -120,7 +129,10 @@ const id = "AccessibilityAnalysisService",
                 worker.onerror = e => {
                     console.error(e);
                 };
-                if (getters.filterUrl && getters.filterFeatureType) {
+                if (getters.filterPoly) {
+                    await init({coords: [getters.filterPoly]});
+                }
+                else if (getters.filterUrl && getters.filterFeatureType) {
                     const coords = await loadFilterPoly(getters.filterUrl, getters.filterFeatureType);
 
                     await init({coords});
@@ -188,6 +200,9 @@ const id = "AccessibilityAnalysisService",
             },
             filterFeatureType: s => {
                 return s.filterFeatureType;
+            },
+            filterPoly: s => {
+                return s.filterPoly;
             }
         },
         mutations: {

@@ -1,20 +1,9 @@
 import {
     expect
 } from "chai";
-import requestIsochrones, {getCityLimits} from "../../../service/requestIsochrones";
+import requestIsochrones from "../../../service/requestIsochrones";
 import axios from "axios";
-import {WFS} from "ol/format.js";
-import * as turf from "@turf/turf";
-import {initializeLayerList} from "../../../../utils/initializeLayerList";
-import {getAllFeatures} from "../../../../utils/getAllFeatures";
-import * as Proj from "ol/proj.js";
-// import layers from "./layers.json";
 
-
-// import fetch from 'node-fetch';
-
-
-// node-fetch not working: https://notes.alex-miller.co/20210520161027-mocking_fetch_in_a_jsdom_node_environment/
 describe("requestIsochrones", () => {
     it("point request within hamburg", async () => {
         const res = await requestIsochrones(
@@ -66,46 +55,5 @@ describe("requestIsochrones", () => {
         catch (e) {
             expect(e.response.data.error.code).to.equal(3002);
         }
-    });
-    it.skip("point request invalid data", async function () {
-
-        this.timeout(205000);
-
-        await initializeLayerList();
-
-        const ret = await getCityLimits("https://geodienste.hamburg.de/HH_WFS_Verwaltungsgrenzen", "landesgrenze"),
-            wfsReader = new WFS({}),
-            feature = wfsReader.readFeatures(ret)[0],
-            features = await getAllFeatures("16601"),
-            poly = turf.polygon(feature.getGeometry().getPolygon(0).getCoordinates()),
-            inp = [],
-            out = [];
-
-        console.log("start");
-        console.log(features.length);
-        for (let i = 0; i < features.length; i++) {
-            const p = features[i].getGeometry().flatCoordinates.slice(0, 2);
-
-            if (turf.booleanPointInPolygon(p, poly)) {
-                inp.push(p);
-            }
-            else {
-                out.push(p);
-            }
-        }
-        console.log(inp.length);
-        console.log(out.length);
-        let failc = 0;
-
-        for (const p of inp) {
-            try {
-                const tp = Proj.transform(p, "EPSG:25832", "EPSG:4326"),
-                    res = await requestIsochrones("driving-car", [tp], "time", [600 * 0.33, 600 * 0.67, 600]);
-            }
-            catch (e) {
-                failc += 1;
-            }
-        }
-        console.log(failc);
     });
 });

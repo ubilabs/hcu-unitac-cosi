@@ -2,6 +2,7 @@ import requestIsochrones from "./requestIsochrones";
 import {readFeatures} from "../components/util.js";
 import * as turf from "@turf/turf";
 import axios from "axios";
+import * as Proj from "ol/proj.js";
 
 let abortController,
     filterPoly;
@@ -114,10 +115,13 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
 
         // group coordinates into groups of 5
         coordinatesList = [],
-        groupedFeaturesList = [];
+        groupedFeaturesList = [],
+        filteredCoordinates = filterPoly === undefined ? coordinates :
+            coordinates.filter(c => turf.booleanPointInPolygon(
+                Proj.transform(c, "EPSG:4326", "EPSG:25832"), filterPoly));
 
-    for (let i = 0; i < coordinates.length; i += batchSize) {
-        const arrayItem = coordinates.slice(i, i + batchSize);
+    for (let i = 0; i < filteredCoordinates.length; i += batchSize) {
+        const arrayItem = filteredCoordinates.slice(i, i + batchSize);
 
         coordinatesList.push(arrayItem);
     }
@@ -155,38 +159,40 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
         k++;
     }
 
-    for (let i = 0; i < 3; i++) {
-        let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
-            layerUnion,
-            layerUnionFeatures;
+    if (groupedFeaturesList.length) {
+        for (let i = 0; i < 3; i++) {
+            let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
+                layerUnion,
+                layerUnionFeatures;
 
-        layeredList = [].concat(...layeredList);
-        layerUnion = layeredList[0];
+            layeredList = [].concat(...layeredList);
+            layerUnion = layeredList[0];
 
-        for (let j = 0; j < layeredList.length; j++) {
-            try {
-                layerUnion = turf.union(layerUnion, layeredList[j]);
+            for (let j = 0; j < layeredList.length; j++) {
+                try {
+                    layerUnion = turf.union(layerUnion, layeredList[j]);
+                }
+                catch (e) {
+                    console.error(e); // turf chokes one some resulting geometries
+                }
             }
-            catch (e) {
-                console.error(e); // turf chokes one some resulting geometries
-            }
+            layerUnionFeatures = readFeatures(JSON.stringify(layerUnion));
+
+            // TODO: get projections via arguments and/or store
+            layerUnionFeatures = transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
+
+            const featureType = "Erreichbarkeit im Gebiet";
+
+            // TODO: add props to layers, like type of facility, unit of measured distance
+            layerUnionFeatures.forEach(feature => {
+                feature.set("featureType", featureType);
+                feature.set("value", layeredList[0].properties.value);
+                feature.set("mode", transportType);
+                feature.set("unit", scaleUnit);
+                feature.set("topic", selectedFacilityName);
+            });
+            features = features.concat(layerUnionFeatures);
         }
-        layerUnionFeatures = readFeatures(JSON.stringify(layerUnion));
-
-        // TODO: get projections via arguments and/or store
-        layerUnionFeatures = transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
-
-        const featureType = "Erreichbarkeit im Gebiet";
-
-        // TODO: add props to layers, like type of facility, unit of measured distance
-        layerUnionFeatures.forEach(feature => {
-            feature.set("featureType", featureType);
-            feature.set("value", layeredList[0].properties.value);
-            feature.set("mode", transportType);
-            feature.set("unit", scaleUnit);
-            feature.set("topic", selectedFacilityName);
-        });
-        features = features.concat(layerUnionFeatures);
     }
     progress(100);
     return features;
