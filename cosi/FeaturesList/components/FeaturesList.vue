@@ -240,10 +240,8 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            console.log(this.activeLayerMapping);
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
-                    console.log(vectorLayer);
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(feature => {

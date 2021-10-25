@@ -215,13 +215,12 @@ function addLayerToTree (newLayer) {
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId});
 
     // model.get("layer").setProperties({"typ": "WFS"});
     setLayerAttributes(model, newLayer);
     adjustLayerStyling(newLayer);
 
-    console.log(model.get("attributeWhiteList"));
     // eslint-disable-next-line one-var
     const filterModel = {
             attributeWhiteList: model.get("attributeWhiteList"),
