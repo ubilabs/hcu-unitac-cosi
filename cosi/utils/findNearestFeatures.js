@@ -17,9 +17,9 @@ export async function findNearestFeatures (layerId, feature, initialBuffer, buff
         iter = 0;
 
     while (++iter < maxIter) {
-        const extend = calculateExtent([feature], buffer);
+        const extent = calculateExtent([feature], buffer);
 
-        features = await getAllFeatures(layerId, extend);
+        features = await getAllFeatures(layerId, extent);
 
         if (features.length) {
             return features;
