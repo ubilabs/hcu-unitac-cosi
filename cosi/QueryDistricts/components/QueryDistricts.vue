@@ -207,22 +207,22 @@ export default {
                     let polygon,
                         val;
 
-                    try {
+                    if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
                         // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
-                    catch (e) {
+                    else if (feature.getGeometry().getType() === "Polygon") {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
                         // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
+
                     if (
                         polygon &&
                         turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
                     ) {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
-
                         fmap[feature.getId()] = fmap[feature.getId()] + val;
 
                         break;
@@ -386,6 +386,11 @@ export default {
             this.setDistrictsByName({
                 districtNames: refDistrictName ? [...this.resultNames, refDistrictName] : this.resultNames
             });
+        },
+
+        resetDistrictSelection: function () {
+            this.layerFilterModels = [];
+            this.updateAvailableLayerOptions();
         },
 
         /**
@@ -587,7 +592,6 @@ export default {
                 if (geometry.getType() === "Point") {
                     return geometry.getCoordinates().splice(0, 2);
                 }
-
                 return Extent.getCenter(geometry?.getExtent());
             }
 
@@ -727,37 +731,51 @@ export default {
                             </v-data-table>
                         </div>
                     </div>
-                    <br>
-                    <div>
-                        <button
+                    <v-divider />
+                    <v-row
+                        justify="start"
+                    >
+                        <v-btn
                             v-if="resultNames && resultNames.length"
                             id="set-selected-district"
-                            class="btn btn-lgv-grey measure-delete"
+                            dense
+                            small
+                            tile
+                            color="grey lighten-1"
+                            class="ma-2"
                             @click="changeDistrictSelection()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
-                        </button>
-                    </div>
-                    <br>
-                    <div>
-                        <!-- <button
-                            v-if="resultNames && resultNames.length"
-                            id="show-in-dashboard"
-                            class="btn btn-lgv-grey measure-delete"
-                            @click="showInDashboard()"
-                        >
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.showInDashboardLable') }}
-                        </button> -->
+                        </v-btn>
                         <v-btn
                             v-if="resultNames && resultNames.length"
+                            id="reset-district"
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
+                            class="ma-2"
+                            @click="resetDistrictSelection()"
+                        >
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
+                        </v-btn>
+                    </v-row>
+                    <v-row
+                        justify="start"
+                    >
+                        <v-btn
+                            v-if="resultNames && resultNames.length"
+                            dense
+                            small
+                            tile
+                            color="grey lighten-1"
+                            class="ma-2"
                             :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
                             @click="exportTable()"
                         >
                             {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
                         </v-btn>
-                    </div>
+                    </v-row>
                 </div>
             </v-app>
         </template>
@@ -857,11 +875,6 @@ export default {
 
 .compare-districts {
     min-height: 300px;
-}
-
-#show-in-dashboard,
-#set-selected-district {
-    width: 100%;
 }
 
 .table {

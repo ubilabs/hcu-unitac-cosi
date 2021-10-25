@@ -340,7 +340,8 @@ export default {
          */
         updateExtent (zoomToExtent = true) {
             const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
-                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal);
+                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal),
+                selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             if (extent) {
                 this.setBufferValue(this.bufferVal);
@@ -353,7 +354,7 @@ export default {
                 }
 
                 this.loadStatFeatures({
-                    districts: this.selectedDistricts,
+                    districts: selectedDistricts,
                     districtLevel: this.selectedDistrictLevel,
                     getStatFeatures: getFeaturePost
                 });
@@ -482,6 +483,7 @@ export default {
                         dense
                         multiple
                         small-chips
+                        deletable-chips
                         @input="updateSelectedFeatures"
                     />
                     <v-text-field

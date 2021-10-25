@@ -8,6 +8,7 @@
                     "districtDropdownLabel": "reference district",
                     "showInDashboardLable": "show in dashboard",
                     "resultAsSelection": "set result as selection",
+                    "resetSelection": "Reset",
                     "comparableResults": "comparable results",
                     "referenceDistrict": "reference district",
                     "valueTypeAbsolute": "absolute",

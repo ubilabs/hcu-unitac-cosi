@@ -5,24 +5,20 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import AccessibilityAnalysisComponent from "../../../components/AccessibilityAnalysis.vue";
-import {createIsochrones} from "../../../service/index";
 import AccessibilityAnalysis from "../../../store/index";
 import {
     expect
 } from "chai";
 import sinon from "sinon";
 import data from "./isochronesPoint.json";
-import features from "./featuresPoint.json";
-import featuresRegion from "./featuresRegion.json";
 import {
     registerProjections
 } from "./util.js";
-import GeoJSON from "ol/format/GeoJSON";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
-import * as turf from "@turf/turf";
 import {Worker} from "../../../service/isochronesWorker";
+import {readFeatures} from "../../../components/util";
 
 global.Worker = Worker;
 
@@ -38,35 +34,9 @@ before(() => {
     registerProjections();
 });
 
-after(() => {
-    global.fetch = undefined;
-});
-
-
-/**
-* @param {object} actualFeatures actual features
-* @param {object} expFeatures expected features
-* @returns {void}
-*/
-function expectFeaturesEqual (actualFeatures, expFeatures) {
-    expect(actualFeatures.length, expFeatures.length);
-
-    actualFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
-    expFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
-    const parser = new GeoJSON();
-
-    for (let i = 0; i < actualFeatures.length; i++) {
-        const f1 = turf.polygon(actualFeatures[i].getGeometry().getCoordinates()),
-            f2 = turf.polygon(expFeatures[i].getGeometry().getCoordinates());
-
-        expect(turf.booleanEqual(f1, f2)).to.be.true;
-        expect(parser.writeFeature(actualFeatures[i]).properties).to.deep.equal(parser.writeFeature(expFeatures[i]).properties);
-    }
-}
-
 describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let component, store, clearStub, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify, progressStub,
+    let component, store, clearStub, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify, progressStub, createIsochronesStub,
         coordiantes = [0, 0];
 
     const mockConfigJson = {
@@ -126,6 +96,7 @@ describe("AccessibilityAnalysis.vue", () => {
         addSingleAlertStub = sinon.stub();
         cleanupStub = sinon.stub();
         progressStub = sinon.stub();
+        createIsochronesStub = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -145,7 +116,8 @@ describe("AccessibilityAnalysis.vue", () => {
                             actions: {
                                 // eslint-disable-next-line no-unused-vars
                                 async getIsochrones ({getters, commit}, params) {
-                                    return createIsochrones(params, progressStub);
+                                    // return createIsochrones(params, progressStub);
+                                    return createIsochronesStub();
                                 }
                             }
                         }
@@ -211,16 +183,12 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
 
-        global.fetch = () => {
-            if (error) {
-                return new Promise(function (resolve) {
-                    resolve({json: () => error});
-                });
-            }
-            return new Promise(function (resolve) {
-                resolve({json: () => data});
-            });
-        };
+        if (error) {
+            createIsochronesStub.throws(error);
+        }
+        else {
+            createIsochronesStub.returns(readFeatures(data));
+        }
 
         await component.vm.$nextTick();
         return component;
@@ -248,21 +216,17 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button with wrong input", async () => {
-        const wrapper = await mount(undefined, {error: {code: 3002}});
+
+        const wrapper = await mount(undefined, {error: {response: {data: {error: {code: 3002}}}}});
 
         await wrapper.setData({
-            coordinate: "10.155828082155567, 53.60323024735499",
+            coordinate: "10.155828082155567, b",
             transportType: "Auto",
             scaleUnit: "time",
             distance: 10
         });
 
-        await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
+        await wrapper.vm.createIsochrones();
 
         sinon.assert.callCount(addSingleAlertStub, 1);
         expect(addSingleAlertStub.firstCall.args[1]).to.eql(
@@ -277,26 +241,16 @@ describe("AccessibilityAnalysis.vue", () => {
         const wrapper = await mount([]);
 
         await wrapper.setData({
-            coordinate: "10.155828082155567, 53.60323024735499",
-            transportType: "Auto",
+            coordinate: [10.155828082155567, 53.60323024735499],
+            transportType: "driving-car",
             scaleUnit: "time",
             distance: "10"
         });
 
         sourceStub.addFeatures.reset();
-        await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
-
+        await wrapper.vm.createIsochrones();
 
         expect(sourceStub.addFeatures.callCount).to.equal(1);
-        expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
-            new GeoJSON().readFeatures(features));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
 
@@ -321,17 +275,9 @@ describe("AccessibilityAnalysis.vue", () => {
             selectedFacilityName: "familyName"
         });
 
-        await wrapper.find("#create-isochrones").trigger("click");
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick(); // TODO: use flush-promises instead?
+        await wrapper.vm.createIsochrones();
 
         expect(sourceStub.addFeatures.callCount).to.equal(1);
-
-        expectFeaturesEqual(sourceStub.addFeatures.getCall(0).args[0],
-            new GeoJSON().readFeatures(featuresRegion));
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;

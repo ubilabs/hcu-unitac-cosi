@@ -1,6 +1,7 @@
 import requestIsochrones from "./requestIsochrones";
 import {readFeatures} from "../components/util.js";
 import * as turf from "@turf/turf";
+import axios from "axios";
 
 /**
  * create isochrones features
@@ -18,7 +19,6 @@ export async function createIsochrones ({transportType, coordinates, scaleUnit, 
         progress(100);
         return ret;
     }
-
     return createIsochronesRegion(transportType, coordinates, scaleUnit, distance, null, progress);
 }
 
@@ -34,9 +34,9 @@ let abortController;
  */
 async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance) {
     if (abortController) {
-        abortController.abort();
+        abortController.cancel();
     }
-    abortController = new AbortController();
+    abortController = axios.CancelToken.source();
 
     const range = scaleUnit === "time" ? distance * 60 : distance,
         json = await requestIsochrones(
@@ -44,7 +44,7 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
             [coordinate],
             scaleUnit,
             [range / 3, range * 2 / 3, range],
-            abortController.signal
+            abortController
         ),
 
         // reverse JSON object sequence to render the isochrones in the correct order
@@ -82,9 +82,9 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
 async function createIsochronesRegion (transportType, coordinates, scaleUnit, distance, selectedFacilityName, progress) {
 
     if (abortController) {
-        abortController.abort();
+        abortController.cancel();
     }
-    abortController = new AbortController();
+    abortController = axios.CancelToken.source();
 
     const range = scaleUnit === "time" ? distance * 60 : distance,
 
@@ -105,7 +105,7 @@ async function createIsochronesRegion (transportType, coordinates, scaleUnit, di
     for (const coords of coordinatesList) {
         // TODO: make use of new OpenRouteService component
         const json = await requestIsochrones(transportType, coords, scaleUnit,
-                [range, range * 2 / 3, range / 3], abortController.signal),
+                [range, range * 2 / 3, range / 3], abortController),
             // reverse JSON object sequence to render the isochrones in the correct order
             // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
             reversedFeatures = [...json.features].reverse(),

@@ -34,11 +34,10 @@ export default {
             }
         }
         catch (err) {
-            console.error(err);
             try {
-                const res = JSON.parse(err.message || err.error.message);
+                const code = err.error.response.data.error.code;
 
-                if (res.error.code === 3002 || res.error.code === 3099) {
+                if (code === 3002 || code === 3099) {
                     this.showErrorInvalidInput();
                 }
                 else {
@@ -46,6 +45,7 @@ export default {
                 }
             }
             catch (e) {
+                console.error(e);
                 this.showError();
             }
         }
@@ -113,8 +113,8 @@ export default {
     renderIsochrones (newFeatures) {
         this.mapLayer.getSource().clear();
 
-        if (newFeatures.length === 0 && this.mode === "point") {
-            if (this.extent?.length > 0) {
+        if (newFeatures.length === 0) {
+            if (this.mode === "point" && this.extent?.length > 0) {
                 setBBoxToGeom(this.boundingGeometry);
             }
             return;

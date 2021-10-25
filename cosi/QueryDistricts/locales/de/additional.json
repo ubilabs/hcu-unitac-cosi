@@ -8,6 +8,7 @@
                     "districtDropdownLabel": "Referenzgebiet",
                     "showInDashboardLable": "Im Dashboard anzeigen",
                     "resultAsSelection": "Ergebnis als Gebietauswahl setzen",
+                    "resetSelection": "Zurücksetzen",
                     "comparableResults": "Vergleichbare Gebiete",
                     "referenceDistrict": "Referenzgebiet",
                     "referenceValueType": "Typ",

@@ -18,6 +18,7 @@ import MappingJson from "../../assets/mapping.json";
  * @property {String} selectedDistrictLevel.keyOfAttrName - The key for the attribute "name" of the selected district layer.
  * @property {String} selectedDistrictLevel.keyOfAttrNameStats - The key for the attribute "name" of the regional statistical data layer.
  * @property {module:ol/Collection} selectedDistrictsCollection - All districts of the current district level.
+ * @property {String[]} selectedDistrictNames - All names of the selected districts.
  * @property {Object {String: String[]}} additionalInfoLayers - Additional Layers to display as guidance and information. Set as keys to display with lists of layerIds. (config-param).
  * @property {Number} [bufferValue=0] - A buffer for the extent of the selected district(s).
  */
