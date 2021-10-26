@@ -2,6 +2,9 @@ import {getAllFeatures} from "../../utils/getAllFeatures";
 import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
 import {findNearestFeatures} from "../../utils/findNearestFeatures";
+import {getFeatureInfo} from "./getFeatureInfo";
+import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import {getConverter} from "../utils/converters";
 
 /**
  *
@@ -83,10 +86,32 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
     return vsum / wsum;
 }
 
+/**
+ *
+ * @param {*} feature feature
+ * @param {*} layerIds layerIds
+ * @param {*} weights weights
+ * @return {*} score
+ */
+async function featureValues ({getters}, {feature, layerId}) {
+
+    const layer = getLayerWhere({id: layerId}),
+        coord = feature.getGeometry().flatCoordinates.slice(0, 2),
+        wmsAttrs = getters.wmsLayers.find(l=>l.id === layerId),
+        converter = getConverter(wmsAttrs.converter),
+        info = await getFeatureInfo(layer.url, layer.layers, coord, "EPSG:25832"),
+        value = converter.convert(info.getProperties()[wmsAttrs.attribute]);
+
+    return value;
+}
+
 const id = "DistanceScoreService",
     actions = {
         async getDistanceScore (store, params) {
             return distanceScore(store, params);
+        },
+        async getFeatureValues (store, params) {
+            return featureValues(store, params);
         }
     },
     store = {
@@ -97,7 +122,14 @@ const id = "DistanceScoreService",
             mindists: {},
             useUserExtent: false,
             initialBuffer: 5000,
-            bufferIncrement: 10000
+            bufferIncrement: 10000,
+            wmsLayers: [
+                {
+                    id: 95,
+                    attribute: "klasse",
+                    converter: "DbRangeConverter"
+                }
+            ]
         },
         getters: {
             mindists: s => {
@@ -111,6 +143,9 @@ const id = "DistanceScoreService",
             },
             bufferIncrement: s => {
                 return s.bufferIncrement;
+            },
+            wmsLayers: s => {
+                return s.wmsLayers;
             }
         },
         mutations: {

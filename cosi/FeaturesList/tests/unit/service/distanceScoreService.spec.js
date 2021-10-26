@@ -4,7 +4,7 @@ import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import sinon from "sinon";
 import {expect} from "chai";
 
-describe("distanceScoreService", () => {
+describe.only("distanceScoreService", () => {
     before(async function () {
         await initializeLayerList();
     });
@@ -94,6 +94,26 @@ describe("distanceScoreService", () => {
             {
                 "id20569563262.057,5941046.992,568546.555,5944993.724": null
             });
+    });
+    it.only("should return feature info value", async () => {
+
+        const commitStub = sinon.stub(),
+            getters = {wmsLayers: [
+                {
+                    id: "95",
+                    attribute: "klasse",
+                    converter: "DbRangeConverter"
+                }
+            ]},
+            p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
+
+            score = await service.store.actions.getFeatureValues({getters, commit: commitStub},
+                {
+                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1})},
+                    layerId: "95"
+                });
+
+        expect(score).to.be.equal(67.5);
     });
     it.skip("getDistanceScore with large layer", async function () {
         this.timeout(120000);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import TileWMS from "ol/source/TileWMS.js";
 import TileGrid from "ol/tilegrid/TileGrid.js";
+import {WFS} from "ol/format.js";
 
 /**
  *
@@ -46,7 +47,8 @@ function getFeatureInfoUrl (source, coord, projection) {
 export async function getFeatureInfo (wmsUrl, layer, coord, projection) {
     const source = createTileWMS(wmsUrl, layer),
         url = getFeatureInfoUrl(source, coord, projection),
-        ret = await axios.get(url);
+        ret = await axios.get(url),
+        wfsReader = new WFS({});
 
-    return ret.data;
+    return wfsReader.readFeatures(ret.data)[0];
 }

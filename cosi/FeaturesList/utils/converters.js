@@ -50,3 +50,18 @@ export class DbRangeConverter {
         return this.converter.convert(str);
     }
 }
+
+
+/**
+ *
+ * @param {*} name name
+ * @return {*}  converter
+ */
+export function getConverter (name) {
+    switch (name) {
+        case "DbRangeConverter":
+            return new DbRangeConverter();
+        default:
+            throw Error(`unknown converter: ${name}`);
+    }
+}
