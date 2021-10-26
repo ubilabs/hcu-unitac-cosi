@@ -112,6 +112,9 @@ const id = "DistanceScoreService",
         },
         async getFeatureValues (store, params) {
             return featureValues(store, params);
+        },
+        async getLayerInfos ({getters}) {
+            return getters.wmsLayers.map(l => ({id: l.id, name: getLayerWhere({id: l.id}).name}));
         }
     },
     store = {

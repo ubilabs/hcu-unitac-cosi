@@ -95,6 +95,13 @@ describe.only("distanceScoreService", () => {
                 "id20569563262.057,5941046.992,568546.555,5944993.724": null
             });
     });
+    it.only("should return layer infos", async () => {
+
+        const getters = {wmsLayers: [{id: "95"}]},
+            infos = await service.store.actions.getLayerInfos({getters});
+
+        expect(infos).to.be.eql([{"id": "95", "name": "Straßenverkehr Tag Abend Nacht 2017"}]);
+    });
     it.only("should return feature info value", async () => {
 
         const commitStub = sinon.stub(),
