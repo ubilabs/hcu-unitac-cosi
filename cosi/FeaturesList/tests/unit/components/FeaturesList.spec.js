@@ -32,7 +32,7 @@ config.mocks.$t = key => key;
 
 global.requestAnimationFrame = (fn) => fn();
 
-describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
 
 
