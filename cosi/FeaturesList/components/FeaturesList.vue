@@ -568,12 +568,6 @@ export default {
                                                     dense
                                                 />
                                             </div>
-                                            <!-- <v-chip
-                                                :color="getNumericalValueColor(item, col.value)"
-                                                dark
-                                            >
-                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                            </v-chip> -->
                                         </div>
                                     </template>
                                 </template>
