@@ -3,7 +3,7 @@
         "tools": {
             "cosi": {
                 "calculateRatio": {
-                    "title": "Coverage Analysis",
+                    "title": "Supply Analysis",
                     "description": "With the coverage analysis you can determine the coverage of an area with a certain type of facility / infrastructure (see 'Topics').",
                     "dataA": "Facilities",
                     "dataB": "Statistical Data",

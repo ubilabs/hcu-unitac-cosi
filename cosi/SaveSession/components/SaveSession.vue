@@ -81,7 +81,7 @@ export default {
         active (state) {
             if (state) {
                 this.addSingleAlert({
-                    content: "WORK IN PROGRESS! Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!",
+                    content: "Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!",
                     category: "Info",
                     displayClass: "info"
                 });
@@ -113,6 +113,7 @@ export default {
 
             this.loadDialog = true;
             this.latestDate = lastSession?.meta?.created;
+            console.log(lastSession);
         }
         catch (e) {
             this.loadDialog = false;
@@ -562,6 +563,15 @@ export default {
             >
                 <v-app>
                     <v-container class="flex btn-grid">
+                        <v-card-title secondary-title>
+                            Schnelles Speichern
+                        </v-card-title>
+                        <v-row dense>
+                            <v-col>
+                                Sitzungen als im Browser speichern. Diese können beim Programmstart wieder aus dem Verlauf geladen werden. <br>
+                                Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.
+                            </v-col>
+                        </v-row>
                         <v-row class="flex">
                             <v-col
                                 cols="6"
@@ -571,7 +581,7 @@ export default {
                                     id="save-session"
                                     tile
                                     depressed
-                                    :title="$t('additional:modules.tools.cosi.saveSession.save')"
+                                    :title="$t('additional:modules.tools.cosi.saveSession.saveTooltip')"
                                     @click="quickSave"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
@@ -582,14 +592,23 @@ export default {
                                 class="flex"
                             >
                                 <v-btn
-                                    id="save-to-file"
+                                    id="load-session"
                                     tile
                                     depressed
-                                    :title="$t('additional:modules.tools.cosi.saveSession.saveToFile')"
-                                    @click="saveAs"
+                                    :title="$t('additional:modules.tools.cosi.saveSession.loadTooltip')"
+                                    @click="loadLastSession"
                                 >
-                                    {{ $t('additional:modules.tools.cosi.saveSession.saveToFile') }}
+                                    {{ $t('additional:modules.tools.cosi.saveSession.load') }}
                                 </v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-divider />
+                        <v-subheader>
+                            Lokales Speichern
+                        </v-subheader>
+                        <v-row dense>
+                            <v-col>
+                                Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
                             </v-col>
                         </v-row>
                         <v-row class="flex">
@@ -598,13 +617,13 @@ export default {
                                 class="flex"
                             >
                                 <v-btn
-                                    id="load-session"
+                                    id="save-to-file"
                                     tile
                                     depressed
-                                    :title="$t('additional:modules.tools.cosi.saveSession.load')"
-                                    @click="loadLastSession"
+                                    :title="$t('additional:modules.tools.cosi.saveSession.saveToFileTooltip')"
+                                    @click="saveAs"
                                 >
-                                    {{ $t('additional:modules.tools.cosi.saveSession.load') }}
+                                    {{ $t('additional:modules.tools.cosi.saveSession.saveToFile') }}
                                 </v-btn>
                             </v-col>
                             <v-col
@@ -615,7 +634,7 @@ export default {
                                     id="load-from-file"
                                     tile
                                     depressed
-                                    :title="$t('additional:modules.tools.cosi.saveSession.loadFromFile')"
+                                    :title="$t('additional:modules.tools.cosi.saveSession.loadFromFileTooltip')"
                                     @click="loadFromFile"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.loadFromFile') }}
@@ -643,6 +662,7 @@ export default {
                                 >
                             </v-col>
                         </v-row>
+                        <v-divider />
                         <v-row class="flex">
                             <v-col
                                 cols="6"

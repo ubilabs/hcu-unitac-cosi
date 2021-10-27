@@ -3,7 +3,7 @@
         "tools": {
             "cosi": {
                 "calculateRatio": {
-                    "title": "Versorgungsanalyse (Vue)",
+                    "title": "Versorgungsanalyse",
                     "description": "Mit der Versorgungsanalyse können Sie die Abdeckung eines Gebietes mit einem bestimmten Einrichtungstyp / Infrastruktur ermitteln (s. 'Themen').",
                     "dataA": "Einrichtungen",
                     "dataB": "Statistische Daten",

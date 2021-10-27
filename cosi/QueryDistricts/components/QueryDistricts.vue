@@ -51,7 +51,7 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -80,12 +80,23 @@ export default {
                 this.initializeDistrictNames();
                 this.setLayerOptions();
             }
+        },
+
+        /**
+         * Listens to the layers change on the map to refresh the list
+         * @listens #change:FeaturesList/activeVectorLayerList
+         * @returns {void}
+         */
+        async activeVectorLayerList () {
+            await this.$nextTick(() => {
+                this.setFacilityNames();
+            });
         }
     },
 
     created () {
         this.$on("close", this.close);
-        Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
+        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -559,12 +570,10 @@ export default {
             this.mapLayer.getSource().addFeatures(cloneCollection);
         },
 
-        setFacilityNames (models) {
-            this.facilityNames = models.filter(
-                (model) => model.get("isFacility") === true
-            ).map((model) => ({
-                name: model.get("name").trim(),
-                id: model.get("id")
+        setFacilityNames () {
+            this.facilityNames = this.activeVectorLayerList.map((layer) => ({
+                name: layer.get("name").trim(),
+                id: layer.get("id")
             }));
         },
 
@@ -670,8 +679,8 @@ export default {
                             {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
                         </button>
                     </div>
+                    <v-divider v-if="layerFilterModels.length > 0" />
                     <br>
-                    <div id="layerfilter-container" />
                     <div id="results">
                         <template
                             v-for="filter in layerFilterModels"
