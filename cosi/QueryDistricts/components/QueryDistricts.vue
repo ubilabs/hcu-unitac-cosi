@@ -139,7 +139,8 @@ export default {
 
             return features.length > 0
                 ? features
-                : this.layerById(id).olLayer.getSource().getFeatures();
+                : Radio.request("ModelList", "getModelByAttributes", {id})?.get("features")
+                || [];
         },
 
         setLayerOptions: function () {
