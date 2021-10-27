@@ -269,8 +269,11 @@ function setLayerAttributes (model, attrs) {
  */
 function adjustLayerStyling (newLayer) {
     if (!newLayer.autoStyle) {
-        let pointColor = d3Color(newLayer.style.svg),
-            pointOpac = d3Color(newLayer.style.svg);
+        let pointColor = "",
+            pointOpac = "";
+
+        pointColor = d3Color(newLayer.style.svg);
+        pointOpac = d3Color(newLayer.style.svg);
 
         pointOpac.opacity = 0.5;
 
@@ -331,7 +334,7 @@ function adjustLayerStyling (newLayer) {
             features = layerNode.attributes.features,
             path = "./assets/svg/" + newLayer.svg;
 
-        if (Number.isInteger(features[0].get(newLayer.autoStyleValue))) {
+        if (!isNaN(parseFloat(features[0].get(newLayer.autoStyleValue)))) {
             const sortingArray = features.map(feature => feature.get(newLayer.autoStyleValue)),
                 colorScale = generateColorScale(newLayer.style.svg, 10);
             let difference = 0,

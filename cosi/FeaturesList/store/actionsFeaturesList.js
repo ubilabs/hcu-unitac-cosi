@@ -56,6 +56,27 @@ const actions = {
         }
 
         commit("setMapping", [..._mapping]);
+    },
+    /**
+     * @description removes a layer from the mapping on runtime
+     * @param {Function} store.commit - Function to commit a mutation.
+     * @param {Object} store.getters - the featuresList getters
+     * @param {Object} layerMap - The mappingObj to remove
+     * @returns {void}
+     */
+    removeVectorLayerFromMapping ({commit, getters}, layerMap) {
+        const {mapping} = getters;
+        let _mapping = [...mapping];
+
+        for (const group of mapping) {
+            group.layer = group.layer.filter(el => el !== layerMap);
+
+            if (group.layer.length === 0) {
+                _mapping = _mapping.filter(el => el !== group);
+            }
+        }
+
+        commit("setMapping", mapping);
     }
 };
 

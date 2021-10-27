@@ -81,6 +81,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
+        ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
         ...mapGetters("Map", ["layerIds", "layers", "map"]),
         selectedFiletype: {
             get () {
@@ -180,7 +181,7 @@ export default {
             "setSelectedFiletype"
         ]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping"]),
+        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
         ...mapMutations("Tools/CalculateRatio", ["setFacilityMappingUpdate"]),
         onDZDragenter () {
@@ -235,7 +236,7 @@ export default {
             this.newLayer.autoStyle = this.autoStyle;
             this.newLayer.autoStyleValue = this.autoStyleValue;
             this.newLayer.style.svg = this.svgColor;
-            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.mouseHoverField, this.searchField, ...this.numericalValues.map(x => x.id)])].map(set => { 
+            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.mouseHoverField, this.searchField, ...this.numericalValues.map(x => x.id)])].map(set => {
                 const obj = {
                     name: set,
                     matchingMode: "AND"
@@ -244,7 +245,6 @@ export default {
                 return obj;
             });
 
-            console.log(this.newLayer.filterWhiteList);
             // eslint-disable-next-line one-var
             const model = await this.passLayer(this.newLayer);
 
@@ -342,6 +342,10 @@ export default {
          * @returns {void}
          */
         removeLayer (filename) {
+            const layerModel = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
+                layerMap = this.layerMapById(layerModel.get("id"));
+
+            this.removeVectorLayerFromMapping(layerMap);
             this.deleteLayerFromTree(filename);
         },
         close () {
@@ -626,7 +630,7 @@ export default {
                                             <v-select
                                                 v-model="searchField"
                                                 :items="newLayerValues"
-                                                label="Styling Feld bestimmen"
+                                                label="Typen-Feld bestimmen"
                                                 item-value="key"
                                             >
                                                 <template
