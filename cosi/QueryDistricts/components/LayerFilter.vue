@@ -253,7 +253,7 @@ export default {
         </table>
         <v-row>
             <v-col>
-                <template v-if="properties">
+                <template v-if="properties && properties.length > 0">
                     <v-select
                         class="property-select val-select"
                         :label="$t('additional:modules.tools.cosi.queryDistricts.selectProperty')"
@@ -265,25 +265,26 @@ export default {
                         dense
                         hide-details
                         :clearable="true"
-                        :disabled="properties.length === 0"
                         @change="updateProperty"
                     />
                 </template>
             </v-col>
             <v-col>
-                <v-select
-                    class="quotient-layer-select val-select"
-                    :label="$t('additional:modules.tools.cosi.queryDistricts.selectQuotientLayer')"
-                    :value="quotientLayer"
-                    :items="quotientLayers"
-                    item-text="name"
-                    item-value="id"
-                    outlined
-                    dense
-                    hide-details
-                    :clearable="true"
-                    @change="updateQLayer"
-                />
+                <template v-if="valueType !== 'relative'">
+                    <v-select
+                        class="quotient-layer-select val-select"
+                        :label="$t('additional:modules.tools.cosi.queryDistricts.selectQuotientLayer')"
+                        :value="quotientLayer"
+                        :items="quotientLayers"
+                        item-text="name"
+                        item-value="id"
+                        outlined
+                        dense
+                        hide-details
+                        :clearable="true"
+                        @change="updateQLayer"
+                    />
+                </template>
             </v-col>
         </v-row>
         <div class="error-msg">

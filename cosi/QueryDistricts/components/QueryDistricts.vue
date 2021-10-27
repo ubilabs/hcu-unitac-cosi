@@ -334,7 +334,7 @@ export default {
                     const v = parseFloat(f[field]);
 
                     if (isNaN(v)) {
-                        invalidFeatures.push(f[this.keyOfAttrName]);
+                        invalidFeatures.push(f[this.keyOfAttrNameStats]);
                         return res;
                     }
                     return [...res, v];
