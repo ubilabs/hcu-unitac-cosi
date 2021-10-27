@@ -101,7 +101,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "activeModifiedFeatures"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
         ...mapState(["configJson"]),
         columns () {
@@ -161,16 +161,7 @@ export default {
          * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
          * @returns {void}
          */
-        activeSimulatedFeatures () {
-            this.updateFeaturesList();
-        },
-
-        /**
-         * Updates the list on added/removed modified features
-         * @listens #change:Tools/ScenarioBuilder/activeModifiedFeatures
-         * @returns {void}
-         */
-        activeModifiedFeatures () {
+        scenarioUpdated () {
             this.updateFeaturesList();
         },
 
@@ -253,7 +244,15 @@ export default {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
-                        visibleFeatures = features.filter(feature => typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle()() !== null),
+                        visibleFeatures = features.filter(feature => {
+                            if (typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle() !== null) {
+                                return true;
+                            }
+                            if (typeof vectorLayer.getStyleFunction() === "function") {
+                                return true;
+                            }
+                            return false;
+                        }),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
@@ -513,7 +512,7 @@ export default {
                                         mdi-alert
                                     </v-icon>
                                     <v-icon
-                                        v-if="item.isSimulated"
+                                        v-if="item.isSimulation"
                                         :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
                                     >
                                         mdi-sprout
@@ -569,12 +568,6 @@ export default {
                                                     dense
                                                 />
                                             </div>
-                                            <!-- <v-chip
-                                                :color="getNumericalValueColor(item, col.value)"
-                                                dark
-                                            >
-                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                            </v-chip> -->
                                         </div>
                                     </template>
                                 </template>

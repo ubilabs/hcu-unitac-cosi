@@ -177,7 +177,7 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
-                                @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
+                                @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
                             >
                                 <span v-if="useIcons">
                                     <v-icon>mdi-map-marker-multiple</v-icon>
@@ -194,7 +194,7 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
-                                @click="activeScenario ? activeScenario.exportScenarioFeatures() : null"
+                                @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
                             >
                                 <span v-if="useIcons">
                                     <v-icon>mdi-home-group</v-icon>

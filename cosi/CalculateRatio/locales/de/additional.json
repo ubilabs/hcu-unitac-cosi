@@ -12,7 +12,25 @@
                     "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
                     "placeholderA": "Paramenter (Zähler) auswählen",
                     "placeholderB": "Referenzwert (Nenner) auswählen",
-                    "noData": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl."
+                    "noData": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl.",
+                    "addedSelection": "Aufsummierte Auswahl",
+                    "visualizeMap": "Ausgewählten Datensatz auf Karte visualisieren",
+                    "visualizeChart": "Graph aus Datensatz erzeugen",
+                    "downloadGeoJson": "Download GeoJSON",
+                    "downloadGeoJsonTooltip": "Ergebnisse als Geodaten (GeoJSON) herunterladen",
+                    "downloadXlsx": "Download XLSX",
+                    "downloadXlsxTooltip": "Ergebnisse als XLSX herunterladen",
+                    "calculate": "Berechnen",
+                    "calculateTooltip": "Datensätze berechnen",
+                    "reset": "Zurücksetzen",
+                    "resetTooltip": "Alle Eingaben zurücksetzen",
+                    "swapFields": "Datenfelder A und B tauschen",
+                    "addFactor": "Faktor (F) hinzufügen",
+                    "addFactorTooltip": "Fügen Sie einen Verrechnungsfaktor hinzu",
+                    "switchFieldType": "Statische Daten / Einrichtungsdaten wechseln",
+                    "calcPer": "berechnen pro",
+                    "ofData": "der Datengrundlage",
+                    "infoTooltip": "Werkzeuginformationen"
                 }
             }
         }

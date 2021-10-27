@@ -1,6 +1,7 @@
 import {unByKey} from "ol/Observable";
 import {describeFeatureType, getFeatureDescription} from "../../../../src/api/wfs/describeFeatureType.js";
 import {getLayerList} from "masterportalAPI/src/rawLayerList";
+import {getContainingDistrictForExtent} from "../../utils/geomUtils.js";
 
 const eventKeys = {};
 
@@ -58,9 +59,11 @@ export function getAllDistrictsWithoutLayer (districtLevels) {
  * @param {String} districtLevel.keyOfAttrName - The key for the attribute containing the name of the district.
  * @param {String} districtLevel.label - The label of the district level.
  * @param {String[]|undefined} districtLevel.duplicateDistrictNames - Names of districts that trigger conflicts.
+ * @param {Object} referenceLevel - The reference level from the district level.
+ * @param {String} layerId - The id of the layer for the district level.
  * @returns {Object[]} The districts.
  */
-export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames}) {
+export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNames, referenceLevel, layerId}) {
     if (typeof layer !== "object" || layer === null || Array.isArray(layer) || typeof keyOfAttrName !== "string" || typeof label !== "string") {
         console.error(`prepareDistrictLevels.getDistricts: ${layer} has to be defined and an object. ${keyOfAttrName} has to be defined and a string. ${label} has to be defined and a string`);
         return [];
@@ -96,7 +99,23 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
                 return districtName;
             },
             // name of the district
-            getName: () => feature.get(keyOfAttrName)
+            getName: () => feature.get(keyOfAttrName),
+            // name of the reference (parent) district
+            getReferencDistrictName: () => {
+                // Districtlevel = Hamburg
+                if (referenceLevel === null) {
+                    return null;
+                }
+                // Districtlevel = Stadtteile/Bezirke
+                // The info for this can be found already at the admin feautre
+                if (layerId !== "6071") {
+                    return feature.get(referenceLevel.keyOfAttrName);
+                }
+                // Districtlevel = Stat.Gebiete
+                const referenceDistrict = getContainingDistrictForExtent(referenceLevel, feature.getGeometry().getInteriorPoint().getExtent());
+
+                return referenceDistrict.getName();
+            }
         });
     });
 

@@ -473,6 +473,7 @@ export default {
                 ...scenarioFeature,
                 guideLayer: null,
                 scenario: null,
+                eventKeys: null,
                 feature: feature,
                 layer: scenarioFeature.layer.get("id")
             };

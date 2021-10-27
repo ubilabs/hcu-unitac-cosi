@@ -37,7 +37,7 @@ export default class ScenarioFeature {
 
         // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
         this.eventKeys[this.feature.getId()] = getClusterSource(this.layer).on("change", () => {
-            if (!getClusterSource(this.layer).hasFeature(this.feature)) {
+            if (!getClusterSource(this.layer).hasFeature(this.feature) && this.scenario.isActive) {
                 getClusterSource(this.layer).addFeature(this.feature);
             }
         });
@@ -103,12 +103,13 @@ export default class ScenarioFeature {
             }
             else {
                 this.feature.set(prop, originalProperties[prop]);
+                if (purge) {
+                    delete this.scenarioData[prop];
+                }
             }
         }
 
-        if (purge) {
-            this.clearScenarioData();
-        }
+        this.checkScenarioData();
     }
 
     /**
@@ -129,7 +130,19 @@ export default class ScenarioFeature {
 
             if (purge) {
                 delete this.scenarioData.geometry;
+                this.checkScenarioData();
             }
+        }
+    }
+
+    /**
+     * Checks if the scenario data has any content
+     * @returns {void}
+     */
+    checkScenarioData () {
+        if (Object.keys(this.scenarioData).length === 0) {
+            this.feature.unset("isModified");
+            unByKey(this.eventKeys.modifier);
         }
     }
 
@@ -152,6 +165,23 @@ export default class ScenarioFeature {
         for (const prop in properties) {
             this.set(prop, properties[prop]);
         }
+
+        /**
+         * @todo outsource to own method, merge with render event?
+         */
+        this.eventKeys.modifier = getClusterSource(this.layer).on("change", () => {
+            const source = getClusterSource(this.layer);
+
+            if (!source.hasFeature(this.feature) && this.scenario.isActive) {
+                const replace = source.getFeatureById(this.feature.getId());
+
+                if (replace) {
+                    source.removeFeature(replace);
+                }
+
+                source.addFeature(this.feature);
+            }
+        });
         this.feature.set("isModified", true);
     }
 

@@ -215,7 +215,7 @@ function addLayerToTree (newLayer) {
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId});
 
     // model.get("layer").setProperties({"typ": "WFS"});
     setLayerAttributes(model, newLayer);
@@ -570,7 +570,7 @@ export default {
                 }
 
                 geometries.forEach(geometry => {
-                    geometry.transform("EPSG:4326", "EPSG:25832");
+                    geometry.transform(state.crs, "EPSG:25832");
                 });
             }
         });
