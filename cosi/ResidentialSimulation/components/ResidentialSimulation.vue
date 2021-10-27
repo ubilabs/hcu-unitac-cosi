@@ -192,11 +192,6 @@ export default {
                 "BarChart"
             );
 
-            /**
-             * @todo remove timeout - only used due to issues in ChartGenerator module
-             * will be refactored
-             */
-            await this.$nextTick();
             this.visualizeDemographics(
                 "age",
                 "Demographie nach Altersgruppen",
@@ -233,6 +228,7 @@ export default {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
         /**
@@ -345,7 +341,7 @@ export default {
                 options: this.baseStatsChartData.options
             });
 
-            this.setNewDataSet(chartData);
+            this.channelGraphData(chartData);
         },
 
         getChartDataSet (labels, districtName) {

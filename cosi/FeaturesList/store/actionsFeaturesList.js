@@ -38,7 +38,8 @@ const actions = {
     addVectorlayerToMapping ({commit, getters}, layer) {
         const {mapping} = getters,
             layerMap = createVectorLayerMappingObject(layer);
-        let group = mapping.find(x => x.group === layer.group || layer.parentId),
+
+        let group = mapping.find(x => x.group === layer.group || x.group === layer.parendId),
             _mapping = mapping;
 
         if (group) {

@@ -175,7 +175,7 @@ export default {
             }
         },
         facilitiesMapping () {
-            // this.updateFacilities();
+            this.updateFacilities();
         },
         filters () {
             console.log("this has changed?");
@@ -832,7 +832,7 @@ export default {
                                         </div>
                                     </div>
                                     <Multiselect
-                                        v-if="featuresList.length"
+                                        v-if="facilityList.length"
                                         v-model="paramFieldA"
                                         track-by="name"
                                         label="name"
@@ -967,7 +967,7 @@ export default {
                                         </div>
                                     </div>
                                     <Multiselect
-                                        v-if="featuresList.length"
+                                        v-if="facilityList.length"
                                         v-model="paramFieldB"
                                         track-by="name"
                                         label="name"

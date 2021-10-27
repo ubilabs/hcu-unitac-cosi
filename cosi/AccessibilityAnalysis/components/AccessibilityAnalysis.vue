@@ -207,6 +207,7 @@ export default {
                 facilityNames = facilityLayerModels.map((model) => model.get("name").trim()
                 );
 
+
             this.facilityNames = facilityNames;
         },
         /**
