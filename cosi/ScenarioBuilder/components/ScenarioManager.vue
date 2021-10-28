@@ -89,6 +89,20 @@ export default {
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
                 this.activeScenario.prune();
             }
+        },
+
+        pruneActiveScenarioNeighborhoods () {
+            // eslint-disable-next-line no-alert
+            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneNeighborhoodsWarning"))) {
+                this.activeScenario.pruneNeighborhoods();
+            }
+        },
+
+        pruneActiveScenarioSimulatedFeatures () {
+            // eslint-disable-next-line no-alert
+            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeaturesWarning"))) {
+                this.activeScenario.pruneSimulatedFeatures();
+            }
         }
     }
 };
@@ -230,7 +244,78 @@ export default {
                 class="flex"
                 cols="12"
             >
-                <v-btn
+                <v-menu
+                    open-on-hover
+                    bottom
+                    offset-y
+                >
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            tile
+                            depressed
+                            :disabled="!activeScenario"
+                            :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
+                            class="flex-item"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="pruneActiveScenario"
+                        >
+                            <v-icon left>
+                                mdi-backspace
+                            </v-icon>
+                            {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
+                        </v-btn>
+                    </template>
+
+                    <v-list>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :disabled="!activeScenario"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
+                                class="flex-item"
+                                @click="pruneActiveScenario"
+                            >
+                                <v-icon left>
+                                    mdi-backspace
+                                </v-icon>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :disabled="!activeScenario"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneNeighborhoods')"
+                                class="flex-item"
+                                @click="pruneActiveScenarioNeighborhoods"
+                            >
+                                <v-icon left>
+                                    mdi-backspace
+                                </v-icon>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneNeighborhoods') }}
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                tile
+                                depressed
+                                :disabled="!activeScenario"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
+                                class="flex-item"
+                                @click="pruneActiveScenarioSimulatedFeatures"
+                            >
+                                <v-icon left>
+                                    mdi-backspace
+                                </v-icon>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeatures') }}
+                            </v-btn>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+                <!-- <v-btn
                     tile
                     depressed
                     :disabled="!activeScenario"
@@ -242,8 +327,8 @@ export default {
                         mdi-cached
                     </v-icon>
                     {{ $t('additional:modules.tools.cosi.scenarioManager.restoreAllFeatures') }}
-                </v-btn>
-                <v-btn
+                </v-btn> -->
+                <!-- <v-btn
                     tile
                     depressed
                     :disabled="!activeScenario"
@@ -256,6 +341,32 @@ export default {
                     </v-icon>
                     {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
                 </v-btn>
+                <v-btn
+                    tile
+                    depressed
+                    :disabled="!activeScenario"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneNeighborhoods')"
+                    class="flex-item"
+                    @click="pruneActiveScenarioNeighborhoods"
+                >
+                    <v-icon left>
+                        mdi-backspace
+                    </v-icon>
+                    {{ $t('additional:modules.tools.cosi.scenarioManager.pruneNeighborhoods') }}
+                </v-btn>
+                <v-btn
+                    tile
+                    depressed
+                    :disabled="!activeScenario"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
+                    class="flex-item"
+                    @click="pruneActiveScenarioSimulatedFeatures"
+                >
+                    <v-icon left>
+                        mdi-backspace
+                    </v-icon>
+                    {{ $t('additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeatures') }}
+                </v-btn> -->
             </v-col>
         </v-row>
         <v-row dense>

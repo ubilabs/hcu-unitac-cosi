@@ -70,9 +70,14 @@ export default {
             layers: null,
             selectedFacilityName: null,
             legendColors: [
-                "rgba(0, 200, 3, 0.6)",
-                "rgba(100, 100, 3, 0.4)",
-                "rgba(200, 0, 3, 0.4)"
+                "rgba(0, 240, 3, 0.6)",
+                "rgba(200, 200, 3, 0.6)",
+                "rgba(240, 0, 3, 0.6)"
+            ],
+            featureColors: [
+                "rgba(240, 0, 3, 0.2)",
+                "rgba(200, 200, 3, 0.2)",
+                "rgba(0, 240, 3, 0.2)"
             ],
             askUpdate: false,
             abortController: null,

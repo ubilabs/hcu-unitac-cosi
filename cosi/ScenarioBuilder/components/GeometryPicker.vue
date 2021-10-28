@@ -265,11 +265,13 @@ export default {
          */
         onPolygonSelect (evt) {
             const feature = evt.selected[0],
-                geometry = feature?.getGeometry(),
+                geometry = feature?.getGeometry().clone(),
                 type = geometry?.getType();
 
             if (type === "Polygon" || type === "MultiPolygon") {
-                this.geometry.value = geometry.clone();
+                this.geometry.value = geometry;
+                this.setDrawPolygon(geometry);
+                this.pickPolygonActive = false;
             }
         },
 
