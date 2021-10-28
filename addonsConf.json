@@ -125,5 +125,9 @@
     "path": "cosi/ResidentialSimulation",
     "type": "tool"
   },
-  "qr": "view.js"
+  "qr": "view.js",
+  "Dipas": {
+    "path": "cosi/Dipas",
+    "type": "tool"
+  }
 }
