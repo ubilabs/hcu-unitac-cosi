@@ -4,16 +4,16 @@ import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCosiFileImport";
 import mutations from "../store/mutationsCosiFileImport";
-import ImportManager from "./ImportManager.vue";
-import EditLayer from "./EditLayer.vue";
+// import ImportManager from "./ImportManager.vue";
+// import EditLayer from "./EditLayer.vue";
 import InlineSvg from "vue-inline-svg";
 
 export default {
     name: "CosiFileImport",
     components: {
         Tool,
-        ImportManager,
-        EditLayer,
+        // ImportManager,
+        // EditLayer,
         InlineSvg
     },
     data () {
@@ -557,7 +557,8 @@ export default {
                                                     <v-select
                                                         v-model="autoStyleValue"
                                                         :items="newLayerValues"
-                                                        label="Vergleichsdatensatz bestimmen"
+                                                        label="Style-Feld auswählen"
+                                                        title="Auswählen nach welchem Feld die Daten eingefärbt werden sollen"
                                                         item-value="key"
                                                         solo
                                                     >

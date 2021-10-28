@@ -56,7 +56,9 @@ export default {
     methods: {
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
         showHideSelectedDistricts () {
-            const layerArray = this.importedLayerIds.map(layerId => Radio.request("ModelList", "getModelByAttributes", {id: layerId}));
+            const layerArray = this.importedLayerIds
+                .map(layerId => Radio.request("ModelList", "getModelByAttributes", {id: layerId}))
+                .filter(layer => Boolean(layer));
 
             if (this.selectedFeatures.length > 0) {
                 layerArray.forEach(layer => {

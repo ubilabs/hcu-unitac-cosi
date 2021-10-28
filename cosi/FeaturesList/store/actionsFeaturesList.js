@@ -76,7 +76,7 @@ const actions = {
             }
         }
 
-        commit("setMapping", mapping);
+        commit("setMapping", _mapping);
     }
 };
 
