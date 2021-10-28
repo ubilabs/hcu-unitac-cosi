@@ -38,7 +38,8 @@ const actions = {
     addVectorlayerToMapping ({commit, getters}, layer) {
         const {mapping} = getters,
             layerMap = createVectorLayerMappingObject(layer);
-        let group = mapping.find(x => x.group === layer.group || layer.parentId),
+
+        let group = mapping.find(x => x.group === layer.group || x.group === layer.parendId),
             _mapping = mapping;
 
         if (group) {
@@ -56,19 +57,32 @@ const actions = {
 
         commit("setMapping", [..._mapping]);
     },
+<<<<<<< HEAD
 
     /**
      * @description remove a layer from the mapping on runtime
+=======
+    /**
+     * @description removes a layer from the mapping on runtime
+>>>>>>> 4f431d7e24790adb02fdf4e84322a78a63a9beec
      * @param {Function} store.commit - Function to commit a mutation.
      * @param {Object} store.getters - the featuresList getters
      * @param {Object} layerMap - The mappingObj to remove
      * @returns {void}
      */
+<<<<<<< HEAD
     removeVectorlayerFromMapping ({commit, getters}, layerMap) {
         const {mapping} = getters;
         let _mapping = [...mapping];
 
         for (const group of _mapping) {
+=======
+    removeVectorLayerFromMapping ({commit, getters}, layerMap) {
+        const {mapping} = getters;
+        let _mapping = [...mapping];
+
+        for (const group of mapping) {
+>>>>>>> 4f431d7e24790adb02fdf4e84322a78a63a9beec
             group.layer = group.layer.filter(el => el !== layerMap);
 
             if (group.layer.length === 0) {

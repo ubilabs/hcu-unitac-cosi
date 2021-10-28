@@ -178,40 +178,9 @@ export default {
                 return;
             }
 
-            this.visualizeDemographics(
-                "gender",
-                "Demographie nach Gender",
-                ["Anteil", "Gender"],
-                [
-                    "Bevölkerung weiblich",
-                    "Bevölkerung männlich",
-                    "Sozialversicherungspflichtig Beschäftigte insgesamt",
-                    "Sozialversicherungspflichtig beschäftigte Frauen",
-                    "Sozialversicherungspflichtig beschäftigte Männer"
-                ],
-                "BarChart"
-            );
-
-            /**
-             * @todo remove timeout - only used due to issues in ChartGenerator module
-             * will be refactored
-             */
-            await this.$nextTick();
-            this.visualizeDemographics(
-                "age",
-                "Demographie nach Altersgruppen",
-                ["Anteil", "Alterskohorten"],
-                [
-                    "Bevölkerung unter 6 Jahren",
-                    "Bevölkerung 6 bis unter 10 Jahren",
-                    "Bevölkerung 10 bis unter 15 Jahren",
-                    "Bevölkerung 15 bis unter 21 Jahren",
-                    "Bevölkerung 21 bis unter 45 Jahren",
-                    "Bevölkerung 45 bis unter 65 Jahren",
-                    "Bevölkerung ab 65 Jahren"
-                ],
-                "LineChart"
-            );
+            for (const chartOptions of this.referenceDistrictCharts) {
+                this.visualizeDemographics(chartOptions);
+            }
 
             this.extrapolateNeighborhoodStatistics();
         },
@@ -233,6 +202,7 @@ export default {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
         ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
         /**
@@ -332,7 +302,7 @@ export default {
             ];
         },
 
-        visualizeDemographics (id, name, scaleLabels, labels, type) {
+        visualizeDemographics ({id, name, scaleLabels, labels, type}) {
             const chartData = new ChartDataSet({
                 id,
                 name,
@@ -345,7 +315,7 @@ export default {
                 options: this.baseStatsChartData.options
             });
 
-            this.setNewDataSet(chartData);
+            this.channelGraphData(chartData);
         },
 
         getChartDataSet (labels, districtName) {

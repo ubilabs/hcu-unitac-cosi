@@ -16,8 +16,9 @@ const state = {
     id: "featuresList",
     isVisibleInMenu: true,
     name: "Einrichtungsübersicht",
-    renderToWindow: true,
+    renderToWindow: false,
     resizableWindow: true,
+    width: 0.5,
     // FeaturesList State
     mapping: [],
     featuresListItems: [],

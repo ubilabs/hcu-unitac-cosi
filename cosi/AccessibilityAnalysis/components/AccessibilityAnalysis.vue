@@ -217,8 +217,7 @@ export default {
         */
         setFacilityLayers () {
             const layers = this.activeVectorLayerList,
-                facilityNames = layers.map(layer => layer.get("name").trim()
-                );
+                facilityNames = layers.map(layer => layer.get("name").trim());
 
             this.facilityNames = facilityNames;
         },
