@@ -240,10 +240,8 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            console.log(this.activeLayerMapping);
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
-                    console.log(vectorLayer);
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(feature => {
@@ -570,12 +568,6 @@ export default {
                                                     dense
                                                 />
                                             </div>
-                                            <!-- <v-chip
-                                                :color="getNumericalValueColor(item, col.value)"
-                                                dark
-                                            >
-                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                            </v-chip> -->
                                         </div>
                                     </template>
                                 </template>

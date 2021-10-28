@@ -122,6 +122,16 @@ export default {
                 }
                 this.map.removeInteraction(this.select);
             }
+        },
+        /**
+         * Listens to the layers change on the map to refresh the list
+         * @listens #change:FeaturesList/activeVectorLayerList
+         * @returns {void}
+         */
+        async activeVectorLayerList () {
+            await this.$nextTick(() => {
+                this.setFacilityLayers();
+            });
         }
     },
     /**
@@ -129,20 +139,8 @@ export default {
     */
     created () {
         this.$on("close", this.close);
-        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityLayers.bind(this));
         this.select = new Select({
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
-        });
-    },
-
-    /**
-     * Listens to the layers change on the map to refresh the list
-     * @listens #change:FeaturesList/activeVectorLayerList
-     * @returns {void}
-     */
-    async activeVectorLayerList () {
-        await this.$nextTick(() => {
-            this.setFacilityLayers();
         });
     },
 
@@ -210,15 +208,11 @@ export default {
         },
         /**
         * set facilityNames in model, trigger renderDropDownView
-        * @param {Object} models layer models of updated selected layer
         * @returns {void}
         */
-        setFacilityLayers: function (models) {
-            const facilityLayerModels = models.filter(
-                    (model) => model.get("isFacility") === true
-                ),
-                facilityNames = facilityLayerModels.map((model) => model.get("name").trim()
-                );
+        setFacilityLayers () {
+            const layers = this.activeVectorLayerList,
+                facilityNames = layers.map(layer => layer.get("name").trim());
 
             this.facilityNames = facilityNames;
         },
