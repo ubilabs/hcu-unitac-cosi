@@ -121,15 +121,6 @@ export default {
                 this.addNewLayer = true;
             }
         },
-        // check if layer is added or deleted
-        importedLayers () {
-            /* if (this.importedLayers.length > 0) {
-                this.addNewLayer = false;
-            }
-            else {
-                this.addNewLayer = true;
-            } */
-        },
         // set all relevant properties on layer object when new file is imported
         newLayerInformation (newValue, oldValue) {
             if (newValue !== oldValue) {
