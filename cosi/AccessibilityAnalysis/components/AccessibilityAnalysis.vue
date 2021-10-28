@@ -215,6 +215,7 @@ export default {
                 facilityNames = layers.map(layer => layer.get("name").trim()
                 );
 
+
             this.facilityNames = facilityNames;
         },
         /**
