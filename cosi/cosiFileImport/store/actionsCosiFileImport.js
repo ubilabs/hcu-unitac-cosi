@@ -215,15 +215,9 @@ function addLayerToTree (newLayer) {
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId});
-
-    // model.get("layer").setProperties({"typ": "WFS"});
-    setLayerAttributes(model, newLayer);
-    adjustLayerStyling(newLayer);
-
-    // eslint-disable-next-line one-var
-    const filterModel = {
-            attributeWhiteList: model.get("attributeWhiteList"),
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId}),
+        filterModel = {
+            attributeWhiteList: newLayer.filterWhiteList,
             isActive: false,
             isSelected: false,
             layerId: newLayer.id,
@@ -232,6 +226,8 @@ function addLayerToTree (newLayer) {
         },
         filterQuery = Radio.request("Filter", "getFilters");
 
+    setLayerAttributes(model, newLayer);
+    adjustLayerStyling(newLayer);
     filterQuery.push(filterModel);
     Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
 
@@ -252,7 +248,7 @@ function setLayerAttributes (model, attrs) {
         typ: "GeoJSON",
         isFacility: true,
         alwaysOnTop: true,
-        addressField: ["address"],
+        addressField: attrs.addressField,
         mouseHoverField: attrs.mouseHoverField,
         searchField: attrs.searchField,
         group: "Importierte Datensätze",

@@ -103,14 +103,12 @@ export default {
             return this.dzIsDropHovering ? "dzReady" : "";
         },
         swatchStyle () {
-            const {svgColor, menu} = this;
-
             return {
-                backgroundColor: svgColor,
+                backgroundColor: this.svgColor,
                 cursor: "pointer",
                 height: "30px",
                 width: "30px",
-                borderRadius: menu ? "50%" : "4px",
+                borderRadius: this.menu ? "50%" : "4px",
                 transition: "border-radius 200ms ease-in-out"
             };
         },
@@ -138,6 +136,8 @@ export default {
                 this.newLayerValues = [];
                 this.preNumericalValues = [];
                 this.numericalValues = [];
+                this.preAddress = [];
+                this.addressSetup = [];
                 this.newLayer = newValue;
                 this.svgFile = "geo_pin_D.svg";
                 this.newLayer.style = {};
@@ -231,6 +231,7 @@ export default {
             const layerArray = this.importedLayers;
 
             this.newLayer.numericalValues = this.numericalValues;
+            this.newLayer.addressField = this.addressSetup;
             this.newLayer.searchField = this.searchField;
             this.newLayer.mouseHoverField = this.mouseHoverField;
             this.newLayer.autoStyle = this.autoStyle;
@@ -304,22 +305,6 @@ export default {
                     }
                 }
             }
-        },
-        /**
-         * @description Constructs the address key on imported Layer from different keys containing street, zip, city etc.
-         * @returns {void}
-         */
-        buildAddress () {
-            this.newLayer.features.forEach(feature => {
-                const helperArray = [],
-                    values = feature.getProperties();
-
-                this.addressSetup.forEach(string => {
-                    helperArray.push(values[string]);
-                });
-
-                feature.setProperties({"address": helperArray.join(", ")});
-            });
         },
         addFilterToWhiteList (event) {
             this.filterWhiteList.push(event);
@@ -739,7 +724,6 @@ export default {
                                                         v-model="addressSetup"
                                                         type="checkbox"
                                                         :value="data"
-                                                        @change="buildAddress()"
                                                     >
                                                 </li>
                                             </ul>
@@ -756,7 +740,6 @@ export default {
                                                         v-model="addressSetup"
                                                         type="checkbox"
                                                         :value="dataKey"
-                                                        @change="buildAddress()"
                                                     >
                                                 </li>
                                             </ul>
