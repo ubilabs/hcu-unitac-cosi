@@ -1,8 +1,9 @@
-import BuildSpecModel from "../../../modules/tools/print/buildSpec.js";
+import SpecModel from "../../../src/modules/tools/print/utils/buildSpec.js";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import store from "../../../src/app-store";
+import axios from "axios";
 
 /**
  *todo
@@ -833,14 +834,35 @@ function initializeBrwAbfrageModel () {
                             "scale": scale
                         }
                     }
+                },
+                spec = SpecModel,
+                getResponse = async (url, payload) => {
+                    return axios.post(url, payload);
                 };
+            let printJob = {};
 
-            let buildSpec = new BuildSpecModel(attr);
+            spec.setAttributes(attr);
+            spec.buildLayers(visibleLayerList);
 
-            buildSpec.buildLayers(visibleLayerList);
-            buildSpec = buildSpec.toJSON();
-            buildSpec = Radio.request("Util", "omit", buildSpec, ["uniqueIdList"]);
-            Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "boris", "pdf");
+            printJob = {
+                payload: encodeURIComponent(JSON.stringify(spec.defaults)),
+                printAppId: "boris",
+                currentFormat: "pdf",
+                getResponse: getResponse
+            };
+
+            store.dispatch("Tools/Print/createPrintJob", printJob);
+            this.listenTo(Radio.channel("Print"), {
+                "printFileReady": this.startDownload
+            });
+        },
+
+        startDownload: function (fileUrl) {
+            console.log("Ready", fileUrl);
+            const link = document.createElement("a");
+
+            link.href = fileUrl;
+            link.click();
         },
 
         /**

@@ -1,4 +1,4 @@
-import SpecModel from "./../../../../src/modules/tools/print/store/utils/buildSpec";
+import SpecModel from "./../../../../src/modules/tools/print/utils/buildSpec";
 
 /**
  * Setes the school route layer to end of the visible vector layer list.
