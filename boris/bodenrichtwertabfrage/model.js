@@ -3,6 +3,7 @@ import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import store from "../../../src/app-store";
+import LoaderOverlay from "../../../src/utils/loaderOverlay";
 
 /**
  *todo
@@ -864,6 +865,7 @@ function initializeBrwAbfrageModel () {
 
             link.href = fileUrl;
             link.click();
+            LoaderOverlay.hide();
         },
 
         /**
