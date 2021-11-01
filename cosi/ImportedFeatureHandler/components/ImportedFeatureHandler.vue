@@ -3,7 +3,6 @@ import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../../cosiFileImport/store/gettersCosiFileImport";
 import mutations from "../../cosiFileImport/store/mutationsCosiFileImport";
-import {Style} from "ol/style.js";
 
 export default {
     name: "ImportedFeatureHandler",
@@ -32,13 +31,17 @@ export default {
                 this.importedFeaturesFull.push(feature);
             });
 
-            this.checkSelectedDistricts();
+            this.showHideSelectedDistricts();
         },
         updateLayerStyles () {
-            this.checkSelectedDistricts();
+            if (this.importedLayerIds.length) {
+                this.showHideSelectedDistricts();
+            }
         },
         selectedFeatures () {
-            this.checkSelectedDistricts();
+            if (this.importedLayerIds.length) {
+                this.showHideSelectedDistricts();
+            }
         }
     },
     created () {
@@ -52,37 +55,45 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
-        checkSelectedDistricts () {
+        showHideSelectedDistricts () {
+            const layerArray = this.importedLayerIds
+                .map(layerId => Radio.request("ModelList", "getModelByAttributes", {id: layerId}))
+                .filter(layer => Boolean(layer));
+
             if (this.selectedFeatures.length > 0) {
-                this.importedFeaturesFull.forEach(feature => {
-                    const featureGeometry = feature.getGeometry().getExtent(),
+                layerArray.forEach(layer => {
+                    if (layer) {
+                        const layerSource = layer.get("layerSource"),
+                            allFeatures = layer.get("features"),
+                            featuresToShow = [];
 
-                        match = this.selectedFeatures.find(district => district.getGeometry().intersectsExtent(featureGeometry));
+                        allFeatures.forEach(feature => {
+                            const featureGeometry = feature.getGeometry().getExtent(),
+                                match = this.selectedFeatures.find(district => district.getGeometry().intersectsExtent(featureGeometry));
 
-                    if (match) {
-                        const originalStyle = feature.get("originalStyle");
+                            if (match) {
+                                featuresToShow.push(feature);
+                            }
 
-                        if (originalStyle !== "undefined") {
-                            feature.setStyle(originalStyle);
-                        }
+                        });
 
-                    }
-                    else {
-                        const emptyStyle = new Style({});
+                        layerSource.clear();
+                        layerSource.addFeatures(featuresToShow);
+                        Radio.trigger("VectorLayer", "resetFeatures", layer.get("id"), allFeatures);
 
-                        feature.setStyle(emptyStyle);
                     }
                 });
             }
             else {
-                this.importedFeaturesFull.forEach(feature => {
-                    const originalStyle = feature.get("originalStyle");
+                layerArray.forEach(layer => {
+                    const layerSource = layer.get("layerSource"),
+                        allFeatures = layer.get("features");
 
-                    feature.setStyle(originalStyle);
+                    layerSource.clear();
+                    layerSource.addFeatures(allFeatures);
+                    Radio.trigger("VectorLayer", "resetFeatures", layer.get("id"), allFeatures);
                 });
             }
-
-            this.setUpdateLayerStyles = false;
         },
         close () {
             this.setActive(false);

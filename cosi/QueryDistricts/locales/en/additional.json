@@ -4,7 +4,8 @@
             "cosi": {
                 "queryDistricts": {
                     "title": "Query Districts",
-                    "layerDropdownLabel": "Select statistic data",
+                    "layerDropdownLabel": "Select filter",
+                    "layerDropdownLabelTooltip": "Select a topic to filter districts by. You can select statistical and facility data.",
                     "districtDropdownLabel": "reference district",
                     "showInDashboardLable": "show in dashboard",
                     "resultAsSelection": "set result as selection",
@@ -13,7 +14,7 @@
                     "referenceDistrict": "reference district",
                     "valueTypeAbsolute": "absolute",
                     "valueTypeRelative": "relative",
-                    "add": "add",
+                    "add": "Add filter",
                     "year": "jear",
                     "referenceValue": "reference value",
                     "referenceValueType": "type",

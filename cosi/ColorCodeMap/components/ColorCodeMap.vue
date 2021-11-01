@@ -17,14 +17,10 @@ export default {
     },
     data () {
         return {
-            // Selected Feature
-            // selectedFeature: "",
             // List of available features for selected Districts
             featuresList: [],
             // Array of all available years
             availableYears: [],
-            // Selected Year
-            // selectedYear: null,
             // Results for generating the CCM legend including colorscale values
             legendResults: [],
             // Values displayed in CCM legend
@@ -40,13 +36,9 @@ export default {
             // Lowest Value of selected feature among all selected districts
             loVal: null,
             // Triggers classes for minimized view
-            minimize: false,
-            // // State of animation playing
-            // playState: false,
+            minimize: true,
             // Playback speed of the animation
             playSpeed: 1,
-            // // State of names of districts visible on map
-            // showMapNames: false,
             // Helper Variable to force Legend Markers to rerender
             updateLegendList: 1,
             // Helper to pass data to the graph generator
@@ -58,9 +50,11 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"]),
-        ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
+        // ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
+        // ...mapGetters("Tools/FeaturesList", {featuresListOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
         _selectedFeature: {
             get () {
@@ -77,13 +71,16 @@ export default {
             set (v) {
                 this.setSelectedYear(v);
             }
+        },
+        dashboardOpen () {
+            return this.$store.getters["Tools/Dashboard/active"] || this.$store.getters["Tools/FeaturesList/active"];
         }
     },
     watch: {
         selectedFeatures () {
             this.updateLegendList += 1;
             if (this.visualizationState) {
-                this.$nextTick(function () {
+                this.$nextTick(() => {
                     this.updateSelectedDistricts();
                 });
             }
@@ -111,7 +108,7 @@ export default {
                 this.renderDataFromCalculateRatio();
             }
             else {
-                this.$store.commit("Tools/ColorCodeMap/setVisualizationState", false);
+                this.setVisualizationState(false);
             }
         },
         colorCodeMapDataSet () {
@@ -238,7 +235,9 @@ export default {
                                 color: [0, 0, 0],
                                 width: 3
                             }),
-                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear] ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
+                                ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale)
+                                : this.$t("additional:modules.tools.colorCodeMap.noData")
                         });
                         styleArray.push(new Style(getStyling));
                         if (this.lastYear) {
@@ -253,7 +252,9 @@ export default {
                                         color: [240, 240, 240],
                                         width: 2
                                     }),
-                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)" : "Keine Daten vorhanden",
+                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear]
+                                        ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)"
+                                        : this.$t("additional:modules.tools.colorCodeMap.noData"),
                                     offsetY: 25
                                 })
                             });
@@ -303,7 +304,6 @@ export default {
          */
         renderDataFromCalculateRatio () {
             if (!this.visualizationState) {
-                // this.$store.commit("Tools/ColorCodeMap/setVisualizationState", true);
                 this.setVisualizationState(true);
             }
 
@@ -332,7 +332,7 @@ export default {
                             color: [0, 0, 0],
                             width: 3
                         }),
-                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData")
                     });
 
                     district.setStyle(new Style(getStyling));
@@ -340,7 +340,6 @@ export default {
 
             });
         },
-
         /**
          * @todo todo
          * @description Generates dynamic Legend in CCM based on selected feature values.
@@ -391,12 +390,11 @@ export default {
                         pValue.innerHTML = value;
                     }
 
-                    this.loVal = colorScale.legend.values[0].toLocaleString("de-DE");
-                    this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString("de-DE");
+                    this.loVal = colorScale.legend.values[0].toLocaleString(this.currentLocale);
+                    this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString(this.currentLocale);
                 });
             }
         },
-
         /**
          * @description Calculate dynamic colors for Array based on its values.
          * @param {*} values Array of ints.
@@ -476,8 +474,8 @@ export default {
                 name: [this.label] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart", "PieChart"],
                 color: "rgb(50,200,120)",
-                source: "Kartenvisualisierungswerkzeug",
-                scaleLabels: [this.selectedFeature, "Jahre"],
+                source: this.$t("additional:modules.tools.colorCodeMap.title"),
+                scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabal")],
                 data: {
                     labels: [],
                     dataSets: []
@@ -522,7 +520,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
-                        title="Maximieren/ Minimieren"
+                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabal')"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
@@ -536,7 +534,7 @@ export default {
                         id="switch"
                         class="switch"
                         :class="{ highlight: !visualizationState }"
-                        title="Visualisierung an/ aus"
+                        :title="$t('additional:modules.tools.colorCodeMap.toggleVisualization')"
                         @click="toggleVisualizationState()"
                     >
                         <span
@@ -550,14 +548,14 @@ export default {
                     </button>
                     <button
                         class="prev btn btn-default btn-sm"
-                        title="Vorherigen Datensatz auswählen"
+                        :title="$t('additional:modules.tools.colorCodeMap.prev')"
                         @click="changeSelector(-1)"
                     >
                         <span class="glyphicon glyphicon-chevron-left" />
                     </button>
                     <button
                         class="next btn btn-default btn-sm"
-                        title="Nächsten Datensatz auswählen"
+                        :title="$t('additional:modules.tools.colorCodeMap.next')"
                         @click="changeSelector(1)"
                     >
                         <span class="glyphicon glyphicon-chevron-right" />
@@ -574,11 +572,7 @@ export default {
                         select-label=""
                         deselect-label=""
                         placeholder=""
-                    >
-                        <template>
-                            <strong>{{ selectedYear }}</strong>
-                        </template>
-                    </Multiselect>
+                    />
                     <Multiselect
                         v-if="selectedStatFeatures.length"
                         v-model="lastYear"
@@ -591,11 +585,7 @@ export default {
                         select-label=""
                         deselect-label="Entfernen"
                         placeholder=""
-                    >
-                        <template>
-                            <strong>{{ lastYear }}</strong>
-                        </template>
-                    </Multiselect>
+                    />
                 </div>
                 <Multiselect
                     v-if="featuresList.length"
@@ -612,11 +602,7 @@ export default {
                     select-label=""
                     deselect-label=""
                     placeholder=""
-                >
-                    <template>
-                        <strong>{{ selectedFeature }}</strong>
-                    </template>
-                </Multiselect>
+                />
             </div>
             <div
                 id="colorCodeMapLegend"
@@ -651,7 +637,7 @@ export default {
             <div class="btn_grp">
                 <button
                     class="info_button"
-                    title="Werkzeuginformationen"
+                    :title="$t('additional:modules.tools.colorCodeMap.infoTooltip')"
                     @click="showInfo()"
                 >
                     <span class="glyphicon glyphicon-question-sign" />
@@ -663,7 +649,7 @@ export default {
                     <button
                         class="play_button"
                         :class="{highlight: playState}"
-                        title="Visualisierung über die Jahre animieren"
+                        :title="$t('additional:modules.tools.colorCodeMap.animate')"
                         @click="setPlayState(!playState)"
                     >
                         <template v-if="!playState">
@@ -680,20 +666,20 @@ export default {
                 </div>
                 <button
                     class="graph_button"
-                    title="Graph aus Datensatz erzeugen"
+                    :title="$t('additional:modules.tools.colorCodeMap.generateChart')"
                     @click="loadToChartGenerator()"
                 >
                     <span class="glyphicon glyphicon-stats" />
                 </button>
                 <button
                     class="map_button"
-                    title="Gebietsnamen ein-/ ausblenden"
+                    :title="$t('additional:modules.tools.colorCodeMap.showDistrictNames')"
                     @click="setShowMapNames(!showMapNames)"
                 >
                     <span class="glyphicon glyphicon-map-marker" />
                 </button>
                 <button
-                    title="Metadaten"
+                    :title="$t('additional:modules.tools.colorCodeMap.metadata')"
                     @click="openMetadata()"
                 >
                     <span class="glyphicon glyphicon-info-sign" />
@@ -1024,7 +1010,7 @@ export default {
 
         &.minimized {
             .hovermenu {
-                width:120px;
+                width:152px;
                 .btn_grp {
                     button {
                         margin:2px;

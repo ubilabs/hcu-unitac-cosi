@@ -3,12 +3,16 @@ import Icon from "ol/style/Icon";
 import CircleStyle from "ol/style/Circle";
 import {mapActions} from "vuex";
 import {buffer} from "ol/extent";
+import InlineSvg from "vue-inline-svg";
 
 /**
  * @todo Make a util to read the icon of a feature
  */
 export default {
     name: "FeatureIcon",
+    components: {
+        InlineSvg
+    },
     props: {
         item: {
             required: true,
@@ -27,6 +31,20 @@ export default {
          * @description
          * @returns {String | undefined} returns the source url of the img
          */
+        getSvgSrc () {
+            if (this.style?.getImage()?.constructor === Icon) {
+                const src = this.style.getImage().getSrc();
+
+                if (src.substr(src.length - 4) === ".svg") {
+                    return src;
+                }
+            }
+            return undefined;
+        },
+        /**
+         * @description
+         * @returns {String | undefined} returns the source url of the img
+         */
         getIconSrc () {
             if (this.style?.getImage()?.constructor === Icon) {
                 return this.style.getImage().getSrc();
@@ -41,6 +59,13 @@ export default {
                 return this.style.getImage();
             }
             return undefined;
+        },
+        /**
+         * @param {module:ol/Style} style - the style object to read
+         * @returns {String} the color
+         */
+        getSvgColor () {
+            return this.convertColor(this.style.getImage().getColor()) || "grey";
         },
         /**
          * @param {module:ol/Style} style - the style object to read
@@ -96,11 +121,20 @@ export default {
 </script>
 
 <template>
-    <span
+    <div
+        class="feature-icon"
+        :title="item.isSimulation ? $t('additional:modules.tools.cosi.featuresList.warningIsSimulated') : ''"
         @click="zoomToFeature"
     >
+        <InlineSvg
+            v-if="getSvgSrc()"
+            class="marker"
+            :src="getSvgSrc()"
+            :fill="getSvgColor()"
+            alt="no img"
+        />
         <img
-            v-if="getIconSrc()"
+            v-else-if="getIconSrc()"
             class="marker"
             :src="getIconSrc()"
             alt="no img"
@@ -123,10 +157,20 @@ export default {
                 borderColor: getBorderColor(style)
             }"
         />
-    </span>
+        <span
+            v-if="item.isSimulation"
+            class="simulation-overlay"
+        >
+            *
+        </span>
+    </div>
 </template>
 
 <style lang="less" scoped>
+    .feature-icon {
+        margin-top: 8px;
+        position: relative;
+    }
     .marker {
         width: 30px;
         height: 30px;
@@ -136,5 +180,14 @@ export default {
     span.marker {
         border-style: solid;
         border-radius: 50%;
+    }
+    span.simulation-overlay {
+        position: absolute;
+        font-family: 'Material Design Icons';
+        right: -8px;
+        top: -8px;
+        color: #FC176B;
+        font-size: 32px;
+        line-height: 24px;
     }
 </style>

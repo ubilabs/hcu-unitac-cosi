@@ -11,7 +11,7 @@ import {getFeature} from "../../../../src/api/wfs/getFeature.js";
 export async function getAllFeatures (layerId) {
     const layer = getLayerWhere({id: layerId}),
         wfsReader = new WFS({
-            featureNS: layer.featureNS
+            featureNS: layer?.featureNS
         }),
         features = await getFeature(layer?.url, layer?.featureType);
 

@@ -240,10 +240,8 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            console.log(this.activeLayerMapping);
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
-                    console.log(vectorLayer);
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(feature => {
@@ -297,7 +295,7 @@ export default {
             const classes = [];
 
             if (item.isSimulation) {
-                classes.push("light-green", "lighten-4");
+                classes.push("light-green", "lighten-5");
             }
             // potentially add more conditionals here
 
@@ -352,7 +350,18 @@ export default {
          * @returns {void}
          */
         exportTable (exportDetails = false) {
-            const data = this.search ? this.filteredItems : this.items,
+            const data = this.items.filter(item => {
+                    if (this.search && !this.filteredItems.includes(item)) {
+                        return false;
+                    }
+                    if (this.selected.length > 0 && !this.selected.includes(item)) {
+                        return false;
+                    }
+                    if (this.layerFilter.length > 0 && !this.layerFilter.map(l => l.layerId).includes(item.layerId)) {
+                        return false;
+                    }
+                    return true;
+                }),
                 exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
@@ -513,12 +522,12 @@ export default {
                                     >
                                         mdi-alert
                                     </v-icon>
-                                    <v-icon
+                                    <!-- <v-icon
                                         v-if="item.isSimulation"
                                         :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
                                     >
                                         mdi-sprout
-                                    </v-icon>
+                                    </v-icon> -->
                                 </template>
                                 <template #item.style="{ item }">
                                     <FeatureIcon :item="item" />
@@ -570,12 +579,6 @@ export default {
                                                     dense
                                                 />
                                             </div>
-                                            <!-- <v-chip
-                                                :color="getNumericalValueColor(item, col.value)"
-                                                dark
-                                            >
-                                                {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
-                                            </v-chip> -->
                                         </div>
                                     </template>
                                 </template>

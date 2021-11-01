@@ -233,7 +233,7 @@ export default {
             features[i].setStyle(
                 new Style({
                     fill: new Fill({
-                        color: this.getFeatureColors()[i]
+                        color: this.featureColors[i]
                     }),
                     stroke: new Stroke({
                         color: "white",
@@ -250,10 +250,7 @@ export default {
      * @returns {void}
      */
     setIsochroneAsBbox: function () {
-        const polygonGeometry = this.isochroneFeatures[
-                // this.steps.length - 1
-                0
-            ].getGeometry(),
+        const polygonGeometry = this.isochroneFeatures[0].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
         setBBoxToGeom(geometryCollection);
@@ -280,13 +277,6 @@ export default {
         this.steps = [0, 0, 0];
         this.setRawGeoJson(null);
         this.setIsochroneFeatures([]);
-    },
-    getFeatureColors: function () {
-        return [
-            "rgba(200, 0, 3, 0.1)",
-            "rgba(100, 100, 3, 0.15)",
-            "rgba(0, 200, 3, 0.2)"
-        ];
     },
     getCoordinates: function (setByFeature) {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {

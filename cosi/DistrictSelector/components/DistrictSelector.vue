@@ -483,6 +483,7 @@ export default {
                         dense
                         multiple
                         small-chips
+                        deletable-chips
                         @input="updateSelectedFeatures"
                     />
                     <v-text-field
