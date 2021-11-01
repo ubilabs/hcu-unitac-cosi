@@ -2,7 +2,7 @@ import {getAllFeatures} from "../../utils/getAllFeatures";
 import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
 import {findNearestFeatures} from "../../utils/findNearestFeatures";
-import {getFeatureInfo} from "./getFeatureInfo";
+import {getFeatureInfos} from "./getFeatureInfo";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import {getConverter} from "../utils/converters";
 
@@ -88,6 +88,41 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
 
 /**
  *
+ * @param {*} values values
+ * @param {*} type type
+ * @return {*} aggregate
+ */
+function aggregate (values, type) {
+    if (!values || values.length === 0) {
+        return null;
+    }
+    switch (type) {
+        case "max":
+        {
+            let m = -Infinity;
+
+            for (const v of values) {
+                if (v > m) {
+                    m = v;
+                }
+            }
+            return m;
+        }
+        default:
+        case "mean":
+        {
+            let m = 0;
+
+            for (const v of values) {
+                m += v;
+            }
+            return m / values.length;
+        }
+    }
+}
+
+/**
+ *
  * @param {*} feature feature
  * @param {*} layerIds layerIds
  * @param {*} weights weights
@@ -99,10 +134,11 @@ async function featureValues ({getters}, {feature, layerId}) {
         coord = feature.getGeometry().flatCoordinates.slice(0, 2),
         wmsAttrs = getters.wmsLayers.find(l => l.id === layerId),
         converter = getConverter(wmsAttrs.converter),
-        info = await getFeatureInfo(layer.url, layer.layers, coord, "EPSG:25832", wmsAttrs.resolution);
+        infos = await getFeatureInfos(layer.url, layer.layers, coord, "EPSG:25832", wmsAttrs.resolution, wmsAttrs.featureCount);
 
-    if (info) {
-        return converter.convert(info.getProperties()[wmsAttrs.attribute]);
+    if (infos.length > 0) {
+        return aggregate(infos.map(info => converter.convert(info.getProperties()[wmsAttrs.attribute])),
+            wmsAttrs.aggregation);
     }
     return null;
 }
@@ -128,10 +164,12 @@ const id = "DistanceScoreService",
             wmsLayers: [
                 {
                     id: "95",
+                    name: "Straßenlärm 2017",
                     attribute: "klasse",
-                    converter: "DbRangeConverter",
                     resolution: 26,
-                    name: "Straßenlärm 2017"
+                    featureCount: 10,
+                    converter: "DbRangeConverter",
+                    aggregation: "max"
                 }
             ]
         },

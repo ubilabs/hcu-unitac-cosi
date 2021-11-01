@@ -7,6 +7,7 @@ describe("converters", () => {
 
         expect(conv.convert("> 55 - 60 dB(A)")).to.be.equal(57.5);
         expect(conv.convert("> 10 - 20 dB(A)")).to.be.equal(15);
+        expect(conv.convert("> 75 dB(A)")).to.be.equal(75);
     });
     it("should convert invalid db range to null", async () => {
         const conv = new DbRangeConverter();

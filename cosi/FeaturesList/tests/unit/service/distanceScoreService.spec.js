@@ -123,7 +123,32 @@ describe("distanceScoreService", () => {
 
         expect(score).to.be.equal(57.5);
     });
-    it("should return feature info values for all features", async () => {
+    it("should return max feature info value", async () => {
+
+        const commitStub = sinon.stub(),
+            getters = {wmsLayers: [
+                {
+                    id: "95",
+                    attribute: "klasse",
+                    converter: "DbRangeConverter",
+                    resolution: 26,
+                    aggregation: "max",
+                    featureCount: 50
+
+                }
+            ]},
+            p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
+
+            score = await service.store.actions.getFeatureValues({getters, commit: commitStub},
+                {
+                    feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1})},
+                    layerId: "95"
+                });
+
+        expect(score).to.be.equal(72.5);
+    });
+    it("should return feature info values for all features", async function () {
+        this.timeout(5000);
 
         const commitStub = sinon.stub(),
             getters = {wmsLayers: [
@@ -146,7 +171,7 @@ describe("distanceScoreService", () => {
 
         expect(ret).to.be.eql(
             [
-                57.5, 57.5, null, 57.5, 57.5,
+                57.5, 57.5, 75, 57.5, 57.5,
                 67.5, 57.5, 57.5, 57.5, null,
                 57.5, 57.5, 57.5, 57.5, 62.5,
                 null, 72.5, 57.5, 57.5, 57.5,

@@ -39,7 +39,8 @@ export class DbRangeConverter {
      * @memberof RegexConverter
      */
     constructor () {
-        this.converter = new RegexConverter("> (\\d+) - (\\d+) dB\\(A\\)", m => (parseFloat(m[1]) + parseFloat(m[2])) / 2);
+        this.interval = new RegexConverter("> (\\d+) - (\\d+) dB\\(A\\)", m => (parseFloat(m[1]) + parseFloat(m[2])) / 2);
+        this.single = new RegexConverter("> (\\d+) dB\\(A\\)", m => parseFloat(m[1]));
     }
 
     /**
@@ -47,7 +48,12 @@ export class DbRangeConverter {
      * @return {*} value
      */
     convert (str) {
-        return this.converter.convert(str);
+        const ret = this.interval.convert(str);
+
+        if (ret === null) {
+            return this.single.convert(str);
+        }
+        return ret;
     }
 }
 
