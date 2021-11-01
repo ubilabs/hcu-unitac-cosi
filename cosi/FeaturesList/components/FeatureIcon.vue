@@ -123,6 +123,7 @@ export default {
 <template>
     <div
         class="feature-icon"
+        :title="item.isSimulation ? $t('additional:modules.tools.cosi.featuresList.warningIsSimulated') : ''"
         @click="zoomToFeature"
     >
         <InlineSvg

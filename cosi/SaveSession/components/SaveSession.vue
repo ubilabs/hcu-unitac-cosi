@@ -566,12 +566,10 @@ export default {
                         <v-card-title secondary-title>
                             Schnelles Speichern
                         </v-card-title>
-                        <v-row dense>
-                            <v-col>
-                                Sitzungen als im Browser speichern. Diese können beim Programmstart wieder aus dem Verlauf geladen werden. <br>
-                                Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.
-                            </v-col>
-                        </v-row>
+                        <v-subheader>
+                            Sitzungen als im Browser speichern. Diese können beim Programmstart wieder aus dem Verlauf geladen werden. <br>
+                            Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.
+                        </v-subheader>
                         <v-row class="flex">
                             <v-col
                                 cols="6"
@@ -603,14 +601,12 @@ export default {
                             </v-col>
                         </v-row>
                         <v-divider />
+                        <v-card-title secondary-title>
+                            Schnelles Speichern
+                        </v-card-title>
                         <v-subheader>
-                            Lokales Speichern
+                            Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
                         </v-subheader>
-                        <v-row dense>
-                            <v-col>
-                                Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
-                            </v-col>
-                        </v-row>
                         <v-row class="flex">
                             <v-col
                                 cols="6"

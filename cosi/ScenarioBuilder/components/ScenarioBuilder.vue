@@ -13,6 +13,7 @@ import TypesMapping from "../../assets/mapping.types.json";
 import Feature from "ol/Feature";
 import {featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
+import getFieldTypeForValue from "../utils/getFieldTypeForValue"
 import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
@@ -78,11 +79,14 @@ export default {
 
             describeFeatureTypeByLayerId(layerMap.layerId)
                 .then(desc => {
-                    const required = [],
+                    const _desc = desc || this.getDescriptionBySource(layerMap.layerId),
+                        required = [],
                         optional = [];
                     let geom;
 
-                    for (const field of desc) {
+                    console.log(_desc);
+
+                    for (const field of _desc) {
                         if (compareLayerMapping(field, layerMap)) {
                             required.push(field);
                         }
@@ -94,8 +98,8 @@ export default {
                         }
                     }
                     this.featureTypeDescSorted = {required, optional, geom};
-                    this.featureTypeDesc = desc;
-                    this.asyncGetValuesForField(desc);
+                    this.featureTypeDesc = _desc;
+                    this.asyncGetValuesForField(_desc);
                 });
         },
         /**
@@ -274,6 +278,27 @@ export default {
 
         mapDataTypes (type) {
             return this.$t(`additional:modules.tools.cosi.dataTypes.${type}`);
+        },
+
+        getDescriptionBySource (layerId) {
+            const layer = this.layerById(layerId).olLayer,
+                feature = layer.getSource().getFeatures()[0] || Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.get("features")[0];
+            let props, desc;
+
+            if (feature) {
+                props = feature.getProperties();
+                desc = Object.entries(props).map(prop => ({
+                    minOccurs: 0,
+                    name: prop[0],
+                    type: getFieldTypeForValue(prop[1])
+                }));
+
+                return desc;
+            }
+
+            console.log(this.layerById(layerId));
+
+            return [];
         }
     }
 };
@@ -315,7 +340,6 @@ export default {
                     id="scenario-builder"
                 >
                     <form class="form-inline features-list-controls">
-                        <!-- <v-divider /> -->
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>
                             <Multiselect

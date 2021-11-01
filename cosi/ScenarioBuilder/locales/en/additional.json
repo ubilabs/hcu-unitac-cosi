@@ -63,7 +63,8 @@
                     "string": "text",
                     "date": "date",
                     "boolean": "true/false",
-                    "geometry": "geometry"
+                    "geometry": "geometry",
+                    "object": "-"
                 }
             }
         }

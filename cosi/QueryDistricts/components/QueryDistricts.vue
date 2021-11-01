@@ -150,6 +150,18 @@ export default {
 
             this.allLayerOptions = [];
 
+            // facility data first
+            for (const facilityLayer of this.facilityNames) {
+                this.allLayerOptions.push({
+                    name: facilityLayer.name,
+                    id: facilityLayer.id,
+                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    valueType: "absolute",
+                    facilityLayerName: facilityLayer.name
+                });
+            }
+
+            // statistical data second
             for (const m of this.mapping) {
                 const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
@@ -163,15 +175,6 @@ export default {
                 }
             }
 
-            for (const facilityLayer of this.facilityNames) {
-                this.allLayerOptions.push({
-                    name: facilityLayer.name,
-                    id: facilityLayer.id,
-                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                    valueType: "absolute",
-                    facilityLayerName: facilityLayer.name
-                });
-            }
             this.updateAvailableLayerOptions();
         },
 
@@ -641,6 +644,7 @@ export default {
                             id="layerfilter-selector-container"
                             v-model="selectedLayer"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
+                            :title="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabeltooltip')"
                             item-text="name"
                             item-value="id"
                             :items="layerOptions"

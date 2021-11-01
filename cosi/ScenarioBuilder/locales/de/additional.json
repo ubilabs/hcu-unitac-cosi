@@ -65,7 +65,8 @@
                     "string": "Text",
                     "date": "Datum",
                     "boolean": "Ja/Nein",
-                    "geometry": "Geometrie"
+                    "geometry": "Geometrie",
+                    "object": "-"
                 }
             }
         }
