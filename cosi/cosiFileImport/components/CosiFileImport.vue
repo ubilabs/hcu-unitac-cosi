@@ -512,10 +512,12 @@ export default {
                                             class="styling"
                                         >
                                             <div
-                                                v-if="newLayer.points && !newLayer.polygons"
                                                 class="styling points"
                                             >
-                                                <div class="grp_wrapper btn">
+                                                <div
+                                                    v-if="newLayer.points && !newLayer.polygons"
+                                                    class="grp_wrapper btn"
+                                                >
                                                     <div class="btn_grp">
                                                         <v-btn
                                                             v-for="svg, key in imgObj"
