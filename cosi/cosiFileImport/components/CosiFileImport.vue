@@ -488,10 +488,12 @@ export default {
                                             class="styling"
                                         >
                                             <div
-                                                v-if="newLayer.points && !newLayer.polygons"
                                                 class="styling points"
                                             >
-                                                <div class="grp_wrapper btn">
+                                                <div
+                                                    v-if="newLayer.points && !newLayer.polygons"
+                                                    class="grp_wrapper btn"
+                                                >
                                                     <div class="btn_grp">
                                                         <v-btn
                                                             v-for="svg, key in imgObj"
@@ -553,7 +555,24 @@ export default {
                                                     </v-select>
                                                 </div>
                                             </div>
-                                            <div class="grp_wrapper">
+                                            <div
+                                                v-if="autoStyle && autoStyleValue && isNaN(parseFloat(newLayer.features[0].get(autoStyleValue)))"
+                                                class="grp_wrapper"
+                                            >
+                                                <p class="featuresInfo">
+                                                    <strong>Regenbogenfarbspektrum</strong>
+                                                    {{ $t("additional:modules.tools.cosiFileImport.featuresInfoRainbow") }}
+                                                </p>
+                                                <v-checkbox
+                                                    v-model="newLayer.rainbow"
+                                                    label="Regenbogenfarbspektrum"
+                                                    type="checkbox"
+                                                />
+                                            </div>
+                                            <div
+                                                v-if="!newLayer.rainbow"
+                                                class="grp_wrapper"
+                                            >
                                                 <p class="featuresInfo">
                                                     <strong>Farbauswahl</strong>
                                                     {{ $t("additional:modules.tools.cosiFileImport.featuresInfoColor") }}
