@@ -97,12 +97,14 @@ async function featureValues ({getters}, {feature, layerId}) {
 
     const layer = getLayerWhere({id: layerId}),
         coord = feature.getGeometry().flatCoordinates.slice(0, 2),
-        wmsAttrs = getters.wmsLayers.find(l=>l.id === layerId),
+        wmsAttrs = getters.wmsLayers.find(l => l.id === layerId),
         converter = getConverter(wmsAttrs.converter),
-        info = await getFeatureInfo(layer.url, layer.layers, coord, "EPSG:25832"),
-        value = converter.convert(info.getProperties()[wmsAttrs.attribute]);
+        info = await getFeatureInfo(layer.url, layer.layers, coord, "EPSG:25832", wmsAttrs.resolution);
 
-    return value;
+    if (info) {
+        return converter.convert(info.getProperties()[wmsAttrs.attribute]);
+    }
+    return null;
 }
 
 const id = "DistanceScoreService",
@@ -112,9 +114,6 @@ const id = "DistanceScoreService",
         },
         async getFeatureValues (store, params) {
             return featureValues(store, params);
-        },
-        async getLayerInfos ({getters}) {
-            return getters.wmsLayers.map(l => ({id: l.id, name: getLayerWhere({id: l.id}).name}));
         }
     },
     store = {
@@ -128,9 +127,11 @@ const id = "DistanceScoreService",
             bufferIncrement: 10000,
             wmsLayers: [
                 {
-                    id: 95,
+                    id: "95",
                     attribute: "klasse",
-                    converter: "DbRangeConverter"
+                    converter: "DbRangeConverter",
+                    resolution: 26,
+                    name: "Straßenlärm 2017"
                 }
             ]
         },
@@ -149,6 +150,9 @@ const id = "DistanceScoreService",
             },
             wmsLayers: s => {
                 return s.wmsLayers;
+            },
+            wmsLayersInfo: s => {
+                return s.wmsLayers; // .map(l => ({id: l.id, name: getLayerWhere({id: l.id}).name}));
             }
         },
         mutations: {
@@ -156,7 +160,10 @@ const id = "DistanceScoreService",
                 moduleState.mindists = payload;
             }
         },
-        actions
+        actions,
+        computed: {
+            // ...mapState(["configJson"])
+        }
     };
 
 export default {

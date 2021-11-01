@@ -4,7 +4,7 @@ import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import sinon from "sinon";
 import {expect} from "chai";
 
-describe.only("distanceScoreService", () => {
+describe("distanceScoreService", () => {
     before(async function () {
         await initializeLayerList();
     });
@@ -95,21 +95,22 @@ describe.only("distanceScoreService", () => {
                 "id20569563262.057,5941046.992,568546.555,5944993.724": null
             });
     });
-    it.only("should return layer infos", async () => {
+    it("should return layer infos", async () => {
 
-        const getters = {wmsLayers: [{id: "95"}]},
-            infos = await service.store.actions.getLayerInfos({getters});
+        const state = {wmsLayers: [{id: "95"}]},
+            infos = await service.store.getters.wmsLayersInfo(state);
 
-        expect(infos).to.be.eql([{"id": "95", "name": "Straßenverkehr Tag Abend Nacht 2017"}]);
+        expect(infos).to.be.eql([{"id": "95"}]);
     });
-    it.only("should return feature info value", async () => {
+    it("should return feature info value", async () => {
 
         const commitStub = sinon.stub(),
             getters = {wmsLayers: [
                 {
                     id: "95",
                     attribute: "klasse",
-                    converter: "DbRangeConverter"
+                    converter: "DbRangeConverter",
+                    resolution: 26
                 }
             ]},
             p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
@@ -120,7 +121,40 @@ describe.only("distanceScoreService", () => {
                     layerId: "95"
                 });
 
-        expect(score).to.be.equal(67.5);
+        expect(score).to.be.equal(57.5);
+    });
+    it("should return feature info values for all features", async () => {
+
+        const commitStub = sinon.stub(),
+            getters = {wmsLayers: [
+                {
+                    id: "95",
+                    attribute: "klasse",
+                    converter: "DbRangeConverter",
+                    resolution: 35
+                }
+            ]},
+            features = await getAllFeatures("19574"),
+
+            scores = features.map(async feature=> service.store.actions.getFeatureValues({getters, commit: commitStub},
+                {
+                    feature,
+                    layerId: "95"
+                })),
+
+            ret = await Promise.all(scores);
+
+        expect(ret).to.be.eql(
+            [
+                57.5, 57.5, null, 57.5, 57.5,
+                67.5, 57.5, 57.5, 57.5, null,
+                57.5, 57.5, 57.5, 57.5, 62.5,
+                null, 72.5, 57.5, 57.5, 57.5,
+                57.5, 57.5, 57.5, 57.5, 57.5,
+                57.5, 57.5, 57.5, 57.5, 57.5,
+                57.5, 57.5, 57.5, 57.5
+            ]
+        );
     });
     it.skip("getDistanceScore with large layer", async function () {
         this.timeout(120000);

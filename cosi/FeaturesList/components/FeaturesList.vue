@@ -112,6 +112,7 @@ export default {
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extend: "extend"}),
+        ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
         columns () {
             return [
@@ -149,6 +150,16 @@ export default {
                     ret = ret.concat(groups[g]);
                 }
                 return ret;
+            }
+        },
+        selectedFeatureLayers: {
+            get () {
+                return this.selectedLayers.filter(l=>l.group !== "Wms Layers");
+            }
+        },
+        selectedWmsLayers: {
+            get () {
+                return this.selectedLayers.filter(l=>l.group === "Wms Layers");
             }
         }
     },
@@ -208,8 +219,12 @@ export default {
             this.numericalColumns = this.getNumericalColumns();
         },
 
+        selectedFeatureLayers () {
+            this.numericalColumns = this.getNumericalColumns();
+        },
+
         selectedLayers () {
-            for (const layer of this.selectedLayers) {
+            for (const layer of this.selectedFeatureLayers) {
                 if (this.layerWeights[layer.layerId] === undefined) {
                     this.layerWeights[layer.layerId] = 1;
                 }
@@ -258,7 +273,7 @@ export default {
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
-        ...mapActions("Tools/DistanceScoreService", ["getDistanceScore"]),
+        ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
@@ -279,6 +294,12 @@ export default {
             }
 
             numCols.push({text: "SB", value: "distanceScore", divider: true});
+            for (const l of this.selectedWmsLayers) {
+                numCols.push({
+                    text: l.name,
+                    value: l.name
+                });
+            }
 
             return numCols;
         },
@@ -470,6 +491,9 @@ export default {
                     }
                 }
             }
+            for (const l of this.wmsLayersInfo) {
+                allLayers.push({...l, id: l.name, layerId: l.id, group: "Wms Layers"});
+            }
             return allLayers;
         },
         async updateSelectedLayers (layerIds) {
@@ -482,12 +506,22 @@ export default {
                 if (this.selectedLayers.length) {
                     this.distanceScoreQueue = [...this.items];
                     while (this.distanceScoreQueue.length) {
-                        const item = this.distanceScoreQueue.shift(),
-                            dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedLayers.map(l=>l.layerId),
-                                weights: this.selectedLayers.map(l=>this.layerWeights[l.layerId]),
+                        const item = {...this.distanceScoreQueue.shift()};
+
+                        if (this.selectedFeatureLayers) {
+                            const dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
+                                weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
                                 extent: this.extend ? this.extend : undefined});
 
-                        items.push({...item, distanceScore: dist !== null ? dist.toFixed(1) : "na"});
+                            item.distanceScore = dist !== null ? dist.toFixed(1) : "na";
+                        }
+                        for (const layer of this.selectedWmsLayers) {
+                            const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
+
+                            item[layer.name] = value;
+                        }
+
+                        items.push(item);
                     }
 
                     this.items = items;
@@ -710,7 +744,7 @@ export default {
                             </v-col>
                             <v-col>
                                 <v-btn
-                                    v-if="selectedLayers.length>0"
+                                    v-if="selectedFeatureLayers.length>0"
                                     id="weights"
                                     depressed
                                     tile
@@ -739,7 +773,7 @@ export default {
                 <LayerWeights
                     v-model="showWeightsDialog"
                     :weights="layerWeights"
-                    :layers="selectedLayers"
+                    :layers="selectedFeatureLayers"
                     @update="updateWeights"
                 />
             </v-app>
@@ -769,5 +803,3 @@ export default {
         }
     }
 </style>
-
-                                    // v-model="layerWeights[layer.layerId].weight"
