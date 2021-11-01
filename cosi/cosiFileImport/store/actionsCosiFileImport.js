@@ -3,6 +3,7 @@ import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
 import {color as d3Color, hsl} from "d3-color";
+import {interpolateRainbow} from "d3";
 import {scaleLinear} from "d3-scale";
 
 const supportedFormats = {
@@ -377,14 +378,14 @@ function adjustLayerStyling (newLayer) {
                 colorScale = generateColorScale(newLayer.style.svg, sortingArray.length);
 
             layer.setStyle(feature => {
-                const position = sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
+                const position = newLayer.rainbow ? (sortingArray.indexOf(feature.get(newLayer.autoStyleValue)) + 1) / sortingArray.length : sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
                     autoStyle = new Style({
                         image: new Icon({
                             src: path,
-                            color: d3Color(colorScale(position)).toString()
+                            color: newLayer.rainbow ? interpolateRainbow(position).toString() : d3Color(colorScale(position)).toString()
                         })
                     });
-
+                    
                 return autoStyle;
             });
 
