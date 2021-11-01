@@ -18,7 +18,7 @@ import TimeSliderView from "./timeSlider/view";
 import CalculateRatioView from "./calculateRatio/selectView";
 import ReachabilityFromPointView from "./reachabilityFromPoint/view";
 import ReachabilityInAreaView from "./reachabilityInArea/view";
-import PrintView from "../../../modules/tools/print/view";
+// import PrintView from "../../../modules/tools/print/view";
 import GraphModel from "./graph_v2/model";
 import ReachabilitySelectView from "./reachabilitySelect/view";
 import {storageListener, updateFromStorage, setupStorage} from "./storage";
@@ -74,7 +74,7 @@ function initializeCosi () {
         new ColorCodeMapView({model: tools.colorCodeMap});
         // new SaveSelectionCosiView({model: tools.saveSelectionCosi});
         new SelectDistrictView({model: tools.selectDistrict});
-        new PrintView({model: tools.print});
+        // new PrintView({model: tools.print});
         new CompareDistrictsView({model: tools.compareDistricts});
         $(document).ready(function () {
             new RefocusView({el: addRowTR("refocus")});
