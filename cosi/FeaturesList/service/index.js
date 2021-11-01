@@ -61,6 +61,8 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
     let vsum = 0,
         wsum = 0;
 
+    const ret = {};
+
     for (let j = 0; j < layerIds.length; j++) {
         const id = feature.getId().toString() + layerIds[j].toString() + (extent && getters.useUserExtent ? extent.toString() : "");
 
@@ -79,11 +81,18 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
             continue;
         }
 
-        vsum += weights[j] * mindist;
+        // eslint-disable-next-line one-var
+        const value = weights[j] * mindist;
+
+        ret[layerIds[j]] = value;
+
+        vsum += value;
         wsum += weights[j];
     }
 
-    return vsum / wsum;
+    ret.score = vsum / wsum;
+
+    return ret;
 }
 
 /**

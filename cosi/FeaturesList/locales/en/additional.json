@@ -19,7 +19,8 @@
                     "inactiveFeature": "The selected facility ist currently set to 'inactive'.",
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
-                    "abort": "abort"
+                    "abort": "abort",
+                    "scoresDialogTitle": "Composition"
                 }
             }
         }

@@ -14,6 +14,7 @@ import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
 import LayerWeights from "./LayerWeights.vue";
+import ScoreValues from "./ScoreValues.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
@@ -27,14 +28,17 @@ export default {
         Multiselect,
         DetailView,
         FeatureIcon,
-        LayerWeights
+        LayerWeights,
+        ScoreValues
     },
     data () {
         return {
             distanceScoreQueue: [],
             weight: 0,
             showWeightsDialog: false,
+            showScoresDialog: false,
             layerWeights: {},
+            currentScores: {},
             selectedLayers: [],
             search: "",
             layerFilter: [],
@@ -293,7 +297,7 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            numCols.push({text: "SB", value: "distanceScore", divider: true});
+            numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
             for (const l of this.selectedWmsLayers) {
                 numCols.push({
                     text: l.name,
@@ -509,11 +513,12 @@ export default {
                         const item = {...this.distanceScoreQueue.shift()};
 
                         if (this.selectedFeatureLayers) {
-                            const dist = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
+                            const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
                                 weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
                                 extent: this.extend ? this.extend : undefined});
 
-                            item.distanceScore = dist !== null ? dist.toFixed(1) : "na";
+                            item.weightedDistanceScores = ret;
+                            item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
                         }
                         for (const layer of this.selectedWmsLayers) {
                             const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
@@ -544,6 +549,12 @@ export default {
                 height: "10px",
                 width: Math.round(100 * val / maxVal) + "%"
             };
+        },
+        showInfo (column, item) {
+            console.log(this.selectedFeatureLayers, item);
+
+            this.currentScores = item.weightedDistanceScores;
+            this.showScoresDialog = true;
         }
     }
 };
@@ -679,6 +690,8 @@ export default {
                                         <div
                                             :key="col.value"
                                             class="align-right"
+                                            :class="col.hasAction? 'number-action': ''"
+                                            @click="showInfo(col, item)"
                                         >
                                             <div>
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
@@ -776,6 +789,12 @@ export default {
                     :layers="selectedFeatureLayers"
                     @update="updateWeights"
                 />
+                <ScoreValues
+                    v-model="showScoresDialog"
+                    :label="$t('additional:modules.tools.cosi.featuresList.scoresDialogTitle')"
+                    :scores="currentScores"
+                    :layers="selectedFeatureLayers"
+                />
             </v-app>
         </template>
     </Tool>
@@ -800,6 +819,9 @@ export default {
         }
         .align-right {
             text-align: right;
+        }
+        .number-action{
+            cursor: pointer;
         }
     }
 </style>
