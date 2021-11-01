@@ -550,9 +550,7 @@ export default {
                 width: Math.round(100 * val / maxVal) + "%"
             };
         },
-        showInfo (column, item) {
-            console.log(this.selectedFeatureLayers, item);
-
+        showInfo (item) {
             this.currentScores = item.weightedDistanceScores;
             this.showScoresDialog = true;
         }
@@ -691,7 +689,7 @@ export default {
                                             :key="col.value"
                                             class="align-right"
                                             :class="col.hasAction? 'number-action': ''"
-                                            @click="showInfo(col, item)"
+                                            @click="showInfo(item)"
                                         >
                                             <div>
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
