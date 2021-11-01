@@ -425,7 +425,7 @@ export default {
             <v-text-field
                 v-model="geomCoords"
                 :name="geomField.name"
-                :label="geomField.type"
+                :label="$t('additional:modules.tools.cosi.dataTypes.geometry')"
                 dense
             >
                 <template #append>

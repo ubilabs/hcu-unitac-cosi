@@ -270,6 +270,10 @@ export default {
 
         geomPickerUnlisten () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
+        },
+
+        mapDataTypes (type) {
+            return this.$t(`additional:modules.tools.cosi.dataTypes.${type}`);
         }
     }
 };
@@ -290,10 +294,14 @@ export default {
             #toolBody
         >
             <v-app>
-                <div class="mb-5 overline">
-                    {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
-                </div>
                 <ScenarioManager />
+                <v-divider />
+                <div class="mb-5 overline">
+                    {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                </div>
+                <v-subheader>
+                    Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
+                </v-subheader>
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"
@@ -307,7 +315,7 @@ export default {
                     id="scenario-builder"
                 >
                     <form class="form-inline features-list-controls">
-                        <v-divider />
+                        <!-- <v-divider /> -->
                         <div class="form-group">
                             <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>
                             <Multiselect
@@ -396,7 +404,7 @@ export default {
                                                     <v-switch
                                                         v-if="typesMapping[field.type] === 'boolean'"
                                                         v-model="featureProperties[field.name]"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         dense
                                                         :hide-details="false"
                                                     />
@@ -410,7 +418,7 @@ export default {
                                                         v-model="featureProperties[field.name]"
                                                         :items="valuesForFields[field.name]"
                                                         :name="field.name"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         :rules="validateProp(field, workingLayer)"
                                                         dense
                                                     />
@@ -426,7 +434,7 @@ export default {
                                             <v-row
                                                 v-for="field in featureTypeDescSorted.optional"
                                                 :key="field.name"
-                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.essentialField')"
+                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.optionalField')"
                                                 dense
                                             >
                                                 <v-col cols="3">
@@ -438,7 +446,7 @@ export default {
                                                     <v-switch
                                                         v-if="typesMapping[field.type] === 'boolean'"
                                                         v-model="featureProperties[field.name]"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         dense
                                                     />
                                                     <!-- Add Date Picker for dates -->
@@ -451,7 +459,7 @@ export default {
                                                         v-model="featureProperties[field.name]"
                                                         :items="valuesForFields[field.name]"
                                                         :name="field.name"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         :rules="validateProp(field, workingLayer)"
                                                         dense
                                                     />
