@@ -3,7 +3,6 @@ import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import store from "../../../src/app-store";
-import axios from "axios";
 
 /**
  *todo
@@ -773,9 +772,10 @@ function initializeBrwAbfrageModel () {
 
         /**
          * Gathers information needed to trigger the print module
+         * @param {Function} getResponse the url post function
          * @return {void}
          */
-        preparePrint: function () {
+        preparePrint: function (getResponse) {
             const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                     return layer.getVisible() === true;
                 }),
@@ -835,10 +835,7 @@ function initializeBrwAbfrageModel () {
                         }
                     }
                 },
-                spec = SpecModel,
-                getResponse = async (url, payload) => {
-                    return axios.post(url, payload);
-                };
+                spec = SpecModel;
             let printJob = {};
 
             spec.setAttributes(attr);
@@ -857,8 +854,12 @@ function initializeBrwAbfrageModel () {
             });
         },
 
+        /**
+         * starts download for pdf
+         * @param {String} fileUrl the url for the download
+         * @return {void}
+         */
         startDownload: function (fileUrl) {
-            console.log("Ready", fileUrl);
             const link = document.createElement("a");
 
             link.href = fileUrl;

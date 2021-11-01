@@ -10,6 +10,7 @@ import TemplateLanduseSelect from "text-loader!./templateLanduseSelect.html";
 import TemplateLayerSelect from "text-loader!./templateLayerSelect.html";
 import TemplateMobileLayerSelect from "text-loader!./templateMobileLayerSelect.html";
 import "./style.less";
+import axios from "axios";
 
 const BrwAbfrageView = Backbone.View.extend({
     events: {
@@ -224,8 +225,22 @@ const BrwAbfrageView = Backbone.View.extend({
         }
     },
 
+    /**
+     * prepare print
+     * @returns {void}
+     */
     preparePrint: function () {
-        this.model.preparePrint();
+        /**
+         * function for print process
+         * @param {String} url the url for the request
+         * @param {object} payload the payload for the request
+         * @returns {void}
+         */
+        const getResponse = async function (url, payload) {
+            return axios.post(url, payload);
+        };
+
+        this.model.preparePrint(getResponse);
     },
     /**
      * Toggles the selected Landuse
