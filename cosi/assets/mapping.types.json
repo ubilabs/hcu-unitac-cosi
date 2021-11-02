@@ -8,7 +8,8 @@
     "date": "date",
     "boolean": "boolean",
     "gml:PointPropertyType": "geom",
+    "gml:MultiPointPropertyType": "geom",
     "gml:LinePropertyType": "geom",
-    "gml:PolygontPropertyType": "geom",
+    "gml:PolygonPropertyType": "geom",
     "gml:MultiPolygonPropertyType": "geom"
 }

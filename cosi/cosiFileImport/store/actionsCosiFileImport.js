@@ -3,6 +3,7 @@ import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
 import {color as d3Color, hsl} from "d3-color";
+import {interpolateRainbow} from "d3";
 import {scaleLinear} from "d3-scale";
 
 const supportedFormats = {
@@ -215,15 +216,9 @@ function addLayerToTree (newLayer) {
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId});
-
-    // model.get("layer").setProperties({"typ": "WFS"});
-    setLayerAttributes(model, newLayer);
-    adjustLayerStyling(newLayer);
-
-    // eslint-disable-next-line one-var
-    const filterModel = {
-            attributeWhiteList: model.get("attributeWhiteList"),
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId}),
+        filterModel = {
+            attributeWhiteList: newLayer.filterWhiteList,
             isActive: false,
             isSelected: false,
             layerId: newLayer.id,
@@ -232,6 +227,8 @@ function addLayerToTree (newLayer) {
         },
         filterQuery = Radio.request("Filter", "getFilters");
 
+    setLayerAttributes(model, newLayer);
+    adjustLayerStyling(newLayer);
     filterQuery.push(filterModel);
     Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
 
@@ -246,18 +243,19 @@ function addLayerToTree (newLayer) {
  */
 function setLayerAttributes (model, attrs) {
     model.set({
+        ol_uid: attrs.id,
         gfiComplex: "true",
         gfiTheme: "default",
         typ: "GeoJSON",
         isFacility: true,
         alwaysOnTop: true,
-        addressField: ["address"],
+        addressField: attrs.addressField,
         mouseHoverField: attrs.mouseHoverField,
         searchField: attrs.searchField,
-        group: "Importierte Daten",
+        group: "Importierte Datensätze",
         filename: attrs.filename,
         numericalValues: attrs.numericalValues,
-        attributeWhiteList: [...attrs.mouseHoverField, attrs.searchField, ...attrs.numericalValues.map(v => v.id)]
+        attributeWhiteList: attrs.filterWhiteList
     });
 }
 
@@ -267,26 +265,16 @@ function setLayerAttributes (model, attrs) {
  * @returns {void}
  */
 function adjustLayerStyling (newLayer) {
+
+    let pointColor = "",
+        pointOpac = "";
+
+    pointColor = d3Color(newLayer.style.svg);
+    pointOpac = d3Color(newLayer.style.svg);
+
+    pointOpac.opacity = 0.5;
+
     if (!newLayer.autoStyle) {
-        let pointColor,
-            pointOpac,
-            areaColor,
-            areaOpac;
-
-        if (newLayer.style.point) {
-            pointColor = d3Color(newLayer.style.point.hex);
-            pointOpac = d3Color(newLayer.style.point.hex);
-            pointOpac.opacity = 0.5;
-
-            areaColor = pointColor;
-            areaOpac = pointOpac;
-        }
-
-        if (newLayer.style.polygon) {
-            areaColor = d3Color(newLayer.style.polygon.hex);
-            areaOpac = d3Color(newLayer.style.polygon.hex);
-            areaOpac.opacity = 0.5;
-        }
 
         const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
             layer = layerNode.attributes.layer,
@@ -313,11 +301,11 @@ function adjustLayerStyling (newLayer) {
 
             areaStyle = new Style({
                 fill: new Fill({
-                    color: areaOpac
+                    color: pointOpac
                 }),
                 stroke: new Stroke({
                     width: 3,
-                    color: areaColor
+                    color: pointColor
                 })
             });
 
@@ -343,12 +331,11 @@ function adjustLayerStyling (newLayer) {
         const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
             layer = layerNode.attributes.layer,
             features = layerNode.attributes.features,
-            path = "./assets/svg/" + newLayer.svg,
-            randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            path = "./assets/svg/" + newLayer.svg;
 
-        if (Number.isInteger(features[0].get(newLayer.autoStyleValue))) {
+        if (!isNaN(parseFloat(features[0].get(newLayer.autoStyleValue)))) {
             const sortingArray = features.map(feature => feature.get(newLayer.autoStyleValue)),
-                colorScale = generateColorScale(randomColor, 10);
+                colorScale = generateColorScale(newLayer.style.svg, 10);
             let difference = 0,
                 chunk = 0;
 
@@ -371,31 +358,74 @@ function adjustLayerStyling (newLayer) {
             }
 
             layer.setStyle(function (feature) {
+                if (feature.getGeometry().getType() === "Point") {
+                    const chunkNode = checkChunkNode(feature, newLayer, chunk),
+                        autoStyle = new Style({
+                            image: new Icon({
+                                src: path,
+                                color: d3Color(colorScale(chunkNode)).toString()
+                            })
+                        });
+
+                    return autoStyle;
+                }
+
                 const chunkNode = checkChunkNode(feature, newLayer, chunk),
-                    autoStyle = new Style({
-                        image: new Icon({
-                            src: path,
-                            color: d3Color(colorScale(chunkNode)).toString()
-                        })
-                    });
+                    colorOpac = hsl(colorScale(chunkNode));
+
+                colorOpac.opacity = 0.6;
+
+                // eslint-disable-next-line one-var
+                const autoStyle = new Style({
+                    fill: new Fill({
+                        color: colorOpac.toString()
+                    }),
+                    stroke: new Stroke({
+                        width: 3,
+                        color: d3Color(colorScale(chunkNode)).toString()
+                    })
+                });
 
                 return autoStyle;
+
             });
 
             layer.setZIndex(100);
         }
         else {
             const sortingArray = [...new Set(features.map(feature => feature.get(newLayer.autoStyleValue)))],
-                colorScale = generateColorScale(randomColor, sortingArray.length);
+                colorScale = generateColorScale(newLayer.style.svg, sortingArray.length);
 
             layer.setStyle(feature => {
-                const position = sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
-                    autoStyle = new Style({
-                        image: new Icon({
-                            src: path,
-                            color: d3Color(colorScale(position)).toString()
-                        })
-                    });
+                if (feature.getGeometry().getType() === "Point") {
+                    const position = newLayer.rainbow ? (sortingArray.indexOf(feature.get(newLayer.autoStyleValue)) + 1) / sortingArray.length : sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
+                        autoStyle = new Style({
+                            image: new Icon({
+                                src: path,
+                                color: newLayer.rainbow ? interpolateRainbow(position).toString() : d3Color(colorScale(position)).toString()
+                            })
+                        });
+
+                    return autoStyle;
+                }
+
+                const position = newLayer.rainbow ? (sortingArray.indexOf(feature.get(newLayer.autoStyleValue)) + 1) / sortingArray.length : sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
+                    rainbowColor = hsl(interpolateRainbow(position)),
+                    colorOpac = hsl(colorScale(position));
+
+                rainbowColor.opacity = 0.6;
+                colorOpac.opacity = 0.6;
+
+                // eslint-disable-next-line one-var
+                const autoStyle = new Style({
+                    fill: new Fill({
+                        color: newLayer.rainbow ? rainbowColor : colorOpac
+                    }),
+                    stroke: new Stroke({
+                        width: 3,
+                        color: newLayer.rainbow ? interpolateRainbow(position).toString() : d3Color(colorScale(position)).toString()
+                    })
+                });
 
                 return autoStyle;
             });
@@ -429,25 +459,26 @@ function checkChunkNode (feature, newLayer, chunk) {
  * @returns {Array} ColorScale Array.
  */
 function generateColorScale (color, length) {
-    const hslColor = hsl(color);
+    const hslColor = hsl(color),
+        colorC = String(hslColor);
     let colorA = "",
         colorB = "",
         range = "";
 
-    hslColor.h += 40;
+    hslColor.h += 10;
     hslColor.s = 100;
     hslColor.l = 80;
     hslColor.opacity = 1;
 
     colorA = String(hslColor);
 
-    hslColor.h -= 80;
+    hslColor.h -= 10;
     hslColor.s = 0;
     hslColor.l -= 10;
     hslColor.opacity = 0.75;
 
     colorB = String(hslColor);
-    range = [colorB, colorA];
+    range = [colorB, colorC, colorA];
     return scaleLinear().domain([0, length]).range(range);
 }
 

@@ -121,8 +121,8 @@ export default {
         selectedColumnNames () {
             const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected),
                 districtNames = selectedCols.length > 0
-                    ? selectedCols.map(col => col.text)
-                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.text);
+                    ? selectedCols.map(col => col.value)
+                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.value);
 
             return districtNames;
         }
@@ -346,8 +346,8 @@ export default {
                 ),
                 data = {
                     ...item,
-                    Gesamt: total,
-                    Durchschnitt: average
+                    total,
+                    average
                 },
                 chart = generateChartForDistricts(
                     data,

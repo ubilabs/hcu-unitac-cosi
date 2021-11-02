@@ -17,6 +17,7 @@
     "vue-json-excel": "^0.3.0",
     "vue-multiselect": "^2.1.6",
     "vuetify": "^2.5.1",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "vue-inline-svg": "^2.1.0"
   }
 }

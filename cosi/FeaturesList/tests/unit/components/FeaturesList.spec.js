@@ -91,7 +91,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         sandbox = sinon.createSandbox();
         layerListStub = sinon.stub();
         getDistanceScoreStub = sinon.stub();
-        getDistanceScoreStub.returns(Promise.resolve(1));
+        getDistanceScoreStub.returns(Promise.resolve({"score": 1, "1234": 1}));
 
         store = new Vuex.Store({
             namespaces: true,
@@ -257,7 +257,17 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(args.feature.getId()).to.be.equal("id");
             expect(args.layerIds).to.be.eql(["1234"]);
             expect(args.weights).to.be.eql([1]);
+            expect(wrapper.vm.items.map(i => i.weightedDistanceScores)).to.be.eql([{"1234": 1.0, score: 1}]);
             expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
+        });
+
+        it("should set scored for dialog", async () => {
+            const wrapper = await mountComponent(true, [layer1]),
+                item = {weightedDistanceScores: {"1234": 1.0, score: 1}};
+
+            wrapper.vm.showInfo(item);
+            expect(wrapper.vm.showScoresDialog).be.true;
+            expect(wrapper.vm.currentScores).to.be.eql(item.weightedDistanceScores);
         });
 
         it("should recompute distance score after weight change", async () => {
@@ -271,7 +281,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}, {layerId: "1235"}]});
             getDistanceScoreStub.reset();
-            getDistanceScoreStub.returns(Promise.resolve(1));
+            getDistanceScoreStub.returns(Promise.resolve({"score": 1, "1234": 1}));
 
             // act
             await wrapper.vm.updateWeights({"1234": 0.5, "1235": 1});

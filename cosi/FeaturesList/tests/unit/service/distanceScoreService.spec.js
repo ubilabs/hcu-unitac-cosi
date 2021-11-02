@@ -32,7 +32,7 @@ describe("distanceScoreService", () => {
                     weights: [1]
                 });
 
-        expect(score).to.be.equal(191.82);
+        expect(score).to.be.eql({"19862": 191.82, score: 191.82});
         expect(commitStub.firstCall.args[1]).to.eql(
             {
                 "DE.HH.UP_AMIRA_1d275df7-64f4-4a43-a647-ae34648191c119862": 191.82
@@ -67,7 +67,7 @@ describe("distanceScoreService", () => {
                     extent
                 });
 
-        expect(score).to.be.equal(157.41);
+        expect(score).to.be.eql({"20569": 157.41, score: 157.41});
         expect(commitStub.firstCall.args[1]).to.eql(
             {
                 "id20569566074.67,5933911.077,567996.251,5935623.892": 157.41
@@ -181,7 +181,7 @@ describe("distanceScoreService", () => {
             ]
         );
     });
-    it.skip("getDistanceScore with large layer", async function () {
+    it("getDistanceScore with large layer", async function () {
         this.timeout(120000);
 
         const features = await getAllFeatures("19951"),
@@ -195,6 +195,6 @@ describe("distanceScoreService", () => {
                     weights: [1]
                 });
 
-        expect(score).to.be.equal(133.57);
+        expect(score).to.be.eql({"16601": 133.57, score: 133.57});
     });
 });

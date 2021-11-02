@@ -2,8 +2,18 @@
     "modules": {
         "tools": {
             "ColorCodeMap": {
-                "title": "ColorCodeMap",
-                "content": ""
+                "title": "Statistical Data Visualization Tool",
+                "infoTooltip": "Tool Info",
+                "minimize": "Maximize / Minimize",
+                "toggleVisualization": "Visualization on / off",
+                "prev": "Previous dataset",
+                "next": "Next dataset",
+                "animate": "Animate visualization over the years",
+                "generateChart": "Generate chart from dataset",
+                "showDistrictNames": "Show district names",
+                "metadata": "Open meta data",
+                "noData": "no data available",
+                "yearsLabal": "Years"
             }
         }
     }

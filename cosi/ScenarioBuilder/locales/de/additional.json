@@ -17,6 +17,7 @@
                     "essentialFieldHeader": "Erforderliche Spalten",
                     "optionalFieldHeader": "Optionale Spalten",
                     "geomFieldHeader": "Geometrie / Ort",
+                    "optionalField": "Diese Spalte hat keinen Einfluss auf die Darstellung oder andere Analysefunktionen",
                     "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
                     "defineFeature": "Neue Einrichtung definieren",
                     "undo": "Schritt zurück",
@@ -44,12 +45,31 @@
                     "exportSimulatedFeatures": "Simulierte Einrichtungen exportieren (GeoJSON)",
                     "restoreAllFeatures": "Alle wiederherstellen",
                     "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
-                    "pruneAllFeatures": "Alle löschen",
-                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
-                    "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
+                    "pruneAllFeatures": "Szenario leeren",
+                    "helpPruneAllFeatures": "Alle erstellten Features und löschen manipulierten Daten zurücksetzen.",
+                    "pruneNeighborhoods": "Wohnquartiere löschen",
+                    "helpPruneNeighborhoods": "Alle Wohnquartiere dieses Szenarios löschen",
+                    "pruneSimulatedFeatures": "Einrichtungen löschen",
+                    "helpPruneSimulatedFeatures": "Alle simulierten Einrichtungen dieses Szenarios löschen",
+                    "pruneAllFeaturesWarning": "Wollen Sie wirklich alle Daten in diesem Szenario löschen?",
+                    "pruneNeighborhoodsWarning": "Wollen Sie wirklich alle erstellten Wohnquartiere in diesem Szenario löschen?",
+                    "pruneSimulatedFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
                     "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie ein neues an."
+                },
+                "dataTypes": {
+                    "decimal": "Zahl",
+                    "long": "Zahl",
+                    "double": "Zahl",
+                    "float": "Zahl",
+                    "integer": "Zahl",
+                    "string": "Text",
+                    "date": "Datum",
+                    "boolean": "Ja/Nein",
+                    "geometry": "Geometrie",
+                    "object": "-"
                 }
             }
         }
     }
 }
+
