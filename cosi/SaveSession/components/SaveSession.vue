@@ -51,7 +51,7 @@ export default {
             state: null,
             session: {
                 meta: {
-                    title: null,
+                    title: this.$t("additional:modules.tools.cosi.saveSession.newSession") + new Date().toLocaleString(),
                     info: null,
                     created: null,
                     date: null
@@ -60,6 +60,8 @@ export default {
             },
             latestDate: null,
             loadDialog: false,
+            saveDialog: false,
+            saveMode: "quickSave",
             sessionFile: null,
             showTemplates: false,
             templates: []
@@ -118,9 +120,6 @@ export default {
         catch (e) {
             this.loadDialog = false;
         }
-        // if (this.localStorage.getItem("cosi-state")) {
-        //     this.loadDialog = true;
-        // }
     },
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
@@ -129,6 +128,7 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         save () {
             console.log(this.$store.state);
+            this.saveDialog = false;
             this.serializeState();
 
             this.session.state = this.state;
@@ -147,7 +147,7 @@ export default {
         },
         saveAs () {
             this.save();
-            downloadJsonToFile(this.session, "Neue_Session.json");
+            downloadJsonToFile(this.session, this.session.meta.title + ".json");
         },
 
         clear () {
@@ -541,6 +541,12 @@ export default {
 
         escapeSelectFromTemplates () {
             this.showTemplates = false;
+        },
+
+        onSavePrompt () {
+            this.saveDialog = false;
+            this[this.saveMode]();
+            this.session.meta.title = this.$t("additional:modules.tools.cosi.saveSession.newSession") + new Date().toLocaleString();
         }
     }
 };
@@ -580,7 +586,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveTooltip')"
-                                    @click="quickSave"
+                                    @click="saveDialog = true; saveMode = 'quickSave'"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
                                 </v-btn>
@@ -602,7 +608,7 @@ export default {
                         </v-row>
                         <v-divider />
                         <v-card-title secondary-title>
-                            Schnelles Speichern
+                            Lokales Speichern
                         </v-card-title>
                         <v-subheader>
                             Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
@@ -617,7 +623,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveToFileTooltip')"
-                                    @click="saveAs"
+                                    @click="saveDialog = true; saveMode = 'saveAs'"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.saveToFile') }}
                                 </v-btn>
@@ -772,10 +778,43 @@ export default {
                 </v-row>
             </template>
         </v-snackbar>
+        <v-snackbar
+            v-model="saveDialog"
+            :timeout="-1"
+            color="lightgreen"
+        >
+            {{ $t('additional:modules.tools.cosi.saveSession.filenamePrompt') }}
+            <template v-if="latestDate">
+                <v-text-field
+                    id="title-field"
+                    v-model="session.meta.title"
+                    name="session-title"
+                />
+            </template>
+
+            <template #action="{ attrs }">
+                <v-row cols="12">
+                    <v-btn
+                        v-bind="attrs"
+                        text
+                        @click="onSavePrompt"
+                    >
+                        <v-icon>mdi-content-save</v-icon>
+                    </v-btn>
+                    <v-btn
+                        v-bind="attrs"
+                        text
+                        @click="saveDialog = false"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-row>
+            </template>
+        </v-snackbar>
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../utils/variables.less";
 
     .hidden {
@@ -784,5 +823,9 @@ export default {
 
     .template-info-button {
         margin-right: 20px;
+    }
+
+    #title-field {
+        width: 20vw;
     }
 </style>

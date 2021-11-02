@@ -164,7 +164,7 @@ const id = "DistanceScoreService",
     store = {
         namespaced: true,
         state: {
-            active: true,
+            active: false,
             id,
             mindists: {},
             useUserExtent: false,
@@ -215,7 +215,10 @@ const id = "DistanceScoreService",
 
 export default {
     component: {
-        name: id
+        name: id,
+        render () {
+            return null;
+        }
     },
     store
 };

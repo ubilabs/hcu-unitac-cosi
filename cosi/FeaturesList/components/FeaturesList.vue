@@ -20,6 +20,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
+import {Style} from "ol/style.js";
 
 export default {
     name: "FeaturesList",
@@ -115,7 +116,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extend: "extend"}),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extent: "extent"}),
         ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
         columns () {
@@ -141,30 +142,24 @@ export default {
                 this.setFeaturesListItems(value);
             }
         },
-        layerOptions: {
+        layerOptions () {
+            const layers = this.getLayerList(),
+                groups = layers.reduce((acc, el)=> ({...acc, [el.group]: [...acc[el.group] || [], el]}), {});
 
-            get () {
-                const layers = this.getLayerList(),
-                    groups = layers.reduce((acc, el)=> ({...acc, [el.group]: [...acc[el.group] || [], el]}), {});
+            let ret = [];
 
-                let ret = [];
-
-                for (const g in groups) {
-                    ret.push({header: g});
-                    ret = ret.concat(groups[g]);
-                }
-                return ret;
+            for (const g in groups) {
+                ret.push({header: g});
+                ret = ret.concat(groups[g]);
             }
+
+            return ret;
         },
-        selectedFeatureLayers: {
-            get () {
-                return this.selectedLayers.filter(l=>l.group !== "Wms Layers");
-            }
+        selectedFeatureLayers () {
+            return this.selectedLayers.filter(l=>l.group !== "Wms Layers");
         },
-        selectedWmsLayers: {
-            get () {
-                return this.selectedLayers.filter(l=>l.group === "Wms Layers");
-            }
+        selectedWmsLayers () {
+            return this.selectedLayers.filter(l=>l.group === "Wms Layers");
         }
     },
     watch: {
@@ -246,7 +241,7 @@ export default {
             this.updateDistanceScores();
         },
 
-        extend () {
+        extent () {
             this.updateDistanceScores();
         }
     },
@@ -296,8 +291,11 @@ export default {
             if (numCols.length > 0) {
                 numCols[numCols.length - 1].divider = true;
             }
+ 
+            if (this.selectedFeatureLayers) {
+                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
+            }
 
-            numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
             for (const l of this.selectedWmsLayers) {
                 numCols.push({
                     text: l.name,
@@ -320,7 +318,8 @@ export default {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(feature => {
-                            if (typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle() !== null) {
+                            console.log(typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null));
+                            if (typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null)) {
                                 return true;
                             }
                             if (typeof vectorLayer.getStyleFunction() === "function") {
@@ -509,6 +508,7 @@ export default {
             for (const l of this.wmsLayersInfo) {
                 allLayers.push({...l, id: l.name, layerId: l.id, group: "Wms Layers"});
             }
+
             return allLayers;
         },
         async updateSelectedLayers (layerIds) {
@@ -526,7 +526,7 @@ export default {
                         if (this.selectedFeatureLayers) {
                             const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
                                 weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
-                                extent: this.extend ? this.extend : undefined});
+                                extent: this.extent ? this.extent : undefined});
 
                             item.weightedDistanceScores = ret;
                             item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";

@@ -18,7 +18,9 @@
                     "templates": "Vorlagen",
                     "loadFromTemplate": "Vorlage laden",
                     "infoLoadFromTemplates": "Laden Sie eine thematische Basis-Konfiguration für fachspezifische Analysen.",
-                    "noInfo": "Keine Beschreibung verfügbar"
+                    "noInfo": "Keine Beschreibung verfügbar",
+                    "filenamePrompt": "Sitzung benennen",
+                    "newSession": "Neue Sitzung"
                 }
             }
         }

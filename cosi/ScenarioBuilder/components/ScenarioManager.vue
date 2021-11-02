@@ -116,6 +116,7 @@ export default {
         <v-subheader>
             Anlegen und Verwalten der Szenarien für fiktive Daten. In einem Szenario können Einrichtungen und Wohnquartiere simuliert, sowie bestehende Einrichtungen verändert werden.
         </v-subheader>
+        <v-row dense />
         <v-row dense>
             <v-col cols="6">
                 <v-select

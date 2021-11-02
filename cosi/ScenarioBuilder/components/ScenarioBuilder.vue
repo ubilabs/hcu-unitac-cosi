@@ -84,8 +84,6 @@ export default {
                         optional = [];
                     let geom;
 
-                    console.log(_desc);
-
                     for (const field of _desc) {
                         if (compareLayerMapping(field, layerMap)) {
                             required.push(field);
@@ -296,8 +294,6 @@ export default {
                 return desc;
             }
 
-            console.log(this.layerById(layerId));
-
             return [];
         }
     }
@@ -327,6 +323,7 @@ export default {
                 <v-subheader>
                     Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
                 </v-subheader>
+                <v-row dense />
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"
