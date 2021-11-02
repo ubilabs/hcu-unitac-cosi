@@ -204,12 +204,18 @@ export default {
 
                     this.api.getComplexTypeBezirk(this.propertyName, this.properties?.bezirk_id, complexTypeBezirk => {
                         this.bezirk_value = this.convertValueBasedOnComplexType(complexTypeBezirk.values[0]?.value, complexTypeBezirk);
+                        if (!this.bezirk_value) {
+                            this.bezirk_value = "g.F.";
+                        }
                     }, error => {
                         this.bezirk_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
                         console.error(error);
                     });
                     this.api.getComplexTypeStadt(this.propertyName, complexTypeStadt => {
                         this.stadt_value = this.convertValueBasedOnComplexType(complexTypeStadt.values[0]?.value, complexTypeStadt);
+                        if (!this.stadt_value) {
+                            this.stadt_value = "g.F.";
+                        }
                     }, error => {
                         this.stadt_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
                         console.error(error);
