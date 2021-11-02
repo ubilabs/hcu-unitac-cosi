@@ -1,5 +1,5 @@
 import {writeFeatures, registerProjections} from "../components/util.js";
-import {createIsochrones} from "./createIsochrones";
+import {createIsochrones, getFilterPoly, setFilterPoly} from "./createIsochrones";
 import "regenerator-runtime/runtime";
 
 
@@ -11,37 +11,58 @@ registerProjections();
  * @returns {void}
  */
 async function onmessage (self, event) {
+    const type = event.data.type;
 
     try {
-        const features = await createIsochrones(event.data, (p) => {
-            self.postMessage({"progress": p});
-        });
+        if (event.data.type === "createIsochrones") {
+            const features = await createIsochrones(event.data, (p) => {
+                self.postMessage({type, "progress": p});
+            });
 
-        self.postMessage({"result": writeFeatures(features)});
+            self.postMessage({type: event.data.type, result: writeFeatures(features)});
+        }
+        else if (event.data.type === "init") {
+            setFilterPoly(event.data.coords);
+            self.postMessage({type, result: "ok"});
+        }
+        else if (event.data.type === "getFilterPoly") {
+            self.postMessage({type, result: getFilterPoly()});
+        }
     }
     catch (error) {
-        self.postMessage({error});
+        self.postMessage({type, error});
     }
 }
 
 self.onmessage = (e) => onmessage(self, e);
 
+self.addEventListener("message", function (e) {
+    onmessage(self, e);
+});
+
 /**
  * use this (for testing) if Workers are not available in the active enviroment
  **/
 export class Worker {
-    /**
-     * @param {*} args arguments
-     * @memberof Worker
-     * @returns {void}
-     */
+
+    // eslint-disable-next-line require-jsdoc
+    constructor () {
+        this.listeners = [];
+    }
+
+    // eslint-disable-next-line require-jsdoc
     async postMessage (args) {
         await onmessage({
             postMessage: (data) => {
                 if (data.error) {
                     this.onerror(data);
                 }
-                this.onmessage({data});
+                if (this.onmessage) {
+                    this.onmessage({data});
+                }
+                for (const l of this.listeners) {
+                    l({data});
+                }
             }
         }, {data: args});
     }
@@ -49,5 +70,23 @@ export class Worker {
     // eslint-disable-next-line require-jsdoc
     terminate () {
         this.status = "terminated";
+    }
+
+    // eslint-disable-next-line require-jsdoc
+    addEventListener (type, l) {
+        if (type === "message") {
+            this.listeners.push(l);
+        }
+    }
+
+    // eslint-disable-next-line require-jsdoc
+    removeEventListener (type, l) {
+        if (type === "message") {
+            const index = this.listeners.indexOf(l);
+
+            if (index > -1) {
+                this.listeners.splice(index, 1);
+            }
+        }
     }
 }

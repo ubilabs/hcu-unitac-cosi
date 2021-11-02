@@ -4,6 +4,8 @@ import {mapGetters, mapActions} from "vuex";
 import {unpackCluster} from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
+import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
+import Point from "ol/geom/Point";
 
 export default {
     name: "MoveFeatures",
@@ -70,8 +72,8 @@ export default {
          */
         moveFeaturesActive (state) {
             if (state) {
-                this.listen();
                 this.$emit("moveFeaturesActive");
+                this.listen();
             }
             else {
                 this.unlisten();
@@ -120,6 +122,9 @@ export default {
             this.select.on("select", this.onSelect.bind(this));
             this.translate.on("translatestart", this.onTranslateStart.bind(this));
             this.translate.on("translateend", this.onTranslateEnd.bind(this));
+
+            // bind listener to Searchbar
+            Radio.on("Searchbar", "hit", this.translateBySearchbar.bind(this));
         },
 
         /**
@@ -132,6 +137,7 @@ export default {
             this.map.removeInteraction(this.select);
             this.translate = null;
             this.select = null;
+            Radio.off("Searchbar", "hit");
         },
 
         /**
@@ -228,7 +234,36 @@ export default {
             }
 
             return false;
-        }
+        },
+
+        translateBySearchbar () {
+            const targetGeometry = new Point(this.getSearchResultsCoordinates()),
+                feature = this.select.getFeatures().item(0);
+            let originalFeature;
+
+            if (!feature) {
+                return;
+            }
+
+            for (originalFeature of unpackCluster(feature)) {
+                // Set the feature on the scenario as modified
+                this.activeScenario.modifyFeature(originalFeature, {}, this.layer);
+
+                // set the new geometry based on search results
+                originalFeature.setGeometry(targetGeometry);
+
+                // modify the feature on the scenario. Update features already stored in the scenario
+                // use the cloned geometry of the point or polygon as reference
+                this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
+
+                if (originalFeature.get("isSimulation")) {
+                    removeSimulationTag(originalFeature, this.guideLayer);
+                    addSimulationTag(originalFeature, this.guideLayer, this.layer);
+                }
+            }
+        },
+
+        getSearchResultsCoordinates
     }
 };
 </script>
@@ -254,7 +289,7 @@ export default {
             :title="$t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip')"
             tile
             depressed
-            :color="onlyEditSimulated ? 'warning' : ''"
+            :color="onlyEditSimulated ? '' : 'warning'"
             :disabled="!activeScenario"
             @click="toggleOnlySimulated"
         >

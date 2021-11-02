@@ -145,7 +145,6 @@ export default {
          * @returns {void}
          */
         generateGraphComponent (dataSet) {
-
             const colorRange = this.generateColorScale(dataSet);
 
             dataSet.data.dataSets.forEach((set, index) => {
@@ -174,7 +173,6 @@ export default {
             this.renderGraph(dataSet);
         },
         renderGraph (dataSet) {
-            // eslint-disable-next-line one-var
             const target = document.getElementById(dataSet.target),
                 // Extend Component dynamically
                 DynamicComponent = Vue.extend(this.$options.components[this.newType]),
@@ -457,7 +455,7 @@ export default {
             >
                 <button
                     class="info_button"
-                    title="Werkzeuginformationen"
+                    :title="$t('additional:modules.tools.cosi.chartGenerator.infoTooltip')"
                     @click="showInfo()"
                 >
                     <span class="glyphicon glyphicon-question-sign" />
@@ -492,7 +490,7 @@ export default {
                                             class="switch_btn"
                                             :class="{highlight: graph.sub_graph === i}"
                                             :style="{backgroundImage: 'url(' + require('../assets/' + type + '.png') + ')'}"
-                                            title="Anderen Graphen für diesen Datensatz auswählen"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.switchChartType')"
                                             @click="changeGraph(graph, i)"
                                         >
                                             <!-- {{ type }} -->
@@ -500,7 +498,7 @@ export default {
                                     </template>
                                     <button
                                         class="rmv_btn"
-                                        title="Diesen Graphen entfernen."
+                                        :title="$t('additional:modules.tools.cosi.chartGenerator.removeChart')"
                                         @click="removeGraph(index)"
                                     >
                                         <span class="glyphicon glyphicon-remove" />
@@ -526,7 +524,7 @@ export default {
                                                 <div class="graph_functions">
                                                     <button
                                                         class="dl right"
-                                                        title="Diesen Graphen herunterladen"
+                                                        :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
                                                         @click="downloadGraph($event)"
                                                     >
                                                         PNG
@@ -542,7 +540,7 @@ export default {
                                     <div class="graph_functions">
                                         <button
                                             class="dl right"
-                                            title="Diesen Graphen herunterladen"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
                                             @click="downloadGraph($event)"
                                         >
                                             PNG
@@ -559,7 +557,7 @@ export default {
                                             :key="b.cgid"
                                             class="select_button"
                                             :class="{highlight: activeGraph === i}"
-                                            title="Graph mit dem jeweiligen Index auswählen"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.selectChartIndex')"
                                             @click="selectGraph(i)"
                                         >
                                             <span>{{ i + 1 }}</span>
@@ -568,27 +566,28 @@ export default {
                                     <div class="btn_grp main">
                                         <button
                                             class="nxt"
-                                            title="Vorherigen Graphen auswählen"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.prevChart')"
                                             @click="graphPrevNext(-1)"
                                         >
                                             <span class="glyphicon glyphicon-chevron-left" />
                                         </button>
                                         <button
                                             class="nxt"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.nextChart')"
                                             @click="graphPrevNext(+1)"
                                         >
                                             <span class="glyphicon glyphicon-chevron-right" />
                                         </button>
                                         <button
                                             class="dl"
-                                            title="Alle Graphen als PNG herunterladen"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.downloadAll')"
                                             @click="downloadAll()"
                                         >
                                             <span class="glyphicon glyphicon-download-alt" />
                                         </button>
                                         <button
                                             class="rm"
-                                            title="Alle Graphen im Werkzeug löschen"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.deleteAll')"
                                             @click="removeAll()"
                                         >
                                             <span class="glyphicon glyphicon-remove" />

@@ -51,7 +51,7 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -80,12 +80,23 @@ export default {
                 this.initializeDistrictNames();
                 this.setLayerOptions();
             }
+        },
+
+        /**
+         * Listens to the layers change on the map to refresh the list
+         * @listens #change:FeaturesList/activeVectorLayerList
+         * @returns {void}
+         */
+        async activeVectorLayerList () {
+            await this.$nextTick(() => {
+                this.setFacilityNames();
+            });
         }
     },
 
     created () {
         this.$on("close", this.close);
-        Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
+        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -128,7 +139,8 @@ export default {
 
             return features.length > 0
                 ? features
-                : this.layerById(id).olLayer.getSource().getFeatures();
+                : Radio.request("ModelList", "getModelByAttributes", {id})?.get("features")
+                || [];
         },
 
         setLayerOptions: function () {
@@ -138,6 +150,18 @@ export default {
 
             this.allLayerOptions = [];
 
+            // facility data first
+            for (const facilityLayer of this.facilityNames) {
+                this.allLayerOptions.push({
+                    name: facilityLayer.name,
+                    id: facilityLayer.id,
+                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    valueType: "absolute",
+                    facilityLayerName: facilityLayer.name
+                });
+            }
+
+            // statistical data second
             for (const m of this.mapping) {
                 const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
@@ -151,15 +175,6 @@ export default {
                 }
             }
 
-            for (const facilityLayer of this.facilityNames) {
-                this.allLayerOptions.push({
-                    name: facilityLayer.name,
-                    id: facilityLayer.id,
-                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                    valueType: "absolute",
-                    facilityLayerName: facilityLayer.name
-                });
-            }
             this.updateAvailableLayerOptions();
         },
 
@@ -334,7 +349,7 @@ export default {
                     const v = parseFloat(f[field]);
 
                     if (isNaN(v)) {
-                        invalidFeatures.push(f[this.keyOfAttrName]);
+                        invalidFeatures.push(f[this.keyOfAttrNameStats]);
                         return res;
                     }
                     return [...res, v];
@@ -559,12 +574,10 @@ export default {
             this.mapLayer.getSource().addFeatures(cloneCollection);
         },
 
-        setFacilityNames (models) {
-            this.facilityNames = models.filter(
-                (model) => model.get("isFacility") === true
-            ).map((model) => ({
-                name: model.get("name").trim(),
-                id: model.get("id")
+        setFacilityNames () {
+            this.facilityNames = this.activeVectorLayerList.map((layer) => ({
+                name: layer.get("name").trim(),
+                id: layer.get("id")
             }));
         },
 
@@ -631,6 +644,7 @@ export default {
                             id="layerfilter-selector-container"
                             v-model="selectedLayer"
                             :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
+                            :title="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabeltooltip')"
                             item-text="name"
                             item-value="id"
                             :items="layerOptions"
@@ -670,8 +684,8 @@ export default {
                             {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
                         </button>
                     </div>
+                    <v-divider v-if="layerFilterModels.length > 0" />
                     <br>
-                    <div id="layerfilter-container" />
                     <div id="results">
                         <template
                             v-for="filter in layerFilterModels"

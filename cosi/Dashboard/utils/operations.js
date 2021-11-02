@@ -74,6 +74,10 @@ export function getXYPairs (datasetA, datasetB, districts, timestamps, timestamp
                 y: parseFloat(datasetB[district][timestampPrefix + timestamp])
             };
 
+            if (isNaN(datum.x) || isNaN(datum.y)) {
+                continue;
+            }
+
             data.push(datum);
         }
     }
@@ -88,7 +92,7 @@ export function getXYPairs (datasetA, datasetB, districts, timestamps, timestamp
  */
 export function calculateCorrelation () {
     const timestamps = arrayIntersect(this.fields.A.years, this.fields.B.years),
-        data = getXYPairs(this.fields.A, this.fields.B, this.selectedColumnNames, timestamps, this.timestampPrefix),
+        data = getXYPairs(this.fields.A, this.fields.B, this.selectedColumnNames.filter(colName => colName !== "average" && colName !== "total"), timestamps, this.timestampPrefix),
         xArr = data.map(d => d.x),
         yArr = data.map(d => d.y),
         fReg = mathutils.linearRegression(xArr, yArr),
@@ -97,8 +101,6 @@ export function calculateCorrelation () {
         stdDev = mathutils.mean(stdDevArr),
         covar = mathutils.covar(xArr, yArr),
         corr = mathutils.pearsons(xArr, yArr);
-
-    // console.log(fReg, data, stdDev, covar, corr);
 
     return {
         data,
