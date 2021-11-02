@@ -3,10 +3,7 @@ import {
 } from "chai";
 import requestIsochrones from "../../../service/requestIsochrones";
 import axios from "axios";
-// import fetch from 'node-fetch';
 
-
-// node-fetch not working: https://notes.alex-miller.co/20210520161027-mocking_fetch_in_a_jsdom_node_environment/
 describe("requestIsochrones", () => {
     it("point request within hamburg", async () => {
         const res = await requestIsochrones(
@@ -35,7 +32,11 @@ describe("requestIsochrones", () => {
         try {
             await requestIsochrones(
                 "driving-car", [
-                    [9.744273174491198, 53.86052854494209]
+                    [9.744273174491198, 53.86052854494209],
+                    [10.044398219793916, 53.58614195023027],
+                    [10.00047212535128, 53.59431305465069],
+                    [10.009020188268527, 53.54967920652423],
+                    [10.042859099930093, 53.57695084241739]
                 ],
                 "time", [600 * 0.33, 600 * 0.67, 600]);
         }

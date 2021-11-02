@@ -10,7 +10,8 @@ export const keyMap = {
     layerName: "Layer",
     actions: "Aktionen",
     enabled: "Ein-/Ausschalten",
-    isSimulation: "Simulation"
+    isSimulation: "Simulatiert?",
+    isModified: "Modifiziert?"
 };
 /**
  * Composes a filename from a given name and the current date

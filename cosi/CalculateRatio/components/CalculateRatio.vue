@@ -175,7 +175,7 @@ export default {
             }
         },
         facilitiesMapping () {
-            // this.updateFacilities();
+            this.updateFacilities();
         },
         filters () {
             this.prepareCoverage();
@@ -279,7 +279,7 @@ export default {
         switchVal (letter) {
             if (this[letter + "Switch"]) {
                 if (this.featuresList.length === 0) {
-                    this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noFeaturesWarning')");
+                    this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.noFeaturesWarning"));
                 }
                 else {
                     this[letter + "Switch"] = !this[letter + "Switch"];
@@ -288,7 +288,7 @@ export default {
                 }
             }
             else if (this.facilityList.length === 0) {
-                this.showAlert("$t('additional:modules.tools.cosi.calculateRatio.noFacilitiesWarning')");
+                this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.noFacilitiesWarning"));
             }
             else {
                 this[letter + "Switch"] = !this[letter + "Switch"];
@@ -714,7 +714,7 @@ export default {
                 <div class="addon_wrapper">
                     <button
                         class="info_button"
-                        title="Werkzeuginformationen"
+                        :title="$t('additional:modules.tools.cosi.calculateRatio.infoTooltip')"
                         @click="showInfo()"
                     >
                         <span class="glyphicon glyphicon-question-sign" />
@@ -737,7 +737,7 @@ export default {
                     >
                         <div
                             class="button switch"
-                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                            :title="$t('additional:modules.tools.cosi.calculateRatio.switchFieldType')"
                         >
                             <button
                                 @click="switchVal('A')"
@@ -809,7 +809,7 @@ export default {
                                     >
                                         <div
                                             class="btn"
-                                            title="Fügen Sie einen Verrechnungsfaktor hinzu"
+                                            :title="$t('additional:modules.tools.cosi.calculateRatio.addFactorTooltip')"
                                             :class="{ reduced: fActive_A }"
                                         >
                                             <button @click="fActive_A = !fActive_A">
@@ -817,7 +817,7 @@ export default {
                                                     v-if="fActive_A"
                                                     class="glyphicon glyphicon-remove"
                                                 />
-                                                <span v-else>Faktor (F) hinzufügen</span>
+                                                <span v-else>{{ $t('additional:modules.tools.cosi.calculateRatio.addFactor') }}</span>
                                             </button>
                                         </div>
                                         <div
@@ -831,7 +831,7 @@ export default {
                                         </div>
                                     </div>
                                     <Multiselect
-                                        v-if="featuresList.length"
+                                        v-if="facilityList.length"
                                         v-model="paramFieldA"
                                         track-by="name"
                                         label="name"
@@ -854,12 +854,12 @@ export default {
                             <template v-else>
                                 <div class="sub_wrapper">
                                     <div class="custom_wrapper">
-                                        <p>berechnen pro </p>
+                                        <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
                                         <input
                                             v-model="perCalc_A"
                                             type="number"
                                         >
-                                        <p><strong> der Datengrundlage</strong></p>
+                                        <p><strong> {{ $t("additional:modules.tools.cosi.calculateRatio.ofData") }}</strong></p>
                                     </div>
                                 </div>
                             </template>
@@ -872,7 +872,7 @@ export default {
                     >
                         <div
                             class="button switch"
-                            title="Statische Daten/ Einrichtungsdaten wechseln"
+                            :title="$t('additional:modules.tools.cosi.calculateRatio.switchFieldType')"
                         >
                             <button
                                 @click="switchVal('B')"
@@ -945,14 +945,14 @@ export default {
                                             :class="{ reduced: fActive_B }"
                                         >
                                             <button
-                                                title="Fügen Sie einen Verrechnungsfaktor hinzu"
+                                                :title="$t('additional:modules.tools.cosi.calculateRatio.addFactorTooltip')"
                                                 @click="fActive_B = !fActive_B"
                                             >
                                                 <span
                                                     v-if="fActive_B"
                                                     class="glyphicon glyphicon-remove"
                                                 />
-                                                <span v-else>Faktor (F) hinzufügen</span>
+                                                <span v-else>{{ $t('additional:modules.tools.cosi.calculateRatio.addFactor') }}</span>
                                             </button>
                                         </div>
                                         <div
@@ -966,7 +966,7 @@ export default {
                                         </div>
                                     </div>
                                     <Multiselect
-                                        v-if="featuresList.length"
+                                        v-if="facilityList.length"
                                         v-model="paramFieldB"
                                         track-by="name"
                                         label="name"
@@ -989,12 +989,12 @@ export default {
                             <template v-else>
                                 <div class="sub_wrapper">
                                     <div class="custom_wrapper">
-                                        <p>berechnen pro </p>
+                                        <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
                                         <input
                                             v-model="perCalc_B"
                                             type="number"
                                         >
-                                        <p><strong> der Datengrundlage</strong></p>
+                                        <p><strong> {{ $t("additional:modules.tools.cosi.calculateRatio.ofData") }}</strong></p>
                                     </div>
                                 </div>
                             </template>
@@ -1007,26 +1007,26 @@ export default {
                         <div class="btn_grp finalization">
                             <button
                                 class="switch"
-                                title="Datenfelder A und B tauschen"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.swapFields')"
                                 @click="switchSelection"
                             >
                                 <span class="glyphicon glyphicon-retweet" />
                             </button>
                             <button
                                 class="cancel"
-                                title="Alle Eingaben zurücksetzen"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.resetTooltip')"
                                 @click="clearAllValues"
                             >
                                 <span class="glyphicon glyphicon-remove-circle" />
-                                Zurücksetzen
+                                {{ $t('additional:modules.tools.cosi.calculateRatio.reset') }}
                             </button>
                             <button
                                 class="confirm"
-                                title="Datensätze berechnen"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.calculateTooltip')"
                                 @click="prepareCoverage"
                             >
                                 <span class="glyphicon glyphicon-ok-circle" />
-                                Berechnen
+                                {{ $t('additional:modules.tools.cosi.calculateRatio.calculate') }}
                             </button>
                         </div>
                     </div>
@@ -1037,29 +1037,29 @@ export default {
                     >
                         <div class="head_wrapper">
                             <JsonExcel
-                                title="Ergebnisse als XLSX herunterladen"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip')"
                                 class="btn btn-default xl_btn"
                                 :data="resultData.json_data"
                                 :fields="resultData.json_fields"
                                 worksheet="Versorgungsanalyse"
-                                :name="selectedYear + '_versorgungsanalyse.xls'"
+                                :name="selectedYear + '_versorgungsanalyse.xlsx'"
                             >
                                 <span class="glyphicon glyphicon-download" />
-                                Download XSLX
+                                {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
                             </JsonExcel>
 
                             <button
                                 class="btn btn-default xl_btn"
-                                title="Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')"
                                 @click="exportAsGeoJson()"
                             >
                                 <span class="glyphicon glyphicon-floppy-disk" />
-                                Download GeoJSON
+                                {{ $t('additional:modules.tools.cosi.calculateRatio.downloadGeoJson') }}
                             </button>
 
                             <button
                                 class="cg"
-                                title="Graph aus Datensatz erzeugen"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.visualizeChart')"
                                 @click="loadToChartGenerator()"
                             >
                                 <span
@@ -1086,7 +1086,7 @@ export default {
                             <button
                                 class="ccm"
                                 :class="{ highlight: !dataToColorCodeMap}"
-                                title="Ausgewählten Datensatz auf Karte visualisieren"
+                                :title="$t('additional:modules.tools.cosi.calculateRatio.visualizeMap')"
                                 @click="loadToColorCodeMap()"
                             >
                                 <span
@@ -1124,8 +1124,8 @@ export default {
                         </div>
                         <DataTable
                             :data-set="results"
-                            :type-a="Array.isArray(selectedFieldA.id) ? 'Aufsummierte Auswahl' : selectedFieldA.id"
-                            :type-b="Array.isArray(selectedFieldB.id) ? 'Aufsummierte Auswahl' : selectedFieldB.id"
+                            :type-a="Array.isArray(selectedFieldA.id) ? $t('additional:modules.tools.cosi.calculateRatio.addedSelection') : selectedFieldA.id"
+                            :type-b="Array.isArray(selectedFieldB.id) ? $t('additional:modules.tools.cosi.calculateRatio.addedSelection') : selectedFieldB.id"
                             :f-active="fActive_A || fActive_B ? true : false"
                         />
                     </div>

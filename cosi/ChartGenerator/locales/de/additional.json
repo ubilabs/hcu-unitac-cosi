@@ -4,7 +4,16 @@
             "cosi": {
                 "chartGenerator": {
                     "title": "Graphenvisualisierung",
-                    "description": "Erzeugt dynamisch unterschiedliche Graphen zum Zwecke der Visualisierung von Daten."
+                    "description": "Erzeugt dynamisch unterschiedliche Graphen zum Zwecke der Visualisierung von Daten.",
+                    "infoTooltip": "Werkzeuginformationen",
+                    "switchChartType": "Anderen Graphen für diesen Datensatz auswählen",
+                    "removeChart": "Diesen Graphen entfernen.",
+                    "deleteAll": "Alle Graphen im Werkzeug löschen",
+                    "downloadChart": "Diesen Graphen herunterladen",
+                    "downloadAll": "Alle Graphen als PNG herunterladen",
+                    "selectChartIndex": "Graph mit dem jeweiligen Index auswählen",
+                    "nextChart": "Nächsten Graphen auswählen",
+                    "prevChart": "Vorherigen Graphen auswählen"
                 }
             }
         }

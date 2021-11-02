@@ -1,19 +1,17 @@
-import Vue from "vue";
-
 const actions = {
     async channelGraphData ({commit}, dataSet) {
         if (Array.isArray(dataSet)) {
             dataSet.forEach(x => {
-                Vue.nextTick(function () {
+                setTimeout(function () {
                     commit("setNewDataSet", x);
-                });
+                }, 500);
             });
         }
         else {
-            await Vue.nextTick();
-            commit("setNewDataSet", dataSet);
+            setTimeout(function () {
+                commit("setNewDataSet", dataSet);
+            }, 500);
         }
-
     }
 };
 
