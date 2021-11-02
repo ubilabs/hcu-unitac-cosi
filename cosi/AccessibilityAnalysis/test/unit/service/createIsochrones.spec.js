@@ -43,7 +43,8 @@ before(() => {
     setWorkerFactory(() => new Worker());
 });
 
-describe.only("createIsochrones", () => {
+describe("createIsochrones", () => {
+
     it("createIsochrones point", async () => {
         const commitStub = sinon.stub(),
             ret = await service.store.actions.getIsochrones({getters: {}, commit: commitStub},
@@ -58,6 +59,31 @@ describe.only("createIsochrones", () => {
         expect(ret.length).to.equal(3);
         expect(service.store.state.progress).to.equal(0);
         expectFeaturesEqual(ret, new GeoJSON().readFeatures(features));
+    });
+
+    it("should cancel first call", async () => {
+        // eslint-disable-next-line require-jsdoc
+        async function act () {
+            return service.store.actions.getIsochrones({getters: {}, commit: sinon.stub()},
+                {
+                    coordinates: [[10.155828082155567, 53.60323024735499]],
+                    transportType: "driving-car",
+                    scaleUnit: "time",
+                    distance: 10
+                });
+        }
+
+        let error;
+
+        act().catch(err => {
+            error = err;
+        });
+        await act();
+
+        expect(error).to.be.eql({
+            "request_canceled": true,
+            "type": "createIsochrones"
+        });
     });
 
     it("createIsochrones several points", async () => {

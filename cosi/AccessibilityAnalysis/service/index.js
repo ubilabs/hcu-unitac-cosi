@@ -74,6 +74,10 @@ async function createIsochrones (params, progress) {
             if (data.type !== "createIsochrones") {
                 return;
             }
+            if (data.request_canceled) {
+                worker.removeEventListener("message", handler);
+                reject(data);
+            }
             if (data.error) {
                 worker.removeEventListener("message", handler);
                 reject(data.error);

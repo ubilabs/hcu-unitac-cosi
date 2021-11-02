@@ -35,6 +35,10 @@ export default {
         }
         catch (err) {
 
+            if (err.request_canceled) {
+                return;
+            }
+
             console.error(err);
 
             try {

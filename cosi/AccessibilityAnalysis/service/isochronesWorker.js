@@ -1,6 +1,7 @@
 import {writeFeatures, registerProjections} from "../components/util.js";
 import {createIsochrones, getFilterPoly, setFilterPoly} from "./createIsochrones";
 import "regenerator-runtime/runtime";
+import axios from "axios";
 
 
 registerProjections();
@@ -30,11 +31,14 @@ async function onmessage (self, event) {
         }
     }
     catch (error) {
-        self.postMessage({type, error});
+        if (axios.isCancel(error)) {
+            self.postMessage({type, request_canceled: true});
+        }
+        else {
+            self.postMessage({type, error});
+        }
     }
 }
-
-self.onmessage = (e) => onmessage(self, e);
 
 self.addEventListener("message", function (e) {
     onmessage(self, e);
