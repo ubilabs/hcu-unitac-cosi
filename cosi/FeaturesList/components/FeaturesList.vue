@@ -21,6 +21,7 @@ import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
 import {Style} from "ol/style.js";
+import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
     name: "FeaturesList",
@@ -276,6 +277,7 @@ export default {
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
+        isFeatureActive,
         getNumericalColumns () {
             const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
                 return [
@@ -291,7 +293,7 @@ export default {
             if (numCols.length > 0) {
                 numCols[numCols.length - 1].divider = true;
             }
- 
+
             if (this.selectedFeatureLayers) {
                 numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
             }
@@ -317,16 +319,7 @@ export default {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
-                        visibleFeatures = features.filter(feature => {
-                            console.log(typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null));
-                            if (typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null)) {
-                                return true;
-                            }
-                            if (typeof vectorLayer.getStyleFunction() === "function") {
-                                return true;
-                            }
-                            return false;
-                        }),
+                        visibleFeatures = features.filter(this.isFeatureActive),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 

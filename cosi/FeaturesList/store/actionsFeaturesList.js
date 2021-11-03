@@ -76,6 +76,7 @@ const actions = {
             }
         }
 
+        console.log(_mapping);
         commit("setMapping", _mapping);
     }
 };
