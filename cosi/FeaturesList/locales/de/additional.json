@@ -20,8 +20,12 @@
                     "exportTable": "Tabelle exportieren",
                     "exportDetails": "Detailansicht exportieren",
                     "exportFilename": "CoSI_Einrichtungsübersicht",
+                    "weighting": "Gewichtung",
+                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung (SB)",
+                    "abort": "Abbrechen",
                     "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
-                    "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert"
+                    "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
+                    "scoresDialogTitle": "Zusammensetung"
                 }
             }
         }

@@ -4,7 +4,8 @@
             "cosi": {
                 "queryDistricts": {
                     "title": "Vergleichbare Gebiete ermitteln",
-                    "layerDropdownLabel": "Auswahl statistische Daten",
+                    "layerDropdownLabel": "Auswahl Filter",
+                    "layerDropdownLabelTooltip": "Wählen Sie ein Thema nach dem Sie filtern möchten. Sie können statistische Daten und Einrichtungsdaten der aktiven Fachdaten auswählen.",
                     "districtDropdownLabel": "Referenzgebiet",
                     "showInDashboardLable": "Im Dashboard anzeigen",
                     "resultAsSelection": "Ergebnis als Gebietauswahl setzen",

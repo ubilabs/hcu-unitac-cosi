@@ -121,7 +121,9 @@ export default {
 </script>
 
 <template>
-    <span
+    <div
+        class="feature-icon"
+        :title="item.isSimulation ? $t('additional:modules.tools.cosi.featuresList.warningIsSimulated') : ''"
         @click="zoomToFeature"
     >
         <InlineSvg
@@ -155,10 +157,20 @@ export default {
                 borderColor: getBorderColor(style)
             }"
         />
-    </span>
+        <span
+            v-if="item.isSimulation"
+            class="simulation-overlay"
+        >
+            *
+        </span>
+    </div>
 </template>
 
 <style lang="less" scoped>
+    .feature-icon {
+        margin-top: 8px;
+        position: relative;
+    }
     .marker {
         width: 30px;
         height: 30px;
@@ -168,5 +180,14 @@ export default {
     span.marker {
         border-style: solid;
         border-radius: 50%;
+    }
+    span.simulation-overlay {
+        position: absolute;
+        font-family: 'Material Design Icons';
+        right: -8px;
+        top: -8px;
+        color: #FC176B;
+        font-size: 32px;
+        line-height: 24px;
     }
 </style>

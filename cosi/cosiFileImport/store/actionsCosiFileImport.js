@@ -3,6 +3,7 @@ import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
 import {color as d3Color, hsl} from "d3-color";
+import {interpolateRainbow} from "d3";
 import {scaleLinear} from "d3-scale";
 
 const supportedFormats = {
@@ -264,14 +265,16 @@ function setLayerAttributes (model, attrs) {
  * @returns {void}
  */
 function adjustLayerStyling (newLayer) {
+
+    let pointColor = "",
+        pointOpac = "";
+
+    pointColor = d3Color(newLayer.style.svg);
+    pointOpac = d3Color(newLayer.style.svg);
+
+    pointOpac.opacity = 0.5;
+
     if (!newLayer.autoStyle) {
-        let pointColor = "",
-            pointOpac = "";
-
-        pointColor = d3Color(newLayer.style.svg);
-        pointOpac = d3Color(newLayer.style.svg);
-
-        pointOpac.opacity = 0.5;
 
         const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
             layer = layerNode.attributes.layer,
@@ -355,15 +358,36 @@ function adjustLayerStyling (newLayer) {
             }
 
             layer.setStyle(function (feature) {
+                if (feature.getGeometry().getType() === "Point") {
+                    const chunkNode = checkChunkNode(feature, newLayer, chunk),
+                        autoStyle = new Style({
+                            image: new Icon({
+                                src: path,
+                                color: d3Color(colorScale(chunkNode)).toString()
+                            })
+                        });
+
+                    return autoStyle;
+                }
+
                 const chunkNode = checkChunkNode(feature, newLayer, chunk),
-                    autoStyle = new Style({
-                        image: new Icon({
-                            src: path,
-                            color: d3Color(colorScale(chunkNode)).toString()
-                        })
-                    });
+                    colorOpac = hsl(colorScale(chunkNode));
+
+                colorOpac.opacity = 0.6;
+
+                // eslint-disable-next-line one-var
+                const autoStyle = new Style({
+                    fill: new Fill({
+                        color: colorOpac.toString()
+                    }),
+                    stroke: new Stroke({
+                        width: 3,
+                        color: d3Color(colorScale(chunkNode)).toString()
+                    })
+                });
 
                 return autoStyle;
+
             });
 
             layer.setZIndex(100);
@@ -373,13 +397,35 @@ function adjustLayerStyling (newLayer) {
                 colorScale = generateColorScale(newLayer.style.svg, sortingArray.length);
 
             layer.setStyle(feature => {
-                const position = sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
-                    autoStyle = new Style({
-                        image: new Icon({
-                            src: path,
-                            color: d3Color(colorScale(position)).toString()
-                        })
-                    });
+                if (feature.getGeometry().getType() === "Point") {
+                    const position = newLayer.rainbow ? (sortingArray.indexOf(feature.get(newLayer.autoStyleValue)) + 1) / sortingArray.length : sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
+                        autoStyle = new Style({
+                            image: new Icon({
+                                src: path,
+                                color: newLayer.rainbow ? interpolateRainbow(position).toString() : d3Color(colorScale(position)).toString()
+                            })
+                        });
+
+                    return autoStyle;
+                }
+
+                const position = newLayer.rainbow ? (sortingArray.indexOf(feature.get(newLayer.autoStyleValue)) + 1) / sortingArray.length : sortingArray.indexOf(feature.get(newLayer.autoStyleValue)),
+                    rainbowColor = hsl(interpolateRainbow(position)),
+                    colorOpac = hsl(colorScale(position));
+
+                rainbowColor.opacity = 0.6;
+                colorOpac.opacity = 0.6;
+
+                // eslint-disable-next-line one-var
+                const autoStyle = new Style({
+                    fill: new Fill({
+                        color: newLayer.rainbow ? rainbowColor : colorOpac
+                    }),
+                    stroke: new Stroke({
+                        width: 3,
+                        color: newLayer.rainbow ? interpolateRainbow(position).toString() : d3Color(colorScale(position)).toString()
+                    })
+                });
 
                 return autoStyle;
             });

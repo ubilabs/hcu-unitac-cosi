@@ -3,7 +3,7 @@
         "tools": {
             "cosi": {
                 "dashboard": {
-                    "title": "Dashboard",
+                    "title": "Statistische Datenübersicht",
                     "avgCol": "Durchschnitt",
                     "totalCol": "Gesamt",
                     "groupCol": "Gruppe",

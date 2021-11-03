@@ -13,6 +13,7 @@ import TypesMapping from "../../assets/mapping.types.json";
 import Feature from "ol/Feature";
 import {featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
+import getFieldTypeForValue from "../utils/getFieldTypeForValue";
 import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
@@ -78,11 +79,12 @@ export default {
 
             describeFeatureTypeByLayerId(layerMap.layerId)
                 .then(desc => {
-                    const required = [],
+                    const _desc = desc || this.getDescriptionBySource(layerMap.layerId),
+                        required = [],
                         optional = [];
                     let geom;
 
-                    for (const field of desc) {
+                    for (const field of _desc) {
                         if (compareLayerMapping(field, layerMap)) {
                             required.push(field);
                         }
@@ -94,8 +96,8 @@ export default {
                         }
                     }
                     this.featureTypeDescSorted = {required, optional, geom};
-                    this.featureTypeDesc = desc;
-                    this.asyncGetValuesForField(desc);
+                    this.featureTypeDesc = _desc;
+                    this.asyncGetValuesForField(_desc);
                 });
         },
         /**
@@ -270,6 +272,29 @@ export default {
 
         geomPickerUnlisten () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
+        },
+
+        mapDataTypes (type) {
+            return this.$t(`additional:modules.tools.cosi.dataTypes.${type}`);
+        },
+
+        getDescriptionBySource (layerId) {
+            const layer = this.layerById(layerId).olLayer,
+                feature = layer.getSource().getFeatures()[0] || Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.get("features")[0];
+            let props, desc;
+
+            if (feature) {
+                props = feature.getProperties();
+                desc = Object.entries(props).map(prop => ({
+                    minOccurs: 0,
+                    name: prop[0],
+                    type: getFieldTypeForValue(prop[1])
+                }));
+
+                return desc;
+            }
+
+            return [];
         }
     }
 };
@@ -290,10 +315,15 @@ export default {
             #toolBody
         >
             <v-app>
-                <div class="mb-5 overline">
-                    {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
-                </div>
                 <ScenarioManager />
+                <v-divider />
+                <div class="mb-5 overline">
+                    {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                </div>
+                <v-subheader>
+                    Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
+                </v-subheader>
+                <v-row dense />
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"
@@ -404,7 +434,7 @@ export default {
                                                     <v-switch
                                                         v-if="typesMapping[field.type] === 'boolean'"
                                                         v-model="featureProperties[field.name]"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         dense
                                                         :hide-details="false"
                                                     />
@@ -418,7 +448,7 @@ export default {
                                                         v-model="featureProperties[field.name]"
                                                         :items="valuesForFields[field.name]"
                                                         :name="field.name"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         :rules="validateProp(field, workingLayer)"
                                                         dense
                                                     />
@@ -434,7 +464,7 @@ export default {
                                             <v-row
                                                 v-for="field in featureTypeDescSorted.optional"
                                                 :key="field.name"
-                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.essentialField')"
+                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.optionalField')"
                                                 dense
                                             >
                                                 <v-col cols="3">
@@ -446,7 +476,7 @@ export default {
                                                     <v-switch
                                                         v-if="typesMapping[field.type] === 'boolean'"
                                                         v-model="featureProperties[field.name]"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         dense
                                                     />
                                                     <!-- Add Date Picker for dates -->
@@ -459,7 +489,7 @@ export default {
                                                         v-model="featureProperties[field.name]"
                                                         :items="valuesForFields[field.name]"
                                                         :name="field.name"
-                                                        :label="field.type"
+                                                        :label="mapDataTypes(field.type)"
                                                         :rules="validateProp(field, workingLayer)"
                                                         dense
                                                     />

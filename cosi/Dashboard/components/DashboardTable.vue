@@ -82,6 +82,7 @@ export default {
             currentTimeStamp: null,
             search: "",
             statsFeatureFilter: [],
+            selectedRows: [],
             fields: {
                 A: null,
                 B: null
@@ -113,11 +114,13 @@ export default {
         statsMapping () {
             return this.groupMapping(this.mapping);
         },
+        selectedColumns () {
+            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected);
+
+            return selectedCols.length > 0 ? selectedCols : [...this.districtColumns, ...this.aggregateColumns];
+        },
         selectedColumnNames () {
-            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected),
-                districtNames = selectedCols.length > 0
-                    ? selectedCols.map(col => col.text)
-                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.text);
+            const districtNames = this.selectedColumns.map(col => col.text);
 
             return districtNames;
         }
@@ -354,6 +357,7 @@ export default {
          * @returns {void}
          */
         exportTable (exportTimeline = false) {
+            console.log(this.items, this.selectedRows, this.selectedColumns, this.statsFeatureFilter);
             const data = exportTimeline
                     ? prepareTableExportWithTimeline(this.items, this.timestamps, this.timestampPrefix)
                     : prepareTableExport(this.items, this.selectedYear, this.timestampPrefix),
@@ -428,6 +432,7 @@ export default {
         </v-row>
         <v-row>
             <v-data-table
+                v-model="selectedRows"
                 :headers="columns"
                 :items="items"
                 group-by="group"

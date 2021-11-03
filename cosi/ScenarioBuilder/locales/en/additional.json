@@ -18,6 +18,7 @@
                     "essentialFieldHeader": "Erforderliche Spalten",
                     "optionalFieldHeader": "Optionale Spalten",
                     "geomFieldHeader": "Geometrie / Ort",
+                    "optionalField": "Diese Spalte hat keinen Einfluss auf die Darstellung oder andere Analysefunktionen",
                     "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
                     "defineFeature": "Neue Einrichtung definieren",
                     "undo": "Schritt zurück",
@@ -45,14 +46,26 @@
                     "exportSimulatedFeatures": "Simulierte Einrichtungen exportieren (GeoJSON)",
                     "restoreAllFeatures": "Alle wiederherstellen",
                     "helpRestoreAllFeatures": "Alle erstellten Features wiederherstellen",
-                    "pruneAllFeatures": "Alle löschen",
-                    "helpPruneAllFeatures": "Alle erstellten Features löschen",
+                    "pruneAllFeatures": "Clear scenario",
+                    "helpPruneAllFeatures": "Delete all created features in the scenario and reset manipulated data.",
                     "pruneNeighborhoods": "Wohnquartiere löschen",
                     "helpPruneNeighborhoods": "Alle Wohnquartiere dieses Szenarios löschen",
                     "pruneSimulatedFeatures": "Einrichtungen löschen",
                     "helpPruneSimulatedFeatures": "Alle simulierten Einrichtungen dieses Szenarios löschen",
                     "pruneAllFeaturesWarning": "Wollen Sie wirklich alle erstellten Einrichtungen in diesem Szenario löschen?",
                     "noActiveScenario": "Bitte wählen Sie ein Szenario oder legen Sie ein neues an."
+                },
+                "dataTypes": {
+                    "decimal": "number",
+                    "long": "number",
+                    "double": "number",
+                    "float": "number",
+                    "integer": "number",
+                    "string": "text",
+                    "date": "date",
+                    "boolean": "true/false",
+                    "geometry": "geometry",
+                    "object": "-"
                 }
             }
         }

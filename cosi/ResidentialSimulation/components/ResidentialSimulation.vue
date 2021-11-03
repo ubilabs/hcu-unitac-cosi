@@ -424,11 +424,14 @@ export default {
                     id="scenario-builder"
                 >
                     <div>
-                        <div class="mb-5 overline">
-                            {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
-                        </div>
                         <ScenarioManager />
                         <v-divider />
+                        <div class="mb-5 overline">
+                            {{ $t('additional:modules.tools.cosi.residentialSimulation.title') }}
+                        </div>
+                        <v-subheader>
+                            Neue fiktive Wohnquartiere mitsamt Bewohnerstruktur anlegen und die statistischen Daten im Gebiet entsprechend modifizieren.
+                        </v-subheader>
                         <ReferenceDistrictPicker
                             :groups-list="groupsList"
                             :timeline-prefix="timelinePrefix"

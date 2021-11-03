@@ -34,8 +34,16 @@ export default {
             }
         }
         catch (err) {
+
+            if (err.request_canceled) {
+                return;
+            }
+
+            console.error(err);
+
             try {
-                const code = err.error.response.data.error.code;
+                const code = (err.error || err).response.data.error.code;
+
 
                 if (code === 3002 || code === 3099) {
                     this.showErrorInvalidInput();
