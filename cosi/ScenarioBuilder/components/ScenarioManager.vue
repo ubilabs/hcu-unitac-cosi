@@ -132,21 +132,6 @@ export default {
                 <v-btn
                     tile
                     depressed
-                    :disabled="!_activeScenario"
-                    :title="$t('additional:modules.tools.cosi.scenarioManager.deleteScenario')"
-                    class="flex-item"
-                    @click="deleteScenario"
-                >
-                    <span v-if="useIcons">
-                        <v-icon>mdi-delete-forever</v-icon>
-                    </span>
-                    <span v-else>
-                        {{ $t('additional:modules.tools.cosi.scenarioManager.deleteScenario') }}
-                    </span>
-                </v-btn>
-                <v-btn
-                    tile
-                    depressed
                     :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                     class="flex-item"
                     @click="createNewScenarioModalOpen = !createNewScenarioModalOpen"
@@ -237,6 +222,21 @@ export default {
                         </v-list-item>
                     </v-list>
                 </v-menu>
+                <v-btn
+                    tile
+                    depressed
+                    :disabled="!_activeScenario"
+                    :title="$t('additional:modules.tools.cosi.scenarioManager.deleteScenario')"
+                    class="flex-item"
+                    @click="deleteScenario"
+                >
+                    <span v-if="useIcons">
+                        <v-icon>mdi-delete-forever</v-icon>
+                    </span>
+                    <span v-else>
+                        {{ $t('additional:modules.tools.cosi.scenarioManager.deleteScenario') }}
+                    </span>
+                </v-btn>
             </v-col>
         </v-row>
         <v-row dense>

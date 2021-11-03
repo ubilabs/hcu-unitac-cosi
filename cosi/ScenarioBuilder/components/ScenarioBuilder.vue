@@ -308,8 +308,10 @@ export default {
                 >
                     <form class="form-inline features-list-controls">
                         <v-divider />
+                        <div class="mb-5 overline">
+                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }}
+                        </div>
                         <div class="form-group">
-                            <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }} </label>
                             <Multiselect
                                 v-model="workingLayer"
                                 class="layer_selection selection"
@@ -330,7 +332,11 @@ export default {
                                 </template>
                             </Multiselect>
                         </div>
+                        <v-divider />
                         <template v-if="featureTypeDesc.length > 0">
+                            <div class="mb-5 overline">
+                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.toolMenu') }}
+                            </div>
                             <div class="form-group">
                                 <v-row>
                                     <v-col cols="4">
@@ -355,8 +361,10 @@ export default {
                                 </v-row>
                                 <v-divider />
                             </div>
+                            <div class="mb-5 overline">
+                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                            </div>
                             <div class="form-group">
-                                <label> {{ $t('additional:modules.tools.cosi.scenarioBuilder.defineFeature') }} </label>
                                 <v-expansion-panels
                                     v-model="panel"
                                     accordion
@@ -473,7 +481,10 @@ export default {
                                             class="flex-item"
                                             @click="createFeature"
                                         >
-                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
+                                            <v-icon>mdi-home-plus</v-icon>
+                                            <span>
+                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
+                                            </span>
                                         </v-btn>
                                         <v-btn
                                             tile

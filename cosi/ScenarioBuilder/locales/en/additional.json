@@ -4,12 +4,13 @@
             "cosi": {
                 "scenarioBuilder": {
                     "title": "Simulate Facilities",
+                    "toolMenu": "Tools",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
                     "pickReference": "Referenzeinrichtung wählen",
                     "chooseLocation": "Ort wählen",
                     "resetLocation": "Zurücksetzen",
-                    "createFeature": "Neue Einrichtung erstellen",
+                    "createFeature": "Create",
                     "helpCreateFeature": "Neue Einrichtung erstellen",
                     "resetFeature": "Zurücksetzen",
                     "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
