@@ -291,7 +291,7 @@ export default {
             if (numCols.length > 0) {
                 numCols[numCols.length - 1].divider = true;
             }
- 
+
             if (this.selectedFeatureLayers) {
                 numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
             }
@@ -318,7 +318,6 @@ export default {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(feature => {
-                            console.log(typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null));
                             if (typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null)) {
                                 return true;
                             }
@@ -584,6 +583,31 @@ export default {
             #toolBody
         >
             <v-app>
+                <div class="my-2">
+                    <v-btn
+                        id="export-table"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        class="my-2"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
+                        @click="exportTable(false)"
+                    >
+                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
+                    </v-btn>
+                    <v-btn
+                        id="export-detail"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
+                        @click="exportTable(true)"
+                    >
+                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
+                    </v-btn>
+                </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
                         <div class="form-group selection">
@@ -629,7 +653,7 @@ export default {
                                 item-key="key"
                                 show-select
                                 show-expand
-                                :items-per-page="15"
+                                :items-per-page="10"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -717,30 +741,6 @@ export default {
                                     </template>
                                 </template>
                             </v-data-table>
-                        </div>
-                        <div class="form-group">
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-btn
-                                        id="export-table"
-                                        tile
-                                        depressed
-                                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                                        @click="exportTable(false)"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
-                                    </v-btn>
-                                    <v-btn
-                                        id="export-detail"
-                                        tile
-                                        depressed
-                                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                                        @click="exportTable(true)"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
                         </div>
                         <v-row>
                             <v-col>
