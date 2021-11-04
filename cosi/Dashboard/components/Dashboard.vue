@@ -102,8 +102,7 @@ export default {
             "keyOfAttrNameStats",
             "districtLevels",
             "mapping",
-            "loadend",
-            "metadataUrls"
+            "loadend"
         ]),
         ...mapGetters("Map", ["layerById"]),
         ...mapGetters("Language", ["currentLocale"]),
@@ -387,12 +386,6 @@ export default {
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
 
             exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
-        },
-
-        openMetadata () {
-            this.metadataUrls.forEach(url => {
-                window.open(url);
-            });
         },
 
         calculateStats,
