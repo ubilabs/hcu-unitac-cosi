@@ -49,7 +49,7 @@ export default {
             excludedPropsForExport: [
                 "Icon",
                 "Aktionen",
-                "Ein-/Ausschalten",
+                "Ein-/ Ausblenden",
                 "layerId",
                 "feature",
                 "key"
@@ -60,6 +60,10 @@ export default {
                     value: "style",
                     filterable: false,
                     sortable: false
+                },
+                {
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
+                    value: "enabled"
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colFacility"),
@@ -122,8 +126,7 @@ export default {
         columns () {
             return [
                 ...this.featureColumns,
-                ...this.numericalColumns,
-                ...this.actionColumns
+                ...this.numericalColumns
             ];
         },
         selected: {
@@ -447,6 +450,7 @@ export default {
          * @returns {void}
          */
         toggleFeature (featureItem) {
+            featureItem.enabled = !featureItem.enabled;
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
         },
@@ -709,11 +713,14 @@ export default {
                                     </v-icon>
                                 </template>
                                 <template #item.enabled="{ item }">
-                                    <v-switch
-                                        v-model="item.enabled"
-                                        dense
-                                        @change="toggleFeature(item)"
-                                    />
+                                    <div class="text-center">
+                                        <v-icon
+                                            right
+                                            @click="toggleFeature(item)"
+                                        >
+                                            {{ item.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
+                                        </v-icon>
+                                    </div>
                                 </template>
                                 <template
                                     v-for="col in numericalColumns"
@@ -722,7 +729,7 @@ export default {
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
                                         <div
                                             :key="col.value"
-                                            class="align-right"
+                                            class="text-right"
                                             :class="col.hasAction? 'number-action': ''"
                                             @click="showInfo(item)"
                                         >
@@ -819,9 +826,6 @@ export default {
             .search {
                 width: 100%;
             }
-        }
-        .align-right {
-            text-align: right;
         }
         .number-action{
             cursor: pointer;

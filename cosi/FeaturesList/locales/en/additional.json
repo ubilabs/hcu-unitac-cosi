@@ -17,6 +17,7 @@
                     "colToggleEnabled": "Enable/Disable",
                     "colAddress": "Address",
                     "inactiveFeature": "The selected facility ist currently set to 'inactive'.",
+                    "exportTable": "Export overview",
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
                     "abort": "abort",
