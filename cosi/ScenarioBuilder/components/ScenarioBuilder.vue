@@ -320,10 +320,9 @@ export default {
                 <div class="mb-5 overline">
                     {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
                 </div>
-                <v-subheader>
+                <div class="mb-2">
                     Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
-                </v-subheader>
-                <v-row dense />
+                </div>
                 <div
                     v-if="activeLayerMapping.length === 0"
                     class="warning_wrapper section"

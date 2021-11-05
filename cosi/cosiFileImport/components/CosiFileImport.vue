@@ -228,14 +228,7 @@ export default {
             this.newLayer.autoStyle = this.autoStyle;
             this.newLayer.autoStyleValue = this.autoStyleValue;
             this.newLayer.style.svg = this.svgColor;
-            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.mouseHoverField, this.searchField, ...this.numericalValues.map(x => x.id)])].map(set => {
-                const obj = {
-                    name: set,
-                    matchingMode: "AND"
-                };
-
-                return obj;
-            });
+            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.mouseHoverField, this.searchField, ...this.numericalValues.map(x => x.id)])];
 
             // eslint-disable-next-line one-var
             const model = await this.passLayer(this.newLayer);

@@ -20,7 +20,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
-import {Style} from "ol/style.js";
 import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {

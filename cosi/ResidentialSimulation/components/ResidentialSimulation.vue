@@ -429,9 +429,9 @@ export default {
                         <div class="mb-5 overline">
                             {{ $t('additional:modules.tools.cosi.residentialSimulation.title') }}
                         </div>
-                        <v-subheader>
+                        <div class="mb-2">
                             Neue fiktive Wohnquartiere mitsamt Bewohnerstruktur anlegen und die statistischen Daten im Gebiet entsprechend modifizieren.
-                        </v-subheader>
+                        </div>
                         <ReferenceDistrictPicker
                             :groups-list="groupsList"
                             :timeline-prefix="timelinePrefix"
