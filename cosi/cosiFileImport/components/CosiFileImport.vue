@@ -21,7 +21,7 @@ export default {
             dzIsDropHovering: false,
             storePath: this.$store.state.Tools.CosiFileImport,
             // available CRS
-            availableCrs: ["EPSG:4326", "EPSG:25832"],
+            availableCrs: [{crs: "EPSG:4326", name: "WGS84"}],
             // set addNewLayer true to change to upload view
             addNewLayer: true,
             // set imported true while adjustments are made to layer that is about to be implemented
@@ -82,7 +82,7 @@ export default {
     computed: {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
-        ...mapGetters("Map", ["layerIds", "layers", "map"]),
+        ...mapGetters("Map", ["layerIds", "layers", "map", "projectionCode"]),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -163,6 +163,19 @@ export default {
     },
     created () {
         this.$on("close", this.close);
+    },
+    mounted () {
+        const namedProjections = this.$store.state.configJs.namedProjections;
+
+        if (namedProjections) {
+            namedProjections.reverse();
+            this.availableCrs = namedProjections.map(proj => (
+                {
+                    crs: proj[0],
+                    name: proj[1].substring(7).replace(/\s[+](.*)/, "")
+                }
+            ));
+        }
     },
     methods: {
         ...mapActions("Tools/CosiFileImport", [
@@ -417,6 +430,8 @@ export default {
                             v-model="currentCrs"
                             dense
                             :items="availableCrs"
+                            item-text="name"
+                            item-value="crs"
                         />
                     </v-col>
                 </v-row>

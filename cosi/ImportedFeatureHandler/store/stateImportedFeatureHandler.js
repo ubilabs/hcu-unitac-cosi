@@ -20,7 +20,7 @@ const state = {
     renderToWindow: false,
     resizableWindow: false,
     isVisibleInMenu: false,
-    deactivateGFI: false,
+    deactivateGFI: false
 };
 
 export default state;

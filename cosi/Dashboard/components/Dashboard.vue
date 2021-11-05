@@ -432,7 +432,10 @@ export default {
         <template
             #toolBody
         >
-            <v-app absolute>
+            <v-app
+                id="dashboard-wrapper"
+                absolute
+            >
                 <v-main>
                     <v-container fluid>
                         <DashboardToolbar
@@ -441,7 +444,7 @@ export default {
                             @setStatsFeatureFilter="setStatsFeatureFilter"
                             @setSearch="setSearch"
                         />
-                        <v-row>
+                        <v-row class="dashboard-table-wrapper">
                             <v-data-table
                                 :headers="columns"
                                 :items="items"
@@ -688,9 +691,26 @@ export default {
 <style lang="less">
 @import "../../utils/variables.less";
 
+#dashboard-wrapper {
+    height: 100%;
+    .v-main {
+        height: 100%;
+        .container {
+            height: 100%;
+            .dashboard-table-wrapper {
+                height: calc(100% - 110px);
+            }
+        }
+    }
+}
+
 .dashboard-table {
+    height: 100%;
     .v-data-table__wrapper {
         padding-top: 10px;
+        overflow-x: auto;
+        overflow-y: auto;
+        height: 100%;
     }
 
     thead {
