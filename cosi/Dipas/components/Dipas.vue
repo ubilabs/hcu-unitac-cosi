@@ -1,27 +1,32 @@
 <script>
 import Tool from "../../../../src/modules/tools/Tool.vue";
-import {mapGetters, mapMutations, mapActions, mapState} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersDipas";
 import mutations from "../store/mutationsDipas";
 import GeoJSON from "ol/format/GeoJSON";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
-import {Fill, Stroke, Style, Text} from "ol/style.js";
+import {Fill, Stroke, Style, Circle} from "ol/style.js";
+import {Vector} from "ol/source.js";
+import {Heatmap} from "ol/layer.js";
+import {generateColorScale, generateColorScaleByColor} from "../../../utils/colorScale";
+import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";
 
 export default {
     name: "Dipas",
     components: {
-        Tool,
-        Modal
+        Tool
     },
     data () {
         return {
             projectsFeatureCollection: null,
-            fetchedProjectContributions: {},
+            projectsColors: null,
+            projectsActive: {},
+            contributions: {},
             showStyleModal: false
         };
     },
     computed: {
-        ...mapGetters("Tools/Dipas", Object.keys(getters))
+        ...mapGetters("Tools/Dipas", Object.keys(getters)),
+        ...mapGetters("Map", ["map", "layerById"])
     },
     watch: {
     },
@@ -41,19 +46,36 @@ export default {
             features = new GeoJSON().readFeatures(fetch);
 
         this.projectsFeatureCollection = this.transformFeatures(features);
-        for (const feature of this.projectsFeatureCollection) {
+        this.projectsColors = generateColorScale(undefined, "interpolateTurbo", this.projectsFeatureCollection.length).legend.colors;
+        for (const [index, feature] of this.projectsFeatureCollection.entries()) {
             const id = feature.getProperties().id,
-                layer = await this.createLayer(id);
+                layer = await this.createLayer(id),
+                style = new Style({
+                    fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
+                    stroke: new Stroke({color: this.projectsColors[index], width: 1.25})
+                }),
+                colorScale = generateColorScaleByColor(this.projectsColors[index], Object.values(feature.getProperties().standardCategories).length);
+
+            layer.setZIndex(0);
+            layer.setStyle(style);
 
             layer.setVisible(false);
             layer.getSource().addFeature(feature);
+
+            this.projectsActive[id] = {layer: false, contributions: false, heatmap: false};
+
+            this.contributions[id] = Object();
+            this.contributions[id].colors = Object();
+            for (const [catIndex, category] of Object.values(feature.getProperties().standardCategories).entries()) {
+                this.contributions[id].colors[category] = colorScale(catIndex);
+            }
         }
     },
     methods: {
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
-        ...mapGetters("Map", ["map", "layerById"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
+        ...mapMutations("Map", ["addLayerToMap"]),
 
         /**
         * Closes this tool window by setting active to false
@@ -72,7 +94,6 @@ export default {
                 model.set("isActive", false);
             }
         },
-
         async fetchProjects () {
             const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
                 ret = await fetch(url, {
@@ -90,7 +111,6 @@ export default {
 
             return json;
         },
-
         async fetchContributions (id) {
             const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects/" + id + "/contributions",
                 ret = await fetch(url, {
@@ -108,7 +128,7 @@ export default {
 
             return json;
         },
-        transformFeatures (features, crs="EPSG:4326", mapcrs="EPSG:25832") {
+        transformFeatures (features, crs = "EPSG:4326", mapcrs = "EPSG:25832") {
             features.forEach(function (feature) {
                 const geometry = feature.getGeometry();
                 // referenceSystem = feature.getProperties().referenceSystem;
@@ -128,9 +148,11 @@ export default {
             }
             return feature;
         },
-        async test () {
-            let map = Radio.request("Map", "getMap");
-            console.log(this.map);
+        async getContributionFeatures (id) {
+            const fetch = await this.fetchContributions(id),
+                features = new GeoJSON().readFeatures(fetch);
+
+            return this.transformFeatures(features);
         },
         async changeProjectVisibility (id, value) {
             const layer = await this.createLayer(id);
@@ -144,44 +166,56 @@ export default {
                 features: []
             };
 
-            let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id})
+            let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
 
             if (!model) {
-                const fetch = await this.fetchContributions(id);
-                let features = new GeoJSON().readFeatures(fetch);
+                if (!this.contributions[id].features) {
+                    this.contributions[id].features = await this.getContributionFeatures(id);
+                }
+                for (const feature of this.contributions[id].features) {
+                    const category = feature.getProperties().category,
+                        color = this.contributions[id].colors[category],
+                        style = new Style({
+                            image: new Circle({
+                                radius: 7,
+                                fill: new Fill({color: color}),
+                                stroke: new Stroke({color: "black", width: 1.5})
+                            })
+                        });
 
-                features = this.transformFeatures(features);
-                layer.features = features;
-                model = this.addLayer(layer);
+                    feature.setStyle(style);
+                }
+                layer.features = this.contributions[id].features;
+                model = await this.addLayer(layer);
+                const layerOnMap = getLayerById(this.map.getLayers().getArray(), "clever-leitsystem-contributions");
+
+                layerOnMap.setZIndex(2);
             }
+
             model.set("isSelected", value);
         },
         async changeHeatmapVisibility (id, value) {
-            // https://gis.stackexchange.com/questions/118190/openlayers-heatmap-add-customized-data
-            // Radio.request("Map", "getMap")
-        },
-        /**
-         * Open the style modal
-         * @param {any} id open the style modal for given id
-         * @returns {void}
-         */
-        async openStyleModal (id) {
-            const layer = await this.createLayer(id),
-                feature = layer.getSource().getFeatures()[0];
-            let style = feature.getStyle();
+            const layerId = id + "-heatmap";
+            let layer = getLayerById(this.map.getLayers().getArray(), layerId);
 
-            if (!style) {
-                style = new Style();
+            if (!layer) {
+                const vector = new Vector();
+
+                if (!this.contributions[id].features) {
+                    this.contributions[id].features = await this.getContributionFeatures(id);
+                }
+                for (const feature of this.contributions[id].features) {
+                    vector.addFeature(feature);
+                }
+                layer = new Heatmap({
+                    source: vector,
+                    radius: 10,
+                    id: layerId
+                });
+                layer.setZIndex(1);
+                this.map.addLayer(layer);
             }
-            style.setFill("rgba(0, 200, 3, 0.6)");
-            this.showStyleModal = true;
-        },
-        /**
-         * Close the style modal
-         * @returns {void}
-         */
-        closeStyleModal () {
-            this.showStyleModal = false;
+            layer.setVisible(value);
         }
     }
 };
@@ -220,27 +254,18 @@ export default {
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
+                                                v-model="projectsActive[feature.getProperties().id]['layer']"
                                                 v-on:change="changeProjectVisibility(feature.getProperties().id, $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
-                                            <v-list-item-title>Projekt auf Karte anzeigen
-                                                <v-btn
-                                                    class="style-button"
-                                                    dense
-                                                    small
-                                                    tile
-                                                    color="grey lighten-1"
-                                                    @click.native="openStyleModal(feature.getProperties().id)"
-                                                >
-                                                    Style
-                                                </v-btn>
-                                            </v-list-item-title>
+                                            <v-list-item-title>Projekt auf Karte anzeigen</v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
+                                                v-model="projectsActive[feature.getProperties().id]['contributions']"
                                                 v-on:change="changeContributionVisibility(feature.getProperties().id, $event)"
                                             />
                                         </v-list-item-action>
@@ -251,6 +276,7 @@ export default {
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
+                                                v-model="projectsActive[feature.getProperties().id]['heatmap']"
                                                 v-on:change="changeHeatmapVisibility(feature.getProperties().id, $event)"
                                             />
                                         </v-list-item-action>
@@ -261,34 +287,10 @@ export default {
                                 </v-list-group>
                             </v-list>
                         </v-card>
-                        <v-btn
-                            id="test"
-                            dense
-                            small
-                            tile
-                            color="grey lighten-1"
-                            @click.native="test()"
-                        >
-                            Test
-                        </v-btn>
                     </div>
                 </v-app>
             </template>
         </Tool>
-        <Modal
-            :show-modal="showStyleModal"
-            @modalHid="closeStyleModal"
-            @clickedOnX="closeStyleModal"
-            @clickedOutside="closeStyleModal"
-        >
-        </Modal>
-        <template>
-            <v-dialog v-model="showStyleDialog">
-                <v-card>
-                    My Content
-                </v-card>
-            </v-dialog>
-        </template>
     </div>
 </template>
 
@@ -306,9 +308,5 @@ export default {
 .feature-item-content {
     display: inline-block;
    margin-left: 20px;
-}
-
-.style-button {
-    float: right
 }
 </style>
