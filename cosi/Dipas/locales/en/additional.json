@@ -4,7 +4,9 @@
             "cosi": {
                 "dipas": {
                     "title": "DIPAS",
-                    "renderButton": "render"
+                    "showProject": "Show project on the map",
+                    "showContributions": "Show contributions on the map",
+                    "showHeatmap": "Show heatmap on the map"
                 }
             }
         }

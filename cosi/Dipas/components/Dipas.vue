@@ -259,7 +259,7 @@ export default {
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
-                                            <v-list-item-title>Projekt auf Karte anzeigen</v-list-item-title>
+                                            <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showProject') }}</v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item>
@@ -270,7 +270,7 @@ export default {
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
-                                            <v-list-item-title>Zeige einzelne Beiträge auf der Karte</v-list-item-title>
+                                            <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showContributions') }}</v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item>
@@ -281,7 +281,7 @@ export default {
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
-                                            <v-list-item-title>Heatmap</v-list-item-title>
+                                            <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showHeatmap') }}</v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
                                 </v-list-group>
