@@ -210,7 +210,14 @@ export default {
                 layer = new Heatmap({
                     source: vector,
                     radius: 10,
-                    id: layerId
+                    id: layerId,
+                    weight: function (feature) {
+                        const votingPro = parseInt(feature.getProperties().votingPro, 10),
+                            votingContra = parseInt(feature.getProperties().votingContra, 10),
+                            weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
+
+                        return weight;
+                    }
                 });
                 layer.setZIndex(1);
                 this.map.addLayer(layer);
