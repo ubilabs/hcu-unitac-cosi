@@ -246,16 +246,16 @@ export default {
                                     v-for="feature in projectsFeatureCollection"
                                     :key="feature.getProperties().id"
                                 >
-                                    <template v-slot:activator>
+                                    <template #activator>
                                         <v-list-item-content>
-                                            <v-list-item-title v-text="feature.getProperties().nameFull"/>
+                                            <v-list-item-title v-text="feature.getProperties().nameFull" />
                                         </v-list-item-content>
                                     </template>
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
                                                 v-model="projectsActive[feature.getProperties().id]['layer']"
-                                                v-on:change="changeProjectVisibility(feature.getProperties().id, $event)"
+                                                @change="changeProjectVisibility(feature.getProperties().id, $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
@@ -266,7 +266,7 @@ export default {
                                         <v-list-item-action>
                                             <v-switch
                                                 v-model="projectsActive[feature.getProperties().id]['contributions']"
-                                                v-on:change="changeContributionVisibility(feature.getProperties().id, $event)"
+                                                @change="changeContributionVisibility(feature.getProperties().id, $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
@@ -277,7 +277,7 @@ export default {
                                         <v-list-item-action>
                                             <v-switch
                                                 v-model="projectsActive[feature.getProperties().id]['heatmap']"
-                                                v-on:change="changeHeatmapVisibility(feature.getProperties().id, $event)"
+                                                @change="changeHeatmapVisibility(feature.getProperties().id, $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
