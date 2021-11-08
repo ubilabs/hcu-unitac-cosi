@@ -117,6 +117,10 @@
     "path": "cosi/AccessibilityAnalysis/service",
     "type": "tool"
   },
+  "DistanceScoreService": {
+    "path": "cosi/FeaturesList/service",
+    "type": "tool"
+  },
   "QueryDistricts": {
     "path": "cosi/QueryDistricts",
     "type": "tool"

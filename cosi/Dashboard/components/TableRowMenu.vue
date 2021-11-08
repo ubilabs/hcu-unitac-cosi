@@ -215,12 +215,15 @@ export default {
                                         </v-list-item>
                                     </template>
                                     <v-divider />
+                                    <v-list-item disabled>
+                                        Diagramme
+                                    </v-list-item>
                                     <v-list-item @click="$emit('renderCharts', _item)">
                                         <v-list-item-icon>
                                             <v-icon>mdi-chart-bar</v-icon>
                                         </v-list-item-icon>
                                         <v-list-item-content>
-                                            Diagramme erstellen
+                                            Balken- / Linien- / Tortendiagramme erstellen
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item @click="$emit('correlate')">

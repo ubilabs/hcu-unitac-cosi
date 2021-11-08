@@ -10,7 +10,7 @@ import LayerFilter from "./LayerFilter.vue";
 import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import {getAllFeatures as _getAllFeatures} from "../utils/getAllFeatures.js";
+import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
@@ -51,7 +51,7 @@ export default {
             "selectedDistrictLevel",
             "mapping"
         ]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById"]),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
         ...mapGetters("Map", ["layerById"])
     },
     watch: {
@@ -80,12 +80,23 @@ export default {
                 this.initializeDistrictNames();
                 this.setLayerOptions();
             }
+        },
+
+        /**
+         * Listens to the layers change on the map to refresh the list
+         * @listens #change:FeaturesList/activeVectorLayerList
+         * @returns {void}
+         */
+        async activeVectorLayerList () {
+            await this.$nextTick(() => {
+                this.setFacilityNames();
+            });
         }
     },
 
     created () {
         this.$on("close", this.close);
-        Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
+        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -128,7 +139,8 @@ export default {
 
             return features.length > 0
                 ? features
-                : this.layerById(id).olLayer.getSource().getFeatures();
+                : Radio.request("ModelList", "getModelByAttributes", {id})?.get("features")
+                || [];
         },
 
         setLayerOptions: function () {
@@ -138,6 +150,18 @@ export default {
 
             this.allLayerOptions = [];
 
+            // facility data first
+            for (const facilityLayer of this.facilityNames) {
+                this.allLayerOptions.push({
+                    name: facilityLayer.name,
+                    id: facilityLayer.id,
+                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    valueType: "absolute",
+                    facilityLayerName: facilityLayer.name
+                });
+            }
+
+            // statistical data second
             for (const m of this.mapping) {
                 const layer = layers.find(l=>l.id && l.id === m[this.keyOfAttrNameStats]);
 
@@ -151,15 +175,6 @@ export default {
                 }
             }
 
-            for (const facilityLayer of this.facilityNames) {
-                this.allLayerOptions.push({
-                    name: facilityLayer.name,
-                    id: facilityLayer.id,
-                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
-                    valueType: "absolute",
-                    facilityLayerName: facilityLayer.name
-                });
-            }
             this.updateAvailableLayerOptions();
         },
 
@@ -334,7 +349,7 @@ export default {
                     const v = parseFloat(f[field]);
 
                     if (isNaN(v)) {
-                        invalidFeatures.push(f[this.keyOfAttrName]);
+                        invalidFeatures.push(f[this.keyOfAttrNameStats]);
                         return res;
                     }
                     return [...res, v];
@@ -391,6 +406,7 @@ export default {
         resetDistrictSelection: function () {
             this.layerFilterModels = [];
             this.updateAvailableLayerOptions();
+            this.selectedDistrict = null;
         },
 
         /**
@@ -559,12 +575,10 @@ export default {
             this.mapLayer.getSource().addFeatures(cloneCollection);
         },
 
-        setFacilityNames (models) {
-            this.facilityNames = models.filter(
-                (model) => model.get("isFacility") === true
-            ).map((model) => ({
-                name: model.get("name").trim(),
-                id: model.get("id")
+        setFacilityNames () {
+            this.facilityNames = this.activeVectorLayerList.map((layer) => ({
+                name: layer.get("name").trim(),
+                id: layer.get("id")
             }));
         },
 
@@ -626,53 +640,91 @@ export default {
                     id="queryDistricts"
                     class="compare-districts"
                 >
-                    <div class="selectors">
-                        <v-autocomplete
-                            id="layerfilter-selector-container"
-                            v-model="selectedLayer"
-                            :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
-                            item-text="name"
-                            item-value="id"
-                            :items="layerOptions"
-                            :clearable="false"
-                            outlined
-                            dense
-                            return-object
-                            class="qd-select"
-                        />
-                        <v-autocomplete
-                            id="district-selector-container"
-                            v-model="selectedDistrict"
-                            :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
-                            :items="districtNames"
-                            :clearable="true"
-                            outlined
-                            dense
-                            class="qd-select"
-                        />
+                    <div class="d-flex">
+                        <div class="mb-5 overline">
+                            {{ $t('additional:modules.tools.cosi.queryDistricts.subTitle') }}
+                        </div>
                         <div
                             id="help"
+                            class="glyphicon glyphicon-question-sign ml-auto"
                             @click="showHelp()"
-                        >
-                            <span class="glyphicon glyphicon-question-sign" />
-                        </div>
+                        />
                     </div>
-                    <br>
-                    <div>
-                        <button
-                            id="add-filter"
-                            type="button"
-                            class="btn btn-lgv-grey measure-delete"
-                            :disabled="selectedLayer===null"
-                            @click="addLayerFilter()"
-                        >
-                            <span class="glyphicon glyphicon-plus" />
+                    <v-autocomplete
+                        id="layerfilter-selector-container"
+                        v-model="selectedLayer"
+                        :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
+                        :title="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabeltooltip')"
+                        item-text="name"
+                        item-value="id"
+                        :items="layerOptions"
+                        :clearable="false"
+                        outlined
+                        dense
+                        return-object
+                        class="qd-select"
+                    />
+                    <v-autocomplete
+                        id="district-selector-container"
+                        v-model="selectedDistrict"
+                        :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
+                        :items="districtNames"
+                        :clearable="true"
+                        outlined
+                        dense
+                        class="qd-select"
+                    />
+                    <v-btn
+                        id="add-filter"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        class="mr-2"
+                        :disabled="selectedLayer===null"
+                        @click="addLayerFilter()"
+                    >
+                        <span>
                             {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
-                        </button>
-                    </div>
-                    <br>
-                    <div id="layerfilter-container" />
+                        </span>
+                    </v-btn>
+                    <v-btn
+                        id="reset-district"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        :disabled="layerFilterModels.length === 0"
+                        @click="resetDistrictSelection()"
+                    >
+                        {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
+                    </v-btn>
+                    <v-divider v-if="layerFilterModels.length > 0" />
                     <div id="results">
+                        <div
+                            v-if="layerFilterModels.length > 0"
+                            class="d-flex overline"
+                        >
+                            <div
+                                class="mb-5"
+                            >
+                                {{ $t('additional:modules.tools.cosi.queryDistricts.setParams') }}
+                            </div>
+                            <div
+                                v-if="selectedDistrict"
+                                id="reference-district"
+                                class="ml-auto"
+                            >
+                                <span>
+                                    {{ $t('additional:modules.tools.cosi.queryDistricts.referenceDistrict') }}:
+                                </span>
+                                <span
+                                    id="reference-district-button"
+                                    class="name-tag district-name"
+                                    @click="zoomToDistrict({'name': selectedDistrict})"
+                                >{{ selectedDistrict }}</span>
+                            </div>
+                        </div>
                         <template
                             v-for="filter in layerFilterModels"
                         >
@@ -686,29 +738,33 @@ export default {
                                 @close="closeFilter"
                             />
                         </template>
-                        <div id="params" />
-                        <div
-                            v-if="selectedDistrict"
-                            id="reference-district"
-                        >
-                            <strong>
-                                {{ $t('additional:modules.tools.cosi.queryDistricts.referenceDistrict') }}:
-                            </strong>
-                            <span
-                                id="reference-district-button"
-                                class="name-tag district-name"
-                                @click="zoomToDistrict({'name': selectedDistrict})"
-                            >{{ selectedDistrict }}</span>
-                        </div>
+                        <v-divider v-if="resultNames" />
                         <div
                             v-if="resultNames"
                             id="compare-results"
                         >
-                            <p>
-                                <strong>
-                                    {{ $t('additional:modules.tools.cosi.queryDistricts.comparableResults') }}:
-                                </strong>
-                            </p>
+                            <div class="d-flex overline">
+                                <div
+                                    v-if="layerFilterModels.length > 0"
+                                    class="mb-5"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.queryDistricts.comparableResults') }}
+                                </div>
+                                <div
+                                    v-if="selectedDistrict"
+                                    id="reference-district"
+                                    class="ml-auto"
+                                >
+                                    <span>
+                                        {{ $t('additional:modules.tools.cosi.queryDistricts.referenceDistrict') }}:
+                                    </span>
+                                    <span
+                                        id="reference-district-button"
+                                        class="name-tag district-name"
+                                        @click="zoomToDistrict({'name': selectedDistrict})"
+                                    >{{ selectedDistrict }}</span>
+                                </div>
+                            </div>
                             <v-data-table
                                 v-if="resultNames.length > 0"
                                 id="result-table"
@@ -729,96 +785,54 @@ export default {
                                     {{ parseFloat(item[header.value]).toLocaleString(currentLocale) }}
                                 </template>
                             </v-data-table>
+                            <v-divider />
+                            <v-btn
+                                v-if="resultNames && resultNames.length"
+                                id="set-selected-district"
+                                dense
+                                small
+                                tile
+                                color="grey lighten-1"
+                                class="mr-2"
+                                @click="changeDistrictSelection()"
+                            >
+                                {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
+                            </v-btn>
+                            <v-btn
+                                v-if="resultNames && resultNames.length"
+                                dense
+                                small
+                                tile
+                                color="grey lighten-1"
+                                :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
+                                @click="exportTable()"
+                            >
+                                {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
+                            </v-btn>
                         </div>
                     </div>
-                    <v-divider />
-                    <v-row
-                        justify="start"
-                    >
-                        <v-btn
-                            v-if="resultNames && resultNames.length"
-                            id="set-selected-district"
-                            dense
-                            small
-                            tile
-                            color="grey lighten-1"
-                            class="ma-2"
-                            @click="changeDistrictSelection()"
-                        >
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
-                        </v-btn>
-                        <v-btn
-                            v-if="resultNames && resultNames.length"
-                            id="reset-district"
-                            dense
-                            small
-                            tile
-                            color="grey lighten-1"
-                            class="ma-2"
-                            @click="resetDistrictSelection()"
-                        >
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
-                        </v-btn>
-                    </v-row>
-                    <v-row
-                        justify="start"
-                    >
-                        <v-btn
-                            v-if="resultNames && resultNames.length"
-                            dense
-                            small
-                            tile
-                            color="grey lighten-1"
-                            class="ma-2"
-                            :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
-                            @click="exportTable()"
-                        >
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
-                        </v-btn>
-                    </v-row>
                 </div>
             </v-app>
         </template>
     </Tool>
 </template>
 
-<style lang="less">
-.selectors {
-    display: flex;
-    flex-direction: column;
-}
-
-.qd-select .v-select__selection {
-  white-space: nowrap;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 496px;
-}
-
-.qd-select .v-select__selections {
-  max-width: 496px;
-  max-height: 30px;
-}
-
-#help {
-    align-self: flex-end;
-}
+<style lang="less" scoped>
 .layer-filter {
     margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,.12);
+    padding: 10px;
+    background-color: rgba(0,0,0,0.01);
 }
 
 #compare-results {
-    max-width: 500px;
- word-wrap: break-word
+    max-width: 600px;
+    word-wrap: break-word
 }
 
 .compare-districts {
+    min-height: 220px;
     #layerfilter-selector-container {
-        .bootstrap-select {
-            width: 12vw !important;
-        }
-
         .dropdown-menu.open {
             width: 400px;
             height: 200px;
@@ -826,24 +840,14 @@ export default {
     }
 
     #district-selector-container {
-        .bootstrap-select {
-            width: 12vw !important;
-        }
-
         .dropdown-menu.open {
             height: 200px;
         }
     }
 }
 
-
-#add-filter {
-    width: 100%;
-}
-
-
 #help {
-    padding-top: 5px;
+    padding-top: 7px;
     background-color: white;
     height: 30px;
     border: 1px solid #ccc;
@@ -862,19 +866,14 @@ export default {
 
 .name-tag {
     border-radius: 5px;
-    background-color: #E3E3E3;
+    background-color: #bdbdbd;
     color: black;
-    padding: 2px 4px;
-    margin: 2px;
+    padding: 0 4px;
     display: inline-block;
 }
 
 .name-tag.district-name {
     cursor: pointer;
-}
-
-.compare-districts {
-    min-height: 300px;
 }
 
 .table {

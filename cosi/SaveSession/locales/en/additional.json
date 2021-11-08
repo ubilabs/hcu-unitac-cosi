@@ -10,7 +10,9 @@
                     "loadFromFile": "Load file",
                     "dropFile": "Select file",
                     "loadLast": "Restore last session?",
-                    "clear": "Clear old sessions"
+                    "clear": "Clear old sessions",
+                    "filenamePrompt": "Name your session",
+                    "newSession": "New Session"
                 }
             }
         }

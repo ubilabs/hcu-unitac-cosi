@@ -289,7 +289,7 @@ export default {
             :title="$t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip')"
             tile
             depressed
-            :color="onlyEditSimulated ? 'warning' : ''"
+            :color="onlyEditSimulated ? '' : 'warning'"
             :disabled="!activeScenario"
             @click="toggleOnlySimulated"
         >

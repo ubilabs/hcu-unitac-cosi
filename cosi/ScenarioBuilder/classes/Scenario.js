@@ -233,6 +233,29 @@ export default class Scenario {
     }
 
     /**
+     * Clears the scenario's neighborhoods
+     * @returns {void}
+     */
+    pruneSimulatedFeatures () {
+        let item;
+
+        for (item of this.simulatedFeatures) {
+            item.hideFeature();
+        }
+
+        this.simulatedFeatures = [];
+    }
+
+    /**
+     * Clears the scenario's neighborhoods
+     * @returns {void}
+     */
+    pruneNeighborhoods () {
+        this.resetAllDistricts();
+        this.neighborhoods = [];
+    }
+
+    /**
      * Removes a given neighborhood from the scenario
      * @param {module:ol/Feature} feature - the feature in the map
      * @returns {void}

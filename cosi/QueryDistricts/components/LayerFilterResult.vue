@@ -61,6 +61,7 @@ export default {
 
 <style lang="less" scoped>
 .filter-result-table{
+    margin-bottom: 5px;
     td {
         border-bottom: 1px solid #ddd;
         background-color:white;

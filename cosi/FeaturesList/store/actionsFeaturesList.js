@@ -64,11 +64,11 @@ const actions = {
      * @param {Object} layerMap - The mappingObj to remove
      * @returns {void}
      */
-    removeVectorLayerFromMapping ({commit, getters}, layerMap) {
+    removeVectorlayerFromMapping ({commit, getters}, layerMap) {
         const {mapping} = getters;
         let _mapping = [...mapping];
 
-        for (const group of mapping) {
+        for (const group of _mapping) {
             group.layer = group.layer.filter(el => el !== layerMap);
 
             if (group.layer.length === 0) {

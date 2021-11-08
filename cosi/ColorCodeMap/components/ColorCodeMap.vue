@@ -36,7 +36,7 @@ export default {
             // Lowest Value of selected feature among all selected districts
             loVal: null,
             // Triggers classes for minimized view
-            minimize: false,
+            minimize: true,
             // Playback speed of the animation
             playSpeed: 1,
             // Helper Variable to force Legend Markers to rerender
@@ -1010,7 +1010,7 @@ export default {
 
         &.minimized {
             .hovermenu {
-                width:120px;
+                width:152px;
                 .btn_grp {
                     button {
                         margin:2px;

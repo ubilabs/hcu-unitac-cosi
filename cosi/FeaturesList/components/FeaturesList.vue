@@ -13,9 +13,14 @@ import getClusterSource from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
+import LayerWeights from "./LayerWeights.vue";
+import ScoreValues from "./ScoreValues.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
+import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import deepEqual from "deep-equal";
+import {Style} from "ol/style.js";
 
 export default {
     name: "FeaturesList",
@@ -23,10 +28,19 @@ export default {
         Tool,
         Multiselect,
         DetailView,
-        FeatureIcon
+        FeatureIcon,
+        LayerWeights,
+        ScoreValues
     },
     data () {
         return {
+            distanceScoreQueue: [],
+            weight: 0,
+            showWeightsDialog: false,
+            showScoresDialog: false,
+            layerWeights: {},
+            currentScores: {},
+            selectedLayers: [],
             search: "",
             layerFilter: [],
             expanded: [],
@@ -35,7 +49,7 @@ export default {
             excludedPropsForExport: [
                 "Icon",
                 "Aktionen",
-                "Ein-/Ausschalten",
+                "Ein-/ Ausblenden",
                 "layerId",
                 "feature",
                 "key"
@@ -46,6 +60,10 @@ export default {
                     value: "style",
                     filterable: false,
                     sortable: false
+                },
+                {
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
+                    value: "enabled"
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colFacility"),
@@ -102,13 +120,13 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
-        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue"}),
+        ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extent: "extent"}),
+        ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
         columns () {
             return [
                 ...this.featureColumns,
-                ...this.numericalColumns,
-                ...this.actionColumns
+                ...this.numericalColumns
             ];
         },
         selected: {
@@ -126,6 +144,25 @@ export default {
             set (value) {
                 this.setFeaturesListItems(value);
             }
+        },
+        layerOptions () {
+            const layers = this.getLayerList(),
+                groups = layers.reduce((acc, el)=> ({...acc, [el.group]: [...acc[el.group] || [], el]}), {});
+
+            let ret = [];
+
+            for (const g in groups) {
+                ret.push({header: g});
+                ret = ret.concat(groups[g]);
+            }
+
+            return ret;
+        },
+        selectedFeatureLayers () {
+            return this.selectedLayers.filter(l=>l.group !== "Wms Layers");
+        },
+        selectedWmsLayers () {
+            return this.selectedLayers.filter(l=>l.group === "Wms Layers");
         }
     },
     watch: {
@@ -182,6 +219,33 @@ export default {
 
         activeLayerMapping () {
             this.numericalColumns = this.getNumericalColumns();
+        },
+
+        selectedFeatureLayers () {
+            this.numericalColumns = this.getNumericalColumns();
+        },
+
+        selectedLayers () {
+            for (const layer of this.selectedFeatureLayers) {
+                if (this.layerWeights[layer.layerId] === undefined) {
+                    this.layerWeights[layer.layerId] = 1;
+                }
+            }
+            this.updateDistanceScores();
+        },
+
+        items (newItems) {
+            if (!deepEqual(newItems.map(i=>i.key), this.items.map(i=>i.key))) {
+                this.updateDistanceScores();
+            }
+        },
+
+        layerWeights () {
+            this.updateDistanceScores();
+        },
+
+        extent () {
+            this.updateDistanceScores();
         }
     },
     created () {
@@ -211,6 +275,7 @@ export default {
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
+        ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
@@ -230,6 +295,17 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
+            if (this.selectedFeatureLayers) {
+                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
+            }
+
+            for (const l of this.selectedWmsLayers) {
+                numCols.push({
+                    text: l.name,
+                    value: l.name
+                });
+            }
+
             return numCols;
         },
 
@@ -245,7 +321,7 @@ export default {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(feature => {
-                            if (typeof feature.getStyle() === "object" || typeof feature.getStyle() === "function" && feature.getStyle() !== null) {
+                            if (typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null)) {
                                 return true;
                             }
                             if (typeof vectorLayer.getStyleFunction() === "function") {
@@ -295,7 +371,7 @@ export default {
             const classes = [];
 
             if (item.isSimulation) {
-                classes.push("light-green", "lighten-4");
+                classes.push("light-green", "lighten-5");
             }
             // potentially add more conditionals here
 
@@ -350,7 +426,18 @@ export default {
          * @returns {void}
          */
         exportTable (exportDetails = false) {
-            const data = this.search ? this.filteredItems : this.items,
+            const data = this.items.filter(item => {
+                    if (this.search && !this.filteredItems.includes(item)) {
+                        return false;
+                    }
+                    if (this.selected.length > 0 && !this.selected.includes(item)) {
+                        return false;
+                    }
+                    if (this.layerFilter.length > 0 && !this.layerFilter.map(l => l.layerId).includes(item.layerId)) {
+                        return false;
+                    }
+                    return true;
+                }),
                 exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
@@ -363,6 +450,7 @@ export default {
          * @returns {void}
          */
         toggleFeature (featureItem) {
+            featureItem.enabled = !featureItem.enabled;
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
         },
@@ -407,7 +495,61 @@ export default {
             }
             return "red";
         },
+        getLayerList () {
+            const groups = this.mapping,
+                allLayers = [];
 
+            for (const g of groups) {
+                for (const l of g.layer) {
+                    const layer = getLayerWhere({id: l.layerId});
+
+                    if (layer) {
+                        allLayers.push({id: l.id, layerId: l.layerId, url: layer.url, group: g.group, featureType: layer.featureType});
+                    }
+                }
+            }
+            for (const l of this.wmsLayersInfo) {
+                allLayers.push({...l, id: l.name, layerId: l.id, group: "Wms Layers"});
+            }
+
+            return allLayers;
+        },
+        async updateSelectedLayers (layerIds) {
+            this.selectedLayers = layerIds;
+        },
+        async updateDistanceScores () {
+            if (this.items && this.items.length) {
+                const items = [];
+
+                if (this.selectedLayers.length) {
+                    this.distanceScoreQueue = [...this.items];
+                    while (this.distanceScoreQueue.length) {
+                        const item = {...this.distanceScoreQueue.shift()};
+
+                        if (this.selectedFeatureLayers) {
+                            const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
+                                weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
+                                extent: this.extent ? this.extent : undefined});
+
+                            item.weightedDistanceScores = ret;
+                            item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
+                        }
+                        for (const layer of this.selectedWmsLayers) {
+                            const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
+
+                            item[layer.name] = value;
+                        }
+
+                        items.push(item);
+                    }
+
+                    this.items = items;
+                }
+            }
+        },
+        updateWeights (weights) {
+            this.layerWeights = {...weights};
+        },
         getNumericalValueStyle (item, key) {
             const val = parseFloat(item[key]),
                 maxVal = Math.max(
@@ -421,6 +563,10 @@ export default {
                 height: "10px",
                 width: Math.round(100 * val / maxVal) + "%"
             };
+        },
+        showInfo (item) {
+            this.currentScores = item.weightedDistanceScores;
+            this.showScoresDialog = true;
         }
     }
 };
@@ -441,6 +587,31 @@ export default {
             #toolBody
         >
             <v-app>
+                <div class="my-2">
+                    <v-btn
+                        id="export-table"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        class="my-2"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
+                        @click="exportTable(false)"
+                    >
+                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
+                    </v-btn>
+                    <v-btn
+                        id="export-detail"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
+                        @click="exportTable(true)"
+                    >
+                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
+                    </v-btn>
+                </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
                         <div class="form-group selection">
@@ -486,7 +657,7 @@ export default {
                                 item-key="key"
                                 show-select
                                 show-expand
-                                :items-per-page="15"
+                                :items-per-page="10"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -511,12 +682,12 @@ export default {
                                     >
                                         mdi-alert
                                     </v-icon>
-                                    <v-icon
+                                    <!-- <v-icon
                                         v-if="item.isSimulation"
                                         :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
                                     >
                                         mdi-sprout
-                                    </v-icon>
+                                    </v-icon> -->
                                 </template>
                                 <template #item.style="{ item }">
                                     <FeatureIcon :item="item" />
@@ -542,11 +713,14 @@ export default {
                                     </v-icon>
                                 </template>
                                 <template #item.enabled="{ item }">
-                                    <v-switch
-                                        v-model="item.enabled"
-                                        dense
-                                        @change="toggleFeature(item)"
-                                    />
+                                    <div class="text-center">
+                                        <v-icon
+                                            right
+                                            @click="toggleFeature(item)"
+                                        >
+                                            {{ item.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
+                                        </v-icon>
+                                    </div>
                                 </template>
                                 <template
                                     v-for="col in numericalColumns"
@@ -555,7 +729,9 @@ export default {
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
                                         <div
                                             :key="col.value"
-                                            class="align-right"
+                                            class="text-right"
+                                            :class="col.hasAction? 'number-action': ''"
+                                            @click="showInfo(item)"
                                         >
                                             <div>
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
@@ -573,32 +749,62 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <div class="form-group">
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-btn
-                                        id="export-table"
-                                        tile
-                                        depressed
-                                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                                        @click="exportTable(false)"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
-                                    </v-btn>
-                                    <v-btn
-                                        id="export-detail"
-                                        tile
-                                        depressed
-                                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                                        @click="exportTable(true)"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                        </div>
+                        <v-row>
+                            <v-col>
+                                <v-autocomplete
+                                    id="selectedLayers"
+                                    :value="selectedLayers"
+                                    :items="layerOptions"
+                                    :label="$t('additional:modules.tools.cosi.featuresList.distanceScoreLayerLabel')"
+                                    outlined
+                                    dense
+                                    multiple
+                                    small-chips
+                                    item-text="id"
+                                    return-object
+                                    @input="updateSelectedLayers"
+                                />
+                            </v-col>
+                            <v-col>
+                                <v-btn
+                                    v-if="selectedFeatureLayers.length>0"
+                                    id="weights"
+                                    depressed
+                                    tile
+                                    @click.native="showWeightsDialog=true"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.featuresList.weighting') }}
+                                </v-btn>
+                                <v-btn
+                                    v-if="distanceScoreQueue.length>0"
+                                    id="weights"
+                                    depressed
+                                    tile
+                                    @click.native="distanceScoreQueue=[]"
+                                >
+                                    {{ $t('additional:modules.tools.cosi.featuresList.abort') }}
+                                </v-btn>
+                            </v-col>
+                            <v-progress-linear
+                                v-if="distanceScoreQueue.length>0"
+                                :value="100-(distanceScoreQueue.length/items.length)*100"
+                                background-color="white"
+                            />
+                        </v-row>
                     </form>
                 </div>
+                <LayerWeights
+                    v-model="showWeightsDialog"
+                    :weights="layerWeights"
+                    :layers="selectedFeatureLayers"
+                    @update="updateWeights"
+                />
+                <ScoreValues
+                    v-model="showScoresDialog"
+                    :label="$t('additional:modules.tools.cosi.featuresList.scoresDialogTitle')"
+                    :scores="currentScores"
+                    :layers="selectedFeatureLayers"
+                />
             </v-app>
         </template>
     </Tool>
@@ -621,8 +827,8 @@ export default {
                 width: 100%;
             }
         }
-        .align-right {
-            text-align: right;
+        .number-action{
+            cursor: pointer;
         }
     }
 </style>

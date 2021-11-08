@@ -1,6 +1,7 @@
 <script>
 import groupMapping from "../../utils/groupMapping";
 import mapping from "../../assets/mapping.json";
+import {mapGetters} from "vuex";
 
 export default {
     name: "DashboardToolbar",
@@ -33,6 +34,16 @@ export default {
             set (value) {
                 this.$emit("setSearch", value);
             }
+        },
+        ...mapGetters("Tools/DistrictSelector", [
+            "metadataUrls"
+        ])
+    },
+    methods: {
+        openMetadata () {
+            this.metadataUrls.forEach(url => {
+                window.open(url);
+            });
         }
     }
 };
@@ -82,7 +93,7 @@ export default {
         </v-col>
         <v-col cols="2">
             <v-icon
-                title="Metadaten"
+                title="Metadaten öffnen"
                 @click="openMetadata()"
             >
                 mdi-information
