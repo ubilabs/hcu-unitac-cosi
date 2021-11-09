@@ -45,7 +45,8 @@ export default {
             typesMapping: TypesMapping,
             geometry: null,
             valuesForFields: {},
-            panel: [0, 1]
+            panel: [0, 1],
+            formValid: false
         };
     },
     computed: {
@@ -87,6 +88,7 @@ export default {
                     for (const field of _desc) {
                         if (compareLayerMapping(field, layerMap)) {
                             required.push(field);
+                            this.featureProperties[field.name] = null;
                         }
                         else if (this.typesMapping[field.type] === "geom") {
                             geom = field;
@@ -174,6 +176,7 @@ export default {
         resetFeature () {
             this.featureProperties = {};
             this.geometry = null;
+            this.formValid = false;
             geomPickerResetLocation(this.$refs["geometry-picker"]);
             geomPickerUnlisten(this.$refs["geometry-picker"]);
         },
@@ -268,6 +271,7 @@ export default {
             }
 
             this.featureProperties = referenceProps;
+            this.formValid = this.requiredFieldsSet();
         },
 
         geomPickerUnlisten () {
@@ -295,6 +299,16 @@ export default {
             }
 
             return [];
+        },
+
+        requiredFieldsSet () {
+            for (const field of this.featureTypeDescSorted.required) {
+                if (!this.featureProperties[field.name]) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 };
@@ -436,6 +450,7 @@ export default {
                                                         :label="mapDataTypes(field.type)"
                                                         dense
                                                         :hide-details="false"
+                                                        @change="formValid = requiredFieldsSet()"
                                                     />
                                                     <!-- Add Date Picker for dates -->
                                                     <!-- <v-date-picker
@@ -450,6 +465,7 @@ export default {
                                                         :label="mapDataTypes(field.type)"
                                                         :rules="validateProp(field, workingLayer)"
                                                         dense
+                                                        @change="formValid = requiredFieldsSet()"
                                                     />
                                                 </v-col>
                                             </v-row>
@@ -506,8 +522,9 @@ export default {
                                             tile
                                             depressed
                                             color="primary"
-                                            :disabled="!activeScenario || geometry === null"
+                                            :disabled="!activeScenario || geometry === null || !formValid"
                                             class="flex-item"
+                                            :title="!formValid ? $t('additional:modules.tools.cosi.scenarioBuilder.requiredFieldMissing') : ''"
                                             @click="createFeature"
                                         >
                                             <v-icon>mdi-home-plus</v-icon>

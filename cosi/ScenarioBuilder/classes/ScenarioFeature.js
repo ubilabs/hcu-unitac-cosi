@@ -14,12 +14,13 @@ export default class ScenarioFeature {
      * @param {module:ol/Feature} feature the OpenLayers Feature created
      * @param {module:ol/layer/Vector} layer the OpenLayers Layer the feature is bound to
      * @param {module:ol/layer/Vector} [guideLayer] the guideLayer to render additional info to
+     * @param {Object} [scenarioData] properties the feature holds for a specific scenario
      */
-    constructor (feature, layer, guideLayer) {
+    constructor (feature, layer, guideLayer, scenarioData) {
         this.feature = feature;
         this.layer = layer;
         this.guideLayer = guideLayer;
-        this.scenarioData = {};
+        this.scenarioData = scenarioData || {};
         this.scenario = null;
         this.eventKeys = {};
 
