@@ -4,14 +4,31 @@
  * @param {Object} attrs - the attrs to set
  * @returns {void}
  */
- function setLayerAttributes (model, attrs) {
+function setLayerAttributes (model) {
     model.set({
         gfiComplex: "true",
         gfiTheme: "default",
         typ: "GeoJSON",
         isFacility: true,
         alwaysOnTop: true,
-        group: "DIPAS"
+        group: "DIPAS",
+        mouseHoverField: "title",
+        searchField: "category",
+        addressField: "belongToProject",
+        numericalValues: [
+            {
+                id: "commentsNumber",
+                name: "Anzahl Kommentare"
+            },
+            {
+                id: "votingPro",
+                name: "Pro Votes"
+            },
+            {
+                id: "votingContra",
+                name: "Contra Votes"
+            }
+        ]
     });
 }
 
@@ -20,7 +37,7 @@
  * @param {{name: String, id: String, features: module:ol/Feature[]}} newLayer - the layer from the imported file
  * @returns {void}
  */
- function addLayerToTree (newLayer) {
+function addLayerToTree (newLayer) {
     const layerName = newLayer.name,
         layerId = newLayer.id,
         features = newLayer.features;
@@ -36,7 +53,8 @@
 }
 
 export default {
-    addLayer ({commit, dispatch}, newLayer) {
+    addLayer (_, newLayer) {
         return addLayerToTree(newLayer);
     }
-}
+};
+

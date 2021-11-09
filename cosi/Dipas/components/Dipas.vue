@@ -72,9 +72,10 @@ export default {
         }
     },
     methods: {
-        ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
+        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
+        ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
 
         /**
@@ -184,12 +185,14 @@ export default {
                         });
 
                     feature.setStyle(style);
+                    feature.setId(feature.get("id"));
                 }
                 layer.features = this.contributions[id].features;
                 model = await this.addLayer(layer);
-                const layerOnMap = getLayerById(this.map.getLayers().getArray(), "clever-leitsystem-contributions");
+                // const layerOnMap = getLayerById(this.map.getLayers().getArray(), "clever-leitsystem-contributions");
 
-                layerOnMap.setZIndex(2);
+                // layerOnMap.setZIndex(2);
+                this.addVectorlayerToMapping(model.attributes);
             }
 
             model.set("isSelected", value);
@@ -214,7 +217,8 @@ export default {
                     weight: function (feature) {
                         const votingPro = parseInt(feature.getProperties().votingPro, 10),
                             votingContra = parseInt(feature.getProperties().votingContra, 10),
-                            weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
+                            // weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
+                            weight = votingPro + votingContra;
 
                         return weight;
                     }
