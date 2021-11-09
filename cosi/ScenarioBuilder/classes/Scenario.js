@@ -89,6 +89,8 @@ export default class Scenario {
 
         this.modifiedFeatures.push(scenarioFeature);
 
+        console.log(layer, feature);
+
         return scenarioFeature;
     }
 

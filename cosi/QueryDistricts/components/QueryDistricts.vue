@@ -14,7 +14,7 @@ import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
-import renameKeys from "../../utils/renameKeys.js";
+import {renameKeys} from "../../utils/modifyObject.js";
 
 export default {
     name: "QueryDistricts",
@@ -613,8 +613,7 @@ export default {
         },
 
         exportTable: function () {
-            const exportData = this.results.map(r=>renameKeys(
-                    Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))), r)),
+            const exportData = this.results.map(r=>renameKeys(r, Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))))),
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
 

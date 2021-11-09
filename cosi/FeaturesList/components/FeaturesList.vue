@@ -20,7 +20,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
-import {Style} from "ol/style.js";
+import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
     name: "FeaturesList",
@@ -279,6 +279,7 @@ export default {
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
+        isFeatureActive,
         getNumericalColumns () {
             const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
                 return [
@@ -320,15 +321,7 @@ export default {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
-                        visibleFeatures = features.filter(feature => {
-                            if (typeof feature.getStyle()?.constructor === Style || (typeof feature.getStyle() === "function" && feature.getStyle() !== null)) {
-                                return true;
-                            }
-                            if (typeof vectorLayer.getStyleFunction() === "function") {
-                                return true;
-                            }
-                            return false;
-                        }),
+                        visibleFeatures = features.filter(this.isFeatureActive),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
                         layerStyleFunction = vectorLayer.getStyleFunction();
 
@@ -586,6 +579,7 @@ export default {
             v-if="active"
             #toolBody
         >
+<<<<<<< HEAD
             <v-app>
                 <div class="my-2">
                     <v-btn
@@ -612,6 +606,9 @@ export default {
                         {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
                     </v-btn>
                 </div>
+=======
+            <v-app id="features-list-wrapper">
+>>>>>>> cosi/dev
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
                         <div class="form-group selection">
@@ -645,7 +642,7 @@ export default {
                             >
                         </div>
                     </form>
-                    <form>
+                    <form class="features-list-table-wrapper">
                         <div class="form-group features-list-table">
                             <v-data-table
                                 v-model="selected"
@@ -812,7 +809,28 @@ export default {
 
 <style lang="less">
     @import "../../utils/variables.less";
+    #features-list-wrapper {
+        height: 100%;
+        position: relative;
+    }
     #features-list {
+        height: 100%;
+        .features-list-table-wrapper {
+           height: calc(100% - 160px);
+            display: block;
+            position: relative;
+           .features-list-table {
+               height: 100%;
+               .v-data-table {
+                   height: 100%;
+                   .v-data-table__wrapper {
+                    overflow-x: auto;
+                    overflow-y: auto;
+                    height: 100%;
+                   }
+               }
+           }
+        }
         input.form-control {
             font-size: 12px;
             border-color: #e8e8e8;

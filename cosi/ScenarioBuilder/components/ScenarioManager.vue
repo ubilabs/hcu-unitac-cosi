@@ -113,10 +113,9 @@ export default {
         <div class="mb-5 overline">
             {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
         </div>
-        <v-subheader>
+        <div class="mb-2">
             Anlegen und Verwalten der Szenarien für fiktive Daten. In einem Szenario können Einrichtungen und Wohnquartiere simuliert, sowie bestehende Einrichtungen verändert werden.
-        </v-subheader>
-        <v-row dense />
+        </div>
         <v-row dense>
             <v-col cols="6">
                 <v-select
