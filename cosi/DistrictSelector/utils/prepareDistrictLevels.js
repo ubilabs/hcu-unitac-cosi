@@ -99,7 +99,13 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
                 return districtName;
             },
             // name of the district
-            getName: () => feature.get(keyOfAttrName),
+            getName: () => {
+                // The names of St.Pauli and Co. are inconsistent in the different services.
+                if (feature.get(keyOfAttrName).indexOf("St. ") !== -1) {
+                    return feature.get(keyOfAttrName).replace(/ /, "");
+                }
+                return feature.get(keyOfAttrName);
+            },
             // name of the reference (parent) district
             getReferencDistrictName: () => {
                 // Districtlevel = Hamburg

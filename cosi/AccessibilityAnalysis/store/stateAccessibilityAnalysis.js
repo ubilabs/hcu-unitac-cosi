@@ -37,7 +37,7 @@ const state = {
         },
         {
             type: "region",
-            text: "Erreichbarkeit im Gebiet"
+            text: "Erreichbarkeit der ausgewählten Einrichtungen"
         }
     ],
     rawGeoJson: null,
