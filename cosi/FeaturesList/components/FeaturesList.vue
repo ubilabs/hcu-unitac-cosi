@@ -808,11 +808,12 @@ export default {
     #features-list-wrapper {
         height: 100%;
         position: relative;
+        overflow: hidden;
     }
     #features-list {
         height: 100%;
         .features-list-table-wrapper {
-           height: calc(100% - 170px);
+           height: calc(100% - 200px);
             display: block;
             position: relative;
            .features-list-table {
