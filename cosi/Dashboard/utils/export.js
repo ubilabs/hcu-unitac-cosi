@@ -50,26 +50,27 @@ export function prepareTableExportWithTimeline (data, timestamps, timestampPrefi
         console.error("prepareTableExport: data must be an array");
         return null;
     }
-    const exportData = data.reduce((items, item) => {
-        const _item = renameKeys(keyMap, item),
-            categoryRows = timestamps.reverse().map(timestamp => {
-                const el = {..._item};
+    const ctimestamps = timestamps.slice(),
+        exportData = data.reduce((items, item) => {
+            const _item = renameKeys(keyMap, item),
+                categoryRows = ctimestamps.reverse().map(timestamp => {
+                    const el = {..._item};
 
-                for (const col in el) {
-                    if (typeof _item[col] === "object") {
-                        const val = parseFloat(el[col][timestampPrefix + timestamp]);
+                    for (const col in el) {
+                        if (typeof _item[col] === "object") {
+                            const val = parseFloat(el[col][timestampPrefix + timestamp]);
 
-                        el[col] = !isNaN(val) ? val : "-";
+                            el[col] = !isNaN(val) ? val : "-";
+                        }
                     }
-                }
 
-                el[keyMap.timestamp] = timestamp;
+                    el[keyMap.timestamp] = timestamp;
 
-                return el;
-            });
+                    return el;
+                });
 
-        return [...items, ...categoryRows];
-    }, []);
+            return [...items, ...categoryRows];
+        }, []);
 
     return exportData;
 }
