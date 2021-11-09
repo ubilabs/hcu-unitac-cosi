@@ -1,0 +1,14 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "dipas": {
+                    "title": "DIPAS",
+                    "showProject": "Show project on the map",
+                    "showContributions": "Show contributions on the map",
+                    "showHeatmap": "Show heatmap on the map"
+                }
+            }
+        }
+    }
+}

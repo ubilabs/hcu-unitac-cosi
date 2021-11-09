@@ -364,14 +364,14 @@ export default {
         async parseScenarios (scenarios) {
             const parser = new GeoJSON();
 
-            return scenarios.map(scenario => await this.parseScenario(scenario, parser));
+            return Promise.all(scenarios.map(async scenario => this.parseScenario(scenario, parser)));
         },
 
         async parseScenario (scenario, parser) {
             console.log(scenario);
             const
-                simulatedFeatures = scenario.simulatedFeatures.map(scenarioFeature => await this.parseScenarioFeature(scenarioFeature, parser)),
-                modifiedFeatures = scenario.modifiedFeatures.map(scenarioFeature => await this.parseScenarioFeature(scenarioFeature, parser, true)),
+                simulatedFeatures = await Promise.all(scenario.simulatedFeatures.map(async scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser))),
+                modifiedFeatures = await Promise.all(scenario.modifiedFeatures.map(async scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser, true))),
                 neighborhoods = scenario.neighborhoods.map(scenarioFeature => this.parseScenarioNeighborhood(scenarioFeature, parser)),
                 _scenario = new Scenario(
                     scenario.name,

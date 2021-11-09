@@ -812,7 +812,7 @@ export default {
     #features-list {
         height: 100%;
         .features-list-table-wrapper {
-           height: calc(100% - 160px);
+           height: calc(100% - 170px);
             display: block;
             position: relative;
            .features-list-table {
