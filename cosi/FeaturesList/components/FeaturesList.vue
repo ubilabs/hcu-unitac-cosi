@@ -579,8 +579,7 @@ export default {
             v-if="active"
             #toolBody
         >
-<<<<<<< HEAD
-            <v-app>
+            <v-app id="features-list-wrapper">
                 <div class="my-2">
                     <v-btn
                         id="export-table"
@@ -606,9 +605,6 @@ export default {
                         {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
                     </v-btn>
                 </div>
-=======
-            <v-app id="features-list-wrapper">
->>>>>>> cosi/dev
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
                         <div class="form-group selection">
@@ -816,7 +812,7 @@ export default {
     #features-list {
         height: 100%;
         .features-list-table-wrapper {
-           height: calc(100% - 160px);
+           height: calc(100% - 170px);
             display: block;
             position: relative;
            .features-list-table {
