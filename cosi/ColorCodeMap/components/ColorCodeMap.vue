@@ -236,7 +236,7 @@ export default {
                                 width: 3
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
-                                ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale)
+                                ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
                                 : this.$t("additional:modules.tools.colorCodeMap.noData")
                         });
                         styleArray.push(new Style(getStyling));
