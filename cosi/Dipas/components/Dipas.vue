@@ -26,7 +26,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "layerById"])
+        ...mapGetters("Map", ["map", "layerById", "projectionCode"])
     },
     watch: {
     },
@@ -129,23 +129,17 @@ export default {
 
             return json;
         },
-        transformFeatures (features, crs = "EPSG:4326", mapcrs = "EPSG:25832") {
-            features.forEach(function (feature) {
-                const geometry = feature.getGeometry();
-                // referenceSystem = feature.getProperties().referenceSystem;
-
-                if (geometry) {
-                    geometry.transform(crs, mapcrs);
-                }
-            });
+        transformFeatures (features) {
+            features.forEach(feature => this.transformFeature(feature));
             return features;
         },
         transformFeature (feature) {
-            const geometry = feature.getGeometry(),
-                referenceSystem = feature.getProperties().referenceSystem;
+            const geometry = feature.getGeometry();
+            let referenceSystem = feature.getProperties().referenceSystem;
 
+            referenceSystem = referenceSystem === undefined ? "4326" : referenceSystem;
             if (geometry) {
-                geometry.transform("EPSG:" + referenceSystem, "EPSG:25832");
+                geometry.transform("EPSG:" + referenceSystem, this.projectionCode);
             }
             return feature;
         },
@@ -189,9 +183,9 @@ export default {
                 }
                 layer.features = this.contributions[id].features;
                 model = await this.addLayer(layer);
-                // const layerOnMap = getLayerById(this.map.getLayers().getArray(), "clever-leitsystem-contributions");
+                const layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
 
-                // layerOnMap.setZIndex(2);
+                layerOnMap.setZIndex(2);
                 this.addVectorlayerToMapping(model.attributes);
             }
 
@@ -217,8 +211,7 @@ export default {
                     weight: function (feature) {
                         const votingPro = parseInt(feature.getProperties().votingPro, 10),
                             votingContra = parseInt(feature.getProperties().votingContra, 10),
-                            // weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
-                            weight = votingPro + votingContra;
+                            weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
 
                         return weight;
                     }
