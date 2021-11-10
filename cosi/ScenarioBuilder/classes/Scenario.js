@@ -82,7 +82,7 @@ export default class Scenario {
             console.error(`Scenario.addModifiedFeature: feature must be of Type Feature. Got ${feature?.constructor} instead.`);
             return null;
         }
-        const scenarioFeature = new ScenarioFeature(feature, layer);
+        const scenarioFeature = new ScenarioFeature(feature, layer, this.guideLayer);
 
         /** @todo is this the right place? */
         scenarioFeature.scenario = this;

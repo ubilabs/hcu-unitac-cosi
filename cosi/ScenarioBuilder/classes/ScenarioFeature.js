@@ -126,7 +126,9 @@ export default class ScenarioFeature {
 
             if (this.guideLayer) {
                 removeSimulationTag(this.feature, this.guideLayer);
-                addSimulationTag(this.feature, this.guideLayer);
+                if (this.feature.get("isSimulation")) {
+                    addSimulationTag(this.feature, this.guideLayer);
+                }
             }
 
             if (purge) {
@@ -183,6 +185,7 @@ export default class ScenarioFeature {
                 source.addFeature(this.feature);
             }
         });
+
         this.feature.set("isModified", true);
     }
 

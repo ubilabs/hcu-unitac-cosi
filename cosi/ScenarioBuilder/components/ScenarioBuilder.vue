@@ -11,7 +11,7 @@ import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import Feature from "ol/Feature";
-import {featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
+import {featureTagStyleMod, featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
 import getFieldTypeForValue from "../utils/getFieldTypeForValue";
 import hash from "object-hash";
@@ -163,7 +163,12 @@ export default {
             const newLayer = await this.createLayer(this.id + "_layer");
 
             newLayer.setVisible(true);
-            newLayer.setStyle(featureTagStyle);
+            newLayer.setStyle(function (feature) {
+                if (feature.get("isModified") && !feature.get("isSimulation")) {
+                    return [featureTagStyleMod(feature)];
+                }
+                return [featureTagStyle(feature)];
+            });
             this.setGuideLayer(newLayer);
 
             return newLayer;

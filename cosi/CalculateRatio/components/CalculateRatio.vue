@@ -10,6 +10,7 @@ import DataTable from "./DataTable.vue";
 import Info from "text-loader!./info.html";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
+import GeoJSON from "ol/format/GeoJSON";
 
 export default {
     name: "CalculateRatio",
@@ -149,6 +150,7 @@ export default {
         },
         loadend (newValue) {
             if (newValue && this.selectedStatFeatures.length > 0) {
+
                 this.updateFeaturesList();
             }
         },
@@ -452,6 +454,7 @@ export default {
          */
         coverageFunction (letter) {
             const dataArray = [];
+
 
             this.selectedFeatures.forEach(district => {
                 const name = district.getProperties()[this.keyOfAttrName],
