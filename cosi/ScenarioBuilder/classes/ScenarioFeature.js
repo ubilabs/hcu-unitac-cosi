@@ -1,6 +1,7 @@
 import getClusterSource from "../../utils/getClusterSource";
 import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
 import storeOriginalFeatureData from "../utils/storeOriginalFeatureData";
+import checkAndReplaceOriginalFeature from "../utils/checkAndReplaceOriginalFeature";
 import translateFeature from "../../utils/translateFeature";
 import {unByKey} from "ol/Observable";
 
@@ -195,6 +196,14 @@ export default class ScenarioFeature {
      */
     getOriginalProperties () {
         return this.feature.get("originalData");
+    }
+
+    /**
+     * links a modified feature to the source feature to replace and update it if the source is reloaded
+     * @returns {void}
+     */
+    linkModifiedFeatureToSource () {
+        this.eventKeys[this.feature.getId()] = getClusterSource(this.layer).on("change", () => checkAndReplaceOriginalFeature(this.feature, this.layer));
     }
 
     /**

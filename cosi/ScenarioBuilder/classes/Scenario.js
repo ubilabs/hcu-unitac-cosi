@@ -34,7 +34,7 @@ export default class Scenario {
         }
         if (opts.modifiedFeatures) {
             for (const modifiedFeature of opts.modifiedFeatures) {
-                this.addModifiedFeature(modifiedFeature.feature, modifiedFeature.layer);
+                this.addModifiedFeature(modifiedFeature.feature, modifiedFeature.layer, modifiedFeature.scenarioData);
             }
         }
         if (opts.neighborhoods) {
@@ -75,21 +75,21 @@ export default class Scenario {
      * Modifies a given feature's properties and stores the changes on the scenario
      * @param {module:ol/Feature} feature - the feature to modify
      * @param {module:ol/layer/Vector} layer - the layer the feature is on
+     * @param {Object} [scenarioData] - the properties belonging to the scenario
      * @returns {ScenarioFeature} the created Scenario Feature
      */
-    addModifiedFeature (feature, layer) {
+    addModifiedFeature (feature, layer, scenarioData) {
         if (feature?.constructor !== Feature) {
             console.error(`Scenario.addModifiedFeature: feature must be of Type Feature. Got ${feature?.constructor} instead.`);
             return null;
         }
-        const scenarioFeature = new ScenarioFeature(feature, layer, this.guideLayer);
+        const scenarioFeature = new ScenarioFeature(feature, layer, this.guideLayer, scenarioData);
 
         /** @todo is this the right place? */
         scenarioFeature.scenario = this;
+        scenarioFeature.linkModifiedFeatureToSource();
 
         this.modifiedFeatures.push(scenarioFeature);
-
-        console.log(layer, feature);
 
         return scenarioFeature;
     }
@@ -118,7 +118,6 @@ export default class Scenario {
             }
             scenarioFeature = this.addModifiedFeature(feature, layer);
         }
-
         // store the altered properties in the scenario
         scenarioFeature.setProperties(properties);
         this.updateScenario();

@@ -260,12 +260,12 @@ export default {
             reader.readAsText(file);
         },
 
-        async load (session) {
+        load (session) {
             const state = session.state || session; // fallback for old saves
 
             this.session.meta.title = session.meta?.title || this.session.meta.title;
             this.setActive(false);
-            await this.parseState(this.storePaths, state);
+            this.parseState(this.storePaths, state);
             this.addSingleAlert({
                 content: `Sitzung ${session.meta?.title} vom ${session.meta?.created} erfolgreich geladen.`,
                 category: "Success",
@@ -273,7 +273,7 @@ export default {
             });
         },
 
-        async parseState (map, state, path = []) {
+        parseState (map, state, path = []) {
             for (const key in map) {
                 if (
                     Array.isArray(map[key]) &&
@@ -294,7 +294,7 @@ export default {
 
                         switch (`${key}/${attr}`) {
                             case "ScenarioBuilder/scenarios":
-                                this.$store.commit(mutation, await this.parseScenarios(state[key][attr]));
+                                this.$store.commit(mutation, this.parseScenarios(state[key][attr]));
                                 break;
                             case "DistrictSelector/selectedDistrictNames":
                                 this.$nextTick(() => {
@@ -361,41 +361,34 @@ export default {
             });
         },
 
-        async parseScenarios (scenarios) {
+        parseScenarios (scenarios) {
             const parser = new GeoJSON();
 
-            return Promise.all(scenarios.map(async scenario => this.parseScenario(scenario, parser)));
+            return scenarios.map(scenario => this.parseScenario(scenario, parser));
         },
 
-        async parseScenario (scenario, parser) {
-            console.log(scenario);
+        parseScenario (scenario, parser) {
             const
-                simulatedFeatures = await Promise.all(scenario.simulatedFeatures.map(async scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser))),
-                modifiedFeatures = await Promise.all(scenario.modifiedFeatures.map(async scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser, true))),
+                simulatedFeatures = scenario.simulatedFeatures.map(scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser)),
+                modifiedFeatures = scenario.modifiedFeatures.map(scenarioFeature => this.parseScenarioFeature(scenarioFeature, parser)),
                 neighborhoods = scenario.neighborhoods.map(scenarioFeature => this.parseScenarioNeighborhood(scenarioFeature, parser)),
                 _scenario = new Scenario(
                     scenario.name,
                     this.simGuideLayer,
                     {
                         simulatedFeatures,
-                        // modifiedFeatures,
+                        modifiedFeatures,
                         neighborhoods
                     }
                 );
 
-            console.log(modifiedFeatures)
-
             return _scenario;
         },
 
-        async parseScenarioFeature (scenarioFeature, parser, fromUdp = false) {
-            console.log(scenarioFeature);
+        parseScenarioFeature (scenarioFeature, parser) {
             const
                 layer = this.getTopicsLayer(scenarioFeature.layer),
-                feature = fromUdp
-                    ? await this.getFeatureById(layer, scenarioFeature.feature.id)
-                    || parser.readFeature(scenarioFeature.feature)
-                    : parser.readFeature(scenarioFeature.feature),
+                feature = parser.readFeature(scenarioFeature.feature),
                 scenarioData = scenarioFeature.scenarioData,
                 originalData = scenarioFeature.feature.properties.originalData;
 
@@ -411,8 +404,6 @@ export default {
             if (scenarioData.geometry) {
                 scenarioData.geometry = this.parseGeometry(scenarioData.geometry);
             }
-
-            console.log(feature.get("originalData")?.geometry, scenarioData.geometry);
 
             return new ScenarioFeature(feature, layer, undefined, scenarioData);
         },
@@ -432,7 +423,6 @@ export default {
                 return undefined;
             }
 
-            console.log(type, coordinates);
             return new this.geomConstructors[type](coordinates);
         },
 
@@ -514,13 +504,12 @@ export default {
                     scenarioFeature => this.serializeScenarioFeature(scenarioFeature, parser)
                 ),
                 modifiedFeatures = scenario.getModifiedFeatures().map(
-                    scenarioFeature => this.serializeScenarioFeature(scenarioFeature, parser, false)
+                    scenarioFeature => this.serializeScenarioFeature(scenarioFeature, parser, true)
                 ),
                 neighborhoods = scenario.getNeighborhoods().map(
                     scenarioNeighborhood => this.serializeNeighborhood(scenarioNeighborhood, parser)
                 );
 
-            console.log(modifiedFeatures);
             return {
                 ...scenario,
                 guideLayer: null,
@@ -531,18 +520,8 @@ export default {
             };
         },
 
-        serializeScenarioFeature (scenarioFeature, parser, deleteOriginalData = true) {
+        serializeScenarioFeature (scenarioFeature, parser, revertToOriginalData = false) {
             const feature = parser.writeFeatureObject(scenarioFeature.feature);
-
-            // delete original Data if necessary
-            if (deleteOriginalData && Object.hasOwnProperty.call(feature.properties, "originalData")) {
-                delete feature.properties.originalData;
-            }
-
-            // delete geometry from properties
-            if (Object.hasOwnProperty.call(feature.properties, "geometry")) {
-                delete feature.properties.geometry;
-            }
 
             // serialize geometry (original data)
             if (feature.properties.originalData?.geometry) {
@@ -552,6 +531,24 @@ export default {
             // serialize geometry (scenario data)
             if (scenarioFeature.scenarioData.geometry) {
                 scenarioFeature.scenarioData.geometry = this.serializeGeometry(scenarioFeature.scenarioData.geometry);
+            }
+
+            if (revertToOriginalData) {
+                feature.geometry = feature.properties.originalData?.geometry || feature.geometry;
+                feature.properties = {
+                    ...feature.properties,
+                    ...feature.properties.originalData || {}
+                };
+            }
+
+            // delete original Data if necessary
+            if (Object.hasOwnProperty.call(feature.properties, "originalData")) {
+                delete feature.properties.originalData;
+            }
+
+            // delete geometry from properties
+            if (Object.hasOwnProperty.call(feature.properties, "geometry")) {
+                delete feature.properties.geometry;
             }
 
             return {
@@ -590,31 +587,6 @@ export default {
             return {
                 type, coordinates
             };
-        },
-
-        getFeatureById (layer, id) {
-            return new Promise(res => {
-                let features = layer.getSource().getFeatures(),
-                    feature, i;
-
-                if (features.length > 0) {
-                    feature = layer.getSource().getFeatureById(id);
-                    res(feature);
-                }
-                if (features.length === 0) {
-                    const interval = setInterval(() => {
-                        features = layer.getSource().getFeatures();
-
-                        if (features.length > 0 || i >= 10) {
-                            clearInterval(interval);
-                            feature = layer.getSource().getFeatureById(id);
-                            res(feature);
-                        }
-
-                        i++;
-                    }, 1000);
-                }
-            });
         },
 
         getTopicsLayer (layerId) {
