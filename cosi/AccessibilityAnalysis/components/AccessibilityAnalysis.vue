@@ -8,6 +8,7 @@ import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
 import {exportAsGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
+import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -91,7 +92,7 @@ export default {
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "activeVectorLayerList"]),
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"])
     },
     watch: {
@@ -168,6 +169,9 @@ export default {
         ...mapActions("Map", ["createLayer"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
+
+        // isFeatureActive form utils
+        isFeatureActive,
 
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {

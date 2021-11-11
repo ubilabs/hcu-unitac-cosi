@@ -291,7 +291,7 @@ export default {
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
                 .getSource().getFeatures()
-                .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
+                .filter(this.isFeatureActive);
 
             return features
                 .reduce((res, feature) => {

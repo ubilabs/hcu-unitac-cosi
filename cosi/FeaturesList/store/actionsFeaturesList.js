@@ -64,7 +64,7 @@ const actions = {
      * @param {Object} layerMap - The mappingObj to remove
      * @returns {void}
      */
-    removeVectorlayerFromMapping ({commit, getters}, layerMap) {
+    removeVectorLayerFromMapping ({commit, getters}, layerMap) {
         const {mapping} = getters;
         let _mapping = [...mapping];
 
