@@ -689,6 +689,11 @@ export default {
             // this.setNewDataSet(graphObj);
             this.channelGraphData(graphObj);
         },
+        multiSelectBugWorkaround(event){
+            console.log(event);
+
+            console.log(this.facilityPropertyList_A);
+        },
 
         // the export function from utils
         exportAsGeoJson
@@ -766,6 +771,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                                 @input="getFacilityData('A')"
                             >
                                 <template
@@ -790,6 +799,9 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
                                 @input="checkSumUp('A')"
                             >
                                 <template slot="singleLabel">
@@ -844,6 +856,10 @@ export default {
                                         select-label=""
                                         deselect-label=""
                                         placeholder=""
+                                        :toggle-select-option="false"
+                                        :allow-empty="false"
+                                        :close-on-select="true"
+                                        :clear-on-select="true"
                                     >
                                         <template slot="singleLabel">
                                             <strong>{{ paramFieldA.name }}</strong>
@@ -901,6 +917,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                                 @input="getFacilityData('B')"
                             >
                                 <template slot="singleLabel">
@@ -923,6 +943,9 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
                                 @input="checkSumUp('B')"
                             >
                                 <template slot="singleLabel">
@@ -979,6 +1002,10 @@ export default {
                                         select-label=""
                                         deselect-label=""
                                         placeholder=""
+                                        :toggle-select-option="false"
+                                        :allow-empty="false"
+                                        :close-on-select="true"
+                                        :clear-on-select="true"
                                     >
                                         <template slot="singleLabel">
                                             <strong>{{ paramFieldB.name }}</strong>
@@ -1041,8 +1068,9 @@ export default {
                                 class="btn btn-default xl_btn"
                                 :data="resultData.json_data"
                                 :fields="resultData.json_fields"
+                                type="xls"
                                 worksheet="Versorgungsanalyse"
-                                :name="selectedYear + '_versorgungsanalyse.xlsx'"
+                                :name="selectedYear + '_versorgungsanalyse.xls'"
                             >
                                 <span class="glyphicon glyphicon-download" />
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
@@ -1078,6 +1106,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 placeholder=""
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                             >
                                 <template slot="singleLabel">
                                     <span><strong>{{ columnSelector.name }}</strong></span>
@@ -1114,6 +1146,9 @@ export default {
                                     select-label=""
                                     deselect-label=""
                                     placeholder=""
+                                    :toggle-select-option="false"
+                                    :close-on-select="true"
+                                    :clear-on-select="true"
                                     @input="recalcData()"
                                 >
                                     <template slot="singleLabel">
@@ -1172,18 +1207,20 @@ export default {
 
             .button {
                 flex-basis:30%;
-                background: #222;
+                background:linear-gradient(180deg, #eee, #ddd);
+                border-radius:5px;
                 margin: 0px 5px 5px 0px;
 
                 button {
                     background: transparent;
                     border:none;
-                    color:whitesmoke;
+                    color:#222;
                     font-size:90%;
                 }
 
                 &:hover {
-                    background:#666;
+                    background:#ccc;
+                    cursor:pointer;
                 }
             }
             .selection {
@@ -1219,6 +1256,8 @@ export default {
                                 height:40px;
                                 font-size:70%;
                                 font-weight:700;
+                                border:1px solid #ccc;
+                                border-radius:5px;
                             }
 
                             &.reduced {

@@ -83,8 +83,8 @@ export default {
         formatData () {
             return this.dataSet.map(scope => ({
                 ...scope,
-                paramA_val: scope.paramA_val.toLocaleString("de-DE"),
-                paramB_val: scope.paramB_val.toLocaleString("de-DE"),
+                paramA_val: scope.paramA_val === undefined || scope.paramA_val === null || scope.paramA_val === "NaN" ? "Keine Daten vorhanden" : scope.paramA_val.toLocaleString("de-DE"),
+                paramB_val: scope.paramB_val === undefined || scope.paramB_val === null || scope.paramB_val === "NaN" ? "Keine Daten vorhanden" : scope.paramB_val.toLocaleString("de-DE"),
                 relation: scope.relation.toLocaleString("de-DE"),
                 coverage: (scope.coverage * 100).toLocaleString("de-DE") + "%",
                 capacity: scope.capacity.toLocaleString("de-DE"),
