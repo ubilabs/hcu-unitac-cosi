@@ -33,7 +33,8 @@ const state = {
     yearSelector: "jahr_",
     dataToColorCodeMap: false,
     colorCodeMapDataSet: [],
-    results: []
+    results: [],
+    resultHeaders: {}
 };
 
 export default state;

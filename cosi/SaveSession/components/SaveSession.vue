@@ -32,7 +32,7 @@ export default {
                 Tools: {
                     CalculateRatio: [
                         "results",
-                        "active"
+                        "active",
                     ],
                     ScenarioBuilder: [
                         "scenarios",
@@ -297,7 +297,9 @@ export default {
                                 this.$store.commit(mutation, this.parseScenarios(state[key][attr]));
                                 break;
                             case "DistrictSelector/selectedDistrictNames":
-                                this.$nextTick(() => {
+                                this.$nextTick(async () => {
+                                    // hacky, wait for the districtStyle to be drawn
+                                    await this.$nextTick();
                                     this.setDistrictsByName({
                                         districtNames: state[key][attr],
                                         zoomToExtent: false

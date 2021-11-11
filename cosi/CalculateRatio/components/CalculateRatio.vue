@@ -10,7 +10,6 @@ import DataTable from "./DataTable.vue";
 import Info from "text-loader!./info.html";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
-import GeoJSON from "ol/format/GeoJSON";
 
 export default {
     name: "CalculateRatio",
@@ -74,8 +73,6 @@ export default {
             featureVals: [],
             // Object that helps calculating the data in prepareCoverage function
             calcHelper: {},
-            // Results for rendering in the table
-            // results: [],
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
@@ -446,6 +443,11 @@ export default {
             });
 
             this.setResults(utils.calculateRatio(allData, this.selectedYear));
+            this.setResultHeaders({
+                typeA: Array.isArray(this.selectedFieldA.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldA.id,
+                typeB: Array.isArray(this.selectedFieldB.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldB.id,
+                fActive: this.fActive_A || this.fActive_B
+            });
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -1127,9 +1129,9 @@ export default {
                         </div>
                         <DataTable
                             :data-set="results"
-                            :type-a="Array.isArray(selectedFieldA.id) ? $t('additional:modules.tools.cosi.calculateRatio.addedSelection') : selectedFieldA.id"
-                            :type-b="Array.isArray(selectedFieldB.id) ? $t('additional:modules.tools.cosi.calculateRatio.addedSelection') : selectedFieldB.id"
-                            :f-active="fActive_A || fActive_B ? true : false"
+                            :type-a="resultHeaders.typeA"
+                            :type-b="resultHeaders.typeB"
+                            :f-active="resultHeaders.fActive"
                         />
                     </div>
                 </div>

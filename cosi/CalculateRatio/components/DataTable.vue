@@ -96,7 +96,7 @@ export default {
 </script>
 
 <template lang="html">
-    <div class="data_table">
+    <div class="calc_ratio_results data_table">
         <v-data-table
             :headers="headers"
             :items="formatData"
@@ -120,6 +120,13 @@ export default {
                         </th>
                     </tr>
                 </thead>
+            </template>
+            <template
+                #item.scope="{item}"
+            >
+                <td class="text-start name-cell">
+                    {{ item.scope }}
+                </td>
             </template>
             <template
                 #item.paramA_val="{ item }"
@@ -161,113 +168,116 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
-    .data_table {
+<style lang="less">
+    .calc_ratio_results.data_table {
         overflow:visible;
-    }
-
-    th {
-        position:relative;
-        z-index:10;
-
-        .col_info {
-            position:absolute;
-            opacity:0;
-            pointer-events: none;
-            top:0;
-            left:0;
-            width:auto;
-            height:auto;
-            padding:10px;
-            box-sizing: border-box;
-            background:white;
-            border:1px solid #ccc;
-            z-index:12;
-
-            p {
-                font-size:12px;
-            }
-        }
-
-        &:hover {
-            cursor:pointer;
-            .col_info {
-                opacity:1;
-                pointer-events:all;
-                transition:0.15s linear 0.3s;
-            }
-        }
-    }
-    td {
-        text-align:center;
-    }
-
-    .table_cell {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position:relative;
-        width:100%;
-        height:100%;
-
-        span {
-            color:black;
-            font-weight:900;
-        }
-
-        .hover_helper {
-            position: absolute;
-            pointer-events:none;
-            opacity: 0;
-            top: 0;
-            left: calc(100% - 30px);
-            width: auto;
-            min-width:360px;
-            text-align: center;
-            padding: 10px;
-            box-sizing: border-box;
-            height: auto;
-            background: white;
-            border:1px solid #ccc;
-            pointer-events: none;
-            transition: 0.3s;
+        th {
+            position:relative;
             z-index:10;
 
-            h2 {
-                color:black;
-                font-size:13px;
-                font-weight:700;
-                text-align:left;
-                padding-bottom:5px;
-                margin-bottom:5px;
-                border-bottom:1px solid #ccc;
-                text-transform: none;
+            .col_info {
+                position:absolute;
+                opacity:0;
+                pointer-events: none;
+                top:0;
+                left:0;
+                width:auto;
+                height:auto;
+                padding:10px;
+                box-sizing: border-box;
+                background:white;
+                border:1px solid #ccc;
+                z-index:12;
 
-                strong {
-                    font-size:16px;
-                    margin-right:10px;
+                p {
+                    font-size:12px;
                 }
             }
 
-            p {
-                color:#888;
-                font-size:12px;
+            &:hover {
+                cursor:pointer;
+                .col_info {
+                    opacity:1;
+                    pointer-events:all;
+                    transition:0.15s linear 0.3s;
+                }
+            }
+        }
+        td {
+            text-align: right;
+            vertical-align: middle;
+            &.name_cell {
                 text-align:left;
             }
         }
 
-        &.lower {
-            .hover_helper {
-                top:auto;
-                bottom:0;
-            }
-        }
+        .table_cell {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            position:relative;
+            width:100%;
+            height:100%;
 
-        &:hover {
+            span {
+                color:black;
+                font-weight:900;
+            }
+
             .hover_helper {
-                opacity:1;
-                pointer-events:all;
-                transition:0.3s;
+                position: absolute;
+                pointer-events:none;
+                opacity: 0;
+                top: 0;
+                left: calc(100% - 30px);
+                width: auto;
+                min-width:360px;
+                text-align: center;
+                padding: 10px;
+                box-sizing: border-box;
+                height: auto;
+                background: white;
+                border:1px solid #ccc;
+                pointer-events: none;
+                transition: 0.3s;
+                z-index:10;
+
+                h2 {
+                    color:black;
+                    font-size:13px;
+                    font-weight:700;
+                    text-align:left;
+                    padding-bottom:5px;
+                    margin-bottom:5px;
+                    border-bottom:1px solid #ccc;
+                    text-transform: none;
+
+                    strong {
+                        font-size:16px;
+                        margin-right:10px;
+                    }
+                }
+
+                p {
+                    color:#888;
+                    font-size:12px;
+                    text-align:left;
+                }
+            }
+
+            &.lower {
+                .hover_helper {
+                    top:auto;
+                    bottom:0;
+                }
+            }
+
+            &:hover {
+                .hover_helper {
+                    opacity:1;
+                    pointer-events:all;
+                    transition:0.3s;
+                }
             }
         }
     }

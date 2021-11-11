@@ -223,6 +223,10 @@ export default {
          * @returns {void}
          */
         setFeatureProperties (feature, properties, geometry) {
+            // delete potential geometry from properties
+            if (Object.hasOwnProperty.call(properties, "geometry")) {
+                delete properties.geometry;
+            }
             // set properties
             feature.setProperties(properties);
             // flag as simulated
