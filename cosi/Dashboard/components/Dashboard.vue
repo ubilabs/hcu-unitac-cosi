@@ -28,12 +28,6 @@ export default {
             dashboardOpen: false,
             rows: [],
             baseColumns: [
-                {
-                    value: "menu",
-                    filterable: false,
-                    sortable: false,
-                    groupable: false
-                },
                 // {
                 //     value: "group",
                 //     text: this.$t("additional:modules.tools.cosi.dashboard.groupCol")
@@ -50,6 +44,12 @@ export default {
 
                         return this.statsFeatureFilter.map(t => typeof t === "string" ? t : t.value).includes(value);
                     }
+                },
+                {
+                    value: "menu",
+                    filterable: false,
+                    sortable: false,
+                    groupable: false
                 },
                 {
                     value: "years",
@@ -449,16 +449,15 @@ export default {
                                 class="dashboard-table"
                             >
                                 <!-- Header for years selector -->
-                                <template #header.years="{ header }">
+                                <template #[`header.years`]>
                                     <v-select
                                         v-model="currentTimeStamp"
                                         :items="timestamps"
+                                        :height="20"
+                                        :label="$t('additional:modules.tools.cosi.dashboard.timestampCol')"
                                         dense
-                                    >
-                                        <template #prepend>
-                                            <span>{{ $t('additional:modules.tools.cosi.dashboard.timestampCol') }}</span>
-                                        </template>
-                                    </v-select>
+                                        hide-details
+                                    />
                                 </template>
 
                                 <!-- Header for districts -->
@@ -492,7 +491,7 @@ export default {
                                         </template>
                                     </div>
                                 </template>
-                                <template #group.header="{items, isOpen, toggle, headers}">
+                                <template #[`group.header`]="{items, isOpen, toggle, headers}">
                                     <th
                                         :colspan="headers.length"
                                         class="text-start"
@@ -505,7 +504,7 @@ export default {
                                 </template>
 
                                 <!-- Base Columns -->
-                                <template #item.years="{ item }">
+                                <template #[`item.years`]="{ item }">
                                     <div class="text-end">
                                         <template v-if="item.expanded">
                                             <ul class="timeline">
@@ -522,7 +521,7 @@ export default {
                                         </template>
                                     </div>
                                 </template>
-                                <template #item.menu="{ item }">
+                                <template #[`item.menu`]="{ item }">
                                     <TableRowMenu
                                         :item="item"
                                         :fields="fields"
@@ -585,9 +584,7 @@ export default {
                                 </template>
 
                                 <!-- Columns for aggregated data -->
-                                <template
-                                    #item.average="{ item }"
-                                >
+                                <template #[`item.average`]="{ item }">
                                     <!--eslint-disable-next-line-->
                                     <v-tooltip
                                         bottom
@@ -617,15 +614,12 @@ export default {
                                         <span>{{ $t('additional:modules.tools.cosi.dashboard.avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
                                     </v-tooltip>
                                 </template>
-                                <template
-                                    #item.total="{ item }"
-                                >
+                                <template #[`item.total`]="{ item }">
                                     <v-tooltip
                                         bottom
                                         :nudge-top="60"
                                     >
                                         <template #activator="{ on, attrs }">
-                                            <!--eslint-disable-next-line-->
                                             <div
                                                 class="text-end"
                                                 v-bind="attrs"

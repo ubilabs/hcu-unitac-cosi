@@ -52,6 +52,7 @@ export default {
         >
             <template #activator="{ on, attrs }">
                 <v-icon
+                    title="Menü öffnen"
                     v-bind="attrs"
                     v-on="on"
                 >
@@ -249,10 +250,16 @@ export default {
                 </v-list>
             </v-card>
         </v-menu>
-        <v-icon @click="renderVisualization">
+        <v-icon
+            title="In der Karte ein-/ausblenden"
+            @click="renderVisualization"
+        >
             {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
         </v-icon>
-        <v-icon @click="_item.expanded = !_item.expanded">
+        <v-icon
+            title="Alle Jahre ein-/ausblenden"
+            @click="_item.expanded = !_item.expanded"
+        >
             {{ _item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
         </v-icon>
     </div>

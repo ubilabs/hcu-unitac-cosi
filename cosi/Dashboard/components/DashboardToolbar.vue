@@ -54,7 +54,7 @@ export default {
         dense
         align-content="end"
     >
-        <v-col cols="5">
+        <v-col cols="8">
             <v-autocomplete
                 v-model="_statsFeatureFilter"
                 :items="statsMapping"
@@ -64,6 +64,7 @@ export default {
                 dense
                 multiple
                 clearable
+                hide-details
             >
                 <template #selection="{ item, index }">
                     <v-chip
@@ -81,7 +82,7 @@ export default {
                 </template>
             </v-autocomplete>
         </v-col>
-        <v-col cols="5">
+        <!-- <v-col cols="5">
             <v-text-field
                 v-model="_search"
                 type="text"
@@ -90,10 +91,11 @@ export default {
                 outlined
                 dense
             />
-        </v-col>
+        </v-col> -->
         <v-col cols="2">
             <v-icon
                 title="Metadaten öffnen"
+                class="mt-2"
                 @click="openMetadata()"
             >
                 mdi-information
