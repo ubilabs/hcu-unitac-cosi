@@ -82,6 +82,10 @@ export default {
             ],
             districtColumns: [],
             items: [],
+            // all current (visible) items in the table
+            currentItems: [],
+            // selected items in the table
+            selectedItems: [],
             timestampPrefix: "jahr_",
             timestamps: [],
             currentTimeStamp: null,
@@ -374,15 +378,18 @@ export default {
         },
 
         /**
-         * Export the table as XLSX
-         * Either the simple view for the selected or all years
-         * @param {Boolean} exportTimeline - whether to include all years
+         * Export the table as XLSX.
+         * Either the simple view for the selected or all years.
+         * @param {Boolean} exportTimeline - Whether to include all years.
+         * @param {Object[]} selectedItems - Selected items in the table.
+         * @param {Object[]} currentItems - All current (visible) items in the table
          * @returns {void}
          */
-        exportTable (exportTimeline = false) {
-            const data = exportTimeline
-                    ? prepareTableExportWithTimeline(this.items, this.timestamps, this.timestampPrefix)
-                    : prepareTableExport(this.items, this.selectedYear, this.timestampPrefix),
+        exportTable (exportTimeline = false, selectedItems, currentItems) {
+            const items = selectedItems.length > 0 ? selectedItems : currentItems,
+                data = exportTimeline
+                    ? prepareTableExportWithTimeline(items, this.timestamps, this.timestampPrefix)
+                    : prepareTableExport(items, this.selectedYear, this.timestampPrefix),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
 
             exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
@@ -406,6 +413,15 @@ export default {
          */
         setSearch (value) {
             this.search = value;
+        },
+
+        /**
+         * Sets the current (visible) items of the table.
+         * @param {Object[]} items - The of the table.
+         * @returns {void}
+         */
+        setCurrentItems (items) {
+            this.currentItems = items;
         }
 
     }
@@ -439,6 +455,7 @@ export default {
                         />
                         <v-row class="dashboard-table-wrapper">
                             <v-data-table
+                                v-model="selectedItems"
                                 :headers="columns"
                                 :items="items"
                                 group-by="groupIndex"
@@ -450,6 +467,7 @@ export default {
                                 show-select
                                 item-key="category"
                                 class="dashboard-table"
+                                @current-items="setCurrentItems"
                             >
                                 <!-- Header for years selector -->
                                 <template #[`header.years`]>
@@ -654,7 +672,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
-                                    @click="exportTable(false)"
+                                    @click="exportTable(false, selectedItems, currentItems)"
                                 >
                                     {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
                                 </v-btn>
@@ -662,7 +680,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-                                    @click="exportTable(true)"
+                                    @click="exportTable(true, selectedItems, currentItems)"
                                 >
                                     {{ $t('additional:modules.tools.cosi.dashboard.exportTableTimeline') }}
                                 </v-btn>
