@@ -72,8 +72,6 @@ export default {
             saveDialog: false,
             saveMode: "quickSave",
             sessionFile: null,
-            showTemplates: false,
-            templates: [],
             autoSave: false,
             autoSaveInterval: undefined,
             autoSaveDialog: false,
@@ -147,7 +145,6 @@ export default {
     },
     mounted () {
         this.localStorage = window.localStorage;
-        this.loadTemplates();
 
         const
             autoSave = JSON.parse(this.localStorage.getItem("cosi-auto-save")),
@@ -202,31 +199,6 @@ export default {
         storeToLocalStorage () {
             console.log(this.session);
             this.localStorage.setItem("cosi-state", JSON.stringify(this.session));
-        },
-
-        async loadTemplates () {
-            let path, res;
-            const templates = [];
-
-            for (const filename of this.templateFiles) {
-                path = `${this.templatePath}/${filename}.json`;
-
-                try {
-                    res = await fetch(path);
-                    templates.push(await res.json());
-                }
-                catch (e) {
-                    console.warn(`Template at ${path} could not be loaded. Please check that it is a valid JSON file.`)
-                }
-            }
-
-            this.templates = templates;
-        },
-
-        async loadFromTemplate (template) {
-            this.showTemplates = false;
-            await this.$nextTick();
-            this.load(template);
         },
 
         loadLastSession () {
@@ -317,18 +289,6 @@ export default {
             }
 
             return Radio.request("ModelList", "getModelByAttributes", {id: layerId});
-        },
-
-        showTemplateInfo (template) {
-            this.addSingleAlert({
-                content: template.meta?.info,
-                category: "Info",
-                displayClass: "info"
-            });
-        },
-
-        escapeSelectFromTemplates () {
-            this.showTemplates = false;
         },
 
         onSavePrompt () {
@@ -475,7 +435,7 @@ export default {
                                 />
                             </v-col>
                             <v-col
-                                cols="3"
+                                cols="6"
                                 class="flex"
                             >
                                 <v-btn
@@ -488,72 +448,8 @@ export default {
                                     {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
                                 </v-btn>
                             </v-col>
-                            <v-col
-                                cols="3"
-                                class="flex"
-                            >
-                                <v-btn
-                                    id="load-from-templates"
-                                    tile
-                                    depressed
-                                    :title="$t('additional:modules.tools.cosi.saveSession.templates')"
-                                    @click="showTemplates = true"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.saveSession.templates') }}
-                                </v-btn>
-                            </v-col>
                         </v-row>
                     </v-container>
-                    <Modal
-                        :show-modal="showTemplates"
-                        @modalHid="escapeSelectFromTemplates"
-                        @clickedOnX="escapeSelectFromTemplates"
-                        @clickedOutside="escapeSelectFromTemplates"
-                    >
-                        <v-container>
-                            <v-card-title primary-title>
-                                <v-icon
-                                    class="template-info-button"
-                                >
-                                    mdi-file-cog
-                                </v-icon>
-                                {{ $t("additional:modules.tools.cosi.saveSession.loadFromTemplate") }}
-                            </v-card-title>
-                            <v-subheader>
-                                {{ $t("additional:modules.tools.cosi.saveSession.infoLoadFromTemplates") }}
-                            </v-subheader>
-                            <v-list dense>
-                                <v-list-item-group
-                                    color="primary"
-                                >
-                                    <v-list-item
-                                        v-for="(template, i) in templates"
-                                        :key="i"
-                                        @click="loadFromTemplate(template)"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-tooltip left>
-                                                <template #activator="{ on, attrs }">
-                                                    <v-icon
-                                                        class="template-info-button"
-                                                        v-bind="attrs"
-                                                        v-on="on"
-                                                    >
-                                                        mdi-help-circle
-                                                    </v-icon>
-                                                </template>
-                                                {{ template.meta ? template.meta.info : $t("additional:modules.tools.cosi.saveSession.noInfo") }}
-                                            </v-tooltip>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            <v-list-item-title v-text="template.meta.title" />
-                                            <v-list-item-subtitle v-text="template.meta.created" />
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                </v-list-item-group>
-                            </v-list>
-                        </v-container>
-                    </Modal>
                 </v-app>
             </template>
         </Tool>
@@ -673,10 +569,6 @@ export default {
 
     .hidden {
         display: hidden;
-    }
-
-    .template-info-button {
-        margin-right: 20px;
     }
 
     #title-field {
