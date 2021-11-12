@@ -446,7 +446,8 @@ export default {
             this.setResultHeaders({
                 typeA: Array.isArray(this.selectedFieldA.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldA.id,
                 typeB: Array.isArray(this.selectedFieldB.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldB.id,
-                fActive: this.fActive_A || this.fActive_B
+                fActive: this.fActive_A || this.fActive_B,
+                faktorF: `${this.faktorf_B} / ${this.faktorf_A}`
             });
         },
         /**
@@ -1132,6 +1133,7 @@ export default {
                             :type-a="resultHeaders.typeA"
                             :type-b="resultHeaders.typeB"
                             :f-active="resultHeaders.fActive"
+                            :faktor-f="resultHeaders.faktorF"
                         />
                     </div>
                 </div>

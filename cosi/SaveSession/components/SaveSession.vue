@@ -31,8 +31,9 @@ export default {
                 ],
                 Tools: {
                     CalculateRatio: [
+                        "resultHeaders",
                         "results",
-                        "active",
+                        "active"
                     ],
                     ScenarioBuilder: [
                         "scenarios",
@@ -45,6 +46,16 @@ export default {
                     ],
                     AccessibilityAnalysis: [
                         "isochroneFeatures",
+                        "rawGeoJson",
+                        "mode",
+                        "coordinate",
+                        "clickCoordinate",
+                        "selectedFacilityName",
+                        "setByFeature",
+                        "transportType",
+                        "scaleUnit",
+                        "distance",
+                        "steps",
                         "active"
                     ]
                 }
@@ -464,7 +475,7 @@ export default {
             let res;
 
             if (!Array.isArray(val)) {
-                if (val.constructor === Feature) {
+                if (val?.constructor === Feature) {
                     res = parser.writeFeatureObject(val);
 
                     res.properties.isOlFeature = true;

@@ -23,6 +23,11 @@ export default {
         fActive: {
             type: Boolean,
             default: false
+        },
+        // The ratio between F_A and F_B
+        faktorF: {
+            type: String,
+            default: "1/1"
         }
     },
     computed: {
@@ -67,13 +72,13 @@ export default {
                     text: "Bedarf",
                     value: "need",
                     show: this.fActive,
-                    help: "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden."
+                    help: "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F (" + this.faktorF + ") bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden."
                 },
                 {
                     text: "Bedarfsdeckung",
                     value: "coverage",
                     show: true,
-                    help: "Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
+                    help: "Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F (" + this.faktorF + ") und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
                 }
             ];
 
@@ -113,7 +118,12 @@ export default {
                             v-for="header in props.headers"
                             :key="header.text"
                         >
-                            <p><strong>{{ header.text }}</strong></p>
+                            <p>
+                                <strong>{{ header.text }}</strong>
+                                <template v-if="header.value === 'capacity' || header.value === 'need'">
+                                    <br><small>(F = {{ faktorF }})</small>
+                                </template>
+                            </p>
                             <div class="col_info">
                                 <p>{{ header.help }}</p>
                             </div>
