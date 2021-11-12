@@ -26,7 +26,7 @@
                     "resetTooltip": "Alle Eingaben zurücksetzen",
                     "swapFields": "Datenfelder A und B tauschen",
                     "addFactor": "Faktor (F) hinzufügen",
-                    "addFactorTooltip": "Fügen Sie einen Verrechnungsfaktor hinzu",
+                    "addFactorTooltip": "Fügen Sie einen Verrechnungsfaktor hinzu. Dieser Faktor wird in die Bedarfs- und Kapazitätsberechnung mit einkalkuliert. Wählen Sie beispielsweise einen Faktor von 0,1 bedeutet das, dass eine Entität des ausgewählten Themas pro 10 Entitäten der Vergleichsgruppe benötigt würde.",
                     "switchFieldType": "Statische Daten / Einrichtungsdaten wechseln",
                     "calcPer": "berechnen pro",
                     "ofData": "der Datengrundlage",

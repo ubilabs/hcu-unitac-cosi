@@ -473,9 +473,10 @@ export default {
                 id: "ccm",
                 name: [this.label] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart", "PieChart"],
-                color: "rgb(50,200,120)",
+                color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
+                beginAtZero: true,
                 source: this.$t("additional:modules.tools.colorCodeMap.title"),
-                scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabal")],
+                scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabel")],
                 data: {
                     labels: [],
                     dataSets: []
@@ -520,7 +521,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
-                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabal')"
+                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">

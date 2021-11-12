@@ -591,7 +591,6 @@ export default {
                     });
                 }
             });
-
             return featureDataList;
         },
         /**
@@ -646,7 +645,7 @@ export default {
                     id: "calcratio",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
                     type: ["LineChart", "BarChart"],
-                    color: "green",
+                    color: "rainbow",
                     source: "Versorgungsanalyse",
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
@@ -688,11 +687,6 @@ export default {
 
             // this.setNewDataSet(graphObj);
             this.channelGraphData(graphObj);
-        },
-        multiSelectBugWorkaround(event){
-            console.log(event);
-
-            console.log(this.facilityPropertyList_A);
         },
 
         // the export function from utils

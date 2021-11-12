@@ -28,8 +28,8 @@ function calculateSingle (calcObj, dataSet) {
     const relation = calcObj.paramA_val / calcObj.paramB_val,
         capacity = calcObj.paramA_val * (dataSet.faktorf_B / dataSet.faktorf_A),
         need = calcObj.paramB_val * (dataSet.faktorf_A / dataSet.faktorf_B),
-        coverageA = (calcObj.paramA_val / need) * dataSet.perCalc_B,
-        coverageB = (calcObj.paramB_val / need) * dataSet.perCalc_A,
+        coverageA = ((calcObj.paramA_val / need) * dataSet.perCalc_B) * 100,
+        coverageB = ((calcObj.paramB_val / need) * dataSet.perCalc_A) * 100,
         weightedRelation = relation * (dataSet.perCalc_A / dataSet.perCalc_B);
 
     calcObj.relation = relation;

@@ -228,7 +228,7 @@ export default {
             this.newLayer.autoStyle = this.autoStyle;
             this.newLayer.autoStyleValue = this.autoStyleValue;
             this.newLayer.style.svg = this.svgColor;
-            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.mouseHoverField, this.searchField, ...this.numericalValues.map(x => x.id)])].map(set => {
+            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.searchField, ...this.numericalValues.map(x => x.id)])].map(set => {
                 const obj = {
                     name: set,
                     matchingMode: "AND"
@@ -339,8 +339,8 @@ export default {
                 displayClass: cssClass
             });
         },
-        showInfo () {
-            this.showAlert(this.$t("additional:modules.tools.cosiFileImport.autoStyleInfo"));
+        showInfo (message) {
+            this.showAlert(message);
         },
 
         /**
@@ -424,6 +424,7 @@ export default {
                             v-model="currentCrs"
                             dense
                             :items="availableCrs"
+                            :title="$t('additional:modules.tools.cosiFileImport.crsTooltip')"
                         />
                     </v-col>
                 </v-row>
@@ -517,15 +518,17 @@ export default {
                                                     </div>
                                                 </div>
                                                 <div class="autostyle">
-                                                    <v-checkbox
-                                                        v-model="autoStyle"
-                                                        label="Farbe nach Attributen"
-                                                    />
-                                                    <div
-                                                        class="info_icon"
-                                                        @click="showInfo"
-                                                    >
-                                                        i
+                                                    <div class="info_wrapper">
+                                                        <v-checkbox
+                                                            v-model="autoStyle"
+                                                            label="Farbe nach Attributen"
+                                                        />
+                                                        <div
+                                                            class="info_icon"
+                                                            @click="showInfo($t('additional:modules.tools.cosiFileImport.autoStyleTooltip'))"
+                                                        >
+                                                            i
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div
@@ -557,17 +560,24 @@ export default {
                                             </div>
                                             <div
                                                 v-if="autoStyle && autoStyleValue && isNaN(parseFloat(newLayer.features[0].get(autoStyleValue)))"
-                                                class="grp_wrapper"
+                                                class="grp_wrapper rainbow"
                                             >
-                                                <p class="featuresInfo">
+                                                <p>
                                                     <strong>Regenbogenfarbspektrum</strong>
-                                                    {{ $t("additional:modules.tools.cosiFileImport.featuresInfoRainbow") }}
                                                 </p>
-                                                <v-checkbox
-                                                    v-model="newLayer.rainbow"
-                                                    label="Regenbogenfarbspektrum"
-                                                    type="checkbox"
-                                                />
+                                                <div class="info_wrapper">
+                                                    <v-checkbox
+                                                        v-model="newLayer.rainbow"
+                                                        label="Regenbogenfarbspektrum"
+                                                        type="checkbox"
+                                                    />
+                                                    <div
+                                                        class="info_icon"
+                                                        @click="showInfo($t('additional:modules.tools.cosiFileImport.rainbowTooltip'))"
+                                                    >
+                                                        i
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div
                                                 v-if="!newLayer.rainbow"
@@ -615,153 +625,176 @@ export default {
                                         </div>
                                     </div>
                                     <div
-                                        class="feat_wrapper filter"
+                                        class="feat_wrapper facility"
                                         @click="e => e.target.classList.toggle('active')"
                                     >
-                                        <h3>{{ $t("additional:modules.tools.cosiFileImport.filter") }}</h3>
+                                        <h3>{{ $t("additional:modules.tools.cosiFileImport.facility") }}</h3>
                                         <p class="featuresInfo">
                                             {{ $t("additional:modules.tools.cosiFileImport.featuresInfoFilter") }}
                                         </p>
                                         <div class="type">
-                                            <v-select
-                                                v-model="searchField"
-                                                :items="newLayerValues"
-                                                label="Typen-Feld bestimmen"
-                                                item-value="key"
-                                            >
-                                                <template
-                                                    slot="selection"
-                                                    slot-scope="data"
+                                            <div class="info_wrapper">
+                                                <v-select
+                                                    v-model="mouseHoverField"
+                                                    :items="newLayerValues"
+                                                    label="Namens-Feld bestimmen"
+                                                    item-value="key"
                                                 >
-                                                    <span>{{ data.item.key }}</span>
-                                                </template>
-                                                <template
-                                                    slot="item"
-                                                    slot-scope="data"
+                                                    <template
+                                                        slot="selection"
+                                                        slot-scope="data"
+                                                    >
+                                                        <span>{{ data.item.key }}</span>
+                                                    </template>
+                                                    <template
+                                                        slot="item"
+                                                        slot-scope="data"
+                                                    >
+                                                        <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
+                                                    </template>
+                                                </v-select>
+                                                <div
+                                                    class="info_icon"
+                                                    @click="showInfo($t('additional:modules.tools.cosiFileImport.namensfeldTooltip'))"
                                                 >
-                                                    <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
-                                                </template>
-                                            </v-select>
+                                                    i
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="type">
-                                            <v-select
-                                                v-model="mouseHoverField"
-                                                :items="newLayerValues"
-                                                label="Namens-Feld bestimmen"
-                                                item-value="key"
-                                            >
-                                                <template
-                                                    slot="selection"
-                                                    slot-scope="data"
-                                                >
-                                                    <span>{{ data.item.key }}</span>
-                                                </template>
-                                                <template
-                                                    slot="item"
-                                                    slot-scope="data"
-                                                >
-                                                    <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
-                                                </template>
-                                            </v-select>
-                                        </div>
-                                        <div class="filterdata">
-                                            <ul v-if="filterWhiteList.length">
-                                                <h4>{{ $t("additional:modules.tools.cosiFileImport.filterSelection") }}</h4>
-                                                <li
-                                                    v-for="(set, i) in filterWhiteList"
-                                                    :key="i"
-                                                >
-                                                    <p>{{ set }}</p>
-                                                    <v-btn
-                                                        @click="removeFilterFromWhiteList(i)"
-                                                    >
-                                                        <v-icon>mdi-close</v-icon>
-                                                    </v-btn>
-                                                </li>
-                                            </ul>
-                                            <v-btn
-                                                v-if="!addFilter"
-                                                class="add"
-                                                @click="addFilter = !addFilter"
-                                            >
-                                                <p>
-                                                    {{ $t("additional:modules.tools.cosiFileImport.addSetToFilter") }}
-                                                </p>
-                                                <v-icon>mdi-plus-thick</v-icon>
-                                            </v-btn>
-                                            <div
-                                                v-if="addFilter"
-                                                class="select_popup"
-                                            >
+                                            <div class="info_wrapper">
                                                 <v-select
-                                                    :items="newLayerValues.filter(x => !filterWhiteList.includes(x.key))"
+                                                    v-model="searchField"
+                                                    :items="newLayerValues"
+                                                    label="Typen-Feld bestimmen"
                                                     item-value="key"
-                                                    item-text="key"
-                                                    label="Datensatz auswählen"
-                                                    solo
-                                                    @input="addFilterToWhiteList"
-                                                />
+                                                >
+                                                    <template
+                                                        slot="selection"
+                                                        slot-scope="data"
+                                                    >
+                                                        <span>{{ data.item.key }}</span>
+                                                    </template>
+                                                    <template
+                                                        slot="item"
+                                                        slot-scope="data"
+                                                    >
+                                                        <span><strong>{{ data.item.key }}</strong>: {{ data.item.value }}</span>
+                                                    </template>
+                                                </v-select>
+                                                <div
+                                                    class="info_icon"
+                                                    @click="showInfo($t('additional:modules.tools.cosiFileImport.typenfeldTooltip'))"
+                                                >
+                                                    i
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            v-if="noAddress"
+                                            class="address"
+                                            @click="e => e.target.classList.toggle('active')"
+                                        >
+                                            <h4>{{ $t("additional:modules.tools.cosiFileImport.address") }}</h4>
+                                            <p>
+                                                {{ $t("additional:modules.tools.cosiFileImport.featuresInfoAddress") }}
+                                            </p>
+                                            <template v-if="noPreselectedData">
+                                                <h4>{{ $t("additional:modules.tools.cosiFileImport.preSelectedData") }}</h4>
+                                                <p>{{ $t("additional:modules.tools.cosiFileImport.preSelectedDataFound") }}</p>
+                                                <v-btn
+                                                    class="viewall"
+                                                    @click="noPreselectedData = false"
+                                                >
+                                                    {{ $t("additional:modules.tools.cosiFileImport.viewAllData") }}
+                                                </v-btn>
+
+                                                <ul class="address">
+                                                    <li
+                                                        v-for="(data, i) in preAddress"
+                                                        :key="i"
+                                                        class="vis"
+                                                    >
+                                                        <label><strong>{{ data }}</strong></label>
+                                                        <input
+                                                            v-model="addressSetup"
+                                                            type="checkbox"
+                                                            :value="data"
+                                                        >
+                                                    </li>
+                                                </ul>
+                                            </template>
+                                            <template v-else>
+                                                <ul class="address">
+                                                    <li
+                                                        v-for="(data, dataKey, i) in newLayer.features[0].values_"
+                                                        :key="i"
+                                                        :class="{ vis: dataKey !== 'geometry' && dataKey !== 'address' }"
+                                                    >
+                                                        <label><strong>{{ dataKey }}</strong></label>
+                                                        <input
+                                                            v-model="addressSetup"
+                                                            type="checkbox"
+                                                            :value="dataKey"
+                                                        >
+                                                    </li>
+                                                </ul>
+                                            </template>
+                                            <div
+                                                v-if="addressSetup.length"
+                                                class="example"
+                                            >
+                                                <span
+                                                    v-for="(string, index) in addressSetup"
+                                                    :key="string"
+                                                ><span v-if="index > 0">, </span>{{ newLayer.features[0].getProperties()[string] }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div
-                                        v-if="noAddress"
-                                        class="feat_wrapper address"
+                                        class="feat_wrapper filterdata filter"
                                         @click="e => e.target.classList.toggle('active')"
                                     >
-                                        <h3>{{ $t("additional:modules.tools.cosiFileImport.address") }}</h3>
+                                        <h3>{{ $t("additional:modules.tools.cosiFileImport.filter") }}</h3>
                                         <p class="featuresInfo">
-                                            {{ $t("additional:modules.tools.cosiFileImport.featuresInfoAddress") }}
+                                            {{ $t("additional:modules.tools.cosiFileImport.filterInfo") }}
                                         </p>
-                                        <template v-if="noPreselectedData">
-                                            <h4>{{ $t("additional:modules.tools.cosiFileImport.preSelectedData") }}</h4>
-                                            <p>{{ $t("additional:modules.tools.cosiFileImport.preSelectedDataFound") }}</p>
-                                            <v-btn
-                                                class="viewall"
-                                                @click="noPreselectedData = false"
+                                        <ul v-if="filterWhiteList.length">
+                                            <h4>{{ $t("additional:modules.tools.cosiFileImport.filterSelection") }}</h4>
+                                            <li
+                                                v-for="(set, i) in filterWhiteList"
+                                                :key="i"
                                             >
-                                                {{ $t("additional:modules.tools.cosiFileImport.viewAllData") }}
-                                            </v-btn>
-
-                                            <ul class="address">
-                                                <li
-                                                    v-for="(data, i) in preAddress"
-                                                    :key="i"
-                                                    class="vis"
+                                                <p>{{ set }}</p>
+                                                <v-btn
+                                                    @click="removeFilterFromWhiteList(i)"
                                                 >
-                                                    <label><strong>{{ data }}</strong></label>
-                                                    <input
-                                                        v-model="addressSetup"
-                                                        type="checkbox"
-                                                        :value="data"
-                                                    >
-                                                </li>
-                                            </ul>
-                                        </template>
-                                        <template v-else>
-                                            <ul class="address">
-                                                <li
-                                                    v-for="(data, dataKey, i) in newLayer.features[0].values_"
-                                                    :key="i"
-                                                    :class="{ vis: dataKey !== 'geometry' && dataKey !== 'address' }"
-                                                >
-                                                    <label><strong>{{ dataKey }}</strong></label>
-                                                    <input
-                                                        v-model="addressSetup"
-                                                        type="checkbox"
-                                                        :value="dataKey"
-                                                    >
-                                                </li>
-                                            </ul>
-                                        </template>
-                                        <div
-                                            v-if="addressSetup.length"
-                                            class="example"
+                                                    <v-icon>mdi-close</v-icon>
+                                                </v-btn>
+                                            </li>
+                                        </ul>
+                                        <v-btn
+                                            v-if="!addFilter"
+                                            class="add"
+                                            @click="addFilter = !addFilter"
                                         >
-                                            <span
-                                                v-for="(string, index) in addressSetup"
-                                                :key="string"
-                                            ><span v-if="index > 0">, </span>{{ newLayer.features[0].getProperties()[string] }}</span>
+                                            <p>
+                                                {{ $t("additional:modules.tools.cosiFileImport.addSetToFilter") }}
+                                            </p>
+                                            <v-icon>mdi-plus-thick</v-icon>
+                                        </v-btn>
+                                        <div
+                                            v-if="addFilter"
+                                            class="select_popup"
+                                        >
+                                            <v-select
+                                                :items="newLayerValues.filter(x => !filterWhiteList.includes(x.key))"
+                                                item-value="key"
+                                                item-text="key"
+                                                label="Objekteigenschaft auswählen"
+                                                solo
+                                                @input="addFilterToWhiteList"
+                                            />
                                         </div>
                                     </div>
                                     <div
@@ -1083,6 +1116,17 @@ export default {
                                     margin-right:10px;
                                 }
                             }
+
+                            &.rainbow {
+                                .v-input {
+                                    height:30px;
+                                    margin:3px 0px;
+
+                                    ::v-deep label {
+                                        margin:0px 10px;
+                                    }
+                                }
+                            }
                         }
 
                         &.sub {
@@ -1103,6 +1147,30 @@ export default {
 
                             &:hover {
                                 cursor:pointer;
+                            }
+
+                            .info_wrapper {
+                                position:relative;
+                                max-width:80%;
+
+                                .info_icon {
+                                        position:absolute;
+                                        top:50%;
+                                        left:calc(100% + 16px);
+                                        transform:translateY(-50%);
+                                        width:16px;
+                                        height:16px;
+                                        border:2px solid #888;
+                                        border-radius:50px;
+                                        color:#888;
+                                        text-align:center;
+                                        line-height:14px;
+                                        font-size:12px;
+
+                                        &:hover {
+                                            cursor:pointer;
+                                        }
+                                }
                             }
 
                             h3 {
@@ -1134,6 +1202,7 @@ export default {
 
                             .autostyle {
                                 position:relative;
+                                width:70%;
                                 margin:20px 0px 10px 0px;
 
                                 .v-input--checkbox {
@@ -1147,25 +1216,6 @@ export default {
                                         margin-left:10px;
                                         margin-top:4px;
                                         line-height:24px;
-                                    }
-                                }
-
-                                .info_icon {
-                                    position:absolute;
-                                    top:50%;
-                                    left:calc(100% + 16px);
-                                    transform:translateY(-50%);
-                                    width:16px;
-                                    height:16px;
-                                    border:2px solid #888;
-                                    border-radius:50px;
-                                    color:#888;
-                                    text-align:center;
-                                    line-height:14px;
-                                    font-size:12px;
-
-                                    &:hover {
-                                        cursor:pointer;
                                     }
                                 }
                             }
@@ -1336,7 +1386,7 @@ export default {
                                 }
                             }
 
-                            .filterdata {
+                            &.filterdata {
                                 position:relative;
                                 margin:10px 0;
 
