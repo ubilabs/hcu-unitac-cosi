@@ -55,6 +55,10 @@
     "path": "cosi/SaveSession",
     "type": "tool"
   },
+  "TemplateManager": {
+    "path": "cosi/TemplateManager",
+    "type": "tool"
+  },
   "schoolRoutePlanning": {
     "type": "tool"
   },

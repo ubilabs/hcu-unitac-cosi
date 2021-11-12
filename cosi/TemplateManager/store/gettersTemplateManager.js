@@ -1,8 +1,8 @@
 import {generateSimpleGetters} from "../../../../src/app-store/utils/generators";
-import stateSaveSession from "./stateSaveSession";
+import stateTemplateManager from "./stateTemplateManager";
 
 const getters = {
-    ...generateSimpleGetters(stateSaveSession)
+    ...generateSimpleGetters(stateTemplateManager)
 };
 
 
