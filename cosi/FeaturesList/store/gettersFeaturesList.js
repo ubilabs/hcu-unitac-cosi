@@ -44,6 +44,11 @@ const getters = {
             return groups;
         }, []);
     },
+    flatLayerMapping (state, {mapping}) {
+        return mapping.reduce((list, group) => {
+            return [...list, ...group.layer.map(l => ({...l, group: group.group}))];
+        }, []);
+    },
     flatActiveVectorLayerIdList (state, {activeLayerMapping}) {
         return activeLayerMapping.reduce((list, group) => {
             return [...list, ...group.layer.map(l => l.layerId)];

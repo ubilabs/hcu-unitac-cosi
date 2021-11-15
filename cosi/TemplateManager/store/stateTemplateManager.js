@@ -12,13 +12,17 @@
 const state = {
     active: false,
     deactivateGFI: false,
-    glyphicon: "glyphicon-save",
-    id: "saveSession",
+    glyphicon: "glyphicon-folder-open",
+    id: "templateManager",
     isVisibleInMenu: true,
-    name: "Sitzung speichern",
+    name: "Vorlagen",
     renderToWindow: true,
     resizableWindow: true,
-    sessionToLoad: null
+    templatePath: "./assets/session_templates",
+    templateFiles: [
+        "Erhaltungsmanagement_Spielplaetze",
+        "Bildung_Bergedorf"
+    ]
 };
 
 export default state;
