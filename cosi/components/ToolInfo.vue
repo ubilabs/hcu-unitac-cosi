@@ -42,7 +42,7 @@ export default {
         <v-row
             v-if="url || infoText"
             dense
-            justify-end
+            justify="end"
         >
             <v-btn
                 :title="title"
