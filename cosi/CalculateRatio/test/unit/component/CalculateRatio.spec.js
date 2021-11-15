@@ -16,8 +16,10 @@ import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
 import features_bev from "./features_bev.json";
-// import features_bibs from "./features_bibs.json";
 import features_stadtteile from "./features_stadtteile.json";
+import facilitiesMapping from "./facilitiesMapping.json";
+import snapshot01 from "./snapshot01.json";
+import snapshot02 from "./snapshot02.json";
 import GeoJSON from "ol/format/GeoJSON";
 import Multiselect from "vue-multiselect";
 
@@ -32,7 +34,7 @@ config.mocks.$t = key => key;
 describe("CalculateRatio.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let component, store, clearStub, sandbox, selectedFeaturesStub, addSingleAlertStub, cleanupStub, vuetify, loadedStub,
-        selectedStatFeaturesStub;
+        selectedStatFeaturesStub, facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFeaturesList, expFeaturesOptions;
 
     const mockConfigJson = {
         Portalconfig: {
@@ -40,8 +42,9 @@ describe("CalculateRatio.vue", () => {
                 tools: {
                     children: {
                         CalculateRatio: {
-                            "name": "translate#additional:modules.tools.vueAddon.title",
-                            "glyphicon": "glyphicon-th-list"
+                            name: "translate#additional:modules.tools.vueAddon.title",
+                            glyphicon: "glyphicon-th-list",
+                            yearSelector: "jahr_"
                         }
                     }
                 }
@@ -57,7 +60,67 @@ describe("CalculateRatio.vue", () => {
         loadedStub = sinon.stub();
         selectedStatFeaturesStub = sinon.stub();
         selectedFeaturesStub = sinon.stub();
+        facilitiesMappingStub = sinon.stub();
+        layerListStub = sinon.stub();
 
+        expFacilitiesOptions = [{
+            "group": "Kultur, Freizeit, Sport und Tourismus",
+            "layer": [{
+                "layerId": "19574",
+                "id": "Öffentliche Bibliotheken",
+                "numericalValues": [{
+                    "id": "medienanzahl",
+                    "name": "Medienanzahl",
+                    "useConfigName": true
+                }],
+                "addressField": ["adresse"],
+                "categoryField": "bezeichnung",
+                "keyOfAttrName": "bezeichnung"
+            }]
+        }];
+
+        expFeaturesList =
+            [{"group": "Bevölkerung", "data": ["Bevölkerung insgesamt", "Bevölkerung weiblich", "Bevölkerung männlich", "Bevölkerung unter 6 Jahren", "Bevölkerung unter 18 Jahren", "Bevölkerung 10 bis unter 15 Jahren", "Bevölkerung 15 bis unter 21 Jahren", "Bevölkerung 15 bis unter 65 Jahren", "Bevölkerung 21 bis unter 45 Jahren", "Bevölkerung 45 bis unter 65 Jahren", "Bevölkerung 6 bis unter 10 Jahren", "Bevölkerung ab 65 Jahren", "Ausländer insgesamt", "Bevölkerung mit Migrationshintergrund"]},
+                {"group": "Fläche", "data": ["Bruttofläche in ha"]},
+                {"group": "Haushalte", "data": ["Alleinerziehende", "Einpersonenhaushalte", "Haushalte mit Kindern", "Privathaushalte"]},
+                {"group": "Sozialversicherungspflichtige", "data": ["Sozialversicherungspflichtig beschäftigte Frauen", "Sozialversicherungspflichtig Beschäftigte insgesamt", "Sozialversicherungspflichtig beschäftigte Männer"]},
+                {"group": "Arbeitslose", "data": ["SGB II (Arbeitlosengeld II) Empfänger insgesamt", "SGB III (Arbeitslosengeld) Empfänger insgesamt", "Arbeitslose insgesamt"]},
+                {"group": "SGB II Leistungen", "data": ["Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Bedarfsgemeinschaften nach SGB II", "Erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren", "Leistungsempfänger/-innen nach SGB II", "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II"]},
+                {"group": "Grundsicherung im Alter", "data": ["Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"]},
+                {"group": "Wohnen", "data": ["Sozialwohnung mit Bindungsauslauf", "Sozialwohnungen", "Wohngebäude", "Wohnungen in Wohn- und Nichtwohngebäuden"]},
+                {"group": "Verkehr", "data": ["Gewerbliche PKW", "PKW Bestand", "Private PKW"]}];
+
+        expFeaturesOptions = [{
+            "group": "Bevölkerung",
+            "data": ["Bevölkerung insgesamt", "Bevölkerung weiblich", "Bevölkerung männlich", "Bevölkerung unter 6 Jahren", "Bevölkerung unter 18 Jahren", "Bevölkerung 10 bis unter 15 Jahren", "Bevölkerung 15 bis unter 21 Jahren", "Bevölkerung 15 bis unter 65 Jahren", "Bevölkerung 21 bis unter 45 Jahren", "Bevölkerung 45 bis unter 65 Jahren", "Bevölkerung 6 bis unter 10 Jahren", "Bevölkerung ab 65 Jahren", "Ausländer insgesamt", "Bevölkerung mit Migrationshintergrund"]
+        }, {
+            "group": "Fläche",
+            "data": ["Bruttofläche in ha"]
+        }, {
+            "group": "Haushalte",
+            "data": ["Alleinerziehende", "Einpersonenhaushalte", "Haushalte mit Kindern", "Privathaushalte"]
+        }, {
+            "group": "Sozialversicherungspflichtige",
+            "data": ["Sozialversicherungspflichtig beschäftigte Frauen", "Sozialversicherungspflichtig Beschäftigte insgesamt", "Sozialversicherungspflichtig beschäftigte Männer"]
+        }, {
+            "group": "Arbeitslose",
+            "data": ["SGB II (Arbeitlosengeld II) Empfänger insgesamt", "SGB III (Arbeitslosengeld) Empfänger insgesamt", "Arbeitslose insgesamt"]
+        }, {
+            "group": "SGB II Leistungen",
+            "data": ["Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Bedarfsgemeinschaften nach SGB II", "Erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren", "Leistungsempfänger/-innen nach SGB II", "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II"]
+        }, {
+            "group": "Grundsicherung im Alter",
+            "data": ["Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"]
+        }, {
+            "group": "Wohnen",
+            "data": ["Sozialwohnung mit Bindungsauslauf", "Sozialwohnungen", "Wohngebäude", "Wohnungen in Wohn- und Nichtwohngebäuden"]
+        }, {
+            "group": "Verkehr",
+            "data": ["Gewerbliche PKW", "PKW Bestand", "Private PKW"]
+        }];
+
+
+        loadedStub.returns(true);
 
         store = new Vuex.Store({
             namespaces: true,
@@ -75,7 +138,19 @@ describe("CalculateRatio.vue", () => {
                                 keyOfAttrName: () => "stadtteil_name",
                                 selectedFeatures: selectedFeaturesStub
                             }
+                        },
+                        FeaturesList: {
+                            namespaced: true,
+                            getters: {
+                                mapping: facilitiesMappingStub
+                            }
                         }
+                    }
+                },
+                Map: {
+                    namespaced: true,
+                    getters: {
+                        layerList: layerListStub
                     }
                 },
                 Alerting: {
@@ -99,7 +174,7 @@ describe("CalculateRatio.vue", () => {
     });
 
     // eslint-disable-next-line require-jsdoc
-    async function mount () {
+    async function mount (callLoadend) {
 
         component = shallowMount(CalculateRatioComponent, {
             stubs: {Tool},
@@ -109,6 +184,9 @@ describe("CalculateRatio.vue", () => {
         });
 
         await component.vm.$nextTick();
+        if (callLoadend) {
+            component.vm.$options.watch.loadend.call(component.vm, true);
+        }
         return component;
     }
 
@@ -137,38 +215,72 @@ describe("CalculateRatio.vue", () => {
     });
 
     it("should update data on loadend", async () => {
+        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+
+        const wrapper = await mount();
+
+        wrapper.vm.$options.watch.loadend.call(wrapper.vm, true);
+
+        expect(wrapper.vm.availableYears).to.be.eql(["2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"]);
+        expect(wrapper.vm.featuresList).to.be.eql(expFeaturesList);
+    });
+
+    it("should show message on missing facilities", async () => {
+        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        sinon.assert.callCount(addSingleAlertStub, 0);
+
+        const wrapper = await mount(true);
+
+        wrapper.find("#switchA").trigger("click");
+
+        sinon.assert.callCount(addSingleAlertStub, 1);
+        expect(addSingleAlertStub.firstCall.args[1]).to.include({
+            category: "Warnung",
+            content: "additional:modules.tools.cosi.calculateRatio.noFacilitiesWarning"
+        });
+    });
+
+    it("should update facilityList", async () => {
+        layerListStub.returns([{
+            getProperties: () => ({name: "Öffentliche Bibliotheken"}),
+            get: (id)=>id === "name" && "Öffentliche Bibliothekenname"
+        }]);
+        facilitiesMappingStub.returns(facilitiesMapping);
+        selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
+        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        const wrapper = await mount(true);
+
+        wrapper.vm.$options.watch.layerList.call(wrapper.vm);
+
+        expect(wrapper.vm.facilityList).to.be.eql(expFacilitiesOptions);
+    });
+
+    it("should switch after facilities available", async () => {
+        layerListStub.returns([{
+            getProperties: () => ({name: "Öffentliche Bibliotheken"}),
+            get: (id)=>id === "name" && "Öffentliche Bibliothekenname"
+        }]);
+        facilitiesMappingStub.returns(facilitiesMapping);
+        selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
+        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        const wrapper = await mount(true);
+
+        await wrapper.vm.$options.watch.layerList.call(wrapper.vm);
+        expect(wrapper.find("#switchA").text()).to.be.equal("additional:modules.tools.cosi.calculateRatio.dataA");
+        expect(wrapper.findAllComponents(Multiselect).at(0).vm.options).to.be.eql(expFacilitiesOptions);
+
+        await wrapper.find("#switchA").trigger("click");
+        expect(wrapper.find("#switchA").text()).to.be.equal("additional:modules.tools.cosi.calculateRatio.dataB");
+        expect(wrapper.findAllComponents(Multiselect).at(0).vm.options).to.be.eql(expFeaturesOptions);
+    });
+
+    it("should compute result on selection", async () => {
 
         selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
         // selectedFeaturesStub.returns(new GeoJSON().readFeatures({...features_bev, features: features_bev.features.slice(0, 2)}));
 
-        loadedStub.returns(false);
-
-        const expResults = [{"scope": "Barmbek-Süd", "paramA_val": 35880, "paramB_val": 18658, "relation": 1.923035695144174, "capacity": 35880, "need": 18658, "coverage": 1.923035695144174, "mirrorCoverage": 1, "weightedRelation": 1.923035695144174, "data": {"name": "Barmbek-Süd", "faktorf_A": 1, "perCalc_A": 1, "type_A": "feature", "paramA_val": {"2012": 32284, "2013": 32782, "2014": 33116, "2015": 33681, "2016": 34792, "2017": 35218, "2018": 35438, "2019": 35828, "2020": 35880}, "paramA_calc": {"2012": 32284, "2013": 32782, "2014": 33116, "2015": 33681, "2016": 34792, "2017": 35218, "2018": 35438, "2019": 35828, "2020": 35880}, "incompleteDataSets_A": 0, "faktorf_B": 1, "perCalc_B": 1, "type_B": "feature", "paramB_val": {"2012": 17069, "2013": 17311, "2014": 17473, "2015": 17687, "2016": 18194, "2017": 18398, "2018": 18442, "2019": 18637, "2020": 18658}, "paramB_calc": {"2012": 17069, "2013": 17311, "2014": 17473, "2015": 17687, "2016": 18194, "2017": 18398, "2018": 18442, "2019": 18637, "2020": 18658}, "incompleteDataSets_B": 0}}, {"scope": "Winterhude", "paramA_val": 56382, "paramB_val": 29748, "relation": 1.8953206938281566, "capacity": 56382, "need": 29748, "coverage": 1.8953206938281566, "mirrorCoverage": 1, "weightedRelation": 1.8953206938281566, "data": {"name": "Winterhude", "faktorf_A": 1, "perCalc_A": 1, "type_A": "feature", "paramA_val": {"2012": 50845, "2013": 51549, "2014": 52441, "2015": 54302, "2016": 54826, "2017": 55651, "2018": 55900, "2019": 55492, "2020": 56382}, "paramA_calc": {"2012": 50845, "2013": 51549, "2014": 52441, "2015": 54302, "2016": 54826, "2017": 55651, "2018": 55900, "2019": 55492, "2020": 56382}, "incompleteDataSets_A": 0, "faktorf_B": 1, "perCalc_B": 1, "type_B": "feature", "paramB_val": {"2012": 27253, "2013": 27534, "2014": 27981, "2015": 28867, "2016": 29195, "2017": 29530, "2018": 29532, "2019": 29354, "2020": 29748}, "paramB_calc": {"2012": 27253, "2013": 27534, "2014": 27981, "2015": 28867, "2016": 29195, "2017": 29530, "2018": 29532, "2019": 29354, "2020": 29748}, "incompleteDataSets_B": 0}}, {"scope": "Gesamt", "paramA_val": 92262, "paramB_val": 48406, "relation": 1.9060033880097509, "capacity": 92262, "need": 48406, "coverage": 1.9060033880097509, "mirrorCoverage": 1, "weightedRelation": 1.9060033880097509, "data": {"faktorf_A": 1, "faktorf_B": 1, "perCalc_A": 1, "perCalc_B": 1, "incompleteDataSets_A": 0, "incompleteDataSets_B": 0, "dataSets_A": null, "dataSets_B": null}}, {"scope": "Durchschnitt", "paramA_val": 46131, "paramB_val": 24203, "relation": 1.9060033880097509, "capacity": 46131, "need": 24203, "coverage": 1.9060033880097509, "mirrorCoverage": 1, "weightedRelation": 1.9060033880097509, "data": {"faktorf_A": 1, "faktorf_B": 1, "perCalc_A": 1, "perCalc_B": 1, "incompleteDataSets_A": 0, "incompleteDataSets_B": 0, "dataSets_A": null, "dataSets_B": null}}],
-            wrapper = await mount();
-
-        await wrapper.setData({yearSelector: "jahr_"});
-
-        loadedStub.returns(true);
-        wrapper.vm.$options.watch.loadend.call(wrapper.vm, true);
-
-        expect(wrapper.vm.availableYears).to.be.eql(["2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"]);
-        expect(wrapper.vm.featuresList).to.be.eql(
-            [{"group": "Bevölkerung", "data": ["Bevölkerung insgesamt", "Bevölkerung weiblich", "Bevölkerung männlich", "Bevölkerung unter 6 Jahren", "Bevölkerung unter 18 Jahren", "Bevölkerung 10 bis unter 15 Jahren", "Bevölkerung 15 bis unter 21 Jahren", "Bevölkerung 15 bis unter 65 Jahren", "Bevölkerung 21 bis unter 45 Jahren", "Bevölkerung 45 bis unter 65 Jahren", "Bevölkerung 6 bis unter 10 Jahren", "Bevölkerung ab 65 Jahren", "Ausländer insgesamt", "Bevölkerung mit Migrationshintergrund"]},
-                {"group": "Fläche", "data": ["Bruttofläche in ha"]},
-                {"group": "Haushalte", "data": ["Alleinerziehende", "Einpersonenhaushalte", "Haushalte mit Kindern", "Privathaushalte"]},
-                {"group": "Sozialversicherungspflichtige", "data": ["Sozialversicherungspflichtig beschäftigte Frauen", "Sozialversicherungspflichtig Beschäftigte insgesamt", "Sozialversicherungspflichtig beschäftigte Männer"]},
-                {"group": "Arbeitslose", "data": ["SGB II (Arbeitlosengeld II) Empfänger insgesamt", "SGB III (Arbeitslosengeld) Empfänger insgesamt", "Arbeitslose insgesamt"]},
-                {"group": "SGB II Leistungen", "data": ["Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Bedarfsgemeinschaften nach SGB II", "Erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren", "Leistungsempfänger/-innen nach SGB II", "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II"]},
-                {"group": "Grundsicherung im Alter", "data": ["Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"]},
-                {"group": "Wohnen", "data": ["Sozialwohnung mit Bindungsauslauf", "Sozialwohnungen", "Wohngebäude", "Wohnungen in Wohn- und Nichtwohngebäuden"]},
-                {"group": "Verkehr", "data": ["Gewerbliche PKW", "PKW Bestand", "Private PKW"]}]
-        );
-
-        await wrapper.vm.$nextTick();
-
-        expect(wrapper.findAll(".feature_selection")).to.have.length(1);
-
+        const wrapper = await mount(true);
 
         let ms = wrapper.findComponent(Multiselect);
 
@@ -189,9 +301,8 @@ describe("CalculateRatio.vue", () => {
         await wrapper.vm.$nextTick();
 
         wrapper.find(".confirm").trigger("click");
-
-
-        expect(expResults).to.be.eql(JSON.parse(JSON.stringify(wrapper.vm.results)));
+        expect(JSON.parse(JSON.stringify(wrapper.vm.results))).to.be.eql(snapshot01);
+        expect(JSON.parse(JSON.stringify(wrapper.vm.resultData))).to.be.eql(snapshot02);
     });
 });
 

@@ -746,6 +746,7 @@ export default {
                             :title="$t('additional:modules.tools.cosi.calculateRatio.switchFieldType')"
                         >
                             <button
+                                id="switchA"
                                 @click="switchVal('A')"
                             >
                                 <template v-if="ASwitch">
@@ -881,6 +882,7 @@ export default {
                             :title="$t('additional:modules.tools.cosi.calculateRatio.switchFieldType')"
                         >
                             <button
+                                id="switchB"
                                 @click="switchVal('B')"
                             >
                                 <template v-if="BSwitch">
