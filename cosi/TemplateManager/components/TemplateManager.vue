@@ -5,11 +5,13 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersTemplateManager";
 import mutations from "../store/mutationsTemplateManager";
 import actions from "../store/actionsTemplateManager";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "TemplateManager",
     components: {
-        Tool
+        Tool,
+        ToolInfo
     },
     data () {
         return {
@@ -128,17 +130,18 @@ export default {
         >
             <v-app>
                 <v-container>
-                    <v-card-title primary-title>
-                        <v-icon
-                            class="template-info-button"
-                        >
-                            mdi-file-cog
-                        </v-icon>
-                        {{ $t("additional:modules.tools.cosi.templateManager.loadFromTemplate") }}
-                    </v-card-title>
+                    <ToolInfo
+                        url="https://bitbucket.org/geowerkstatt-hamburg/addons/src/c5d42c7d2b72db609510355095dc65997eb61c2d/cosi/README.de.md?mode=edit&at=cosi%2Fdev"
+                    />
                     <v-subheader>
                         {{ $t("additional:modules.tools.cosi.templateManager.infoLoadFromTemplates") }}
                     </v-subheader>
+                    <v-divider />
+                    <div>
+                        <span class="text-subtitle-2">
+                            {{ $t("additional:modules.tools.cosi.templateManager.loadFromTemplate") }}
+                        </span>
+                    </div>
                     <v-list dense>
                         <v-list-group
                             v-for="(template, i) in templates"
@@ -228,8 +231,9 @@ export default {
                                             </template>
                                         </v-simple-table>
                                     </v-row>
+                                    <v-divider />
                                     <v-row justify="end">
-                                        <v-col cols="5">
+                                        <v-col class="right-text">
                                             <v-btn
                                                 id="load"
                                                 tile
