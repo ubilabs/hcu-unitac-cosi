@@ -349,7 +349,7 @@ export default {
                                 </v-btn>
                             </v-col>
                             <v-col
-                                cols="6"
+                                cols="5"
                                 class="flex"
                             >
                                 <v-btn
@@ -360,6 +360,20 @@ export default {
                                     @click="loadLastSession"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.load') }}
+                                </v-btn>
+                            </v-col>
+                            <v-col
+                                cols="1"
+                                class="flex"
+                            >
+                                <v-btn
+                                    id="clear-session"
+                                    tile
+                                    depressed
+                                    :title="$t('additional:modules.tools.cosi.saveSession.clear')"
+                                    @click="clear"
+                                >
+                                    <v-icon>mdi-delete</v-icon>
                                 </v-btn>
                             </v-col>
                         </v-row>
@@ -433,20 +447,6 @@ export default {
                                     :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"
                                     :title="$t('additional:modules.tools.cosi.saveSession.autoSaveCheck')"
                                 />
-                            </v-col>
-                            <v-col
-                                cols="6"
-                                class="flex"
-                            >
-                                <v-btn
-                                    id="clear-session"
-                                    tile
-                                    depressed
-                                    :title="$t('additional:modules.tools.cosi.saveSession.clear')"
-                                    @click="clear"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.saveSession.clear') }}
-                                </v-btn>
                             </v-col>
                         </v-row>
                     </v-container>
