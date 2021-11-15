@@ -768,28 +768,6 @@ export default {
         }
     }
 }
-td {
-        vertical-align: top;
-
-        div.text-end {
-            text-align: right;
-        }
-        ul.timeline {
-            list-style: none;
-            li {
-                text-align: right;
-            }
-        }
-        .timestamp {
-            color: @brightblue;
-        }
-        .no-wrap {
-            white-space: nowrap;
-        }
-        .modified {
-            color: @brightred;
-        }
-    }
 </style>
 
 

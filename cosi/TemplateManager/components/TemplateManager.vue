@@ -18,7 +18,9 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/TemplateManager", Object.keys(getters)),
-        ...mapGetters("Tools/SaveSession", [])
+        ...mapGetters("Tools/SaveSession", []),
+        ...mapGetters("Tools/DistrictSelector", ["districtLevels"]),
+        ...mapGetters("Tools/FeaturesList", ["flatLayerMapping"])
     },
     watch: {
         /**
@@ -83,6 +85,28 @@ export default {
                 category: "Info",
                 displayClass: "info"
             });
+        },
+
+        getActiveLayerList (template) {
+            return this.flatLayerMapping
+                .filter(layer => (template.state?.Map?.layerIds || []).includes(layer.layerId))
+                .map(layerMap => layerMap.id);
+        },
+
+        getActiveTool (template) {
+            const id = Object.entries(template.state.Tools).find(tool => tool[1].active)?.[0];
+
+            return this.$store.getters[`Tools/${id}/name`];
+        },
+
+        getActiveDistrictLevel (template) {
+            const layerId = template.state.Tools?.DistrictSelector?.selectedDistrictLevelId;
+
+            return this.districtLevels.find(districtLevel => districtLevel.layerId === layerId)?.label;
+        },
+
+        getSelectedDistricts (template) {
+            return template.state.Tools?.DistrictSelector?.selectedDistrictNames || [];
         }
     }
 };
@@ -116,34 +140,113 @@ export default {
                         {{ $t("additional:modules.tools.cosi.templateManager.infoLoadFromTemplates") }}
                     </v-subheader>
                     <v-list dense>
-                        <v-list-item-group
+                        <v-list-group
+                            v-for="(template, i) in templates"
+                            :key="i"
                             color="primary"
+                            :prepend-icon="template.meta.icon"
+                            no-action
                         >
-                            <v-list-item
-                                v-for="(template, i) in templates"
-                                :key="i"
-                                @click="loadFromTemplate(template)"
-                            >
-                                <v-list-item-icon>
-                                    <v-tooltip left>
-                                        <template #activator="{ on, attrs }">
-                                            <v-icon
-                                                class="template-info-button"
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            >
-                                                mdi-help-circle
-                                            </v-icon>
-                                        </template>
-                                        {{ template.meta ? template.meta.info : $t("additional:modules.tools.cosi.templateManager.noInfo") }}
-                                    </v-tooltip>
-                                </v-list-item-icon>
+                            <template #activator>
                                 <v-list-item-content>
                                     <v-list-item-title v-text="template.meta.title" />
-                                    <v-list-item-subtitle v-text="template.meta.created" />
+                                </v-list-item-content>
+                            </template>
+
+                            <v-list-item>
+                                <v-list-item-content class="no-flex">
+                                    <v-row>
+                                        <v-simple-table
+                                            class="info-table"
+                                            dense
+                                        >
+                                            <template #default>
+                                                <tbody>
+                                                    <tr>
+                                                        <th>
+                                                            {{ $t("additional:modules.tools.cosi.templateManager.created") }}
+                                                        </th>
+                                                        <td>
+                                                            {{ template.meta.created }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>
+                                                            {{ $t("additional:modules.tools.cosi.templateManager.info") }}
+                                                        </th>
+                                                        <td>
+                                                            {{ template.meta.info || $t("additional:modules.tools.cosi.templateManager.noInfo") }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>
+                                                            {{ $t("additional:modules.tools.cosi.templateManager.layers") }}
+                                                        </th>
+                                                        <td>
+                                                            <v-chip
+                                                                v-for="layerId in getActiveLayerList(template)"
+                                                                :key="template.meta.title + layerId"
+                                                                class="ma-1"
+                                                                small
+                                                            >
+                                                                {{ layerId }}
+                                                            </v-chip>
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="getActiveDistrictLevel(template)">
+                                                        <th>
+                                                            {{ $t("additional:modules.tools.cosi.templateManager.districtLevel") }}
+                                                        </th>
+                                                        <td>
+                                                            {{ getActiveDistrictLevel(template) }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="getSelectedDistricts(template).length > 0">
+                                                        <th>
+                                                            {{ $t("additional:modules.tools.cosi.templateManager.selectedDistricts") }}
+                                                        </th>
+                                                        <td>
+                                                            <v-chip
+                                                                v-for="districtName in getSelectedDistricts(template)"
+                                                                :key="template.meta.title + districtName"
+                                                                class="ma-1"
+                                                                small
+                                                            >
+                                                                {{ districtName }}
+                                                            </v-chip>
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="getActiveTool(template)">
+                                                        <th>
+                                                            {{ $t("additional:modules.tools.cosi.templateManager.activeTool") }}
+                                                        </th>
+                                                        <td>
+                                                            {{ getActiveTool(template) }}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
+                                    </v-row>
+                                    <v-row justify="end">
+                                        <v-col cols="5">
+                                            <v-btn
+                                                id="load"
+                                                tile
+                                                depressed
+                                                :title="$t('additional:modules.tools.cosi.saveSession.infoLoadFromTemplates')"
+                                                @click="loadFromTemplate(template)"
+                                            >
+                                                <v-icon left>
+                                                    mdi-open-in-app
+                                                </v-icon>
+                                                {{ $t('additional:modules.tools.cosi.saveSession.loadFromTemplate') }}
+                                            </v-btn>
+                                        </v-col>
+                                    </v-row>
                                 </v-list-item-content>
                             </v-list-item>
-                        </v-list-item-group>
+                        </v-list-group>
                     </v-list>
                 </v-container>
             </v-app>
@@ -157,8 +260,13 @@ export default {
     .hidden {
         display: hidden;
     }
-
     .template-info-button {
         margin-right: 20px;
+    }
+    .info-table {
+        max-width: 550px;
+    }
+    .no-flex {
+        display: block;
     }
 </style>
