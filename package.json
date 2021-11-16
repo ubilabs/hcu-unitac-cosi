@@ -15,10 +15,5 @@
   },
   "devDependencies": {
     "husky": "^4.3.8"
-  },
-  "husky": {
-    "hooks": {
-      "pre-push": "cd .. && node ./node_modules/@masterportal/mpconfigparser/cli.js ./doc/config.json.md ./doc/config.json.de.md && eslint --max-warnings 0 \"./**/*.{vue,js}\" && npm run buildJsDoc && npm run test:all && cd addons"
-    }
   }
 }

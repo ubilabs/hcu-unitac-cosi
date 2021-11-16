@@ -24,7 +24,7 @@ const state = {
     active: false,
     id: "AccessibilityAnalysis",
     // defaults for config.json parameters
-    name: "AccessibilityAnalysis (Vue)",
+    name: "Accessibility Analysis",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: true,
     resizableWindow: false,
@@ -37,11 +37,21 @@ const state = {
         },
         {
             type: "region",
-            text: "Erreichbarkeit im Gebiet"
+            text: "Erreichbarkeit der ausgewählten Einrichtungen"
         }
     ],
     rawGeoJson: null,
-    isochroneFeatures: []
+    isochroneFeatures: [],
+    mode: "point",
+    coordinate: [],
+    clickCoordinate: null,
+    selectedFacilityName: null,
+    setByFeature: false,
+    setBySearch: false,
+    transportType: "",
+    scaleUnit: "",
+    distance: "",
+    steps: [0, 0, 0]
 };
 
 export default state;

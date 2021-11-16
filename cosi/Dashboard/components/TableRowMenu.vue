@@ -52,6 +52,7 @@ export default {
         >
             <template #activator="{ on, attrs }">
                 <v-icon
+                    title="Menü öffnen"
                     v-bind="attrs"
                     v-on="on"
                 >
@@ -81,32 +82,39 @@ export default {
                             @click="renderVisualization"
                         >
                             <v-list-item-icon>
-                                <v-icon>mdi-map</v-icon>
+                                <v-icon>
+                                    {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
+                                </v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
                                 In der Karte visualisieren
                             </v-list-item-content>
                         </v-list-item>
-                        <v-list-item
-                            @click="setPlayState(!playState)"
+                        <div
+                            v-if="_item.visualized"
+                            class="ml-12"
                         >
-                            <v-list-item-icon>
-                                <v-icon>mdi-play</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                Zeitreihe Animieren
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item
-                            @click="setShowMapNames(!showMapNames)"
-                        >
-                            <v-list-item-icon>
-                                <v-icon>mdi-map-marker</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                Gebietsnamen ein- / ausblenden
-                            </v-list-item-content>
-                        </v-list-item>
+                            <v-list-item
+                                @click="setPlayState(!playState)"
+                            >
+                                <v-list-item-icon>
+                                    <v-icon>mdi-play</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                    Zeitreihe Animieren
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-list-item
+                                @click="setShowMapNames(!showMapNames)"
+                            >
+                                <v-list-item-icon>
+                                    <v-icon>mdi-map-marker</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                    Gebietsnamen ein- / ausblenden
+                                </v-list-item-content>
+                            </v-list-item>
+                        </div>
                         <v-divider />
                         <v-tooltip left>
                             <template #activator="{ on, attrs }">
@@ -242,10 +250,16 @@ export default {
                 </v-list>
             </v-card>
         </v-menu>
-        <v-icon @click="renderVisualization">
+        <v-icon
+            title="In der Karte ein-/ausblenden"
+            @click="renderVisualization"
+        >
             {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
         </v-icon>
-        <v-icon @click="_item.expanded = !_item.expanded">
+        <v-icon
+            title="Alle Jahre ein-/ausblenden"
+            @click="_item.expanded = !_item.expanded"
+        >
             {{ _item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
         </v-icon>
     </div>

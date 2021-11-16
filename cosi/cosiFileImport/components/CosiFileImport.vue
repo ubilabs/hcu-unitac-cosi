@@ -21,7 +21,7 @@ export default {
             dzIsDropHovering: false,
             storePath: this.$store.state.Tools.CosiFileImport,
             // available CRS
-            availableCrs: ["EPSG:4326", "EPSG:25832"],
+            availableCrs: [{crs: "EPSG:4326", name: "WGS84"}],
             // set addNewLayer true to change to upload view
             addNewLayer: true,
             // set imported true while adjustments are made to layer that is about to be implemented
@@ -82,7 +82,7 @@ export default {
     computed: {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
-        ...mapGetters("Map", ["layerIds", "layers", "map"]),
+        ...mapGetters("Map", ["layerIds", "layers", "map", "projectionCode"]),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -164,6 +164,19 @@ export default {
     created () {
         this.$on("close", this.close);
     },
+    mounted () {
+        const namedProjections = this.$store.state.configJs.namedProjections;
+
+        if (namedProjections) {
+            namedProjections.reverse();
+            this.availableCrs = namedProjections.map(proj => (
+                {
+                    crs: proj[0],
+                    name: proj[1].substring(7).replace(/\s[+](.*)/, "")
+                }
+            ));
+        }
+    },
     methods: {
         ...mapActions("Tools/CosiFileImport", [
             "importKML",
@@ -228,14 +241,7 @@ export default {
             this.newLayer.autoStyle = this.autoStyle;
             this.newLayer.autoStyleValue = this.autoStyleValue;
             this.newLayer.style.svg = this.svgColor;
-            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.searchField, ...this.numericalValues.map(x => x.id)])].map(set => {
-                const obj = {
-                    name: set,
-                    matchingMode: "AND"
-                };
-
-                return obj;
-            });
+            this.newLayer.filterWhiteList = [...new Set([...this.filterWhiteList, this.searchField, ...this.numericalValues.map(x => x.id)])];
 
             // eslint-disable-next-line one-var
             const model = await this.passLayer(this.newLayer);
@@ -433,7 +439,8 @@ export default {
                             v-model="currentCrs"
                             dense
                             :items="availableCrs"
-                            :title="$t('additional:modules.tools.cosiFileImport.crsTooltip')"
+                            item-text="name"
+                            item-value="crs"
                         />
                     </v-col>
                 </v-row>

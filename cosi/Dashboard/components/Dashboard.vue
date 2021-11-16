@@ -28,12 +28,6 @@ export default {
             dashboardOpen: false,
             rows: [],
             baseColumns: [
-                {
-                    value: "menu",
-                    filterable: false,
-                    sortable: false,
-                    groupable: false
-                },
                 // {
                 //     value: "group",
                 //     text: this.$t("additional:modules.tools.cosi.dashboard.groupCol")
@@ -50,6 +44,12 @@ export default {
 
                         return this.statsFeatureFilter.map(t => typeof t === "string" ? t : t.value).includes(value);
                     }
+                },
+                {
+                    value: "menu",
+                    filterable: false,
+                    sortable: false,
+                    groupable: false
                 },
                 {
                     value: "years",
@@ -82,6 +82,10 @@ export default {
             ],
             districtColumns: [],
             items: [],
+            // all current (visible) items in the table
+            currentItems: [],
+            // selected items in the table
+            selectedItems: [],
             timestampPrefix: "jahr_",
             timestamps: [],
             currentTimeStamp: null,
@@ -102,8 +106,7 @@ export default {
             "keyOfAttrNameStats",
             "districtLevels",
             "mapping",
-            "loadend",
-            "metadataUrls"
+            "loadend"
         ]),
         ...mapGetters("Map", ["layerById"]),
         ...mapGetters("Language", ["currentLocale"]),
@@ -375,24 +378,21 @@ export default {
         },
 
         /**
-         * Export the table as XLSX
-         * Either the simple view for the selected or all years
-         * @param {Boolean} exportTimeline - whether to include all years
+         * Export the table as XLSX.
+         * Either the simple view for the selected or all years.
+         * @param {Boolean} exportTimeline - Whether to include all years.
+         * @param {Object[]} selectedItems - Selected items in the table.
+         * @param {Object[]} currentItems - All current (visible) items in the table
          * @returns {void}
          */
-        exportTable (exportTimeline = false) {
-            const data = exportTimeline
-                    ? prepareTableExportWithTimeline(this.items, this.timestamps, this.timestampPrefix)
-                    : prepareTableExport(this.items, this.selectedYear, this.timestampPrefix),
+        exportTable (exportTimeline = false, selectedItems, currentItems) {
+            const items = selectedItems.length > 0 ? selectedItems : currentItems,
+                data = exportTimeline
+                    ? prepareTableExportWithTimeline(items, this.timestamps, this.timestampPrefix)
+                    : prepareTableExport(items, this.selectedYear, this.timestampPrefix),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
 
             exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
-        },
-
-        openMetadata () {
-            this.metadataUrls.forEach(url => {
-                window.open(url);
-            });
         },
 
         calculateStats,
@@ -413,6 +413,15 @@ export default {
          */
         setSearch (value) {
             this.search = value;
+        },
+
+        /**
+         * Sets the current (visible) items of the table.
+         * @param {Object[]} items - The of the table.
+         * @returns {void}
+         */
+        setCurrentItems (items) {
+            this.currentItems = items;
         }
 
     }
@@ -432,7 +441,10 @@ export default {
         <template
             #toolBody
         >
-            <v-app absolute>
+            <v-app
+                id="dashboard-wrapper"
+                absolute
+            >
                 <v-main>
                     <v-container fluid>
                         <DashboardToolbar
@@ -441,8 +453,9 @@ export default {
                             @setStatsFeatureFilter="setStatsFeatureFilter"
                             @setSearch="setSearch"
                         />
-                        <v-row>
+                        <v-row class="dashboard-table-wrapper">
                             <v-data-table
+                                v-model="selectedItems"
                                 :headers="columns"
                                 :items="items"
                                 group-by="groupIndex"
@@ -454,18 +467,18 @@ export default {
                                 show-select
                                 item-key="category"
                                 class="dashboard-table"
+                                @current-items="setCurrentItems"
                             >
                                 <!-- Header for years selector -->
-                                <template #header.years="{ header }">
+                                <template #[`header.years`]>
                                     <v-select
                                         v-model="currentTimeStamp"
                                         :items="timestamps"
+                                        :height="20"
+                                        :label="$t('additional:modules.tools.cosi.dashboard.timestampCol')"
                                         dense
-                                    >
-                                        <template #prepend>
-                                            <span>{{ $t('additional:modules.tools.cosi.dashboard.timestampCol') }}</span>
-                                        </template>
-                                    </v-select>
+                                        hide-details
+                                    />
                                 </template>
 
                                 <!-- Header for districts -->
@@ -499,7 +512,7 @@ export default {
                                         </template>
                                     </div>
                                 </template>
-                                <template #group.header="{items, isOpen, toggle, headers}">
+                                <template #[`group.header`]="{items, isOpen, toggle, headers}">
                                     <th
                                         :colspan="headers.length"
                                         class="text-start"
@@ -512,7 +525,7 @@ export default {
                                 </template>
 
                                 <!-- Base Columns -->
-                                <template #item.years="{ item }">
+                                <template #[`item.years`]="{ item }">
                                     <div class="text-end">
                                         <template v-if="item.expanded">
                                             <ul class="timeline">
@@ -529,7 +542,7 @@ export default {
                                         </template>
                                     </div>
                                 </template>
-                                <template #item.menu="{ item }">
+                                <template #[`item.menu`]="{ item }">
                                     <TableRowMenu
                                         :item="item"
                                         :fields="fields"
@@ -592,9 +605,7 @@ export default {
                                 </template>
 
                                 <!-- Columns for aggregated data -->
-                                <template
-                                    #item.average="{ item }"
-                                >
+                                <template #[`item.average`]="{ item }">
                                     <!--eslint-disable-next-line-->
                                     <v-tooltip
                                         bottom
@@ -624,15 +635,12 @@ export default {
                                         <span>{{ $t('additional:modules.tools.cosi.dashboard.avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
                                     </v-tooltip>
                                 </template>
-                                <template
-                                    #item.total="{ item }"
-                                >
+                                <template #[`item.total`]="{ item }">
                                     <v-tooltip
                                         bottom
                                         :nudge-top="60"
                                     >
                                         <template #activator="{ on, attrs }">
-                                            <!--eslint-disable-next-line-->
                                             <div
                                                 class="text-end"
                                                 v-bind="attrs"
@@ -664,7 +672,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
-                                    @click="exportTable(false)"
+                                    @click="exportTable(false, selectedItems, currentItems)"
                                 >
                                     {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
                                 </v-btn>
@@ -672,7 +680,7 @@ export default {
                                     tile
                                     depressed
                                     :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-                                    @click="exportTable(true)"
+                                    @click="exportTable(true, selectedItems, currentItems)"
                                 >
                                     {{ $t('additional:modules.tools.cosi.dashboard.exportTableTimeline') }}
                                 </v-btn>
@@ -688,9 +696,26 @@ export default {
 <style lang="less">
 @import "../../utils/variables.less";
 
+#dashboard-wrapper {
+    height: 100%;
+    .v-main {
+        height: 100%;
+        .container {
+            height: 100%;
+            .dashboard-table-wrapper {
+                height: calc(100% - 110px);
+            }
+        }
+    }
+}
+
 .dashboard-table {
+    height: 100%;
     .v-data-table__wrapper {
         padding-top: 10px;
+        overflow-x: auto;
+        overflow-y: auto;
+        height: 100%;
     }
 
     thead {
@@ -743,28 +768,6 @@ export default {
         }
     }
 }
-td {
-        vertical-align: top;
-
-        div.text-end {
-            text-align: right;
-        }
-        ul.timeline {
-            list-style: none;
-            li {
-                text-align: right;
-            }
-        }
-        .timestamp {
-            color: @brightblue;
-        }
-        .no-wrap {
-            white-space: nowrap;
-        }
-        .modified {
-            color: @brightred;
-        }
-    }
 </style>
 
 

@@ -20,7 +20,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
-import {Style} from "ol/style.js";
 import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
@@ -50,7 +49,7 @@ export default {
             excludedPropsForExport: [
                 "Icon",
                 "Aktionen",
-                "Ein-/Ausschalten",
+                "Ein-/ Ausblenden",
                 "layerId",
                 "feature",
                 "key"
@@ -61,6 +60,10 @@ export default {
                     value: "style",
                     filterable: false,
                     sortable: false
+                },
+                {
+                    text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
+                    value: "enabled"
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colFacility"),
@@ -123,8 +126,7 @@ export default {
         columns () {
             return [
                 ...this.featureColumns,
-                ...this.numericalColumns,
-                ...this.actionColumns
+                ...this.numericalColumns
             ];
         },
         selected: {
@@ -441,6 +443,7 @@ export default {
          * @returns {void}
          */
         toggleFeature (featureItem) {
+            featureItem.enabled = !featureItem.enabled;
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
         },
@@ -576,7 +579,32 @@ export default {
             v-if="active"
             #toolBody
         >
-            <v-app>
+            <v-app id="features-list-wrapper">
+                <div class="my-2">
+                    <v-btn
+                        id="export-table"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        class="my-2"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
+                        @click="exportTable(false)"
+                    >
+                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
+                    </v-btn>
+                    <v-btn
+                        id="export-detail"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
+                        @click="exportTable(true)"
+                    >
+                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
+                    </v-btn>
+                </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
                         <div class="form-group selection">
@@ -610,7 +638,7 @@ export default {
                             >
                         </div>
                     </form>
-                    <form>
+                    <form class="features-list-table-wrapper">
                         <div class="form-group features-list-table">
                             <v-data-table
                                 v-model="selected"
@@ -622,7 +650,7 @@ export default {
                                 item-key="key"
                                 show-select
                                 show-expand
-                                :items-per-page="15"
+                                :items-per-page="10"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -678,11 +706,14 @@ export default {
                                     </v-icon>
                                 </template>
                                 <template #item.enabled="{ item }">
-                                    <v-switch
-                                        v-model="item.enabled"
-                                        dense
-                                        @change="toggleFeature(item)"
-                                    />
+                                    <div class="text-center">
+                                        <v-icon
+                                            right
+                                            @click="toggleFeature(item)"
+                                        >
+                                            {{ item.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
+                                        </v-icon>
+                                    </div>
                                 </template>
                                 <template
                                     v-for="col in numericalColumns"
@@ -691,7 +722,7 @@ export default {
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
                                         <div
                                             :key="col.value"
-                                            class="align-right"
+                                            class="text-right"
                                             :class="col.hasAction? 'number-action': ''"
                                             @click="showInfo(item)"
                                         >
@@ -710,30 +741,6 @@ export default {
                                     </template>
                                 </template>
                             </v-data-table>
-                        </div>
-                        <div class="form-group">
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-btn
-                                        id="export-table"
-                                        tile
-                                        depressed
-                                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                                        @click="exportTable(false)"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
-                                    </v-btn>
-                                    <v-btn
-                                        id="export-detail"
-                                        tile
-                                        depressed
-                                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                                        @click="exportTable(true)"
-                                    >
-                                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
                         </div>
                         <v-row>
                             <v-col>
@@ -798,7 +805,29 @@ export default {
 
 <style lang="less">
     @import "../../utils/variables.less";
+    #features-list-wrapper {
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
     #features-list {
+        height: 100%;
+        .features-list-table-wrapper {
+           height: calc(100% - 200px);
+            display: block;
+            position: relative;
+           .features-list-table {
+               height: 100%;
+               .v-data-table {
+                   height: 100%;
+                   .v-data-table__wrapper {
+                    overflow-x: auto;
+                    overflow-y: auto;
+                    height: 100%;
+                   }
+               }
+           }
+        }
         input.form-control {
             font-size: 12px;
             border-color: #e8e8e8;
@@ -812,9 +841,6 @@ export default {
             .search {
                 width: 100%;
             }
-        }
-        .align-right {
-            text-align: right;
         }
         .number-action{
             cursor: pointer;

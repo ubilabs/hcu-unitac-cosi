@@ -228,13 +228,15 @@ export default {
          */
         registerFeatureCollectionListener (featureCollection) {
             featureCollection.on("change:length", (evt) => {
-                // evt.target = feature collection
-                this.setSelectedDistrictsCollection(evt.target);
-
                 const selectedNames = evt.target.getArray().map(feature => {
+                    // The names of St.Pauli and Co. are inconsistent in the different services.
+                    if (feature.get(this.keyOfAttrName).indexOf("St. ") !== -1) {
+                        feature.set(this.keyOfAttrName, feature.get(this.keyOfAttrName).replace(/ /, ""));
+                    }
                     return feature.get(this.keyOfAttrName);
                 });
 
+                this.setSelectedDistrictsCollection(evt.target);
                 this.selectedNames = [...new Set(selectedNames)];
             });
 
