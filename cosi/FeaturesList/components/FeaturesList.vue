@@ -20,7 +20,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
-import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
     name: "FeaturesList",
@@ -279,7 +278,6 @@ export default {
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
-        isFeatureActive,
         getNumericalColumns () {
             const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
                 return [

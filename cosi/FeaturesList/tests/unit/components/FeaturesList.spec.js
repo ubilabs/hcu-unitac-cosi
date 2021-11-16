@@ -21,6 +21,7 @@ import mockConfigJson from "./mock.config.json";
 import Multiselect from "vue-multiselect";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
+import isFeatureActive from "../../../../utils/isFeatureActive";
 
 Vue.use(Vuetify);
 
@@ -181,6 +182,27 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             const wrapper = await mountComponent(false);
 
             expect(wrapper.find("form").exists()).to.be.false;
+        });
+
+        it("should return false for null on isFeaturedDisabled", async () => {
+            const wrapper = await mountComponent(false);
+
+            expect(wrapper.vm.isFeatureDisabled(null)).to.be.false;
+        });
+
+        it("should return true for minimal object on isFeatureActive", async () => {
+            const wrapper = await mountComponent(false);
+
+            expect(wrapper.vm.isFeatureActive({style_: null})).to.be.true;
+        });
+
+        it.only("should return false for disabled object on isFeatureActive", async () => {
+            const wrapper = await mountComponent(false),
+                feat = {disabled: false, _style: null, enabled: true};
+
+            wrapper.vm.toggleFeature(feat);
+
+            expect(wrapper.vm.isFeatureActive(feat)).to.be.false;
         });
 
         it("mapping should be generated from layerConf, should have length of 1", async () => {
