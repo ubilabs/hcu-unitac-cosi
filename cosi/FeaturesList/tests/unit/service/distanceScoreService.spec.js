@@ -3,10 +3,12 @@ import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import sinon from "sinon";
 import {expect} from "chai";
+import {registerProjections} from "masterportalAPI/src/crs";
 
 describe("distanceScoreService", () => {
     before(async function () {
         await initializeLayerList();
+        registerProjections();
     });
 
     /**
