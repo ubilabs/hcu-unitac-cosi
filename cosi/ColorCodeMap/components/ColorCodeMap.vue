@@ -1016,6 +1016,9 @@ export default {
                 .btn_grp {
                     button {
                         margin:2px;
+                        .info_button {
+                            display: inline-block;
+                        }
                     }
                 }
             }
