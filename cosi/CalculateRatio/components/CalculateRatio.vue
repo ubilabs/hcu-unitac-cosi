@@ -31,6 +31,8 @@ export default {
             filters: {},
             // Sorted an grouped list of availabke features
             featuresList: [],
+            // Holds all statistical data from selectedFeatures (DistrictSelector)
+            selectedStatFeatures: [],
             // List with summable features like "age 10-15" etc
             subFeaturesList: [],
             // All available years in data
@@ -83,7 +85,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "selectedStatFeatures", "loadend"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
@@ -148,7 +150,14 @@ export default {
             this.updateFacilities();
         },
         loadend (newValue) {
-            if (newValue && this.selectedStatFeatures.length > 0) {
+            /* if (newValue && this.selectedStatFeatures.length > 0) {
+                this.updateFeaturesList();
+            }*/
+
+            const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
+
+            this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
+            if (newValue && this.selectedFeatures.length > 0) {
                 this.updateFeaturesList();
             }
         },
@@ -621,7 +630,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: result[this.columnSelector.key]
+                            data: result[this.columnSelector.key].toLocaleString("de-DE")
                         };
 
                         prepareData.push(data);

@@ -646,14 +646,7 @@ export default {
             width:400px;
             height:400px !important;
         }
-
-        .info_button {
-            display:block;
-            width:30px;
-            height:30px;
-            background:#eee;
-            margin:0px 0px 0px auto;
-        }
+        
         #chart_panel {
             .graph {
                     display:none;

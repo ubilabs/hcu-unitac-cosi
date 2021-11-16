@@ -342,7 +342,9 @@ export default {
         showInfo (message) {
             this.showAlert(message);
         },
+        openManual () {
 
+        },
         /**
          * Getting the layer name from the file name without the postfix as file format
          * @param {String} fileName name of the file
@@ -370,6 +372,13 @@ export default {
                 id="tool-file-import"
                 class="importer"
             >
+                <button
+                    class="info_button"
+                    :title="$t('additional:modules.tools.cosi.chartGenerator.infoTooltip')"
+                    @click="openManual()"
+                >
+                    <span class="glyphicon glyphicon-question-sign" />
+                </button>
                 <p
                     class="cta"
                     v-html="$t('additional:modules.tools.cosiFileImport.captions.introInfo')"
