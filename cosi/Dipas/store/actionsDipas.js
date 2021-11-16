@@ -47,7 +47,7 @@ function addLayerToTree (newLayer) {
     // eslint-disable-next-line one-var
     const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
         filterModel = {
-            attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category"],
+            attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType"],
             isActive: false,
             isSelected: false,
             layerId: newLayer.id,
