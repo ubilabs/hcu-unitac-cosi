@@ -27,7 +27,7 @@ function transformedCoordinates (features) {
  */
 async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement) {
     const featureCoords = transformedCoordinates([feature]),
-        coords = extent ? transformedCoordinates(await getAllFeatures(layerId, extent))
+        coords = Array.isArray(extent) && extent.length > 0 ? transformedCoordinates(await getAllFeatures(layerId, extent))
             : transformedCoordinates(await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement)),
         dists = (await fetchDistances(featureCoords, coords))[0];
 
