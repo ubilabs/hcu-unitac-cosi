@@ -21,7 +21,7 @@ import mockConfigJson from "./mock.config.json";
 import Multiselect from "vue-multiselect";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
-import isFeatureActive from "../../../../utils/isFeatureActive";
+import GeoJSON from "ol/format/GeoJSON";
 
 Vue.use(Vuetify);
 
@@ -196,13 +196,33 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.isFeatureActive({style_: null})).to.be.true;
         });
 
-        it.only("should return false for disabled object on isFeatureActive", async () => {
+        it("should return true for enabled object on isFeatureActive", async () => {
             const wrapper = await mountComponent(false),
-                feat = {disabled: false, _style: null, enabled: true};
+                feat = {style_: null, feature};
 
-            wrapper.vm.toggleFeature(feat);
 
-            expect(wrapper.vm.isFeatureActive(feat)).to.be.false;
+            expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.true;
+            expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.false;
+        });
+
+        it("should return false for disabled object on isFeatureActive", async () => {
+            const wrapper = await mountComponent(false),
+                feat = {style_: null, feature};
+
+            await wrapper.vm.addDisabledFeatureItem(feat);
+
+            expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.true;
+            expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.false;
+        });
+
+        it("should toggle active feacture", async () => {
+            const wrapper = await mountComponent(false),
+                feat = {style_: null, feature: feature.clone()};
+
+            await wrapper.vm.toggleFeature(feat);
+
+            expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.false;
+            expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.true;
         });
 
         it("mapping should be generated from layerConf, should have length of 1", async () => {
