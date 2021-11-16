@@ -1,7 +1,7 @@
 import {featuresToGeoJsonCollection, featureToGeoJson} from "../../utils/geomUtils";
 import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
-import getColorScale from "../../../utils/colorScale.js";
+import {generateColorScale} from "../../../utils/colorScale.js";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 
@@ -33,7 +33,7 @@ export function exportAsGeoJson () {
         values = this.results.map(x => {
             return x.coverage;
         }),
-        colorScale = getColorScale(values);
+        colorScale = generateColorScale(values);
 
     // match the result and add it to the resp. geoJSON
     for (const feature of featureCollection.features) {

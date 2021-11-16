@@ -203,7 +203,7 @@ export default {
                 // use the cloned geometry of the point or polygon as reference
                 this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
 
-                if (originalFeature.get("isSimulation")) {
+                if (originalFeature.get("isSimulation") || originalFeature.get("isModified")) {
                     removeSimulationTag(originalFeature, this.guideLayer);
                     addSimulationTag(originalFeature, this.guideLayer, this.layer);
                 }
@@ -255,7 +255,6 @@ export default {
                 // modify the feature on the scenario. Update features already stored in the scenario
                 // use the cloned geometry of the point or polygon as reference
                 this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
-
                 if (originalFeature.get("isSimulation")) {
                     removeSimulationTag(originalFeature, this.guideLayer);
                     addSimulationTag(originalFeature, this.guideLayer, this.layer);

@@ -14,13 +14,20 @@
                     "loadFromFileTooltip": "Sitzung aus lokaler Datei öffnen",
                     "dropFile": "Datei auswählen",
                     "loadLast": "Letzte Sitzung wiederherstellen?",
-                    "clear": "Sitzungen löschen",
+                    "clear": "Letzte Browsersitzung löschen",
                     "templates": "Vorlagen",
                     "loadFromTemplate": "Vorlage laden",
                     "infoLoadFromTemplates": "Laden Sie eine thematische Basis-Konfiguration für fachspezifische Analysen.",
                     "noInfo": "Keine Beschreibung verfügbar",
                     "filenamePrompt": "Sitzung benennen",
-                    "newSession": "Neue Sitzung"
+                    "newSession": "Neue Sitzung",
+                    "autoSaveCheck": "Soll die Sitzung automatisch alle 10 Minuten gespeichert werden?",
+                    "autoSaveInfo": "Kann jederzeit im Dienst 'Sitzung Speichern' geändert werden.",
+                    "autoSave": "Automatisches Speichern (10 min)",
+                    "yes": "Ja",
+                    "no": "Nein",
+                    "success": "Sitzung erfolgreich gespeichert!",
+                    "settingsChanged": "Ihre Einstellungen wurden geändert"
                 }
             }
         }

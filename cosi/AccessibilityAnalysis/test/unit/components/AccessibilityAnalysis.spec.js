@@ -310,7 +310,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#help").trigger("click");
-        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit im Gebiet");
+        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit der ausgewählten Einrichtungen");
     });
-
 });
+

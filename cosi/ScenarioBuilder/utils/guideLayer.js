@@ -27,6 +27,30 @@ export function featureTagStyle (feature) {
 }
 
 /**
+ * Style for modified features for the guide layer.
+ * @param {module:ol/Feature} feature - The modified feature.
+ * @returns {module:ol/Style} The style.
+ */
+export function featureTagStyleMod (feature) {
+    return new Style({
+        text: new Text({
+            font: "22px sans-serif",
+            fill: new Fill({
+                color: "#FC176B"
+            }),
+            stroke: new Stroke({
+                width: 1,
+                color: "#000"
+            }),
+            text: "⇄",
+            offsetX: 15,
+            offsetY: -12,
+            placement: feature.getGeometry()?.getType() === "Point" ? "point" : "line"
+        })
+    });
+}
+
+/**
  * adds a new feature to the guidelayer to highlight simulated features
  * @param {module:ol/Feature} feature - the original scenario feature
  * @param {module:ol/Layer/Vector} layer - the drawing layer of the scenario builder

@@ -18,11 +18,7 @@ const state = {
     name: "Sitzung speichern",
     renderToWindow: true,
     resizableWindow: true,
-    templatePath: "./assets/session_templates",
-    templateFiles: [
-        "Erhaltungsmanagement_Spielplaetze",
-        "Bildung_Bergedorf"
-    ]
+    sessionToLoad: null
 };
 
 export default state;

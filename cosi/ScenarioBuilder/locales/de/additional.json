@@ -15,6 +15,7 @@
                     "resetFeature": "Zurücksetzen",
                     "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
                     "required": "Erforderlich",
+                    "requiredFieldMissing": "Eines oder mehrere erforderliche Felder wurden nicht ausgefüllt.",
                     "essentialFieldHeader": "Erforderliche Spalten",
                     "optionalFieldHeader": "Optionale Spalten",
                     "geomFieldHeader": "Geometrie / Ort",
