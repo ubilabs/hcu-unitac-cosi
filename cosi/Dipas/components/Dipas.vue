@@ -202,7 +202,8 @@ export default {
                     this.contributions[id].features = await this.getContributionFeatures(id);
                 }
                 for (const feature of this.contributions[id].features) {
-                    const category = feature.getProperties().category,
+                    const properties = feature.getProperties(),
+                        category = properties.category,
                         color = this.contributions[id].colors[category],
                         style = new Style({
                             image: new Circle({
@@ -214,6 +215,11 @@ export default {
 
                     feature.setStyle(style);
                     feature.setId(feature.get("id"));
+
+                    for (const property of ['votingPro', 'votingContra', 'commentsNumber']) {
+                        properties[property] = String(properties[property]);
+                    };
+                    feature.setProperties(properties);
                 }
                 layer.features = this.contributions[id].features;
                 model = await this.addLayer(layer);
