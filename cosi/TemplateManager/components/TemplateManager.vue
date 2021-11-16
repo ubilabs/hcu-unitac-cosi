@@ -236,8 +236,10 @@ export default {
                                         <v-col class="right-text">
                                             <v-btn
                                                 id="load"
+                                                dense
+                                                small
                                                 tile
-                                                depressed
+                                                color="grey lighten-1"
                                                 :title="$t('additional:modules.tools.cosi.saveSession.infoLoadFromTemplates')"
                                                 @click="loadFromTemplate(template)"
                                             >

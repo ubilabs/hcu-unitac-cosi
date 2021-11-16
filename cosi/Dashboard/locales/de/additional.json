@@ -13,7 +13,10 @@
                     "exportTable": "Tabelle exportieren",
                     "exportTableTimeline": "Tabelle exportieren (alle Jahre)",
                     "exportFilename": "CoSI_Dashboard-Tabelle",
-                    "modifiedTooltip": "Dieses Datum wurde durch Simulationsfunktionen verändert."
+                    "modifiedTooltip": "Dieses Datum wurde durch Simulationsfunktionen verändert.",
+                    "moveColLeft": "Spalte nach links verschieben",
+                    "moveColRight": "Spalte nach rechts verschieben",
+                    "minimizeCol": "Spalte aus-/einblenden"
                 }
             }
         }
