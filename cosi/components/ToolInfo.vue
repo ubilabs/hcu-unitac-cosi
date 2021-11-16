@@ -39,9 +39,8 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div v-if="url || infoText">
         <v-row
-            v-if="url || infoText"
             dense
             justify="end"
         >

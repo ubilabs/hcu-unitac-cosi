@@ -326,7 +326,7 @@ export default {
             >
                 <v-app>
                     <ToolInfo
-                        infoText="Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!"
+                        info-text="Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!"
                     />
                     <v-container class="flex btn-grid">
                         <v-card-title secondary-title>
@@ -344,7 +344,9 @@ export default {
                                 <v-btn
                                     id="save-session"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveTooltip')"
                                     @click="saveDialog = true; saveMode = 'quickSave'"
                                 >
@@ -358,7 +360,9 @@ export default {
                                 <v-btn
                                     id="load-session"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.loadTooltip')"
                                     @click="loadLastSession"
                                 >
@@ -372,7 +376,9 @@ export default {
                                 <v-btn
                                     id="clear-session"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.clear')"
                                     @click="clear"
                                 >
@@ -395,7 +401,9 @@ export default {
                                 <v-btn
                                     id="save-to-file"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveToFileTooltip')"
                                     @click="saveDialog = true; saveMode = 'saveAs'"
                                 >
@@ -409,7 +417,9 @@ export default {
                                 <v-btn
                                     id="load-from-file"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.loadFromFileTooltip')"
                                     @click="loadFromFile"
                                 >
@@ -439,7 +449,10 @@ export default {
                             </v-col>
                         </v-row>
                         <v-divider />
-                        <v-row class="flex">
+                        <v-row
+                            class="flex"
+                            dense
+                        >
                             <v-col
                                 cols="6"
                                 class="flex"
@@ -447,6 +460,9 @@ export default {
                                 <v-checkbox
                                     id="auto-save"
                                     v-model="autoSave"
+                                    class="form-check-input"
+                                    dense
+                                    hide-details
                                     :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"
                                     :title="$t('additional:modules.tools.cosi.saveSession.autoSaveCheck')"
                                 />

@@ -9,21 +9,22 @@ import deepEqual from "deep-equal";
 import {exportAsGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import isFeatureActive from "../../utils/isFeatureActive";
+import ToolInfo from "../../components/ToolInfo.vue";
+import InfoTemplatePoint from "text-loader!./info_point.html";
+import InfoTemplateRegion from "text-loader!./info_region.html";
 
 export default {
     name: "AccessibilityAnalysis",
     components: {
-        Tool
+        Tool,
+        ToolInfo
     },
     data () {
         return {
-            // mode: "point",
+            InfoTemplatePoint,
+            InfoTemplateRegion,
             facilityNames: [],
             mapLayer: null,
-            // coordinate: [],
-            // setBySearch: false,
-            // setByFeature: false,
-            // transportType: "",
             transportTypes: [
                 {
                     type: "",
@@ -50,7 +51,6 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.wheelchair")
                 }
             ],
-            // scaleUnit: "",
             scaleUnits: [
                 {
                     type: "",
@@ -65,10 +65,7 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
                 }
             ],
-            // distance: "",
-            // steps: [0, 0, 0],
             layers: null,
-            // selectedFacilityName: null,
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
@@ -82,7 +79,6 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
-            // clickCoordinate: null,
             select: null
         };
     },
@@ -298,6 +294,7 @@ export default {
         >
             <template #toolBody>
                 <v-app>
+                    <ToolInfo :info-text="mode === 'point' ? InfoTemplatePoint : InfoTemplateRegion" />
                     <div
                         v-if="active"
                         id="accessibilityanalysis"
@@ -314,14 +311,14 @@ export default {
                                 dense
                                 @click:append="$refs.mode.blur()"
                             >
-                                <template #append>
+                                <!-- <template #append>
                                     <v-switch
                                         v-model="_setByFeature"
                                         dense
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
                                         class="inline-switch"
                                     />
-                                </template>
+                                </template> -->
                             </v-select>
                             <v-text-field
                                 v-if="mode === 'point'"
@@ -384,13 +381,14 @@ export default {
                                     >
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
-                                    <v-icon
-                                        id="help"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
-                                        @click="showHelp()"
-                                    >
-                                        mdi-help-circle-outline
-                                    </v-icon>
+                                    <v-checkbox
+                                        v-model="_setByFeature"
+                                        dense
+                                        hide-details
+                                        class="form-check-input"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row
@@ -510,7 +508,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
 #accessibilityanalysis {
   width: 400px;
   min-height: 100px;
