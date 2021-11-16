@@ -31,6 +31,8 @@ export default {
             filters: {},
             // Sorted an grouped list of availabke features
             featuresList: [],
+            // Holds all statistical data from selectedFeatures (DistrictSelector)
+            selectedStatFeatures: [],
             // List with summable features like "age 10-15" etc
             subFeaturesList: [],
             // All available years in data
@@ -81,7 +83,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "selectedStatFeatures", "loadend"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
@@ -146,8 +148,14 @@ export default {
             this.updateFacilities();
         },
         loadend (newValue) {
-            if (newValue && this.selectedStatFeatures.length > 0) {
+            /* if (newValue && this.selectedStatFeatures.length > 0) {
+                this.updateFeaturesList();
+            }*/
 
+            const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
+
+            this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
+            if (newValue && this.selectedFeatures.length > 0) {
                 this.updateFeaturesList();
             }
         },
@@ -597,7 +605,6 @@ export default {
                     });
                 }
             });
-
             return featureDataList;
         },
         /**
@@ -628,7 +635,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: result[this.columnSelector.key]
+                            data: result[this.columnSelector.key].toLocaleString("de-DE")
                         };
 
                         prepareData.push(data);
@@ -652,7 +659,7 @@ export default {
                     id: "calcratio",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
                     type: ["LineChart", "BarChart"],
-                    color: "green",
+                    color: "rainbow",
                     source: "Versorgungsanalyse",
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
@@ -773,6 +780,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                                 @input="getFacilityData('A')"
                             >
                                 <template
@@ -797,6 +808,9 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
                                 @input="checkSumUp('A')"
                             >
                                 <template slot="singleLabel">
@@ -851,6 +865,10 @@ export default {
                                         select-label=""
                                         deselect-label=""
                                         placeholder=""
+                                        :toggle-select-option="false"
+                                        :allow-empty="false"
+                                        :close-on-select="true"
+                                        :clear-on-select="true"
                                     >
                                         <template slot="singleLabel">
                                             <strong>{{ paramFieldA.name }}</strong>
@@ -909,6 +927,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                                 @input="getFacilityData('B')"
                             >
                                 <template slot="singleLabel">
@@ -931,6 +953,9 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
                                 @input="checkSumUp('B')"
                             >
                                 <template slot="singleLabel">
@@ -987,6 +1012,10 @@ export default {
                                         select-label=""
                                         deselect-label=""
                                         placeholder=""
+                                        :toggle-select-option="false"
+                                        :allow-empty="false"
+                                        :close-on-select="true"
+                                        :clear-on-select="true"
                                     >
                                         <template slot="singleLabel">
                                             <strong>{{ paramFieldB.name }}</strong>
@@ -1049,8 +1078,9 @@ export default {
                                 class="btn btn-default xl_btn"
                                 :data="resultData.json_data"
                                 :fields="resultData.json_fields"
+                                type="xls"
                                 worksheet="Versorgungsanalyse"
-                                :name="selectedYear + '_versorgungsanalyse.xlsx'"
+                                :name="selectedYear + '_versorgungsanalyse.xls'"
                             >
                                 <span class="glyphicon glyphicon-download" />
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
@@ -1086,6 +1116,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 placeholder=""
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                             >
                                 <template slot="singleLabel">
                                     <span><strong>{{ columnSelector.name }}</strong></span>
@@ -1122,6 +1156,9 @@ export default {
                                     select-label=""
                                     deselect-label=""
                                     placeholder=""
+                                    :toggle-select-option="false"
+                                    :close-on-select="true"
+                                    :clear-on-select="true"
                                     @input="recalcData()"
                                 >
                                     <template slot="singleLabel">
@@ -1181,18 +1218,20 @@ export default {
 
             .button {
                 flex-basis:30%;
-                background: #222;
+                background:linear-gradient(180deg, #eee, #ddd);
+                border-radius:5px;
                 margin: 0px 5px 5px 0px;
 
                 button {
                     background: transparent;
                     border:none;
-                    color:whitesmoke;
+                    color:#222;
                     font-size:90%;
                 }
 
                 &:hover {
-                    background:#666;
+                    background:#ccc;
+                    cursor:pointer;
                 }
             }
             .selection {
@@ -1228,6 +1267,8 @@ export default {
                                 height:40px;
                                 font-size:70%;
                                 font-weight:700;
+                                border:1px solid #ccc;
+                                border-radius:5px;
                             }
 
                             &.reduced {
