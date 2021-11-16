@@ -510,32 +510,39 @@ export default {
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
+
                 const items = [];
 
-                if (this.selectedLayers.length) {
-                    this.distanceScoreQueue = [...this.items];
-                    while (this.distanceScoreQueue.length) {
-                        const item = {...this.distanceScoreQueue.shift()};
+                this.distanceScoreQueue = this.items.map(item=>{
+                    const ret = {...item};
 
-                        if (this.selectedFeatureLayers) {
-                            const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
-                                weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
-                                extent: this.extent ? this.extent : undefined});
+                    delete ret.weightedDistanceScores;
+                    delete ret.distanceScore;
+                    return ret;
+                });
 
-                            item.weightedDistanceScores = ret;
-                            item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
-                        }
-                        for (const layer of this.selectedWmsLayers) {
-                            const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
 
-                            item[layer.name] = value;
-                        }
+                while (this.distanceScoreQueue.length) {
+                    const item = this.distanceScoreQueue.shift();
 
-                        items.push(item);
+                    if (this.selectedFeatureLayers.length > 0) {
+                        const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
+                            weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
+                            extent: this.extent ? this.extent : undefined});
+
+                        item.weightedDistanceScores = ret;
+                        item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
+                    }
+                    for (const layer of this.selectedWmsLayers) {
+                        const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
+
+                        item[layer.name] = value;
                     }
 
-                    this.items = items;
+                    items.push(item);
                 }
+
+                this.items = items;
             }
         },
         updateWeights (weights) {

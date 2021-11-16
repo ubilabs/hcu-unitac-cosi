@@ -318,6 +318,20 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
         });
 
+        it("should delete distance score on remove layer", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
+
+            await wrapper.setData({selectedLayers: []});
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql([undefined]);
+        });
+
         it("should set scored for dialog", async () => {
             const wrapper = await mountComponent(true, [createLayer()]),
                 item = {weightedDistanceScores: {"1234": 1.0, score: 1}};
