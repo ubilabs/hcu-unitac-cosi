@@ -6,16 +6,16 @@ import getters from "../store/gettersSaveSession";
 import mutations from "../store/mutationsSaveSession";
 import actions from "../store/actionsSaveSession";
 import {downloadJsonToFile} from "../../utils/download";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
 import {Point, Polygon, MultiPoint, MultiPolygon} from "ol/geom";
 import serializeState from "./serializeState";
 import parseState from "./parseState";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "SaveSession",
     components: {
         Tool,
-        Modal
+        ToolInfo
     },
     data () {
         return {
@@ -325,6 +325,9 @@ export default {
                 #toolBody
             >
                 <v-app>
+                    <ToolInfo
+                        infoText="Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!"
+                    />
                     <v-container class="flex btn-grid">
                         <v-card-title secondary-title>
                             Schnelles Speichern
