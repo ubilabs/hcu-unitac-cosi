@@ -1,11 +1,18 @@
-import {renameKeys} from "../../utils/modifyObject.js";
+import {renameKeys, replaceValues} from "../../utils/modifyObject.js";
+// import beautifyKey from "../../../../src/utils/beautifyKey";
 
-const keyMap = {
-    category: "Kategorie",
-    group: "Gruppe",
-    valueType: "Datentyp",
-    timestamp: "Jahr"
-};
+const
+    keyMap = {
+        category: "Kategorie",
+        group: "Gruppe",
+        valueType: "Datentyp",
+        timestamp: "Jahr",
+        hamburg_gesamt: "Hamburg gesamt"
+    },
+    valuesMap = {
+        absolute: "absolut",
+        relative: "relativ"
+    };
 
 /**
  * Prepares the table data for an XLSX export, just the table as displayed
@@ -50,10 +57,12 @@ export function prepareTableExportWithTimeline (data, timestamps, timestampPrefi
         console.error("prepareTableExport: data must be an array");
         return null;
     }
-    const ctimestamps = timestamps.slice(),
+    const
+        // _keyMap = {...Object.fromEntries(Object.keys(data[0] || {}).map(key => [key, beautifyKey(key)])), ...keyMap},
+        ctimestamps = timestamps.slice().reverse(),
         exportData = data.reduce((items, item) => {
-            const _item = renameKeys(item, keyMap),
-                categoryRows = ctimestamps.reverse().map(timestamp => {
+            const _item = replaceValues(renameKeys(item, keyMap), valuesMap),
+                categoryRows = ctimestamps.map(timestamp => {
                     const el = {..._item};
 
                     for (const col in el) {
