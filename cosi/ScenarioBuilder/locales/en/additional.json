@@ -4,6 +4,7 @@
             "cosi": {
                 "scenarioBuilder": {
                     "title": "Simulate Facilities",
+                    "configureFeature": "Configure facility",
                     "toolMenu": "Tools",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
@@ -29,8 +30,9 @@
                     "title": "Einrichtungen verschieben",
                     "toggleOnlySimulated": "Nur Simulierte",
                     "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
+                    "toggleOnlySimulatedOffTooltip": "Alle Einrichtungen können verschoben werden",
                     "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen sind nur temporär und werden nach der Sitzung nicht gespeichert.",
-                    "resetFeatureLocations": "Zurücksetzen"
+                    "resetFeatureLocations": "Reset moved facilities"
                 },
                 "scenarioManager": {
                     "title": "Szenariomanager",

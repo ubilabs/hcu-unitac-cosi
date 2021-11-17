@@ -414,7 +414,7 @@ export default {
                                 <v-divider />
                             </div>
                             <div class="mb-5 overline">
-                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.configureFeature') }}
                             </div>
                             <div class="form-group">
                                 <v-expansion-panels

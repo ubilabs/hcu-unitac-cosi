@@ -113,7 +113,8 @@ export default {
                     value: "enabled"
                 }
             ],
-            numericalColumns: []
+            numericalColumns: [],
+            exportDetails: false
         };
     },
     computed: {
@@ -418,7 +419,7 @@ export default {
          * @param {Boolean} exportDetails - whether to include the detailed feature data
          * @returns {void}
          */
-        exportTable (exportDetails = false) {
+        exportTable () {
             const data = this.items.filter(item => {
                     if (this.search && !this.filteredItems.includes(item)) {
                         return false;
@@ -431,7 +432,7 @@ export default {
                     }
                     return true;
                 }),
-                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
@@ -589,11 +590,20 @@ export default {
                         color="grey lighten-1"
                         class="my-2"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                        @click="exportTable(false)"
+                        @click="exportTable"
                     >
                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                     </v-btn>
-                    <v-btn
+                    <v-checkbox
+                        id="export-details"
+                        v-model="exportDetails"
+                        class="form-check-input"
+                        dense
+                        hide-details
+                        :label="$t('additional:modules.tools.cosi.saveSession.exportDetails')"
+                        :title="$t('additional:modules.tools.cosi.saveSession.exportDetails')"
+                    />
+                    <!-- <v-btn
                         id="export-detail"
                         dense
                         small
@@ -603,7 +613,7 @@ export default {
                         @click="exportTable(true)"
                     >
                         {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                    </v-btn>
+                    </v-btn> -->
                 </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">

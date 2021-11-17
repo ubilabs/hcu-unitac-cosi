@@ -123,7 +123,7 @@ export default {
         availableColumns () {
             const options = [
                 {name: "Verhältnis", key: "relation"},
-                {name: "Bedarfsdeckung", key: "coverage"}
+                {name: "Bedarfsdeckung (%)", key: "coverage"}
             ];
 
             if (this.fActive_A || this.fActive_B) {

@@ -285,7 +285,7 @@ export default {
             </span>
         </v-btn>
         <v-btn
-            :title="$t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip')"
+            :title="onlyEditSimulated ? $t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip') : $t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedOffTooltip')"
             tile
             depressed
             :color="onlyEditSimulated ? '' : 'warning'"
