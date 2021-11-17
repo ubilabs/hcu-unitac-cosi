@@ -14,7 +14,7 @@ export default {
         },
         infoText: {
             type: String,
-            required: true
+            default: undefined
         }
     },
     methods: {

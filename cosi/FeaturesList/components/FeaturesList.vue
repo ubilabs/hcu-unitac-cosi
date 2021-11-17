@@ -600,8 +600,8 @@ export default {
                         class="form-check-input"
                         dense
                         hide-details
-                        :label="$t('additional:modules.tools.cosi.saveSession.exportDetails')"
-                        :title="$t('additional:modules.tools.cosi.saveSession.exportDetails')"
+                        :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
+                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                     />
                     <!-- <v-btn
                         id="export-detail"

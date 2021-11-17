@@ -324,7 +324,7 @@ export default {
                 v-if="active"
                 #toolBody
             >
-                <v-app>
+                <v-app class="clamp-40vw">
                     <ToolInfo
                         info-text="Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!"
                     />
@@ -333,8 +333,8 @@ export default {
                             Schnelles Speichern
                         </v-card-title>
                         <v-subheader>
-                            Sitzungen als im Browser speichern. Diese können beim Programmstart wieder aus dem Verlauf geladen werden. <br>
-                            Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.
+                            Sitzungen im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button 'Letzte Laden' wieder geladen werden. <br>
+                            Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
                         </v-subheader>
                         <v-row class="flex">
                             <v-col
@@ -391,7 +391,7 @@ export default {
                             Lokales Speichern
                         </v-card-title>
                         <v-subheader>
-                            Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
+                            Sitzungen als Datei auf dem Rechner speichern und über den Button 'Datei laden' wieder laden. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
                         </v-subheader>
                         <v-row class="flex">
                             <v-col

@@ -522,7 +522,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
-                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
+                        :title="$t('additional:modules.tools.colorCodeMap.minimize')"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
@@ -574,6 +574,7 @@ export default {
                         select-label=""
                         deselect-label=""
                         placeholder=""
+                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
                     />
                     <Multiselect
                         v-if="selectedStatFeatures.length"
@@ -1016,7 +1017,7 @@ export default {
                 .btn_grp {
                     button {
                         margin:2px;
-                        .info_button {
+                        &.info_button {
                             display: inline-block;
                         }
                     }
