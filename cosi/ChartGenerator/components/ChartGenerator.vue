@@ -646,7 +646,7 @@ export default {
             width:400px;
             height:400px !important;
         }
-        
+
         #chart_panel {
             .graph {
                     display:none;

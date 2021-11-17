@@ -105,10 +105,7 @@ export default {
 
             for (const dataset of this.chartData.graph.datasets) {
                 if (dataset.type === "line") {
-                    const newColor = this.invertColor(dataset.backgroundColor);
-
-                    dataset.borderColor = newColor;
-                    dataset.backgroundColor = rgb(newColor.r, newColor.g, newColor.b, 0);
+                    dataset.backgroundColor.opacity = 0;
                 }
             }
 

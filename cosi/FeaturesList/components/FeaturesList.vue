@@ -603,17 +603,6 @@ export default {
                         :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                     />
-                    <!-- <v-btn
-                        id="export-detail"
-                        dense
-                        small
-                        tile
-                        color="grey lighten-1"
-                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                        @click="exportTable(true)"
-                    >
-                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                    </v-btn> -->
                 </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
