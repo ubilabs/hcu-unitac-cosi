@@ -174,7 +174,7 @@ export default {
         ...serializeState,
 
         save () {
-            console.log(this.$store.state);
+            // console.log(this.$store.state);
             this.saveDialog = false;
             this.serializeState();
 
@@ -197,7 +197,7 @@ export default {
         },
 
         storeToLocalStorage () {
-            console.log(this.session);
+            // console.log(this.session);
             this.localStorage.setItem("cosi-state", JSON.stringify(this.session));
         },
 

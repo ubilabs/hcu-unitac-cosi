@@ -129,6 +129,7 @@ export default {
                     :title="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
                     outlined
                     dense
+                    clearable
                 />
             </v-col>
             <v-col
@@ -202,7 +203,7 @@ export default {
                                 @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
                             >
                                 <span v-if="useIcons">
-                                    <v-icon>mdi-home-group</v-icon>
+                                    <v-icon>mdi-home</v-icon>
                                 </span>
                                 <span v-else>
                                     {{ $t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods') }}
@@ -267,7 +268,7 @@ export default {
                             @click="pruneActiveScenario"
                         >
                             <v-icon left>
-                                mdi-backspace
+                                mdi-domain-remove
                             </v-icon>
                             {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
                         </v-btn>
@@ -284,7 +285,7 @@ export default {
                                 @click="pruneActiveScenario"
                             >
                                 <v-icon left>
-                                    mdi-backspace
+                                    mdi-domain-remove
                                 </v-icon>
                                 {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
                             </v-btn>
@@ -299,7 +300,7 @@ export default {
                                 @click="pruneActiveScenarioNeighborhoods"
                             >
                                 <v-icon left>
-                                    mdi-backspace
+                                    mdi-home-remove
                                 </v-icon>
                                 {{ $t('additional:modules.tools.cosi.scenarioManager.pruneNeighborhoods') }}
                             </v-btn>
@@ -314,7 +315,7 @@ export default {
                                 @click="pruneActiveScenarioSimulatedFeatures"
                             >
                                 <v-icon left>
-                                    mdi-backspace
+                                    mdi-map-marker-remove
                                 </v-icon>
                                 {{ $t('additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeatures') }}
                             </v-btn>
