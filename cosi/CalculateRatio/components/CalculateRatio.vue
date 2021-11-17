@@ -5,9 +5,8 @@ import getters from "../store/gettersCalculateRatio";
 import mutations from "../store/mutationsCalculateRatio";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
-import JsonExcel from "vue-json-excel";
+import exportXlsx from "../../utils/exportXlsx";
 import DataTable from "./DataTable.vue";
-import Info from "text-loader!./info.html";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 
@@ -16,7 +15,6 @@ export default {
     components: {
         Tool,
         Multiselect,
-        JsonExcel,
         DataTable
     },
     data () {
@@ -82,6 +80,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
@@ -89,33 +88,18 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         // Transforming results data for excel export
         resultData () {
-            const json = {
-                json_fields: {
-                },
-                json_data: [],
-                json_meta: [
-                    [
-                        {
-                            "key": "charset",
-                            "value": "utf-8"
-                        }
-                    ]
-                ]
-            };
-
-            json.json_fields[this.label] = "scope";
-            json.json_fields[this.selectedFieldA.id] = this.paramFieldA.name === "Anzahl" ? "paramA_count" : "paramA_val";
-            json.json_fields[this.selectedFieldB.id] = this.paramFieldB.name === "Anzahl" ? "paramB_count" : "paramB_val";
-            json.json_fields[this.selectedFieldA.id + " / " + this.selectedFieldB.id] = "relation";
-            json.json_fields.Bedarfsdeckung = "coverage";
-
-            if (this.ASwitch || this.BSwitch) {
-                json.json_fields.Kapazität = "capacity";
-                json.json_fields.Bedarf = "need";
-            }
+            const json = [];
 
             this.results.forEach(result => {
-                json.json_data.push(result);
+                const resultObj = {};
+
+                resultObj[this.selectedFieldA.id] = result.paramA_val;
+                resultObj[this.selectedFieldB.id] = result.paramB_val;
+                resultObj[this.selectedFieldA.id + " / " + this.selectedFieldB.id] = result.relation;
+                resultObj.Kapazitaet = result.capacity;
+                resultObj.Bedarf = result.need;
+                resultObj.Bedarfsdeckung = result.coverage;
+                json.push(resultObj);
             });
 
             return json;
@@ -329,11 +313,13 @@ export default {
          * @description Shows component info as popup.
          * @returns {Void} Function returns nothing.
          */
-        showInfo () {
-            this.addSingleAlert({
+        openManual () {
+            /* this.addSingleAlert({
                 category: "Info",
                 content: Info
-            });
+            });*/
+
+            window.open(this.readmeUrl[this.currentLocale], "_blank");
         },
         /**
          * @description Checks if the user selected a summable statistical data set (feature).
@@ -621,6 +607,9 @@ export default {
 
             this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
         },
+        exportAsXlsx () {
+            exportXlsx(this.resultData, this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
+        },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
          * @returns {void}
@@ -728,7 +717,7 @@ export default {
                     <button
                         class="info_button"
                         :title="$t('additional:modules.tools.cosi.calculateRatio.infoTooltip')"
-                        @click="showInfo()"
+                        @click="openManual()"
                     >
                         <span class="glyphicon glyphicon-question-sign" />
                     </button>
@@ -1073,19 +1062,14 @@ export default {
                         class="data_table"
                     >
                         <div class="head_wrapper">
-                            <JsonExcel
+                            <button
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip')"
                                 class="btn btn-default xl_btn"
-                                :data="resultData.json_data"
-                                :fields="resultData.json_fields"
-                                type="xls"
-                                worksheet="Versorgungsanalyse"
-                                :name="selectedYear + '_versorgungsanalyse.xls'"
+                                @click="exportAsXlsx"
                             >
                                 <span class="glyphicon glyphicon-download" />
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
-                            </JsonExcel>
-
+                            </button>
                             <button
                                 class="btn btn-default xl_btn"
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')"

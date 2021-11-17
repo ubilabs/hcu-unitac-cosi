@@ -89,8 +89,6 @@ export default {
             this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
             this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
             this._options.title.text = beautifyKey(this.chartData.name);
-            console.log(this.chartData.graph);
-
             this.renderChart(this.chartData.graph, this._options);
         }
     }

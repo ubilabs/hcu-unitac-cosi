@@ -316,7 +316,6 @@ export default {
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
-                    console.log(matchResults);
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
