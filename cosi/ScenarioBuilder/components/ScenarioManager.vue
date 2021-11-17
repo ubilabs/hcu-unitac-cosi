@@ -137,8 +137,10 @@ export default {
                 cols="6"
             >
                 <v-btn
+                    dense
+                    small
                     tile
-                    depressed
+                    color="grey lighten-1"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                     class="flex-item"
                     @click="createNewScenarioModalOpen = !createNewScenarioModalOpen"
@@ -157,8 +159,10 @@ export default {
                 >
                     <template #activator="{ on, attrs }">
                         <v-btn
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
                             :disabled="!activeScenario"
                             class="flex-item"
@@ -178,8 +182,10 @@ export default {
                     <v-list>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
@@ -195,8 +201,10 @@ export default {
                         </v-list-item>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
@@ -212,8 +220,10 @@ export default {
                         </v-list-item>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
@@ -230,8 +240,10 @@ export default {
                     </v-list>
                 </v-menu>
                 <v-btn
+                    dense
+                    small
                     tile
-                    depressed
+                    color="grey lighten-1"
                     :disabled="!_activeScenario"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.deleteScenario')"
                     class="flex-item"
@@ -258,8 +270,10 @@ export default {
                 >
                     <template #activator="{ on, attrs }">
                         <v-btn
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
                             :disabled="!activeScenario"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
                             class="flex-item"
@@ -277,8 +291,10 @@ export default {
                     <v-list>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
                                 class="flex-item"
@@ -292,8 +308,10 @@ export default {
                         </v-list-item>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneNeighborhoods')"
                                 class="flex-item"
@@ -307,8 +325,10 @@ export default {
                         </v-list-item>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
                                 class="flex-item"
@@ -347,10 +367,11 @@ export default {
                                 :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
                             />
                             <v-btn
-                                tile
-                                depressed
-                                type="button"
                                 dense
+                                small
+                                tile
+                                color="grey lighten-1"
+                                type="button"
                                 :disabled="validScenarioName"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                                 @click="createNewScenario"

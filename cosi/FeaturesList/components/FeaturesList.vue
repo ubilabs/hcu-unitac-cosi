@@ -331,7 +331,7 @@ export default {
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: layerStyleFunction(feature),
+                            style: feature.getStyle() || layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,

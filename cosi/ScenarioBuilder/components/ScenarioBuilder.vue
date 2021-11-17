@@ -528,8 +528,9 @@ export default {
                                         cols="12"
                                     >
                                         <v-btn
+                                            dense
+                                            small
                                             tile
-                                            depressed
                                             color="primary"
                                             :disabled="!activeScenario || geometry === null || !formValid"
                                             class="flex-item"
@@ -542,8 +543,10 @@ export default {
                                             </span>
                                         </v-btn>
                                         <v-btn
+                                            dense
+                                            small
                                             tile
-                                            depressed
+                                            color="grey lighten-1"
                                             :disabled="!activeScenario"
                                             class="flex-item"
                                             @click="resetFeature"

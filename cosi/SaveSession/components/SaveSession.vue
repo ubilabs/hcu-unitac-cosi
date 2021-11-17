@@ -348,7 +348,7 @@ export default {
                                     small
                                     color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveTooltip')"
-                                    @click="saveDialog = true; saveMode = 'quickSave'"
+                                    @click="quickSave"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
                                 </v-btn>
