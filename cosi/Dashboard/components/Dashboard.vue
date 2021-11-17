@@ -391,8 +391,9 @@ export default {
          * @param {Object[]} currentItems - All current (visible) items in the table
          * @returns {void}
          */
-        exportTable (exportTimeline = false, selectedItems, currentItems) {
-            const items = selectedItems.length > 0 ? selectedItems : currentItems,
+        exportTable (exportTimeline = false) {
+            // exportTable(false, selectedItems, currentItems)
+            const items = this.selectedItems.length > 0 ? this.selectedItems : this.currentItems,
                 data = exportTimeline
                     ? prepareTableExportWithTimeline(items, this.timestamps, this.timestampPrefix)
                     : prepareTableExport(items, this.selectedYear, this.timestampPrefix),
@@ -458,6 +459,7 @@ export default {
                             :search="search"
                             @setStatsFeatureFilter="setStatsFeatureFilter"
                             @setSearch="setSearch"
+                            @exportTable="exportTable"
                         />
                         <v-row class="dashboard-table-wrapper">
                             <v-data-table
@@ -690,26 +692,6 @@ export default {
                                 </template>
                             </v-data-table>
                         </v-row>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-btn
-                                    tile
-                                    depressed
-                                    :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
-                                    @click="exportTable(false, selectedItems, currentItems)"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
-                                </v-btn>
-                                <v-btn
-                                    tile
-                                    depressed
-                                    :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-                                    @click="exportTable(true, selectedItems, currentItems)"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.dashboard.exportTableTimeline') }}
-                                </v-btn>
-                            </v-col>
-                        </v-row>
                     </v-container>
                 </v-main>
             </v-app>
@@ -727,7 +709,7 @@ export default {
         .container {
             height: 100%;
             .dashboard-table-wrapper {
-                height: calc(100% - 110px);
+                height: calc(100% - 40px);
             }
         }
     }

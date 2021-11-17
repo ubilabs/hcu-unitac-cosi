@@ -52,7 +52,7 @@ export function prepareTableExportWithTimeline (data, timestamps, timestampPrefi
     }
     const ctimestamps = timestamps.slice(),
         exportData = data.reduce((items, item) => {
-            const _item = renameKeys(keyMap, item),
+            const _item = renameKeys(item, keyMap),
                 categoryRows = ctimestamps.reverse().map(timestamp => {
                     const el = {..._item};
 

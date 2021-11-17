@@ -11,7 +11,7 @@
                     "timestampCol": "Jahr",
                     "search": "Tabelle durchsuchen",
                     "exportTable": "Tabelle exportieren",
-                    "exportTableTimeline": "Tabelle exportieren (alle Jahre)",
+                    "exportTableTimeline": "Export all years",
                     "exportFilename": "CoSI_Dashboard-Tabelle",
                     "modifiedTooltip": "Dieses Datum wurde durch Simulationsfunktionen verändert.",
                     "moveColLeft": "Spalte nach links verschieben",
