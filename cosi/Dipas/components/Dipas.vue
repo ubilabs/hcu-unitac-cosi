@@ -20,13 +20,12 @@ export default {
             projectsFeatureCollection: null,
             projectsColors: null,
             projectsActive: {},
-            contributions: {},
-            showStyleModal: false
+            contributions: {}
         };
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "layerById"])
+        ...mapGetters("Map", ["map", "layerById", "projectionCode"])
     },
     watch: {
     },
@@ -37,7 +36,7 @@ export default {
         this.$on("close", this.close);
     },
     /**
-   * Put initialize here if mounting occurs after config parsing
+   * fetches the projects and creates their layer with different color styles
    * @returns {void}
    */
     async mounted () {
@@ -95,6 +94,10 @@ export default {
                 model.set("isActive", false);
             }
         },
+        /**
+         * fetches all projects as a FeatureCollection
+         * @returns {Object} the FeatureCollection of all projects in json format
+         */
         async fetchProjects () {
             const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
                 ret = await fetch(url, {
@@ -109,9 +112,13 @@ export default {
             if (json.error) {
                 throw Error(JSON.stringify(json));
             }
-
             return json;
         },
+        /**
+         * fetches the contributions of a given project id
+         * @param {String} id the id of a previously fetched project
+         * @returns {Object} the FeatureCollection of all contributions for the given project id in json format
+         */
         async fetchContributions (id) {
             const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects/" + id + "/contributions",
                 ret = await fetch(url, {
@@ -129,37 +136,58 @@ export default {
 
             return json;
         },
-        transformFeatures (features, crs = "EPSG:4326", mapcrs = "EPSG:25832") {
-            features.forEach(function (feature) {
-                const geometry = feature.getGeometry();
-                // referenceSystem = feature.getProperties().referenceSystem;
-
-                if (geometry) {
-                    geometry.transform(crs, mapcrs);
-                }
-            });
+        /**
+         * takes an array of features and passes them to the transformFeature function
+         * @param {Array} features an array of features
+         * @returns {Array} an array with the transformed features
+         */
+        transformFeatures (features) {
+            features.forEach(feature => this.transformFeature(feature));
             return features;
         },
+        /**
+         * takes a feature and transforms it to the desired referenceSystem so it can be displayed on the map
+         * @param {Object} feature the feature to be transformed
+         * @returns {Object} the transformed feature
+         */
         transformFeature (feature) {
-            const geometry = feature.getGeometry(),
-                referenceSystem = feature.getProperties().referenceSystem;
+            const geometry = feature.getGeometry();
+            let referenceSystem = feature.getProperties().referenceSystem;
 
+            referenceSystem = referenceSystem === undefined ? "4326" : referenceSystem;
             if (geometry) {
-                geometry.transform("EPSG:" + referenceSystem, "EPSG:25832");
+                geometry.transform("EPSG:" + referenceSystem, this.projectionCode);
             }
             return feature;
         },
+        /**
+         * fetches the contributions for the given project id and transforms those features
+         * @param {String} id the id of the project
+         * @returns {Array} the transformed features of all contributions
+         */
         async getContributionFeatures (id) {
             const fetch = await this.fetchContributions(id),
                 features = new GeoJSON().readFeatures(fetch);
 
             return this.transformFeatures(features);
         },
+        /**
+         * changes the visibility of the layer for the given project id
+         * @param {String} id the project id
+         * @param {Boolean} value wether the project layer shall be visible or not
+         * @returns {void}
+         */
         async changeProjectVisibility (id, value) {
             const layer = await this.createLayer(id);
 
             layer.setVisible(value);
         },
+        /**
+         * changes the visibility of the contributions layer for the given project id
+         * @param {String} id the project id
+         * @param {Boolean} value wether the contributions layer shall be visible or not
+         * @returns {void}
+         */
         async changeContributionVisibility (id, value) {
             const layer = {
                 id: id + "-contributions",
@@ -174,7 +202,8 @@ export default {
                     this.contributions[id].features = await this.getContributionFeatures(id);
                 }
                 for (const feature of this.contributions[id].features) {
-                    const category = feature.getProperties().category,
+                    const properties = feature.getProperties(),
+                        category = properties.category,
                         color = this.contributions[id].colors[category],
                         style = new Style({
                             image: new Circle({
@@ -186,17 +215,28 @@ export default {
 
                     feature.setStyle(style);
                     feature.setId(feature.get("id"));
+
+                    for (const property of ['votingPro', 'votingContra', 'commentsNumber']) {
+                        properties[property] = String(properties[property]);
+                    };
+                    feature.setProperties(properties);
                 }
                 layer.features = this.contributions[id].features;
                 model = await this.addLayer(layer);
-                // const layerOnMap = getLayerById(this.map.getLayers().getArray(), "clever-leitsystem-contributions");
+                const layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
 
-                // layerOnMap.setZIndex(2);
+                layerOnMap.setZIndex(2);
                 this.addVectorlayerToMapping(model.attributes);
             }
 
             model.set("isSelected", value);
         },
+        /**
+         * changes the visibility of the heatmap layer for the given project id
+         * @param {String} id the project id
+         * @param {Boolean} value wether the heatmap layer shall be visible or not
+         * @returns {void}
+         */
         async changeHeatmapVisibility (id, value) {
             const layerId = id + "-heatmap";
             let layer = getLayerById(this.map.getLayers().getArray(), layerId);
@@ -217,8 +257,7 @@ export default {
                     weight: function (feature) {
                         const votingPro = parseInt(feature.getProperties().votingPro, 10),
                             votingContra = parseInt(feature.getProperties().votingContra, 10),
-                            // weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
-                            weight = votingPro + votingContra;
+                            weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
 
                         return weight;
                     }
