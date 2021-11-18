@@ -108,7 +108,8 @@ describe("AccessibilityAnalysis.vue", () => {
                         FeaturesList: {
                             namespaced: true,
                             getters: {
-                                isFeatureDisabled: () => sinon.stub()
+                                isFeatureDisabled: () => sinon.stub(),
+                                isFeatureActive: () => sinon.stub()
                             }
                         },
                         AccessibilityAnalysisService: {
