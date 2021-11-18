@@ -6,16 +6,16 @@ import getters from "../store/gettersSaveSession";
 import mutations from "../store/mutationsSaveSession";
 import actions from "../store/actionsSaveSession";
 import {downloadJsonToFile} from "../../utils/download";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
 import {Point, Polygon, MultiPoint, MultiPolygon} from "ol/geom";
 import serializeState from "./serializeState";
 import parseState from "./parseState";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "SaveSession",
     components: {
         Tool,
-        Modal
+        ToolInfo
     },
     data () {
         return {
@@ -174,7 +174,7 @@ export default {
         ...serializeState,
 
         save () {
-            console.log(this.$store.state);
+            // console.log(this.$store.state);
             this.saveDialog = false;
             this.serializeState();
 
@@ -197,7 +197,7 @@ export default {
         },
 
         storeToLocalStorage () {
-            console.log(this.session);
+            // console.log(this.session);
             this.localStorage.setItem("cosi-state", JSON.stringify(this.session));
         },
 
@@ -324,14 +324,17 @@ export default {
                 v-if="active"
                 #toolBody
             >
-                <v-app>
+                <v-app class="clamp-40vw">
+                    <ToolInfo
+                        info-text="Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!"
+                    />
                     <v-container class="flex btn-grid">
                         <v-card-title secondary-title>
                             Schnelles Speichern
                         </v-card-title>
                         <v-subheader>
-                            Sitzungen als im Browser speichern. Diese können beim Programmstart wieder aus dem Verlauf geladen werden. <br>
-                            Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.
+                            Sitzungen im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button 'Letzte Laden' wieder geladen werden. <br>
+                            Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
                         </v-subheader>
                         <v-row class="flex">
                             <v-col
@@ -341,9 +344,11 @@ export default {
                                 <v-btn
                                     id="save-session"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveTooltip')"
-                                    @click="saveDialog = true; saveMode = 'quickSave'"
+                                    @click="quickSave"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.save') }}
                                 </v-btn>
@@ -355,7 +360,9 @@ export default {
                                 <v-btn
                                     id="load-session"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.loadTooltip')"
                                     @click="loadLastSession"
                                 >
@@ -369,7 +376,9 @@ export default {
                                 <v-btn
                                     id="clear-session"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.clear')"
                                     @click="clear"
                                 >
@@ -382,7 +391,7 @@ export default {
                             Lokales Speichern
                         </v-card-title>
                         <v-subheader>
-                            Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
+                            Sitzungen als Datei auf dem Rechner speichern und über den Button 'Datei laden' wieder laden. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
                         </v-subheader>
                         <v-row class="flex">
                             <v-col
@@ -392,7 +401,9 @@ export default {
                                 <v-btn
                                     id="save-to-file"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.saveToFileTooltip')"
                                     @click="saveDialog = true; saveMode = 'saveAs'"
                                 >
@@ -406,7 +417,9 @@ export default {
                                 <v-btn
                                     id="load-from-file"
                                     tile
-                                    depressed
+                                    dense
+                                    small
+                                    color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.loadFromFileTooltip')"
                                     @click="loadFromFile"
                                 >
@@ -436,7 +449,10 @@ export default {
                             </v-col>
                         </v-row>
                         <v-divider />
-                        <v-row class="flex">
+                        <v-row
+                            class="flex"
+                            dense
+                        >
                             <v-col
                                 cols="6"
                                 class="flex"
@@ -444,6 +460,9 @@ export default {
                                 <v-checkbox
                                     id="auto-save"
                                     v-model="autoSave"
+                                    class="form-check-input"
+                                    dense
+                                    hide-details
                                     :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"
                                     :title="$t('additional:modules.tools.cosi.saveSession.autoSaveCheck')"
                                 />

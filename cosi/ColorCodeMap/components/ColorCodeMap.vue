@@ -316,6 +316,7 @@ export default {
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+                    console.log(matchResults);
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -473,9 +474,10 @@ export default {
                 id: "ccm",
                 name: [this.label] + " - " + this.dataCategory,
                 type: ["LineChart", "BarChart", "PieChart"],
-                color: "rgb(50,200,120)",
+                color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
+                beginAtZero: true,
                 source: this.$t("additional:modules.tools.colorCodeMap.title"),
-                scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabal")],
+                scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabel")],
                 data: {
                     labels: [],
                     dataSets: []
@@ -520,7 +522,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
-                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabal')"
+                        :title="$t('additional:modules.tools.colorCodeMap.minimize')"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
@@ -572,6 +574,7 @@ export default {
                         select-label=""
                         deselect-label=""
                         placeholder=""
+                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
                     />
                     <Multiselect
                         v-if="selectedStatFeatures.length"
@@ -1014,6 +1017,9 @@ export default {
                 .btn_grp {
                     button {
                         margin:2px;
+                        &.info_button {
+                            display: inline-block;
+                        }
                     }
                 }
             }

@@ -39,7 +39,13 @@ export default {
         translate: null,
         moveFeaturesActive: false,
         onlyEditSimulated: true,
-        select: null
+        select: null,
+        dialog: {
+            open: false,
+            color: "success",
+            text: "",
+            timeout: 4000
+        }
     }),
     computed: {
         ...mapGetters("Map", ["map", "layerById"]),
@@ -74,6 +80,10 @@ export default {
             if (state) {
                 this.$emit("moveFeaturesActive");
                 this.listen();
+                this.dialog.timeout = 5000;
+                this.dialog.color = "primary";
+                this.dialog.text = this.$t("additional:modules.tools.cosi.moveFeatures.help");
+                this.dialog.open = true;
             }
             else {
                 this.unlisten();
@@ -97,7 +107,6 @@ export default {
     },
     methods: {
         ...mapActions("Map", ["removeHighlightFeature"]),
-        ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
          * Sets and adds all OL interactions to move features
@@ -148,11 +157,15 @@ export default {
             this.onlyEditSimulated = !this.onlyEditSimulated;
 
             if (!this.onlyEditSimulated) {
-                this.addSingleAlert({
-                    category: "Warnung",
-                    displayClass: "warning",
-                    content: this.$t("additional:modules.tools.cosi.moveFeatures.onlySimulatedWarning")
-                });
+                // this.addSingleAlert({
+                //     category: "Warnung",
+                //     displayClass: "warning",
+                //     content: this.$t("additional:modules.tools.cosi.moveFeatures.onlySimulatedWarning")
+                // });
+                this.dialog.timeout = 2000;
+                this.dialog.color = "warning";
+                this.dialog.text = this.$t("additional:modules.tools.cosi.moveFeatures.onlySimulatedWarning");
+                this.dialog.open = true;
             }
         },
 
@@ -271,9 +284,10 @@ export default {
     <div>
         <v-btn
             :title="$t('additional:modules.tools.cosi.moveFeatures.title')"
+            dense
+            small
             tile
-            depressed
-            :color="moveFeaturesActive ? 'warning' : ''"
+            :color="moveFeaturesActive ? 'warning' : 'grey lighten-1'"
             :disabled="!activeScenario"
             @click="moveFeaturesActive = !moveFeaturesActive"
         >
@@ -285,10 +299,11 @@ export default {
             </span>
         </v-btn>
         <v-btn
-            :title="$t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip')"
+            :title="onlyEditSimulated ? $t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip') : $t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedOffTooltip')"
+            dense
+            small
             tile
-            depressed
-            :color="onlyEditSimulated ? '' : 'warning'"
+            :color="onlyEditSimulated ? 'grey lighten-1' : 'warning'"
             :disabled="!activeScenario"
             @click="toggleOnlySimulated"
         >
@@ -301,8 +316,10 @@ export default {
         </v-btn>
         <v-btn
             :title="$t('additional:modules.tools.cosi.moveFeatures.resetFeatureLocations')"
+            dense
+            small
             tile
-            depressed
+            color="grey lighten-1"
             :disabled="!activeScenario"
             @click="resetFeatureLocations"
         >
@@ -313,5 +330,21 @@ export default {
                 {{ $t('additional:modules.tools.cosi.moveFeatures.resetFeatureLocations') }}
             </span>
         </v-btn>
+        <v-snackbar
+            v-model="dialog.open"
+            :timeout="2000"
+            :color="dialog.color"
+        >
+            {{ dialog.text }}
+            <template #action="{ attrs }">
+                <v-btn
+                    v-bind="attrs"
+                    text
+                    @click="dialog.open = false"
+                >
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
     </div>
 </template>
