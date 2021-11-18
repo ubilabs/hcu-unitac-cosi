@@ -522,6 +522,13 @@ export default {
                                         </v-expansion-panel-content>
                                     </v-expansion-panel>
                                 </v-expansion-panels>
+                                <v-row dense>
+                                    <v-progress-linear
+                                        v-if="featureTypeDesc.length > 0 && Object.keys(valuesForFields).length / featureTypeDesc.length < 1"
+                                        :value="100 * Object.keys(valuesForFields).length / featureTypeDesc.length"
+                                        background-color="white"
+                                    />
+                                </v-row>
                                 <v-row>
                                     <v-col
                                         class="flex"
