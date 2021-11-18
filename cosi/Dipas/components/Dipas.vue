@@ -216,9 +216,9 @@ export default {
                     feature.setStyle(style);
                     feature.setId(feature.get("id"));
 
-                    for (const property of ['votingPro', 'votingContra', 'commentsNumber']) {
+                    for (const property of ["votingPro", "votingContra", "commentsNumber"]) {
                         properties[property] = String(properties[property]);
-                    };
+                    }
                     feature.setProperties(properties);
                 }
                 layer.features = this.contributions[id].features;
