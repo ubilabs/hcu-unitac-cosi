@@ -6,7 +6,13 @@
                     "title": "DIPAS",
                     "showProject": "Show project on the map",
                     "showContributions": "Show contributions on the map",
-                    "showHeatmap": "Show heatmap on the map"
+                    "showHeatmap": "Show heatmap on the map",
+                    "styling": {
+                        "label": "Styling of the contributions:",
+                        "byProject": "by project",
+                        "byCategories": "by categories",
+                        "byVoting": "by voting"
+                    }
                 }
             }
         }
