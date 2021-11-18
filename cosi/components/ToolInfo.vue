@@ -1,0 +1,64 @@
+<script>
+import {mapActions} from "vuex";
+
+export default {
+    name: "ToolInfo",
+    props: {
+        title: {
+            type: String,
+            default: "Werkzeuginformationen (Link öffnen)"
+        },
+        url: {
+            type: String,
+            default: null
+        },
+        infoText: {
+            type: String,
+            default: undefined
+        }
+    },
+    methods: {
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
+
+        showInfo () {
+            if (this.url) {
+                return window.open(this.url, "_blank");
+            }
+
+            if (this.infoText) {
+                this.cleanup();
+                this.addSingleAlert({
+                    category: "Info",
+                    content: this.infoText,
+                    displayClass: "info"
+                });
+            }
+        }
+    }
+};
+</script>
+
+<template>
+    <div v-if="url || infoText">
+        <v-row
+            dense
+            justify="end"
+        >
+            <v-btn
+                :title="title"
+                depressed
+                right
+                icon
+                x-small
+                @click="showInfo"
+            >
+                <v-icon>mdi-help-circle</v-icon>
+            </v-btn>
+        </v-row>
+        <v-divider />
+    </div>
+</template>
+
+<style lang="less" scoped>
+
+</style>

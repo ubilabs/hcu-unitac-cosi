@@ -8,22 +8,23 @@ import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
 import {exportAsGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
-import isFeatureActive from "../../utils/isFeatureActive";
+// import isFeatureActive from "../../utils/isFeatureActive";
+import ToolInfo from "../../components/ToolInfo.vue";
+import InfoTemplatePoint from "text-loader!./info_point.html";
+import InfoTemplateRegion from "text-loader!./info_region.html";
 
 export default {
     name: "AccessibilityAnalysis",
     components: {
-        Tool
+        Tool,
+        ToolInfo
     },
     data () {
         return {
-            mode: "point",
+            InfoTemplatePoint,
+            InfoTemplateRegion,
             facilityNames: [],
             mapLayer: null,
-            coordinate: [],
-            setBySearch: false,
-            setByFeature: false,
-            transportType: "",
             transportTypes: [
                 {
                     type: "",
@@ -50,7 +51,6 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.wheelchair")
                 }
             ],
-            scaleUnit: "",
             scaleUnits: [
                 {
                     type: "",
@@ -65,10 +65,7 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
                 }
             ],
-            distance: "",
-            steps: [0, 0, 0],
             layers: null,
-            selectedFacilityName: null,
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
@@ -82,7 +79,6 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
-            clickCoordinate: null,
             select: null
         };
     },
@@ -92,8 +88,64 @@ export default {
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"])
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        _mode: {
+            get () {
+                return this.mode;
+            },
+            set (v) {
+                this.setMode(v);
+            }
+        },
+        _coordinate: {
+            get () {
+                return this.coordinate;
+            },
+            set (v) {
+                this.setCoordinate(v);
+            }
+        },
+        _selectedFacilityName: {
+            get () {
+                return this.selectedFacilityName;
+            },
+            set (v) {
+                this.setSelectedFacilityName(v);
+            }
+        },
+        _setByFeature: {
+            get () {
+                return this.setByFeature;
+            },
+            set (v) {
+                this.setSetByFeature(v);
+            }
+        },
+        _transportType: {
+            get () {
+                return this.transportType;
+            },
+            set (v) {
+                this.setTransportType(v);
+            }
+        },
+        _scaleUnit: {
+            get () {
+                return this.scaleUnit;
+            },
+            set (v) {
+                this.setScaleUnit(v);
+            }
+        },
+        _distance: {
+            get () {
+                return this.distance;
+            },
+            set (v) {
+                this.setDistance(v);
+            }
+        }
     },
     watch: {
         active () {
@@ -115,7 +167,10 @@ export default {
             this.tryUpdateIsochrones();
         },
         mode () {
-            this.setByFeature = false;
+            this.setSetByFeature(false);
+        },
+        clickCoordinate (coord) {
+            this.placingPointMarker(coord);
         },
         setByFeature (val) {
             if (val && this.mode === "point") {
@@ -128,7 +183,6 @@ export default {
                 this.map.removeInteraction(this.select);
             }
         },
-
         activeVectorLayerList (newValues) {
             this.setFacilityLayers(newValues);
         }
@@ -170,8 +224,8 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
-        // isFeatureActive form utils
-        isFeatureActive,
+        // // isFeatureActive form utils
+        // isFeatureActive,
 
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {
@@ -240,6 +294,7 @@ export default {
         >
             <template #toolBody>
                 <v-app>
+                    <ToolInfo :info-text="mode === 'point' ? InfoTemplatePoint : InfoTemplateRegion" />
                     <div
                         v-if="active"
                         id="accessibilityanalysis"
@@ -247,7 +302,7 @@ export default {
                         <v-form>
                             <v-select
                                 ref="mode"
-                                v-model="mode"
+                                v-model="_mode"
                                 :items="availableModes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo')"
                                 item-text="text"
@@ -256,19 +311,19 @@ export default {
                                 dense
                                 @click:append="$refs.mode.blur()"
                             >
-                                <template #append>
+                                <!-- <template #append>
                                     <v-switch
-                                        v-model="setByFeature"
+                                        v-model="_setByFeature"
                                         dense
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
                                         class="inline-switch"
                                     />
-                                </template>
+                                </template> -->
                             </v-select>
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
-                                v-model="coordinate"
+                                v-model="_coordinate"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference')"
                                 type="text"
                                 min="0"
@@ -278,7 +333,7 @@ export default {
                             />
                             <v-select
                                 v-if="mode === 'region'"
-                                v-model="selectedFacilityName"
+                                v-model="_selectedFacilityName"
                                 placeholder="Keine Auswahl"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
@@ -286,7 +341,7 @@ export default {
                                 dense
                             />
                             <v-select
-                                v-model="transportType"
+                                v-model="_transportType"
                                 title="Verkehrsmittel"
                                 :items="transportTypes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.transportType')"
@@ -296,7 +351,7 @@ export default {
                                 dense
                             />
                             <v-select
-                                v-model="scaleUnit"
+                                v-model="_scaleUnit"
                                 title="Maßeinheit der Entfernung"
                                 :items="scaleUnits"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit')"
@@ -307,7 +362,7 @@ export default {
                             />
                             <v-text-field
                                 id="range"
-                                v-model="distance"
+                                v-model="_distance"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                 type="number"
                                 min="0"
@@ -326,13 +381,14 @@ export default {
                                     >
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
-                                    <v-icon
-                                        id="help"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.help')"
-                                        @click="showHelp()"
-                                    >
-                                        mdi-help-circle-outline
-                                    </v-icon>
+                                    <v-checkbox
+                                        v-model="_setByFeature"
+                                        dense
+                                        hide-details
+                                        class="form-check-input"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row
@@ -452,7 +508,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
 #accessibilityanalysis {
   width: 400px;
   min-height: 100px;

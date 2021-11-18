@@ -176,9 +176,10 @@ export default {
 <template>
     <div>
         <v-btn
+            dense
+            small
             tile
-            depressed
-            :color="referencePickerActive ? 'warning' : ''"
+            :color="referencePickerActive ? 'warning' : 'grey lighten-1'"
             :title="$t('additional:modules.tools.cosi.scenarioBuilder.pickReference')"
             @click="togglePickReference"
         >

@@ -22,7 +22,7 @@ export default {
                 scales: {
                     xAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: false
                         },
                         scaleLabel: {
                             display: true,
@@ -31,7 +31,7 @@ export default {
                     }],
                     yAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: false
                         },
                         scaleLabel: {
                             display: true,
@@ -51,6 +51,7 @@ export default {
             return {
                 name: this.dataSets.name,
                 scaleLabels: this.dataSets.scaleLabels,
+                beginAtZero: this.dataSets.beginAtZero,
                 graph: {
                     labels: this.dataSets.data.labels,
                     datasets: this.dataSets.data.dataSets
@@ -77,9 +78,19 @@ export default {
                 return;
             }
 
+            if (this.dataSets.beginAtZero) {
+                this._options.scales.yAxes[0].ticks.beginAtZero = true;
+            }
+            else {
+                this._options.scales.yAxes[0].ticks.beginAtZero = false;
+            }
+
+
             this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
             this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
             this._options.title.text = beautifyKey(this.chartData.name);
+            console.log(this.chartData.graph);
+
             this.renderChart(this.chartData.graph, this._options);
         }
     }

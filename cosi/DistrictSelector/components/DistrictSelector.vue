@@ -13,11 +13,13 @@ import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
 import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
 import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "DistrictSelector",
     components: {
-        Tool
+        Tool,
+        ToolInfo
     },
     data () {
         return {
@@ -228,13 +230,11 @@ export default {
          */
         registerFeatureCollectionListener (featureCollection) {
             featureCollection.on("change:length", (evt) => {
-                // evt.target = feature collection
-                this.setSelectedDistrictsCollection(evt.target);
-
                 const selectedNames = evt.target.getArray().map(feature => {
                     return feature.get(this.keyOfAttrName);
                 });
 
+                this.setSelectedDistrictsCollection(evt.target);
                 this.selectedNames = [...new Set(selectedNames)];
             });
 
@@ -465,6 +465,7 @@ export default {
             #toolBody
         >
             <v-app>
+                <ToolInfo :info-text="$t('additional:modules.tools.cosi.districtSelector.help')" />
                 <form class="district-selector">
                     <v-select
                         v-model="selectedLevelId"
@@ -497,12 +498,12 @@ export default {
                     />
                     <p class="text-caption">
                         {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
-                        <v-icon
+                        <!-- <v-icon
                             small
                             @click="showAlert($t('additional:modules.tools.cosi.districtSelector.help'))"
                         >
                             mdi-help-circle
-                        </v-icon>
+                        </v-icon> -->
                     </p>
                     <v-divider />
                     <div>

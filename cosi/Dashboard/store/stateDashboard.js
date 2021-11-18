@@ -18,7 +18,7 @@ const state = {
     name: "Dashboard",
     renderToWindow: false,
     resizableWindow: true,
-    excludedPropsForExport: ["visualized", "expanded", "years"]
+    excludedPropsForExport: ["visualized", "expanded", "years", "groupIndex"]
 };
 
 export default state;

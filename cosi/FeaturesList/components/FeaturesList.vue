@@ -20,7 +20,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
-import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
     name: "FeaturesList",
@@ -113,7 +112,8 @@ export default {
                     value: "enabled"
                 }
             ],
-            numericalColumns: []
+            numericalColumns: [],
+            exportDetails: false
         };
     },
     computed: {
@@ -279,7 +279,6 @@ export default {
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
-        isFeatureActive,
         getNumericalColumns () {
             const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
                 return [
@@ -330,7 +329,7 @@ export default {
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: layerStyleFunction(feature),
+                            style: feature.getStyle() || layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
@@ -418,7 +417,7 @@ export default {
          * @param {Boolean} exportDetails - whether to include the detailed feature data
          * @returns {void}
          */
-        exportTable (exportDetails = false) {
+        exportTable () {
             const data = this.items.filter(item => {
                     if (this.search && !this.filteredItems.includes(item)) {
                         return false;
@@ -431,7 +430,7 @@ export default {
                     }
                     return true;
                 }),
-                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
@@ -512,32 +511,39 @@ export default {
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
+
                 const items = [];
 
-                if (this.selectedLayers.length) {
-                    this.distanceScoreQueue = [...this.items];
-                    while (this.distanceScoreQueue.length) {
-                        const item = {...this.distanceScoreQueue.shift()};
+                this.distanceScoreQueue = this.items.map(item=>{
+                    const ret = {...item};
 
-                        if (this.selectedFeatureLayers) {
-                            const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
-                                weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
-                                extent: this.extent ? this.extent : undefined});
+                    delete ret.weightedDistanceScores;
+                    delete ret.distanceScore;
+                    return ret;
+                });
 
-                            item.weightedDistanceScores = ret;
-                            item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
-                        }
-                        for (const layer of this.selectedWmsLayers) {
-                            const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
 
-                            item[layer.name] = value;
-                        }
+                while (this.distanceScoreQueue.length) {
+                    const item = this.distanceScoreQueue.shift();
 
-                        items.push(item);
+                    if (this.selectedFeatureLayers.length > 0) {
+                        const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
+                            weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
+                            extent: this.extent ? this.extent : undefined});
+
+                        item.weightedDistanceScores = ret;
+                        item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
+                    }
+                    for (const layer of this.selectedWmsLayers) {
+                        const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
+
+                        item[layer.name] = value;
                     }
 
-                    this.items = items;
+                    items.push(item);
                 }
+
+                this.items = items;
             }
         },
         updateWeights (weights) {
@@ -589,21 +595,19 @@ export default {
                         color="grey lighten-1"
                         class="my-2"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                        @click="exportTable(false)"
+                        @click="exportTable"
                     >
                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                     </v-btn>
-                    <v-btn
-                        id="export-detail"
+                    <v-checkbox
+                        id="export-details"
+                        v-model="exportDetails"
+                        class="form-check-input"
                         dense
-                        small
-                        tile
-                        color="grey lighten-1"
+                        hide-details
+                        :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                        @click="exportTable(true)"
-                    >
-                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                    </v-btn>
+                    />
                 </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
@@ -808,11 +812,12 @@ export default {
     #features-list-wrapper {
         height: 100%;
         position: relative;
+        overflow: hidden;
     }
     #features-list {
         height: 100%;
         .features-list-table-wrapper {
-           height: calc(100% - 170px);
+           height: calc(100% - 200px);
             display: block;
             position: relative;
            .features-list-table {

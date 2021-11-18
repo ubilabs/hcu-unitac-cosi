@@ -11,7 +11,7 @@ import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp, {compareLayerMapping} from "../utils/validateProp";
 import TypesMapping from "../../assets/mapping.types.json";
 import Feature from "ol/Feature";
-import {featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
+import {featureTagStyleMod, featureTagStyle, toggleTagsOnLayerVisibility} from "../utils/guideLayer";
 import getValuesForField from "../utils/getValuesForField";
 import getFieldTypeForValue from "../utils/getFieldTypeForValue";
 import hash from "object-hash";
@@ -163,7 +163,12 @@ export default {
             const newLayer = await this.createLayer(this.id + "_layer");
 
             newLayer.setVisible(true);
-            newLayer.setStyle(featureTagStyle);
+            newLayer.setStyle(function (feature) {
+                if (feature.get("isModified") && !feature.get("isSimulation")) {
+                    return [featureTagStyleMod(feature)];
+                }
+                return [featureTagStyle(feature)];
+            });
             this.setGuideLayer(newLayer);
 
             return newLayer;
@@ -218,6 +223,10 @@ export default {
          * @returns {void}
          */
         setFeatureProperties (feature, properties, geometry) {
+            // delete potential geometry from properties
+            if (Object.hasOwnProperty.call(properties, "geometry")) {
+                delete properties.geometry;
+            }
             // set properties
             feature.setProperties(properties);
             // flag as simulated
@@ -405,7 +414,7 @@ export default {
                                 <v-divider />
                             </div>
                             <div class="mb-5 overline">
-                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.configureFeature') }}
                             </div>
                             <div class="form-group">
                                 <v-expansion-panels
@@ -513,14 +522,22 @@ export default {
                                         </v-expansion-panel-content>
                                     </v-expansion-panel>
                                 </v-expansion-panels>
+                                <v-row dense>
+                                    <v-progress-linear
+                                        v-if="featureTypeDesc.length > 0 && Object.keys(valuesForFields).length / featureTypeDesc.length < 1"
+                                        :value="100 * Object.keys(valuesForFields).length / featureTypeDesc.length"
+                                        background-color="white"
+                                    />
+                                </v-row>
                                 <v-row>
                                     <v-col
                                         class="flex"
                                         cols="12"
                                     >
                                         <v-btn
+                                            dense
+                                            small
                                             tile
-                                            depressed
                                             color="primary"
                                             :disabled="!activeScenario || geometry === null || !formValid"
                                             class="flex-item"
@@ -533,8 +550,10 @@ export default {
                                             </span>
                                         </v-btn>
                                         <v-btn
+                                            dense
+                                            small
                                             tile
-                                            depressed
+                                            color="grey lighten-1"
                                             :disabled="!activeScenario"
                                             class="flex-item"
                                             @click="resetFeature"

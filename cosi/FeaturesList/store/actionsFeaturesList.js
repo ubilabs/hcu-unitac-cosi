@@ -47,7 +47,7 @@ const actions = {
         }
         else {
             group = {
-                group: "Importierte Datensätze",
+                group: layer.group,
                 layer: [
                     layerMap
                 ]
