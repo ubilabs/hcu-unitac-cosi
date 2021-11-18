@@ -3,10 +3,12 @@ import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import sinon from "sinon";
 import {expect} from "chai";
+import {registerProjections} from "masterportalAPI/src/crs";
 
 describe("distanceScoreService", () => {
     before(async function () {
         await initializeLayerList();
+        registerProjections();
     });
 
     /**
@@ -72,6 +74,21 @@ describe("distanceScoreService", () => {
             {
                 "id20569566074.67,5933911.077,567996.251,5935623.892": 157.41
             });
+    });
+    it("should ignore empty extend", async () => {
+        const features = await getAllFeatures("20569"),
+            commitStub = sinon.stub(),
+            getters = defaultGetters(),
+
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+                {
+                    feature: features[0],
+                    layerIds: ["19862"],
+                    weights: [1],
+                    extent: []
+                });
+
+        expect(score).to.be.eql({"19862": 191.82, score: 191.82});
     });
     it("getDistanceScore with small layer outside extent", async () => {
         // current implementation ignores extent

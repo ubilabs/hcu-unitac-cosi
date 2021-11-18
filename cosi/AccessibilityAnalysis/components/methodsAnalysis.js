@@ -8,8 +8,6 @@ import
     Stroke,
     Style
 } from "ol/style.js";
-import InfoTemplatePoint from "text-loader!./info_point.html";
-import InfoTemplateRegion from "text-loader!./info_region.html";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import * as turf from "@turf/turf";
 
@@ -82,7 +80,7 @@ export default {
             const features = await this.getIsochrones({transportType: this.transportType, coordinates, scaleUnit: this.scaleUnit, distance: this.distance});
 
             // TODO: get locale from store
-            this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
+            this.setSteps([distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)));
             this.setIsochroneFeatures(features);
             this.currentCoordinates = coordinates;
         }
@@ -104,11 +102,11 @@ export default {
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
-            this.setByFeature = false;
+            this.setSetByFeature(false);
 
             const features = await this.getIsochrones({transportType: this.transportType, coordinates: this.coordinate, scaleUnit: this.scaleUnit, distance: this.distance});
 
-            this.steps = [distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
+            this.setSteps([distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)));
             this.setRawGeoJson(await this.featureToGeoJson(features[0]));
             this.setIsochroneFeatures(features);
             this.showRequestButton = true;
@@ -146,10 +144,10 @@ export default {
                 "EPSG:4326"
             ));
 
-        this.coordinate = coordinates;
-        this.clickCoordinate = evt.coordinate;
-        this.placingPointMarker(evt.coordinate);
-        this.setBySearch = false;
+        this.setCoordinate(coordinates);
+        this.setClickCoordinate(evt.coordinate);
+        // this.placingPointMarker(evt.coordinate);
+        this.setSetBySearch(false);
     },
 
     setCoordinatesByFeatures: function (evt) {
@@ -196,9 +194,9 @@ export default {
         const coord = getSearchResultsCoordinates();
 
         if (coord) {
-            this.coordinate = [coord];
-            this.clickCoordinate = coord;
-            this.setBySearch = true;
+            this.setCoordinate([coord]);
+            this.setClickCoordinate(coord);
+            this.setSetBySearch(true);
         }
     },
     /**
@@ -260,25 +258,13 @@ export default {
         setBBoxToGeom(geometryCollection);
     },
     /**
-     * shows help window
-     * @returns {void}
-     */
-    showHelp: function () {
-        this.cleanup();
-        this.addSingleAlert({
-            category: "Info",
-            content: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
-            displayClass: "info"
-        });
-    },
-    /**
      * clears the component
      * @returns {void}
      */
     clear: function () {
         this.layers = null;
         this.showRequestButton = false;
-        this.steps = [0, 0, 0];
+        this.setSteps([0, 0, 0]);
         this.setRawGeoJson(null);
         this.setIsochroneFeatures([]);
     },
@@ -291,7 +277,7 @@ export default {
         if (selectedLayerModel) {
             const features = selectedLayerModel.get("layer")
                 .getSource().getFeatures()
-                .filter(f => (typeof f.style_ === "object" || f.style_ === null) && !this.isFeatureDisabled(f));
+                .filter(this.isFeatureActive);
 
             return features
                 .reduce((res, feature) => {

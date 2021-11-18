@@ -4,6 +4,7 @@
             "cosi": {
                 "scenarioBuilder": {
                     "title": "Simulate Facilities",
+                    "configureFeature": "Configure facility",
                     "toolMenu": "Tools",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
@@ -15,6 +16,7 @@
                     "resetFeature": "Zurücksetzen",
                     "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
                     "required": "Erforderlich",
+                    "requiredFieldMissing": "Eines oder mehrere erforderliche Felder wurden nicht ausgefüllt.",
                     "essentialFieldHeader": "Erforderliche Spalten",
                     "optionalFieldHeader": "Optionale Spalten",
                     "geomFieldHeader": "Geometrie / Ort",
@@ -28,8 +30,9 @@
                     "title": "Einrichtungen verschieben",
                     "toggleOnlySimulated": "Nur Simulierte",
                     "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
+                    "toggleOnlySimulatedOffTooltip": "Alle Einrichtungen können verschoben werden",
                     "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen sind nur temporär und werden nach der Sitzung nicht gespeichert.",
-                    "resetFeatureLocations": "Zurücksetzen"
+                    "resetFeatureLocations": "Reset moved facilities"
                 },
                 "scenarioManager": {
                     "title": "Szenariomanager",

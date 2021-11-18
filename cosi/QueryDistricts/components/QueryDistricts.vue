@@ -14,7 +14,7 @@ import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
-import renameKeys from "../../utils/renameKeys.js";
+import {renameKeys} from "../../utils/modifyObject.js";
 
 export default {
     name: "QueryDistricts",
@@ -308,7 +308,7 @@ export default {
                 field = fieldValues[0],
                 model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
-                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
+                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id && l.valueType !== "relative").map(l=>({id: l.id, name: l.name})),
                     properties: await this.getFacilityProperties(layer)
                 };
 
@@ -613,8 +613,7 @@ export default {
         },
 
         exportTable: function () {
-            const exportData = this.results.map(r=>renameKeys(
-                    Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))), r)),
+            const exportData = this.results.map(r=>renameKeys(r, Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))))),
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
 

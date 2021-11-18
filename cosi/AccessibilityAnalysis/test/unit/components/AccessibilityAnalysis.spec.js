@@ -108,7 +108,8 @@ describe("AccessibilityAnalysis.vue", () => {
                         FeaturesList: {
                             namespaced: true,
                             getters: {
-                                isFeatureDisabled: () => sinon.stub()
+                                isFeatureDisabled: () => sinon.stub(),
+                                isFeatureActive: () => sinon.stub()
                             }
                         },
                         AccessibilityAnalysisService: {
@@ -310,7 +311,7 @@ describe("AccessibilityAnalysis.vue", () => {
         });
 
         await wrapper.find("#help").trigger("click");
-        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit im Gebiet");
+        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit der ausgewählten Einrichtungen");
     });
-
 });
+

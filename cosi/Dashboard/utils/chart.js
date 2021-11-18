@@ -103,7 +103,7 @@ export function generateScatterGraphObj (graphData, categoryX, categoryY) {
         id: "ccm",
         name: `${categoryY} / ${categoryX}`,
         type: "ScatterChart",
-        color: "green",
+        color: "rainbow",
         source: "Dashboard",
         scaleLabels: [categoryY, categoryX],
         data: {

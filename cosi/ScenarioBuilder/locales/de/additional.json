@@ -4,6 +4,7 @@
             "cosi": {
                 "scenarioBuilder": {
                     "title": "Einrichtungen anlegen",
+                    "configureFeature": "Einrichtung konfigurieren",
                     "toolMenu": "Werkzeuge",
                     "help": "Lorem Ipsum dolor sit amet",
                     "layerSelector": "Thema auswählen",
@@ -15,6 +16,7 @@
                     "resetFeature": "Zurücksetzen",
                     "warningNoData": "Es wurden bisher keine Themendaten geladen. Bitte wählen Sie mindestens ein Analysethema aus dem Themenbaum.",
                     "required": "Erforderlich",
+                    "requiredFieldMissing": "Eines oder mehrere erforderliche Felder wurden nicht ausgefüllt.",
                     "essentialFieldHeader": "Erforderliche Spalten",
                     "optionalFieldHeader": "Optionale Spalten",
                     "geomFieldHeader": "Geometrie / Ort",
@@ -27,9 +29,11 @@
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",
                     "toggleOnlySimulated": "Nur Simulierte",
-                    "toggleOnlySimulatedTooltip": "Nur Simulierte Einrichtungen verschieben",
+                    "toggleOnlySimulatedTooltip": "Verriegelt: Nur simulierte Einrichtungen können verschoben werden",
+                    "toggleOnlySimulatedOffTooltip": "Offen: Alle Einrichtungen des Themas können verschoben werden",
                     "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen sind nur temporär und werden nach der Sitzung nicht gespeichert.",
-                    "resetFeatureLocations": "Zurücksetzen"
+                    "resetFeatureLocations": "Verschobene Einrichtungen Zurücksetzen",
+                    "help": "Einrichtung zum Verschieben auswählen. Der Cursor zeigt an, wenn eine Einrichtung durchs Ziehen verschoben werden kann."
                 },
                 "scenarioManager": {
                     "title": "Szenariomanager",
