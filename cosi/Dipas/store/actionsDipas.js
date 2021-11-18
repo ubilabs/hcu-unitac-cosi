@@ -8,17 +8,6 @@ function setLayerAttributes (model) {
     model.set({
         gfiComplex: "true",
         gfiTheme: "default",
-        gfiAttributes: {
-            dateCreated: "Erstellungsdatum",
-            title: "Titel",
-            contributionType: "Beitragstyp",
-            contributionContent: "Beitragstext",
-            commentsNumber: "Anzahl Kommentare",
-            category: "Kategorie",
-            votingPro: "Pro Stimmen",
-            votingContra: "Contro Stimmen",
-            belongToProject: "Verfahren"
-        },
         typ: "GeoJSON",
         isFacility: true,
         alwaysOnTop: true,
@@ -51,9 +40,20 @@ function setLayerAttributes (model) {
 function addLayerToTree (newLayer) {
     const layerName = newLayer.name,
         layerId = newLayer.id,
-        features = newLayer.features;
+        features = newLayer.features,
+        gfiAttributes = {
+            dateCreated: "Erstellungsdatum",
+            title: "Titel",
+            contributionType: "Beitragstyp",
+            contributionContent: "Beitragstext",
+            commentsNumber: "Anzahl Kommentare",
+            category: "Kategorie",
+            votingPro: "Pro Stimmen",
+            votingContra: "Contro Stimmen",
+            belongToProject: "Verfahren"
+        };
 
-    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, "showAll", {isNeverVisibleInTree: true});
+    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true});
 
     // eslint-disable-next-line one-var
     const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
