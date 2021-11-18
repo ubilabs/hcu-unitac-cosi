@@ -8,7 +8,7 @@ import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
 import {exportAsGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
-import isFeatureActive from "../../utils/isFeatureActive";
+// import isFeatureActive from "../../utils/isFeatureActive";
 import ToolInfo from "../../components/ToolInfo.vue";
 import InfoTemplatePoint from "text-loader!./info_point.html";
 import InfoTemplateRegion from "text-loader!./info_region.html";
@@ -88,7 +88,7 @@ export default {
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
         _mode: {
             get () {
@@ -224,8 +224,8 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
-        // isFeatureActive form utils
-        isFeatureActive,
+        // // isFeatureActive form utils
+        // isFeatureActive,
 
         tryUpdateIsochrones: function () {
             if (this.mode === "region" && this.currentCoordinates) {

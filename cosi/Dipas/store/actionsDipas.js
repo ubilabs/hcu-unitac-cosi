@@ -8,6 +8,17 @@ function setLayerAttributes (model) {
     model.set({
         gfiComplex: "true",
         gfiTheme: "default",
+        gfiAttributes: {
+            dateCreated: "Erstellungsdatum",
+            title: "Titel",
+            contributionType: "Beitragstyp",
+            contributionContent: "Beitragstext",
+            commentsNumber: "Anzahl Kommentare",
+            category: "Kategorie",
+            votingPro: "Pro Stimmen",
+            votingContra: "Contro Stimmen",
+            belongToProject: "Verfahren"
+        },
         typ: "GeoJSON",
         isFacility: true,
         alwaysOnTop: true,
@@ -22,11 +33,11 @@ function setLayerAttributes (model) {
             },
             {
                 id: "votingPro",
-                name: "Pro Votes"
+                name: "Pro Stimmen"
             },
             {
                 id: "votingContra",
-                name: "Contra Votes"
+                name: "Contra Stimmen"
             }
         ]
     });

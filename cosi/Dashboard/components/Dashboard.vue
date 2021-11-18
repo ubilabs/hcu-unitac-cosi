@@ -94,13 +94,7 @@ export default {
             fields: {
                 A: null,
                 B: null
-            },
-            excludedPropsForExport: [
-                "groupIndex",
-                "visualized",
-                "years",
-                "expanded"
-            ]
+            }
         };
     },
     computed: {
