@@ -332,10 +332,10 @@ export default {
                         <v-card-title secondary-title>
                             Schnelles Speichern
                         </v-card-title>
-                        <v-subheader>
+                        <div class="mb-2">>
                             Sitzungen im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button 'Letzte Laden' wieder geladen werden. <br>
                             Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
-                        </v-subheader>
+                        </div>
                         <v-row class="flex">
                             <v-col
                                 cols="6"
@@ -390,9 +390,9 @@ export default {
                         <v-card-title secondary-title>
                             Lokales Speichern
                         </v-card-title>
-                        <v-subheader>
+                        <div class="mb-2">
                             Sitzungen als Datei auf dem Rechner speichern und über den Button 'Datei laden' wieder laden. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
-                        </v-subheader>
+                        </div>
                         <v-row class="flex">
                             <v-col
                                 cols="6"

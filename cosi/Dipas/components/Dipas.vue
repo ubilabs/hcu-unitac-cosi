@@ -386,7 +386,7 @@ export default {
             :deactivate-gfi="deactivateGFI"
         >
             <template #toolBody>
-                <v-app>
+                <v-app class="clamp-600px">
                     <div
                         v-if="active"
                         id="dipas"
@@ -405,9 +405,10 @@ export default {
                                             <v-list-item-title v-text="feature.getProperties().nameFull" />
                                         </v-list-item-content>
                                     </template>
-                                    <p class="description">
-                                        {{ feature.getProperties().description }}
-                                    </p>
+                                    <p
+                                        class="description"
+                                        v-html="feature.getProperties().description"
+                                    />
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
@@ -448,9 +449,9 @@ export default {
                         </v-card>
                     </div>
                     <div id="radio">
-                        <label>
+                        <div class="mb-1">
                             {{ $t('additional:modules.tools.cosi.dipas.styling.label') }}
-                        </label>
+                        </div>
                         <label>
                             <input
                                 v-model="selectedStyling"
@@ -492,6 +493,10 @@ export default {
   min-height: 100px;
 }
 
+#radio {
+    margin-top: 5px;
+}
+
 .feature-item {
     white-space: nowrap;
     overflow-x: auto;
@@ -499,10 +504,14 @@ export default {
 
 .feature-item-content {
     display: inline-block;
-   margin-left: 20px;
+    margin-left: 20px;
 }
 
 p.description {
     margin-left: 20px;
+    margin-right: 20px;
+    max-height: 40vh;
+    overflow-y: auto;
+    line-height: 1.5rem;
 }
 </style>

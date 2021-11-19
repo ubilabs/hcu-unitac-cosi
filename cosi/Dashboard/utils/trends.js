@@ -4,8 +4,8 @@
  * @param {*} len 
  * @returns 
  */
-function filterLinear (x, len) {
-    return (2 / len) * (x + 0.5);
+function filterLinear (x, len, integral = 1) {
+    return (2 * integral / len) * (x + 0.5);
 }
 
 /**
