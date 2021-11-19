@@ -24,7 +24,8 @@ export default {
             projectsActive: {},
             contributions: {},
             selectedStyling: null,
-            selectedStylingFunction: null
+            selectedStylingFunction: null,
+            categoryRainbow: false
         };
     },
     computed: {
@@ -38,6 +39,11 @@ export default {
                     this.selectedStylingFunction = this.setContributionColorByProject;
                     break;
                 case "category":
+                    this.categoryRainbow = false;
+                    this.selectedStylingFunction = this.setContributionColorByCategory;
+                    break;
+                case "categoryRainbow":
+                    this.categoryRainbow = true;
                     this.selectedStylingFunction = this.setContributionColorByCategory;
                     break;
                 case "voting":
@@ -69,7 +75,7 @@ export default {
         const fetch = await this.fetchProjects(),
             features = new GeoJSON().readFeatures(fetch);
 
-        this.selectedStyling = "project";
+        this.selectedStyling = "category";
         this.projectsFeatureCollection = this.transformFeatures(features);
         this.projectsColors = generateColorScale(undefined, "interpolateTurbo", this.projectsFeatureCollection.length).legend.colors;
         for (const [index, feature] of this.projectsFeatureCollection.entries()) {
@@ -79,7 +85,9 @@ export default {
                     fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
                     stroke: new Stroke({color: this.projectsColors[index], width: 1.25})
                 }),
-                colorScale = generateColorScaleByColor(this.projectsColors[index], Object.values(feature.getProperties().standardCategories).length);
+                len = Object.values(feature.getProperties().standardCategories).length,
+                colorScale = generateColorScaleByColor(this.projectsColors[index], len),
+                rainbowColorScale = generateColorScale([0, len], "interpolateTurbo").scale;
 
             layer.setZIndex(0);
             layer.setStyle(style);
@@ -91,9 +99,11 @@ export default {
 
             this.contributions[id] = Object();
             this.contributions[id].colors = Object();
+            this.contributions[id].rainbowColors = Object();
             this.contributions[id].index = index;
             for (const [catIndex, category] of Object.values(feature.getProperties().standardCategories).entries()) {
                 this.contributions[id].colors[category] = colorScale(catIndex);
+                this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
             }
         }
     },
@@ -226,7 +236,9 @@ export default {
 
             if (!model) {
                 if (!this.contributions[id].features) {
+                    Radio.trigger("Util", "showLoader");
                     this.contributions[id].features = await this.getContributionFeatures(id);
+                    Radio.trigger("Util", "hideLoader");
                 }
                 this.selectedStylingFunction(id);
                 for (const feature of this.contributions[id].features) {
@@ -277,13 +289,18 @@ export default {
          */
         setContributionColorByCategory (id) {
             for (const feature of this.contributions[id].features) {
+                let colors = this.contributions[id].colors;
+
+                if (this.categoryRainbow) {
+                    colors = this.contributions[id].rainbowColors;
+                }
                 const category = feature.getProperties().category,
-                    color = this.contributions[id].colors[category],
+                    color = colors[category],
                     style = new Style({
                         image: new Circle({
                             radius: 5,
                             fill: new Fill({color: color}),
-                            stroke: new Stroke({color: "black", width: 1.5})
+                            stroke: new Stroke({color: color, width: 1.5})
                         })
                     });
 
@@ -309,7 +326,7 @@ export default {
                         image: new Circle({
                             radius: Math.sqrt(votingPro + votingContra) + 5,
                             fill: new Fill({color: color}),
-                            stroke: new Stroke({color: "black", width: 1.5})
+                            stroke: new Stroke({color: color, width: 1.5})
                         })
                     });
 
@@ -386,6 +403,9 @@ export default {
                                             <v-list-item-title v-text="feature.getProperties().nameFull" />
                                         </v-list-item-content>
                                     </template>
+                                    <p class="description">
+                                        {{ feature.getProperties().description }}
+                                    </p>
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
@@ -405,7 +425,9 @@ export default {
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
-                                            <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showContributions') }}</v-list-item-title>
+                                            <v-list-item-title>
+                                                {{ $t('additional:modules.tools.cosi.dipas.showContributions') }}
+                                            </v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item>
@@ -445,6 +467,13 @@ export default {
                             <input
                                 v-model="selectedStyling"
                                 type="radio"
+                                value="categoryRainbow"
+                            > {{ $t('additional:modules.tools.cosi.dipas.styling.byCategoriesRainbow') }}
+                        </label>
+                        <label>
+                            <input
+                                v-model="selectedStyling"
+                                type="radio"
                                 value="voting"
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
@@ -469,5 +498,9 @@ export default {
 .feature-item-content {
     display: inline-block;
    margin-left: 20px;
+}
+
+p.description {
+    margin-left: 20px;
 }
 </style>
