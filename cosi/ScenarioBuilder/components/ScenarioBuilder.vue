@@ -551,7 +551,7 @@ export default {
                                             small
                                             tile
                                             color="primary"
-                                            :disabled="!activeScenario || geometry === null || !formValid"
+                                            :disabled="!activeScenario || geometry === null || !formValid || isCreated"
                                             class="flex-item"
                                             :title="!formValid ? $t('additional:modules.tools.cosi.scenarioBuilder.requiredFieldMissing') : ''"
                                             @click="createFeature"
