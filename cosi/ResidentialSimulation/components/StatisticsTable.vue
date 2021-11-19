@@ -63,18 +63,20 @@ export default {
             hide-default-footer
         >
             <!-- eslint-disable-next-line vue/valid-v-slot -->
-            <template v-slot:item.value="{ item }">
+            <template #item.value="{ item }">
                 <v-edit-dialog
                     :return-value.sync="item.value"
                     :rules="[isNumber]"
                     large
                     persistent
+                    :save-text="$t('common:button.save')"
+                    :cancel-text="$t('common:button.cancel')"
                     @save="save(item)"
                     @cancel="cancel"
                     @open="open"
                 >
                     <div>{{ item.value }}</div>
-                    <template v-slot:input>
+                    <template #input>
                         <div class="mt-4 text-h6">
                             {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsField") }}
                         </div>

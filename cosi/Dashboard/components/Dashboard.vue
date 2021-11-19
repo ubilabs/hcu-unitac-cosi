@@ -15,13 +15,15 @@ import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/expor
 import composeFilename from "../../utils/composeFilename";
 import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
+import StatsTrend from "./StatsTrend.vue";
 
 export default {
     name: "Dashboard",
     components: {
         Tool,
         TableRowMenu,
-        DashboardToolbar
+        DashboardToolbar,
+        StatsTrend
     },
     data () {
         return {
@@ -600,6 +602,11 @@ export default {
                                                 v-bind="attrs"
                                                 v-on="on"
                                             >
+                                                <StatsTrend
+                                                    :item="item"
+                                                    :header="header"
+                                                    :timestamp-prefix="timestampPrefix"
+                                                />
                                                 <template v-if="item.expanded">
                                                     <ul class="timeline">
                                                         <li

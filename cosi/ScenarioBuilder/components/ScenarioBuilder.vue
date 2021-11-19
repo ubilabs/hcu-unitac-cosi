@@ -46,7 +46,8 @@ export default {
             geometry: null,
             valuesForFields: {},
             panel: [0, 1],
-            formValid: false
+            formValid: false,
+            isCreated: false
         };
     },
     computed: {
@@ -133,6 +134,13 @@ export default {
             if (this.guideLayer) {
                 toggleTagsOnLayerVisibility(this.guideLayer, layerList);
             }
+        },
+
+        featureProperties: {
+            deep: true,
+            handler () {
+                this.isCreated = false;
+            }
         }
     },
     /**
@@ -214,6 +222,8 @@ export default {
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
             this.removePointMarker();
             this.$root.$emit("updateFeature");
+
+            this.isCreated = true;
         },
 
         /**
@@ -338,10 +348,12 @@ export default {
             #toolBody
         >
             <v-app>
-                <ScenarioManager />
+                <ScenarioManager @pruneScenario="resetFeature" />
                 <v-divider />
-                <div class="mb-5 overline">
-                    {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                <div>
+                    <span class="text-subtitle-2">
+                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.title') }}
+                    </span>
                 </div>
                 <div class="mb-2">
                     Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
@@ -555,9 +567,11 @@ export default {
                                             tile
                                             color="grey lighten-1"
                                             :disabled="!activeScenario"
+                                            :title="$t('additional:modules.tools.cosi.scenarioBuilder.helpResetFeature')"
                                             class="flex-item"
                                             @click="resetFeature"
                                         >
+                                            <v-icon>mdi-eraser</v-icon>
                                             {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}
                                         </v-btn>
                                     </v-col>

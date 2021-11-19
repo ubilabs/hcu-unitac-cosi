@@ -81,7 +81,7 @@ export function generateGraphObj (graphData, districtLevelLabel, category, times
         id: "ccm",
         name: districtLevelLabel + " - " + category,
         type: ["LineChart", "BarChart", "PieChart"],
-        color: "blue",
+        color: "rainbow",
         source: "Dashboard",
         scaleLabels: [category, "Jahre"],
         data: {

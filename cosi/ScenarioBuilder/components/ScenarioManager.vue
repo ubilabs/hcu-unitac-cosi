@@ -88,6 +88,7 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
                 this.activeScenario.prune();
+                this.$emit("pruneScenario");
             }
         },
 
@@ -95,6 +96,7 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneNeighborhoodsWarning"))) {
                 this.activeScenario.pruneNeighborhoods();
+                this.$emit("pruneScenario", "neighborhoods");
             }
         },
 
@@ -102,6 +104,7 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeaturesWarning"))) {
                 this.activeScenario.pruneSimulatedFeatures();
+                this.$emit("pruneScenario", "simulated");
             }
         }
     }
@@ -110,8 +113,10 @@ export default {
 
 <template>
     <div>
-        <div class="mb-5 overline">
-            {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
+        <div>
+            <span class="text-subtitle-2">
+                {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
+            </span>
         </div>
         <div class="mb-2">
             Anlegen und Verwalten der Szenarien für fiktive Daten. In einem Szenario können Einrichtungen und Wohnquartiere simuliert, sowie bestehende Einrichtungen verändert werden.
@@ -296,14 +301,14 @@ export default {
                                 tile
                                 color="grey lighten-1"
                                 :disabled="!activeScenario"
-                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
                                 class="flex-item"
-                                @click="pruneActiveScenario"
+                                @click="pruneActiveScenarioSimulatedFeatures"
                             >
                                 <v-icon left>
-                                    mdi-domain-remove
+                                    mdi-map-marker-remove
                                 </v-icon>
-                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeatures') }}
                             </v-btn>
                         </v-list-item>
                         <v-list-item>
@@ -330,14 +335,14 @@ export default {
                                 tile
                                 color="grey lighten-1"
                                 :disabled="!activeScenario"
-                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
                                 class="flex-item"
-                                @click="pruneActiveScenarioSimulatedFeatures"
+                                @click="pruneActiveScenario"
                             >
                                 <v-icon left>
-                                    mdi-map-marker-remove
+                                    mdi-domain-remove
                                 </v-icon>
-                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeatures') }}
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
                             </v-btn>
                         </v-list-item>
                     </v-list>

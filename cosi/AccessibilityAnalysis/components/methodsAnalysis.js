@@ -214,14 +214,14 @@ export default {
     showError: function () {
         this.addSingleAlert({
             content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
-            category: "Error",
+            category: "Fehler",
             displayClass: "error"
         });
     },
     showErrorInvalidInput: function () {
         this.addSingleAlert({
             content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
-            category: "Error",
+            category: "Fehler",
             displayClass: "error"
         });
     },

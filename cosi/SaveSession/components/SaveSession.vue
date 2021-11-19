@@ -255,7 +255,7 @@ export default {
             this.parseState(this.storePaths, state);
             this.addSingleAlert({
                 content: `Sitzung ${session.meta?.title} vom ${session.meta?.created} erfolgreich geladen.`,
-                category: "Success",
+                category: "Erfolg",
                 displayClass: "success"
             });
         },

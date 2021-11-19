@@ -90,7 +90,8 @@ export default {
                         }]
                     }
                 }
-            }
+            },
+            isCreated: false
         };
     },
     computed: {
@@ -187,6 +188,13 @@ export default {
 
         residents () {
             this.extrapolateNeighborhoodStatistics();
+        },
+
+        neighborhood: {
+            deep: true,
+            handler () {
+                this.isCreated = false;
+            }
         }
     },
     created () {
@@ -304,7 +312,7 @@ export default {
 
         visualizeDemographics ({id, name, scaleLabels, labels, type}) {
             const chartData = new ChartDataSet({
-                id,
+                id: id + "-" + this.baseStats.reference.districtName,
                 name,
                 scaleLabels,
                 data: {
@@ -337,6 +345,7 @@ export default {
 
             this.activeScenario.addNeighborhood(neighborhood);
 
+            this.isCreated = true;
             // reset geometry
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
         },
@@ -424,10 +433,12 @@ export default {
                     id="scenario-builder"
                 >
                     <div>
-                        <ScenarioManager />
+                        <ScenarioManager @pruneScenario="resetFeature" />
                         <v-divider />
-                        <div class="mb-5 overline">
-                            {{ $t('additional:modules.tools.cosi.residentialSimulation.title') }}
+                        <div>
+                            <span class="text-subtitle-2">
+                                {{ $t('additional:modules.tools.cosi.residentialSimulation.title') }}
+                            </span>
                         </div>
                         <div class="mb-2">
                             Neue fiktive Wohnquartiere mitsamt Bewohnerstruktur anlegen und die statistischen Daten im Gebiet entsprechend modifizieren.
@@ -756,7 +767,7 @@ export default {
                                     tile
                                     color="primary"
                                     :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
-                                    :disabled="!activeScenario || geometry === null || !neighborhood.stats"
+                                    :disabled="!activeScenario || geometry === null || !neighborhood.stats || isCreated"
                                     class="flex-item"
                                     @click="createFeature"
                                 >
