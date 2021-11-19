@@ -347,7 +347,9 @@ export default {
                 const vector = new Vector();
 
                 if (!this.contributions[id].features) {
+                    Radio.trigger("Util", "showLoader");
                     this.contributions[id].features = await this.getContributionFeatures(id);
+                    Radio.trigger("Util", "hideLoader");
                 }
                 for (const feature of this.contributions[id].features) {
                     vector.addFeature(feature);
