@@ -332,7 +332,7 @@ export default {
                         <v-card-title secondary-title>
                             Schnelles Speichern
                         </v-card-title>
-                        <div class="mb-2">>
+                        <div class="mb-2">
                             Sitzungen im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button 'Letzte Laden' wieder geladen werden. <br>
                             Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
                         </div>
