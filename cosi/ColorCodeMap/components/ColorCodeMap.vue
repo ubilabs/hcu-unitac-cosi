@@ -237,7 +237,8 @@ export default {
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
                                 ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
-                                : this.$t("additional:modules.tools.colorCodeMap.noData")
+                                : this.$t("additional:modules.tools.colorCodeMap.noData"),
+                            overflow: true
                         });
                         styleArray.push(new Style(getStyling));
                         if (this.lastYear) {
@@ -255,7 +256,8 @@ export default {
                                     text: matchResults.getProperties()[this.yearSelector + this.lastYear]
                                         ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)"
                                         : this.$t("additional:modules.tools.colorCodeMap.noData"),
-                                    offsetY: 25
+                                    offsetY: 25,
+                                    overflow: true
                                 })
                             });
 
@@ -275,7 +277,8 @@ export default {
                                     }),
                                     padding: [5, 10, 5, 10],
                                     text: matchResults.getProperties()[this.keyOfAttrNameStats],
-                                    offsetY: -35
+                                    offsetY: -35,
+                                    overflow: true
                                 })
                             });
 
@@ -316,7 +319,6 @@ export default {
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
                     matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
-                    console.log(matchResults);
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -333,7 +335,8 @@ export default {
                             color: [0, 0, 0],
                             width: 3
                         }),
-                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData")
+                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData"),
+                        overflow: true
                     });
 
                     district.setStyle(new Style(getStyling));
