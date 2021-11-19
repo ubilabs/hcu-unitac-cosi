@@ -9,6 +9,8 @@ import {Vector} from "ol/source.js";
 import {Heatmap} from "ol/layer.js";
 import {generateColorScale, generateColorScaleByColor} from "../../../utils/colorScale";
 import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";
+import {scaleSequential} from "d3-scale";
+import {interpolateRdYlGn} from "d3-scale-chromatic";
 
 export default {
     name: "Dipas",
@@ -20,7 +22,10 @@ export default {
             projectsFeatureCollection: null,
             projectsColors: null,
             projectsActive: {},
-            contributions: {}
+            contributions: {},
+            selectedStyling: null,
+            selectedStylingFunction: null,
+            categoryRainbow: false
         };
     },
     computed: {
@@ -28,6 +33,32 @@ export default {
         ...mapGetters("Map", ["map", "layerById", "projectionCode"])
     },
     watch: {
+        selectedStyling: function (newValue) {
+            switch (newValue) {
+                case "project":
+                    this.selectedStylingFunction = this.setContributionColorByProject;
+                    break;
+                case "category":
+                    this.categoryRainbow = false;
+                    this.selectedStylingFunction = this.setContributionColorByCategory;
+                    break;
+                case "categoryRainbow":
+                    this.categoryRainbow = true;
+                    this.selectedStylingFunction = this.setContributionColorByCategory;
+                    break;
+                case "voting":
+                    this.selectedStylingFunction = this.setContributionColorByVoting;
+                    break;
+                default:
+                    this.selectedStylingFunction = null;
+                    break;
+            }
+            for (const [id, value] of Object.entries(this.contributions)) {
+                if (value.features) {
+                    this.selectedStylingFunction(id);
+                }
+            }
+        }
     },
     /**
     * @returns {void}
@@ -44,6 +75,7 @@ export default {
         const fetch = await this.fetchProjects(),
             features = new GeoJSON().readFeatures(fetch);
 
+        this.selectedStyling = "category";
         this.projectsFeatureCollection = this.transformFeatures(features);
         this.projectsColors = generateColorScale(undefined, "interpolateTurbo", this.projectsFeatureCollection.length).legend.colors;
         for (const [index, feature] of this.projectsFeatureCollection.entries()) {
@@ -53,7 +85,9 @@ export default {
                     fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
                     stroke: new Stroke({color: this.projectsColors[index], width: 1.25})
                 }),
-                colorScale = generateColorScaleByColor(this.projectsColors[index], Object.values(feature.getProperties().standardCategories).length);
+                len = Object.values(feature.getProperties().standardCategories).length,
+                colorScale = generateColorScaleByColor(this.projectsColors[index], len),
+                rainbowColorScale = generateColorScale([0, len], "interpolateTurbo").scale;
 
             layer.setZIndex(0);
             layer.setStyle(style);
@@ -65,8 +99,11 @@ export default {
 
             this.contributions[id] = Object();
             this.contributions[id].colors = Object();
+            this.contributions[id].rainbowColors = Object();
+            this.contributions[id].index = index;
             for (const [catIndex, category] of Object.values(feature.getProperties().standardCategories).entries()) {
                 this.contributions[id].colors[category] = colorScale(catIndex);
+                this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
             }
         }
     },
@@ -199,21 +236,14 @@ export default {
 
             if (!model) {
                 if (!this.contributions[id].features) {
+                    Radio.trigger("Util", "showLoader");
                     this.contributions[id].features = await this.getContributionFeatures(id);
+                    Radio.trigger("Util", "hideLoader");
                 }
+                this.selectedStylingFunction(id);
                 for (const feature of this.contributions[id].features) {
-                    const properties = feature.getProperties(),
-                        category = properties.category,
-                        color = this.contributions[id].colors[category],
-                        style = new Style({
-                            image: new Circle({
-                                radius: 7,
-                                fill: new Fill({color: color}),
-                                stroke: new Stroke({color: "black", width: 1.5})
-                            })
-                        });
+                    const properties = feature.getProperties();
 
-                    feature.setStyle(style);
                     feature.setId(feature.get("id"));
 
                     for (const property of ["votingPro", "votingContra", "commentsNumber"]) {
@@ -232,6 +262,78 @@ export default {
             model.set("isSelected", value);
         },
         /**
+         * sets the contributions style of the given project id by project color
+         * @param {String} id the project id
+         * @returns {void}
+         */
+        setContributionColorByProject (id) {
+            for (const feature of this.contributions[id].features) {
+                const index = this.contributions[id].index,
+                    color = this.projectsColors[index],
+                    style = new Style({
+                        image: new Circle({
+                            radius: 5,
+                            fill: new Fill({color: color.replace("rgb", "rgba").replace(")", ", 0.4)")}),
+                            stroke: new Stroke({color: color, width: 1.5})
+                        })
+
+                    });
+
+                feature.setStyle(style);
+            }
+        },
+        /**
+         * sets the contributions style of the given project id by the category of every contribution
+         * @param {String} id the project id
+         * @returns {void}
+         */
+        setContributionColorByCategory (id) {
+            for (const feature of this.contributions[id].features) {
+                let colors = this.contributions[id].colors;
+
+                if (this.categoryRainbow) {
+                    colors = this.contributions[id].rainbowColors;
+                }
+                const category = feature.getProperties().category,
+                    color = colors[category],
+                    style = new Style({
+                        image: new Circle({
+                            radius: 5,
+                            fill: new Fill({color: color}),
+                            stroke: new Stroke({color: color, width: 1.5})
+                        })
+                    });
+
+                feature.setStyle(style);
+            }
+        },
+        /**
+         * sets the contributions style of the given project id by the voting of every contribution
+         * red to green
+         * @param {String} id the project id
+         * @returns {void}
+         */
+        setContributionColorByVoting (id) {
+            const colorScale = scaleSequential().interpolator(interpolateRdYlGn);
+
+            for (const feature of this.contributions[id].features) {
+                const properties = feature.getProperties(),
+                    votingPro = parseInt(properties.votingPro, 10),
+                    votingContra = parseInt(properties.votingContra, 10),
+                    weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1)),
+                    color = colorScale(weight),
+                    style = new Style({
+                        image: new Circle({
+                            radius: Math.sqrt(votingPro + votingContra) + 5,
+                            fill: new Fill({color: color}),
+                            stroke: new Stroke({color: color, width: 1.5})
+                        })
+                    });
+
+                feature.setStyle(style);
+            }
+        },
+        /**
          * changes the visibility of the heatmap layer for the given project id
          * @param {String} id the project id
          * @param {Boolean} value wether the heatmap layer shall be visible or not
@@ -245,7 +347,9 @@ export default {
                 const vector = new Vector();
 
                 if (!this.contributions[id].features) {
+                    Radio.trigger("Util", "showLoader");
                     this.contributions[id].features = await this.getContributionFeatures(id);
+                    Radio.trigger("Util", "hideLoader");
                 }
                 for (const feature of this.contributions[id].features) {
                     vector.addFeature(feature);
@@ -301,6 +405,9 @@ export default {
                                             <v-list-item-title v-text="feature.getProperties().nameFull" />
                                         </v-list-item-content>
                                     </template>
+                                    <p class="description">
+                                        {{ feature.getProperties().description }}
+                                    </p>
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
@@ -320,7 +427,9 @@ export default {
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
-                                            <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showContributions') }}</v-list-item-title>
+                                            <v-list-item-title>
+                                                {{ $t('additional:modules.tools.cosi.dipas.showContributions') }}
+                                            </v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item>
@@ -337,6 +446,39 @@ export default {
                                 </v-list-group>
                             </v-list>
                         </v-card>
+                    </div>
+                    <div id="radio">
+                        <label>
+                            {{ $t('additional:modules.tools.cosi.dipas.styling.label') }}
+                        </label>
+                        <label>
+                            <input
+                                v-model="selectedStyling"
+                                type="radio"
+                                value="project"
+                            > {{ $t('additional:modules.tools.cosi.dipas.styling.byProject') }}
+                        </label>
+                        <label>
+                            <input
+                                v-model="selectedStyling"
+                                type="radio"
+                                value="category"
+                            > {{ $t('additional:modules.tools.cosi.dipas.styling.byCategories') }}
+                        </label>
+                        <label>
+                            <input
+                                v-model="selectedStyling"
+                                type="radio"
+                                value="categoryRainbow"
+                            > {{ $t('additional:modules.tools.cosi.dipas.styling.byCategoriesRainbow') }}
+                        </label>
+                        <label>
+                            <input
+                                v-model="selectedStyling"
+                                type="radio"
+                                value="voting"
+                            > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
+                        </label>
                     </div>
                 </v-app>
             </template>
@@ -358,5 +500,9 @@ export default {
 .feature-item-content {
     display: inline-block;
    margin-left: 20px;
+}
+
+p.description {
+    margin-left: 20px;
 }
 </style>
