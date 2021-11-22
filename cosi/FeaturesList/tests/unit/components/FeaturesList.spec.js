@@ -66,7 +66,7 @@ function createFeature (key) {
 }
 
 
-describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
 
 
@@ -175,6 +175,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         store.commit("Tools/FeaturesList/setActive", isActive);
+        store.commit("Tools/FeaturesList/setDistanceScoreEnabled", true);
         await ret.vm.$nextTick();
         return ret;
     }
