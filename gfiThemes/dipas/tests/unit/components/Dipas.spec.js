@@ -27,7 +27,7 @@ describe("addons/dipas/components/Dipas.vue", () => {
     function createWrapper (isTable) {
         wrapper = shallowMount(Dipas, {
             computed: {
-                isTable: () => isTable
+                isTableStyle: () => isTable
             },
             localVue,
             propsData: {
