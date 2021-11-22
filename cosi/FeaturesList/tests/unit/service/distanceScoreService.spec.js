@@ -3,7 +3,7 @@ import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import sinon from "sinon";
 import {expect} from "chai";
-import {registerProjections} from "masterportalAPI/src/crs";
+import {registerProjections} from "../../../../utils/registerProjections";
 
 describe("distanceScoreService", () => {
     before(async function () {
@@ -39,6 +39,22 @@ describe("distanceScoreService", () => {
             {
                 "DE.HH.UP_AMIRA_1d275df7-64f4-4a43-a647-ae34648191c119862": 191.82
             });
+    });
+    it.skip("getDistanceScore for feature from hvv layer", async function () {
+        // this one is too slow
+        this.timeout(15000);
+        const features = await getAllFeatures("20569"),
+            commitStub = sinon.stub(),
+            getters = defaultGetters(),
+
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+                {
+                    feature: features[0],
+                    layerIds: ["5246"],
+                    weights: [1]
+                });
+
+        expect(score).to.be.eql({"5246": 220.07, score: 220.07});
     });
     it("getDistanceScore feature outside hamburg", async () => {
         const p = [9.818415798420284, 53.26231927558228],
