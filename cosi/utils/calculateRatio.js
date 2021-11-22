@@ -28,8 +28,8 @@ function calculateSingle (calcObj, dataSet) {
     const relation = calcObj.paramA_val / calcObj.paramB_val,
         capacity = calcObj.paramA_val * (dataSet.faktorf_B / dataSet.faktorf_A),
         need = calcObj.paramB_val * (dataSet.faktorf_A / dataSet.faktorf_B),
-        coverageA = (calcObj.paramA_val / need) * dataSet.perCalc_B,
-        coverageB = (calcObj.paramB_val / need) * dataSet.perCalc_A,
+        coverageA = ((calcObj.paramA_val / need) * dataSet.perCalc_B) * 100,
+        coverageB = ((calcObj.paramB_val / need) * dataSet.perCalc_A) * 100,
         weightedRelation = relation * (dataSet.perCalc_A / dataSet.perCalc_B);
 
     calcObj.relation = relation;
@@ -47,31 +47,39 @@ function calculateSingle (calcObj, dataSet) {
 * @returns {Array} Updated Array.
 */
 function calculateTotals (results) {
-    const dataHelpers_total = {
-            faktorf_A: results[0].data.faktorf_A,
-            faktorf_B: results[0].data.faktorf_B,
-            perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalc_B,
-            incompleteDataSets_A: results.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
-            incompleteDataSets_B: results.reduce((total, district) => total + district.data.incompleteDataSets_B, 0),
-            dataSets_A: results.reduce((total, district) => total + district.data.dataSets_A, 0),
-            dataSets_B: results.reduce((total, district) => total + district.data.dataSets_B, 0)
+    const filteredResults = results.filter(function (dataSet) {
+            if (dataSet.paramA_val === undefined || dataSet.paramB_val === undefined) {
+                return false;
+            }
+
+            return true;
+
+        }),
+        dataHelpers_total = {
+            faktorf_A: filteredResults[0].data.faktorf_A,
+            faktorf_B: filteredResults[0].data.faktorf_B,
+            perCalc_A: filteredResults[0].data.perCalc_A,
+            perCalc_B: filteredResults[0].data.perCalc_B,
+            incompleteDataSets_A: filteredResults.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
+            incompleteDataSets_B: filteredResults.reduce((total, district) => total + district.data.incompleteDataSets_B, 0),
+            dataSets_A: filteredResults.reduce((total, district) => total + district.data.dataSets_A, 0),
+            dataSets_B: filteredResults.reduce((total, district) => total + district.data.dataSets_B, 0)
         },
         resultsTotal = {
             scope: "Gesamt",
-            paramA_val: results.reduce((total, district) => total + district.paramA_val, 0),
-            paramB_val: results.reduce((total, district) => total + district.paramB_val, 0)
+            paramA_val: filteredResults.reduce((total, district) => total + district.paramA_val, 0),
+            paramB_val: filteredResults.reduce((total, district) => total + district.paramB_val, 0)
         },
         total = calculateSingle(resultsTotal, dataHelpers_total),
         dataHelpers_avg = {
-            faktorf_A: results[0].data.faktorf_A,
-            faktorf_B: results[0].data.faktorf_B,
-            perCalc_A: results[0].data.perCalc_A,
-            perCalc_B: results[0].data.perCalc_B,
-            incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / results.length,
-            incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / results.length,
-            dataSets_A: resultsTotal.data.dataSets_A / results.length,
-            dataSets_B: resultsTotal.data.dataSets_B / results.length
+            faktorf_A: filteredResults[0].data.faktorf_A,
+            faktorf_B: filteredResults[0].data.faktorf_B,
+            perCalc_A: filteredResults[0].data.perCalc_A,
+            perCalc_B: filteredResults[0].data.perCalc_B,
+            incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / filteredResults.length,
+            incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / filteredResults.length,
+            dataSets_A: resultsTotal.data.dataSets_A / filteredResults.length,
+            dataSets_B: resultsTotal.data.dataSets_B / filteredResults.length
         },
         resultsAverage = {
             scope: "Durchschnitt",
