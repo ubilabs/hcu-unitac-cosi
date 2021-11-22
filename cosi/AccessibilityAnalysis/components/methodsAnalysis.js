@@ -8,8 +8,6 @@ import
     Stroke,
     Style
 } from "ol/style.js";
-import InfoTemplatePoint from "text-loader!./info_point.html";
-import InfoTemplateRegion from "text-loader!./info_region.html";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import * as turf from "@turf/turf";
 
@@ -216,14 +214,14 @@ export default {
     showError: function () {
         this.addSingleAlert({
             content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
-            category: "Error",
+            category: "Fehler",
             displayClass: "error"
         });
     },
     showErrorInvalidInput: function () {
         this.addSingleAlert({
             content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput") + "</strong>",
-            category: "Error",
+            category: "Fehler",
             displayClass: "error"
         });
     },
@@ -258,18 +256,6 @@ export default {
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
         setBBoxToGeom(geometryCollection);
-    },
-    /**
-     * shows help window
-     * @returns {void}
-     */
-    showHelp: function () {
-        this.cleanup();
-        this.addSingleAlert({
-            category: "Info",
-            content: this.mode === "point" ? InfoTemplatePoint : InfoTemplateRegion,
-            displayClass: "info"
-        });
     },
     /**
      * clears the component

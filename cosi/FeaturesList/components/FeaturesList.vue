@@ -112,7 +112,8 @@ export default {
                     value: "enabled"
                 }
             ],
-            numericalColumns: []
+            numericalColumns: [],
+            exportDetails: false
         };
     },
     computed: {
@@ -328,7 +329,7 @@ export default {
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: layerStyleFunction(feature),
+                            style: feature.getStyle() || layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
@@ -416,7 +417,7 @@ export default {
          * @param {Boolean} exportDetails - whether to include the detailed feature data
          * @returns {void}
          */
-        exportTable (exportDetails = false) {
+        exportTable () {
             const data = this.items.filter(item => {
                     if (this.search && !this.filteredItems.includes(item)) {
                         return false;
@@ -429,7 +430,7 @@ export default {
                     }
                     return true;
                 }),
-                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
@@ -599,21 +600,19 @@ export default {
                         color="grey lighten-1"
                         class="my-2"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                        @click="exportTable(false)"
+                        @click="exportTable"
                     >
                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                     </v-btn>
-                    <v-btn
-                        id="export-detail"
+                    <v-checkbox
+                        id="export-details"
+                        v-model="exportDetails"
+                        class="form-check-input"
                         dense
-                        small
-                        tile
-                        color="grey lighten-1"
+                        hide-details
+                        :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                        @click="exportTable(true)"
-                    >
-                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                    </v-btn>
+                    />
                 </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">

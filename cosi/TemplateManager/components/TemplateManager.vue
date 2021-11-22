@@ -128,7 +128,7 @@ export default {
             v-if="active"
             #toolBody
         >
-            <v-app>
+            <v-app class="clamp-40vw">
                 <v-container>
                     <ToolInfo
                         url="https://bitbucket.org/geowerkstatt-hamburg/addons/src/c5d42c7d2b72db609510355095dc65997eb61c2d/cosi/README.de.md?mode=edit&at=cosi%2Fdev"
@@ -236,8 +236,10 @@ export default {
                                         <v-col class="right-text">
                                             <v-btn
                                                 id="load"
+                                                dense
+                                                small
                                                 tile
-                                                depressed
+                                                color="grey lighten-1"
                                                 :title="$t('additional:modules.tools.cosi.saveSession.infoLoadFromTemplates')"
                                                 @click="loadFromTemplate(template)"
                                             >

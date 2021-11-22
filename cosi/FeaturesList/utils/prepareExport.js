@@ -10,7 +10,7 @@ const keyMap = {
         layerName: "Layer",
         actions: "Aktionen",
         enabled: "Ein-/Ausschalten",
-        isSimulation: "Simulatiert?",
+        isSimulation: "Simuliert?",
         isModified: "Modifiziert?"
     },
     valuesMap = {

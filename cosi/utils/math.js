@@ -216,6 +216,32 @@ export function linearRegression (xArr, yArr) {
     return (x) => a * x + b;
 }
 
+/**
+ * interpolates a set of points for a given x with lagrange interpolation
+ * @param {*} x - the value
+ * @param {*} xArr - the x values
+ * @param {*} yArr - the y values
+ * @returns {number} the exp value
+ */
+export function interpolate (x, xArr, yArr) {
+    const k = xArr.length;
+
+    /**
+     * The lagrange base function
+     * @param {Number} j - the current index
+     * @returns {Number} the base
+     */
+    function _basis (j) {
+        const p = new Array(k).fill(0)
+            .map((v, m) => m !== j ? (x - xArr[m]) / (xArr[j] - xArr[m]) : null)
+            .filter(v => v !== null);
+
+        return p.reduce((res, v) => res * v, 1);
+    }
+
+    return new Array(k).fill(0).map((v, j) => _basis(j) * yArr[j]).reduce((res, v) => res + v, 0);
+}
+
 export default {
     add,
     subtract,

@@ -10,7 +10,7 @@
                     "saveToFileTooltip": "Aktuelle Sitzung als Datei herunterladen",
                     "load": "Letzte laden",
                     "loadTooltip": "Letzte Sitzung aus dem Cache laden",
-                    "loadFromFile": "Datei öffnen",
+                    "loadFromFile": "Datei laden",
                     "loadFromFileTooltip": "Sitzung aus lokaler Datei öffnen",
                     "dropFile": "Datei auswählen",
                     "loadLast": "Letzte Sitzung wiederherstellen?",
