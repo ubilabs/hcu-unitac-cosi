@@ -10,6 +10,7 @@ export default class ChartDataSet {
      * @param {{backgroundColor: String, borderColor: String, data: number[], label: String}[]} params.data.dataSets - the dataSets in the chart
      * @param {String[]} params.data.labels - the labels for the dataSets
      * @param {"BarChart" | "LineChart"} params.type - the type of the Chart
+     * @param {Boolean} params.beginAtZero - Defines if yAxes should begin at zero or not.
      * @param {String[]} [params.scaleLabels] - the labels of the axes
      * @param {String} [params.id="cg"] - the ID of the chart, auto-assigned if not provided
      * @param {String} [params.id=""] - the source tool where the chart was created, auto-assigned if not provided
@@ -20,7 +21,7 @@ export default class ChartDataSet {
      * @param {String} [params.sub_length] - length of the chart group, auto-assigned if not provided
      * @param {String} [params.options] - optional chart options to override default
      */
-    constructor ({id = "cg", name, data, type, scaleLabels, color = "blue", source = "", sub = false, sub_graph, sub_index, sub_length, options}) {
+    constructor ({id = "cg", name, data, type, beginAtZero = false, scaleLabels, color = "blue", source = "", sub = false, sub_graph, sub_index, sub_length, options}) {
         if (!(name && data && type && typeof name === "string" && (typeof type === "string" || Array.isArray(type)) && typeof data === "object")) {
             throw new EvalError(`ChartDataSet: 'name', 'data' and 'type' musst be provided in the options. Got ${name}, ${data} and ${type} instead`);
         }
@@ -32,6 +33,7 @@ export default class ChartDataSet {
         this.scaleLabels = scaleLabels;
         this.source = source;
         this.source = source;
+        this.beginAtZero = beginAtZero;
         this.sub = sub;
         this.sub_graph = sub_graph;
         this.sub_index = sub_index;

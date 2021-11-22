@@ -15,6 +15,9 @@ export default {
             required: true
         }
     },
+    data: () => ({
+        exportTimeline: false
+    }),
     computed: {
         statsMapping () {
             return groupMapping(mapping);
@@ -44,6 +47,10 @@ export default {
             this.metadataUrls.forEach(url => {
                 window.open(url);
             });
+        },
+
+        exportTable () {
+            this.$emit("exportTable", this.exportTimeline);
         }
     }
 };
@@ -54,7 +61,7 @@ export default {
         dense
         align-content="end"
     >
-        <v-col cols="8">
+        <v-col cols="5">
             <v-autocomplete
                 v-model="_statsFeatureFilter"
                 :items="statsMapping"
@@ -92,7 +99,7 @@ export default {
                 dense
             />
         </v-col> -->
-        <v-col cols="2">
+        <v-col cols="1">
             <v-icon
                 title="Metadaten öffnen"
                 class="mt-2"
@@ -100,6 +107,45 @@ export default {
             >
                 mdi-information
             </v-icon>
+        </v-col>
+        <v-col
+            cols="4"
+            class="text-right"
+        >
+            <v-checkbox
+                id="export-details"
+                v-model="exportTimeline"
+                class="form-check-input"
+                dense
+                hide-details
+                :label="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+                :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+            />
+            <!-- <v-btn
+                dense
+                small
+                tile
+                color="grey lighten-1"
+                :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+                @click="exportTable(true)"
+            >
+                {{ $t('additional:modules.tools.cosi.dashboard.exportTableTimeline') }}
+            </v-btn> -->
+        </v-col>
+        <v-col
+            cols="2"
+            class="text-right"
+        >
+            <v-btn
+                dense
+                small
+                tile
+                color="grey lighten-1"
+                :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
+                @click="exportTable"
+            >
+                {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
+            </v-btn>
         </v-col>
     </v-row>
 </template>

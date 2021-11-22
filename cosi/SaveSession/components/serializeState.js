@@ -99,6 +99,11 @@ export default {
     serializeScenarioFeature (scenarioFeature, parser, revertToOriginalData = false) {
         const feature = parser.writeFeatureObject(scenarioFeature.feature);
 
+        // serialize original data (copy object)
+        if (feature.properties.originalData) {
+            feature.properties.originalData = {...feature.properties.originalData};
+        }
+
         // serialize geometry (original data)
         if (feature.properties.originalData?.geometry) {
             feature.properties.originalData.geometry = this.serializeGeometry(feature.properties.originalData.geometry);

@@ -308,7 +308,7 @@ export default {
                 field = fieldValues[0],
                 model = {layerId: layer.id, currentLayerId: layer.id, name: layer.name, field, valueType, high: 0, low: 0, fieldValues, facilityLayerName: layer.facilityLayerName,
                     ...this.getMinMaxForField(layer.id, field),
-                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id).map(l=>({id: l.id, name: l.name})),
+                    quotientLayers: this.allLayerOptions.filter(l=>l.id !== layer.id && l.valueType !== "relative").map(l=>({id: l.id, name: l.name})),
                     properties: await this.getFacilityProperties(layer)
                 };
 
