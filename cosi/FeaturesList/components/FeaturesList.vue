@@ -234,8 +234,8 @@ export default {
             this.updateDistanceScores();
         },
 
-        items (newItems) {
-            if (!deepEqual(newItems.map(i=>i.key), this.items.map(i=>i.key))) {
+        items (newItems, oldItems) {
+            if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
             }
         },
@@ -295,7 +295,7 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.selectedFeatureLayers) {
+            if (this.selectedFeatureLayers.length > 0) {
                 numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
             }
 
@@ -316,6 +316,7 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
+            console.log("updateFeaturesList");
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
@@ -747,7 +748,7 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <v-row>
+                        <v-row v-if="distanceScoreEnabled">
                             <v-col>
                                 <v-autocomplete
                                     id="selectedLayers"

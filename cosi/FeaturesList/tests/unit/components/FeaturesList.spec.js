@@ -66,7 +66,7 @@ function createFeature (key) {
 }
 
 
-describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
 
 
@@ -97,8 +97,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "layerName",
             "type",
             "group",
-            "anzahl_schueler",
-            "distanceScore"
+            "anzahl_schueler"
         ],
         layersMock = [];
 
@@ -176,6 +175,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         store.commit("Tools/FeaturesList/setActive", isActive);
+        store.commit("Tools/FeaturesList/setDistanceScoreEnabled", true);
         await ret.vm.$nextTick();
         return ret;
     }
@@ -297,6 +297,25 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             );
             expect(wrapper.vm.layerWeights).to.deep.equal({});
             expect(wrapper.vm.selectedLayers).to.deep.equal([]);
+        });
+
+        it("should show distance score layers select only if enabled", async () => {
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.true;
+
+            await wrapper.vm.setDistanceScoreEnabled(false);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.false;
+        });
+
+        it("should show distance score column on select layer", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+
+            expect(wrapper.vm.columns.map(e => e.value)).to.contain("distanceScore");
         });
 
         it("should compute distance score on select layer", async () => {
