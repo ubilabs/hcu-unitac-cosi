@@ -298,6 +298,16 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.selectedLayers).to.deep.equal([]);
         });
 
+        it("should show distance score layers select only if enabled", async () => {
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.true;
+
+            await wrapper.vm.setDistanceScoreEnabled(false);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.false;
+        });
+
         it("should show distance score column on select layer", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
             const wrapper = await mountComponent(true, [createLayer()]);

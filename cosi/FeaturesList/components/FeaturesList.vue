@@ -748,7 +748,7 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <v-row>
+                        <v-row v-if="distanceScoreEnabled">
                             <v-col>
                                 <v-autocomplete
                                     id="selectedLayers"
