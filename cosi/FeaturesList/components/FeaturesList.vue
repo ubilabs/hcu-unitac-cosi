@@ -233,8 +233,8 @@ export default {
             this.updateDistanceScores();
         },
 
-        items (newItems) {
-            if (!deepEqual(newItems.map(i=>i.key), this.items.map(i=>i.key))) {
+        items (newItems, oldItems) {
+            if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
             }
         },
@@ -315,6 +315,7 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
+            console.log("updateFeaturesList");
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
