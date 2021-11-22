@@ -1,4 +1,6 @@
 <script>
+import {mapGetters} from "vuex";
+
 export default {
     name: "Dipas",
     props: {
@@ -6,6 +8,9 @@ export default {
             type: Object,
             required: true
         }
+    },
+    computed: {
+        ...mapGetters(["uiStyle"])
     },
     methods: {
         /**
@@ -68,7 +73,7 @@ export default {
             let parentLocation = "",
                 contributionLink = "";
 
-            if (!this.isTableStyle) {
+            if (!this.isTableStyle()) {
                 parentLocation = document.referrer.split("?")[0];
                 contributionLink = parentLocation.split("#")[0] + "#/contribution/" + nid;
             }
@@ -102,7 +107,7 @@ export default {
             {{ feature.getMappedProperties().Kategorie }}
         </div>
         <div
-            v-if="!isTableStyle && feature.getMappedProperties().link"
+            v-if="!isTableStyle() && feature.getMappedProperties().link"
             class="dipas-gfi-name"
         >
             <a
@@ -123,7 +128,7 @@ export default {
             {{ feature.getMappedProperties().description }}
         </div>
         <a
-            v-if="!isTableStyle && feature.getMappedProperties().link"
+            v-if="!isTableStyle() && feature.getMappedProperties().link"
             class="dipas-gfi-more"
             :href="modifyContributionLink(feature.getMappedProperties().link, feature.getMappedProperties().nid)"
             target="_top"
