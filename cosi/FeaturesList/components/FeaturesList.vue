@@ -294,7 +294,7 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.selectedFeatureLayers) {
+            if (this.selectedFeatureLayers.length > 0) {
                 numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
             }
 

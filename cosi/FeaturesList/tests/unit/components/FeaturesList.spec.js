@@ -97,8 +97,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "layerName",
             "type",
             "group",
-            "anzahl_schueler",
-            "distanceScore"
+            "anzahl_schueler"
         ],
         layersMock = [];
 
@@ -297,6 +296,15 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             );
             expect(wrapper.vm.layerWeights).to.deep.equal({});
             expect(wrapper.vm.selectedLayers).to.deep.equal([]);
+        });
+
+        it("should show distance score column on select layer", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+
+            expect(wrapper.vm.columns.map(e => e.value)).to.contain("distanceScore");
         });
 
         it("should compute distance score on select layer", async () => {
