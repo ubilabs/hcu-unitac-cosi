@@ -15,7 +15,8 @@ describe("addons/dipas/components/Dipas.vue", () => {
                 "gfiIconPath": iconPath
 
             }
-        };
+        },
+        store = new Vuex.Store({});
     let wrapper,
         valueStyle = [];
 
@@ -26,9 +27,7 @@ describe("addons/dipas/components/Dipas.vue", () => {
      */
     function createWrapper (isTable) {
         wrapper = shallowMount(Dipas, {
-            computed: {
-                isTableStyle: () => isTable
-            },
+            store,
             localVue,
             propsData: {
                 feature: {
@@ -47,6 +46,9 @@ describe("addons/dipas/components/Dipas.vue", () => {
                 }
             }
         });
+        if (isTable) {
+            store.commit("setUiStyle", "TABLE");
+        }
     }
 
     describe("template", () => {
