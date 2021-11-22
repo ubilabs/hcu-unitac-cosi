@@ -295,7 +295,7 @@ export default {
             }
 
             if (this.selectedFeatureLayers.length > 0) {
-                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
+                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true, invertColor: true});
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -315,7 +315,6 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            console.log("updateFeaturesList");
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
@@ -447,42 +446,47 @@ export default {
             this.$root.$emit("updateFeature");
         },
 
-        getNumericalValueColor (item, key) {
-            const val = parseFloat(item[key]),
-                maxVal = Math.max(
-                    ...this.items
-                        .map(_item => parseFloat(_item[key]))
-                        .filter(_item => !isNaN(_item))
-                );
+        getNumericalValueColor (item, key, invertColor) {
+            const maxVal = Math.max(
+                ...this.items
+                    .map(_item => parseFloat(_item[key]))
+                    .filter(_item => !isNaN(_item))
+            );
+            let val = parseFloat(item[key]) / maxVal;
+
+            if (invertColor) {
+                val = 1 - val;
+            }
 
             if (isNaN(val)) {
                 return "grey";
             }
-            if (val / maxVal > 0.9) {
+
+            if (val > 0.9) {
                 return "purple";
             }
-            if (val / maxVal > 0.8) {
+            if (val > 0.8) {
                 return "indigo";
             }
-            if (val / maxVal > 0.7) {
+            if (val > 0.7) {
                 return "blue";
             }
-            if (val / maxVal > 0.6) {
+            if (val > 0.6) {
                 return "cyan";
             }
-            if (val / maxVal > 0.5) {
+            if (val > 0.5) {
                 return "teal";
             }
-            if (val / maxVal > 0.4) {
+            if (val > 0.4) {
                 return "green";
             }
-            if (val / maxVal > 0.4) {
+            if (val > 0.4) {
                 return "light-green";
             }
-            if (val / maxVal > 0.2) {
+            if (val > 0.2) {
                 return "lime";
             }
-            if (val / maxVal > 0.1) {
+            if (val > 0.1) {
                 return "amber";
             }
             return "red";
@@ -738,7 +742,7 @@ export default {
                                             <div>
                                                 <v-chip
                                                     :style="getNumericalValueStyle(item, col.value)"
-                                                    :color="getNumericalValueColor(item, col.value)"
+                                                    :color="getNumericalValueColor(item, col.value, col.invertColor)"
                                                     dark
                                                     dense
                                                 />

@@ -21,6 +21,7 @@ import mockConfigJson from "./mock.config.json";
 import Multiselect from "vue-multiselect";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
+import {VChip} from "vuetify/lib";
 
 Vue.use(Vuetify);
 
@@ -335,6 +336,7 @@ describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(args.weights).to.be.eql([1]);
             expect(wrapper.vm.items.map(i => i.weightedDistanceScores)).to.be.eql([{"1234": 1.0, score: 1}]);
             expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
+            expect(wrapper.findAllComponents(VChip).at(1).vm.color).to.be.equal("red");
         });
 
         it("should delete distance score on remove layer", async () => {
