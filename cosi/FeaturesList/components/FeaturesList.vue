@@ -296,7 +296,7 @@ export default {
             }
 
             if (this.selectedFeatureLayers.length > 0) {
-                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
+                numCols.push({text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"), value: "distanceScore", divider: true, hasAction: true});
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -316,7 +316,6 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            console.log("updateFeaturesList");
             if (this.activeLayerMapping.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
