@@ -268,8 +268,9 @@ export default {
         >
             <v-col cols="6">
                 <v-btn
+                    dense
+                    small
                     tile
-                    depressed
                     :color="referencePickerActive ? 'primary' : 'grey lighten-1'"
                     :title="$t('additional:modules.tools.cosi.residentialSimulation.pickReference')"
                     @click="togglePickReference"

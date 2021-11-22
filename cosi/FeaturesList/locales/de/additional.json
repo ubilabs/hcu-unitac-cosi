@@ -18,7 +18,7 @@
                     "colAddress": "Adresse",
                     "inactiveFeature": "Die ausgewählte Einrichtung ist gegenwärtig inaktiv geschaltet.",
                     "exportTable": "Übersicht exportieren",
-                    "exportDetails": "Detailansicht exportieren",
+                    "exportDetails": "Detailansicht mit exportieren",
                     "exportFilename": "CoSI_Einrichtungsübersicht",
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung (SB)",

@@ -3,10 +3,10 @@
         "tools": {
             "cosi": {
                 "templateManager": {
-                    "title": "Vorlagen",
-                    "loadFromTemplate": "Vorlage laden",
-                    "infoLoadFromTemplates": "Laden Sie eine thematische Basis-Konfiguration für fachspezifische Analysen.",
-                    "noInfo": "Keine Beschreibung verfügbar",
+                    "title": "Templates",
+                    "loadFromTemplate": "Load templates",
+                    "infoLoadFromTemplates": "Load basic thematic configurations for specific types of analyses. You can find the data which will be loaded in the templates' overview. Some templates include the selection of areas, some require you to select areas yourself in beforehand.",
+                    "noInfo": "No description available.",
                     "created": "Created",
                     "info": "Description",
                     "layers": "Topics",

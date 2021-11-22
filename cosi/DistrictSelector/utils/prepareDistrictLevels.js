@@ -194,6 +194,10 @@ export function getNameList (layer, keyOfAttrName) {
 
     layer.getSource().getFeatures().forEach(feature => {
         if (typeof feature.get(keyOfAttrName) !== "undefined") {
+            // The names of St.Pauli and Co. are inconsistent in the different services.
+            if (feature.get(keyOfAttrName).indexOf("St. ") !== -1) {
+                feature.set(keyOfAttrName, feature.get(keyOfAttrName).replace(/ /, ""));
+            }
             nameList.push(feature.get(keyOfAttrName));
         }
     });
