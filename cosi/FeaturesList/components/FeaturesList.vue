@@ -655,6 +655,7 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="10"
+                                :items-per-page-text="$t('additional:modules.tools.cosi.featuresList.itemsPerPage')"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
