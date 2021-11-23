@@ -472,7 +472,7 @@ export default {
                                 group-by="groupIndex"
                                 show-group-by
                                 :items-per-page="-1"
-                                :items-per-page-text="$t('additional:modules.tools.cosi.dashboard.itemsPerPage')"
+                                :footer-props="{itemsPerPageText: $t('additional:modules.tools.cosi.featuresList.itemsPerPage'), itemsPerPageAllText: $t('additional:modules.tools.cosi.featuresList.itemsPerPageAll')}"
                                 :search="search"
                                 hide-default-footer
                                 dense
