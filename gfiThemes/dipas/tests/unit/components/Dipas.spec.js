@@ -16,7 +16,24 @@ describe("addons/dipas/components/Dipas.vue", () => {
 
             }
         },
-        store = new Vuex.Store({});
+        getters = {
+            uiStyle: state => state.uiStyle
+        },
+        mutations = {
+            setUiStyle (state, uiStyle) {
+                state.uiStyle = uiStyle;
+            }
+        },
+        store = new Vuex.Store({
+            namespaces: true,
+            modules: {
+                Dipas
+            },
+            state: {
+            },
+            getters,
+            mutations
+        });
     let wrapper,
         valueStyle = [];
 
