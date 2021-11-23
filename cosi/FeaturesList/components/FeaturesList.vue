@@ -296,7 +296,7 @@ export default {
             }
 
             if (this.selectedFeatureLayers.length > 0) {
-                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true, invertColor: true});
+                numCols.push({text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"), value: "distanceScore", divider: true, hasAction: true, invertColor: true});
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -660,6 +660,7 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="10"
+                                :items-per-page-text="$t('additional:modules.tools.cosi.featuresList.itemsPerPage')"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"

@@ -471,6 +471,7 @@ export default {
                                 group-by="groupIndex"
                                 show-group-by
                                 :items-per-page="-1"
+                                :items-per-page-text="$t('additional:modules.tools.cosi.dashboard.itemsPerPage')"
                                 :search="search"
                                 hide-default-footer
                                 dense

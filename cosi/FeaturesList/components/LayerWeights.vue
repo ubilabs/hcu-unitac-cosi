@@ -28,14 +28,13 @@
                             <template #append>
                                 <v-text-field
                                     v-model="layerWeights[layer.layerId]"
-                                    class="mt-0 pt-0"
+                                    class="mt-0 pt-0 slider-text"
                                     hide-details
                                     single-line
                                     type="number"
                                     step="0.1"
                                     max="1"
                                     min="0"
-                                    style="width: 50px"
                                 />
                             </template>
                         </v-slider>
@@ -94,3 +93,9 @@ export default {
     }
 };
 </script>
+
+<style lang="less" scoped>
+    .slider-text {
+        width: 50px;
+    }
+</style>

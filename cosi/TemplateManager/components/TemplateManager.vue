@@ -166,25 +166,15 @@ export default {
                                             <template #default>
                                                 <tbody>
                                                     <tr>
-                                                        <th>
-                                                            {{ $t("additional:modules.tools.cosi.templateManager.created") }}
-                                                        </th>
-                                                        <td>
-                                                            {{ template.meta.created }}
-                                                        </td>
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.created')" />
+                                                        <td v-text="template.meta.created" />
                                                     </tr>
                                                     <tr>
-                                                        <th>
-                                                            {{ $t("additional:modules.tools.cosi.templateManager.info") }}
-                                                        </th>
-                                                        <td>
-                                                            {{ template.meta.info || $t("additional:modules.tools.cosi.templateManager.noInfo") }}
-                                                        </td>
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.info')" />
+                                                        <td v-html="template.meta.info || $t('additional:modules.tools.cosi.templateManager.noInfo')" />
                                                     </tr>
                                                     <tr>
-                                                        <th>
-                                                            {{ $t("additional:modules.tools.cosi.templateManager.layers") }}
-                                                        </th>
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.layers')" />
                                                         <td>
                                                             <v-chip
                                                                 v-for="layerId in getActiveLayerList(template)"
