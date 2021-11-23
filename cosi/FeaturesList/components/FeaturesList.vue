@@ -246,6 +246,10 @@ export default {
 
         extent () {
             this.updateDistanceScores();
+        },
+
+        requireUpdate () {
+            this.updateFeaturesList();
         }
     },
     created () {

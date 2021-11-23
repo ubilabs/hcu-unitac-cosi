@@ -22,11 +22,11 @@ function setLayerAttributes (model) {
             },
             {
                 id: "votingPro",
-                name: "Pro Stimmen"
+                name: "Pos. Bewertungen"
             },
             {
                 id: "votingContra",
-                name: "Contra Stimmen"
+                name: "Neg. Bewertungen"
             }
         ]
     });
@@ -48,8 +48,8 @@ function addLayerToTree (newLayer) {
             contributionContent: "Beitragstext",
             commentsNumber: "Anzahl Kommentare",
             category: "Kategorie",
-            votingPro: "Pro Stimmen",
-            votingContra: "Contro Stimmen",
+            votingPro: "Pos. Bewertungen",
+            votingContra: "Neg. Bewertung",
             belongToProject: "Verfahren"
         };
 

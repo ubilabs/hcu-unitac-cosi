@@ -4,7 +4,7 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersDipas";
 import mutations from "../store/mutationsDipas";
 import GeoJSON from "ol/format/GeoJSON";
-import {Fill, Stroke, Style, Circle} from "ol/style.js";
+import {Fill, Stroke, Style, Circle, Text} from "ol/style.js";
 import {Vector} from "ol/source.js";
 import {Heatmap} from "ol/layer.js";
 import {generateColorScale, generateColorScaleByColor} from "../../../utils/colorScale";
@@ -56,6 +56,7 @@ export default {
             for (const [id, value] of Object.entries(this.contributions)) {
                 if (value.features) {
                     this.selectedStylingFunction(id);
+                    this.requireUpdate();
                 }
             }
         }
@@ -83,11 +84,11 @@ export default {
                 layer = await this.createLayer(id),
                 style = new Style({
                     fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
-                    stroke: new Stroke({color: this.projectsColors[index], width: 1.25})
+                    stroke: new Stroke({color: this.projectsColors[index], width: 4})
                 }),
                 len = Object.values(feature.getProperties().standardCategories).length,
                 colorScale = generateColorScaleByColor(this.projectsColors[index], len),
-                rainbowColorScale = generateColorScale([0, len], "interpolateTurbo").scale;
+                rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale;
 
             layer.setZIndex(0);
             layer.setStyle(style);
@@ -110,7 +111,7 @@ export default {
     methods: {
         ...mapActions("Map", ["createLayer"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
-        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
+        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping", "requireUpdate"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
 
@@ -270,13 +271,14 @@ export default {
             for (const feature of this.contributions[id].features) {
                 const index = this.contributions[id].index,
                     color = this.projectsColors[index],
+                    text = this.getContributionLabel(feature),
                     style = new Style({
                         image: new Circle({
                             radius: 5,
                             fill: new Fill({color: color.replace("rgb", "rgba").replace(")", ", 0.4)")}),
-                            stroke: new Stroke({color: color, width: 1.5})
-                        })
-
+                            stroke: new Stroke({color: "#000", width: 1})
+                        }),
+                        text
                     });
 
                 feature.setStyle(style);
@@ -296,12 +298,14 @@ export default {
                 }
                 const category = feature.getProperties().category,
                     color = colors[category],
+                    text = this.getContributionLabel(feature),
                     style = new Style({
                         image: new Circle({
                             radius: 5,
                             fill: new Fill({color: color}),
-                            stroke: new Stroke({color: color, width: 1.5})
-                        })
+                            stroke: new Stroke({color: "#000", width: 1})
+                        }),
+                        text
                     });
 
                 feature.setStyle(style);
@@ -322,12 +326,14 @@ export default {
                     votingContra = parseInt(properties.votingContra, 10),
                     weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1)),
                     color = colorScale(weight),
+                    text = this.getContributionLabel(feature),
                     style = new Style({
                         image: new Circle({
                             radius: Math.sqrt(votingPro + votingContra) + 5,
                             fill: new Fill({color: color}),
-                            stroke: new Stroke({color: color, width: 1.5})
-                        })
+                            stroke: new Stroke({color: "#000", width: 1})
+                        }),
+                        text
                     });
 
                 feature.setStyle(style);
@@ -370,6 +376,25 @@ export default {
                 this.map.addLayer(layer);
             }
             layer.setVisible(value);
+        },
+
+        getContributionLabel (feature) {
+            return new Text({
+                font: "12px Calibri,sans-serif",
+                fill: new Fill({
+                    color: [255, 255, 255]
+                }),
+                stroke: new Stroke({
+                    color: [0, 0, 0],
+                    width: 2
+                }),
+                text: feature.get("id"),
+                textAlign: "left",
+                offsetY: -8,
+                offsetX: 8
+            });
+
+            // return undefined;
         }
     }
 };

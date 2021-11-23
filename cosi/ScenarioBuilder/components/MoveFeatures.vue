@@ -157,11 +157,6 @@ export default {
             this.onlyEditSimulated = !this.onlyEditSimulated;
 
             if (!this.onlyEditSimulated) {
-                // this.addSingleAlert({
-                //     category: "Warnung",
-                //     displayClass: "warning",
-                //     content: this.$t("additional:modules.tools.cosi.moveFeatures.onlySimulatedWarning")
-                // });
                 this.dialog.timeout = 2000;
                 this.dialog.color = "warning";
                 this.dialog.text = this.$t("additional:modules.tools.cosi.moveFeatures.onlySimulatedWarning");

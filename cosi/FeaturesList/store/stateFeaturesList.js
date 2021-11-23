@@ -38,7 +38,8 @@ const state = {
         "originalData"
     ],
     disabledFeatureItems: [],
-    distanceScoreEnabled: true
+    distanceScoreEnabled: true,
+    requireUpdate: false
 };
 
 export default state;
