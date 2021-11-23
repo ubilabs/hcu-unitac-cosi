@@ -23,7 +23,12 @@ describe("addons/dipas/components/Dipas.vue", () => {
             setUiStyle (state, uiStyle) {
                 state.uiStyle = uiStyle;
             }
-        },
+        };
+    let wrapper,
+        valueStyle = [],
+        store;
+
+    beforeEach(() => {
         store = new Vuex.Store({
             namespaces: true,
             modules: {
@@ -34,8 +39,8 @@ describe("addons/dipas/components/Dipas.vue", () => {
             getters,
             mutations
         });
-    let wrapper,
-        valueStyle = [];
+        store.commit("configJs/uiStyle", "DEFAULT");
+    });
 
     /**
      * Creates the wrapper
@@ -64,7 +69,7 @@ describe("addons/dipas/components/Dipas.vue", () => {
             }
         });
         if (isTable) {
-            store.commit("setUiStyle", "TABLE");
+            store.commit("configJs/uiStyle", "TABLE");
         }
     }
 
