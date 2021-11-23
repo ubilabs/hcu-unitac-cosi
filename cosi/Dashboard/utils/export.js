@@ -1,4 +1,4 @@
-import renameKeys from "../../utils/renameKeys.js";
+import {renameKeys} from "../../utils/modifyObject.js";
 
 const keyMap = {
     category: "Kategorie",
@@ -20,7 +20,7 @@ export function prepareTableExport (data, timestamp, timestampPrefix = "jahr_") 
         return null;
     }
     const exportData = data.map(item => {
-        const _item = renameKeys(keyMap, item);
+        const _item = renameKeys(item, keyMap);
 
         for (const col in _item) {
             if (typeof _item[col] === "object") {

@@ -1,5 +1,6 @@
 import {scaleLinear, scaleSequential} from "d3-scale";
 import * as Chromatic from "d3-scale-chromatic";
+import {hsl} from "d3-color";
 
 /**
  * generates a function to use for color generation from values
@@ -10,7 +11,7 @@ import * as Chromatic from "d3-scale-chromatic";
  * @param {string} defaultColor - defaultColor in rgb.
  * @returns {(function|object)} - returns both the scale function and a legend with value/color-pairs for visualization.
  */
-export default function generateColorScale (values = [0, 1], colorspace = "interpolateBlues", legendSteps = 5, type = "sequential", defaultColor = "rgb(51, 153, 204)") {
+export function generateColorScale (values = [0, 1], colorspace = "interpolateBlues", legendSteps = 5, type = "sequential", defaultColor = "rgb(51, 153, 204)") {
     const legendDefaultColor = "rgb(99,99,99)",
         filteredValues = values.filter(val => !isNaN(val)),
         filteredUndefineds = values.filter(val => val === undefined),
@@ -62,6 +63,36 @@ export default function generateColorScale (values = [0, 1], colorspace = "inter
     }
 
     return {scale, legend};
+}
+
+/**
+* @description Generates colorScale for given length on base color.
+* @param {String} color color from which colorscale is generated
+* @param {Int} length Number of colors to be generated in colorscale.
+* @returns {Array} ColorScale Array.
+*/
+export function generateColorScaleByColor (color, length) {
+   const hslColor = hsl(color),
+       colorC = String(hslColor);
+   let colorA = "",
+       colorB = "",
+       range = "";
+
+   hslColor.h += 10;
+   hslColor.s = 100;
+   hslColor.l = 80;
+   hslColor.opacity = 1;
+
+   colorA = String(hslColor);
+
+   hslColor.h -= 10;
+   hslColor.s = 0;
+   hslColor.l -= 10;
+   hslColor.opacity = 0.75;
+
+   colorB = String(hslColor);
+   range = [colorB, colorC, colorA];
+   return scaleLinear().domain([0, length]).range(range);
 }
 
 /**

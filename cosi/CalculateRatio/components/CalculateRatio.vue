@@ -73,8 +73,6 @@ export default {
             featureVals: [],
             // Object that helps calculating the data in prepareCoverage function
             calcHelper: {},
-            // Results for rendering in the table
-            // results: [],
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
@@ -149,6 +147,7 @@ export default {
         },
         loadend (newValue) {
             if (newValue && this.selectedStatFeatures.length > 0) {
+
                 this.updateFeaturesList();
             }
         },
@@ -444,6 +443,12 @@ export default {
             });
 
             this.setResults(utils.calculateRatio(allData, this.selectedYear));
+            this.setResultHeaders({
+                typeA: Array.isArray(this.selectedFieldA.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldA.id,
+                typeB: Array.isArray(this.selectedFieldB.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldB.id,
+                fActive: this.fActive_A || this.fActive_B,
+                faktorF: `${this.faktorf_B} / ${this.faktorf_A}`
+            });
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -452,6 +457,7 @@ export default {
          */
         coverageFunction (letter) {
             const dataArray = [];
+
 
             this.selectedFeatures.forEach(district => {
                 const name = district.getProperties()[this.keyOfAttrName],
@@ -740,6 +746,7 @@ export default {
                             :title="$t('additional:modules.tools.cosi.calculateRatio.switchFieldType')"
                         >
                             <button
+                                id="switchA"
                                 @click="switchVal('A')"
                             >
                                 <template v-if="ASwitch">
@@ -875,6 +882,7 @@ export default {
                             :title="$t('additional:modules.tools.cosi.calculateRatio.switchFieldType')"
                         >
                             <button
+                                id="switchB"
                                 @click="switchVal('B')"
                             >
                                 <template v-if="BSwitch">
@@ -1124,9 +1132,10 @@ export default {
                         </div>
                         <DataTable
                             :data-set="results"
-                            :type-a="Array.isArray(selectedFieldA.id) ? $t('additional:modules.tools.cosi.calculateRatio.addedSelection') : selectedFieldA.id"
-                            :type-b="Array.isArray(selectedFieldB.id) ? $t('additional:modules.tools.cosi.calculateRatio.addedSelection') : selectedFieldB.id"
-                            :f-active="fActive_A || fActive_B ? true : false"
+                            :type-a="resultHeaders.typeA"
+                            :type-b="resultHeaders.typeB"
+                            :f-active="resultHeaders.fActive"
+                            :faktor-f="resultHeaders.faktorF"
                         />
                     </div>
                 </div>

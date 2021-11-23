@@ -509,12 +509,13 @@ export default {
     setSelectedFiletype: ({commit}, newFiletype) => {
         commit("setSelectedFiletype", newFiletype);
     },
-    importKML: ({state, dispatch}, datasrc) => {
+    importKML: ({state, rootGetters, dispatch}, datasrc) => {
         const
             checkSameLayer = datasrc.checkSameLayer,
             layerName = datasrc.layerName,
             layerId = "imported" + uniqueId("_"),
-            format = getFormat(datasrc.filename, state.selectedFiletype, state.supportedFiletypes, supportedFormats);
+            format = getFormat(datasrc.filename, state.selectedFiletype, state.supportedFiletypes, supportedFormats),
+            currentCrs = rootGetters["Map/projectionCode"];
         let
             featureError = false,
             alertingMessage,
@@ -615,7 +616,7 @@ export default {
                 }
 
                 geometries.forEach(geometry => {
-                    geometry.transform(state.crs, "EPSG:25832");
+                    geometry.transform(state.crs, currentCrs);
                 });
             }
         });

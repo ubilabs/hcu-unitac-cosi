@@ -6,7 +6,7 @@ import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import Info from "text-loader!./info.html";
-import getColorScale from "../../../utils/colorScale.js";
+import {generateColorScale} from "../../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 
@@ -236,7 +236,7 @@ export default {
                                 width: 3
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
-                                ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale)
+                                ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
                                 : this.$t("additional:modules.tools.colorCodeMap.noData")
                         });
                         styleArray.push(new Style(getStyling));
@@ -401,7 +401,7 @@ export default {
          * @returns {Object} the colorScale function(value) and the n-step legend color/value pairs.
          */
         getColorsByValues (values) {
-            return getColorScale(values, this.colorScheme);
+            return generateColorScale(values, this.colorScheme);
         },
         /**
          * @description Changes selected feature with arrow buttons.

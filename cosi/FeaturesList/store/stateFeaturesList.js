@@ -37,7 +37,8 @@ const state = {
         "lonlat",
         "originalData"
     ],
-    disabledFeatureItems: []
+    disabledFeatureItems: [],
+    distanceScoreEnabled: true
 };
 
 export default state;

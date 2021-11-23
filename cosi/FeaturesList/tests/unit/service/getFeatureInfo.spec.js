@@ -2,11 +2,13 @@
 import {getFeatureInfos} from "../../../service/getFeatureInfo";
 import {expect} from "chai";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
+import {registerProjections} from "masterportalAPI/src/crs";
 
 
 describe("getFeatureInfos", () => {
     before(async function () {
         await initializeLayerList();
+        registerProjections();
     });
 
     it("should return one feature info", async () => {
@@ -31,7 +33,7 @@ describe("getFeatureInfos", () => {
     it("should return no feature info", async () => {
         const featureInfos = await getFeatureInfos("https://geodienste.hamburg.de/HH_WMS_Strassenverkehr",
             "strassenverkehr_tag_abend_nacht_2017",
-            [564310.8970702873 + 0.108, 5937870.667724043],
+            [564310.8970702873 + 10.208, 5937870.667724043],
             "EPSG:25832", 0.00001, 1000);
 
         expect(featureInfos).to.have.lengthOf(0);

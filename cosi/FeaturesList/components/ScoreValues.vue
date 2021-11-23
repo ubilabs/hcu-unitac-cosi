@@ -17,7 +17,7 @@
                         {{ layer.id }}
                     </v-subheader>
                     <v-card-text>
-                        {{ scores[layer.layerId] }}
+                        {{ scores[layer.layerId] && scores[layer.layerId].value }}
                     </v-card-text>
                 </div>
             </v-card>
