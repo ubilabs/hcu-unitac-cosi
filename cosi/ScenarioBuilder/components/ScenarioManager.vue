@@ -88,6 +88,7 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
                 this.activeScenario.prune();
+                this.$emit("pruneScenario");
             }
         },
 
@@ -95,6 +96,7 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneNeighborhoodsWarning"))) {
                 this.activeScenario.pruneNeighborhoods();
+                this.$emit("pruneScenario", "neighborhoods");
             }
         },
 
@@ -102,6 +104,7 @@ export default {
             // eslint-disable-next-line no-alert
             if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeaturesWarning"))) {
                 this.activeScenario.pruneSimulatedFeatures();
+                this.$emit("pruneScenario", "simulated");
             }
         }
     }
@@ -110,8 +113,10 @@ export default {
 
 <template>
     <div>
-        <div class="mb-5 overline">
-            {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
+        <div>
+            <span class="text-subtitle-2">
+                {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}
+            </span>
         </div>
         <div class="mb-2">
             Anlegen und Verwalten der Szenarien für fiktive Daten. In einem Szenario können Einrichtungen und Wohnquartiere simuliert, sowie bestehende Einrichtungen verändert werden.
@@ -129,6 +134,7 @@ export default {
                     :title="$t('additional:modules.tools.cosi.scenarioManager.selectScenarios')"
                     outlined
                     dense
+                    clearable
                 />
             </v-col>
             <v-col
@@ -136,8 +142,10 @@ export default {
                 cols="6"
             >
                 <v-btn
+                    dense
+                    small
                     tile
-                    depressed
+                    color="grey lighten-1"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                     class="flex-item"
                     @click="createNewScenarioModalOpen = !createNewScenarioModalOpen"
@@ -156,8 +164,10 @@ export default {
                 >
                     <template #activator="{ on, attrs }">
                         <v-btn
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
                             :disabled="!activeScenario"
                             class="flex-item"
@@ -177,8 +187,10 @@ export default {
                     <v-list>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportSimulatedFeatures')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
@@ -194,15 +206,17 @@ export default {
                         </v-list-item>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
                                 @click="activeScenario ? activeScenario.exportScenarioNeighborhoods() : null"
                             >
                                 <span v-if="useIcons">
-                                    <v-icon>mdi-home-group</v-icon>
+                                    <v-icon>mdi-home</v-icon>
                                 </span>
                                 <span v-else>
                                     {{ $t('additional:modules.tools.cosi.scenarioManager.exportNeighborhoods') }}
@@ -211,8 +225,10 @@ export default {
                         </v-list-item>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
+                                color="grey lighten-1"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.exportScenario')"
                                 :disabled="!activeScenario"
                                 class="flex-item"
@@ -229,8 +245,10 @@ export default {
                     </v-list>
                 </v-menu>
                 <v-btn
+                    dense
+                    small
                     tile
-                    depressed
+                    color="grey lighten-1"
                     :disabled="!_activeScenario"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.deleteScenario')"
                     class="flex-item"
@@ -257,8 +275,10 @@ export default {
                 >
                     <template #activator="{ on, attrs }">
                         <v-btn
+                            dense
+                            small
                             tile
-                            depressed
+                            color="grey lighten-1"
                             :disabled="!activeScenario"
                             :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
                             class="flex-item"
@@ -267,7 +287,7 @@ export default {
                             @click="pruneActiveScenario"
                         >
                             <v-icon left>
-                                mdi-backspace
+                                mdi-domain-remove
                             </v-icon>
                             {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
                         </v-btn>
@@ -276,47 +296,53 @@ export default {
                     <v-list>
                         <v-list-item>
                             <v-btn
+                                dense
+                                small
                                 tile
-                                depressed
-                                :disabled="!activeScenario"
-                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
-                                class="flex-item"
-                                @click="pruneActiveScenario"
-                            >
-                                <v-icon left>
-                                    mdi-backspace
-                                </v-icon>
-                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
-                            </v-btn>
-                        </v-list-item>
-                        <v-list-item>
-                            <v-btn
-                                tile
-                                depressed
-                                :disabled="!activeScenario"
-                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneNeighborhoods')"
-                                class="flex-item"
-                                @click="pruneActiveScenarioNeighborhoods"
-                            >
-                                <v-icon left>
-                                    mdi-backspace
-                                </v-icon>
-                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneNeighborhoods') }}
-                            </v-btn>
-                        </v-list-item>
-                        <v-list-item>
-                            <v-btn
-                                tile
-                                depressed
+                                color="grey lighten-1"
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
                                 class="flex-item"
                                 @click="pruneActiveScenarioSimulatedFeatures"
                             >
                                 <v-icon left>
-                                    mdi-backspace
+                                    mdi-map-marker-remove
                                 </v-icon>
                                 {{ $t('additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeatures') }}
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                dense
+                                small
+                                tile
+                                color="grey lighten-1"
+                                :disabled="!activeScenario"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneNeighborhoods')"
+                                class="flex-item"
+                                @click="pruneActiveScenarioNeighborhoods"
+                            >
+                                <v-icon left>
+                                    mdi-home-remove
+                                </v-icon>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneNeighborhoods') }}
+                            </v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn
+                                dense
+                                small
+                                tile
+                                color="grey lighten-1"
+                                :disabled="!activeScenario"
+                                :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
+                                class="flex-item"
+                                @click="pruneActiveScenario"
+                            >
+                                <v-icon left>
+                                    mdi-domain-remove
+                                </v-icon>
+                                {{ $t('additional:modules.tools.cosi.scenarioManager.pruneAllFeatures') }}
                             </v-btn>
                         </v-list-item>
                     </v-list>
@@ -346,10 +372,11 @@ export default {
                                 :label="$t('additional:modules.tools.cosi.scenarioManager.scenarioName')"
                             />
                             <v-btn
-                                tile
-                                depressed
-                                type="button"
                                 dense
+                                small
+                                tile
+                                color="grey lighten-1"
+                                type="button"
                                 :disabled="validScenarioName"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                                 @click="createNewScenario"

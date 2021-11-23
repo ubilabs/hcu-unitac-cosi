@@ -22,11 +22,11 @@ function setLayerAttributes (model) {
             },
             {
                 id: "votingPro",
-                name: "Pro Votes"
+                name: "Pos. Bewertungen"
             },
             {
                 id: "votingContra",
-                name: "Contra Votes"
+                name: "Neg. Bewertungen"
             }
         ]
     });
@@ -40,14 +40,35 @@ function setLayerAttributes (model) {
 function addLayerToTree (newLayer) {
     const layerName = newLayer.name,
         layerId = newLayer.id,
-        features = newLayer.features;
+        features = newLayer.features,
+        gfiAttributes = {
+            dateCreated: "Erstellungsdatum",
+            title: "Titel",
+            contributionType: "Beitragstyp",
+            contributionContent: "Beitragstext",
+            commentsNumber: "Anzahl Kommentare",
+            category: "Kategorie",
+            votingPro: "Pos. Bewertungen",
+            votingContra: "Neg. Bewertung",
+            belongToProject: "Verfahren"
+        };
 
-    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, "showAll", {isNeverVisibleInTree: true});
+    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true});
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
+        filterModel = {
+            attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType"],
+            isActive: false,
+            isSelected: false,
+            layerId: newLayer.id,
+            name: newLayer.name,
+            useConfigName: true
+        },
+        filterQuery = Radio.request("Filter", "getFilters");
 
     setLayerAttributes(model, newLayer);
+    filterQuery.push(filterModel);
 
     return model;
 }

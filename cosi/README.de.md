@@ -1,7 +1,6 @@
-<h1 align="center">CoSI</h1>
-<h1 align="center">Cockpit Städtische Infrastrukturen</h1>
-<h4 align="center">GIS + Daten basierte Analyse- & Planungstools in der Hamburger Stadtverwaltung</h4>
-<br></br>
+# CoSI
+# Cockpit Städtische Infrakstrukturen
+#### GIS + datenbasierte Analyse- & Planungstools in der Hamburger Stadtverwaltung
 
 ## Nutzerhandbuch
 

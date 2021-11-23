@@ -430,10 +430,10 @@ export default {
             >
                 <template #append>
                     <v-btn
+                        dense
+                        x-small
                         tile
-                        depressed
-                        small
-                        :color="locationPickerActive ? 'warning' : ''"
+                        :color="locationPickerActive ? 'warning' : 'grey lighten-1'"
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.chooseLocation')"
                         @click="toggleLocationPicker(geomField.type)"
                     >
@@ -446,9 +446,10 @@ export default {
                     </v-btn>
                     <v-btn
                         v-if="geometry.type === 'Polygon'"
+                        dense
+                        x-small
                         tile
-                        depressed
-                        small
+                        color="grey lighten-1"
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.undo')"
                         :disabled="!locationPickerActive"
                         @click="undoDrawPolygonStep"
@@ -462,10 +463,11 @@ export default {
                     </v-btn>
                     <v-btn
                         v-if="geometry.type === 'Polygon'"
+                        dense
+                        x-small
                         tile
-                        depressed
-                        small
-                        :color="pickPolygonActive ? 'warning' : ''"
+                        class="ms-1"
+                        :color="pickPolygonActive ? 'warning' : 'grey lighten-1'"
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.pick')"
                         :disabled="!locationPickerActive"
                         @click="togglePickPolygon"
@@ -478,9 +480,11 @@ export default {
                         </span>
                     </v-btn>
                     <v-btn
+                        dense
+                        x-small
                         tile
-                        depressed
-                        small
+                        color="grey lighten-1"
+                        class="ms-1"
                         :disabled="geometry.value === null"
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.resetLocation')"
                         @click="resetLocation"
@@ -497,3 +501,4 @@ export default {
         </v-col>
     </v-row>
 </template>
+

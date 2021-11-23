@@ -34,7 +34,11 @@ const state = {
     dataToColorCodeMap: false,
     colorCodeMapDataSet: [],
     results: [],
-    resultHeaders: {}
+    resultHeaders: {},
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/7ec194d74626913b87e886b736dfe43f2523b6f3/cosi/README.md?at=cosi%2Fdev#markdown-header-calculate-ratio",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/7ec194d74626913b87e886b736dfe43f2523b6f3/cosi/README.de.md?at=cosi%2Fdev#markdown-header-versorgungsanalyse"
+    }
 };
 
 export default state;

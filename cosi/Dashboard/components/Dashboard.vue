@@ -15,13 +15,15 @@ import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/expor
 import composeFilename from "../../utils/composeFilename";
 import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
+import StatsTrend from "./StatsTrend.vue";
 
 export default {
     name: "Dashboard",
     components: {
         Tool,
         TableRowMenu,
-        DashboardToolbar
+        DashboardToolbar,
+        StatsTrend
     },
     data () {
         return {
@@ -245,7 +247,8 @@ export default {
                     districtLevel: districtLevel.label,
                     sortable: false,
                     groupable: false,
-                    selected: false
+                    selected: false,
+                    minimized: false
                 });
 
                 refDistrictName = district.getReferencDistrictName();
@@ -296,6 +299,11 @@ export default {
 
             this.districtColumns = cols;
             this.setColDividers();
+        },
+
+        minimizeCol (col) {
+            col.minimized = !col.minimized;
+            col.class = col.minimized ? "minimized" : "";
         },
 
         getValue (item, header, timestamp) {
@@ -385,13 +393,15 @@ export default {
          * @param {Object[]} currentItems - All current (visible) items in the table
          * @returns {void}
          */
-        exportTable (exportTimeline = false, selectedItems, currentItems) {
-            const items = selectedItems.length > 0 ? selectedItems : currentItems,
+        exportTable (exportTimeline = false) {
+            // exportTable(false, selectedItems, currentItems)
+            const items = this.selectedItems.length > 0 ? this.selectedItems : this.currentItems,
                 data = exportTimeline
                     ? prepareTableExportWithTimeline(items, this.timestamps, this.timestampPrefix)
                     : prepareTableExport(items, this.selectedYear, this.timestampPrefix),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
 
+            console.log(data);
             exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
         },
 
@@ -452,6 +462,7 @@ export default {
                             :search="search"
                             @setStatsFeatureFilter="setStatsFeatureFilter"
                             @setSearch="setSearch"
+                            @exportTable="exportTable"
                         />
                         <v-row class="dashboard-table-wrapper">
                             <v-data-table
@@ -461,6 +472,7 @@ export default {
                                 group-by="groupIndex"
                                 show-group-by
                                 :items-per-page="-1"
+                                :items-per-page-text="$t('additional:modules.tools.cosi.dashboard.itemsPerPage')"
                                 :search="search"
                                 hide-default-footer
                                 dense
@@ -497,30 +509,46 @@ export default {
                                             hide-details
                                         />
                                         <template v-if="!district.isAggregation">
-                                            <v-icon
+                                            <v-btn
                                                 class="move-col left"
+                                                icon
+                                                x-small
+                                                :title="$t('additional:modules.tools.cosi.dashboard.moveColLeft')"
                                                 @click="moveCol(district, 0)"
                                             >
-                                                mdi-chevron-left
-                                            </v-icon>
-                                            <v-icon
+                                                <v-icon>mdi-chevron-left</v-icon>
+                                            </v-btn>
+                                            <v-btn
                                                 class="move-col right"
+                                                icon
+                                                x-small
+                                                :title="$t('additional:modules.tools.cosi.dashboard.moveColRight')"
                                                 @click="moveCol(district, 1)"
                                             >
-                                                mdi-chevron-right
-                                            </v-icon>
+                                                <v-icon>mdi-chevron-right</v-icon>
+                                            </v-btn>
+                                            <v-btn
+                                                class="move-col minimize"
+                                                icon
+                                                x-small
+                                                :title="$t('additional:modules.tools.cosi.dashboard.minimize')"
+                                                @click="minimizeCol(district)"
+                                            >
+                                                <v-icon>{{ district.minimized ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+                                            </v-btn>
                                         </template>
                                     </div>
                                 </template>
-                                <template #[`group.header`]="{items, isOpen, toggle, headers}">
+
+                                <template #[`group.header`]="group">
                                     <th
-                                        :colspan="headers.length"
+                                        :colspan="group.headers.length"
                                         class="text-start"
                                     >
-                                        <v-icon @click="toggle">
-                                            {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
+                                        <v-icon @click="group.toggle">
+                                            {{ group.isOpen ? 'mdi-minus' : 'mdi-plus' }}
                                         </v-icon>
-                                        {{ items[0].group }}
+                                        {{ group.items[0].group }}
                                     </th>
                                 </template>
 
@@ -562,6 +590,7 @@ export default {
                                 <template
                                     v-for="district in districtColumns"
                                     #[`item.${district.value}`]="{ item, header }"
+                                    :class="{'text-end': true, 'minimized': header.minimized}"
                                 >
                                     <!--eslint-disable-next-line-->
                                     <v-tooltip
@@ -571,10 +600,15 @@ export default {
                                     >
                                         <template #activator="{ on, attrs }">
                                             <div
-                                                class="text-end"
+                                                :class="{'text-end': true, 'minimized': header.minimized}"
                                                 v-bind="attrs"
                                                 v-on="on"
                                             >
+                                                <StatsTrend
+                                                    :item="item"
+                                                    :header="header"
+                                                    :timestamp-prefix="timestampPrefix"
+                                                />
                                                 <template v-if="item.expanded">
                                                     <ul class="timeline">
                                                         <li
@@ -636,6 +670,7 @@ export default {
                                     </v-tooltip>
                                 </template>
                                 <template #[`item.total`]="{ item }">
+                                    <!--eslint-disable-next-line-->
                                     <v-tooltip
                                         bottom
                                         :nudge-top="60"
@@ -666,26 +701,6 @@ export default {
                                 </template>
                             </v-data-table>
                         </v-row>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-btn
-                                    tile
-                                    depressed
-                                    :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
-                                    @click="exportTable(false, selectedItems, currentItems)"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
-                                </v-btn>
-                                <v-btn
-                                    tile
-                                    depressed
-                                    :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-                                    @click="exportTable(true, selectedItems, currentItems)"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.dashboard.exportTableTimeline') }}
-                                </v-btn>
-                            </v-col>
-                        </v-row>
                     </v-container>
                 </v-main>
             </v-app>
@@ -703,7 +718,7 @@ export default {
         .container {
             height: 100%;
             .dashboard-table-wrapper {
-                height: calc(100% - 110px);
+                height: calc(100% - 40px);
             }
         }
     }
@@ -726,10 +741,13 @@ export default {
                 top: -10px;
                 font-size: 16px;
                 &.left {
-                    right: 0;
+                    left: 0px;
                 }
                 &.right {
-                    right: -10px;
+                    left: 10px;
+                }
+                &.minimize {
+                    right: 0px;
                 }
             }
         }
@@ -741,6 +759,27 @@ export default {
                 i {
                     font-size: 20px;
                 }
+            }
+        }
+    }
+
+    th.minimized {
+        width: 20px;
+        max-width:20px;
+
+        .v-input {
+            display: none;
+        }
+        .move-col {
+            &.left {
+                display: none;
+            }
+            &.right {
+                display: none;
+            }
+            &.minimize {
+                left: -10px;
+                right: unset;
             }
         }
     }
@@ -765,6 +804,11 @@ export default {
         }
         .modified {
             color: @brightred;
+        }
+        .minimized {
+            // overflow: hidden;
+            // width: 20px;
+            display: none;
         }
     }
 }

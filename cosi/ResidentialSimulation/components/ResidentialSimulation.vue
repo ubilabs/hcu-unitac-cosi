@@ -90,7 +90,8 @@ export default {
                         }]
                     }
                 }
-            }
+            },
+            isCreated: false
         };
     },
     computed: {
@@ -187,6 +188,13 @@ export default {
 
         residents () {
             this.extrapolateNeighborhoodStatistics();
+        },
+
+        neighborhood: {
+            deep: true,
+            handler () {
+                this.isCreated = false;
+            }
         }
     },
     created () {
@@ -304,7 +312,7 @@ export default {
 
         visualizeDemographics ({id, name, scaleLabels, labels, type}) {
             const chartData = new ChartDataSet({
-                id,
+                id: id + "-" + this.baseStats.reference.districtName,
                 name,
                 scaleLabels,
                 data: {
@@ -337,6 +345,7 @@ export default {
 
             this.activeScenario.addNeighborhood(neighborhood);
 
+            this.isCreated = true;
             // reset geometry
             geomPickerClearDrawPolygon(this.$refs["geometry-picker"]);
         },
@@ -424,10 +433,12 @@ export default {
                     id="scenario-builder"
                 >
                     <div>
-                        <ScenarioManager />
+                        <ScenarioManager @pruneScenario="resetFeature" />
                         <v-divider />
-                        <div class="mb-5 overline">
-                            {{ $t('additional:modules.tools.cosi.residentialSimulation.title') }}
+                        <div>
+                            <span class="text-subtitle-2">
+                                {{ $t('additional:modules.tools.cosi.residentialSimulation.title') }}
+                            </span>
                         </div>
                         <div class="mb-2">
                             Neue fiktive Wohnquartiere mitsamt Bewohnerstruktur anlegen und die statistischen Daten im Gebiet entsprechend modifizieren.
@@ -724,8 +735,10 @@ export default {
                                 cols="12"
                             >
                                 <v-btn
+                                    dense
+                                    small
                                     tile
-                                    depressed
+                                    color="grey lighten-1"
                                     class="flex-item"
                                     @click="resetFeature"
                                 >
@@ -735,8 +748,10 @@ export default {
                                     </span>
                                 </v-btn>
                                 <v-btn
+                                    dense
+                                    small
                                     tile
-                                    depressed
+                                    color="grey lighten-1"
                                     class="flex-item"
                                     :disabled="!neighborhood.stats || geometry === null"
                                     @click="editStatsTable = true"
@@ -747,6 +762,25 @@ export default {
                                     </span>
                                 </v-btn>
                                 <v-btn
+                                    dense
+                                    small
+                                    tile
+                                    color="primary"
+                                    :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
+                                    :disabled="!activeScenario || geometry === null || !neighborhood.stats || isCreated"
+                                    class="flex-item"
+                                    @click="createFeature"
+                                >
+                                    <v-icon>mdi-home-plus</v-icon>
+                                    <span>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
+                                    </span>
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                        <!-- <v-row>
+                            <v-col cols="12">
+                                <v-btn
                                     tile
                                     depressed
                                     color="primary"
@@ -761,25 +795,7 @@ export default {
                                     </span>
                                 </v-btn>
                             </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12">
-                                <!-- <v-btn
-                                    tile
-                                    depressed
-                                    color="primary"
-                                    :title="$t('additional:modules.tools.cosi.residentialSimulation.createFeatureHelp')"
-                                    :disabled="!activeScenario || geometry === null || !neighborhood.stats"
-                                    class="flex-item"
-                                    @click="createFeature"
-                                >
-                                    <v-icon>mdi-home-plus</v-icon>
-                                    <span>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.createFeature') }}
-                                    </span>
-                                </v-btn> -->
-                            </v-col>
-                        </v-row>
+                        </v-row> -->
                     </div>
                     <v-snackbar
                         v-model="editDialog"
