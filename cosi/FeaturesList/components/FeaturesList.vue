@@ -664,7 +664,10 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="10"
-                                :footer-props="{itemsPerPageText: $t('additional:modules.tools.cosi.featuresList.itemsPerPage'), itemsPerPageAllText: $t('additional:modules.tools.cosi.featuresList.itemsPerPageAll')}"
+                                :footer-props="{
+                                    itemsPerPageText: $t('additional:modules.tools.cosi.featuresList.itemsPerPage'),
+                                    itemsPerPageAllText: $t('additional:modules.tools.cosi.featuresList.itemsPerPageAll')
+                                }"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"

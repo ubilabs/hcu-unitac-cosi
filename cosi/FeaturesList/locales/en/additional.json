@@ -22,7 +22,11 @@
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
                     "abort": "abort",
-                    "scoresDialogTitle": "Composition"
+                    "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
+                    "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
+                    "scoresDialogTitle": "Zusammensetzung",
+                    "itemsPerPage": "Rows per Page",
+                    "itemsPerPageAll": "All"
                 }
             }
         }

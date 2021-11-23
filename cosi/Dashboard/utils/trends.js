@@ -37,9 +37,8 @@ function averageSlope (arr, steps = 5) {
  * @param {*} stats 
  * @param {*} timestamps 
  * @param {*} timestampPrefix 
- * @returns 
  */
-export function getTrendStyle (stats, timestamps, timestampPrefix) {
+export function getTrend (stats, timestamps, timestampPrefix) {
     const
         vals = timestamps.map(t => parseFloat(stats[timestampPrefix + t])).reverse(),
         dy_1 = deriveLocalLinear(vals),
@@ -47,6 +46,15 @@ export function getTrendStyle (stats, timestamps, timestampPrefix) {
         avg_dy_2 = averageSlope(dy_2),
         dy = avg_dy_2 * dy_1[dy_1.length - 1];
 
+    return dy;
+}
+
+/**
+ * gets a style for a trend arrow
+ * @param {Number} dy - the expected growth for the next timestep
+ * @returns {Object} css style
+ */
+export function getTrendStyle (dy) {
     if (dy > 1.055) {
         return {color: "green", transform: "rotate(-60deg)"};
     }

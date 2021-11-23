@@ -16,8 +16,7 @@
                     "modifiedTooltip": "Dieses Datum wurde durch Simulationsfunktionen verändert.",
                     "moveColLeft": "Spalte nach links verschieben",
                     "moveColRight": "Spalte nach rechts verschieben",
-                    "minimizeCol": "Spalte aus-/einblenden",
-                    "itemsPerPage": "Einträge pro Seite"
+                    "minimizeCol": "Spalte aus-/einblenden"
                 }
             }
         }
