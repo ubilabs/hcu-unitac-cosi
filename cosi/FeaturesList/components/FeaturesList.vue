@@ -20,6 +20,15 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
+import
+{
+    Fill,
+    Style,
+    Stroke,
+    Text,
+    Circle
+} from "ol/style.js";
+import Feature from "ol/Feature";
 
 export default {
     name: "FeaturesList",
@@ -112,7 +121,8 @@ export default {
                     value: "enabled"
                 }
             ],
-            numericalColumns: []
+            numericalColumns: [],
+            distScoreLayer: null
         };
     },
     computed: {
@@ -184,12 +194,18 @@ export default {
 
         /**
          * Updates the feature highlighting on selection change
+         * @param {object} newValue new value
          * @listens #change:this.$data.selected
          * @returns {void}
          */
-        selected () {
+        selected (newValue) {
             this.removeHighlightFeature();
-            this.selected.forEach(item => highlightVectorFeature(item.feature, item.layerId));
+
+            newValue.forEach(item => {
+                highlightVectorFeature(item.feature, item.layerId);
+            });
+
+            this.showDistanceScoreFeatures();
         },
 
         /**
@@ -237,6 +253,7 @@ export default {
             if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
             }
+            this.showDistanceScoreFeatures();
         },
 
         layerWeights () {
@@ -256,7 +273,7 @@ export default {
             this.setActive(false);
         });
     },
-    mounted () {
+    async mounted () {
         // initally set the facilities mapping based on the config.json
         this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
         this.updateFeaturesList();
@@ -270,12 +287,15 @@ export default {
         Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
         Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
         Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
+
+        this.distScoreLayer = await this.createLayer("distance-score-features");
+        this.distScoreLayer.setVisible(true);
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
-        ...mapActions("Map", ["removeHighlightFeature"]),
+        ...mapActions("Map", ["removeHighlightFeature", "createLayer"]),
 
         getVectorlayerMapping,
         getNumericalColumns () {
@@ -570,6 +590,47 @@ export default {
         showInfo (item) {
             this.currentScores = item.weightedDistanceScores;
             this.showScoresDialog = true;
+        },
+        showDistanceScoreFeatures () {
+            if (this.distScoreLayer === null) {
+                return;
+            }
+            this.distScoreLayer.getSource().clear();
+            this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
+                if (item.weightedDistanceScores) {
+                    for (const [_, entry] of Object.entries(item.weightedDistanceScores)) {
+                        if (entry.feature) {
+                            const feature = new Feature({geometry: entry.feature.getGeometry()});
+
+                            feature.set("styleId", entry.feature.getId() + "-ds");
+                            feature.setStyle(new Style({
+                                image: new Circle({
+                                    radius: 10,
+                                    fill: new Fill({color: [0, 0, 255]}),
+                                    stroke: new Stroke({color: [255, 255, 255]})
+                                }),
+                                fill: new Fill({
+                                    color: "blue"
+                                }),
+                                text: new Text({
+                                    text: entry.feature.getId(),
+                                    placement: "point",
+                                    offsetY: 25,
+                                    font: "13px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [0, 0, 0]
+                                    }),
+                                    stroke: new Stroke({
+                                        color: [240, 240, 240],
+                                        width: 2
+                                    })
+                                })
+                            }));
+                            this.distScoreLayer.getSource().addFeature(feature);
+                        }
+                    }
+                }
+            });
         }
     }
 };

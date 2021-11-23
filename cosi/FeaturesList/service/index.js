@@ -27,23 +27,27 @@ function transformedCoordinates (features) {
  */
 async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement) {
     const featureCoords = transformedCoordinates([feature]),
-        coords = Array.isArray(extent) && extent.length > 0 ? transformedCoordinates(await getAllFeatures(layerId, extent))
-            : transformedCoordinates(await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement)),
+        features = Array.isArray(extent) && extent.length > 0 ? await getAllFeatures(layerId, extent)
+            : await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement),
+        coords = transformedCoordinates(features),
         dists = (await fetchDistances(featureCoords, coords))[0];
 
     if (dists === null) {
         return null;
     }
 
-    let mindist = Infinity;
+    let mindist = Infinity,
+        minFeature;
+
 
     for (let i = 0; i < dists.length; i++) {
         if (dists[i] !== null && dists[i] < mindist) {
             mindist = dists[i];
+            minFeature = features[i];
         }
     }
 
-    return mindist;
+    return {dist: mindist, feature: minFeature};
 }
 
 /**
@@ -82,9 +86,9 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
         }
 
         // eslint-disable-next-line one-var
-        const value = weights[j] * mindist;
+        const value = weights[j] * mindist.dist;
 
-        ret[layerIds[j]] = value;
+        ret[layerIds[j]] = {value, feature: mindist.feature};
 
         vsum += value;
         wsum += weights[j];

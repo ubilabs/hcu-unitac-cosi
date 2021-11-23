@@ -34,11 +34,10 @@ describe("distanceScoreService", () => {
                     weights: [1]
                 });
 
-        expect(score).to.be.eql({"19862": 191.82, score: 191.82});
-        expect(commitStub.firstCall.args[1]).to.eql(
-            {
-                "DE.HH.UP_AMIRA_1d275df7-64f4-4a43-a647-ae34648191c119862": 191.82
-            });
+        expect(score.score).to.be.equal(191.82);
+        expect(score["19862"].value).to.be.equal(191.82);
+        expect(score["19862"].feature.getId()).to.be.equal("DE.HH.UP_LEBENSLAGENBERATUNG_6");
+        expect(commitStub.firstCall.args[1]["DE.HH.UP_AMIRA_1d275df7-64f4-4a43-a647-ae34648191c119862"].dist).to.be.equal(191.82);
     });
     it.skip("getDistanceScore for feature from hvv layer", async function () {
         // this one is too slow
@@ -54,7 +53,7 @@ describe("distanceScoreService", () => {
                     weights: [1]
                 });
 
-        expect(score).to.be.eql({"5246": 220.07, score: 220.07});
+        expect(score.score).to.be.equal(140.07);
     });
     it("getDistanceScore feature outside hamburg", async () => {
         const p = [9.818415798420284, 53.26231927558228],
@@ -85,11 +84,10 @@ describe("distanceScoreService", () => {
                     extent
                 });
 
-        expect(score).to.be.eql({"20569": 157.41, score: 157.41});
-        expect(commitStub.firstCall.args[1]).to.eql(
-            {
-                "id20569566074.67,5933911.077,567996.251,5935623.892": 157.41
-            });
+        expect(score.score).to.be.equal(157.41);
+        expect(score["20569"].value).to.be.equal(157.41);
+        expect(score["20569"].feature.getId()).to.be.equal("DE.HH.UP_AMIRA_1d275df7-64f4-4a43-a647-ae34648191c1");
+        expect(commitStub.firstCall.args[1]["id20569566074.67,5933911.077,567996.251,5935623.892"].dist).to.eql(157.41);
     });
     it("should ignore empty extend", async () => {
         const features = await getAllFeatures("20569"),
@@ -104,7 +102,7 @@ describe("distanceScoreService", () => {
                     extent: []
                 });
 
-        expect(score).to.be.eql({"19862": 191.82, score: 191.82});
+        expect(score.score).to.be.equal(191.82);
     });
     it("getDistanceScore with small layer outside extent", async () => {
         // current implementation ignores extent
@@ -228,6 +226,6 @@ describe("distanceScoreService", () => {
                     weights: [1]
                 });
 
-        expect(score).to.be.eql({"16601": 133.57, score: 133.57});
+        expect(score.score).to.be.equal(133.57);
     });
 });
