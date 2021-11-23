@@ -20,6 +20,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
+import * as convert from "color-convert";
 import
 {
     Fill,
@@ -595,34 +596,38 @@ export default {
             if (this.distScoreLayer === null) {
                 return;
             }
+
+
             this.distScoreLayer.getSource().clear();
             this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
                 if (item.weightedDistanceScores) {
-                    for (const [_, entry] of Object.entries(item.weightedDistanceScores)) {
+                    for (const [layerId, entry] of Object.entries(item.weightedDistanceScores)) {
                         if (entry.feature) {
                             const feature = new Feature({geometry: entry.feature.getGeometry()});
 
                             feature.set("styleId", entry.feature.getId() + "-ds");
                             feature.setStyle(new Style({
                                 image: new Circle({
-                                    radius: 10,
-                                    fill: new Fill({color: [0, 0, 255]}),
-                                    stroke: new Stroke({color: [255, 255, 255]})
+                                    radius: 5,
+                                    fill: new Fill({color: convert.keyword.rgb(this.getColorFromValue(entry.nvalue, true))})
+                                    // stroke: new Stroke({color: [255, 255, 255]})
                                 }),
-                                fill: new Fill({
-                                    color: "blue"
-                                }),
+                                // fill: new Fill({
+                                //     color: "blue"
+                                // }),
                                 text: new Text({
-                                    text: entry.feature.getId(),
+                                    // text: entry.feature.getId(),
+                                    text: getLayerWhere({id: layerId})?.name,
                                     placement: "point",
-                                    offsetY: 25,
-                                    font: "13px Calibri, sans-serif",
+                                    offsetY: -10,
+                                    offsetX: 10,
+                                    font: "12px Calibri, sans-serif",
                                     fill: new Fill({
-                                        color: [0, 0, 0]
+                                        color: [255, 2550, 255]
                                     }),
                                     stroke: new Stroke({
-                                        color: [240, 240, 240],
-                                        width: 2
+                                        color: [0, 0, 0],
+                                        width: 1
                                     })
                                 })
                             }));
