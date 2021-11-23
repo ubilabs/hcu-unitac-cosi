@@ -401,6 +401,7 @@ export default {
                     : prepareTableExport(items, this.selectedYear, this.timestampPrefix),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
 
+            console.log(data);
             exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
         },
 

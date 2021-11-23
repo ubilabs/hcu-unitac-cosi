@@ -474,6 +474,13 @@ export default {
                 class="handler"
                 :class="{expand: importedLayers.length}"
             >
+                <button
+                    class="info_button"
+                    :title="$t('additional:modules.tools.cosi.calculateRatio.infoTooltip')"
+                    @click="showInfo()"
+                >
+                    <span class="glyphicon glyphicon-question-sign" />
+                </button>
                 <!--New Layer Handling-->
                 <template v-if="imported">
                     <div class="wrapper">
@@ -1357,7 +1364,7 @@ export default {
                                         box-sizing: border-box;
 
                                         .preNumName {
-                                            flex:0 0 160px;
+                                            flex:0 0 120px;
                                             margin-right:5px;
                                             font-size:100%;
                                             padding-top:5px;

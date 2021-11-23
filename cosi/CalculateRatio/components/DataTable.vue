@@ -158,9 +158,7 @@ export default {
                     </div>
                 </div>
             </template>
-            <template
-                #item.paramB_val="{ item }"
-            >
+            <template #item.paramB_val="{ item }">
                 <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                 <div class="table_cell">
                     {{ item.paramB_val }}
