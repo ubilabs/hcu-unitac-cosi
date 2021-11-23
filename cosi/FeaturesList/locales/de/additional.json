@@ -18,14 +18,16 @@
                     "colAddress": "Adresse",
                     "inactiveFeature": "Die ausgewählte Einrichtung ist gegenwärtig inaktiv geschaltet.",
                     "exportTable": "Übersicht exportieren",
-                    "exportDetails": "Detailansicht exportieren",
+                    "exportDetails": "Detailansicht mit exportieren",
                     "exportFilename": "CoSI_Einrichtungsübersicht",
                     "weighting": "Gewichtung",
-                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung (SB)",
+                    "distanceScore": "Anbindung (Ø/m)",
+                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung",
                     "abort": "Abbrechen",
                     "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
                     "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
-                    "scoresDialogTitle": "Zusammensetung"
+                    "scoresDialogTitle": "Zusammensetzung",
+                    "itemsPerPage": "Einträge pro Seite"
                 }
             }
         }

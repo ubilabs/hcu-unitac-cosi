@@ -237,7 +237,8 @@ export default {
                             }),
                             text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
                                 ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
-                                : this.$t("additional:modules.tools.colorCodeMap.noData")
+                                : this.$t("additional:modules.tools.colorCodeMap.noData"),
+                            overflow: true
                         });
                         styleArray.push(new Style(getStyling));
                         if (this.lastYear) {
@@ -255,7 +256,8 @@ export default {
                                     text: matchResults.getProperties()[this.yearSelector + this.lastYear]
                                         ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)"
                                         : this.$t("additional:modules.tools.colorCodeMap.noData"),
-                                    offsetY: 25
+                                    offsetY: 25,
+                                    overflow: true
                                 })
                             });
 
@@ -275,7 +277,8 @@ export default {
                                     }),
                                     padding: [5, 10, 5, 10],
                                     text: matchResults.getProperties()[this.keyOfAttrNameStats],
-                                    offsetY: -35
+                                    offsetY: -35,
+                                    overflow: true
                                 })
                             });
 
@@ -332,7 +335,8 @@ export default {
                             color: [0, 0, 0],
                             width: 3
                         }),
-                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData")
+                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData"),
+                        overflow: true
                     });
 
                     district.setStyle(new Style(getStyling));
@@ -521,7 +525,7 @@ export default {
                     <button
                         class="minimize"
                         :class="{ highlight: !minimize }"
-                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
+                        :title="$t('additional:modules.tools.colorCodeMap.minimize')"
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
@@ -573,6 +577,7 @@ export default {
                         select-label=""
                         deselect-label=""
                         placeholder=""
+                        :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
                     />
                     <Multiselect
                         v-if="selectedStatFeatures.length"
@@ -1015,6 +1020,9 @@ export default {
                 .btn_grp {
                     button {
                         margin:2px;
+                        &.info_button {
+                            display: inline-block;
+                        }
                     }
                 }
             }

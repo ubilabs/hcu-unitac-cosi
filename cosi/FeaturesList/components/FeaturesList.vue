@@ -20,7 +20,6 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
-import isFeatureActive from "../../utils/isFeatureActive";
 
 export default {
     name: "FeaturesList",
@@ -113,7 +112,8 @@ export default {
                     value: "enabled"
                 }
             ],
-            numericalColumns: []
+            numericalColumns: [],
+            exportDetails: false
         };
     },
     computed: {
@@ -234,8 +234,8 @@ export default {
             this.updateDistanceScores();
         },
 
-        items (newItems) {
-            if (!deepEqual(newItems.map(i=>i.key), this.items.map(i=>i.key))) {
+        items (newItems, oldItems) {
+            if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
             }
         },
@@ -279,7 +279,6 @@ export default {
         ...mapActions("Map", ["removeHighlightFeature"]),
 
         getVectorlayerMapping,
-        isFeatureActive,
         getNumericalColumns () {
             const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
                 return [
@@ -296,8 +295,8 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.selectedFeatureLayers) {
-                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
+            if (this.selectedFeatureLayers.length > 0) {
+                numCols.push({text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"), value: "distanceScore", divider: true, hasAction: true, invertColor: true});
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -330,7 +329,7 @@ export default {
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: layerStyleFunction(feature),
+                            style: feature.getStyle() || layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
@@ -418,7 +417,7 @@ export default {
          * @param {Boolean} exportDetails - whether to include the detailed feature data
          * @returns {void}
          */
-        exportTable (exportDetails = false) {
+        exportTable () {
             const data = this.items.filter(item => {
                     if (this.search && !this.filteredItems.includes(item)) {
                         return false;
@@ -431,7 +430,7 @@ export default {
                     }
                     return true;
                 }),
-                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
@@ -448,42 +447,47 @@ export default {
             this.$root.$emit("updateFeature");
         },
 
-        getNumericalValueColor (item, key) {
-            const val = parseFloat(item[key]),
-                maxVal = Math.max(
-                    ...this.items
-                        .map(_item => parseFloat(_item[key]))
-                        .filter(_item => !isNaN(_item))
-                );
+        getNumericalValueColor (item, key, invertColor) {
+            const maxVal = Math.max(
+                ...this.items
+                    .map(_item => parseFloat(_item[key]))
+                    .filter(_item => !isNaN(_item))
+            );
+            let val = parseFloat(item[key]) / maxVal;
+
+            if (invertColor) {
+                val = 1 - val;
+            }
 
             if (isNaN(val)) {
                 return "grey";
             }
-            if (val / maxVal > 0.9) {
+
+            if (val > 0.9) {
                 return "purple";
             }
-            if (val / maxVal > 0.8) {
+            if (val > 0.8) {
                 return "indigo";
             }
-            if (val / maxVal > 0.7) {
+            if (val > 0.7) {
                 return "blue";
             }
-            if (val / maxVal > 0.6) {
+            if (val > 0.6) {
                 return "cyan";
             }
-            if (val / maxVal > 0.5) {
+            if (val > 0.5) {
                 return "teal";
             }
-            if (val / maxVal > 0.4) {
+            if (val > 0.4) {
                 return "green";
             }
-            if (val / maxVal > 0.4) {
+            if (val > 0.4) {
                 return "light-green";
             }
-            if (val / maxVal > 0.2) {
+            if (val > 0.2) {
                 return "lime";
             }
-            if (val / maxVal > 0.1) {
+            if (val > 0.1) {
                 return "amber";
             }
             return "red";
@@ -512,32 +516,39 @@ export default {
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
+
                 const items = [];
 
-                if (this.selectedLayers.length) {
-                    this.distanceScoreQueue = [...this.items];
-                    while (this.distanceScoreQueue.length) {
-                        const item = {...this.distanceScoreQueue.shift()};
+                this.distanceScoreQueue = this.items.map(item=>{
+                    const ret = {...item};
 
-                        if (this.selectedFeatureLayers) {
-                            const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
-                                weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
-                                extent: this.extent ? this.extent : undefined});
+                    delete ret.weightedDistanceScores;
+                    delete ret.distanceScore;
+                    return ret;
+                });
 
-                            item.weightedDistanceScores = ret;
-                            item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
-                        }
-                        for (const layer of this.selectedWmsLayers) {
-                            const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
 
-                            item[layer.name] = value;
-                        }
+                while (this.distanceScoreQueue.length) {
+                    const item = this.distanceScoreQueue.shift();
 
-                        items.push(item);
+                    if (this.selectedFeatureLayers.length > 0) {
+                        const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
+                            weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
+                            extent: this.extent ? this.extent : undefined});
+
+                        item.weightedDistanceScores = ret;
+                        item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
+                    }
+                    for (const layer of this.selectedWmsLayers) {
+                        const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
+
+                        item[layer.name] = value;
                     }
 
-                    this.items = items;
+                    items.push(item);
                 }
+
+                this.items = items;
             }
         },
         updateWeights (weights) {
@@ -589,21 +600,19 @@ export default {
                         color="grey lighten-1"
                         class="my-2"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                        @click="exportTable(false)"
+                        @click="exportTable"
                     >
                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                     </v-btn>
-                    <v-btn
-                        id="export-detail"
+                    <v-checkbox
+                        id="export-details"
+                        v-model="exportDetails"
+                        class="form-check-input"
                         dense
-                        small
-                        tile
-                        color="grey lighten-1"
+                        hide-details
+                        :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                        @click="exportTable(true)"
-                    >
-                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                    </v-btn>
+                    />
                 </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
@@ -651,6 +660,7 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="10"
+                                :items-per-page-text="$t('additional:modules.tools.cosi.featuresList.itemsPerPage')"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -732,7 +742,7 @@ export default {
                                             <div>
                                                 <v-chip
                                                     :style="getNumericalValueStyle(item, col.value)"
-                                                    :color="getNumericalValueColor(item, col.value)"
+                                                    :color="getNumericalValueColor(item, col.value, col.invertColor)"
                                                     dark
                                                     dense
                                                 />
@@ -742,7 +752,7 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <v-row>
+                        <v-row v-if="distanceScoreEnabled">
                             <v-col>
                                 <v-autocomplete
                                     id="selectedLayers"

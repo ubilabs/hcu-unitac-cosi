@@ -8,10 +8,10 @@ import calculateExtent from "./calculateExtent";
  * @param {*} initialBuffer initial buffer
  * @param {*} bufferIncrement buffer increment
  * @param {number} [maxIter=10] max number of iterations
+ * @param {String} srsName - srsName
  * @return {*} feature
  */
-export async function findNearestFeatures (layerId, feature, initialBuffer, bufferIncrement, maxIter = 10) {
-
+export async function findNearestFeatures (layerId, feature, initialBuffer, bufferIncrement, maxIter = 10, srsName = "EPSG:25832") {
     let buffer = initialBuffer,
         features = null,
         iter = 0;
@@ -19,7 +19,7 @@ export async function findNearestFeatures (layerId, feature, initialBuffer, buff
     while (++iter < maxIter) {
         const extent = calculateExtent([feature], buffer);
 
-        features = await getAllFeatures(layerId, extent);
+        features = await getAllFeatures(layerId, extent, srsName);
 
         if (features.length) {
             return features;

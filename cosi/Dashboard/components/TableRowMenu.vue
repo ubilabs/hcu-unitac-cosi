@@ -91,20 +91,23 @@ export default {
                             </v-list-item-content>
                         </v-list-item>
                         <div
-                            v-if="_item.visualized"
                             class="ml-12"
+                            :title="!_item.visualized ? 'Visualisierung in der Karte muss aktiv sein.' : ''"
                         >
                             <v-list-item
+                                :disabled="!_item.visualized"
                                 @click="setPlayState(!playState)"
                             >
                                 <v-list-item-icon>
-                                    <v-icon>mdi-play</v-icon>
+                                    <v-icon>{{ playState ? 'mdi-pause' : 'mdi-play' }}</v-icon>
                                 </v-list-item-icon>
                                 <v-list-item-content>
                                     Zeitreihe Animieren
                                 </v-list-item-content>
                             </v-list-item>
                             <v-list-item
+                                :disabled="!_item.visualized"
+                                :title="!_item.visualized ? 'Visualisierung in der Karte muss aktiv sein.' : ''"
                                 @click="setShowMapNames(!showMapNames)"
                             >
                                 <v-list-item-icon>

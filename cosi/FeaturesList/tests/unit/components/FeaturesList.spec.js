@@ -21,6 +21,7 @@ import mockConfigJson from "./mock.config.json";
 import Multiselect from "vue-multiselect";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
+import {VChip} from "vuetify/lib";
 
 Vue.use(Vuetify);
 
@@ -32,29 +33,45 @@ config.mocks.$t = key => key;
 
 global.requestAnimationFrame = (fn) => fn();
 
-describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+
+// eslint-disable-next-line require-jsdoc
+function createLayer (feature) {
+    return new Layer({
+        id: "1234",
+        source: new Source({
+            features: [feature || createFeature()]
+        })
+    });
+}
+
+// eslint-disable-next-line require-jsdoc
+function createFeature (key) {
+    const feature = new Feature({
+        id: "id",
+        schulname: "feature 1",
+        anzahl_schueler: 42,
+        adresse_strasse_hausnr: "Hauptstraße",
+        adresse_ort: "Hamburg",
+        kapitelbezeichnung: "Grundschule",
+        geometry: new Point([
+            10.086822509765625,
+            53.55825752009741
+        ])
+    });
+
+    feature.setId("id");
+    if (key) {
+        feature.key = key;
+    }
+    return feature;
+}
+
+
+describe.only("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
 
 
-    const feature = new Feature({
-            id: "id",
-            schulname: "feature 1",
-            anzahl_schueler: 42,
-            adresse_strasse_hausnr: "Hauptstraße",
-            adresse_ort: "Hamburg",
-            kapitelbezeichnung: "Grundschule",
-            geometry: new Point([
-                10.086822509765625,
-                53.55825752009741
-            ])
-        }),
-        layer1 = new Layer({
-            id: "1234",
-            source: new Source({
-                features: [feature]
-            })
-        }),
-        expMapping = [{
+    const expMapping = [{
             group: "Bildung und Wissenschaft",
             layer: [{
                 addressField: [
@@ -73,6 +90,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         }],
         expCols = [
             "style",
+            "enabled",
             "name",
             "warning",
             "district",
@@ -80,11 +98,10 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "layerName",
             "type",
             "group",
-            "anzahl_schueler",
-            "distanceScore",
-            "enabled"
+            "anzahl_schueler"
         ],
         layersMock = [];
+
 
     beforeEach(() => {
         vuetify = new Vuetify();
@@ -129,7 +146,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 Map: {
                     namespaced: true,
                     getters: {
-                        layerById: () => sinon.stub().returns({olLayer: layer1}),
+                        layerById: () => sinon.stub().returns({olLayer: createLayer()}),
                         layerList: layerListStub
                     },
                     actions: {
@@ -159,6 +176,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         store.commit("Tools/FeaturesList/setActive", isActive);
+        store.commit("Tools/FeaturesList/setDistanceScoreEnabled", true);
         await ret.vm.$nextTick();
         return ret;
     }
@@ -183,6 +201,47 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.find("form").exists()).to.be.false;
         });
 
+        it("should return false for null on isFeaturedDisabled", async () => {
+            const wrapper = await mountComponent(false);
+
+            expect(wrapper.vm.isFeatureDisabled(null)).to.be.false;
+        });
+
+        it("should return true for minimal object on isFeatureActive", async () => {
+            const wrapper = await mountComponent(false);
+
+            expect(wrapper.vm.isFeatureActive({style_: null})).to.be.true;
+        });
+
+        it("should return true for enabled object on isFeatureActive", async () => {
+            const wrapper = await mountComponent(false),
+                feat = {style_: null, feature: createFeature()};
+
+
+            expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.true;
+            expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.false;
+        });
+
+        it("should return false for disabled object on isFeatureActive", async () => {
+            const wrapper = await mountComponent(false),
+                feat = {style_: null, feature: createFeature()};
+
+            await wrapper.vm.addDisabledFeatureItem(feat);
+
+            expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.true;
+            expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.false;
+        });
+
+        it("should toggle active feacture", async () => {
+            const wrapper = await mountComponent(false),
+                feat = {style_: null, feature: createFeature()};
+
+            await wrapper.vm.toggleFeature(feat);
+
+            expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.false;
+            expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.true;
+        });
+
         it("mapping should be generated from layerConf, should have length of 1", async () => {
             const wrapper = await mountComponent();
 
@@ -198,7 +257,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("layer should be read out if active", async () => {
-            const wrapper = await mountComponent(true, [layer1]),
+            const wrapper = await mountComponent(true, [createLayer()]),
                 layerFilterWrapper = wrapper.findComponent(Multiselect);
 
             await wrapper.vm.$nextTick();
@@ -212,7 +271,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("items array should hold one item with relevant properties", async () => {
-            const wrapper = await mountComponent(true, [layer1]);
+            const wrapper = await mountComponent(true, [createLayer()]);
 
             expect(wrapper.vm.items).to.have.lengthOf(1);
             expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isModified", "isSimulation", "anzahl_schueler");
@@ -221,7 +280,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         it("should show layers for distance score", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
-            const wrapper = await mountComponent(true, [layer1]);
+            const wrapper = await mountComponent(true, [createLayer()]);
 
             await wrapper.vm.$nextTick();
 
@@ -241,11 +300,29 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.selectedLayers).to.deep.equal([]);
         });
 
+        it("should show distance score layers select only if enabled", async () => {
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.true;
+
+            await wrapper.vm.setDistanceScoreEnabled(false);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.false;
+        });
+
+        it("should show distance score column on select layer", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+
+            expect(wrapper.vm.columns.map(e => e.value)).to.contain("distanceScore");
+        });
+
         it("should compute distance score on select layer", async () => {
-            feature.setId("id");
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
-            const wrapper = await mountComponent(true, [layer1]);
+            const wrapper = await mountComponent(true, [createLayer()]);
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
 
@@ -259,10 +336,25 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(args.weights).to.be.eql([1]);
             expect(wrapper.vm.items.map(i => i.weightedDistanceScores)).to.be.eql([{"1234": 1.0, score: 1}]);
             expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
+            expect(wrapper.findAllComponents(VChip).at(1).vm.color).to.be.equal("red");
+        });
+
+        it("should delete distance score on remove layer", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
+
+            await wrapper.setData({selectedLayers: []});
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql([undefined]);
         });
 
         it("should set scored for dialog", async () => {
-            const wrapper = await mountComponent(true, [layer1]),
+            const wrapper = await mountComponent(true, [createLayer()]),
                 item = {weightedDistanceScores: {"1234": 1.0, score: 1}};
 
             wrapper.vm.showInfo(item);
@@ -272,12 +364,11 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("should recompute distance score after weight change", async () => {
             // arrange
-            feature.setId("id");
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"},
                 {"id": "1235", "url": "url", "featureType": "type"}
             ]);
 
-            const wrapper = await mountComponent(true, [layer1]);
+            const wrapper = await mountComponent(true, [createLayer()]);
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}, {layerId: "1235"}]});
             getDistanceScoreStub.reset();
@@ -295,13 +386,13 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("headers should have all fields", async () => {
-            const wrapper = await mountComponent(true, [layer1]);
+            const wrapper = await mountComponent(true, [createLayer()]);
 
             expect(wrapper.vm.columns.map(e => e.value)).deep.to.equal(expCols);
         });
 
         it("layer with one feature should be rendered to table if layer is active", async () => {
-            const wrapper = await mountComponent(true, [layer1]),
+            const wrapper = await mountComponent(true, [createLayer()]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
 
             // await wrapper.vm.$nextTick();
@@ -313,7 +404,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("table row should be expanded to detail view", async () => {
-            const wrapper = await mountComponent(true, [layer1]),
+            const wrapper = await mountComponent(true, [createLayer()]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
 
             // await wrapper.vm.$nextTick();
@@ -327,7 +418,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("selecting a field in expanded view should emit the 'filterProps' event", async () => {
             const spyUpdateFilterProps = sinon.spy(FeaturesList.methods, "updateFilterProps"),
-                wrapper = await mountComponent(true, [layer1]);
+                wrapper = await mountComponent(true, [createLayer()]);
 
             // await wrapper.vm.$nextTick();
             await wrapper.find("button.mdi-chevron-down").trigger("click");
@@ -343,7 +434,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("expect download prompt to open when table is exported", async () => {
             const spyExportTable = sinon.spy(FeaturesList.methods, "exportTable"),
-                wrapper = await mountComponent(true, [layer1]);
+                wrapper = await mountComponent(true, [createLayer()]);
 
             await wrapper.vm.$nextTick();
             await wrapper.find("#export-table").trigger("click");
@@ -361,10 +452,13 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("expect feature to be removed from map/layer, when toggled off", async () => {
             const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
+                layer1 = createLayer(),
                 wrapper = await mountComponent(true, [layer1]);
 
-            // toggle feature off
-            await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
+
+            // // toggle feature off
+            await wrapper.find("#featureToggle").trigger("click");
+            await wrapper.vm.$nextTick();
             await wrapper.vm.$nextTick();
 
             expect(spyToggleFeature.calledOnceWith(wrapper.vm.items[0])).to.be.true;
@@ -380,9 +474,9 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
         });
         it("should update weights and recompute score", async () => {
-            feature.key = 1;
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
-            const wrapper = await mountComponent(true, [layer1]);
+
+            const wrapper = await mountComponent(true, [createLayer(createFeature(1))]);
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
             await wrapper.vm.$nextTick();
@@ -393,5 +487,4 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.showWeightsDialog).to.be.true;
         });
     });
-
 });

@@ -6,7 +6,7 @@ export default {
     props: {
         title: {
             type: String,
-            default: "Werkzeuginformationen"
+            default: "Werkzeuginformationen (Link öffnen)"
         },
         url: {
             type: String,
@@ -14,12 +14,13 @@ export default {
         },
         infoText: {
             type: String,
-            required: true
+            default: undefined
         }
     },
     methods: {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        showHelp () {
+
+        showInfo () {
             if (this.url) {
                 return window.open(this.url, "_blank");
             }
@@ -38,9 +39,8 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div v-if="url || infoText">
         <v-row
-            v-if="url || infoText"
             dense
             justify="end"
         >
@@ -50,7 +50,7 @@ export default {
                 right
                 icon
                 x-small
-                @click="showHelp"
+                @click="showInfo"
             >
                 <v-icon>mdi-help-circle</v-icon>
             </v-btn>
