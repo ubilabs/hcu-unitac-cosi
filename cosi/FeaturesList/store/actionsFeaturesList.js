@@ -1,3 +1,4 @@
+import Vue from "vue";
 import getClusterSource from "../../utils/getClusterSource";
 import {createVectorLayerMappingObject} from "../utils/getVectorlayerMapping";
 
@@ -47,7 +48,7 @@ const actions = {
         }
         else {
             group = {
-                group: "Importierte Datensätze",
+                group: layer.group,
                 layer: [
                     layerMap
                 ]
@@ -77,6 +78,12 @@ const actions = {
         }
 
         commit("setMapping", _mapping);
+    },
+
+    async requireUpdate ({commit}) {
+        commit("setRequireUpdate", true);
+        await Vue.nextTick();
+        commit("setRequireUpdate", false);
     }
 };
 

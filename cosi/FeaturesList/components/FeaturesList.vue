@@ -123,7 +123,8 @@ export default {
                 }
             ],
             numericalColumns: [],
-            distScoreLayer: null
+            distScoreLayer: null,
+            exportDetails: false
         };
     },
     computed: {
@@ -263,6 +264,10 @@ export default {
 
         extent () {
             this.updateDistanceScores();
+        },
+
+        requireUpdate () {
+            this.updateFeaturesList();
         }
     },
     created () {
@@ -316,7 +321,7 @@ export default {
             }
 
             if (this.selectedFeatureLayers.length > 0) {
-                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true, invertColor: true});
+                numCols.push({text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"), value: "distanceScore", divider: true, hasAction: true, invertColor: true});
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -349,7 +354,7 @@ export default {
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: layerStyleFunction(feature),
+                            style: feature.getStyle() || layerStyleFunction(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
@@ -437,7 +442,7 @@ export default {
          * @param {Boolean} exportDetails - whether to include the detailed feature data
          * @returns {void}
          */
-        exportTable (exportDetails = false) {
+        exportTable () {
             const data = this.items.filter(item => {
                     if (this.search && !this.filteredItems.includes(item)) {
                         return false;
@@ -450,7 +455,7 @@ export default {
                     }
                     return true;
                 }),
-                exportData = exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
@@ -665,21 +670,19 @@ export default {
                         color="grey lighten-1"
                         class="my-2"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                        @click="exportTable(false)"
+                        @click="exportTable"
                     >
                         {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
                     </v-btn>
-                    <v-btn
-                        id="export-detail"
+                    <v-checkbox
+                        id="export-details"
+                        v-model="exportDetails"
+                        class="form-check-input"
                         dense
-                        small
-                        tile
-                        color="grey lighten-1"
+                        hide-details
+                        :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                        @click="exportTable(true)"
-                    >
-                        {{ $t('additional:modules.tools.cosi.featuresList.exportDetails') }}
-                    </v-btn>
+                    />
                 </div>
                 <div id="features-list">
                     <form class="form-inline features-list-controls">
@@ -727,6 +730,7 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="10"
+                                :items-per-page-text="$t('additional:modules.tools.cosi.featuresList.itemsPerPage')"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"

@@ -5,9 +5,8 @@ import getters from "../store/gettersCalculateRatio";
 import mutations from "../store/mutationsCalculateRatio";
 import utils from "../../utils";
 import Multiselect from "vue-multiselect";
-import JsonExcel from "vue-json-excel";
+import exportXlsx from "../../utils/exportXlsx";
 import DataTable from "./DataTable.vue";
-import Info from "text-loader!./info.html";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 
@@ -16,7 +15,6 @@ export default {
     components: {
         Tool,
         Multiselect,
-        JsonExcel,
         DataTable
     },
     data () {
@@ -31,6 +29,8 @@ export default {
             filters: {},
             // Sorted an grouped list of availabke features
             featuresList: [],
+            // Holds all statistical data from selectedFeatures (DistrictSelector)
+            selectedStatFeatures: [],
             // List with summable features like "age 10-15" etc
             subFeaturesList: [],
             // All available years in data
@@ -80,40 +80,26 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
-        ...mapGetters("Tools/DistrictSelector", ["selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "selectedStatFeatures", "loadend"]),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         // Transforming results data for excel export
         resultData () {
-            const json = {
-                json_fields: {
-                },
-                json_data: [],
-                json_meta: [
-                    [
-                        {
-                            "key": "charset",
-                            "value": "utf-8"
-                        }
-                    ]
-                ]
-            };
-
-            json.json_fields[this.label] = "scope";
-            json.json_fields[this.selectedFieldA.id] = this.paramFieldA.name === "Anzahl" ? "paramA_count" : "paramA_val";
-            json.json_fields[this.selectedFieldB.id] = this.paramFieldB.name === "Anzahl" ? "paramB_count" : "paramB_val";
-            json.json_fields[this.selectedFieldA.id + " / " + this.selectedFieldB.id] = "relation";
-            json.json_fields.Bedarfsdeckung = "coverage";
-
-            if (this.ASwitch || this.BSwitch) {
-                json.json_fields.Kapazität = "capacity";
-                json.json_fields.Bedarf = "need";
-            }
+            const json = [];
 
             this.results.forEach(result => {
-                json.json_data.push(result);
+                const resultObj = {};
+
+                resultObj[this.selectedFieldA.id] = result.paramA_val;
+                resultObj[this.selectedFieldB.id] = result.paramB_val;
+                resultObj[this.selectedFieldA.id + " / " + this.selectedFieldB.id] = result.relation;
+                resultObj.Kapazitaet = result.capacity;
+                resultObj.Bedarf = result.need;
+                resultObj.Bedarfsdeckung = result.coverage;
+                json.push(resultObj);
             });
 
             return json;
@@ -121,7 +107,7 @@ export default {
         availableColumns () {
             const options = [
                 {name: "Verhältnis", key: "relation"},
-                {name: "Bedarfsdeckung", key: "coverage"}
+                {name: "Bedarfsdeckung (%)", key: "coverage"}
             ];
 
             if (this.fActive_A || this.fActive_B) {
@@ -146,8 +132,14 @@ export default {
             this.updateFacilities();
         },
         loadend (newValue) {
-            if (newValue && this.selectedStatFeatures.length > 0) {
+            /* if (newValue && this.selectedStatFeatures.length > 0) {
+                this.updateFeaturesList();
+            }*/
 
+            const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
+
+            this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
+            if (newValue && this.selectedFeatures.length > 0) {
                 this.updateFeaturesList();
             }
         },
@@ -321,11 +313,13 @@ export default {
          * @description Shows component info as popup.
          * @returns {Void} Function returns nothing.
          */
-        showInfo () {
-            this.addSingleAlert({
+        openManual () {
+            /* this.addSingleAlert({
                 category: "Info",
                 content: Info
-            });
+            });*/
+
+            window.open(this.readmeUrl[this.currentLocale], "_blank");
         },
         /**
          * @description Checks if the user selected a summable statistical data set (feature).
@@ -597,7 +591,6 @@ export default {
                     });
                 }
             });
-
             return featureDataList;
         },
         /**
@@ -614,6 +607,9 @@ export default {
 
             this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
         },
+        exportAsXlsx () {
+            exportXlsx(this.resultData, this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
+        },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
          * @returns {void}
@@ -628,7 +624,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: result[this.columnSelector.key]
+                            data: result[this.columnSelector.key].toLocaleString("de-DE")
                         };
 
                         prepareData.push(data);
@@ -652,7 +648,7 @@ export default {
                     id: "calcratio",
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
                     type: ["LineChart", "BarChart"],
-                    color: "green",
+                    color: "rainbow",
                     source: "Versorgungsanalyse",
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
@@ -721,7 +717,7 @@ export default {
                     <button
                         class="info_button"
                         :title="$t('additional:modules.tools.cosi.calculateRatio.infoTooltip')"
-                        @click="showInfo()"
+                        @click="openManual()"
                     >
                         <span class="glyphicon glyphicon-question-sign" />
                     </button>
@@ -773,6 +769,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                                 @input="getFacilityData('A')"
                             >
                                 <template
@@ -797,6 +797,9 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
                                 @input="checkSumUp('A')"
                             >
                                 <template slot="singleLabel">
@@ -851,6 +854,10 @@ export default {
                                         select-label=""
                                         deselect-label=""
                                         placeholder=""
+                                        :toggle-select-option="false"
+                                        :allow-empty="false"
+                                        :close-on-select="true"
+                                        :clear-on-select="true"
                                     >
                                         <template slot="singleLabel">
                                             <strong>{{ paramFieldA.name }}</strong>
@@ -909,6 +916,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                                 @input="getFacilityData('B')"
                             >
                                 <template slot="singleLabel">
@@ -931,6 +942,9 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
                                 @input="checkSumUp('B')"
                             >
                                 <template slot="singleLabel">
@@ -987,6 +1001,10 @@ export default {
                                         select-label=""
                                         deselect-label=""
                                         placeholder=""
+                                        :toggle-select-option="false"
+                                        :allow-empty="false"
+                                        :close-on-select="true"
+                                        :clear-on-select="true"
                                     >
                                         <template slot="singleLabel">
                                             <strong>{{ paramFieldB.name }}</strong>
@@ -1044,18 +1062,14 @@ export default {
                         class="data_table"
                     >
                         <div class="head_wrapper">
-                            <JsonExcel
+                            <button
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip')"
                                 class="btn btn-default xl_btn"
-                                :data="resultData.json_data"
-                                :fields="resultData.json_fields"
-                                worksheet="Versorgungsanalyse"
-                                :name="selectedYear + '_versorgungsanalyse.xlsx'"
+                                @click="exportAsXlsx"
                             >
                                 <span class="glyphicon glyphicon-download" />
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
-                            </JsonExcel>
-
+                            </button>
                             <button
                                 class="btn btn-default xl_btn"
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')"
@@ -1086,6 +1100,10 @@ export default {
                                 select-label=""
                                 deselect-label=""
                                 placeholder=""
+                                :toggle-select-option="false"
+                                :allow-empty="false"
+                                :close-on-select="true"
+                                :clear-on-select="true"
                             >
                                 <template slot="singleLabel">
                                     <span><strong>{{ columnSelector.name }}</strong></span>
@@ -1122,6 +1140,9 @@ export default {
                                     select-label=""
                                     deselect-label=""
                                     placeholder=""
+                                    :toggle-select-option="false"
+                                    :close-on-select="true"
+                                    :clear-on-select="true"
                                     @input="recalcData()"
                                 >
                                     <template slot="singleLabel">
@@ -1181,18 +1202,20 @@ export default {
 
             .button {
                 flex-basis:30%;
-                background: #222;
+                background:linear-gradient(180deg, #eee, #ddd);
+                border-radius:5px;
                 margin: 0px 5px 5px 0px;
 
                 button {
                     background: transparent;
                     border:none;
-                    color:whitesmoke;
+                    color:#222;
                     font-size:90%;
                 }
 
                 &:hover {
-                    background:#666;
+                    background:#ccc;
+                    cursor:pointer;
                 }
             }
             .selection {
@@ -1228,6 +1251,8 @@ export default {
                                 height:40px;
                                 font-size:70%;
                                 font-weight:700;
+                                border:1px solid #ccc;
+                                border-radius:5px;
                             }
 
                             &.reduced {

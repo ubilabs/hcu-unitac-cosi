@@ -7,6 +7,7 @@ import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
 import {scaleLinear} from "d3-scale";
 import {color, hsl} from "d3-color";
+import {interpolateRainbow} from "d3";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
@@ -296,6 +297,39 @@ export default {
          * @returns {Array} ColorScale Array.
          */
         generateColorScale (dataSet) {
+
+            if (Array.isArray(dataSet.color)) {
+                const domainRange = [0];
+
+                dataSet.color.map(incColor => hsl(incColor));
+                dataSet.color.forEach((incColor, index) => {
+                    if (index < (dataSet.color.length - 2)) {
+                        domainRange.push(dataSet.data.dataSets.length / (index + 2));
+                    }
+                });
+
+                domainRange.push(dataSet.data.dataSets.length);
+                domainRange.sort();
+                return scaleLinear().domain(domainRange).range(dataSet.color);
+            }
+            else if (dataSet.color === "rainbow") {
+                const range = [],
+                    domainRange = [];
+
+                dataSet.data.dataSets.forEach((set, index) => {
+                    domainRange.push(index);
+                });
+
+                dataSet.data.dataSets.forEach((set, index) => {
+                    const indexValue = (index + 1) / dataSet.data.dataSets.length,
+                        rainbowColor = interpolateRainbow(indexValue).toString();
+
+                    range.push(rainbowColor);
+                });
+
+                return scaleLinear().domain(domainRange).range(range);
+            }
+
             const d3Color = hsl(dataSet.color);
             let colorA = "",
                 colorB = "",
@@ -490,7 +524,7 @@ export default {
                                             class="switch_btn"
                                             :class="{highlight: graph.sub_graph === i}"
                                             :style="{backgroundImage: 'url(' + require('../assets/' + type + '.png') + ')'}"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.switchChartType')"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.' + type + '') + $t('additional:modules.tools.cosi.chartGenerator.switchChartType')"
                                             @click="changeGraph(graph, i)"
                                         >
                                             <!-- {{ type }} -->
@@ -613,13 +647,6 @@ export default {
             height:400px !important;
         }
 
-        .info_button {
-            display:block;
-            width:30px;
-            height:30px;
-            background:#eee;
-            margin:0px 0px 0px auto;
-        }
         #chart_panel {
             .graph {
                     display:none;
