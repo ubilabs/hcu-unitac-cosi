@@ -21,7 +21,8 @@
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
                     "abort": "abort",
-                    "scoresDialogTitle": "Composition"
+                    "scoresDialogTitle": "Composition",
+                    "scoresDialogHistogramTitle": "Distribution of scores"
                 }
             }
         }

@@ -43,11 +43,16 @@ export function createHistogram (values, bin_count, width, height) {
  */
 function createSvg (id, x, y, bins, width, height, margin) {
     const svg = d3
-        .select(id)
+        .select(id);
+
+    svg.selectAll("*").remove();
+
+    svg
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
     svg
         .append("g")
@@ -85,20 +90,36 @@ export default {
     },
 
     data: () => ({}),
+    computed: {
+        allProps () {
+            return [this.values, this.binCount, this.width, this.height, this.margin].join();
+        }
+    },
+    watch: {
+        allProps () {
+            this.render();
+        }
+    },
     mounted () {
-        const values = this.values,
-            margin = {
-                top: this.margin,
-                right: this.margin,
-                bottom: this.margin,
-                left: this.margin
-            },
-            width = this.width - margin.left - margin.right,
-            height = this.height - margin.top - margin.bottom,
+        this.render();
+    },
+    methods: {
+        render () {
 
-            {x, y, bins} = createHistogram(values, this.binCount, width, height);
+            const values = this.values,
+                margin = {
+                    top: this.margin,
+                    right: this.margin,
+                    bottom: this.margin,
+                    left: this.margin
+                },
+                width = this.width - margin.left - margin.right,
+                height = this.height - margin.top - margin.bottom,
 
-        createSvg("#chart", x, y, bins, width, height, margin);
+                {x, y, bins} = createHistogram(values, this.binCount, width, height);
+
+            createSvg("#chart", x, y, bins, width, height, margin);
+        }
     }
 };
 </script>

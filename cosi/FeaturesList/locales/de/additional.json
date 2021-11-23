@@ -25,7 +25,8 @@
                     "abort": "Abbrechen",
                     "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
                     "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
-                    "scoresDialogTitle": "Zusammensetzung"
+                    "scoresDialogTitle": "Zusammensetzung",
+                    "scoresDialogHistogramTitle": "Verteilung der Bewertungen"
                 }
             }
         }

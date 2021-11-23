@@ -5,6 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import FeaturesList from "../../../components/FeaturesList.vue";
+import ScoreValues from "../../../components/ScoreValues.vue";
 import FeaturesListStore from "../../../store/indexFeaturesList";
 import DetailView from "../../../components/DetailView.vue";
 import {expect} from "chai";
@@ -376,12 +377,23 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("should set scored for dialog", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]),
-                item = {weightedDistanceScores: {"1234": {value: 1.0}, score: 1}};
+            // arrange
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const feature = createFeature(),
+                wrapper = await mountComponent(true, [createLayer(feature)]);
 
-            wrapper.vm.showInfo(item);
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+
+            // act
+            wrapper.vm.showInfo(wrapper.vm.items[0]);
+
+            // assert
+            expect(wrapper.vm.allScores).to.be.eql([1]);
             expect(wrapper.vm.showScoresDialog).be.true;
-            expect(wrapper.vm.currentScores).to.be.eql(item.weightedDistanceScores);
+            expect(wrapper.vm.currentScores).to.be.eql(wrapper.vm.items[0].weightedDistanceScores);
+
+            expect(wrapper.findComponent(ScoreValues).exists()).to.be.true;
         });
 
         it("should show distance score features", async () => {
