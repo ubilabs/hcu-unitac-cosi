@@ -1,5 +1,4 @@
 <script>
-// import {interpolate} from "../../utils/math";
 import {getTrendStyle, getTrend} from "../utils/trends";
 
 export default {
@@ -16,6 +15,10 @@ export default {
         timestampPrefix: {
             type: String,
             default: "jahr_"
+        },
+        locale: {
+            type: String,
+            default: "de-DE"
         }
     },
     computed: {
@@ -46,7 +49,9 @@ export default {
                 mdi-arrow-right
             </v-icon>
         </template>
-        <span>{{ ((dy - 1) * 100).toLocaleString("de-DE") }}%</span>
+        <span>
+            <small>{{ ((dy - 1) * 100).toLocaleString(locale) }}%</small>
+        </span>
     </v-tooltip>
 </template>
 

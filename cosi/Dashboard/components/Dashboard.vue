@@ -607,6 +607,7 @@ export default {
                                                     :item="item"
                                                     :header="header"
                                                     :timestamp-prefix="timestampPrefix"
+                                                    :locale="currentLocale"
                                                 />
                                                 <template v-if="item.expanded">
                                                     <ul class="timeline">
