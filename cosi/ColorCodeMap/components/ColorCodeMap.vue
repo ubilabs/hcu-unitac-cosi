@@ -641,7 +641,7 @@ export default {
         </div>
         <div class="hovermenu">
             <div class="btn_grp">
-                <ToolInfo :url="readmeUrl[currentLocale]" class="ccm_info_button"/>
+                <ToolInfo :url="readmeUrl[currentLocale]" class="ccm_info_button" />
                 <div
                     v-if="visualizationState && !minimize"
                     class="field"

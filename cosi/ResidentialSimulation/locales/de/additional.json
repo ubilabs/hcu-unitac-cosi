@@ -32,7 +32,7 @@
                     "createFeature": "Anlegen",
                     "createFeatureHelp": "Wohnquartier anlegen - Statistische Daten werden dem umliegenden Gebiet zugerechnet",
                     "resetFeature": "Zurücksetzen",
-                    "editFeature": "Wohnquartier bearbeiten",
+                    "editFeature": "Wohnquartier löschen?",
                     "dateOfCompletion": "Jahr der Fertigstellung"
                 }
             }

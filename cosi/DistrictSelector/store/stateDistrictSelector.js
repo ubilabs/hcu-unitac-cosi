@@ -43,8 +43,8 @@ const state = {
     loadend: false,
     mapping: MappingJson,
     readmeUrl: {
-        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/districtselector.md",
-        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/gebietsauswahl.md"
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/districtselector.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/gebietsauswahl.md"
     }
 };
 

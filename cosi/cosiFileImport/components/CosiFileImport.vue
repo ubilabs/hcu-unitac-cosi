@@ -378,7 +378,7 @@ export default {
                 id="tool-file-import"
                 class="importer"
             >
-                <ToolInfo :url="readmeUrl[currentLocale]"/>
+                <ToolInfo :url="readmeUrl[currentLocale]" />
                 <p
                     class="cta"
                     v-html="$t('additional:modules.tools.cosiFileImport.captions.introInfo')"
@@ -468,7 +468,7 @@ export default {
                 class="handler"
                 :class="{expand: importedLayers.length}"
             >
-                <ToolInfo :url="readmeUrl[currentLocale]"/>
+                <ToolInfo :url="readmeUrl[currentLocale]" />
                 <!--New Layer Handling-->
                 <template v-if="imported">
                     <div class="wrapper">
