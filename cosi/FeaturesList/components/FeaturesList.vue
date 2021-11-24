@@ -475,6 +475,10 @@ export default {
             this.$root.$emit("updateFeature");
         },
 
+        searchAllAttributes (value, search, item) {
+            return Object.values(item).some(v=>v && v.toString().toLowerCase().includes(search));
+        },
+
         getNumericalValueColor (item, key, invertColor) {
             const maxVal = Math.max(
                 ...this.items
@@ -730,6 +734,7 @@ export default {
                                 :headers="columns"
                                 :items="items"
                                 :search="search"
+                                :custom-filter="searchAllAttributes"
                                 :expanded.sync="expanded"
                                 multi-sort
                                 item-key="key"

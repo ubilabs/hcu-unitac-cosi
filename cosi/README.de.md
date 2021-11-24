@@ -172,8 +172,8 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
       8. [Vorlagen](#markdown-header-vorlagen)
 
 5. **Dashboard**
-      1. Statistische Datenübersicht
-      2. Einrichtungsübersicht
+      1. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)
+      2. [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)
 6. **[Gebiete auswählen](#markdown-header-gebiete-auswählen)**
 7. **Kontaktformular**
 8. **Legende** (s. Legende)
@@ -435,25 +435,28 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
          Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
 
 ### DIPAS
-Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden.
+Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden. D.h. alle Beiträge können in der [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht) angezeigt, für [Versorgungsanalyse](#markdown-header-versorgungsanalyse), [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Vergleichbare Gebiete Ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln) verwendet und mit dem [Filter](#markdown-header-filter) gefiltert werden.
 
 
 ![Abbildung 12: DIPAS](../cosi/utils/assets/screenshots/dipas.PNG)
 
 *Abbildung 12: DIPAS*
 
-1. **Typ bestimmen**
-   - Mit Klick auf den Button wechseln Sie zwischen Themendatensätzen (hier auch "Einrichtungen") und statistischen Regionaldaten.
-2. **Thema/ Datensatz auswählen**
-   - Wählen Sie das Thema/ den Datensatz aus, den Sie verrechnen möchten.
-3. **Faktor F hinzufügen**
-   - Bei Einrichtungsdatensätzen können Sie einen *Faktor (F)* angeben, der bestimmt, wie viele Einheiten der ausgewählten Einrichtung für den Referenzdatensatz benötigt werden. Wollen Sie beispielsweise die Anzahl der öffentlichen Schulen gegen die Anzahl der Bevölkerung unter 18 Jahren rechnen und geben einen Faktor von 0,001 an, würde das bedeuten, dass eine Schule pro 1000 Mitglieder der Referenzgruppe benötigt wird. Ist ein *Faktor (F)* angegeben, werden die Spalten "Kapazität" und "Bedarf" in der Berechnungstabelle mit angegeben.
-4. **Parameter auswählen** 
-   - Manche Einrichtungsdatensätze haben andere Parameter, als nur ihre Anzahl in den ausgewählten Gebieten. So kann man bei öffentlichen Schulen beispielsweise den Datensatz "Schülerzahl" abfragen oder bei Krankenhäusern die Anzahl der stationären Plätze. Nicht jeder Einrichtungsdatensatz bietet zusätzliche Parameter.
-5. **Auswahl vertauschen**
-   - Mit einem Klick auf diesen Button können Sie Ihre Auswahl von Feld (1) und (2) vertauschen.
-6. **Die gesamte Auswahl zurücksetzen**
-7. **Berechnen**
+1. **Beteiligungsverfahren auswählen**
+   > Für jedes Verfahren aus der DIPAS-Datenbank wird automatisch eine Registerkarte angelegt, welche durchs Anklicken aufgeklappt werden kann. Ein aufgeklapptes Verfahren zeigt dessen Beschreibungstext und die Kontrollfelder für die Visualisierung. Jedem Verfahren wid dabei eine zufällige Farbe zugewiesen.
+2. **Verfahren in der Karte anzeigen**
+   > Zeigt das Verfahrensgebiet als Polygon in der Karte in der jeweiligen Farbe des Verfahrens.
+3. **Einzelne Beiträge in der Karte anzeigen**
+   > Zeigt alle Einzelbeiträge des Verfahrens in der Karte. Das Styling der Beiträge kann unten (s. 5.) festgelegt werden.
+4. **Heatmap in der Karte anzeigen** 
+   > Zeigt eine Heatmap der Beiträge in der Karte. Das Gewicht eines Punktes richtet sich dabei nach der Gesamtzahl der Bewertungen des Beitrags, also der Stärke der Resonanz auf ihn.
+5. **Styling der Beiträge wählen**
+   > - nach Projekt: Alle Beiträge werden gleichmäßig in der Projektfarbe dargestellt.
+   > - nach Kategorien im Projektfarbraum: Jede Kategorie wird in einer Schattierung der Projektfarbe dargestellt.
+   > - nach Kategorien im Regenbogenspektrum: Jeder Kategorie wird eine zufällig Farbe zugewiesen.
+   > - nach Bewertung: Die Beiträge werden abhängig von den positiven- und negativen-Bewertungen dargestellt. Die Größe des Punktes richtet sich dabei nach der Gesamtzahl der Reaktionen, die Farbe nach dem Verhältnis von positiven (grün) und negativen (rot) Bewertungen.
+6. **Beiträge in der Karte**
+   > Alle Beiträge werden mit ihrer ID (einer fortlaufenden Nummer) in der Karte dargestellt.
 
 
 ### Simulation
@@ -685,16 +688,77 @@ ____
 
 *Abbildung 20 - Dashboard*
 
-1. **[Statistische Datenübersicht](#markdown-header-statistischedatenübersicht)**
-2. **[Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)**
+In den Dashboards können komplementär tabellarisch Informationen zu den statistischen Daten der ausgewählten Gebiete ([Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)) bzw. den Einrichtungen der aktiven Fachdaten-Themen ([Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)) angezeigt, ausgewertet und von dort exportiert werden.
 
-*Die Anleitung für dieses Werkzeug befindet sich derzeit in Überarbeitung.*
+1. **[Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)**
+2. **[Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)**
 
 ### Statistische Datenübersicht
 ![Abbildung 21: Statistische Datenübersicht](../cosi/utils/assets/screenshots/statdashboard.png)
 *Abbildung 21 - Statistische Datenübersicht*
 
+1. **Gruppen ein-/ausklappen**
+   > Thematische Gruppen (vgl. [Regionalstatistische Daten](#markdown-header-regionalstatistische-daten)) über das **+** ein- und ausklappen.
+2. **Aktionen**
+   > - s. [Burger-Menü](#markdown-header)
+   > - Visualisierung ein- / ausschalten: Schaltet die Visualisierung des ausgewählten Indikators zum aktuell gewählten Jahr in der Karte ein/aus
+   > - Jahre ein- / ausklappen: Klappt die Tabellenzeile auf um alle Jahre der Zeitreihe darzustellen.
+3. **Jahr auswählen**
+   > Aktuelles Jahr für die Darstellung in Tabelle und Karte auswählen.
+4. **Spalte verschieben**
+   > Mit den Pfeilen links/rechts die Spalte verschieben. Die Trennstriche grenzen die Verwaltungsebenen voneinander ab
+5. **Spalte ein-/ausblenden**
+   > Mit dem Auge kann eine Spalte aus- und eingeblendet werden, um die Tabelle übersichtlicher zu gestalten. Ausgeblendete Spalten werden für Exporte und Diagramme nicht berücksichtigt.
+6. **Aggregationsspalten**
+   > Die letzten zwei Spalten zeigen standardmäßig Durchschnitts- und Gesamtwert für die **ausgewählten Gebiete** (wie in der Karte dargestellt, nur die ausgewählte Verwaltungsebene). Für relative (anteilige) Indikatoren können keine Aggregationen berechnet werden, da der Bezugsrahmen nicht klar ist.
+7. **Spalte auswählen**
+   > Spalten für Export und Diagramm-Erstellung auswählen. Ist keine Spalte ausgewählt werden alle verwendet.
+8. **Zeile auswählen**
+   > Zeilen für Export und Diagramm-Erstellung auswählen. Ist keine Spalte ausgewählt werden alle für den Export bzw. nur die aktuelle für die Diagramme verwendet.
+9. **Trendpfeil**
+   > Der Trendpfeil zeigt das extrapolierte Wachstum für den nächsten Zeitschritt (in % im Tooltip) an. Für die Abschätzung werden die Steigungen der letzten 5 Zeitschritte, gewichtet nach Aktualität, herangezogen. Die Darstellung erhebt **keinen Anspruch** auf Genauigkeit und berücksichtigt keine anderen Werte über die aktuelle Zeitreihe hinaus.
+10. **Themenfilter**
+      > Über den Filter können beliebige Indikatoren (sortiert nach Gruppen) für die Darstellung und den Export ausgewählt werden. Die Liste kann im Freitext durchsucht werden.
+11. **Tabelle exportieren**
+      > Die aktuelle Auswahl (Spalten, Zeilen, Jahre) als XLSX für Excel exportieren. Über aus Auswahlfeld *alle Jahre exportieren* kann die gesamte Zeitreihe für die ausgewählten Spalten und Zeilen exportiert werden. Ist keine Spalte oder Zeile ausgewählt werden alle verwendet.
+12. **Kartenvisualisierung**
+      > Die Darstellung in der Karte entspricht der des Kontrollfeldes [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten).
+
+
 ### Einrichtungsübersicht
+![Abbildung 22: Einrichtungsübersicht](../cosi/utils/assets/screenshots/einrichtungsuebersicht.png)
+*Abbildung 22 - Einrichtungsübersicht*
+
+1. **Detailansicht ein-/ausklappen**
+   > Über den Pfeil können *alle* Attribute einer Einrichtung aufgeklappt werden. Die einzelnen Zeilen der Detailansicht können für den weiteren Export ausgewählt werden.
+2. **Einrichtung auswählen**
+   > Einrichtungen für den Export auswählen. Ausgewählte Einrichtungen werden in der Karte visuell hervorgehoben.
+3. **Einrichtung fokussieren**
+   > Durch einen Klick auf das Symbol zoomt die Karte zu der betreffenden Einrichtungen. Die Einrichtung wird in der Karte visuell hervorgehoben.
+4. **Einrichtung ein-/ausblenden**
+   > Einrichtungen können in der Karte ein- und ausgeschaltet werden. Ausgeschaltete Einrichtungen werden bei allen anderen CoSI-Funktionen nicht berücksichtigt.
+5. **Einrichtungsattribute**
+   > - Einrichtungsname, Adresse, Layer, Typ und Thema werden dem Datensatz direkt entnommen
+   > - Die Gebietszuweisung wird dynamisch für die aktuelle Verwaltungsebene generiert
+   > - Symbole zeigen an, wenn eine Einrichtung simuliert oder modifiziert wurde.
+6. **Numerische Attribute**
+   > Alle Attribute einer Einrichtung, die Zahlwerte abbilden (welche auch für die [Versorgungsanalyse](#markdown-header-versorgungsanalyse) verwendet werden können) werden in einer eigenen Spalte dargestellt. Die Farbe des Balkens richtet sich dabei nach dem Dezil des Wertes in der Liste aller Einrichtungen. Die Länge des Balkens ist proportional zum Höchstwert.
+7. **Einträge sortieren**
+   > Alle Spalten können, durch mehrmaliges Klicken auf die Kopfzeile, auf- und absteigend sortiert werden (alphabetisch oder nach Wert). Dabei kann für max. 2 Spalten erfolgen (z.B. 1. nach Typ und 2. nach numerischem Wert).
+8. **Durchschnittliche Anbindung (in m)**
+   > Die Anbindungsspalte zeigt die durchschnittliche Laufdistanz (in m) zu den jeweils nächstgelegenen Einrichtungen der ausgewählten Typen. Durch einen Klick auf den Wert kann die entsprechende Aufschlüsselung geöffnet werden (s. Standortbewertung).
+9.  **Themenfilter**
+      > Über kann die Tabelle nach Fachdatenlayern gefiltert werden. Die Liste kann im Freitext durchsucht werden.
+10. **Einträge durchsuchen**
+      > Die Tabelle kann nach beliebigen Freitexten durchsucht werden.
+11. **Tabelle exportieren**
+      > Die ausgewählten Einträge als XLSX für Excel exportieren. Über aus Auswahlfeld *Detailansicht exportieren* können alle bzw. in der Detailansicht ausgewählte Attribute eines Einrichtungstyps exportiert werden. Ist keine Auswahl getroffen, werden alle Einrichtungen exportiert.
+12. **Standortbewertung: Themenauswahl**
+   *(Das Werkzeug befindet sich in der Entwicklung)*
+      > Die Darstellung in der Karte entspricht der des Kontrollfeldes.
+13. **Standortbewertung: Gewichtung**
+   *(Das Werkzeug befindet sich in der Entwicklung)*
+      > Die Darstellung in der Karte entspricht der des Kontrollfeldes.
 
 ### Gebietsauswahl
 ___
