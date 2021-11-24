@@ -81,6 +81,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/SaveSession", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
         ...mapGetters("Tools/ResidentialSimulation", {simNeighborhoodLayer: "drawingLayer"}),
@@ -326,7 +327,7 @@ export default {
             >
                 <v-app class="clamp-40vw">
                     <ToolInfo
-                        info-text="Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!"
+                        :url="readmeUrl[currentLocale]"
                     />
                     <v-container class="flex btn-grid">
                         <v-card-title secondary-title>

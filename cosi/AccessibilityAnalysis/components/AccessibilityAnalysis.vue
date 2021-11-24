@@ -82,6 +82,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
         ...mapGetters("Map", ["map", "getOverlayById"]),
@@ -290,7 +291,7 @@ export default {
         >
             <template #toolBody>
                 <v-app>
-                    <ToolInfo :info-text="mode === 'point' ? InfoTemplatePoint : InfoTemplateRegion" />
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <div
                         v-if="active"
                         id="accessibilityanalysis"

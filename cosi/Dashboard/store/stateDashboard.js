@@ -18,7 +18,11 @@ const state = {
     name: "Dashboard",
     renderToWindow: false,
     resizableWindow: true,
-    excludedPropsForExport: ["visualized", "expanded", "years", "groupIndex"]
+    excludedPropsForExport: ["visualized", "expanded", "years", "groupIndex"],
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dashboard_en.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dashboard.md"
+    }
 };
 
 export default state;

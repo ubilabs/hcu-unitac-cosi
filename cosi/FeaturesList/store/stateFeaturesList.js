@@ -38,7 +38,11 @@ const state = {
         "originalData"
     ],
     disabledFeatureItems: [],
-    distanceScoreEnabled: true
+    distanceScoreEnabled: true,
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/featureslist.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/einrichtungsuebersicht.md"
+    }
 };
 
 export default state;

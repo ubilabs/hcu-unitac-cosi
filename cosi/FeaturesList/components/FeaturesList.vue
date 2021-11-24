@@ -20,11 +20,13 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "FeaturesList",
     components: {
         Tool,
+        ToolInfo,
         Multiselect,
         DetailView,
         FeatureIcon,
@@ -590,6 +592,7 @@ export default {
             v-if="active"
             #toolBody
         >
+            <ToolInfo :url="readmeUrl[currentLocale]"/>
             <v-app id="features-list-wrapper">
                 <div class="my-2">
                     <v-btn

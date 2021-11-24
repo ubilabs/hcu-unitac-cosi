@@ -28,7 +28,11 @@ const state = {
     playState: false,
     selectedFeature: "",
     selectedYear: null,
-    chart: false
+    chart: false,
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md"
+    }
 };
 
 export default state;

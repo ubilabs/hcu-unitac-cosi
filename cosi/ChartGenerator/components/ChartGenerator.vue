@@ -14,11 +14,13 @@ import BarChart from "./charts/BarChart.vue";
 import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import Info from "text-loader!./info.html";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "ChartGenerator",
     components: {
         Tool,
+        ToolInfo,
         LineChart,
         BarChart,
         PieChart,
@@ -43,6 +45,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
     },
     watch: {
@@ -507,13 +510,7 @@ export default {
                 v-if="active"
                 id="chart_generator"
             >
-                <button
-                    class="info_button"
-                    :title="$t('additional:modules.tools.cosi.chartGenerator.infoTooltip')"
-                    @click="showInfo()"
-                >
-                    <span class="glyphicon glyphicon-question-sign" />
-                </button>
+                <ToolInfo :url="readmeUrl[currentLocale]"/>
                 <div
                     id="chart_panel"
                     class="wrapper"
