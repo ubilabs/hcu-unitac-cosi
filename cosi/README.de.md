@@ -154,6 +154,7 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
       4. [Filter](#markdown-header-filter)
       5. Strecke/ Fläche messen
       6. [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+      7. [DIPAS](#markdown-header-dipas)
 
 3. **Simulationsfunktionen**
       1. [Einrichtungen anlegen](#markdown-header-einrichtungen-anlegen)
@@ -254,7 +255,7 @@ ___
 5. **[Strecke / Fläche messen](#markdown-header-strecke-/-flaeche-messen)**
 6. **[Versorgungsanalyse](#markdown-header-versorgungsanalyse)**
    > Verhältnis zwischen Einrichtungen (Fachdaten) und Zielgruppen (StaNord-Daten) im Gebiet ermitteln
-7. **DIPAS**
+7. **[DIPAS](#markdown-header-dipas)**
    > (In Entwicklung)  
   
 ### Einwohnerabfrage

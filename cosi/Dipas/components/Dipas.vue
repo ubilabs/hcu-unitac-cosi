@@ -412,6 +412,7 @@ export default {
         >
             <template #toolBody>
                 <v-app class="clamp-600px">
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <div
                         v-if="active"
                         id="dipas"
