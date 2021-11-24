@@ -33,6 +33,8 @@ export default {
                     displayClass: "info"
                 });
             }
+
+            return null;
         }
     }
 };

@@ -83,6 +83,8 @@ ___
       - [Numerische Werte](#numerische-werte)
     - [Zweites Fenster](#zweites-fenster)
     - [Dashboard](#dashboard)
+    - [Statistische Datenübersicht](#statistische-datenübersicht)
+    - [Einrichtungsübersicht](#einrichtungsübersicht)
     - [Gebietsauswahl](#gebietsauswahl)
     - [Kartenanalyse regionalstatistischer Daten](#kartenanalyse-regionalstatistischer-daten)
     - [Chartgenerator](#chartgenerator)
@@ -164,7 +166,8 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
       4. [Geodaten Importieren](#markdown-header-geodaten-importieren)
       5. WMS hinzufügen
       6. [Zweites Fenster öffnen](#markdown-header-zweites-fenster)
-      7. Sitzung speichern/ laden
+      7. [Sitzung speichern/laden](#markdown-header-sitzung-speichern)
+      8. [Vorlagen](#markdown-header-vorlagen)
 
 5. **Dashboard**
       1. Statistische Datenübersicht
@@ -564,10 +567,7 @@ Zur besseren Verständlichkeit des Werkzeugs wird im Folgenden einmal Schritt f�
 
 ### Dienste
 ___
-![Abbildung 13 - Dienste](https://user-images.githubusercontent.com/43250699/142929329-caca93bf-aee3-4a5d-838e-cff33bca5502.png)
-
-1.
-
+![Abbildung 13: Dienste](https://user-images.githubusercontent.com/43250699/142929329-caca93bf-aee3-4a5d-838e-cff33bca5502.png)
 *Abbildung 13 - Dienste*
 
 1. **Zeichnen/ Schreiben**
@@ -579,10 +579,11 @@ ___
 5. **WMS hinzufügen**
    > Beliebige andere Kartendienste können aus dem FHH-Atlas oder anderen Quellen über die Webadresse (URL) des Dienstes eingebunden werden. Die URLs entnehmen Sie z.B. dem Metadatenkatalog der FHH oder dem Geoportal unter dem Info-Button im Themenbaum (s. Themenbaum).
 6. **[Zweites Fenster öffnen](#markdown-header-zweites-fenster-öffnen)**
-7. **Sitzung speichen/ laden**
+7. **[Sitzung speichen / laden](#markdown-header-sitzung-speichern)**
    > Die aktuelle Sitzung mit aktiven Daten, gewählten Gebieten und Filtern speichern. Sitzungen können im Browser gespeichert werden. Diese können beim Programmstart wieder aus dem Verlauf geladen werden.
    Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.   
    Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
+8. **[Vorlagen](#markdown-header-vorlagen)**
 
    >*Hinweis: Manuell hinzugefügte Kartendienste (WMS) und erstellte Berechnungen bleiben nicht erhalten. Das Speichern aller Arbeitsergebnisse ist Teil des aktuell laufenden Weiterentwicklungsprojekts.*
 
@@ -657,8 +658,20 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
 
 ### Dashboard
 ____
+![Abbildung 20: Dienste](../cosi/utils/assets/screenshots/dashboardmenu.png)
+
+*Abbildung 20 - Dashboard*
+
+1. **[Statistische Datenübersicht](#markdown-header-statistischedatenübersicht)**
+2. **[Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)**
 
 *Die Anleitung für dieses Werkzeug befindet sich derzeit in Überarbeitung.*
+
+### Statistische Datenübersicht
+![Abbildung 21: Statistische Datenübersicht](../cosi/utils/assets/screenshots/statdashboard.png)
+*Abbildung 21 - Statistische Datenübersicht*
+
+### Einrichtungsübersicht
 
 ### Gebietsauswahl
 ___
@@ -669,7 +682,7 @@ Beim Starten von CoSI wird zunächst ein Bezugsrahmen festgelegt sowie ein Planu
 *Abbildung 22: Das Werkzeug "Gebiet auswählen"*  
 
 1. **Bezugsrahmen wählen**
-   > Über ein Dropdown Menü können **"Bezirke"**, **"Stadtteile"** oder **"Statistische Gebiete"** ausgewählt werden – dies legt die Verwaltungseinheit fest, für die die statistischen Daten angezeigt und Auswertungen erstellt werden sollen. Alle Funktionen sind auf den jeweiligen Gebietsebenen verfügbar. Die Zahl der verfügbaren Indikatoren kann jedoch variieren. Der Bezugsrahmen bestimmt auch die zu ladenden übergeordneten Referenzgebiete: Stadtteile für stat. Gebiete, Bezirke für Stadtteile.
+   > Über ein Dropdown Menü können **"Hamburg"**, **"Bezirke"**, **"Stadtteile"** oder **"Statistische Gebiete"** ausgewählt werden – dies legt die Verwaltungseinheit fest, für die die statistischen Daten angezeigt und Auswertungen erstellt werden sollen. Alle Funktionen sind auf den jeweiligen Gebietsebenen verfügbar. Die Zahl der verfügbaren Indikatoren kann jedoch variieren. Der Bezugsrahmen bestimmt auch die zu ladenden übergeordneten Referenzgebiete: Stadtteile für stat. Gebiete, Bezirke für Stadtteile.
 2. **2.	Gebiete aus- und abwählen**
     - Die einzelnen Verwaltungseinheiten (statistisches Gebiet oder Stadtteil) anklicken (nochmaliges Klicken deaktiviert die Auswahl wieder), die Grenzen werden blau markiert. 
     - Auf dem Stift rechts neben "Auswahl zurücksetzen" klicken. Es wird ein Zeichentool aktiviert; damit kann der Nutzende ein Rechteck über das Auswahlgebiet ziehen um dieses auszuwählen.
