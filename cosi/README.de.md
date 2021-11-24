@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-# CoSI
-# Cockpit Städtische Infrakstrukturen
-#### GIS + datenbasierte Analyse- & Planungstools in der Hamburger Stadtverwaltung
-=======
 # CoSI 
 ___
 ## Cockpit Städtische Infrakstrukturen
 ___
 #### GIS + datenbasierte Analyse- und Planungstools in der Hamburger Stadtverwaltung
->>>>>>> cosi-prod
 
 
 ### Nutzerhandbuch
@@ -43,36 +37,55 @@ Um die technischen und inhaltlichen Anforderungen des Initialisierungs-Projekts 
 
 ## Inhalt
 ___
-- [Datenmodell & -Infrastruktur](#markdown-header-datenmodell---infrastruktur)
-   - [Regionalstatistische Daten](#markdown-header-regionalstatistische-daten)
-      - [Fachdaten](#markdown-header-fachdaten)
-      - [Analyse](#markdown-header-analyse)
-      - [Darstellung](#markdown-header-darstellung)
-      - [Geodienste](#markdown-header-geodienste)
-      - [WMS](#markdown-header-wms)
-      - [WFS](#markdown-header-wfs)
-   - [Module](#markdown-header-module)
-      - [Überblick](#markdown-header-überblick)
-      - [Themen (Layer)](#markdown-header-themen-layer)
-      - [Analyse](#markdown-header-analyse-1)
-         - [Einwohnerabfrage](#markdown-header-einwohnerabfrage)
-         - [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse)
-            - [Ab einem Referenzpunkt](#markdown-header-erreichbarkeit-ab-einem-referenz-punkt)
-            - [Im Gebiet](#markdown-header-erreichbarkeit-im-gebiet)
-         - [Vergleichbare Gebiete ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln)
-         - [Filter](#markdown-header-filter)
-         - [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
-      - [Simulation](#markdown-header-simulation)
-         - [Szenario Manager](#markdown-header-szenario-manager)
-         - [Einrichtungen erstellen](#markdown-header-einrichtungen-erstellen)
-         - [Wohnungsbauquartiere anlegen](#markdown-header-wohungsbauquartiere-anlegen)
-      - [Dienste](#markdown-headerdienste)
-         - [Geodaten importieren](#markdown-header-geodaten-importieren)
-         - [Zweites Fenster](#markdown-header-zweites-fenster)
-   - [Dashboard](#markdown-header-dashboard)
-   - [Gebietsauswahl](#markdown-header-gebietsauswahl)
-   - [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)
-   - [Chartgenerator](#markdown-header-chartgenerator)
+- [CoSI](#cosi)
+  - [Cockpit Städtische Infrakstrukturen](#cockpit-städtische-infrakstrukturen)
+      - [GIS + datenbasierte Analyse- und Planungstools in der Hamburger Stadtverwaltung](#gis--datenbasierte-analyse--und-planungstools-in-der-hamburger-stadtverwaltung)
+  - [### Nutzerhandbuch](#-nutzerhandbuch)
+      - [2. Phase (Weiterentwicklung)](#2-phase-weiterentwicklung)
+    - [Version 2.0](#version-20)
+      - [Zur Internen Nutzung](#zur-internen-nutzung)
+    - [Autoren](#autoren)
+    - [Stand](#stand)
+    - [Keywords](#keywords)
+  - [Zusammenfassung](#zusammenfassung)
+  - [Inhalt](#inhalt)
+  - [Datenmodell & -Infrastruktur](#datenmodell---infrastruktur)
+    - [Regionalstatistische Daten](#regionalstatistische-daten)
+    - [Fachdaten](#fachdaten)
+    - [Analyse](#analyse)
+    - [Darstellung](#darstellung)
+    - [Geodienste](#geodienste)
+    - [WMS](#wms)
+    - [WFS](#wfs)
+  - [Module](#module)
+    - [Überblick](#überblick)
+    - [Themen (Layer)](#themen-layer)
+    - [Analyse](#analyse-1)
+    - [Einwohnerabfrage](#einwohnerabfrage)
+    - [Erreichbarkeitsanalyse](#erreichbarkeitsanalyse)
+      - [Erreichbarkeit ab einem Referenzpunkt](#erreichbarkeit-ab-einem-referenzpunkt)
+      - [Erreichbarkeit im Gebiet](#erreichbarkeit-im-gebiet)
+    - [Vergleichbare Gebiete ermitteln](#vergleichbare-gebiete-ermitteln)
+    - [Filter](#filter)
+    - [Versorgungsanalyse](#versorgungsanalyse)
+    - [Simulation](#simulation)
+    - [Einrichtungen anlegen](#einrichtungen-anlegen)
+      - [Szenario Manager](#szenario-manager)
+      - [Schrittweises Vorgehen](#schrittweises-vorgehen)
+    - [Wohnungsbauquartiere anlegen](#wohnungsbauquartiere-anlegen)
+        - [**Die Parameter in den Feldern passen sich der gezeichneten Fläche an:**](#die-parameter-in-den-feldern-passen-sich-der-gezeichneten-fläche-an)
+      - [Schrittweises Vorgehen](#schrittweises-vorgehen-1)
+    - [Dienste](#dienste)
+    - [Geodaten Importieren](#geodaten-importieren)
+      - [Styling](#styling)
+      - [Einrichtungsdaten](#einrichtungsdaten)
+      - [Filterdaten](#filterdaten)
+      - [Numerische Werte](#numerische-werte)
+    - [Zweites Fenster](#zweites-fenster)
+    - [Dashboard](#dashboard)
+    - [Gebietsauswahl](#gebietsauswahl)
+    - [Kartenanalyse regionalstatistischer Daten](#kartenanalyse-regionalstatistischer-daten)
+    - [Chartgenerator](#chartgenerator)
 
 ## Datenmodell & -Infrastruktur
 ___
