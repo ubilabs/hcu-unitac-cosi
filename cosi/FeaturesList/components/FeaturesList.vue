@@ -49,6 +49,7 @@ export default {
             showScoresDialog: false,
             layerWeights: {},
             currentScores: {},
+            allScores: [],
             selectedLayers: [],
             search: "",
             layerFilter: [],
@@ -595,6 +596,9 @@ export default {
         },
         showInfo (item) {
             this.currentScores = item.weightedDistanceScores;
+            this.allScores = this.items
+                .filter(i=>!isNaN(i.weightedDistanceScores.score))
+                .map(i=>i.weightedDistanceScores.score);
             this.showScoresDialog = true;
         },
         showDistanceScoreFeatures () {
@@ -729,7 +733,10 @@ export default {
                                 show-select
                                 show-expand
                                 :items-per-page="10"
-                                :items-per-page-text="$t('additional:modules.tools.cosi.featuresList.itemsPerPage')"
+                                :footer-props="{
+                                    itemsPerPageText: $t('additional:modules.tools.cosi.featuresList.itemsPerPage'),
+                                    itemsPerPageAllText: $t('additional:modules.tools.cosi.featuresList.itemsPerPageAll')
+                                }"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -874,7 +881,9 @@ export default {
                 <ScoreValues
                     v-model="showScoresDialog"
                     :label="$t('additional:modules.tools.cosi.featuresList.scoresDialogTitle')"
+                    :hist-label="$t('additional:modules.tools.cosi.featuresList.scoresDialogHistogramTitle')"
                     :scores="currentScores"
+                    :all-scores="allScores"
                     :layers="selectedFeatureLayers"
                 />
             </v-app>

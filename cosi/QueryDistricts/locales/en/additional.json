@@ -26,7 +26,8 @@
                     "selectedDistrictNotAvailable": "Reference value invalid for selected district",
                     "selectQuotientLayer": "Quotient",
                     "selectProperty": "Attribute",
-                    "rowsPerPage": "rows per page",
+                    "rowsPerPage": "Rows per page",
+                    "rowsPerPageAll": "All",
                     "exportTable": "export table",
                     "exportFilename": "CoSI_query_districts",
                     "invalidFeaturesWarning": "There are districts without valid results for this filter."
