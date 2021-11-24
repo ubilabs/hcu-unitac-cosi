@@ -21,7 +21,11 @@ const state = {
     templatePath: "./assets/templates",
     templateFiles: [
         "Erhaltungsmanagement_Spielplaetze"
-    ]
+    ],
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/templates.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/vorlagen.md"
+    }
 };
 
 export default state;

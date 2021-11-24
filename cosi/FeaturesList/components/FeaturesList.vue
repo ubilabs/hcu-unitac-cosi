@@ -30,11 +30,13 @@ import
     Circle
 } from "ol/style.js";
 import Feature from "ol/Feature";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "FeaturesList",
     components: {
         Tool,
+        ToolInfo,
         Multiselect,
         DetailView,
         FeatureIcon,
@@ -663,6 +665,7 @@ export default {
             v-if="active"
             #toolBody
         >
+            <ToolInfo :url="readmeUrl[currentLocale]"/>
             <v-app id="features-list-wrapper">
                 <div class="my-2">
                     <v-btn

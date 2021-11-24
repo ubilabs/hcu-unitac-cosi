@@ -14,11 +14,13 @@ import BarChart from "./charts/BarChart.vue";
 import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import Info from "text-loader!./info.html";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "ChartGenerator",
     components: {
         Tool,
+        ToolInfo,
         LineChart,
         BarChart,
         PieChart,
@@ -28,6 +30,8 @@ export default {
         return {
             // All dataSets that have been passed to the component
             dataSets: [],
+            // All generated Chart components and data sets
+            allCharts: [],
             // The ID of the active Graph in the ChartGenerator Tool Winodw
             activeGraph: 0,
             // Type Of The Graph to render
@@ -41,6 +45,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
     },
     watch: {
@@ -54,9 +59,11 @@ export default {
                 const index = this.dataSets.indexOf(checkDouble);
 
                 this.dataSets.splice(index, 1);
+                dataSet.init = this.dataSets.length;
                 this.dataSets.push(dataSet);
             }
             else {
+                dataSet.init = this.dataSets.length;
                 this.dataSets.push(dataSet);
             }
             if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
@@ -133,6 +140,7 @@ export default {
                 const dataClone = JSON.parse(JSON.stringify(dataSet));
 
                 dataClone.type = type;
+                dataClone.init = dataSet.init;
                 dataClone.sub = true;
                 dataClone.sub_index = i;
                 dataClone.sub_length = dataSet.type.length;
@@ -178,6 +186,9 @@ export default {
                 // Extend Component dynamically
                 DynamicComponent = Vue.extend(this.$options.components[this.newType]),
                 dynamicComponentInstance = new DynamicComponent({propsData: {dataSets: dataSet, options: dataSet.options}});
+
+            dataSet.component = dynamicComponentInstance;
+            this.allCharts.push(dataSet);
 
             if (target !== null) {
                 if (!dataSet.sub) {
@@ -394,6 +405,18 @@ export default {
             }
         },
         /**
+         * @description Updates chart canvas to display yAxes starting from zero or reverse.
+         * @param {Int} index Index of the main dataset.
+         * @param  {Int} subindex Index of the sub graph in main dataset (if there are different types of graphs in the maindataset)
+         * @returns {Void} Function returns nothing.
+         */
+        yToZero (index, subindex) {
+            let chartComponent = {};
+            // eslint-disable-next-line
+            subindex >= 0 ? chartComponent = this.allCharts.find(dataSet => (dataSet.init === index && dataSet.sub_index === subindex)) : chartComponent = this.allCharts.find(dataSet => dataSet.init === index);
+            chartComponent.beginAtZero = !chartComponent.beginAtZero;
+        },
+        /**
          * @description Turns closest Canvas to PNG and passes it the download function.
          * @param {$event} event Click event handler.
          * @returns {Void} Function returns nothing.
@@ -487,13 +510,7 @@ export default {
                 v-if="active"
                 id="chart_generator"
             >
-                <button
-                    class="info_button"
-                    :title="$t('additional:modules.tools.cosi.chartGenerator.infoTooltip')"
-                    @click="showInfo()"
-                >
-                    <span class="glyphicon glyphicon-question-sign" />
-                </button>
+                <ToolInfo :url="readmeUrl[currentLocale]"/>
                 <div
                     id="chart_panel"
                     class="wrapper"
@@ -557,6 +574,14 @@ export default {
                                                 />
                                                 <div class="graph_functions">
                                                     <button
+                                                        v-if="type === 'LineChart'"
+                                                        class="switch right"
+                                                        :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
+                                                        @click="yToZero(index, -1)"
+                                                    >
+                                                        {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
+                                                    </button>
+                                                    <button
                                                         class="dl right"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
                                                         @click="downloadGraph($event)"
@@ -572,6 +597,14 @@ export default {
 
                                 <template v-if="!Array.isArray(graph.type)">
                                     <div class="graph_functions">
+                                        <button
+                                            v-if="type === 'LineChart'"
+                                            class="switch right"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
+                                            @click="yToZero(index, i)"
+                                        >
+                                            {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
+                                        </button>
                                         <button
                                             class="dl right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
@@ -740,10 +773,14 @@ export default {
                         }
 
                         .graph_functions {
+                            display:flex;
+                            flex-flow:row wrap;
+                            justify-content: flex-end;
                             margin-bottom:10px;
-                            .dl {
+
+                            .dl, .switch {
                                 display:block;
-                                margin:5px 0px 5px auto;
+                                margin:6px 3px;
                                 height:26px;
                                 padding:0px 10px;
                                 border:1px solid #888;

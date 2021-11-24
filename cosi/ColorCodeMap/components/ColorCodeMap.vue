@@ -9,10 +9,12 @@ import Info from "text-loader!./info.html";
 import {generateColorScale} from "../../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "ColorCodeMap",
     components: {
+        ToolInfo,
         Multiselect
     },
     data () {
@@ -639,13 +641,7 @@ export default {
         </div>
         <div class="hovermenu">
             <div class="btn_grp">
-                <button
-                    class="info_button"
-                    :title="$t('additional:modules.tools.colorCodeMap.infoTooltip')"
-                    @click="showInfo()"
-                >
-                    <span class="glyphicon glyphicon-question-sign" />
-                </button>
+                <ToolInfo :url="readmeUrl[currentLocale]" class="ccm_info_button"/>
                 <div
                     v-if="visualizationState && !minimize"
                     class="field"
@@ -720,6 +716,19 @@ export default {
             .drop_shadow();
 
             .btn_grp {
+                .ccm_info_button {
+                    background:transparent;
+                    display: inline-block !important;
+
+                    ::v-deep .v_btn {
+                        border-radius:0px !important;
+                        margin: 2px !important;
+                    }
+
+                    ::v-deep .v-divider {
+                        display:none;
+                    }
+                }
 
                 button {
                     width:26px;
@@ -1017,9 +1026,9 @@ export default {
                 width:152px;
                 .btn_grp {
                     button {
-                        margin:2px;
-                        &.info_button {
-                            display: inline-block;
+                        margin:2px !important;
+                        &.ccm_info_button {
+                            display: inline-block !important;
                         }
                     }
                 }

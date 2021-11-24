@@ -16,11 +16,13 @@ import composeFilename from "../../utils/composeFilename";
 import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import StatsTrend from "./StatsTrend.vue";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "Dashboard",
     components: {
         Tool,
+        ToolInfo,
         TableRowMenu,
         DashboardToolbar,
         StatsTrend
@@ -459,6 +461,7 @@ export default {
                 absolute
             >
                 <v-main>
+                    <ToolInfo :url="readmeUrl[currentLocale]"/>
                     <v-container fluid>
                         <DashboardToolbar
                             :stats-feature-filter="statsFeatureFilter"
