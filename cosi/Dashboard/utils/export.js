@@ -1,5 +1,5 @@
 import {renameKeys, replaceValues} from "../../utils/modifyObject.js";
-// import beautifyKey from "../../../../src/utils/beautifyKey";
+import {getTotal, getAverage} from "../utils/operations";
 
 const
     keyMap = {
@@ -7,7 +7,9 @@ const
         group: "Gruppe",
         valueType: "Datentyp",
         timestamp: "Jahr",
-        hamburg_gesamt: "Hamburg gesamt"
+        hamburg_gesamt: "Hamburg gesamt",
+        total: "Gesamt",
+        average: "Durchschnitt"
     },
     valuesMap = {
         absolute: "absolut",
@@ -17,11 +19,12 @@ const
 /**
  * Prepares the table data for an XLSX export, just the table as displayed
  * @param {Object[]} data - the feature data from the featuresList
+ * @param {String[]} districtNames - keys of the districts
  * @param {Number} timestamp - timestamp
  * @param {String} timestampPrefix - timestamp prefix
  * @returns {Object[]} data for export
  */
-export function prepareTableExport (data, timestamp, timestampPrefix = "jahr_") {
+export function prepareTableExport (data, districtNames, timestamp, timestampPrefix = "jahr_") {
     if (data.constructor !== Array) {
         console.error("prepareTableExport: data must be an array");
         return null;
@@ -37,6 +40,11 @@ export function prepareTableExport (data, timestamp, timestampPrefix = "jahr_") 
             }
         }
 
+        /**
+         * @todo localize
+         */
+        _item[keyMap.total] = getTotal(item, districtNames, timestamp, timestampPrefix);
+        _item[keyMap.average] = getAverage(item, districtNames, timestamp, timestampPrefix);
         _item[keyMap.timestamp] = timestamp;
 
         return _item;
@@ -48,17 +56,17 @@ export function prepareTableExport (data, timestamp, timestampPrefix = "jahr_") 
 /**
  * Prepares the table data for an XLSX export, just the table as displayed
  * @param {Object[]} data - the feature data from the featuresList
+* @param {String[]} districtNames - keys of the districts
  * @param {Number[]} timestamps - timestamps
  * @param {String} timestampPrefix - timestamp prefix
  * @returns {Object[]} data for export
  */
-export function prepareTableExportWithTimeline (data, timestamps, timestampPrefix) {
+export function prepareTableExportWithTimeline (data, districtNames, timestamps, timestampPrefix) {
     if (data.constructor !== Array) {
         console.error("prepareTableExport: data must be an array");
         return null;
     }
     const
-        // _keyMap = {...Object.fromEntries(Object.keys(data[0] || {}).map(key => [key, beautifyKey(key)])), ...keyMap},
         ctimestamps = timestamps.slice().reverse(),
         exportData = data.reduce((items, item) => {
             const _item = replaceValues(renameKeys(item, keyMap), valuesMap),
@@ -73,6 +81,11 @@ export function prepareTableExportWithTimeline (data, timestamps, timestampPrefi
                         }
                     }
 
+                    /**
+                     * @todo localize
+                     */
+                    el[keyMap.total] = getTotal(item, districtNames, timestamp, timestampPrefix);
+                    el[keyMap.average] = getAverage(item, districtNames, timestamp, timestampPrefix);
                     el[keyMap.timestamp] = timestamp;
 
                     return el;

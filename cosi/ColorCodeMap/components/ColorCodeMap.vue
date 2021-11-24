@@ -53,8 +53,6 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"]),
-        // ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
-        // ...mapGetters("Tools/FeaturesList", {featuresListOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
         _selectedFeature: {
             get () {

@@ -1,27 +1,28 @@
 /**
- * 
- * @param {*} x 
- * @param {*} len 
- * @returns 
+ * Linear filter for an index
+ * @param {Number} i - the index
+ * @param {Number} len - the length of the list
+ * @param {Number} [integral=1] - the integral (sum) for all indices
+ * @returns {Number} the weight of the index
  */
-function filterLinear (x, len, integral = 1) {
-    return (2 * integral / len) * (x + 0.5);
+function filterLinear (i, len, integral = 1) {
+    return (2 * integral / len) * (i + 0.5);
 }
 
 /**
- * 
- * @param {*} arr 
- * @returns 
+ * Local derivation for every two neighboring values
+ * @param {Number[]} arr - array of values, len n
+ * @returns {Number[]} the list of local slopes, len n-1
  */
 function deriveLocalLinear (arr) {
     return arr.map((v, i) => arr[i + 1] / v).filter(v => !isNaN(v));
 }
 
 /**
- * 
- * @param {*} arr 
- * @param {*} steps 
- * @returns 
+ * gets the average for a set of dy/dt incl. bias for latest values
+ * @param {*} arr - list of values
+ * @param {*} steps - n steps for linear filter
+ * @returns {Number} the average slope
  */
 function averageSlope (arr, steps = 5) {
     const _steps = arr.length > steps ? steps : arr.length;
@@ -33,13 +34,14 @@ function averageSlope (arr, steps = 5) {
 }
 
 /**
- * 
- * @param {*} stats 
- * @param {*} timestamps 
- * @param {*} timestampPrefix 
- * @returns 
+ * Extrapolates the trend of growth for the next timestep in a series
+ * Looks at the slope and change of slope for the last 5 timesteps
+ * @param {Object} stats - the stats properties per indicator and district
+ * @param {Number[]} timestamps - all relevant timesteps
+ * @param {String} [timestampPrefix="jahr_"] - timestamp props prefix
+ * @return {Number} the projected growth for the next timestep
  */
-export function getTrendStyle (stats, timestamps, timestampPrefix) {
+export function getTrend (stats, timestamps, timestampPrefix = "jahr_") {
     const
         vals = timestamps.map(t => parseFloat(stats[timestampPrefix + t])).reverse(),
         dy_1 = deriveLocalLinear(vals),
@@ -47,6 +49,15 @@ export function getTrendStyle (stats, timestamps, timestampPrefix) {
         avg_dy_2 = averageSlope(dy_2),
         dy = avg_dy_2 * dy_1[dy_1.length - 1];
 
+    return dy;
+}
+
+/**
+ * gets a style for a trend arrow
+ * @param {Number} dy - the expected growth for the next timestep
+ * @returns {Object} css style
+ */
+export function getTrendStyle (dy) {
     if (dy > 1.055) {
         return {color: "green", transform: "rotate(-60deg)"};
     }

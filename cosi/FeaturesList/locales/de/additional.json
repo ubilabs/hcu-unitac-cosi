@@ -27,7 +27,9 @@
                     "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
                     "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
                     "scoresDialogTitle": "Zusammensetzung",
-                    "itemsPerPage": "Einträge pro Seite"
+                    "scoresDialogHistogramTitle": "Verteilung der Bewertungen",
+                    "itemsPerPage": "Einträge pro Seite",
+                    "itemsPerPageAll": "Alle"
                 }
             }
         }

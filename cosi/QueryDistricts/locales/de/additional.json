@@ -27,6 +27,7 @@
                     "selectQuotientLayer": "Quotient",
                     "selectProperty": "Attribut der Einrichtung",
                     "rowsPerPage": "Zeilen pro Seite",
+                    "rowsPerPageAll": "Alle",
                     "exportTable": "Tabelle exportieren",
                     "exportFilename": "CoSI_Vergleichbare_Gebiete",
                     "invalidFeaturesWarning": "Für diesen Filter gibt es Gebiete für die keine gültigen Werte Vorliegen."
