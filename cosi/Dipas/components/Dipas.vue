@@ -30,7 +30,8 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "layerById", "projectionCode"])
+        ...mapGetters("Map", ["map", "layerById", "projectionCode"]),
+        ...mapGetters("Language", ["currentLocale"])
     },
     watch: {
         selectedStyling: function (newValue) {
@@ -56,7 +57,7 @@ export default {
             for (const [id, value] of Object.entries(this.contributions)) {
                 if (value.features) {
                     this.selectedStylingFunction(id);
-                    this.requireUpdate();
+                    this.$root.$emit("updateFeaturesList");
                 }
             }
         }
@@ -111,7 +112,7 @@ export default {
     methods: {
         ...mapActions("Map", ["createLayer"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
-        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping", "requireUpdate"]),
+        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
 

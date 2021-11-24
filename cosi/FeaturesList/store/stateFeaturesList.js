@@ -39,7 +39,6 @@ const state = {
     ],
     disabledFeatureItems: [],
     distanceScoreEnabled: true,
-    updateRequired: false,
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/featureslist.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/einrichtungsuebersicht.md"

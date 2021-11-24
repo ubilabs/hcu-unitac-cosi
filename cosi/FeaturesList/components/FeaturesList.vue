@@ -267,10 +267,6 @@ export default {
 
         extent () {
             this.updateDistanceScores();
-        },
-
-        updateRequired () {
-            this.updateFeaturesList();
         }
     },
     created () {
@@ -296,6 +292,8 @@ export default {
         Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
         Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
         Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
+
+        this.$root.$on("updateFeaturesList", this.updateFeaturesList);
 
         this.distScoreLayer = await this.createLayer("distance-score-features");
         this.distScoreLayer.setVisible(true);
