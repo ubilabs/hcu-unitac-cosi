@@ -773,7 +773,8 @@ export default {
                                 item-key="name"
                                 class="elevation-1"
                                 :footer-props="{
-                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage')
+                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage'),
+                                    'items-per-page-all-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPageAll'),
                                 }"
                                 @click:row="zoomToDistrict"
                             >
