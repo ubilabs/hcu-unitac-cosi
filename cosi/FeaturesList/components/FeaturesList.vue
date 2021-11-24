@@ -602,7 +602,6 @@ export default {
                 return;
             }
 
-
             this.distScoreLayer.getSource().clear();
             this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
                 if (item.weightedDistanceScores) {
@@ -614,7 +613,7 @@ export default {
                             feature.setStyle(new Style({
                                 image: new Circle({
                                     radius: 5,
-                                    fill: new Fill({color: convert.keyword.rgb(this.getColorFromValue(entry.nvalue, true))})
+                                    fill: new Fill({color: convert.keyword.rgb(this.getNumericalValueColor({distanceScore: entry.value}, "distanceScore", true))})
                                     // stroke: new Stroke({color: [255, 255, 255]})
                                 }),
                                 // fill: new Fill({
