@@ -39,7 +39,7 @@ const state = {
     ],
     disabledFeatureItems: [],
     distanceScoreEnabled: true,
-    requireUpdate: false
+    updateRequired: false
 };
 
 export default state;

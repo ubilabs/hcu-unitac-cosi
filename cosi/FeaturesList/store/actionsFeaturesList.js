@@ -81,9 +81,9 @@ const actions = {
     },
 
     async requireUpdate ({commit}) {
-        commit("setRequireUpdate", true);
+        commit("setUpdateRequired", true);
         await Vue.nextTick();
-        commit("setRequireUpdate", false);
+        commit("setUpdateRequired", false);
     }
 };
 

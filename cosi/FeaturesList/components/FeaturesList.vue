@@ -266,7 +266,7 @@ export default {
             this.updateDistanceScores();
         },
 
-        requireUpdate () {
+        updateRequired () {
             this.updateFeaturesList();
         }
     },
