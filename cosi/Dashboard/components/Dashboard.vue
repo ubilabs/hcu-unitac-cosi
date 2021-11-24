@@ -123,13 +123,18 @@ export default {
         statsMapping () {
             return this.groupMapping(this.mapping);
         },
-        selectedColumnNames () {
-            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected),
-                districtNames = selectedCols.length > 0
-                    ? selectedCols.map(col => col.value)
-                    : [...this.districtColumns, ...this.aggregateColumns].map(col => col.value);
+        selectedColumns () {
+            const selectedCols = [...this.districtColumns, ...this.aggregateColumns].filter(col => col.selected);
 
-            return districtNames;
+            return selectedCols.length > 0
+                ? selectedCols
+                : [...this.districtColumns, ...this.aggregateColumns];
+        },
+        selectedColumnNames () {
+            return this.selectedColumns.map(col => col.value);
+        },
+        unselectedColumnLabels () {
+            return [...this.districtColumns, ...this.aggregateColumns].filter(col => !this.selectedColumns.includes(col)).map(col => col.text);
         }
     },
 
@@ -394,15 +399,13 @@ export default {
          * @returns {void}
          */
         exportTable (exportTimeline = false) {
-            // exportTable(false, selectedItems, currentItems)
             const items = this.selectedItems.length > 0 ? this.selectedItems : this.currentItems,
                 data = exportTimeline
-                    ? prepareTableExportWithTimeline(items, this.timestamps, this.timestampPrefix)
-                    : prepareTableExport(items, this.selectedYear, this.timestampPrefix),
+                    ? prepareTableExportWithTimeline(items, this.selectedDistrictNames, this.timestamps, this.timestampPrefix)
+                    : prepareTableExport(items, this.selectedDistrictNames, this.selectedYear, this.timestampPrefix),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
 
-            console.log(data);
-            exportXlsx(data, filename, {exclude: this.excludedPropsForExport});
+            exportXlsx(data, filename, {exclude: [...this.excludedPropsForExport, ...this.unselectedColumnLabels]});
         },
 
         calculateStats,
