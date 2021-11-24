@@ -68,6 +68,7 @@ ___
     - [Vergleichbare Gebiete ermitteln](#vergleichbare-gebiete-ermitteln)
     - [Filter](#filter)
     - [Versorgungsanalyse](#versorgungsanalyse)
+    - [DIPAS](#dipas)
     - [Simulation](#simulation)
     - [Einrichtungen anlegen](#einrichtungen-anlegen)
       - [Szenario Manager](#szenario-manager)
@@ -432,6 +433,27 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
          Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
       - **Bedarfsdeckung:**  
          Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
+
+### DIPAS
+Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden.
+
+
+![Abbildung 12: DIPAS](../cosi/utils/assets/screenshots/dipas.PNG)
+
+*Abbildung 12: DIPAS*
+
+1. **Typ bestimmen**
+   - Mit Klick auf den Button wechseln Sie zwischen Themendatensätzen (hier auch "Einrichtungen") und statistischen Regionaldaten.
+2. **Thema/ Datensatz auswählen**
+   - Wählen Sie das Thema/ den Datensatz aus, den Sie verrechnen möchten.
+3. **Faktor F hinzufügen**
+   - Bei Einrichtungsdatensätzen können Sie einen *Faktor (F)* angeben, der bestimmt, wie viele Einheiten der ausgewählten Einrichtung für den Referenzdatensatz benötigt werden. Wollen Sie beispielsweise die Anzahl der öffentlichen Schulen gegen die Anzahl der Bevölkerung unter 18 Jahren rechnen und geben einen Faktor von 0,001 an, würde das bedeuten, dass eine Schule pro 1000 Mitglieder der Referenzgruppe benötigt wird. Ist ein *Faktor (F)* angegeben, werden die Spalten "Kapazität" und "Bedarf" in der Berechnungstabelle mit angegeben.
+4. **Parameter auswählen** 
+   - Manche Einrichtungsdatensätze haben andere Parameter, als nur ihre Anzahl in den ausgewählten Gebieten. So kann man bei öffentlichen Schulen beispielsweise den Datensatz "Schülerzahl" abfragen oder bei Krankenhäusern die Anzahl der stationären Plätze. Nicht jeder Einrichtungsdatensatz bietet zusätzliche Parameter.
+5. **Auswahl vertauschen**
+   - Mit einem Klick auf diesen Button können Sie Ihre Auswahl von Feld (1) und (2) vertauschen.
+6. **Die gesamte Auswahl zurücksetzen**
+7. **Berechnen**
 
 
 ### Simulation
