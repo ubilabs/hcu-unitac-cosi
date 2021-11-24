@@ -36,6 +36,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
         ...mapGetters("Map", ["layerList", "visibleLayerList"]),
         ...mapState(["easyReadMode"]),
@@ -465,7 +466,7 @@ export default {
             #toolBody
         >
             <v-app>
-                <ToolInfo :info-text="$t('additional:modules.tools.cosi.districtSelector.help')" />
+                <ToolInfo :url="readmeUrl[currentLocale]" />
                 <form class="district-selector">
                     <v-select
                         v-model="selectedLevelId"

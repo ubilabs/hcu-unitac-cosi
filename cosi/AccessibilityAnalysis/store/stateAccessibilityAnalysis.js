@@ -51,7 +51,11 @@ const state = {
     transportType: "",
     scaleUnit: "",
     distance: "",
-    steps: [0, 0, 0]
+    steps: [0, 0, 0],
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/accessibilityanalysis.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/erreichbarkeitsanalyse.md"
+    }
 };
 
 export default state;

@@ -30,7 +30,11 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    referenceLayers: [{"id": "15563"}, {"id": "15990"}, {"id": "19041"}, {"id": "19034"}, {"id": "18977"}, {"id": "18970"}]
+    referenceLayers: [{"id": "15563"}, {"id": "15990"}, {"id": "19041"}, {"id": "19034"}, {"id": "18977"}, {"id": "18970"}],
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/querydistricts.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/vergleichbaregebieteermitteln.md"
+    }
 };
 
 export default state;
