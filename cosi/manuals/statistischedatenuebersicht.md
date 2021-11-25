@@ -2,6 +2,8 @@
 ![Abbildung 27: Statistische Datenübersicht](../utils/assets/screenshots/statdashboard.png)
 *Abbildung 27: Statistische Datenübersicht*
 
+In der statistischen Datenübersicht können tabellarisch Informationen zu den statistischen Daten der ausgewählten Gebiete ([Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)) angezeigt, ausgewertet und exportiert werden.
+
 1. **Gruppen ein-/ausklappen**
    > Thematische Gruppen (vgl. [Regionalstatistische Daten](./kartenvisualisierung.md)) über das **+** ein- und ausklappen.
 2. **Aktionen**

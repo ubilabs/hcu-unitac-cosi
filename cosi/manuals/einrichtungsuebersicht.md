@@ -2,6 +2,8 @@
 ![Abbildung 29: Einrichtungsübersicht](../utils/assets/screenshots/einrichtungsuebersicht.png)
 *Abbildung 29: Einrichtungsübersicht*
 
+In der Einrichtungsüberischt können Einrichtungen der aktiven Fachdaten-Themen ([Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)) angezeigt, ausgewertet und exportiert werden. Dazu wird gegenwärtig das Feature **Standortbewertung** entwickelt, die die Möglichkeit bietet die Qualität einer Lokalität im Hinblick auf verschiedene Kriterien zu überprüfen.
+
 1. **Detailansicht ein-/ausklappen**
    > Über den Pfeil können *alle* Attribute einer Einrichtung aufgeklappt werden. Die einzelnen Zeilen der Detailansicht können für den weiteren Export ausgewählt werden.
 2. **Einrichtung auswählen**
