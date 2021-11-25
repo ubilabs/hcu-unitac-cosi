@@ -83,9 +83,11 @@ ___
       - [Filterdaten](#filterdaten)
       - [Numerische Werte](#numerische-werte)
     - [Zweites Fenster](#zweites-fenster)
+    - [Sitzung Speichern/Laden](#sitzung-speichernladen)
+    - [Vorlagen](#vorlagen)
     - [Dashboard](#dashboard)
     - [Statistische Datenübersicht](#statistische-datenübersicht)
-      - [Statistische Datenübersicht](#statistische-datenübersicht-1)
+      - [Burgermenü](#burgermenü)
     - [Einrichtungsübersicht](#einrichtungsübersicht)
     - [Gebietsauswahl](#gebietsauswahl)
     - [Kartenanalyse regionalstatistischer Daten](#kartenanalyse-regionalstatistischer-daten)
@@ -683,10 +685,58 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
 ### Zweites Fenster
 Über den Reiter "Zweites Fenster öffnen" können Sie einen zweiten Browser-Tab mit dem Dashboard öffnen. Ihnen stehen dort alle Funktionen wie im ursprünglichen Fenster zur Verfügung. Sie können das zweite Fenster von Ihrem Browser durch Ziehen des Tabs (der Registerkarte) ablösen, um es auf einen zweiten Bildschirm zu bewegen. Wenn der InfoScreen (zweites Fenster) geöffnet ist, können Sie das Dashboard im Hauptfenster nicht mehr öffnen. Schließen Sie das Fenster, kehrt das Dashboard ins Hauptfenster zurück.
 
+### Sitzung Speichern/Laden 
+*(Befindet sich in Entwicklung)*
 
+![Abbildung 20: Sitzung Speichern](../cosi/utils/assets/screenshots/sitzungspeichern.png)
+*Abbildung 21 - Sitzung speichern / laden*
+
+Mit dem Dienst **Sitzung speichern/laden** können aktuelle diverse Informationen der aktuellen Arbeitssitzung abgespeichert werden um diese zu einem späteren Zeitpunkt wieder öffnen und weiterbearbeiten zu können. Dies umfasst
+
+- Die ausgewählte Verwaltungsebene und ausgewählte Gebiete
+- Aktive Fachdatenthemen 
+- Mit den [Simulationswerkzeugen](#markdown-header-simulation) erstellte Szenarien
+- Ergebnisse und Konfigurationen der Werkzeuge [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+
+1. **Schnell speichern**
+   > Aktuelle Sitzung im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button **Letzte Laden** wieder geladen werden. Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
+2. **Letzte laden**
+   > Letzte im Browser gespeicherte Sitzung aus dem Cache laden
+3. **Letzte löschen**
+   > Letzte Sitzung aus dem Cache löschen
+4. **Speichern unter**
+   > Eine Sitzung benennen und als Datei auf dem Rechner speichern und über den Button **Datei laden** wieder laden. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden. 
+   
+   *Expertentipp: Die Sitzungen können mit jedem Texteditor geöffnet und als JSON-Datei bearbeitet werden.*
+5. **Datei laden**
+   > Sitzung aus lokaler Datei öffnen
+6. **Automatisches Speichern (10min)**
+   > Wenn aktiv wird die aktuelle Sitzung im Modus **Schnell speichern** alle 10min im Hintergrund gespeichert und kann über **Letzte laden** wiederhergestellt werden.
+
+### Vorlagen
+![Abbildung 20: Vorlagen](../cosi/utils/assets/screenshots/vorlagen.png)
+
+*Abbildung 22 - Vorlagen*
+
+Über den Dienst **Vorlagen** können Vorlagen zu verschieden Themenkomplexen und Arbeitsfeldern geladen werden. Diese können Fachdatenthemen, aktive Werkzeuge und eine Gebietsauswahl beinhalten. Die verfügbaren Vorlagen und ihr Inhalt werden von den Fachbehörden in Koordination mit dem CoSI-Betriebsteam gepflegt.
+
+1. **Liste aller Vorlagen (zum Aufklappen)**
+2. **Inhaltsübersicht einer Vorlage**
+   > - Titel
+   > - Stand (Datum)
+   > - Beschreibung
+   > - Fachdatenthemen
+   > - Aktiver Bezugsrahmen (Verwaltungsebene)
+   > - Ausgewählte Gebiete
+3. **optionale Gebietsauswahl**
+   > Wenn kein Bezugrahmen/Gebiete definiert sind, können diese händisch im Vorfeld oder nach dem Laden ausgewählt werden. Die Inhalte werden dann für die aktive Gebietsauswahl geladen.
+3. **Vorlage laden**
+   > Die ausgewählte Vorlage laden.
+
+___
 ### Dashboard
 ____
-![Abbildung 20: Dienste](../cosi/utils/assets/screenshots/dashboardmenu.png)
+![Abbildung 20: Dashboard](../cosi/utils/assets/screenshots/dashboardmenu.png)
 
 *Abbildung 20 - Dashboard*
 
@@ -726,7 +776,7 @@ In den Dashboards können komplementär tabellarisch Informationen zu den statis
 12. **Kartenvisualisierung**
       > Die Darstellung in der Karte entspricht der des Kontrollfeldes [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten).
 
-#### Statistische Datenübersicht
+#### Burgermenü
 ![Abbildung 21: Statistische Datenübersicht - Burgermenü](../cosi/utils/assets/screenshots/statdashboard_burgermenu.png)
 *Abbildung 21 - Statistische Datenübersicht*
 
@@ -753,7 +803,7 @@ In den Dashboards können komplementär tabellarisch Informationen zu den statis
 11. **Diagramme erzeugen**
       > Erzeugt Diagramme für den ausgewählten Indikator im [Chartgenerator](#markdown-header-chartgenerator) (analog zu [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)). Visualisiert alle ausgewählten Spalten (s. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)).
 12. **Korrelations- / Streuungsdiagramm**
-      > Visualisiert ein Streuungsdiagramm für die Felder **A** (Y-Achse) über **B** (X-Achse) im [Chartgenerator](#markdown-header-chartgenerator) und berechnet die Pearson Regressionsgerade.
+      > Visualisiert ein Streuungsdiagramm für die Felder **A** (Y-Achse) über **B** (X-Achse) im [Chartgenerator](#markdown-header-chartgenerator) und berechnet die Korrelation (Pearson) zwischen den Datensätzen und zeichet eine Regressionsgerade.
 
 ---
 ### Einrichtungsübersicht
