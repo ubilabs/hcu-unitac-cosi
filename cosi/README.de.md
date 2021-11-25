@@ -85,6 +85,7 @@ ___
     - [Zweites Fenster](#zweites-fenster)
     - [Dashboard](#dashboard)
     - [Statistische Datenübersicht](#statistische-datenübersicht)
+      - [Statistische Datenübersicht](#statistische-datenübersicht-1)
     - [Einrichtungsübersicht](#einrichtungsübersicht)
     - [Gebietsauswahl](#gebietsauswahl)
     - [Kartenanalyse regionalstatistischer Daten](#kartenanalyse-regionalstatistischer-daten)
@@ -594,6 +595,7 @@ Zur besseren Verständlichkeit des Werkzeugs wird im Folgenden einmal Schritt f�
 ### Dienste
 ___
 ![Abbildung 13: Dienste](https://user-images.githubusercontent.com/43250699/142929329-caca93bf-aee3-4a5d-838e-cff33bca5502.png)
+
 *Abbildung 13 - Dienste*
 
 1. **Zeichnen/ Schreiben**
@@ -724,7 +726,36 @@ In den Dashboards können komplementär tabellarisch Informationen zu den statis
 12. **Kartenvisualisierung**
       > Die Darstellung in der Karte entspricht der des Kontrollfeldes [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten).
 
+#### Statistische Datenübersicht
+![Abbildung 21: Statistische Datenübersicht - Burgermenü](../cosi/utils/assets/screenshots/statdashboard_burgermenu.png)
+*Abbildung 21 - Statistische Datenübersicht*
 
+1. **Visualisierung ein-/ausschalten**
+   > Thematische Gruppen
+2. **Zeitreihe in der Karte animieren**
+   > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
+3. **Gebietsnamen ein-/ausblenden**
+   > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
+4. **Für Feld A auswählen**
+   > Selektiert das Thema als **Feld A** für Berechnungen und Korrelation (siehe 7, 8, 9, 10, 12)
+5. **Für Feld B auswählen**
+   > Selektiert das Thema als **Feld B** für Berechnungen und Korrelation (siehe 7, 8, 9, 10, 12)
+6. **Auswahl aufheben**
+   > Setzt die Felder **A** und **B** zurück
+7. **Addieren**
+   > Addiert die Werte für **A** und **B** für jede Gebietsspalte und fügt das Ergebnis der Tabelle an. Der neue Datensatz kann ebenfalls in der Karte visualisiert und in anderen Werkzeugen verwendet werden.
+8. **Subtrahieren**
+   > Analog zu **Addieren**, subtrahiert **A** - **B**.
+9. **Multiplizieren**
+   > Analog zu **Addieren**, multipliziert **A** x **B**.
+10. **Dividieren**
+      > Analog zu **Addieren**, dividiert **A** / **B**.
+11. **Diagramme erzeugen**
+      > Erzeugt Diagramme für den ausgewählten Indikator im [Chartgenerator](#markdown-header-chartgenerator) (analog zu [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)). Visualisiert alle ausgewählten Spalten (s. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)).
+12. **Korrelations- / Streuungsdiagramm**
+      > Visualisiert ein Streuungsdiagramm für die Felder **A** (Y-Achse) über **B** (X-Achse) im [Chartgenerator](#markdown-header-chartgenerator) und berechnet die Pearson Regressionsgerade.
+
+---
 ### Einrichtungsübersicht
 ![Abbildung 22: Einrichtungsübersicht](../cosi/utils/assets/screenshots/einrichtungsuebersicht.png)
 *Abbildung 22 - Einrichtungsübersicht*
@@ -746,19 +777,19 @@ In den Dashboards können komplementär tabellarisch Informationen zu den statis
 7. **Einträge sortieren**
    > Alle Spalten können, durch mehrmaliges Klicken auf die Kopfzeile, auf- und absteigend sortiert werden (alphabetisch oder nach Wert). Dabei kann für max. 2 Spalten erfolgen (z.B. 1. nach Typ und 2. nach numerischem Wert).
 8. **Durchschnittliche Anbindung (in m)**
-   > Die Anbindungsspalte zeigt die durchschnittliche Laufdistanz (in m) zu den jeweils nächstgelegenen Einrichtungen der ausgewählten Typen. Durch einen Klick auf den Wert kann die entsprechende Aufschlüsselung geöffnet werden (s. Standortbewertung).
+   > Die Anbindungsspalte zeigt die durchschnittliche Laufdistanz (in m) zu den jeweils nächstgelegenen Einrichtungen der ausgewählten Typen. Durch einen Klick auf den Wert kann die entsprechende Aufschlüsselung geöffnet werden (s. 12.).
 9.  **Themenfilter**
       > Über kann die Tabelle nach Fachdatenlayern gefiltert werden. Die Liste kann im Freitext durchsucht werden.
 10. **Einträge durchsuchen**
-      > Die Tabelle kann nach beliebigen Freitexten durchsucht werden.
+      > Die Tabelle kann nach beliebigen Freitexten durchsucht werden (schließt auch die Detailansichten ein).
 11. **Tabelle exportieren**
       > Die ausgewählten Einträge als XLSX für Excel exportieren. Über aus Auswahlfeld *Detailansicht exportieren* können alle bzw. in der Detailansicht ausgewählte Attribute eines Einrichtungstyps exportiert werden. Ist keine Auswahl getroffen, werden alle Einrichtungen exportiert.
 12. **Standortbewertung: Themenauswahl**
    *(Das Werkzeug befindet sich in der Entwicklung)*
-      > Die Darstellung in der Karte entspricht der des Kontrollfeldes.
+      > Erlaubt die Auswahl beliebiger weiterer Fachdatenthemen für eine Standortbewertung. Bei Fachdaten, welche Punkte oder Flächen in der Karte repräsentieren (i.d.R. Einrichtungen) wird der Ort des Typs gefunden, welcher jeder Einrichtung in der Tabelle am nächsten ist und die Laufdistanz in Metern angegeben. Bei er Auswahl mehrerer Themen wird ein gewichteter Mittelwert gebildet (s. 8./13.). Andere Themen, z.D. Lärmkarte, Luftqualität, etc.) für die Bewertung befinden sich im Aufbau.
 13. **Standortbewertung: Gewichtung**
    *(Das Werkzeug befindet sich in der Entwicklung)*
-      > Die Darstellung in der Karte entspricht der des Kontrollfeldes.
+      > Erlaubt die Gewichtung der Themen für die Standortbewertung. Ein Thema mit Wert 0,5 wird somit nur halb so stark in den Mittelwert einbezogen, wie eines mit dem Wert 1.
 
 ### Gebietsauswahl
 ___

@@ -598,7 +598,7 @@ export default {
                                 <template v-if="!Array.isArray(graph.type)">
                                     <div class="graph_functions">
                                         <button
-                                            v-if="type === 'LineChart'"
+                                            v-if="graph.type === 'LineChart'"
                                             class="switch right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                             @click="yToZero(index, i)"
