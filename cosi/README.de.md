@@ -757,7 +757,7 @@ In den Dashboards können komplementär tabellarisch Informationen zu den statis
 1. **Gruppen ein-/ausklappen**
    > Thematische Gruppen (vgl. [Regionalstatistische Daten](#markdown-header-regionalstatistische-daten)) über das **+** ein- und ausklappen.
 2. **Aktionen**
-   > - s. [Burger-Menü](#markdown-header)
+   > - s. [Burger-Menü](#markdown-header-burgermenü)
    > - Visualisierung ein- / ausschalten: Schaltet die Visualisierung des ausgewählten Indikators zum aktuell gewählten Jahr in der Karte ein/aus
    > - Jahre ein- / ausklappen: Klappt die Tabellenzeile auf um alle Jahre der Zeitreihe darzustellen.
 3. **Jahr auswählen**
