@@ -412,8 +412,14 @@ export default {
          */
         yToZero (index, subindex) {
             let chartComponent = {};
-            // eslint-disable-next-line
-            subindex >= 0 ? chartComponent = this.allCharts.find(dataSet => (dataSet.init === index && dataSet.sub_index === subindex)) : chartComponent = this.allCharts.find(dataSet => dataSet.init === index);
+
+            if (subindex >= 0) {
+                chartComponent = this.allCharts.find(dataSet => (dataSet.init === index && dataSet.sub_index === subindex));
+            }
+            else {
+                chartComponent = this.allCharts.find(dataSet => dataSet.init === index);
+            }
+
             chartComponent.beginAtZero = !chartComponent.beginAtZero;
         },
         /**

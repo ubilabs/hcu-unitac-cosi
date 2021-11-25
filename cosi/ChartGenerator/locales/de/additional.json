@@ -17,8 +17,8 @@
                     "selectChartIndex": "Graph mit dem jeweiligen Index auswählen",
                     "nextChart": "Nächsten Graphen auswählen",
                     "prevChart": "Vorherigen Graphen auswählen",
-                    "yToZero": "Y-Achse auf 0",
-                    "yToZeroTooltip": "Y-Achse auf 0 oder von niedrigstem Wert umstellen."
+                    "yToZero": "Y-Achse skalieren",
+                    "yToZeroTooltip": "Y-Achse bei 0 oder beim niedrigstem Wert des Datensatzes starten."
                 }
             }
         }
