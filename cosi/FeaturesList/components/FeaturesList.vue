@@ -474,7 +474,9 @@ export default {
         },
 
         searchAllAttributes (value, search, item) {
-            return Object.values(item).some(v=>v && v.toString().toLowerCase().includes(search));
+            const allProps = {...item.feature.getProperties(), ...item};
+
+            return Object.values(allProps).some(v => v && v.toString().toLowerCase().includes(search.toLowerCase()));
         },
 
         getNumericalValueColor (item, key, invertColor) {
