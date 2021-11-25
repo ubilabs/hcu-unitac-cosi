@@ -411,14 +411,9 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         yToZero (index, subindex) {
-            let chartComponent = {};
-
-            if (subindex >= 0) {
-                chartComponent = this.allCharts.find(dataSet => (dataSet.init === index && dataSet.sub_index === subindex));
-            }
-            else {
-                chartComponent = this.allCharts.find(dataSet => dataSet.init === index);
-            }
+            const chartComponent = subindex >= 0 ?
+                this.allCharts.find(dataSet => dataSet.init === index && dataSet.sub_index === subindex) :
+                this.allCharts.find(dataSet => dataSet.init === index);
 
             chartComponent.beginAtZero = !chartComponent.beginAtZero;
         },
