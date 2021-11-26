@@ -163,6 +163,12 @@ export default {
         >
             *
         </span>
+        <span
+            v-else-if="item.isModified"
+            class="simulation-overlay"
+        >
+            ⇄
+        </span>
     </div>
 </template>
 

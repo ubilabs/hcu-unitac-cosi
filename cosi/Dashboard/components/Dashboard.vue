@@ -461,7 +461,7 @@ export default {
                 absolute
             >
                 <v-main>
-                    <ToolInfo :url="readmeUrl[currentLocale]"/>
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <v-container fluid>
                         <DashboardToolbar
                             :stats-feature-filter="statsFeatureFilter"

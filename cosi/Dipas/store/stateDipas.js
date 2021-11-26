@@ -18,7 +18,11 @@ const state = {
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
-    deactivateGFI: false
+    deactivateGFI: false,
+    readmeUrl: {
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.en.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.de.md"
+    }
 };
 
 export default state;

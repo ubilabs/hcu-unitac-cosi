@@ -68,6 +68,7 @@ ___
     - [Vergleichbare Gebiete ermitteln](#vergleichbare-gebiete-ermitteln)
     - [Filter](#filter)
     - [Versorgungsanalyse](#versorgungsanalyse)
+    - [DIPAS](#dipas)
     - [Simulation](#simulation)
     - [Einrichtungen anlegen](#einrichtungen-anlegen)
       - [Szenario Manager](#szenario-manager)
@@ -82,8 +83,11 @@ ___
       - [Filterdaten](#filterdaten)
       - [Numerische Werte](#numerische-werte)
     - [Zweites Fenster](#zweites-fenster)
+    - [Sitzung Speichern/Laden](#sitzung-speichernladen)
+    - [Vorlagen](#vorlagen)
     - [Dashboard](#dashboard)
     - [Statistische Datenübersicht](#statistische-datenübersicht)
+      - [Burgermenü](#burgermenü)
     - [Einrichtungsübersicht](#einrichtungsübersicht)
     - [Gebietsauswahl](#gebietsauswahl)
     - [Kartenanalyse regionalstatistischer Daten](#kartenanalyse-regionalstatistischer-daten)
@@ -154,6 +158,7 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
       4. [Filter](#markdown-header-filter)
       5. Strecke/ Fläche messen
       6. [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+      7. [DIPAS](#markdown-header-dipas)
 
 3. **Simulationsfunktionen**
       1. [Einrichtungen anlegen](#markdown-header-einrichtungen-anlegen)
@@ -170,8 +175,8 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
       8. [Vorlagen](#markdown-header-vorlagen)
 
 5. **Dashboard**
-      1. Statistische Datenübersicht
-      2. Einrichtungsübersicht
+      1. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)
+      2. [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)
 6. **[Gebiete auswählen](#markdown-header-gebiete-auswählen)**
 7. **Kontaktformular**
 8. **Legende** (s. Legende)
@@ -254,7 +259,7 @@ ___
 5. **[Strecke / Fläche messen](#markdown-header-strecke-/-flaeche-messen)**
 6. **[Versorgungsanalyse](#markdown-header-versorgungsanalyse)**
    > Verhältnis zwischen Einrichtungen (Fachdaten) und Zielgruppen (StaNord-Daten) im Gebiet ermitteln
-7. **DIPAS**
+7. **[DIPAS](#markdown-header-dipas)**
    > (In Entwicklung)  
   
 ### Einwohnerabfrage
@@ -314,9 +319,9 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
 #### Erreichbarkeit im Gebiet
 Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungsart (z.B. Kindergärten) in dem festgelegten Einzugsbereich (Planungsgebiet). Der Einzugsbereich ist die Entfernung von der jeweiligen Einrichtung und kann angegeben werden in Zeit oder in Metern. Die Erreichbarkeit ist abhängig von dem festgelegten Verkehrsmittel.
 
-![Abbildung 7: Erreichbarkeit ausgewählter Einrichtungen im Gebiet](https://user-images.githubusercontent.com/43250699/142923253-c745b0d3-f698-4f6e-b744-cecf30981ff8.jpg)
+![Abbildung 6: Erreichbarkeit ausgewählter Einrichtungen im Gebiet](https://user-images.githubusercontent.com/43250699/142923253-c745b0d3-f698-4f6e-b744-cecf30981ff8.jpg)
 
-*Abbildung 7: Erreichbarkeit ausgewählter Einrichtungen im Gebiet*
+*Abbildung 6: Erreichbarkeit ausgewählter Einrichtungen im Gebiet*
 
 1. **Auswahl des Modus**
    > Art der Einrichtungsanalyse. Ab einem Referenzpunkt oder Erreichbarkeit der gewählten Einrichtungen.
@@ -343,9 +348,9 @@ Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungs
 Das Werkzeug erlaubt die Ermittlung aller Gebiete (Stadtteile oder statistische Gebiete), in denen die ausgewählten Parameter vorherrschen, bzw. solcher, die dem gewählten Referenzgebiet in diesen Parametern ähneln.
 Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ein Referenzgebiet (optional).  
 
-![Abbildung 8: Vergleichbare Gebiete ermitteln](https://user-images.githubusercontent.com/43250699/142924529-006f7d31-d1d3-4075-87bf-acd25e2e360d.jpg)   
+![Abbildung 7: Vergleichbare Gebiete ermitteln](https://user-images.githubusercontent.com/43250699/142924529-006f7d31-d1d3-4075-87bf-acd25e2e360d.jpg)   
  
-*Abbildung 8: Vergleichbare Gebiete ermitteln*  
+*Abbildung 7: Vergleichbare Gebiete ermitteln*  
 
 1. **Statistische Datenfilter**
    > Gewünschten Parameter für den Vergleich auswählen. Es können beliebig viele Parameter hinzugefügt werden. Alle StaNord-Datensätze sind hierfür verfügbar. Anteilige Werte eignen sich jedoch besser für die Vergleichbarkeit. Gegenwärtig können eigene Berechnungen aus dem Dashboard nicht herangezogen werden.
@@ -356,8 +361,8 @@ Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ei
 4. **Ergebnisse** 
    > Die zutreffenden Gebiete werden in der Karte markiert.  
 
-![Abbildung 9: Vergleichbare Gebiete ermitteln, Ergebnisse](https://user-images.githubusercontent.com/43250699/142925184-b63f11b9-c209-472e-892e-552de7610705.jpg)  
-*Abbildung 9: Vergleichbare Gebiete ermitteln, Ergebnisse*  
+![Abbildung 8: Vergleichbare Gebiete ermitteln, Ergebnisse](https://user-images.githubusercontent.com/43250699/142925184-b63f11b9-c209-472e-892e-552de7610705.jpg)  
+*Abbildung 8: Vergleichbare Gebiete ermitteln, Ergebnisse*  
 
 1. **Ergebnisse**
    > Eine Liste aller Gebiete, auf die die gewählten Kriterien zutreffen, wird im Fenster angezeigt. Ein Klick auf ein Gebiet legt den Kartenausschnitt auf dieses fest.
@@ -370,9 +375,9 @@ Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ei
 ### Filter
 Die aktiven, ausgewählten Themen können durch Klick auf den Reiter "Filter" nach den Kategorien ihrer Datensätze durchsucht und gefiltert werden. Die Karte zoomt automatisch auf die Filterergebnisse. Es werden nur Ergebnisse in den ausgewählten Gebieten einbezogen. Der Filter ist für alle Fachdatensätze verfügbar, welche sinnvolle filterbare Attribute (wie Fläche, Nutzung, Träger, etc.) aufweisen.  
 
-![Abbildung 10: Filter](https://user-images.githubusercontent.com/43250699/142924026-a46ada10-7289-4882-9b2e-c41528289930.jpg)
+![Abbildung 9: Filter](https://user-images.githubusercontent.com/43250699/142924026-a46ada10-7289-4882-9b2e-c41528289930.jpg)
 
-*Abbildung 10: Filter*  
+*Abbildung 9: Filter*  
 
 1. **Ein Thema im Filter wählen**
    > Angezeigt werden die ausgewählten Themen. Themen können jederzeit hinzugefügt werden. Dazu Themenbau anklicken und Thema auswählen.
@@ -390,9 +395,9 @@ Die aktiven, ausgewählten Themen können durch Klick auf den Reiter "Filter" na
 Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet werden. Die Datensätze können entweder regionalstatistische Daten oder Einrichtungsdaten aus dem Menü "Themen/ Fachdaten" sein. Damit die Versorgungsanalyse verwendet werden kann, müssen mindestens zwei Datensätze geladen worden sein.
 
 
-![Abbildung 11: Versorgungsanalyse, Einstellungen](https://user-images.githubusercontent.com/43250699/142926985-dfc8c2f9-c652-49f5-8f92-64a985a64f5e.jpg)
+![Abbildung 10: Versorgungsanalyse, Einstellungen](https://user-images.githubusercontent.com/43250699/142926985-dfc8c2f9-c652-49f5-8f92-64a985a64f5e.jpg)
 
-*Abbildung 11: Versorgungsanalyse, Einstellungen*
+*Abbildung 10: Versorgungsanalyse, Einstellungen*
 
 1. **Info** 
    > Über den Button finden Sie zu dieser Anleitung.
@@ -409,9 +414,9 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
 8. **Die gesamte Auswahl zurücksetzen**
 9. **Berechnen**
 
-![Abbildung 12: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/142927798-bbd05b05-8a7c-46cc-8790-20a263f04f59.jpg)
+![Abbildung 11: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/142927798-bbd05b05-8a7c-46cc-8790-20a263f04f59.jpg)
 
-*Abbildung 12: Versorgungsanalyse, Ergebnisse*
+*Abbildung 11: Versorgungsanalyse, Ergebnisse*
 
 1. **Als Excel Datei downloaden**
 2. **Als GeoJSON downloaden**
@@ -432,13 +437,38 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
       - **Bedarfsdeckung:**  
          Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
 
+### DIPAS
+Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden. D.h. alle Beiträge können in der [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht) angezeigt, für [Versorgungsanalyse](#markdown-header-versorgungsanalyse), [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Vergleichbare Gebiete Ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln) verwendet und mit dem [Filter](#markdown-header-filter) gefiltert werden.
+
+
+![Abbildung 12: DIPAS](../cosi/utils/assets/screenshots/dipas.PNG)
+
+*Abbildung 12: DIPAS*
+
+1. **Beteiligungsverfahren auswählen**
+   > Für jedes Verfahren aus der DIPAS-Datenbank wird automatisch eine Registerkarte angelegt, welche durchs Anklicken aufgeklappt werden kann. Ein aufgeklapptes Verfahren zeigt dessen Beschreibungstext und die Kontrollfelder für die Visualisierung. Jedem Verfahren wid dabei eine zufällige Farbe zugewiesen.
+2. **Verfahren in der Karte anzeigen**
+   > Zeigt das Verfahrensgebiet als Polygon in der Karte in der jeweiligen Farbe des Verfahrens.
+3. **Einzelne Beiträge in der Karte anzeigen**
+   > Zeigt alle Einzelbeiträge des Verfahrens in der Karte. Das Styling der Beiträge kann unten (s. 5.) festgelegt werden.
+4. **Heatmap in der Karte anzeigen** 
+   > Zeigt eine Heatmap der Beiträge in der Karte. Das Gewicht eines Punktes richtet sich dabei nach der Gesamtzahl der Bewertungen des Beitrags, also der Stärke der Resonanz auf ihn.
+5. **Styling der Beiträge wählen**
+   > - nach Projekt: Alle Beiträge werden gleichmäßig in der Projektfarbe dargestellt.
+   > - nach Kategorien im Projektfarbraum: Jede Kategorie wird in einer Schattierung der Projektfarbe dargestellt.
+   > - nach Kategorien im Regenbogenspektrum: Jeder Kategorie wird eine zufällig Farbe zugewiesen.
+   > - nach Bewertung: Die Beiträge werden abhängig von den positiven- und negativen-Bewertungen dargestellt. Die Größe des Punktes richtet sich dabei nach der Gesamtzahl der Reaktionen, die Farbe nach dem Verhältnis von positiven (grün) und negativen (rot) Bewertungen.
+6. **Beiträge in der Karte**
+   > Alle Beiträge werden mit ihrer ID (einer fortlaufenden Nummer) in der Karte dargestellt.
+
 
 ### Simulation
 ___
 Das Modul Simulation bietet die Möglichkeit, fiktionale Einrichtungen oder Wohnungsbauquartiere hinzuzufügen und Analysen auf einer hypothetischen Grundlage durchzuführen.  
   
-![Abbildung 13: Simulation](https://user-images.githubusercontent.com/43250699/142929647-1f8dd57a-fd18-4398-a0ca-19d8d110e0c0.jpg)  
-*Abbildung 12: Simulation*  
+![Abbildung 13: Simulation](https://user-images.githubusercontent.com/43250699/142929647-1f8dd57a-fd18-4398-a0ca-19d8d110e0c0.jpg)
+
+*Abbildung 13: Simulation*  
 
 1. **[Einrichtungen anlegen](#markdown-header-einrichtungen-anlegen)**
    > Hier können Sie verschiedene Themen auswählen und je nach Thema neue Einrichtungen erstellen, kopieren und verschieben. Dieses bietet die Grundlage, um in verschiedenen Szenarien Analysen durchzuführen. 
@@ -451,6 +481,8 @@ Sobald sie "Einrichtungen anlegen" auswählen, öffnet sich ein Fenster, in dess
 
 #### Szenario Manager
 ![Abbildung 14: Szenario Manager](https://user-images.githubusercontent.com/43250699/143022435-622e8032-e0da-4b5e-bd0c-9e33aa07de2c.png)  
+
+*Abbildung 14: Szenario Manager* 
 
 1. **Scenario Dropdown**
    > Zeigt bisher erstellte Szenarien an.
@@ -468,7 +500,8 @@ Szenarios.
   
  *Sie **müssen** ein Thema aus den geladenen Fachdaten wählen. Sind keine Fachdaten ausgewählt, ist kein Szenario möglich. Wählen Sie mindestens ein Analysethema aus dem Themenbaum.*  
 
-![Abbildung 15: Einrichtungen anlegen](https://user-images.githubusercontent.com/43250699/143023574-324b2275-eea7-4926-bf3d-07c2f21124e1.png)  
+![Abbildung 15: Einrichtungen anlegen](https://user-images.githubusercontent.com/43250699/143023574-324b2275-eea7-4926-bf3d-07c2f21124e1.png)
+
 *Abbildung 15: Einrichtungen anlegen*  
 
 1. **Einrichtung kopieren**
@@ -519,7 +552,8 @@ Durch das Erstellen eines Wohnbauquartiers können sie Wohnungsbauszenarien dur
 
 Sobald sie "Wohnungsquartiere anlegen" auswählen, öffnet sich ein Fenster, in dessen oberem Bereich Sie den Szenario Manager finden. (s. [Szenario Manager](#markdown-header-szenario-manager))
 
-![Abbildung: 16: Wohnungsbauquartiere anlegen](https://user-images.githubusercontent.com/43250699/143025884-f86a5897-3757-4b35-9d6d-1e4969d8175d.png)  
+![Abbildung: 16: Wohnungsbauquartiere anlegen](https://user-images.githubusercontent.com/43250699/143025884-f86a5897-3757-4b35-9d6d-1e4969d8175d.png)
+
 *Abbildung 16: Wohnungsbauquartiere anlegen*
 
 1. **Geometrie**
@@ -567,8 +601,9 @@ Zur besseren Verständlichkeit des Werkzeugs wird im Folgenden einmal Schritt f�
 
 ### Dienste
 ___
-![Abbildung 13: Dienste](https://user-images.githubusercontent.com/43250699/142929329-caca93bf-aee3-4a5d-838e-cff33bca5502.png)
-*Abbildung 13 - Dienste*
+![Abbildung 17: Dienste](https://user-images.githubusercontent.com/43250699/142929329-caca93bf-aee3-4a5d-838e-cff33bca5502.png)
+
+*Abbildung 17 - Dienste*
 
 1. **Zeichnen/ Schreiben**
 2. **Karte drucken**
@@ -591,8 +626,8 @@ ___
 ### Geodaten Importieren
 Mit diesem Werkzeug können Sie eigene Datensätze in Form von GeoJSONs hochladen und als Themenlayer einfügen, der anschließnend visualisiert werden kann und dem alle weiteren Analysefunktionen von CoSI zur Verfügung stehen.   
 
-![Abbildung 14: Dateien importieren](https://user-images.githubusercontent.com/43250699/142930620-f556b3bb-a098-4deb-8394-2b5db6963c94.jpg)  
-*Abbildung 14: Dateien importieren*   
+![Abbildung 18: Dateien importieren](https://user-images.githubusercontent.com/43250699/142930620-f556b3bb-a098-4deb-8394-2b5db6963c94.jpg)  
+*Abbildung 18: Dateien importieren*   
 1. **Info**
    > Über den Button finden Sie zu dieser Anleitung.
 2. **Upload per Drag And Drop**
@@ -604,8 +639,8 @@ Mit diesem Werkzeug können Sie eigene Datensätze in Form von GeoJSONs hochlade
   
 Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welchem Sie bestimmte Funktionen haben, um den Layer aus der Datei zu generieren.  
 
-![Abbildung 15: Geodaten Importieren, Layeroptionen festlegen](https://user-images.githubusercontent.com/43250699/142931326-1effcb55-62a9-4fdb-918f-6d0fb9dccc49.jpg)  
-*Abbildung 15: Geodaten Importieren, Layeroptionen festlegen* 
+![Abbildung 19: Geodaten Importieren, Layeroptionen festlegen](https://user-images.githubusercontent.com/43250699/142931326-1effcb55-62a9-4fdb-918f-6d0fb9dccc49.jpg)  
+*Abbildung 19: Geodaten Importieren, Layeroptionen festlegen* 
 
 5. **Layername**
    > Hier können Sie den Layer frei benennen. Standardmäßig wird der Name der hochgeladenen Datei verwendet.
@@ -618,8 +653,8 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
 
 #### Styling
 
-![Abbildung 16: Geodaten Importieren, Layerstyling](https://user-images.githubusercontent.com/43250699/142931936-7da21540-9ac3-4a4d-85f5-1f78feae6978.jpg)  
-*Abbildung 16: Geodaten Importieren, Layerstyling*  
+![Abbildung 20: Geodaten Importieren, Layerstyling](https://user-images.githubusercontent.com/43250699/142931936-7da21540-9ac3-4a4d-85f5-1f78feae6978.jpg)  
+*Abbildung 20: Geodaten Importieren, Layerstyling*  
 
 - **6.1** Ein Icon auswählen, mit dem die jeweiligen Punkte visualisiert werden sollen. *(Diese Option steht nicht zur Verfügung, wenn es sich bei denen von Ihnen hochgeladenen Geodaten um Polygone handelt).
 - **6.2** Mit dieser Checkbox legen Sie fest, ob alle Entitäten des Datensatzes mit derselben Farbe dargestellt werden sollen oder basierend auf einer ihrer Attribute farblich angepasst werden sollen. Aktivieren Sie diese Checkbox, bestimmen Sie das gewünschte Attribut bitte wie in 6.2.1 beschrieben.
@@ -628,8 +663,8 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
 - **6.3** Haben Sie weder "Farbe nach Attributen" ausgewählt bzw. bei "Farbe nach Attributen" nicht die Checkbox "Regenbogenfarbspektrum" aktiviert, können Sie hier eine Farbe bestimmen, auf deren Basis die Daten visualisiert werden. Ein Klick auf das farbige Viereck der Textbox öffnet das Farbauswahlfeld.
 
 #### Einrichtungsdaten
-![Abbildung 17: Geodaten Importieren, Einrichtungsdaten](https://user-images.githubusercontent.com/43250699/142932334-7476d084-eda1-4a05-a93e-bf159ac55b8f.jpg)  
-*Abbildung 17: Geodaten Importieren, Einrichtungsdaten*    
+![Abbildung 21: Geodaten Importieren, Einrichtungsdaten](https://user-images.githubusercontent.com/43250699/142932334-7476d084-eda1-4a05-a93e-bf159ac55b8f.jpg)  
+*Abbildung 21: Geodaten Importieren, Einrichtungsdaten*    
 
    - **7.1** Hier wählen Sie aus allen Attributen der Einträge Ihrer hochgeladenen Datei das Attribut aus, welches einen eindeutigen, individuellen Namen des Eintrags enthält. Dies ist für bestimmte Funktionen von CoSI relevant. Sollte ein solches Attribut nicht existieren, lassen Sie es bitte einfach frei.
    - **7.2** Hier wählen Sie aus allen Attributen der Einträge Ihrer hochgeladenen Datei ein Attribut aus, was den Typ des jeweiligen Eintrags am besten beschreibt. Handelt es sich bei Ihrem Datensatz beispielsweise um eine Reihe von unterschiedlichen Einrichtungen, könnte hier als Attribut eines gewählt werden, dass Werte wie "Kindergarten", "Krankenhaus" oder "Hotel" enthält.
@@ -637,15 +672,15 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
    - **7.4** Sollte keines der automatisch erkannten Attribute die korrekten Adressdaten enthalten, können Sie mit dem Button "Aus allen Objekteigenschaften wählen" alle Attribute anzeigen lassen, um daraus die Adresseigenschaften auszuwählen. Sollten in dem Datensatz keine entsprechenden Informationen hinterlegt sein, können Sie dieses Auswahlfeld ignorieren.
 
 #### Filterdaten
-![Abbildung 18: Geodaten Importieren, Filterdaten festlegen](https://user-images.githubusercontent.com/43250699/142932614-055ed92b-6967-436b-ace5-8977111ef473.jpg)  
-*Abbildung 18: Geodaten Importieren, Filterdaten festlegen*  
+![Abbildung 22: Geodaten Importieren, Filterdaten festlegen](https://user-images.githubusercontent.com/43250699/142932614-055ed92b-6967-436b-ace5-8977111ef473.jpg)  
+*Abbildung 22: Geodaten Importieren, Filterdaten festlegen*  
 
    - Unter CoSIs Werkzeugen finden Sie auch das Filterwerkzeug, mit denen Sie alle Datensätze nach bestimmten Kriterien filtern können. Bitte bestimmen Sie hier, welche der Attribute Ihrer Daten für den Filter verfügbar gemacht werden sollen.
    - **8.1** Mit einem Klick auf diesen Button öffnet sich ein Auswahlfeld, mit Hilfe dessen Sie ein Attribut zur weißen Liste des Filters hinzufügen können.
 
 #### Numerische Werte
-![Abbildung 19: Geodarten Importieren, Numerische Werte festlegen](https://user-images.githubusercontent.com/43250699/142932809-d77c6760-bff3-4576-b9fa-1bcca88ef816.jpg)  
-*Abbildung 19: Geodarten Importieren, Numerische Werte festlegen*  
+![Abbildung 23: Geodarten Importieren, Numerische Werte festlegen](https://user-images.githubusercontent.com/43250699/142932809-d77c6760-bff3-4576-b9fa-1bcca88ef816.jpg)  
+*Abbildung 23: Geodarten Importieren, Numerische Werte festlegen*  
 - Mit Hilfe des Werkzeugs [Versorgungsanalyse](#markdown-header-versorgungsanalyse) können Sie unterschiedlichste Zahlwerte gegeneinander verrechnen. In diesem Bereich bestimmen Sie Attribute, die numerische Werte enthalten, die für die Versorgungsanalyse bereitgestellt werden sollen. Dies können alle sinnvoll quantitativ messbaren Werte sein, wie beispielswiese "Budget", "Einwohnerzahl", "Fläche" oder "Besuche pro Woche" etc.  
 
    - **9.1** Für die bessere Visualisierung in einer späteren Tabelle, können Sie hier dem numerischen Wert einen sinnvollen Namen geben, sollte das Attribut nicht sinnvoll benannt sein. So könnten Sie beispielsweise "budget_21" in "Verfügbare Mittel 2021" umbenennen.
@@ -655,31 +690,169 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
 ### Zweites Fenster
 Über den Reiter "Zweites Fenster öffnen" können Sie einen zweiten Browser-Tab mit dem Dashboard öffnen. Ihnen stehen dort alle Funktionen wie im ursprünglichen Fenster zur Verfügung. Sie können das zweite Fenster von Ihrem Browser durch Ziehen des Tabs (der Registerkarte) ablösen, um es auf einen zweiten Bildschirm zu bewegen. Wenn der InfoScreen (zweites Fenster) geöffnet ist, können Sie das Dashboard im Hauptfenster nicht mehr öffnen. Schließen Sie das Fenster, kehrt das Dashboard ins Hauptfenster zurück.
 
+### Sitzung Speichern/Laden 
+*(Befindet sich in Entwicklung)*
 
+![Abbildung 24: Sitzung Speichern](../cosi/utils/assets/screenshots/sitzungspeichern.png)
+*Abbildung 24: Sitzung speichern / laden*
+
+Mit dem Dienst **Sitzung speichern/laden** können aktuelle diverse Informationen der aktuellen Arbeitssitzung abgespeichert werden um diese zu einem späteren Zeitpunkt wieder öffnen und weiterbearbeiten zu können. Dies umfasst
+
+- Die ausgewählte Verwaltungsebene und ausgewählte Gebiete
+- Aktive Fachdatenthemen 
+- Mit den [Simulationswerkzeugen](#markdown-header-simulation) erstellte Szenarien
+- Ergebnisse und Konfigurationen der Werkzeuge [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+
+1. **Schnell speichern**
+   > Aktuelle Sitzung im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button **Letzte Laden** wieder geladen werden. Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
+2. **Letzte laden**
+   > Letzte im Browser gespeicherte Sitzung aus dem Cache laden
+3. **Letzte löschen**
+   > Letzte Sitzung aus dem Cache löschen
+4. **Speichern unter**
+   > Eine Sitzung benennen und als Datei auf dem Rechner speichern und über den Button **Datei laden** wieder laden. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden. 
+   
+   *Expertentipp: Die Sitzungen können mit jedem Texteditor geöffnet und als JSON-Datei bearbeitet werden.*
+5. **Datei laden**
+   > Sitzung aus lokaler Datei öffnen
+6. **Automatisches Speichern (10min)**
+   > Wenn aktiv wird die aktuelle Sitzung im Modus **Schnell speichern** alle 10min im Hintergrund gespeichert und kann über **Letzte laden** wiederhergestellt werden.
+
+### Vorlagen
+![Abbildung 25: Vorlagen](../cosi/utils/assets/screenshots/vorlagen.png)
+
+*Abbildung 25: Vorlagen*
+
+Über den Dienst **Vorlagen** können Vorlagen zu verschieden Themenkomplexen und Arbeitsfeldern geladen werden. Diese können Fachdatenthemen, aktive Werkzeuge und eine Gebietsauswahl beinhalten. Die verfügbaren Vorlagen und ihr Inhalt werden von den Fachbehörden in Koordination mit dem CoSI-Betriebsteam gepflegt.
+
+1. **Liste aller Vorlagen (zum Aufklappen)**
+2. **Inhaltsübersicht einer Vorlage**
+   > - Titel
+   > - Stand (Datum)
+   > - Beschreibung
+   > - Fachdatenthemen
+   > - Aktiver Bezugsrahmen (Verwaltungsebene)
+   > - Ausgewählte Gebiete
+3. **optionale Gebietsauswahl**
+   > Wenn kein Bezugrahmen/Gebiete definiert sind, können diese händisch im Vorfeld oder nach dem Laden ausgewählt werden. Die Inhalte werden dann für die aktive Gebietsauswahl geladen.
+3. **Vorlage laden**
+   > Die ausgewählte Vorlage laden.
+
+___
 ### Dashboard
 ____
-![Abbildung 20: Dienste](../cosi/utils/assets/screenshots/dashboardmenu.png)
+![Abbildung 26: Dashboard](../cosi/utils/assets/screenshots/dashboardmenu.png)
 
-*Abbildung 20 - Dashboard*
+*Abbildung 26: Dashboard*
 
-1. **[Statistische Datenübersicht](#markdown-header-statistischedatenübersicht)**
+In den Dashboards können komplementär tabellarisch Informationen zu den statistischen Daten der ausgewählten Gebiete ([Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)) bzw. den Einrichtungen der aktiven Fachdaten-Themen ([Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)) angezeigt, ausgewertet und von dort exportiert werden.
+
+1. **[Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)**
 2. **[Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)**
 
-*Die Anleitung für dieses Werkzeug befindet sich derzeit in Überarbeitung.*
-
 ### Statistische Datenübersicht
-![Abbildung 21: Statistische Datenübersicht](../cosi/utils/assets/screenshots/statdashboard.png)
-*Abbildung 21 - Statistische Datenübersicht*
+![Abbildung 27: Statistische Datenübersicht](../cosi/utils/assets/screenshots/statdashboard.png)
+*Abbildung 27: Statistische Datenübersicht*
 
+1. **Gruppen ein-/ausklappen**
+   > Thematische Gruppen (vgl. [Regionalstatistische Daten](#markdown-header-regionalstatistische-daten)) über das **+** ein- und ausklappen.
+2. **Aktionen**
+   > - s. [Burger-Menü](#markdown-header-burgermenü)
+   > - Visualisierung ein- / ausschalten: Schaltet die Visualisierung des ausgewählten Indikators zum aktuell gewählten Jahr in der Karte ein/aus
+   > - Jahre ein- / ausklappen: Klappt die Tabellenzeile auf um alle Jahre der Zeitreihe darzustellen.
+3. **Jahr auswählen**
+   > Aktuelles Jahr für die Darstellung in Tabelle und Karte auswählen.
+4. **Spalte verschieben**
+   > Mit den Pfeilen links/rechts die Spalte verschieben. Die Trennstriche grenzen die Verwaltungsebenen voneinander ab
+5. **Spalte ein-/ausblenden**
+   > Mit dem Auge kann eine Spalte aus- und eingeblendet werden, um die Tabelle übersichtlicher zu gestalten. Ausgeblendete Spalten werden für Exporte und Diagramme nicht berücksichtigt.
+6. **Aggregationsspalten**
+   > Die letzten zwei Spalten zeigen standardmäßig Durchschnitts- und Gesamtwert für die **ausgewählten Gebiete** (wie in der Karte dargestellt, nur die ausgewählte Verwaltungsebene). Für relative (anteilige) Indikatoren können keine Aggregationen berechnet werden, da der Bezugsrahmen nicht klar ist.
+7. **Spalte auswählen**
+   > Spalten für Export und Diagramm-Erstellung auswählen. Ist keine Spalte ausgewählt werden alle verwendet.
+8. **Zeile auswählen**
+   > Zeilen für Export und Diagramm-Erstellung auswählen. Ist keine Spalte ausgewählt werden alle für den Export bzw. nur die aktuelle für die Diagramme verwendet.
+9. **Trendpfeil**
+   > Der Trendpfeil zeigt das extrapolierte Wachstum für den nächsten Zeitschritt (in % im Tooltip) an. Für die Abschätzung werden die Steigungen der letzten 5 Zeitschritte, gewichtet nach Aktualität, herangezogen. Die Darstellung erhebt **keinen Anspruch** auf Genauigkeit und berücksichtigt keine anderen Werte über die aktuelle Zeitreihe hinaus.
+10. **Themenfilter**
+      > Über den Filter können beliebige Indikatoren (sortiert nach Gruppen) für die Darstellung und den Export ausgewählt werden. Die Liste kann im Freitext durchsucht werden.
+11. **Tabelle exportieren**
+      > Die aktuelle Auswahl (Spalten, Zeilen, Jahre) als XLSX für Excel exportieren. Über aus Auswahlfeld *alle Jahre exportieren* kann die gesamte Zeitreihe für die ausgewählten Spalten und Zeilen exportiert werden. Ist keine Spalte oder Zeile ausgewählt werden alle verwendet.
+12. **Kartenvisualisierung**
+      > Die Darstellung in der Karte entspricht der des Kontrollfeldes [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten).
+
+#### Burgermenü
+![Abbildung 28: Statistische Datenübersicht - Burgermenü](../cosi/utils/assets/screenshots/statdashboard_burgermenu.png)
+*Abbildung 28: Statistische Datenübersicht*
+
+1. **Visualisierung ein-/ausschalten**
+   > Thematische Gruppen
+2. **Zeitreihe in der Karte animieren**
+   > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
+3. **Gebietsnamen ein-/ausblenden**
+   > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
+4. **Für Feld A auswählen**
+   > Selektiert das Thema als **Feld A** für Berechnungen und Korrelation (siehe 7, 8, 9, 10, 12)
+5. **Für Feld B auswählen**
+   > Selektiert das Thema als **Feld B** für Berechnungen und Korrelation (siehe 7, 8, 9, 10, 12)
+6. **Auswahl aufheben**
+   > Setzt die Felder **A** und **B** zurück
+7. **Addieren**
+   > Addiert die Werte für **A** und **B** für jede Gebietsspalte und fügt das Ergebnis der Tabelle an. Der neue Datensatz kann ebenfalls in der Karte visualisiert und in anderen Werkzeugen verwendet werden.
+8. **Subtrahieren**
+   > Analog zu **Addieren**, subtrahiert **A** - **B**.
+9. **Multiplizieren**
+   > Analog zu **Addieren**, multipliziert **A** x **B**.
+10. **Dividieren**
+      > Analog zu **Addieren**, dividiert **A** / **B**.
+11. **Diagramme erzeugen**
+      > Erzeugt Diagramme für den ausgewählten Indikator im [Chartgenerator](#markdown-header-chartgenerator) (analog zu [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)). Visualisiert alle ausgewählten Spalten (s. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)).
+12. **Korrelations- / Streuungsdiagramm**
+      > Visualisiert ein Streuungsdiagramm für die Felder **A** (Y-Achse) über **B** (X-Achse) im [Chartgenerator](#markdown-header-chartgenerator) und berechnet die Korrelation (Pearson) zwischen den Datensätzen und zeichet eine Regressionsgerade.
+
+---
 ### Einrichtungsübersicht
+![Abbildung 29: Einrichtungsübersicht](../cosi/utils/assets/screenshots/einrichtungsuebersicht.png)
+*Abbildung 29: Einrichtungsübersicht*
+
+1. **Detailansicht ein-/ausklappen**
+   > Über den Pfeil können *alle* Attribute einer Einrichtung aufgeklappt werden. Die einzelnen Zeilen der Detailansicht können für den weiteren Export ausgewählt werden.
+2. **Einrichtung auswählen**
+   > Einrichtungen für den Export auswählen. Ausgewählte Einrichtungen werden in der Karte visuell hervorgehoben.
+3. **Einrichtung fokussieren**
+   > Durch einen Klick auf das Symbol zoomt die Karte zu der betreffenden Einrichtungen. Die Einrichtung wird in der Karte visuell hervorgehoben.
+4. **Einrichtung ein-/ausblenden**
+   > Einrichtungen können in der Karte ein- und ausgeschaltet werden. Ausgeschaltete Einrichtungen werden bei allen anderen CoSI-Funktionen nicht berücksichtigt.
+5. **Einrichtungsattribute**
+   > - Einrichtungsname, Adresse, Layer, Typ und Thema werden dem Datensatz direkt entnommen
+   > - Die Gebietszuweisung wird dynamisch für die aktuelle Verwaltungsebene generiert
+   > - Symbole zeigen an, wenn eine Einrichtung simuliert oder modifiziert wurde.
+6. **Numerische Attribute**
+   > Alle Attribute einer Einrichtung, die Zahlwerte abbilden (welche auch für die [Versorgungsanalyse](#markdown-header-versorgungsanalyse) verwendet werden können) werden in einer eigenen Spalte dargestellt. Die Farbe des Balkens richtet sich dabei nach dem Dezil des Wertes in der Liste aller Einrichtungen. Die Länge des Balkens ist proportional zum Höchstwert.
+7. **Einträge sortieren**
+   > Alle Spalten können, durch mehrmaliges Klicken auf die Kopfzeile, auf- und absteigend sortiert werden (alphabetisch oder nach Wert). Dabei kann für max. 2 Spalten erfolgen (z.B. 1. nach Typ und 2. nach numerischem Wert).
+8. **Durchschnittliche Anbindung (in m)**
+   > Die Anbindungsspalte zeigt die durchschnittliche Laufdistanz (in m) zu den jeweils nächstgelegenen Einrichtungen der ausgewählten Typen. Durch einen Klick auf den Wert kann die entsprechende Aufschlüsselung geöffnet werden (s. 12.).
+9.  **Themenfilter**
+      > Über kann die Tabelle nach Fachdatenlayern gefiltert werden. Die Liste kann im Freitext durchsucht werden.
+10. **Einträge durchsuchen**
+      > Die Tabelle kann nach beliebigen Freitexten durchsucht werden (schließt auch die Detailansichten ein).
+11. **Tabelle exportieren**
+      > Die ausgewählten Einträge als XLSX für Excel exportieren. Über aus Auswahlfeld *Detailansicht exportieren* können alle bzw. in der Detailansicht ausgewählte Attribute eines Einrichtungstyps exportiert werden. Ist keine Auswahl getroffen, werden alle Einrichtungen exportiert.
+12. **Standortbewertung: Themenauswahl**
+   *(Das Werkzeug befindet sich in der Entwicklung)*
+      > Erlaubt die Auswahl beliebiger weiterer Fachdatenthemen für eine Standortbewertung. Bei Fachdaten, welche Punkte oder Flächen in der Karte repräsentieren (i.d.R. Einrichtungen) wird der Ort des Typs gefunden, welcher jeder Einrichtung in der Tabelle am nächsten ist und die Laufdistanz in Metern angegeben. Bei er Auswahl mehrerer Themen wird ein gewichteter Mittelwert gebildet (s. 8./13.). Andere Themen, z.D. Lärmkarte, Luftqualität, etc.) für die Bewertung befinden sich im Aufbau.
+13. **Standortbewertung: Gewichtung**
+   *(Das Werkzeug befindet sich in der Entwicklung)*
+      > Erlaubt die Gewichtung der Themen für die Standortbewertung. Ein Thema mit Wert 0,5 wird somit nur halb so stark in den Mittelwert einbezogen, wie eines mit dem Wert 1.
 
 ### Gebietsauswahl
 ___
 Beim Starten von CoSI wird zunächst ein Bezugsrahmen festgelegt sowie ein Planungsgebiet zusammengestellt und bestätigt.
 
-![Abbildung 22: Gebietsauswahl](https://user-images.githubusercontent.com/43250699/142933538-fd2e1dbc-8bef-444a-bc7f-66d0066a457e.png)
+![Abbildung 30: Gebietsauswahl](https://user-images.githubusercontent.com/43250699/142933538-fd2e1dbc-8bef-444a-bc7f-66d0066a457e.png)
 
-*Abbildung 22: Das Werkzeug "Gebiet auswählen"*  
+*Abbildung 30: Das Werkzeug "Gebiet auswählen"*  
 
 1. **Bezugsrahmen wählen**
    > Über ein Dropdown Menü können **"Hamburg"**, **"Bezirke"**, **"Stadtteile"** oder **"Statistische Gebiete"** ausgewählt werden – dies legt die Verwaltungseinheit fest, für die die statistischen Daten angezeigt und Auswertungen erstellt werden sollen. Alle Funktionen sind auf den jeweiligen Gebietsebenen verfügbar. Die Zahl der verfügbaren Indikatoren kann jedoch variieren. Der Bezugsrahmen bestimmt auch die zu ladenden übergeordneten Referenzgebiete: Stadtteile für stat. Gebiete, Bezirke für Stadtteile.
@@ -719,9 +892,9 @@ Das Werkzeug zur Visualisierung regionalstatistischer Daten ermöglicht die Ausw
 Das Werkzeug kann die ausgewählten Datensätze auf der Karte visualisieren und generiert eine dynamische Legende. Des Weiteren können Datensätze für mehrere Jahre ausgewählt und auf Wunsch in hintereinander laufender Folge animiert werden.  
 
 
-![Abbildung 23: Fenster zur Kartenanalyse statistischer Daten](https://user-images.githubusercontent.com/43250699/142934510-c2a59330-4630-4ff3-9e3d-eb5305fc91f2.png)  
+![Abbildung 31: Fenster zur Kartenanalyse statistischer Daten](https://user-images.githubusercontent.com/43250699/142934510-c2a59330-4630-4ff3-9e3d-eb5305fc91f2.png)  
 
-*Abbildung 23: Fenster zur Kartenanalyse statistischer Daten*  
+*Abbildung 31: Fenster zur Kartenanalyse statistischer Daten*  
 
 1.	**Werkzeug minimieren/ maximieren**  
    > Über den Button kann das Fenster des Werkzeugs minimiert bzw. wieder maximiert werden.
@@ -751,8 +924,8 @@ Das Werkzeug kann die ausgewählten Datensätze auf der Karte visualisieren und 
 ___
 Das Werkzeug "Chartgenerator" erstellt Graphen aus Datensätzen und verwaltet diese. Darüberhinaus ermöglicht es Ihnen den Export dieser Graphen als PNG.
 
-![Abbildung 20: Chartgenerator](https://user-images.githubusercontent.com/43250699/143032270-d9521038-a4b8-4669-bcd8-452a701fc962.jpg)  
-*Abbildung 20: Chartgenerator*
+![Abbildung 32: Chartgenerator](https://user-images.githubusercontent.com/43250699/143032270-d9521038-a4b8-4669-bcd8-452a701fc962.jpg)  
+*Abbildung 32: Chartgenerator*
 
 1. **Info**
    > Über diesen Button öffnen Sie diese Anleitung.

@@ -704,7 +704,7 @@ export default {
                 :class="{ expanded: results.length > 0 }"
             >
                 <div class="addon_wrapper">
-                    <ToolInfo :url="readmeUrl[currentLocale]"/>
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <p class="section intro">
                         {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
                     </p>

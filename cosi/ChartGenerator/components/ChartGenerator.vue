@@ -411,9 +411,10 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         yToZero (index, subindex) {
-            let chartComponent = {};
-            // eslint-disable-next-line
-            subindex >= 0 ? chartComponent = this.allCharts.find(dataSet => (dataSet.init === index && dataSet.sub_index === subindex)) : chartComponent = this.allCharts.find(dataSet => dataSet.init === index);
+            const chartComponent = subindex >= 0 ?
+                this.allCharts.find(dataSet => dataSet.init === index && dataSet.sub_index === subindex) :
+                this.allCharts.find(dataSet => dataSet.init === index);
+
             chartComponent.beginAtZero = !chartComponent.beginAtZero;
         },
         /**
@@ -510,7 +511,7 @@ export default {
                 v-if="active"
                 id="chart_generator"
             >
-                <ToolInfo :url="readmeUrl[currentLocale]"/>
+                <ToolInfo :url="readmeUrl[currentLocale]" />
                 <div
                     id="chart_panel"
                     class="wrapper"
@@ -598,7 +599,7 @@ export default {
                                 <template v-if="!Array.isArray(graph.type)">
                                     <div class="graph_functions">
                                         <button
-                                            v-if="type === 'LineChart'"
+                                            v-if="graph.type === 'LineChart'"
                                             class="switch right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                             @click="yToZero(index, i)"

@@ -78,12 +78,6 @@ const actions = {
         }
 
         commit("setMapping", _mapping);
-    },
-
-    async requireUpdate ({commit}) {
-        commit("setUpdateRequired", true);
-        await Vue.nextTick();
-        commit("setUpdateRequired", false);
     }
 };
 

@@ -430,8 +430,8 @@ export default {
         <template
             v-if="active"
             #toolBody
-        >  
-            <ToolInfo :url="readmeUrl[currentLocale]"/>
+        >
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app absolute>
                 <v-main
                     id="scenario-builder"

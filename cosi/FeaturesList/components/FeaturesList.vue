@@ -267,10 +267,6 @@ export default {
 
         extent () {
             this.updateDistanceScores();
-        },
-
-        updateRequired () {
-            this.updateFeaturesList();
         }
     },
     created () {
@@ -296,6 +292,8 @@ export default {
         Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
         Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
         Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
+
+        this.$root.$on("updateFeaturesList", this.updateFeaturesList);
 
         this.distScoreLayer = await this.createLayer("distance-score-features");
         this.distScoreLayer.setVisible(true);
@@ -473,6 +471,12 @@ export default {
             featureItem.enabled = !featureItem.enabled;
             this.toggleFeatureDisabled(featureItem);
             this.$root.$emit("updateFeature");
+        },
+
+        searchAllAttributes (value, search, item) {
+            const allProps = {...item.feature.getProperties(), ...item};
+
+            return Object.values(allProps).some(v => v && v.toString().toLowerCase().includes(search.toLowerCase()));
         },
 
         getNumericalValueColor (item, key, invertColor) {
@@ -665,7 +669,7 @@ export default {
             v-if="active"
             #toolBody
         >
-            <ToolInfo :url="readmeUrl[currentLocale]"/>
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app id="features-list-wrapper">
                 <div class="my-2">
                     <v-btn
@@ -730,6 +734,7 @@ export default {
                                 :headers="columns"
                                 :items="items"
                                 :search="search"
+                                :custom-filter="searchAllAttributes"
                                 :expanded.sync="expanded"
                                 multi-sort
                                 item-key="key"
