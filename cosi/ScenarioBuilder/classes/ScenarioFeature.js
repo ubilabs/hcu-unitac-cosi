@@ -59,11 +59,11 @@ export default class ScenarioFeature {
         const source = getClusterSource(this.layer);
 
         // unbind the listener
+        unByKey(this.eventKeys.modifier);
         unByKey(this.eventKeys[this.feature.getId()]);
         if (source.getFeatureById(this.feature.getId())) {
             source.removeFeature(this.feature);
         }
-
         if (this.guideLayer) {
             removeSimulationTag(this.feature, this.guideLayer);
         }
@@ -173,19 +173,20 @@ export default class ScenarioFeature {
         /**
          * @todo outsource to own method, merge with render event?
          */
-        this.eventKeys.modifier = getClusterSource(this.layer).on("change", () => {
-            const source = getClusterSource(this.layer);
+        if (!this.feature.get("isSimulation")) {
+            this.eventKeys.modifier = getClusterSource(this.layer).on("change", (evt) => {
+                const source = evt.target;
 
-            if (!source.hasFeature(this.feature) && this.scenario.isActive) {
-                const replace = source.getFeatureById(this.feature.getId());
+                if (!source.hasFeature(this.feature) && this.scenario.isActive) {
+                    const replace = source.getFeatureById(this.feature.getId());
 
-                if (replace) {
-                    source.removeFeature(replace);
+                    if (replace) {
+                        source.removeFeature(replace);
+                    }
+                    source.addFeature(this.feature);
                 }
-
-                source.addFeature(this.feature);
-            }
-        });
+            });
+        }
 
         this.feature.set("isModified", true);
     }
