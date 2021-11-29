@@ -60,6 +60,7 @@ export default class ScenarioFeature {
 
         // unbind the listener
         unByKey(this.eventKeys[this.feature.getId()]);
+        unByKey(this.eventKeys.modifier);
         if (source.getFeatureById(this.feature.getId())) {
             source.removeFeature(this.feature);
         }
@@ -173,19 +174,21 @@ export default class ScenarioFeature {
         /**
          * @todo outsource to own method, merge with render event?
          */
-        this.eventKeys.modifier = getClusterSource(this.layer).on("change", () => {
-            const source = getClusterSource(this.layer);
+        if (!this.feature.get("isSimulation")) {
+            this.eventKeys.modifier = getClusterSource(this.layer).on("change", () => {
+                const source = getClusterSource(this.layer);
 
-            if (!source.hasFeature(this.feature) && this.scenario.isActive) {
-                const replace = source.getFeatureById(this.feature.getId());
+                if (!source.hasFeature(this.feature) && this.scenario.isActive) {
+                    const replace = source.getFeatureById(this.feature.getId());
 
-                if (replace) {
-                    source.removeFeature(replace);
+                    if (replace) {
+                        source.removeFeature(replace);
+                    }
+
+                    source.addFeature(this.feature);
                 }
-
-                source.addFeature(this.feature);
-            }
-        });
+            });
+        }
 
         this.feature.set("isModified", true);
     }
