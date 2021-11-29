@@ -6,12 +6,14 @@ import moment from "moment";
  * @post the given timeData has no gaps and the seconds are zeroed
  * @param {String} from the starting date based on the calender as "YYYY-MM-DD HH:mm:ss"
  * @param {Object} timeData a single dataset object{date: value}
+ * @param {Number} [minutes=15] the minutes (should fit an hour) to split an hour into (default: 15 minutes)
  * @returns {Object}  a new dataset object{date: value} without any gaps in the timeline
  */
-export function addMissingDataDay (from, timeData) {
+export function addMissingDataDay (from, timeData, minutes = 15) {
     const zeroedData = {},
         result = {},
-        datePrefix = moment(from, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD ");
+        datePrefix = moment(from, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD "),
+        hourParts = Math.floor(60 / Math.max(1, minutes));
     let h,
         m,
         key;
@@ -22,8 +24,8 @@ export function addMissingDataDay (from, timeData) {
 
     // add missing datasets
     for (h = 0; h < 24; h++) {
-        for (m = 0; m < 4; m++) {
-            key = datePrefix + String(h).padStart(2, "0") + ":" + String(m * 15).padStart(2, "0") + ":00";
+        for (m = 0; m < hourParts; m++) {
+            key = datePrefix + String(h).padStart(2, "0") + ":" + String(m * minutes).padStart(2, "0") + ":00";
 
             if (Object.prototype.hasOwnProperty.call(zeroedData, key)) {
                 result[key] = zeroedData[key];

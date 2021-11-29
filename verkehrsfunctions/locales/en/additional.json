@@ -2,9 +2,9 @@
     "modules": {
         "tools": {
             "verkehrsfunctions": {
-                "number": "Number",
-                "carsHeaderSuffix": "The count of cars",
-                "trucksHeaderSuffix": "Trucks proportion in %"
+                "bicycleHeaderSuffix": "Number of bicycles",
+                "carsHeaderSuffix": "Number of cars",
+                "trucksHeaderSuffix": "Number of trucks"
             }
         }
     }

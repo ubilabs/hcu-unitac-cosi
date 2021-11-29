@@ -3,7 +3,6 @@
   "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
-  "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "cosiFileImport": {
@@ -15,6 +14,9 @@
     "type": "tool"
   },
   "populationRequest": {
+    "type": "tool"
+  },
+  "sdpDownload": {
     "type": "tool"
   },
   "commuterFlows": {
@@ -59,6 +61,15 @@
     "path": "cosi/TemplateManager",
     "type": "tool"
   },
+  "resetTree": {
+    "type": "tool"
+  },
+  "geoAnalyze": {
+    "type": "tool"
+  },
+  "vueAddon": {
+    "type": "tool"
+  },
   "schoolRoutePlanning": {
     "type": "tool"
   },
@@ -68,10 +79,6 @@
   },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
-    "type": "gfiTheme"
-  },
-  "continuousCountingBike": {
-    "path":"gfiThemes/continuousCountingBike",
     "type": "gfiTheme"
   },
   "dataTable": {
@@ -84,10 +91,6 @@
   },
   "flaecheninfo": {
     "path":"gfiThemes/flaecheninfo",
-    "type": "gfiTheme"
-  },
-  "reisezeiten": {
-    "path":"gfiThemes/reisezeiten",
     "type": "gfiTheme"
   },
   "schulinfo": {

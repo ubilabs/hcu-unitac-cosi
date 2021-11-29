@@ -227,12 +227,15 @@ export default {
 
 
 <style lang="less" scoped>
+@import "~/css/mixins.less";
+
 @color_1: #fff;
 @color_2: #fec44f;
 @background_color_1: rgba(227, 227, 227, 0.5);
 @background_color_2: rgba(0,0,0,.5);
 
 .schulinfo {
+    max-width: 40vw;
     position: relative;
     .bold {
         td {
@@ -251,6 +254,12 @@ export default {
         font-size: 12px;
         .btn-default {
             margin: 4px;
+            &:focus {
+                .primary_action_focus();
+            }
+            &:hover {
+                .primary_action_hover();
+            }
         }
         padding-right: 64px;
     }
@@ -270,10 +279,6 @@ export default {
     .glyphicon {
         font-size: 28px;
         padding: 0 2px;
-        &:hover {
-            cursor: pointer;
-            opacity: 0.5;
-        }
     }
     .glyphicon-star {
         color: @color_2;

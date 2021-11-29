@@ -7,6 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataWeek} from "../utils/addMissingData.js";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountWeek",
@@ -21,18 +22,28 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
         }
     },
     data () {
         return {
+            tab: "week",
             weekDatepicker: null,
             apiData: [],
+            showPreviousWeekUntilThisWeekday: 1,
 
             // props for diagram
             setTooltipValue: (tooltipItem) => {
@@ -52,9 +63,38 @@ export default {
 
                 return this.calendarweek + " " + weeknumber + " / " + year;
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
+            renderPointSize: (datetime) => {
+                const pointSize = [],
+                    format = "YYYY-MM-DD";
+
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointSize.push(6);
+                    }
+                    else {
+                        pointSize.push(2);
+                    }
+                }
+
+                return pointSize;
+            },
             // props for table
-            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.weekLabel"),
+            tableTitle: i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek") ? i18next.t("additional:modules.tools.gfi.themes.trafficCount.tableTitleWeek") : "",
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("dd");
             },
@@ -69,10 +109,12 @@ export default {
                 switch (meansOfTransports) {
                     // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
                     // use this code to enable Kfz + SV
-                    // case "Anzahl_Kfz":
-                    //    return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
-                    case "Anteil_SV":
+                    /*
+                    case "Anzahl_Kfz":
+                        return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
+                    case "Anzahl_SV":
                         return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix");
+                    */
                     default:
                         return txt;
                 }
@@ -90,17 +132,24 @@ export default {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek");
         }
     },
+    watch: {
+        reset () {
+            this.weekDatepicker = null;
+            this.setWeekdatepicker();
+        }
+    },
     mounted () {
         moment.locale(i18next.language);
         this.setWeekdatepicker();
     },
     methods: {
         setWeekdatepicker: function () {
-            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year");
+            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year"),
+                preselectedValue = moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate();
 
             if (!this.weekDatepicker) {
                 this.weekDatepicker = new DatepickerModel({
-                    preselectedValue: moment().toDate(),
+                    preselectedValue: preselectedValue,
                     multidate: 5,
                     startDate: startDate.toDate(),
                     endDate: moment().toDate(),
@@ -117,7 +166,16 @@ export default {
                         }
                     },
                     todayHighlight: false,
-                    language: i18next.language
+                    language: i18next.language,
+                    beforeShowDay: date => {
+                        const holiday = getPublicHoliday(date, this.holidays);
+
+                        if (holiday?.translationKey) {
+                            return {classes: "holiday", tooltip: i18next.t(holiday.translationKey)};
+                        }
+
+                        return true;
+                    }
                 });
 
                 this.weekDatepicker.on("valuesChanged", function (evt) {
@@ -132,7 +190,8 @@ export default {
                 if (document.querySelector("#weekDateSelector")) {
                     document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
                 }
-                this.weekDatepicker.updateValues(moment().toDate());
+
+                this.weekDatepicker.updateValues(moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate());
             }
             else if (document.querySelector("#weekDateSelector")) {
                 document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
@@ -212,6 +271,7 @@ export default {
             <div class="input-group">
                 <input
                     id="weekDateInput"
+                    aria-label="Datum"
                     type="text"
                     class="form-control dpinput"
                     placeholder="Datum"
@@ -243,6 +303,8 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
+                :render-point-size="renderPointSize"
             />
         </div>
         <TrafficCountCheckbox
@@ -250,6 +312,8 @@ export default {
         />
         <div id="tableWeek">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

@@ -94,6 +94,7 @@ export default {
 <style lang="less" scoped>
 .verkehrsstaerken-table {
         margin: 6px 15px 0 12px;
+        overflow: auto;
         table {
             margin: 0;
             td,

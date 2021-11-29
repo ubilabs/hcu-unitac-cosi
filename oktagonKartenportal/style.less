@@ -1,6 +1,17 @@
+@import "../../css/mixins.less";
+
 @font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
 
 .oktagon {
+    .close, #oktagonCloseButton, #oktagonSubmitButton:not([disabled])  {
+        opacity: 1;
+        &:focus {
+            .primary_action_focus();
+        }
+        &:hover {
+            .primary_action_hover();
+        }
+    }
     .header {
         width: 100%;
         border-bottom: 1px solid rgb(229,229,229);

@@ -151,6 +151,7 @@ export default {
         active (value) {
             if (value) {
                 this.setActive(value);
+                this.setFocusToFirstControl();
             }
             else {
                 this.resetCanvasCursor();
@@ -177,7 +178,17 @@ export default {
             addInteractionToMap: "addInteraction",
             removeInteractionFromMap: "removeInteraction"
         }),
-
+        /**
+         * Sets the focus to the first control
+         * @returns {void}
+         */
+        setFocusToFirstControl () {
+            this.$nextTick(() => {
+                if (this.$refs["select-drawtype"]) {
+                    this.$refs["select-drawtype"].focus();
+                }
+            });
+        },
         /**
          * call the setIcon function by changes in damage account
          * field to update the number with setted param dmaChg
@@ -580,6 +591,7 @@ export default {
                     </label>
                 </div>
                 <select
+                    ref="select-drawtype"
                     class="form-control input-sm"
                     @change="selectIconCat($event);"
                 >
@@ -599,9 +611,13 @@ export default {
                                 ref="Vorlage_Dammbalken"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Dammbalken.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Dammbalken.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Dammbalken_16.jpg'))">
+                                    <img
+                                        alt="Dammbalken"
+                                        :src="$t(getIconPath('Vorlage_Dammbalken_16.jpg'))"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -616,9 +632,13 @@ export default {
                                 ref="Vorlage_Deich"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Deich.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Deich.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Deich_16.jpg'))">
+                                    <img
+                                        alt="Deich"
+                                        :src="$t(getIconPath('Vorlage_Deich_16.jpg'))"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -633,9 +653,13 @@ export default {
                                 ref="Vorlage_Zug_DB"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Zug_DB.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Zug_DB.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Zug_DB_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Zug_DB_16.jpg'))"
+                                        alt="Zug DB"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -650,9 +674,13 @@ export default {
                                 ref="Vorlage_Dammbalken_ueberflutet_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Dammbalken_ueberflutet_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Dammbalken_ueberflutet_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Dammbalken_ueberflutet_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Dammbalken_ueberflutet_defekt_16.jpg'))"
+                                        alt="Dammbalken überflutet"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -667,9 +695,13 @@ export default {
                                 ref="Vorlage_Deich_normal"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Deich_normal.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Deich_normal.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Deich_normal_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Deich_normal_16.jpg'))"
+                                        alt="Deich normal"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -684,9 +716,13 @@ export default {
                                 ref="Vorlage_Zug_DB_Schaden"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Zug_DB_Schaden.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Zug_DB_Schaden.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Zug_DB_Schaden_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Zug_DB_Schaden_16.jpg'))"
+                                        alt="Zug DB Schaden"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -701,9 +737,13 @@ export default {
                                 ref="Vorlage_Drehtor"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Drehtor.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Drehtor.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Drehtor_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Drehtor_16.jpg'))"
+                                        alt="Drehtor"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -718,9 +758,13 @@ export default {
                                 ref="Vorlage_Deichbruch"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Deichbruch.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Deichbruch.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Deichbruch_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Deichbruch_16.jpg'))"
+                                        alt="Deichbruch"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -735,9 +779,13 @@ export default {
                                 ref="Vorlage_Zugunglueck"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Zugunglueck.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Zugunglueck.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Zugunglueck_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Zugunglueck_16.jpg'))"
+                                        alt="Zugunglück"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -752,9 +800,13 @@ export default {
                                 ref="Vorlage_Drehtor_ueberflutet_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Drehtor_ueberflutet_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Drehtor_ueberflutet_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Drehtor_ueberflutet_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Drehtor_ueberflutet_defekt_16.jpg'))"
+                                        alt="Drehtor überflutet/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -769,9 +821,13 @@ export default {
                                 ref="Vorlage_Deichwart"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Deichwart.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Deichwart.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Deichwart_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Deichwart_16.jpg'))"
+                                        alt="Deichwart"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -786,9 +842,13 @@ export default {
                                 ref="Vorlage_E_Lok_DB"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_E_Lok_DB.jpg');"
+                                @keydown.enter="setIcon('Vorlage_E_Lok_DB.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_E_Lok_DB_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_E_Lok_DB_16.jpg'))"
+                                        alt="E-Lok DB"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -803,9 +863,13 @@ export default {
                                 ref="Vorlage_Schleusen"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Schleusen.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Schleusen.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Schleusen_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Schleusen_16.jpg'))"
+                                        alt="Schleusen"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -820,9 +884,13 @@ export default {
                                 ref="Vorlage_Produktionsbetrieb_firma"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Produktionsbetrieb_firma.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Produktionsbetrieb_firma.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_16.jpg'))"
+                                        alt="Produktionsfirma"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -837,9 +905,13 @@ export default {
                                 ref="Vorlage_E_Lok_DB_Schaden"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_E_Lok_DB_Schaden.jpg');"
+                                @keydown.enter="setIcon('Vorlage_E_Lok_DB_Schaden.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_E_Lok_DB_Schaden_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_E_Lok_DB_Schaden_16.jpg'))"
+                                        alt="E-Lok DB Schaden"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -854,9 +926,13 @@ export default {
                                 ref="Vorlage_Schleusen_ueberflutet_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Schleusen_ueberflutet_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Schleusen_ueberflutet_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Schleusen_ueberflutet_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Schleusen_ueberflutet_defekt_16.jpg'))"
+                                        alt="Schleusen überflutet/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -871,9 +947,13 @@ export default {
                                 ref="Vorlage_Produktionsbetrieb_firma_problem"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Produktionsbetrieb_firma_problem.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Produktionsbetrieb_firma_problem.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_problem_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_problem_16.jpg'))"
+                                        alt="Produktionfirma Problem"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -888,9 +968,13 @@ export default {
                                 ref="Vorlage_Pfeil_oben"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_oben.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_oben.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_oben_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_oben_16.jpg'))"
+                                        alt="Pfeil oben"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -905,9 +989,13 @@ export default {
                                 ref="Vorlage_Schiebetor"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Schiebetor.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Schiebetor.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Schiebetor_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Schiebetor_16.jpg'))"
+                                        alt="Schiebetor"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -922,9 +1010,13 @@ export default {
                                 ref="Vorlage_Produktionsbetrieb_firma_problem_auslaufen"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Produktionsbetrieb_firma_problem_auslaufen.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Produktionsbetrieb_firma_problem_auslaufen.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_problem_auslaufen_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_problem_auslaufen_16.jpg'))"
+                                        alt="Produktionsfirma auslaufen"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -939,9 +1031,13 @@ export default {
                                 ref="Vorlage_Pfeil_oben_rechts"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_oben_rechts.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_oben_rechts.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_oben_rechts_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_oben_rechts_16.jpg'))"
+                                        alt="Pfeil oben rechts"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -956,9 +1052,13 @@ export default {
                                 ref="Vorlage_Schiebetor_uebeflutet_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Schiebetor_uebeflutet_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Schiebetor_uebeflutet_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Schiebetor_uebeflutet_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Schiebetor_uebeflutet_defekt_16.jpg'))"
+                                        alt="Schiebetor überflutet/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -973,9 +1073,13 @@ export default {
                                 ref="Vorlage_Produktionsbetrieb_firma_explosion_brand"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Produktionsbetrieb_firma_explosion_brand.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Produktionsbetrieb_firma_explosion_brand.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_explosion_brand_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Produktionsbetrieb_firma_explosion_brand_16.jpg'))"
+                                        alt="Produktionsfirma Explosion"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -990,9 +1094,13 @@ export default {
                                 ref="Vorlage_Pfeil_rechts"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_rechts.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_rechts.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_rechts_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_rechts_16.jpg'))"
+                                        alt="Pfeil rechts"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1007,9 +1115,13 @@ export default {
                                 ref="Vorlage_sandsackwall"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_sandsackwall.jpg');"
+                                @keydown.enter="setIcon('Vorlage_sandsackwall.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_sandsackwall_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_sandsackwall_16.jpg'))"
+                                        alt="Sandsackwall"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1024,9 +1136,13 @@ export default {
                                 ref="Vorlage_LKW_Tank"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_LKW_Tank.jpg');"
+                                @keydown.enter="setIcon('Vorlage_LKW_Tank.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_LKW_Tank_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_LKW_Tank_16.jpg'))"
+                                        alt="LKW Tank"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1041,9 +1157,13 @@ export default {
                                 ref="Vorlage_Pfeil_unten_rechts"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_unten_rechts.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_unten_rechts.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_unten_rechts_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_unten_rechts_16.jpg'))"
+                                        alt="Pfeil unten rechts"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1058,9 +1178,13 @@ export default {
                                 ref="Vorlage_sandsackwall_ueberflutet_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_sandsackwall_ueberflutet_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_sandsackwall_ueberflutet_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_sandsackwall_ueberflutet_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_sandsackwall_ueberflutet_defekt_16.jpg'))"
+                                        alt="Sandsackwall überflutet/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1075,9 +1199,13 @@ export default {
                                 ref="Vorlage_LKW_Tank_Auslaufen"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_LKW_Tank_Auslaufen.jpg');"
+                                @keydown.enter="setIcon('Vorlage_LKW_Tank_Auslaufen.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_LKW_Tank_Auslaufen_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_LKW_Tank_Auslaufen_16.jpg'))"
+                                        alt="LKW Tank auslaufen"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1092,9 +1220,13 @@ export default {
                                 ref="Vorlage_Pfeil_unten"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_unten.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_unten.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_unten_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_unten_16.jpg'))"
+                                        alt="Pfeil unten"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1109,9 +1241,13 @@ export default {
                                 ref="Vorlage_Klapptor"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Klapptor.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Klapptor.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Klapptor_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Klapptor_16.jpg'))"
+                                        alt="Klapptor"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1126,9 +1262,13 @@ export default {
                                 ref="Vorlage_Wasser"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Wasser.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Wasser.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Wasser_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Wasser_16.jpg'))"
+                                        alt="Wasser"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1143,9 +1283,13 @@ export default {
                                 ref="Vorlage_Pfeil_unten_links"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_unten_links.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_unten_links.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_unten_links_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_unten_links_16.jpg'))"
+                                        alt="Pfeil unten links"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1160,9 +1304,13 @@ export default {
                                 ref="Vorlage_Klapptor_ueberflutet_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Klapptor_ueberflutet_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Klapptor_ueberflutet_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Klapptor_ueberflutet_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Klapptor_ueberflutet_defekt_16.jpg'))"
+                                        alt="Klapptor überflutet/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1177,9 +1325,13 @@ export default {
                                 ref="Vorlage_Haus"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Haus.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Haus.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Haus_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Haus_16.jpg'))"
+                                        alt="Haus"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1194,9 +1346,13 @@ export default {
                                 ref="Vorlage_Pfeil_links"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_links.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_links.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_links_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_links_16.jpg'))"
+                                        alt="Pfeil links"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1211,9 +1367,13 @@ export default {
                                 ref="Vorlage_Kraftwerk"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kraftwerk.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kraftwerk.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kraftwerk_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kraftwerk_16.jpg'))"
+                                        alt="Kraftwerk"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1228,9 +1388,13 @@ export default {
                                 ref="Vorlage_container"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_container.jpg');"
+                                @keydown.enter="setIcon('Vorlage_container.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_container_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_container_16.jpg'))"
+                                        alt="Container"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1245,9 +1409,13 @@ export default {
                                 ref="Vorlage_Pfeil_oben_links"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pfeil_oben_links.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pfeil_oben_links.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pfeil_oben_links_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pfeil_oben_links_16.jpg'))"
+                                        alt="Pfeil oben links"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1262,9 +1430,13 @@ export default {
                                 ref="Vorlage_Kraftwerk_gefahr"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kraftwerk_gefahr.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kraftwerk_gefahr.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kraftwerk_gefahr_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kraftwerk_gefahr_16.jpg'))"
+                                        alt="Kraftwerk Gefahr"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1279,9 +1451,13 @@ export default {
                                 ref="Vorlage_bombe"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_bombe.jpg');"
+                                @keydown.enter="setIcon('Vorlage_bombe.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_bombe_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_bombe_16.jpg'))"
+                                        alt="Bombe"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1296,9 +1472,13 @@ export default {
                                 ref="Vorlage_viereck"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_viereck.jpg');"
+                                @keydown.enter="setIcon('Vorlage_viereck.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_viereck_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_viereck_16.jpg'))"
+                                        alt="Viereck"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1317,9 +1497,13 @@ export default {
                                 ref="Vorlage_Mannschaft"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Mannschaft.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Mannschaft.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Mannschaft_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Mannschaft_16.jpg'))"
+                                        alt="Mannschaft"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1334,9 +1518,13 @@ export default {
                                 ref="Vorlage_Notunterkunft_Kapazitaet"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Notunterkunft_Kapazitaet.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Notunterkunft_Kapazitaet.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Notunterkunft_Kapazitaet_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Notunterkunft_Kapazitaet_16.jpg'))"
+                                        alt="Notunterkunft Kapazität"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1351,9 +1539,13 @@ export default {
                                 ref="Vorlage_sandsacklager"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_sandsacklager.jpg');"
+                                @keydown.enter="setIcon('Vorlage_sandsacklager.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_sandsacklager_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_sandsacklager_16.jpg'))"
+                                        alt="Sandsacklager"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1368,9 +1560,13 @@ export default {
                                 ref="Vorlage_Kran_Bergepanzer"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_Bergepanzer.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_Bergepanzer.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_Bergepanzer_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_Bergepanzer_16.jpg'))"
+                                        alt="Kran/Bergepanzer"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1385,9 +1581,13 @@ export default {
                                 ref="Vorlage_Mannschaft_F"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Mannschaft_F.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Mannschaft_F.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Mannschaft_F_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Mannschaft_F_16.jpg'))"
+                                        alt="Mannschaft F"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1402,9 +1602,13 @@ export default {
                                 ref="Vorlage_Notunterkunft_Kapazitaet_aktiviert"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Notunterkunft_Kapazitaet_aktiviert.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Notunterkunft_Kapazitaet_aktiviert.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Notunterkunft_Kapazitaet_aktiviert_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Notunterkunft_Kapazitaet_aktiviert_16.jpg'))"
+                                        alt="Notunterkunft Kapazität aktiviert"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1419,9 +1623,13 @@ export default {
                                 ref="Vorlage_Sandsacklager_aktiviert"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Sandsacklager_aktiviert.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Sandsacklager_aktiviert.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Sandsacklager_aktiviert_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Sandsacklager_aktiviert_16.jpg'))"
+                                        alt="Sandsacklager aktiviert"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1436,9 +1644,13 @@ export default {
                                 ref="Vorlage_Kran_Bergepanzer_Raeumschild"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_Bergepanzer_Raeumschild.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_Bergepanzer_Raeumschild.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_Bergepanzer_Raeumschild_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_Bergepanzer_Raeumschild_16.jpg'))"
+                                        alt="Kran/Bergepanzer/Räumschild"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1453,9 +1665,13 @@ export default {
                                 ref="Vorlage_Mannschaft_Pol"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Mannschaft_Pol.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Mannschaft_Pol.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Mannschaft_Pol_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Mannschaft_Pol_16.jpg'))"
+                                        alt="Mannschaft Pol"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1470,9 +1686,13 @@ export default {
                                 ref="Vorlage_Notunterkunft_Kapazitaet_ok"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Notunterkunft_Kapazitaet_ok.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Notunterkunft_Kapazitaet_ok.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Notunterkunft_Kapazitaet_ok_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Notunterkunft_Kapazitaet_ok_16.jpg'))"
+                                        alt="Notunterkunft Kapazität ok"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1487,9 +1707,13 @@ export default {
                                 ref="Vorlage_Sandsacklager_ok"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Sandsacklager_ok.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Sandsacklager_ok.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Sandsacklager_ok_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Sandsacklager_ok_16.jpg'))"
+                                        alt="Sandsacklager ok"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1504,9 +1728,13 @@ export default {
                                 ref="Vorlage_Kran_Panzer"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_Panzer.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_Panzer.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_Panzer_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_Panzer_16.jpg'))"
+                                        alt="Kran/Panzer"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1521,9 +1749,13 @@ export default {
                                 ref="Vorlage_Mannschaft_SAN"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Mannschaft_SAN.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Mannschaft_SAN.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Mannschaft_SAN_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Mannschaft_SAN_16.jpg'))"
+                                        alt="Mannschaft San"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1538,9 +1770,13 @@ export default {
                                 ref="Vorlage_Notunterkunft_besetzt_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Notunterkunft_besetzt_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Notunterkunft_besetzt_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Notunterkunft_besetzt_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Notunterkunft_besetzt_defekt_16.jpg'))"
+                                        alt="Notunterkunft besetzt/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1555,9 +1791,13 @@ export default {
                                 ref="Vorlage_Sandsacklager_leer"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Sandsacklager_leer.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Sandsacklager_leer.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Sandsacklager_leer_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Sandsacklager_leer_16.jpg'))"
+                                        alt="Sandsacklager leer"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1572,9 +1812,13 @@ export default {
                                 ref="Vorlage_Kran_BW"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_BW.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_BW.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_BW_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_BW_16.jpg'))"
+                                        alt="Kran BW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1589,9 +1833,13 @@ export default {
                                 ref="Vorlage_Mannschaft_THW"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Mannschaft_THW.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Mannschaft_THW.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Mannschaft_THW_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Mannschaft_THW_16.jpg'))"
+                                        alt="Mannschaft THW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1606,9 +1854,13 @@ export default {
                                 ref="Vorlage_Fluchtburg"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Fluchtburg.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Fluchtburg.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Fluchtburg_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Fluchtburg_16.jpg'))"
+                                        alt="Fluchtburg"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1623,9 +1875,13 @@ export default {
                                 ref="Vorlage_Sand_Lagerflaeche"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Sand_Lagerflaeche.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Sand_Lagerflaeche.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Sand_Lagerflaeche_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Sand_Lagerflaeche_16.jpg'))"
+                                        alt="Sand Lagerfläche"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1640,9 +1896,13 @@ export default {
                                 ref="Vorlage_Kran_Feuerwehr"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_Feuerwehr.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_Feuerwehr.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_Feuerwehr_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_Feuerwehr_16.jpg'))"
+                                        alt="Kran Feuerwehr"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1657,9 +1917,13 @@ export default {
                                 ref="Vorlage_Pol"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Pol.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Pol.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Pol_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Pol_16.jpg'))"
+                                        alt="Pol"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1674,9 +1938,13 @@ export default {
                                 ref="Vorlage_Fluchtburg_aktiviert"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Fluchtburg_aktiviert.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Fluchtburg_aktiviert.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Fluchtburg_aktiviert_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Fluchtburg_aktiviert_16.jpg'))"
+                                        alt="Fluchtburg aktiviert"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1691,9 +1959,13 @@ export default {
                                 ref="Vorlage_Sand_Lagerflaeche_aktiviert"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Sand_Lagerflaeche_aktiviert.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Sand_Lagerflaeche_aktiviert.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Sand_Lagerflaeche_aktiviert_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Sand_Lagerflaeche_aktiviert_16.jpg'))"
+                                        alt="Sand Lagerfläche aktiviert"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1708,9 +1980,13 @@ export default {
                                 ref="Vorlage_Kran_THW"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_THW.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_THW.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_THW_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_THW_16.jpg'))"
+                                        alt="Kran THW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1725,9 +2001,13 @@ export default {
                                 ref="Vorlage_THW"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_THW.jpg');"
+                                @keydown.enter="setIcon('Vorlage_THW.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_THW_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_THW_16.jpg'))"
+                                        alt="THW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1742,9 +2022,13 @@ export default {
                                 ref="Vorlage_Fluchtburg_aktiv_ok"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Fluchtburg_aktiv_ok.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Fluchtburg_aktiv_ok.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Fluchtburg_aktiv_ok_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Fluchtburg_aktiv_ok_16.jpg'))"
+                                        alt="Fluchtburg aktiv/ok"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1759,9 +2043,13 @@ export default {
                                 ref="Vorlage_Kran_sonstige"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Kran_sonstige.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Kran_sonstige.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Kran_sonstige_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Kran_sonstige_16.jpg'))"
+                                        alt="Kran sonstige"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1776,9 +2064,13 @@ export default {
                                 ref="Vorlage_feuerwehr"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_feuerwehr.jpg');"
+                                @keydown.enter="setIcon('Vorlage_feuerwehr.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_feuerwehr_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_feuerwehr_16.jpg'))"
+                                        alt="Feuerwehr"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1793,9 +2085,13 @@ export default {
                                 ref="Vorlage_Fluchtburg_besetzt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Fluchtburg_besetzt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Fluchtburg_besetzt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Fluchtburg_besetzt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Fluchtburg_besetzt_16.jpg'))"
+                                        alt="Fluchtburg besetzt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1810,9 +2106,13 @@ export default {
                                 ref="Vorlage_Sand_Lagerflaeche_leer_defekt"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Sand_Lagerflaeche_leer_defekt.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Sand_Lagerflaeche_leer_defekt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Sand_Lagerflaeche_leer_defekt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Sand_Lagerflaeche_leer_defekt_16.jpg'))"
+                                        alt="Sand Lagerfläche leer/defekt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1827,9 +2127,13 @@ export default {
                                 ref="Vorlage_TLF"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_TLF.jpg');"
+                                @keydown.enter="setIcon('Vorlage_TLF.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_TLF_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_TLF_16.jpg'))"
+                                        alt="TLF"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1844,9 +2148,13 @@ export default {
                                 ref="feuerwehr_rtw"
                                 class="tm-btn"
                                 @click="setIcon('feuerwehr_rtw.jpg');"
+                                @keydown.enter="setIcon('feuerwehr_rtw.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('feuerwehr_rtw_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('feuerwehr_rtw_16.jpg'))"
+                                        alt="Feuerwehr RTW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1861,9 +2169,13 @@ export default {
                                 ref="Vorlage_Fluchtburg_Kapazitaet"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Fluchtburg_Kapazitaet.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Fluchtburg_Kapazitaet.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Fluchtburg_Kapazitaet_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Fluchtburg_Kapazitaet_16.jpg'))"
+                                        alt="Fluchtburg Kapazität"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1878,9 +2190,13 @@ export default {
                                 ref="Vorlage_HWS_Material"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_HWS_Material.jpg');"
+                                @keydown.enter="setIcon('Vorlage_HWS_Material.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_HWS_Material_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_HWS_Material_16.jpg'))"
+                                        alt="HWS Material"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1895,9 +2211,13 @@ export default {
                                 ref="Vorlage_Drehleiter"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Drehleiter.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Drehleiter.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Drehleiter_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Drehleiter_16.jpg'))"
+                                        alt="Drehleiter"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1912,9 +2232,13 @@ export default {
                                 ref="feuerwehr_nef"
                                 class="tm-btn"
                                 @click="setIcon('feuerwehr_nef.jpg');"
+                                @keydown.enter="setIcon('feuerwehr_nef.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('feuerwehr_nef_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('feuerwehr_nef_16.jpg'))"
+                                        alt="Feuerwehr NEF"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1929,9 +2253,13 @@ export default {
                                 ref="Vorlage_Bereitstellungsraum_Ort"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Bereitstellungsraum_Ort.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Bereitstellungsraum_Ort.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_16.jpg'))"
+                                        alt="Bereitstellungsraum Ort"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1946,9 +2274,13 @@ export default {
                                 ref="Vorlage_TEL_DV1"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_TEL_DV1.jpg');"
+                                @keydown.enter="setIcon('Vorlage_TEL_DV1.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_TEL_DV1_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_TEL_DV1_16.jpg'))"
+                                        alt="TEL DV1"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1963,9 +2295,13 @@ export default {
                                 ref="Vorlage_Bagger_Tieflader"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Bagger_Tieflader.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Bagger_Tieflader.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Bagger_Tieflader_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Bagger_Tieflader_16.jpg'))"
+                                        alt="Bagger/Tieflader"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1980,9 +2316,13 @@ export default {
                                 ref="feuerwehr_umwelt"
                                 class="tm-btn"
                                 @click="setIcon('feuerwehr_umwelt.jpg');"
+                                @keydown.enter="setIcon('feuerwehr_umwelt.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('feuerwehr_umwelt_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('feuerwehr_umwelt_16.jpg'))"
+                                        alt="Feuerwehr Umwelt"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -1997,9 +2337,13 @@ export default {
                                 ref="Vorlage_Bereitstellungsraum_Ort_arbeitet"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Bereitstellungsraum_Ort_arbeitet.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Bereitstellungsraum_Ort_arbeitet.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_arbeitet_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_arbeitet_16.jpg'))"
+                                        alt="Bereitstellungsraum Ort arbeitet"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2014,9 +2358,13 @@ export default {
                                 ref="Vorlage_TEL_DV2"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_TEL_DV2.jpg');"
+                                @keydown.enter="setIcon('Vorlage_TEL_DV2.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_TEL_DV2_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_TEL_DV2_16.jpg'))"
+                                        alt="TEL DV2"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2031,9 +2379,13 @@ export default {
                                 ref="Vorlage_Radlader"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Radlader.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Radlader.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Radlader_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Radlader_16.jpg'))"
+                                        alt="Radlader"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2048,9 +2400,13 @@ export default {
                                 ref="Vorlage_LKW"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_LKW.jpg');"
+                                @keydown.enter="setIcon('Vorlage_LKW.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_LKW_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_LKW_16.jpg'))"
+                                        alt="LKW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2065,9 +2421,13 @@ export default {
                                 ref="Vorlage_Bereitstellungsraum_Ort_aktiv"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Bereitstellungsraum_Ort_aktiv.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Bereitstellungsraum_Ort_aktiv.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_aktiv_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_aktiv_16.jpg'))"
+                                        alt="Bereitstellungsraum Ort aktiv"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2082,9 +2442,13 @@ export default {
                                 ref="Vorlage_TEL_DV3"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_TEL_DV3.jpg');"
+                                @keydown.enter="setIcon('Vorlage_TEL_DV3.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_TEL_DV3_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_TEL_DV3_16.jpg'))"
+                                        alt="TEL DV3"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2099,9 +2463,13 @@ export default {
                                 ref="Vorlage_Transporthubschrauber_BW"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Transporthubschrauber_BW.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Transporthubschrauber_BW.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Transporthubschrauber_BW_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Transporthubschrauber_BW_16.jpg'))"
+                                        alt="Transporthubschrauber BW"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2116,9 +2484,13 @@ export default {
                                 ref="Vorlage_LKW_Kippeinrichtung"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_LKW_Kippeinrichtung.jpg');"
+                                @keydown.enter="setIcon('Vorlage_LKW_Kippeinrichtung.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_LKW_Kippeinrichtung_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_LKW_Kippeinrichtung_16.jpg'))"
+                                        alt="LKW Kippeinrichtung"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2133,9 +2505,13 @@ export default {
                                 ref="Vorlage_Bereitstellungsraum_Ort_inaktiv"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_Bereitstellungsraum_Ort_inaktiv.jpg');"
+                                @keydown.enter="setIcon('Vorlage_Bereitstellungsraum_Ort_inaktiv.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_inaktiv_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_Bereitstellungsraum_Ort_inaktiv_16.jpg'))"
+                                        alt="Bereitstellungsraum Ort inaktiv"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2150,9 +2526,13 @@ export default {
                                 ref="Vorlage_TEL_DV4"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_TEL_DV4.jpg');"
+                                @keydown.enter="setIcon('Vorlage_TEL_DV4.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_TEL_DV4_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_TEL_DV4_16.jpg'))"
+                                        alt="TEL DV4"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2167,9 +2547,13 @@ export default {
                                 ref="Vorlage_RTH"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_RTH.jpg');"
+                                @keydown.enter="setIcon('Vorlage_RTH.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_RTH_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_RTH_16.jpg'))"
+                                        alt="RTH"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2184,9 +2568,13 @@ export default {
                                 ref="Vorlage_LKW_Stadtreinigung"
                                 class="tm-btn"
                                 @click="setIcon('Vorlage_LKW_Stadtreinigung.jpg');"
+                                @keydown.enter="setIcon('Vorlage_LKW_Stadtreinigung.jpg');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('Vorlage_LKW_Stadtreinigung_16.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('Vorlage_LKW_Stadtreinigung_16.jpg'))"
+                                        alt="LKW Stadtreinigung"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2213,9 +2601,13 @@ export default {
                                 ref="damage_account"
                                 class="tm-btn"
                                 @click="setIcon('damage_account.jpg', 'dmaNumber');"
+                                @keydown.enter="setIcon('damage_account.jpg', 'dmaNumber');"
                             >
                                 <div class="tm-btn-img pull-left">
-                                    <img :src="$t(getIconPath('damage_account_mini.jpg'))">
+                                    <img
+                                        :src="$t(getIconPath('damage_account_mini.jpg'))"
+                                        alt="damage account"
+                                    >
                                 </div>
                                 <div class="tm-btn-txt">
                                     <span>
@@ -2232,6 +2624,7 @@ export default {
                             ref="modify"
                             class="tm-btn"
                             @click="modifyIcon();"
+                            @keydown.enter="modifyIcon();"
                         >
                             <div class="tm-btn-txt">
                                 <span>
@@ -2245,6 +2638,7 @@ export default {
                             ref="delete"
                             class="tm-btn"
                             @click="deleteIcon();"
+                            @keydown.enter="deleteIcon();"
                         >
                             <div class="tm-btn-txt">
                                 <span>
@@ -2257,7 +2651,8 @@ export default {
                         <div
                             ref="download"
                             class="tm-btn"
-                            @click="download()"
+                            @click="download();"
+                            @keydown.enter="download();"
                         >
                             <div class="tm-btn-txt">
                                 <span>
@@ -2297,7 +2692,10 @@ export default {
                                     >
                                 </div>
                             </div>
-                            <label class="col-md-5 col-sm-5 control-label" />
+                            <label
+                                class="col-md-5 col-sm-5 control-label"
+                                for="tool-tacticalmark-download-file"
+                            />
                             <a
                                 id="tool-tacticalmark-download-file"
                                 class="downloadFile"

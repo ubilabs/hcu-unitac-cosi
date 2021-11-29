@@ -1,4 +1,4 @@
-import BuildSpecModel from "../../../../modules/tools/print/buildSpec";
+import SpecModel from "./../../../../src/modules/tools/print/utils/buildSpec";
 
 /**
  * Setes the school route layer to end of the visible vector layer list.
@@ -29,14 +29,16 @@ export default {
     /**
      * Prints the route via the print module.
      * @param {Object} context The vuex context.
+     * @param {Function} getResponse a function to receive the response with
      * @returns {void}
      */
-    printRoute ({state, rootGetters}) {
+    printRoute ({state, rootGetters, dispatch}, getResponse) {
         const routeElements = state.routeElements,
             visibleLayerList = sortVisibleLayerList(rootGetters["Map/visibleLayerList"], state.layerName),
             attributes = {
                 "layout": state.printLayout,
                 "outputFormat": state.printOutputFormat,
+                "outputFilename": "Schulweg",
                 "attributes": {
                     "title": state.printTitle,
                     "length": `${routeElements.kuerzesteStrecke}m`,
@@ -55,13 +57,21 @@ export default {
                         }
                     }]
                 }
-            };
+            },
+            spec = SpecModel;
+        let printJob = null;
 
-        let buildSpec = new BuildSpecModel(attributes);
+        dispatch("Tools/Print/activatePrintStarted", true, {root: true});
+        spec.setAttributes(attributes);
 
-        buildSpec.buildLayers(visibleLayerList);
-        buildSpec = buildSpec.toJSON();
+        spec.buildLayers(visibleLayerList);
+        printJob = {
+            payload: encodeURIComponent(JSON.stringify(spec.defaults)),
+            printAppId: "schulwegrouting",
+            currentFormat: state.printOutputFormat,
+            getResponse: getResponse
+        };
 
-        Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "schulwegrouting", state.printOutputFormat);
+        dispatch("Tools/Print/createPrintJob", printJob, {root: true});
     }
 };

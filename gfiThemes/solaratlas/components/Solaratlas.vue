@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="solaratlas">
         <h6><strong>{{ $t("additional:modules.tools.gfi.themes.solaratlas.solarPotential", {ardfull: feature.getMappedProperties().adrfull}) }}</strong></h6>
         <p
             v-if="feature.getMappedProperties().area_pv_m2 > 0"
@@ -40,3 +40,11 @@ export default {
         />
     </div>
 </template>
+
+<style lang="less" scoped>
+.solaratlas {
+    padding: 10px;
+    max-width: "600px";
+}
+</style>
+

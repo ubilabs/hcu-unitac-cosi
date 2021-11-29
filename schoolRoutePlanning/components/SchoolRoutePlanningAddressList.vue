@@ -35,6 +35,7 @@ export default {
                     :key="streetName"
                     class="list-group-item street"
                     @click="searchHousenumbers({streetName, eventType: 'click'})"
+                    @keydown.enter="searchHousenumbers({streetName, eventType: 'click'})"
                 >
                     {{ streetName }}
                 </li>
@@ -45,6 +46,7 @@ export default {
                     :key="houseNumber.name"
                     class="list-group-item address"
                     @click="findHouseNumber({input: houseNumber.name, layer})"
+                    @keydown.enter="findHouseNumber({input: houseNumber.name, layer})"
                 >
                     {{ houseNumber.name }}
                 </li>

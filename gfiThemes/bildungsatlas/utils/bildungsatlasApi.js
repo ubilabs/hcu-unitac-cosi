@@ -461,7 +461,7 @@ export class BildungsatlasApi {
      * @returns {void}
      */
     initConfig (configUrl) {
-        if (this.wfsUrls !== false && this.featureTypes !== false) {
+        if (this.wfsUrls !== false && this.featureTypes !== false || typeof configUrl !== "string") {
             // no need to load config
             return;
         }

@@ -19,10 +19,13 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                     getProperties () {
                         return {};
                     },
+                    getTitle () {
+                        return "title";
+                    },
                     getTheme () {
                         return {
                             params: {
-                                subTheme: "subTheme",
+                                subTheme: "",
                                 featureType: "someFeatureType"
                             }
                         };
@@ -34,7 +37,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
     });
     describe("created", () => {
         it("should set the internal value of subTheme to the value found in the feature", () => {
-            expect(wrapper.vm.subTheme).to.equal("subTheme");
+            expect(wrapper.vm.subTheme).to.equal("");
             expect(wrapper.vm.featureType).to.equal("someFeatureType");
         });
     });
@@ -235,28 +238,6 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
             });
 
             expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenEinzugsgebiete"}).exists()).to.be.true;
-        });
-        it("should find the child component BildungsatlasVorschulischeSF", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
-                propsData: {
-                    feature: {
-                        getProperties () {
-                            return {};
-                        },
-                        getTheme () {
-                            return {
-                                params: {
-                                    subTheme: "BildungsatlasVorschulischeSF",
-                                    featureType: "someFeatureType"
-                                }
-                            };
-                        }
-                    }
-                },
-                localVue
-            });
-
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasVorschulischeSF"}).exists()).to.be.true;
         });
     });
 });
