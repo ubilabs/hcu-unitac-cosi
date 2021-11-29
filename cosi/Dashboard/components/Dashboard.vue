@@ -157,18 +157,6 @@ export default {
                 this.generateTable();
             }
         }
-        // currentTimeStamp (v) {
-        //     this.setSelectedYear(v);
-        // },
-
-        // /**
-        //  * @todo merge both properties!
-        //  * @param {Number} v - the current value of ColorCodeMaps selectedYear
-        //  * @returns {void}
-        //  */
-        // selectedYear (v) {
-        //     this.currentTimeStamp = v;
-        // }
     },
     created () {
         /**
@@ -620,6 +608,7 @@ export default {
                                                 <StatsTrend
                                                     :item="item"
                                                     :header="header"
+                                                    :current-timestamp="currentTimeStamp"
                                                     :timestamp-prefix="timestampPrefix"
                                                     :locale="currentLocale"
                                                 />
