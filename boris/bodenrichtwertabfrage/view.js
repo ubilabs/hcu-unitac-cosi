@@ -10,6 +10,8 @@ import TemplateLanduseSelect from "text-loader!./templateLanduseSelect.html";
 import TemplateLayerSelect from "text-loader!./templateLayerSelect.html";
 import TemplateMobileLayerSelect from "text-loader!./templateMobileLayerSelect.html";
 import "./style.less";
+import axios from "axios";
+import LoaderOverlay from "../../../src/utils/loaderOverlay";
 
 const BrwAbfrageView = Backbone.View.extend({
     events: {
@@ -224,9 +226,26 @@ const BrwAbfrageView = Backbone.View.extend({
         }
     },
 
+    /**
+     * Prepare print.
+     * @returns {void}
+     */
     preparePrint: function () {
-        this.model.preparePrint();
+        LoaderOverlay.show();
+
+        this.model.preparePrint(this.getResponse);
     },
+
+    /**
+     * Function for print process.
+     * @param {String} url the url for the request
+     * @param {Object} payload the payload for the request
+     * @returns {void}
+     */
+    getResponse: async function (url, payload) {
+        return axios.post(url, payload);
+    },
+
     /**
      * Toggles the selected Landuse
      * @param {jQuery.Event} evt - select change event

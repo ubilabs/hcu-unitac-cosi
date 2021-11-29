@@ -4,7 +4,7 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
 import GraphicalSelect from "../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
-import ToggleCheckbox from "../../../src/share-components/ToggleCheckbox.vue";
+import ToggleCheckbox from "../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
@@ -82,6 +82,33 @@ export default {
             return this.sourceMRH === "tlw" && this.sourceFHH === "nein";
         }
     },
+    watch: {
+        /**
+         * Sets the status for graphicalSelect
+         * @param {Boolean} newValue value deciding whether the tool gets activated or deactivated
+         * @returns {void}
+         */
+        active (newValue) {
+            if (newValue) {
+                this.$nextTick(() => {
+                    if (this.$refs.graphicalSelection) {
+                        this.$refs.graphicalSelection.resetView();
+                        this.$refs.graphicalSelection.setStatus(newValue);
+                        this.$refs.graphicalSelection.resetGeographicSelection();
+                    }
+                });
+            }
+            else {
+                if (this.$refs.graphicalSelection) {
+                    this.$refs.graphicalSelection.setStatus(newValue);
+                    this.$refs.graphicalSelection.resetView();
+                    this.$refs.graphicalSelection.resetGeographicSelection();
+                }
+                // forced delete of tooltip overlay
+                $("#tooltip-overlay").remove();
+            }
+        }
+    },
     /**
      * Created hook:
      * @returns {void}
@@ -128,7 +155,7 @@ export default {
          * @returns {void}
          */
         resetView: function () {
-            this.$refs.graphicalSelectComponent.resetView();
+            this.$refs.graphicalSelection.resetView();
         },
         /**
          * Called when the wps modules returns a request
@@ -409,92 +436,115 @@ export default {
             v-if="active"
             #toolBody
         >
-            <div>{{ translate("additional:modules.tools.populationRequest.select.info") }}</div>
-            <div class="dropdown">
-                <GraphicalSelect
-                    ref="graphicalSelectComponent"
-                    :select-element="'Dropdown'"
-                />
-            </div>
             <div
-                v-if="inhabitantsFHHNum > -1 || inhabitantsMRHNum > -1"
-                class="result"
+                class="form-horizontal"
+                role="form"
             >
-                <div class="heading additional-text">
-                    {{ translate("additional:modules.tools.populationRequest.result.confidentialityHint") }}:
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
-                <table class="table">
-                    <tr
-                        v-if="sourceFHH !== 'nein'"
-                    >
-                        <td>{{ translate("additional:modules.tools.populationRequest.result.populationFHH") }}:</td>
-                        <td
-                            class="inhabitantsFHH"
-                        >
-                            {{ inhabitantsFHH }}
-                        </td>
-                    </tr>
-                    <tr
-                        v-if="sourceMRH !== 'nein'"
-                    >
-                        <td>{{ translate("additional:modules.tools.populationRequest.result.populationMRH") }}:</td>
-                        <td
-                            class="inhabitantsMRH"
-                        >
-                            {{ inhabitantsMRH }}
-                        </td>
-                    </tr>
-                    <tr
-                        v-if="searchArea"
-                    >
-                        <td>{{ translate("additional:modules.tools.populationRequest.result.areaSize") }}:</td>
-                        <td
-                            class="searchArea"
-                        >
-                            {{ searchArea }}
-                        </td>
-                    </tr>
-                </table>
-                <div
-                    v-if="showFHHHintAndLinktext"
-                    class="inhabitantsFHHAddText"
-                >
-                    <div class="hinweis additional-text">
-                        <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues") }}
-                    </div>
-                    <div>
-                        <a
-                            target="_blank"
-                            :href="`${metaDataLink}${fhhId}`"
-                        >
-                            {{ translate("additional:modules.tools.populationRequest.result.dataSourceFHHLinktext") }}
-                        </a>
-                    </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    &nbsp;
                 </div>
-                <div
-                    v-if="showMRHHintAndLinktext"
-                    class="inhabitantsMRHAddText"
-                >
-                    <div
-                        class="hinweis additional-text"
+                <div class="form-group form-group-sm">
+                    <label
+                        for="graphicalSelection"
+                        class="col-md-5 col-sm-5 control-label"
                     >
-                        <div>
-                            <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>
-                            <span
-                                v-if="showMRHSourceAreaOutsideHint"
-                            >
-                                {{ translate("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
-                            </span>
+                        {{ translate("additional:modules.tools.populationRequest.select.action") }}
+                    </label>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="dropdown">
+                            <GraphicalSelect
+                                ref="graphicalSelection"
+                                :select-element="'Dropdown'"
+                                :focus-on-creation="true"
+                            />
                         </div>
-                        <span>{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
                     </div>
-                    <div>
-                        <a
-                            target="_blank"
-                            :href="`${metaDataLink}${mrhId}`"
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div
+                        v-if="inhabitantsFHHNum > -1 || inhabitantsMRHNum > -1"
+                        class="result"
+                    >
+                        <div class="heading additional-text">
+                            {{ translate("additional:modules.tools.populationRequest.result.confidentialityHint") }}:
+                        </div>
+                        <table class="table">
+                            <tr
+                                v-if="sourceFHH !== 'nein'"
+                            >
+                                <td>{{ translate("additional:modules.tools.populationRequest.result.populationFHH") }}:</td>
+                                <td
+                                    class="inhabitantsFHH"
+                                >
+                                    {{ inhabitantsFHH }}
+                                </td>
+                            </tr>
+                            <tr
+                                v-if="sourceMRH !== 'nein'"
+                            >
+                                <td>{{ translate("additional:modules.tools.populationRequest.result.populationMRH") }}:</td>
+                                <td
+                                    class="inhabitantsMRH"
+                                >
+                                    {{ inhabitantsMRH }}
+                                </td>
+                            </tr>
+                            <tr
+                                v-if="searchArea"
+                            >
+                                <td>{{ translate("additional:modules.tools.populationRequest.result.areaSize") }}:</td>
+                                <td
+                                    class="searchArea"
+                                >
+                                    {{ searchArea }}
+                                </td>
+                            </tr>
+                        </table>
+                        <div
+                            v-if="showFHHHintAndLinktext"
+                            class="inhabitantsFHHAddText"
                         >
-                            {{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHLinktext") }}
-                        </a>
+                            <div class="hinweis additional-text">
+                                <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.confidentialityHintSmallValues") }}
+                            </div>
+                            <div>
+                                <a
+                                    target="_blank"
+                                    :href="`${metaDataLink}${fhhId}`"
+                                >
+                                    {{ translate("additional:modules.tools.populationRequest.result.dataSourceFHHLinktext") }}
+                                </a>
+                            </div>
+                        </div>
+                        <div
+                            v-if="showMRHHintAndLinktext"
+                            class="inhabitantsMRHAddText"
+                        >
+                            <div
+                                class="hinweis additional-text"
+                            >
+                                <div>
+                                    <span>{{ translate("additional:modules.tools.populationRequest.result.hint") }}:</span>
+                                    <span
+                                        v-if="showMRHSourceAreaOutsideHint"
+                                    >
+                                        {{ translate("additional:modules.tools.populationRequest.result.sourceAreaOutside") }}
+                                    </span>
+                                </div>
+                                <span>{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHKey") }}:</span>&nbsp;{{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHValue") }}
+                            </div>
+                            <div>
+                                <a
+                                    target="_blank"
+                                    :href="`${metaDataLink}${mrhId}`"
+                                >
+                                    {{ translate("additional:modules.tools.populationRequest.result.dataSourceMRHLinktext") }}
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -506,8 +556,13 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label @click="triggerRaster(!rasterActive)">{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
+                                <label
+                                    for="rasterCheckBoxPopRE"
+                                    @click="triggerRaster(!rasterActive)"
+                                    @keydown.enter="triggerRaster(!rasterActive)"
+                                >{{ translate("additional:modules.tools.populationRequest.select.showRasterLayer") }}</label>
                                 <ToggleCheckbox
+                                    id="rasterCheckBoxPopRE"
                                     ref="rasterCheckBox"
                                     :default-state="isRasterVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
@@ -521,8 +576,15 @@ export default {
                     <div class="checkbox-container">
                         <div class="form-inline">
                             <div class="title-checkbox pull-left">
-                                <label @click="triggerAlkisAdresses(!alkisAdressesActive)">{{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}</label>
+                                <label
+                                    for="alkisAdressesCheckBoxPopRe"
+                                    @click="triggerAlkisAdresses(!alkisAdressesActive)"
+                                    @keydown.enter="triggerAlkisAdresses(!alkisAdressesActive)"
+                                >
+                                    {{ translate("additional:modules.tools.populationRequest.select.showAlkisAdresses") }}
+                                </label>
                                 <ToggleCheckbox
+                                    id="alkisAdressesCheckBoxPopRe"
                                     ref="alkisAdressesCheckBox"
                                     :default-state="isAlkisAdressesVisibleInMap"
                                     :title="translate('additional:modules.tools.populationRequest.switchOffFilter')"
@@ -571,9 +633,11 @@ export default {
 </style>
 
 <style lang="less">
+    @import "~/css/mixins.less";
+
     #tooltip-overlay {
         position: relative;
-        background: rgba(51, 153, 204, 0.8);
+        background: @accent_active;
         color: #fff;
         max-width: 200px;
         padding: 4px 8px;
@@ -582,7 +646,7 @@ export default {
     #circle-overlay {
         position: relative;
         top: -20px;
-        background: rgba(51, 153, 204, 0.8);
+        background: @accent_active;
         color: #fff;
         max-width: 70px;
         padding: 4px 8px;

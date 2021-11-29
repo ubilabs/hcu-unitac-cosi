@@ -5,5 +5,5 @@ node_modules
 sdpDownload/node_modules/*
 cosi/node_modules/*
 qr/node_modules/*
-
+.history
 .vscode

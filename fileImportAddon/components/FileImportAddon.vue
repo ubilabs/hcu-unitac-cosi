@@ -111,6 +111,7 @@ export default {
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
+        :focus-to-close-icon="true"
     >
         <template #toolBody>
             <div
@@ -138,7 +139,7 @@ export default {
                             {{ $t("additional:modules.tools.fileImportAddon.captions.dropzone") }}
                         </p>
                     </div>
-
+                    <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
                     <div
                         class="drop-area"
                         @drop.prevent="onDrop"
@@ -148,10 +149,17 @@ export default {
                         @mouseenter="onDZMouseenter"
                         @mouseleave="onDZMouseleave"
                     />
+                    <!-- The previous element does not provide a @focusin or @focus reaction as would
+                        be considered correct by the linting rule set. Since it's a drop-area for file
+                        dropping by mouse, the concept does not apply. Keyboard users may use the
+                        matching input fields. -->
                 </div>
 
                 <div>
-                    <label class="upload-button-wrapper">
+                    <label
+                        class="upload-button-wrapper"
+                        tabindex="0"
+                    >
                         <input
                             type="file"
                             @change="onInputChange"
@@ -163,12 +171,16 @@ export default {
                 <div v-if="importedFileNames.length > 0">
                     <div class="h-seperator" />
                     <p class="cta">
-                        <label class="successfullyImportedLabel">
+                        <label
+                            class="successfullyImportedLabel"
+                            for="importFileNames"
+                        >
                             {{ $t("additional:modules.tools.fileImportAddon.successfullyImportedLabel") }}
                         </label>
                         <ul>
                             <li
                                 v-for="(filename, index) in importedFileNames"
+                                id="importFileNames"
                                 :key="index"
                             >
                                 {{ filename }}
@@ -182,7 +194,7 @@ export default {
 </template>
 
 <style lang="less" scoped>
-    @import "~variables";
+    @import "~/css/mixins.less";
 
     .h-seperator {
         margin:12px 0 12px 0;
@@ -197,18 +209,20 @@ export default {
     }
 
     .upload-button-wrapper {
-        border: 2px solid #DDDDDD;
-        background-color:#FFFFFF;
+        color: #FFFFFF;
+        background-color: @secondary_focus;
         display: block;
         text-align:center;
         padding: 8px 12px;
         cursor: pointer;
         margin:12px 0 0 0;
         font-size: @font_size_big;
-        transition: background 0.25s;
 
+        &:focus {
+            .primary_action_focus();
+        }
         &:hover {
-            background-color:#EEEEEE;
+            .primary_action_hover();
         }
     }
 
@@ -220,12 +234,12 @@ export default {
     .drop-area-fake {
         background-color: #FFFFFF;
         border-radius: 12px;
-        border: 2px dashed @accent_disabled;
+        border: 2px dashed @accent;
         padding:24px;
         transition: background 0.25s, border-color 0.25s;
 
         &.dzReady {
-            background-color:@accent_hover;
+            background-color: @accent_hover;
             border-color:transparent;
 
             p.caption {
@@ -239,7 +253,7 @@ export default {
             transition: color 0.35s;
             font-family: @font_family_accent;
             font-size: @font_size_huge;
-            color: @accent_disabled;
+            color: @secondary_focus;
         }
     }
     .drop-area {

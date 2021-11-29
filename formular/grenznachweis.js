@@ -1,4 +1,4 @@
-import cookie from "../../modules/cookie/view";
+import cookie from "./cookie/view";
 import Tool from "../../modules/core/modelList/tool/model";
 import VectorSource from "ol/source/Vector.js";
 import VectorLayer from "ol/layer/Vector.js";

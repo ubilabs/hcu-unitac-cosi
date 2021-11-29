@@ -40,6 +40,12 @@ describe("addons/trafficCount/components/TraffiCount.vue", () => {
                             "requestUrl": "test://api",
                             "versionUrl": "1.0"
                         };
+                    },
+                    getTheme: function () {
+                        return {
+                            name: "trafficCount",
+                            params: {}
+                        };
                     }
                 }
             },
@@ -60,7 +66,7 @@ describe("addons/trafficCount/components/TraffiCount.vue", () => {
 
     describe("createDataConnection", () => {
         it("returns the means of transportation from data stream", () => {
-            wrapper.vm.createDataConnection(wrapper.vm.feature.getProperties(), "sensorThingsApiOpt");
+            wrapper.vm.createDataConnection(wrapper.vm.feature.getProperties(), "onerror", "sensorThingsApiOpt");
 
             expect(wrapper.vm.propThingId).to.equal(5508);
             expect(wrapper.vm.propMeansOfTransport).to.equal("Anzahl_Fahrraeder");
@@ -69,7 +75,9 @@ describe("addons/trafficCount/components/TraffiCount.vue", () => {
 
     describe("header text", () => {
         it("show the header title", () => {
-            wrapper.vm.createDataConnection(wrapper.vm.feature.getProperties(), {
+            wrapper.vm.createDataConnection(wrapper.vm.feature.getProperties(), () => {
+                // onerror
+            }, {
                 updateTitle: (thingId, setter) => {
                     setter("title");
                 },
@@ -85,7 +93,9 @@ describe("addons/trafficCount/components/TraffiCount.vue", () => {
         });
 
         it("show the errors", () => {
-            wrapper.vm.createDataConnection(wrapper.vm.feature.getProperties(), {
+            wrapper.vm.createDataConnection(wrapper.vm.feature.getProperties(), () => {
+                // onerror
+            }, {
                 updateTitle: (thingId, setter, onerror) => {
                     onerror("errormsg");
                 },

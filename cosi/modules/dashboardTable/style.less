@@ -1,3 +1,5 @@
+@import "../../../../css/mixins.less";
+
 @color_1: #fff;
 @font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
 @background_color_1: rgba(0, 0, 0,.5);
@@ -24,6 +26,7 @@
                 }
             }
             .btn-reset {
+                padding-top: 0px;
                 display: inline-block;
                 height: 26px;
             }
@@ -47,8 +50,8 @@
             border: 1px solid lightgrey;
             border-radius: 4px;
             span {
-                border-right: 1px solid lightgrey;
-                border-bottom: 1px solid lightgrey;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
                 width: 9px;
                 height: 9px;
                 position: absolute;
@@ -93,7 +96,7 @@
                     cursor: pointer;
                 }
                 &:hover {
-                    background: rgb(199, 199, 199);
+                    .primary_action_hover();
                     .move {
                         visibility: visible;
                     }
@@ -110,10 +113,9 @@
                     top: 0;
                     left: 5px;
                     span {
-                        color: lightgrey;
+                        color: white;
                         &:hover {
-                            color:darkblue;
-                            cursor: pointer;
+                            .primary_action_hover();
                         }
                     }
                 }
@@ -125,10 +127,9 @@
                     width: 10px;
                     height: 10px;
                     transform: rotate(-45deg);
-                    color: lightgrey;
+                    color: white;
                     &:hover {
-                        color:darkblue;
-                        cursor: pointer;
+                        .primary_action_hover();
                     }
                 }
                 ul.list-group {
@@ -149,7 +150,7 @@
                             display:none;
                         }
                         small {
-                            color: #90c6f5;
+                            color: @accent_focus;
                         }
                     }
                 }
@@ -168,23 +169,43 @@
                     }
                 }
                 button.open {
+                    color: black;
                     transform: rotate(180deg);
+                    span:hover {
+                        .primary_action_hover();
+                        border-right: 1px solid white;
+                        border-bottom: 1px solid white;
+                    }
                 }
             }
             &:hover {
-                background: rgb(245, 245, 245);   
+                background-color: darken(@accent_hover, 5%);
+                color: @primary_contrast;
+                cursor: pointer;
+                button.open span {
+                    border-right: 1px solid white;
+                    border-bottom: 1px solid white;
+                }
             }
             &.selected {
                 td, th {
-                    background: #3399CC;
+                    background: @accent_focus;
                     color: white;
+                    button.open span {
+                        border-right: 1px solid white;
+                        border-bottom: 1px solid white;
+                    }
                     small {
-                        color: rgb(155, 222, 255) !important;
+                        color: rgb(170, 225, 252) !important;
                     }
                 }
                 td {
                     &:hover {
-                        background: rgb(54, 129, 167);
+                        .primary_action_hover();
+                        button.open span {
+                            border-right: 1px solid white;
+                            border-bottom: 1px solid white;
+                        }
                     }
                 }
             }

@@ -1,6 +1,7 @@
 import QueryModel from "../model";
 import {intersects} from "ol/extent.js";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import store from "../../../../../../src/app-store";
 
 const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
     defaults: {
@@ -69,7 +70,7 @@ const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{
                 if (layerId === this.get("layerId")) {
                     if (this.get("snippetCollection").length > 0 && this.get("isAutoRefreshing") && !this.get("isInitialLoad")) {
 
-                        urlFilterRules = Radio.request("ParametricURL", "getFilter").filter(function (urlFilters) {
+                        urlFilterRules = store.state.urlParam?.filter.filter(function (urlFilters) {
                             const name = Radio.request("Filter", "getFilterName", layerId);
 
                             return urlFilters.name === name;

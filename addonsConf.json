@@ -4,7 +4,6 @@
   "cosi": "modules/loader.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
-  "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "fileImportAddon": {
@@ -13,10 +12,19 @@
   "populationRequest": {
     "type": "tool"
   },
+  "sdpDownload": {
+    "type": "tool"
+  },
   "commuterFlows": {
     "type": "tool"
   },
   "tacticalMark": {
+    "type": "tool"
+  },
+  "resetTree": {
+    "type": "tool"
+  },
+  "geoAnalyze": {
     "type": "tool"
   },
   "vueAddon": {
@@ -33,10 +41,6 @@
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
   },
-  "continuousCountingBike": {
-    "path":"gfiThemes/continuousCountingBike",
-    "type": "gfiTheme"
-  },
   "dataTable": {
     "path":"gfiThemes/dataTable",
     "type": "gfiTheme"
@@ -47,10 +51,6 @@
   },
   "flaecheninfo": {
     "path":"gfiThemes/flaecheninfo",
-    "type": "gfiTheme"
-  },
-  "reisezeiten": {
-    "path":"gfiThemes/reisezeiten",
     "type": "gfiTheme"
   },
   "schulinfo": {

@@ -10,7 +10,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
         layerIds: ["186", "19110"],
         submitObject: {},
         glyphicon: "glyphicon-info-sign",
-        name: "Hausnummernvergabe"
+        name: "Georeferenzierung"
     },
     /**
      * @class OktagonGetFeatureInformationModel
@@ -21,7 +21,7 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
      * @property {String} layerIds=["186", "19110"] Array with Layerids for the GetFeatureInfo request
      * @property {Object} submitObject Object for the submit parameter
      * @property {String} glyphicon="glyphicon-info-sign" Icon for the sidebar header
-     * @property {String} name="Hausnummernvergabe" Name of the sidebar
+     * @property {String} name="Georeferenzierung" Name of the sidebar
      * @fires OktagonURLParameter#RadioRequestOktagonURLParameterGetRueckURL
      * @fires ModelList#RadioRequestModelListGetModelByAttributes
      * @fires MapView#RadioRequestMapViewGetOptions

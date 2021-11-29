@@ -1,12 +1,15 @@
 <script>
 import {mapGetters} from "vuex";
 
+import axios from "axios";
 import {TrafficCountCache} from "../utils/trafficCountCache";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 import TrafficCountInfo from "./TrafficCountInfo.vue";
 import TrafficCountDay from "./TrafficCountDay.vue";
 import TrafficCountWeek from "./TrafficCountWeek.vue";
 import TrafficCountYear from "./TrafficCountYear.vue";
 import TrafficCountFooter from "./TrafficCountFooter.vue";
+import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
 
 export default {
     name: "TrafficCount",
@@ -36,7 +39,27 @@ export default {
             keyInfo: "info",
             keyDay: "day",
             keyWeek: "week",
-            keyYear: "year"
+            keyYear: "year",
+            dayCheckReset: false,
+            weekCheckReset: false,
+            yearCheckReset: false,
+            holidays: [
+                "newYearsDay",
+                "goodFriday",
+                "easterSunday",
+                "easterMonday",
+                "laborDay",
+                "ascensionDay",
+                "pentecostSunday",
+                "pentecostMonday",
+                "germanUnityDay",
+                "reformationDay",
+                "christmasEve",
+                "christmasDay",
+                "secondDayOfChristmas",
+                "newYearsEve"
+            ],
+            checkGurlittInsel: false
         };
     },
     computed: {
@@ -60,7 +83,7 @@ export default {
         typeAssoc: function () {
             return {
                 Anzahl_Kfz: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor"),
-                Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.countingstation")
+                Anzahl_Fahrraeder: this.$t("additional:modules.tools.gfi.themes.trafficCount.infraredsensor")
             };
         },
 
@@ -85,6 +108,18 @@ export default {
 
         directionLabel: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.directionLabel");
+        },
+
+        downloadUrl: function () {
+            if (this.checkGurlittInsel && this.feature?.getProperties()?.link_download) {
+                return convertHttpLinkToSSL(this.feature.getProperties().link_download);
+            }
+
+            return false;
+        },
+
+        downloadFilename () {
+            return this.propMeansOfTransport + "_" + this.propThingId + "_" + this.direction;
         }
     },
     watch: {
@@ -92,10 +127,22 @@ export default {
         feature: {
             handler (newVal, oldVal) {
                 if (oldVal) {
-                    this.createDataConnection(newVal.getProperties(), null);
+                    if (this.isGurlittInsel(newVal)) {
+                        this.createDataConnectionDauerzaehlstellenRad(newVal, errormsg => {
+                            console.warn("An error occured constructing Gurlitt Insel:", errormsg);
+                        });
+                        this.checkGurlittInsel = true;
+                    }
+                    else {
+                        this.createDataConnection(newVal.getProperties(), errormsg => {
+                            console.warn("An error occured constructing SensorThings Api:", errormsg);
+                        }, null);
+                        this.checkGurlittInsel = false;
+                    }
                     this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
                     this.setComponentKey(this.propThingId + this.propMeansOfTransport);
                     this.setActiveDefaultTab();
+                    this.setHolidays(newVal);
                 }
             },
             immediate: true
@@ -120,22 +167,70 @@ export default {
         }
     },
     created: function () {
-        this.createDataConnection(this.feature.getProperties(), null);
+        if (this.isGurlittInsel(this.feature)) {
+            this.createDataConnectionDauerzaehlstellenRad(this.feature, errormsg => {
+                console.warn("An error occured constructing Gurlitt Insel:", errormsg);
+            });
+            this.checkGurlittInsel = true;
+        }
+        else {
+            this.createDataConnection(this.feature.getProperties(), errormsg => {
+                console.warn("An error occured constructing SensorThings Api:", errormsg);
+            }, null);
+            this.checkGurlittInsel = false;
+        }
     },
     mounted: function () {
         this.setHeader(this.api, this.propThingId, this.propMeansOfTransport);
+        this.setHolidays(this.feature);
     },
     beforeDestroy: function () {
         this.api.unsubscribeEverything();
     },
     methods: {
         /**
-         * it will make conntection to thing api
-         * @param {Object[]} feature the feature properties from thing
-         * @param {Object} [sensorThingsApiOpt=null] an optional api for testing
-         * @returns {Void} -
+         * checks if this is the feature of Gurlitt-Insel
+         * @param {Object} feature the feature
+         * @returns {void}
          */
-        createDataConnection: function (feature, sensorThingsApiOpt = null) {
+        isGurlittInsel (feature) {
+            return typeof feature === "object" && feature !== null
+                && typeof feature.getMimeType === "function" && feature.getMimeType() === "text/xml"
+                && typeof feature.getId === "function" && typeof feature.getId() === "string" && feature.getId().indexOf("DE.HH.UP_DAUERZAEHLSTELLEN_RAD") === 0;
+        },
+        /**
+         * sets the GFI up for the Gurlitt-Insel feature
+         * @param {Object} feature the feature
+         * @param {Function} [onerror] a function to call on error
+         * @returns {void}
+         */
+        createDataConnectionDauerzaehlstellenRad (feature, onerror) {
+            this.api = new DauerzaehlstellenRadApi(feature, onerror, (link, onsuccess, onAxiosError) => {
+                axios({
+                    method: "get",
+                    url: link,
+                    responseType: "text"
+                }).then(function (response) {
+                    if (typeof onsuccess === "function" && typeof response === "object" && response !== null && Object.prototype.hasOwnProperty.call(response, "data")) {
+                        onsuccess(response.data);
+                    }
+                }).catch(function (error) {
+                    if (typeof onAxiosError === "function") {
+                        onAxiosError(error);
+                    }
+                });
+            });
+            this.propThingId = this.api.getThingId(onerror);
+            this.propMeansOfTransport = this.api.getMeansOfTransport();
+        },
+        /**
+         * it will make conntection to thing api
+         * @param {Object} feature the feature properties from thing
+         * @param {Function} [onerror] a function to call on error
+         * @param {Object} [sensorThingsApiOpt=null] an optional api for testing
+         * @returns {void}
+         */
+        createDataConnection: function (feature, onerror, sensorThingsApiOpt = null) {
             const thingId = feature["@iot.id"],
                 meansOfTransport = this.getMeansOfTransportFromDatastream(feature.Datastreams, Object.keys(this.typeAssoc)),
                 url = feature.requestUrl,
@@ -227,7 +322,12 @@ export default {
 
             // type
             if (meansOfTransport && Object.prototype.hasOwnProperty.call(this.typeAssoc, meansOfTransport)) {
-                this.type = this.typeAssoc[meansOfTransport];
+                if (this.isGurlittInsel(this.feature)) {
+                    this.type = this.$t("additional:modules.tools.gfi.themes.trafficCount.inductionLoop");
+                }
+                else {
+                    this.type = this.typeAssoc[meansOfTransport];
+                }
             }
             else {
                 this.type = "";
@@ -257,7 +357,7 @@ export default {
         /**
          * setter for title
          * @param {String} value the title to be shown in the template
-         * @returns {Void}  -
+         * @returns {void}
          */
         setTitle: function (value) {
             this.title = value;
@@ -266,7 +366,7 @@ export default {
         /**
          * setter for direction
          * @param {String} value the direction to be shown in the template
-         * @returns {Void}  -
+         * @returns {void}
          */
         setDirection: function (value) {
             this.direction = value;
@@ -275,7 +375,7 @@ export default {
         /**
          * setter for the compoent key
          * @param {String} value the dynamic changed value from watch hook
-         * @returns {Void}  -
+         * @returns {void}
          */
         setComponentKey: function (value) {
             this.keyInfo = value + "info";
@@ -298,6 +398,37 @@ export default {
          */
         setGfiDefaultWidth: function () {
             document.querySelector(".tool-window-vue").style.maxWidth = "600px";
+        },
+
+        /**
+         * Setting the holidays in Array if there are holiday configured in config.json
+         * @param {Object} feature the feature
+         * @returns {void}
+         */
+        setHolidays (feature) {
+            const gfiTheme = feature?.getTheme(),
+                gfiParams = gfiTheme?.params,
+                holidays = gfiParams?.holidays;
+
+            if (Array.isArray(holidays) && holidays.length) {
+                this.holidays = holidays;
+            }
+        },
+
+        /**
+         * changing resetting check status for the active tab
+         * @returns {void} -
+         */
+        resetTab: function () {
+            if (this.currentTabId === "day") {
+                this.dayCheckReset = !this.dayCheckReset;
+            }
+            else if (this.currentTabId === "week") {
+                this.weekCheckReset = !this.weekCheckReset;
+            }
+            else if (this.currentTabId === "year") {
+                this.yearCheckReset = !this.yearCheckReset;
+            }
         }
     }
 };
@@ -315,6 +446,7 @@ export default {
             <ul
                 class="nav nav-pills"
                 @click="setCurrentTabId"
+                @keydown.enter="setCurrentTabId"
             >
                 <li
                     value="infos"
@@ -351,6 +483,7 @@ export default {
                     class="tab-pane fade in active"
                     :api="api"
                     :thing-id="propThingId"
+                    :holidays="holidays"
                     :means-of-transport="propMeansOfTransport"
                 />
                 <TrafficCountDay
@@ -360,6 +493,9 @@ export default {
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
+                    :reset="dayCheckReset"
+                    :holidays="holidays"
+                    :check-gurlitt-insel="checkGurlittInsel"
                 />
                 <TrafficCountWeek
                     id="week"
@@ -368,6 +504,8 @@ export default {
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
+                    :reset="weekCheckReset"
+                    :holidays="holidays"
                 />
                 <TrafficCountYear
                     id="year"
@@ -376,6 +514,9 @@ export default {
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
+                    :reset="yearCheckReset"
+                    :holidays="holidays"
+                    :check-gurlitt-insel="checkGurlittInsel"
                 />
             </div>
         </div>
@@ -385,6 +526,10 @@ export default {
             :api="api"
             :thing-id="propThingId"
             :means-of-transport="propMeansOfTransport"
+            :holidays="holidays"
+            :download-url="downloadUrl"
+            :download-filename="downloadFilename"
+            @resetTab="resetTab"
         />
     </div>
 </template>
@@ -413,6 +558,7 @@ export default {
         position: relative;
         display: inline-block;
         width: 100%;
+        padding-bottom: 5px;
     }
 }
 </style>

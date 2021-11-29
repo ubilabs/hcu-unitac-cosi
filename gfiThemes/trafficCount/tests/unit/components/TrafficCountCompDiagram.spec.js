@@ -40,6 +40,12 @@ describe("addons/trafficCount/components/TrafficCountCompDiagram.vue", () => {
                 descriptionYAxis: "description of y axis",
                 renderLabelLegend: (datetime) => {
                     return datetime;
+                },
+                renderPointStyle: (datetime) => {
+                    return datetime;
+                },
+                renderPointSize: (datetime) => {
+                    return datetime;
                 }
             }
         });
@@ -91,9 +97,15 @@ describe("addons/trafficCount/components/TrafficCountCompDiagram.vue", () => {
                 testFunctions = {
                     callbackRenderLabelLegend: datetime => {
                         return datetime;
+                    },
+                    callbackRenderPointStyle: (datetime) => {
+                        return datetime;
+                    },
+                    callbackRenderPointSize: () => {
+                        return 2;
                     }
                 },
-                result = wrapper.vm.createDataForDiagram(apiData, colors, testFunctions.callbackRenderLabelLegend);
+                result = wrapper.vm.createDataForDiagram(apiData, colors, testFunctions.callbackRenderLabelLegend, testFunctions.callbackRenderPointStyle, testFunctions.callbackRenderPointSize);
 
             expect(result).to.be.an("object");
             expect(result.datasets).to.be.an("array").to.have.length(2);
