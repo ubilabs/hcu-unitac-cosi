@@ -20,6 +20,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
+import getColorFromNumber from "../../utils/getColorFromNumber";
 import * as convert from "color-convert";
 import
 {
@@ -606,6 +607,10 @@ export default {
                 return;
             }
 
+            const colorMap = this.selectedLayers.reduce((acc, layer, index) => (
+                {...acc, [layer.layerId]: getColorFromNumber(index, this.selectedLayers.length)}), {});
+
+
             this.distScoreLayer.getSource().clear();
             this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
                 if (item.weightedDistanceScores) {
@@ -617,14 +622,9 @@ export default {
                             feature.setStyle(new Style({
                                 image: new Circle({
                                     radius: 5,
-                                    fill: new Fill({color: convert.keyword.rgb(this.getNumericalValueColor({distanceScore: entry.value}, "distanceScore", true))})
-                                    // stroke: new Stroke({color: [255, 255, 255]})
+                                    fill: new Fill({color: colorMap[layerId]})
                                 }),
-                                // fill: new Fill({
-                                //     color: "blue"
-                                // }),
                                 text: new Text({
-                                    // text: entry.feature.getId(),
                                     text: getLayerWhere({id: layerId})?.name,
                                     placement: "point",
                                     offsetY: -10,
