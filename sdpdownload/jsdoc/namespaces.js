@@ -1,4 +1,0 @@
-/**
- * @namespace SdpDownload
- * @memberof Addons
- */
