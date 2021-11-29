@@ -101,9 +101,7 @@ export default {
                 layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
             layerOnMap.setZIndex(0);
             layerOnMap.setStyle(style);
-            //layerOnMap.setVisible(false);
             model.set("isSelected", false);
-
             this.projectsActive[id] = {layer: false, contributions: false, heatmap: false};
 
             this.contributions[id] = Object();

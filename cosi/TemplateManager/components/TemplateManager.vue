@@ -19,6 +19,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/TemplateManager", Object.keys(getters)),
         ...mapGetters("Tools/SaveSession", []),
         ...mapGetters("Tools/DistrictSelector", ["districtLevels"]),
@@ -131,7 +132,7 @@ export default {
             <v-app class="clamp-40vw">
                 <v-container>
                     <ToolInfo
-                        url="https://bitbucket.org/geowerkstatt-hamburg/addons/src/c5d42c7d2b72db609510355095dc65997eb61c2d/cosi/README.de.md?mode=edit&at=cosi%2Fdev"
+                        :url="readmeUrl[currentLocale]"
                     />
                     <v-subheader>
                         {{ $t("additional:modules.tools.cosi.templateManager.infoLoadFromTemplates") }}
@@ -166,25 +167,15 @@ export default {
                                             <template #default>
                                                 <tbody>
                                                     <tr>
-                                                        <th>
-                                                            {{ $t("additional:modules.tools.cosi.templateManager.created") }}
-                                                        </th>
-                                                        <td>
-                                                            {{ template.meta.created }}
-                                                        </td>
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.created')" />
+                                                        <td v-text="template.meta.created" />
                                                     </tr>
                                                     <tr>
-                                                        <th>
-                                                            {{ $t("additional:modules.tools.cosi.templateManager.info") }}
-                                                        </th>
-                                                        <td>
-                                                            {{ template.meta.info || $t("additional:modules.tools.cosi.templateManager.noInfo") }}
-                                                        </td>
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.info')" />
+                                                        <td v-html="template.meta.info || $t('additional:modules.tools.cosi.templateManager.noInfo')" />
                                                     </tr>
                                                     <tr>
-                                                        <th>
-                                                            {{ $t("additional:modules.tools.cosi.templateManager.layers") }}
-                                                        </th>
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.layers')" />
                                                         <td>
                                                             <v-chip
                                                                 v-for="layerId in getActiveLayerList(template)"

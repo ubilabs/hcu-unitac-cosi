@@ -5,6 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import FeaturesList from "../../../components/FeaturesList.vue";
+import ScoreValues from "../../../components/ScoreValues.vue";
 import FeaturesListStore from "../../../store/indexFeaturesList";
 import DetailView from "../../../components/DetailView.vue";
 import {expect} from "chai";
@@ -21,6 +22,7 @@ import mockConfigJson from "./mock.config.json";
 import Multiselect from "vue-multiselect";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
+import {VChip} from "vuetify/lib";
 
 Vue.use(Vuetify);
 
@@ -31,6 +33,8 @@ localVue.use(Vuex);
 config.mocks.$t = key => key;
 
 global.requestAnimationFrame = (fn) => fn();
+global.cancelAnimationFrame = () => ({ });
+global.ShadowRoot = window.ShadowRoot;
 
 
 // eslint-disable-next-line require-jsdoc
@@ -67,7 +71,7 @@ function createFeature (key) {
 
 
 describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
-    let store, sandbox, vuetify, layerListStub, getDistanceScoreStub;
+    let store, sandbox, vuetify, layerListStub, getDistanceScoreStub, sourceStub, clearStub, _wrapper;
 
 
     const expMapping = [{
@@ -97,8 +101,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             "layerName",
             "type",
             "group",
-            "anzahl_schueler",
-            "distanceScore"
+            "anzahl_schueler"
         ],
         layersMock = [];
 
@@ -108,7 +111,13 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         sandbox = sinon.createSandbox();
         layerListStub = sinon.stub();
         getDistanceScoreStub = sinon.stub();
-        getDistanceScoreStub.returns(Promise.resolve({"score": 1, "1234": 1}));
+        getDistanceScoreStub.returns(Promise.resolve({"score": 1, "1234": {value: 1, feature: createFeature()}}));
+
+        clearStub = sinon.stub();
+        sourceStub = {
+            clear: clearStub,
+            addFeature: sinon.stub()
+        };
 
         store = new Vuex.Store({
             namespaces: true,
@@ -128,7 +137,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                             getters: {
                                 selectedDistrictLevel: sinon.stub().returns(districtLevel),
                                 selectedFeatures: sinon.stub().returns(districtLevel.layer.getSource().getFeatures()),
-                                districtLayer: sinon.stub().returns(districtLevel.layer),
+                                layer: ()=>districtLevel.layer,
                                 bufferValue: () => 0
                             }
                         },
@@ -150,7 +159,14 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                         layerList: layerListStub
                     },
                     actions: {
-                        removeHighlightFeature: () => sinon.stub()
+                        removeHighlightFeature: () => sinon.stub(),
+                        createLayer: () => {
+                            return Promise.resolve({
+                                setVisible: sinon.stub(),
+                                addEventListener: sinon.stub(),
+                                getSource: () => sourceStub
+                            });
+                        }
                     }
                 }
             },
@@ -162,6 +178,9 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
     afterEach(function () {
         sandbox.restore();
+        if (_wrapper) {
+            _wrapper.destroy();
+        }
     });
 
     // eslint-disable-next-line require-jsdoc, no-shadow
@@ -176,6 +195,8 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         store.commit("Tools/FeaturesList/setActive", isActive);
+        store.commit("Tools/FeaturesList/setDistanceScoreEnabled", true);
+        _wrapper = ret;
         await ret.vm.$nextTick();
         return ret;
     }
@@ -299,10 +320,30 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.vm.selectedLayers).to.deep.equal([]);
         });
 
+        it("should show distance score layers select only if enabled", async () => {
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.true;
+
+            await wrapper.vm.setDistanceScoreEnabled(false);
+
+            expect(await wrapper.find("#selectedLayers").exists()).to.be.false;
+        });
+
+        it("should show distance score column on select layer", async () => {
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+
+            expect(wrapper.vm.columns.map(e => e.value)).to.contain("distanceScore");
+        });
+
         it("should compute distance score on select layer", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const feature = createFeature(),
+                wrapper = await mountComponent(true, [createLayer(feature)]);
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
 
@@ -314,8 +355,11 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(args.feature.getId()).to.be.equal("id");
             expect(args.layerIds).to.be.eql(["1234"]);
             expect(args.weights).to.be.eql([1]);
-            expect(wrapper.vm.items.map(i => i.weightedDistanceScores)).to.be.eql([{"1234": 1.0, score: 1}]);
+            expect(wrapper.vm.items).to.have.length(1);
+            expect(wrapper.vm.items[0].weightedDistanceScores.score).to.be.equal(1);
+            expect(wrapper.vm.items[0].weightedDistanceScores.score).to.be.equal(1);
             expect(wrapper.vm.items.map(i=>i.distanceScore)).to.be.eql(["1.0"]);
+            expect(wrapper.findAllComponents(VChip).at(1).vm.color).to.be.equal("red");
         });
 
         it("should delete distance score on remove layer", async () => {
@@ -333,12 +377,65 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("should set scored for dialog", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]),
-                item = {weightedDistanceScores: {"1234": 1.0, score: 1}};
+            // arrange
+            await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
+            const feature = createFeature(),
+                wrapper = await mountComponent(true, [createLayer(feature)]);
 
-            wrapper.vm.showInfo(item);
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+
+            // act
+            wrapper.vm.showInfo(wrapper.vm.items[0]);
+
+            // assert
+            expect(wrapper.vm.allScores).to.be.eql([1]);
             expect(wrapper.vm.showScoresDialog).be.true;
-            expect(wrapper.vm.currentScores).to.be.eql(item.weightedDistanceScores);
+            expect(wrapper.vm.currentScores).to.be.eql(wrapper.vm.items[0].weightedDistanceScores);
+
+            expect(wrapper.findComponent(ScoreValues).exists()).to.be.true;
+        });
+
+        it("should show distance score features", async () => {
+            // arrange
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.vm.$nextTick();
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+            clearStub.reset();
+            sourceStub.addFeature.reset();
+
+            // act
+            await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+
+            // assert
+            // call counts affected by other test runs, why?
+            expect(clearStub.callCount).to.be.greaterThan(0);
+            expect(sourceStub.addFeature.callCount).to.be.greaterThan(0);
+        });
+
+        it("should hide distance score features on deselect", async () => {
+
+            // arrange
+            const wrapper = await mountComponent(true, [createLayer()]);
+
+            await wrapper.vm.$nextTick();
+
+            await wrapper.setData({selectedLayers: [{layerId: "1234"}]});
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+
+            clearStub.reset();
+            sourceStub.addFeature.reset();
+
+            // act
+            await wrapper.setData({selectedLayers: []});
+
+            // assert
+            expect(clearStub.callCount).to.be.greaterThan(0);
+            expect(sourceStub.addFeature.callCount).to.equal(0);
         });
 
         it("should recompute distance score after weight change", async () => {
@@ -351,7 +448,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.setData({selectedLayers: [{layerId: "1234"}, {layerId: "1235"}]});
             getDistanceScoreStub.reset();
-            getDistanceScoreStub.returns(Promise.resolve({"score": 1, "1234": 1}));
+            getDistanceScoreStub.returns(Promise.resolve({"score": 1, "1234": {value: 1, feature: createFeature()}}));
 
             // act
             await wrapper.vm.updateWeights({"1234": 0.5, "1235": 1});

@@ -15,11 +15,13 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import {renameKeys} from "../../utils/modifyObject.js";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "QueryDistricts",
     components: {
         Tool,
+        ToolInfo,
         LayerFilter
     },
     data () {
@@ -633,6 +635,7 @@ export default {
         :deactivate-gfi="deactivateGFI"
     >
         <template #toolBody>
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app>
                 <div
                     v-if="active"
@@ -773,7 +776,8 @@ export default {
                                 item-key="name"
                                 class="elevation-1"
                                 :footer-props="{
-                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage')
+                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage'),
+                                    'items-per-page-all-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPageAll'),
                                 }"
                                 @click:row="zoomToDistrict"
                             >

@@ -20,11 +20,23 @@ import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
+import * as convert from "color-convert";
+import
+{
+    Fill,
+    Style,
+    Stroke,
+    Text,
+    Circle
+} from "ol/style.js";
+import Feature from "ol/Feature";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "FeaturesList",
     components: {
         Tool,
+        ToolInfo,
         Multiselect,
         DetailView,
         FeatureIcon,
@@ -39,6 +51,7 @@ export default {
             showScoresDialog: false,
             layerWeights: {},
             currentScores: {},
+            allScores: [],
             selectedLayers: [],
             search: "",
             layerFilter: [],
@@ -113,6 +126,7 @@ export default {
                 }
             ],
             numericalColumns: [],
+            distScoreLayer: null,
             exportDetails: false
         };
     },
@@ -185,12 +199,18 @@ export default {
 
         /**
          * Updates the feature highlighting on selection change
+         * @param {object} newValue new value
          * @listens #change:this.$data.selected
          * @returns {void}
          */
-        selected () {
+        selected (newValue) {
             this.removeHighlightFeature();
-            this.selected.forEach(item => highlightVectorFeature(item.feature, item.layerId));
+
+            newValue.forEach(item => {
+                highlightVectorFeature(item.feature, item.layerId);
+            });
+
+            this.showDistanceScoreFeatures();
         },
 
         /**
@@ -234,10 +254,11 @@ export default {
             this.updateDistanceScores();
         },
 
-        items (newItems) {
-            if (!deepEqual(newItems.map(i=>i.key), this.items.map(i=>i.key))) {
+        items (newItems, oldItems) {
+            if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
             }
+            this.showDistanceScoreFeatures();
         },
 
         layerWeights () {
@@ -257,7 +278,7 @@ export default {
             this.setActive(false);
         });
     },
-    mounted () {
+    async mounted () {
         // initally set the facilities mapping based on the config.json
         this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
         this.updateFeaturesList();
@@ -271,12 +292,17 @@ export default {
         Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
         Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
         Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
+
+        this.$root.$on("updateFeaturesList", this.updateFeaturesList);
+
+        this.distScoreLayer = await this.createLayer("distance-score-features");
+        this.distScoreLayer.setVisible(true);
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
-        ...mapActions("Map", ["removeHighlightFeature"]),
+        ...mapActions("Map", ["removeHighlightFeature", "createLayer"]),
 
         getVectorlayerMapping,
         getNumericalColumns () {
@@ -295,8 +321,8 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.selectedFeatureLayers) {
-                numCols.push({text: "SB", value: "distanceScore", divider: true, hasAction: true});
+            if (this.selectedFeatureLayers.length > 0) {
+                numCols.push({text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"), value: "distanceScore", divider: true, hasAction: true, invertColor: true});
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -447,42 +473,53 @@ export default {
             this.$root.$emit("updateFeature");
         },
 
-        getNumericalValueColor (item, key) {
-            const val = parseFloat(item[key]),
-                maxVal = Math.max(
-                    ...this.items
-                        .map(_item => parseFloat(_item[key]))
-                        .filter(_item => !isNaN(_item))
-                );
+        searchAllAttributes (value, search, item) {
+            const allProps = {...item.feature.getProperties(), ...item};
+
+            return Object.values(allProps).some(v => v && v.toString().toLowerCase().includes(search.toLowerCase()));
+        },
+
+        getNumericalValueColor (item, key, invertColor) {
+            const maxVal = Math.max(
+                ...this.items
+                    .map(_item => parseFloat(_item[key]))
+                    .filter(_item => !isNaN(_item))
+            );
+            let val = parseFloat(item[key]) / maxVal;
+
+            if (invertColor) {
+                val = 1 - val;
+            }
 
             if (isNaN(val)) {
                 return "grey";
             }
-            if (val / maxVal > 0.9) {
+
+            if (val > 0.9) {
                 return "purple";
             }
-            if (val / maxVal > 0.8) {
+            if (val > 0.8) {
                 return "indigo";
             }
-            if (val / maxVal > 0.7) {
+            if (val > 0.7) {
                 return "blue";
             }
-            if (val / maxVal > 0.6) {
+            if (val > 0.6) {
                 return "cyan";
             }
-            if (val / maxVal > 0.5) {
+            if (val > 0.5) {
                 return "teal";
             }
-            if (val / maxVal > 0.4) {
+            if (val > 0.4) {
                 return "green";
             }
-            if (val / maxVal > 0.4) {
+            if (val > 0.4) {
                 return "light-green";
             }
-            if (val / maxVal > 0.2) {
+            if (val > 0.2) {
                 return "lime";
             }
-            if (val / maxVal > 0.1) {
+            if (val > 0.1) {
                 return "amber";
             }
             return "red";
@@ -565,7 +602,54 @@ export default {
         },
         showInfo (item) {
             this.currentScores = item.weightedDistanceScores;
+            this.allScores = this.items
+                .filter(i=>!isNaN(i.weightedDistanceScores.score))
+                .map(i=>i.weightedDistanceScores.score);
             this.showScoresDialog = true;
+        },
+        showDistanceScoreFeatures () {
+            if (this.distScoreLayer === null) {
+                return;
+            }
+
+            this.distScoreLayer.getSource().clear();
+            this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
+                if (item.weightedDistanceScores) {
+                    for (const [layerId, entry] of Object.entries(item.weightedDistanceScores)) {
+                        if (entry.feature) {
+                            const feature = new Feature({geometry: entry.feature.getGeometry()});
+
+                            feature.set("styleId", entry.feature.getId() + "-ds");
+                            feature.setStyle(new Style({
+                                image: new Circle({
+                                    radius: 5,
+                                    fill: new Fill({color: convert.keyword.rgb(this.getNumericalValueColor({distanceScore: entry.value}, "distanceScore", true))})
+                                    // stroke: new Stroke({color: [255, 255, 255]})
+                                }),
+                                // fill: new Fill({
+                                //     color: "blue"
+                                // }),
+                                text: new Text({
+                                    // text: entry.feature.getId(),
+                                    text: getLayerWhere({id: layerId})?.name,
+                                    placement: "point",
+                                    offsetY: -10,
+                                    offsetX: 10,
+                                    font: "12px Calibri, sans-serif",
+                                    fill: new Fill({
+                                        color: [255, 2550, 255]
+                                    }),
+                                    stroke: new Stroke({
+                                        color: [0, 0, 0],
+                                        width: 1
+                                    })
+                                })
+                            }));
+                            this.distScoreLayer.getSource().addFeature(feature);
+                        }
+                    }
+                }
+            });
         }
     }
 };
@@ -585,6 +669,7 @@ export default {
             v-if="active"
             #toolBody
         >
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app id="features-list-wrapper">
                 <div class="my-2">
                     <v-btn
@@ -649,12 +734,17 @@ export default {
                                 :headers="columns"
                                 :items="items"
                                 :search="search"
+                                :custom-filter="searchAllAttributes"
                                 :expanded.sync="expanded"
                                 multi-sort
                                 item-key="key"
                                 show-select
                                 show-expand
                                 :items-per-page="10"
+                                :footer-props="{
+                                    itemsPerPageText: $t('additional:modules.tools.cosi.featuresList.itemsPerPage'),
+                                    itemsPerPageAllText: $t('additional:modules.tools.cosi.featuresList.itemsPerPageAll')
+                                }"
                                 :item-class="getRowClasses"
                                 @click:row="handleClickRow"
                                 @current-items="setFilteredItems"
@@ -736,7 +826,7 @@ export default {
                                             <div>
                                                 <v-chip
                                                     :style="getNumericalValueStyle(item, col.value)"
-                                                    :color="getNumericalValueColor(item, col.value)"
+                                                    :color="getNumericalValueColor(item, col.value, col.invertColor)"
                                                     dark
                                                     dense
                                                 />
@@ -746,7 +836,7 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <v-row>
+                        <v-row v-if="distanceScoreEnabled">
                             <v-col>
                                 <v-autocomplete
                                     id="selectedLayers"
@@ -799,7 +889,9 @@ export default {
                 <ScoreValues
                     v-model="showScoresDialog"
                     :label="$t('additional:modules.tools.cosi.featuresList.scoresDialogTitle')"
+                    :hist-label="$t('additional:modules.tools.cosi.featuresList.scoresDialogHistogramTitle')"
                     :scores="currentScores"
+                    :all-scores="allScores"
                     :layers="selectedFeatureLayers"
                 />
             </v-app>

@@ -18,11 +18,14 @@ const state = {
     name: "Vorlagen",
     renderToWindow: true,
     resizableWindow: true,
-    templatePath: "./assets/session_templates",
+    templatePath: "./assets/templates",
     templateFiles: [
-        "Erhaltungsmanagement_Spielplaetze",
-        "Bildung_Bergedorf"
-    ]
+        "Erhaltungsmanagement_Spielplaetze"
+    ],
+    readmeUrl: {
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/templates.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/vorlagen.md"
+    }
 };
 
 export default state;

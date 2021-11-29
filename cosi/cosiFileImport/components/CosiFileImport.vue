@@ -4,6 +4,7 @@ import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCosiFileImport";
 import mutations from "../store/mutationsCosiFileImport";
+import ToolInfo from "../../components/ToolInfo.vue";
 // import ImportManager from "./ImportManager.vue";
 // import EditLayer from "./EditLayer.vue";
 import InlineSvg from "vue-inline-svg";
@@ -12,6 +13,7 @@ export default {
     name: "CosiFileImport",
     components: {
         Tool,
+        ToolInfo,
         // ImportManager,
         // EditLayer,
         InlineSvg
@@ -80,6 +82,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
         ...mapGetters("Map", ["layerIds", "layers", "map", "projectionCode"]),
@@ -348,9 +351,6 @@ export default {
         showInfo (message) {
             this.showAlert(message);
         },
-        openManual () {
-
-        },
         /**
          * Getting the layer name from the file name without the postfix as file format
          * @param {String} fileName name of the file
@@ -378,13 +378,7 @@ export default {
                 id="tool-file-import"
                 class="importer"
             >
-                <button
-                    class="info_button"
-                    :title="$t('additional:modules.tools.cosi.chartGenerator.infoTooltip')"
-                    @click="openManual()"
-                >
-                    <span class="glyphicon glyphicon-question-sign" />
-                </button>
+                <ToolInfo :url="readmeUrl[currentLocale]" />
                 <p
                     class="cta"
                     v-html="$t('additional:modules.tools.cosiFileImport.captions.introInfo')"
@@ -474,6 +468,7 @@ export default {
                 class="handler"
                 :class="{expand: importedLayers.length}"
             >
+                <ToolInfo :url="readmeUrl[currentLocale]" />
                 <!--New Layer Handling-->
                 <template v-if="imported">
                     <div class="wrapper">
@@ -617,6 +612,7 @@ export default {
                                                             :close-on-content-click="false"
                                                         >
                                                             <template #activator="{ on }">
+                                                                <!--eslint-disable-next-line-->
                                                                 <div
                                                                     :style="swatchStyle"
                                                                     v-on="on"
@@ -1357,7 +1353,7 @@ export default {
                                         box-sizing: border-box;
 
                                         .preNumName {
-                                            flex:0 0 160px;
+                                            flex:0 0 120px;
                                             margin-right:5px;
                                             font-size:100%;
                                             padding-top:5px;

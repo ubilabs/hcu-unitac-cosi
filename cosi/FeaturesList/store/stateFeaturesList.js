@@ -37,7 +37,12 @@ const state = {
         "lonlat",
         "originalData"
     ],
-    disabledFeatureItems: []
+    disabledFeatureItems: [],
+    distanceScoreEnabled: true,
+    readmeUrl: {
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/featureslist.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/einrichtungsuebersicht.md"
+    }
 };
 
 export default state;

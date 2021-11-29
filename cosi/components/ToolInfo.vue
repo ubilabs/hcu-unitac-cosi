@@ -33,6 +33,8 @@ export default {
                     displayClass: "info"
                 });
             }
+
+            return null;
         }
     }
 };
@@ -46,6 +48,7 @@ export default {
         >
             <v-btn
                 :title="title"
+                class="info_btn"
                 depressed
                 right
                 icon
@@ -60,5 +63,7 @@ export default {
 </template>
 
 <style lang="less" scoped>
-
+    .info_btn {
+        margin: 0 0 0 auto;
+    }
 </style>

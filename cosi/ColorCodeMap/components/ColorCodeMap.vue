@@ -5,14 +5,16 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-import Info from "text-loader!./info.html";
+// import Info from "text-loader!./info.html";
 import {generateColorScale} from "../../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
+// import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "ColorCodeMap",
     components: {
+        // ToolInfo,
         Multiselect
     },
     data () {
@@ -53,8 +55,6 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"]),
-        // ...mapGetters("Tools/Dashboard", {dashboardOpen: "active"}),
-        // ...mapGetters("Tools/FeaturesList", {featuresListOpen: "active"}),
         ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
         _selectedFeature: {
             get () {
@@ -427,14 +427,11 @@ export default {
             this.renderVisualization();
         },
         /**
-         * @description Shows component info as popup.
+         * @description Shows component info as new window.
          * @returns {Void} Function returns nothing.
          */
         showInfo () {
-            this.addSingleAlert({
-                category: "Info",
-                content: Info
-            });
+            window.open(this.readmeUrl[this.currentLocale], "_blank");
         },
         /**
          * @description Filters the feature data sets and pass them to the prepareGraphData() for graph visualization.
@@ -641,10 +638,14 @@ export default {
         </div>
         <div class="hovermenu">
             <div class="btn_grp">
+                <!-- <ToolInfo
+                    :url="readmeUrl[currentLocale]"
+                    class="ccm_info_button"
+                /> -->
                 <button
-                    class="info_button"
+                    class="help_button"
                     :title="$t('additional:modules.tools.colorCodeMap.infoTooltip')"
-                    @click="showInfo()"
+                    @click="showInfo"
                 >
                     <span class="glyphicon glyphicon-question-sign" />
                 </button>
@@ -722,6 +723,19 @@ export default {
             .drop_shadow();
 
             .btn_grp {
+                .ccm_info_button {
+                    background:transparent;
+                    display: inline-block !important;
+
+                    .v_btn {
+                        border-radius:0px !important;
+                        margin: 2px !important;
+                    }
+
+                    .v-divider {
+                        display:none;
+                    }
+                }
 
                 button {
                     width:26px;
@@ -1019,9 +1033,9 @@ export default {
                 width:152px;
                 .btn_grp {
                     button {
-                        margin:2px;
-                        &.info_button {
-                            display: inline-block;
+                        margin:2px !important;
+                        &.ccm_info_button {
+                            display: inline-block !important;
                         }
                     }
                 }

@@ -21,7 +21,11 @@ const state = {
     areaAttributes: [
         {key: "flaeche_qm", factorToSqm: 1},
         {key: "flaeche_ha", factorToSqm: 0.0001}
-    ]
+    ],
+    readmeUrl: {
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/scenariobuilder.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/einrichtungenanlegen.md"
+    }
 };
 
 export default state;

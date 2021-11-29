@@ -17,11 +17,13 @@ import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighbor
 import Modal from "../../../../src/share-components/modals/Modal.vue";
 import processStats from "../utils/processStats";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "ResidentialSimulation",
     components: {
         Tool,
+        ToolInfo,
         ScenarioManager,
         GeometryPicker,
         ReferenceDistrictPicker,
@@ -95,6 +97,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ResidentialSimulation", Object.keys(getters)),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
         ...mapGetters("Tools/DistrictSelector", {
@@ -428,6 +431,7 @@ export default {
             v-if="active"
             #toolBody
         >
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app absolute>
                 <v-main
                     id="scenario-builder"
