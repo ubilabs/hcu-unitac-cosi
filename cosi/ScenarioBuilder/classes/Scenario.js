@@ -245,6 +245,7 @@ export default class Scenario {
         }
 
         this.simulatedFeatures = [];
+        this.updateScenario();
     }
 
     /**
