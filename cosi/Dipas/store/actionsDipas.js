@@ -22,11 +22,11 @@ function setLayerAttributes (model) {
             },
             {
                 id: "votingPro",
-                name: "Pro Stimmen"
+                name: "Pos. Bewertungen"
             },
             {
                 id: "votingContra",
-                name: "Contra Stimmen"
+                name: "Neg. Bewertungen"
             }
         ]
     });
@@ -40,37 +40,67 @@ function setLayerAttributes (model) {
 function addLayerToTree (newLayer) {
     const layerName = newLayer.name,
         layerId = newLayer.id,
-        features = newLayer.features,
-        gfiAttributes = {
-            dateCreated: "Erstellungsdatum",
-            title: "Titel",
-            contributionType: "Beitragstyp",
-            contributionContent: "Beitragstext",
-            commentsNumber: "Anzahl Kommentare",
-            category: "Kategorie",
-            votingPro: "Pro Stimmen",
-            votingContra: "Contro Stimmen",
-            belongToProject: "Verfahren"
-        };
+        features = newLayer.features;
+    let gfiAttributes = Object();
+
+    gfiAttributes = newLayer.project ? projectGfiAttributes() : contributionsGfiAttributes();
 
     Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true});
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
-        filterModel = {
-            attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType"],
-            isActive: false,
-            isSelected: false,
-            layerId: newLayer.id,
-            name: newLayer.name,
-            useConfigName: true
-        },
-        filterQuery = Radio.request("Filter", "getFilters");
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
 
     setLayerAttributes(model, newLayer);
-    filterQuery.push(filterModel);
+    if (!newLayer.project) {
+        const filterModel = {
+                attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType"],
+                isActive: false,
+                isSelected: false,
+                layerId: newLayer.id,
+                name: newLayer.name,
+                useConfigName: true
+            },
+            filterQuery = Radio.request("Filter", "getFilters");
+
+
+        filterQuery.push(filterModel);
+    }
 
     return model;
+}
+
+/**
+ * Returns the GFI Attributes for projects
+ * @returns {void} the GFI attributes
+ */
+function projectGfiAttributes () {
+    return {
+        nameFull: "Projektname",
+        dateStart: "Startdatum",
+        dateEnd: "Enddatum",
+        dipasPhase: "DIPAS Phase",
+        website: "Website",
+        owner: "Eigentümer",
+        publisher: "Veröffentlicher"
+    };
+}
+
+/**
+ * Returns the GFI Attributes for contributions
+ * @returns {void} the GFI attributes
+ */
+function contributionsGfiAttributes () {
+    return {
+        dateCreated: "Erstellungsdatum",
+        title: "Titel",
+        contributionType: "Beitragstyp",
+        contributionContent: "Beitragstext",
+        commentsNumber: "Anzahl Kommentare",
+        category: "Kategorie",
+        votingPro: "Pos. Bewertungen",
+        votingContra: "Neg. Bewertung",
+        belongToProject: "Verfahren"
+    };
 }
 
 export default {
@@ -78,4 +108,3 @@ export default {
         return addLayerToTree(newLayer);
     }
 };
-
