@@ -1,0 +1,20 @@
+{
+    "modules": {
+        "tools": {
+            "colorCodeMap": {
+                "title": "Kartenvisualisierungswerkzeug",
+                "infoTooltip": "Werkzeuginformationen",
+                "minimize": "Maximieren / Minimieren",
+                "toggleVisualization": "Visualisierung an / aus",
+                "prev": "Vorherigen Datensatz auswählen",
+                "next": "Nächsten Datensatz auswählen",
+                "animate": "Visualisierung über die Jahre animieren",
+                "generateChart": "Graph aus Datensatz erzeugen",
+                "showDistrictNames": "Gebietsnamen ein-/ ausblenden",
+                "metadata": "Metadaten öffnen",
+                "noData": "Keine Daten vorhanden",
+                "yearsLabel": "Jahre"
+            }
+        }
+    }
+}

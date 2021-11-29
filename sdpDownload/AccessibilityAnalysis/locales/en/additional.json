@@ -1,0 +1,43 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "accessibilityAnalysis": {
+                    "title": "Accessibility Analysis",
+                    "dropdownInfo": "Please choose the mode you want to work with:",
+                    "pointOfReference": "Point of reference: click on the map",
+                    "setByFeature": "Select facilities as location (use perimeter of polygons)",
+                    "topic": "Topic",
+                    "transportType": "Type of transportation",
+                    "transportTypes": {
+                        "clear": "-clear-",
+                        "driving-car": "Car",
+                        "cycling-regular": "Bicycle",
+                        "cycling-electric": "Bicycle (electric)",
+                        "foot-walking": "Walking",
+                        "wheelchair": "Wheelchair"
+                    },
+                    "scaleUnit": "Unit of distance",
+                    "scaleUnits": {
+                        "clear": "-clear-",
+                        "time": "Time (in min)",
+                        "distance": "Distance (in m)"
+                    },
+                    "distance": "Distance",
+                    "calculate": "Calculate",
+                    "clear": "Clear result",
+                    "help": "Help",
+                    "legend": "Legend:",
+                    "requestInhabitants": "Request inhabitants",
+                    "inputReminder": "Please fill out all input fields.",
+                    "showError": "The request could not be executed correctly. Please verify all inputs.",
+                    "askUpdate": "Do you want to update the current accessibility analysis?",
+                    "showErrorInvalidInput": "The request could not be executed correctly: One parameter has wrong format or is invalid.",
+                    "download": {
+                        "title": "Download results as geodata (GeoJSON)"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "dipas": {
+                    "title": "DIPAS",
+                    "showProject": "Projekt auf der Karte anzeigen",
+                    "showContributions": "Einzelne Beiträge auf der Karte anzeigen",
+                    "showHeatmap": "Heatmap auf der Karte anzeigen",
+                    "styling": {
+                        "label": "Styling der Beiträge:",
+                        "byProject": "nach Projekt",
+                        "byCategories": "nach Kategorien im Projektfarbenspektrum",
+                        "byCategoriesRainbow": "nach Kategorien im Regenbogenspektrum",
+                        "byVoting": "nach Bewertungen"
+                    }
+                }
+            }
+        }
+    }
+}
