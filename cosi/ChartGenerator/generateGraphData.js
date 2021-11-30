@@ -46,12 +46,7 @@ function createPieChartData (dataSet) {
             target: dataSet.target ? dataSet.target : "",
             cgid: dataSet.cgid,
             id: dataSet.id,
-            source: dataSet.source,
-            sub: dataSet.sub,
-            sub_graph: dataSet.sub ? dataSet.sub_graph : false,
-            sub_index: dataSet.sub ? dataSet.sub_index : false,
-            sub_length: dataSet.sub ? dataSet.sub_length : false,
-            pie_index: i
+            source: dataSet.source
         };
 
         dataSet.data.dataSets.forEach((set) => {
