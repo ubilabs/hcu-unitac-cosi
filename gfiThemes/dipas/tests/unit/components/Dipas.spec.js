@@ -16,12 +16,21 @@ describe("addons/dipas/components/Dipas.vue", () => {
 
             }
         },
+        mockConfigJsTABLE = {
+            uiStyle: "TABLE"
+        },
+        mockConfigJsDEFAULT = {
+            uiStyle: "DEFAULT"
+        },
         getters = {
-            uiStyle: state => state.uiStyle
+            uiStyle: state => state.configJs.uiStyle
         },
         mutations = {
-            setUiStyle (state, uiStyle) {
-                state.uiStyle = uiStyle;
+            setConfigJs (state, value) {
+                state.configJs = value;
+            },
+            setUiStyle (state, value) {
+                state.configJs.uiStyle = value;
             }
         };
     let wrapper,
@@ -35,11 +44,11 @@ describe("addons/dipas/components/Dipas.vue", () => {
                 Dipas
             },
             state: {
+                configJs: mockConfigJsDEFAULT
             },
             getters,
             mutations
         });
-        store.commit("configJs/uiStyle", "DEFAULT");
     });
 
     /**
@@ -69,13 +78,24 @@ describe("addons/dipas/components/Dipas.vue", () => {
             }
         });
         if (isTable) {
-            store.commit("configJs/uiStyle", "TABLE");
+            store.commit("setConfigJs", mockConfigJsTABLE);
+        }
+        else {
+            store.commit("setConfigJs", mockConfigJsDEFAULT);
         }
     }
 
     describe("template", () => {
         it("uiStyle table, should place the values", () => {
             createWrapper(true);
+            /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
+            console.log(wrapper);
+            wrapper.vm.$nextTick();
+            console.log(wrapper.vm.isTableStyle());
+            console.log(wrapper.findAll(".dipas-gfi-thema"));
+            console.log(wrapper.findAll(".dipas-gfi-name"));
+            console.log(wrapper.findAll(".dipas-gfi-description"));
+            console.log(wrapper.findAll("a").length);
             expect(wrapper.findAll(".dipas-gfi-thema").at(0).element.textContent.trim()).to.equal("Value Kategorie");
             expect(wrapper.findAll(".dipas-gfi-name").at(0).element.textContent.trim()).to.equal("Value name");
             expect(wrapper.findAll(".dipas-gfi-description").at(0).element.textContent.trim()).to.equal("Value description");
