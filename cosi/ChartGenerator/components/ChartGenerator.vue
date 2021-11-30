@@ -5,8 +5,8 @@ import Tool from "../../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
-import {scaleLinear} from "d3-scale";
-import {color, hsl} from "d3-color";
+import actions from "../store/actionsChartGenerator";
+import {color} from "d3-color";
 import {interpolateRainbow} from "d3";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
@@ -15,6 +15,7 @@ import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import Info from "text-loader!./info.html";
 import ToolInfo from "../../components/ToolInfo.vue";
+import generateColorScale from "../generateColorScale";
 
 export default {
     name: "ChartGenerator",
@@ -29,7 +30,7 @@ export default {
     data () {
         return {
             // All dataSets that have been passed to the component
-            dataSets: [],
+            // dataSets: [],
             // All generated Chart components and data sets
             allCharts: [],
             // The ID of the active Graph in the ChartGenerator Tool Winodw
@@ -49,46 +50,60 @@ export default {
         ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
     },
     watch: {
-        newDataSet (dataSet) {
-            console.log(JSON.stringify(dataSet));
-            if (!dataSet.cgid) {
-                dataSet.cgid = dataSet.id + "-" + dataSet.name;
-            }
-            const checkDouble = this.dataSets.find(x => x.cgid === dataSet.cgid);
+        dataSets (newDataSets, oldValue) {
+            console.log("newDataSet new", newDataSets);
+            console.log("newDataSet old", oldValue);
+            for (const dataSet of newDataSets) {
+                if (oldValue && oldValue.indexOf(dataSet) >= 0) {
+                    continue;
+                }
+                if (dataSet === oldValue) {
+                    return;
+                }
+                if (!dataSet.cgid) {
+                    dataSet.cgid = dataSet.id + "-" + dataSet.name;
+                }
+                // const checkDouble = this.dataSets.find(x => x.cgid === dataSet.cgid);
 
-            if (checkDouble) {
-                const index = this.dataSets.indexOf(checkDouble);
+                // if (checkDouble) {
+                //     const index = this.dataSets.indexOf(checkDouble);
 
-                this.dataSets.splice(index, 1);
+                //     this.dataSets.splice(index, 1);
+                //     dataSet.init = this.dataSets.length;
+                // }
+                // else {
+                // }
                 dataSet.init = this.dataSets.length;
-                this.dataSets.push(dataSet);
-            }
-            else {
-                dataSet.init = this.dataSets.length;
-                this.dataSets.push(dataSet);
-            }
-            if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
-                this.setActive(true);
-            }
 
-            if (Array.isArray(dataSet.type)) {
-                this.prepareMultiple(dataSet);
-            }
-            else {
-                this.generateGraphComponent(dataSet);
+                if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
+                    this.setActive(true);
+                }
+
+                if (Array.isArray(dataSet.type)) {
+                    this.prepareMultiple(dataSet);
+                }
+                else {
+                    dataSet[dataSet.type] = this.generateGraphComponent(dataSet);
+                }
+
+                // this.dataSets.push(dataSet);
+                this.allCharts = [...this.allCharts, dataSet];
+
+                console.log(dataSet);
+                console.log("this.dataSets", this.dataSets);
             }
         },
         active (state) {
-            if (state) {
-                this.dataSets.forEach(dataSet => {
-                    if (Array.isArray(dataSet.type)) {
-                        this.prepareMultiple(dataSet);
-                    }
-                    else {
-                        this.generateGraphComponent(dataSet);
-                    }
-                });
-            }
+            // if (state) {
+            //     this.dataSets.forEach(dataSet => {
+            //         if (Array.isArray(dataSet.type)) {
+            //             this.prepareMultiple(dataSet);
+            //         }
+            //         else {
+            //             this.generateGraphComponent(dataSet);
+            //         }
+            //     });
+            // }
         }
     },
     created () {
@@ -98,15 +113,17 @@ export default {
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
-    mounted () {
+    async mounted () {
         this.applyTranslationKey(this.name);
 
         const dat = {"type": ["LineChart", "BarChart", "PieChart"], "id": "ccm", "name": "Stadtteile - Bevölkerung insgesamt", "color": ["#55eb34", "rgb(14, 150, 240)", "yellow"], "data": {"labels": ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"], "dataSets": [{"label": "Fuhlsbüttel", "data": ["12135.0", "12130.0", "12204.0", "12572.0", "12590.0", "12701.0", "13384.0", "13441.0", "13348.0"]}, {"label": "Groß Borstel", "data": ["7969.0", "8086.0", "8013.0", "8769.0", "8459.0", "8499.0", "8734.0", "9284.0", "9642.0"]}, {"label": "Alsterdorf", "data": ["13657.0", "13749.0", "14009.0", "14123.0", "14428.0", "15031.0", "15174.0", "15204.0", "15227.0"]}, {"label": "Ohlsdorf", "data": ["15154.0", "15085.0", "15043.0", "15471.0", "15794.0", "16471.0", "16463.0", "16666.0", "16686.0"]}]}, "scaleLabels": ["Bevölkerung insgesamt", "Jahre"], "source": "Kartenvisualisierungswerkzeug", "beginAtZero": true, "sub": false, "cgid": "ccm-Stadtteile - Bevölkerung insgesamt"};
 
-        this.setNewDataSet(dat);
+        await this.channelGraphData(dat);
+        await this.channelGraphData({...dat, cgid: "2", id: "2"});
     },
     methods: {
         ...mapMutations("Tools/ChartGenerator", Object.keys(mutations)),
+        ...mapActions("Tools/ChartGenerator", Object.keys(actions)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
 
         /**
@@ -141,25 +158,28 @@ export default {
          * @returns {void}
          */
         prepareMultiple (dataSet) {
-            dataSet.type.forEach((type, i) => {
-                const dataClone = JSON.parse(JSON.stringify(dataSet));
+            const dataClone = JSON.parse(JSON.stringify(dataSet));
 
-                dataClone.type = type;
-                dataClone.init = dataSet.init;
-                dataClone.sub = true;
-                dataClone.sub_index = i;
-                dataClone.sub_length = dataSet.type.length;
-                dataClone.sub_graph = 0;
-                this.generateGraphComponent(dataClone);
+            dataSet.type.forEach((type, i) => {
+                const typeData = {...dataClone};
+
+                typeData.type = type;
+                typeData.init = dataSet.init;
+                typeData.sub = true;
+                typeData.sub_index = i;
+                typeData.sub_length = dataSet.type.length;
+                typeData.sub_graph = 0;
+                dataSet[type] = this.generateGraphComponent(typeData);
             });
         },
         /**
          * @description Generates the graph component and passes the data dynamically.
-         * @param {Object} dataSet dataSet containing the data and a String for type property.
+         * @param {Object} arg dataSet containing the data and a String for type property.
          * @returns {void}
          */
-        generateGraphComponent (dataSet) {
-            const colorRange = this.generateColorScale(dataSet);
+        generateGraphComponent (arg) {
+            const dataSet = JSON.parse(JSON.stringify(arg)),
+                colorRange = generateColorScale(dataSet);
 
             dataSet.data.dataSets.forEach((set, index) => {
                 const getColor = colorRange(index),
@@ -170,21 +190,22 @@ export default {
                 set.backgroundColor = d3Color;
             });
 
-            if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
-                this.newType = "BarChart";
-            }
-            else if (dataSet.type === "PieChart") {
-                const pieChartData = this.createPieChartData(dataSet);
+            // if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
+            //     this.newType = "BarChart";
+            // }
+            if (dataSet.type === "PieChart") {
+                return this.createPieChartData(dataSet);
 
-                this.newType = "PieChart";
-                this.createPieChart(pieChartData);
-                return;
+                // this.newType = "PieChart";
+                // this.createPieChart(pieChartData);
+                // return;
             }
-            else {
-                this.newType = dataSet.type;
-            }
+            // else {
+            //     this.newType = dataSet.type;
+            // }
 
-            this.renderGraph(dataSet);
+            // this.renderGraph(dataSet);
+            return dataSet;
         },
         renderGraph (dataSet) {
             const target = document.getElementById(dataSet.target),
@@ -193,35 +214,35 @@ export default {
                 dynamicComponentInstance = new DynamicComponent({propsData: {dataSets: dataSet, options: dataSet.options}});
 
             dataSet.component = dynamicComponentInstance;
-            this.allCharts.push(dataSet);
+            // this.allCharts.push(dataSet);
 
-            if (target !== null) {
-                if (!dataSet.sub) {
-                    this.$nextTick(function () {
-                        dynamicComponentInstance.$mount(target);
-                    });
-                }
-            }
-            else if (!dataSet.sub) {
-                const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
+            // if (target !== null) {
+            //     if (!dataSet.sub) {
+            //         this.$nextTick(function () {
+            //             dynamicComponentInstance.$mount(target);
+            //         });
+            //     }
+            // }
+            // else if (!dataSet.sub) {
+            //     const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
 
-                this.$nextTick(function () {
-                    const altTarget = document.getElementById("graph-" + index);
+            //     this.$nextTick(function () {
+            //         const altTarget = document.getElementById("graph-" + index);
 
-                    dynamicComponentInstance.$mount(altTarget);
-                    this.activeGraph = index;
-                });
-            }
-            else {
-                const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
+            //         dynamicComponentInstance.$mount(altTarget);
+            //         this.activeGraph = index;
+            //     });
+            // }
+            // else {
+            //     const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
 
-                this.$nextTick(function () {
-                    const altTarget = document.getElementById("graph-" + index + "-" + dataSet.sub_index);
+            //     this.$nextTick(function () {
+            //         const altTarget = document.getElementById("graph-" + index + "-" + dataSet.sub_index);
 
-                    dynamicComponentInstance.$mount(altTarget);
-                    this.activeGraph = index;
-                });
-            }
+            //         dynamicComponentInstance.$mount(altTarget);
+            //         this.activeGraph = index;
+            //     });
+            // }
         },
         /**
          * @description Modifies the dataSet to match chart.js requirements for PieCharts.
@@ -306,66 +327,6 @@ export default {
 
             return target;
 
-        },
-        /**
-         * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
-         * @param {Object} dataSet dataSet containing the data to be rendered as graph.
-         * @returns {Array} ColorScale Array.
-         */
-        generateColorScale (dataSet) {
-
-            if (Array.isArray(dataSet.color)) {
-                const domainRange = [0];
-
-                dataSet.color.map(incColor => hsl(incColor));
-                dataSet.color.forEach((incColor, index) => {
-                    if (index < (dataSet.color.length - 2)) {
-                        domainRange.push(dataSet.data.dataSets.length / (index + 2));
-                    }
-                });
-
-                domainRange.push(dataSet.data.dataSets.length);
-                domainRange.sort();
-                return scaleLinear().domain(domainRange).range(dataSet.color);
-            }
-            else if (dataSet.color === "rainbow") {
-                const range = [],
-                    domainRange = [];
-
-                dataSet.data.dataSets.forEach((set, index) => {
-                    domainRange.push(index);
-                });
-
-                dataSet.data.dataSets.forEach((set, index) => {
-                    const indexValue = (index + 1) / dataSet.data.dataSets.length,
-                        rainbowColor = interpolateRainbow(indexValue).toString();
-
-                    range.push(rainbowColor);
-                });
-
-                return scaleLinear().domain(domainRange).range(range);
-            }
-
-            const d3Color = hsl(dataSet.color);
-            let colorA = "",
-                colorB = "",
-                range = "";
-
-            d3Color.h += 20;
-            d3Color.s += 0.3;
-            d3Color.l += 0.15;
-
-            colorA = String(d3Color);
-
-            d3Color.h -= 40;
-            d3Color.s -= 0.6;
-            d3Color.l -= 0.3;
-
-            colorB = String(d3Color);
-
-            range = [colorA, String(d3Color), colorB];
-
-            return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
         },
         /**
          * @description Activates the tool window of the chartgenerator.
@@ -575,8 +536,12 @@ export default {
                                                 class="multi_graph"
                                                 :class="{active: graph.sub_graph === i}"
                                             >
-                                                <div
+                                                <component
+                                                    :is="type"
+                                                    v-if="type!=='PieChart'"
                                                     :id="`graph-${index}-${i}`"
+                                                    :data-sets="graph[type]"
+                                                    :options="graph.options"
                                                 />
                                                 <div class="graph_functions">
                                                     <button
@@ -595,6 +560,7 @@ export default {
                                                         PNG
                                                         <span class="glyphicon glyphicon-download-alt" />
                                                     </button>
+                                                    div
                                                 </div>
                                             </div>
                                         </div>

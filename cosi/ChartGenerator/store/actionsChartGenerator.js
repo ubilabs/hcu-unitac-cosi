@@ -1,16 +1,12 @@
 const actions = {
-    async channelGraphData ({commit}, dataSet) {
+    async channelGraphData ({commit, getters}, dataSet) {
+        console.log(getters);
+        console.log(dataSet);
         if (Array.isArray(dataSet)) {
-            dataSet.forEach(x => {
-                setTimeout(function () {
-                    commit("setNewDataSet", x);
-                }, 500);
-            });
+            commit("setDataSets", [...getters.dataSets, ...dataSet]);
         }
         else {
-            setTimeout(function () {
-                commit("setNewDataSet", dataSet);
-            }, 500);
+            commit("setDataSets", [...getters.dataSets, dataSet]);
         }
     }
 };

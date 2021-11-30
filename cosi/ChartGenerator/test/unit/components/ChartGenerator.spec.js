@@ -18,6 +18,7 @@ import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import chartdata01 from "./chartdata01.json";
 
 Vue.use(Vuetify);
 
@@ -124,15 +125,23 @@ describe.only("CharGenerator.vue", () => {
         expect(addSingleAlertStub.firstCall.args[1].content).to.contain("Das Werkzeug \"Datenvisualisierung\" verwaltet Datensätze");
     });
 
-    it("should set new dataset without id", async function () {
+    // it("should set new dataset without id", async function () {
+    //     const wrapper = await mountComponent();
+
+    //     await wrapper.vm.setNewDataSet({data: {dataSets: []}});
+
+    //     const chart = await wrapper.findComponent(BarChart);
+
+    //     expect(chart.exists()).to.be.true;
+
+    // });
+    it.only("should create new graph data", async function () {
         const wrapper = await mountComponent();
 
-        await wrapper.vm.setNewDataSet({data: {dataSets: []}});
+        await wrapper.vm.setNewDataSet(chartdata01);
 
-        const chart = await wrapper.findComponent(BarChart);
-
-        expect(chart.exists()).to.be.true;
-
+        expect(wrapper.vm.dataSets[0].cgid).to.be.equal("");
+        console.log(wrapper.vm.dataSets);
     });
 });
 
