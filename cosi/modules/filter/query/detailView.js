@@ -4,7 +4,7 @@ import SnippetCheckBoxView from "../../../../../modules/snippets/checkbox/view";
 import Template from "text-loader!./templateDetailView.html";
 import SnippetSliderView from "../../../../../modules/snippets/slider/range/view";
 import SnippetMultiCheckboxView from "../../../../../modules/snippets/multiCheckbox/view";
-import "./style.less";
+import "./style.scss";
 
 const QueryDetailView = Backbone.View.extend(/** @lends QueryDetailView.prototype */{
     events: {

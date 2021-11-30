@@ -124,7 +124,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .gfi-bildungsatlas-fluechtlinge {
         max-width: 445px;
         font-size: 13px;

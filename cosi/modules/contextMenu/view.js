@@ -1,4 +1,4 @@
-import "./style.less";
+import "./style.scss";
 import Template from "text-loader!./template.html";
 
 const ContextMenuView = Backbone.View.extend(/** @lends ContextMenuView */ {

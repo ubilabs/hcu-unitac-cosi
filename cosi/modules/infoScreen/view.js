@@ -1,6 +1,6 @@
 import Template from "text-loader!./template.html";
 import InfoScreenModel from "./model";
-import "./style.less";
+import "./style.scss";
 
 const InfoScreenView = Backbone.View.extend(/** @lends InfoScreenView.prototype */{
     events: {

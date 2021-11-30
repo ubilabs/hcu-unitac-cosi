@@ -1,6 +1,6 @@
 import Template from "text-loader!./template.html";
 import {selection} from "d3-selection";
-import "./style.less";
+import "./style.scss";
 
 const DashboardWidgetView = Backbone.View.extend(/** @lends DashboardWidgetView */{
     events: {

@@ -4,7 +4,7 @@ import Template from "text-loader!./template.html";
 import ResultView from "./query/resultView";
 import ResultModel from "./query/resultModel";
 import * as Extent from "ol/extent";
-import "./style.less";
+import "./style.scss";
 
 const FilterView = Backbone.View.extend(/** @lends FilterView.prototype */{
     events: {

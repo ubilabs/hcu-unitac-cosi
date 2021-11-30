@@ -9,7 +9,7 @@ import TemplateInfoContainer from "text-loader!./templateInfoContainer.html";
 import TemplateLanduseSelect from "text-loader!./templateLanduseSelect.html";
 import TemplateLayerSelect from "text-loader!./templateLayerSelect.html";
 import TemplateMobileLayerSelect from "text-loader!./templateMobileLayerSelect.html";
-import "./style.less";
+import "./style.scss";
 import axios from "axios";
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 

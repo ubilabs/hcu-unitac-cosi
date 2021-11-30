@@ -1,5 +1,5 @@
 import Template from "text-loader!./templateSimpleView.html";
-import "./style.less";
+import "./style.scss";
 
 const QuerySimpleView = Backbone.View.extend(/** @lends QuerySimpleView.prototype */{
     /**

@@ -1,4 +1,4 @@
-import "./style.less";
+import "./style.scss";
 
 const QueryValuesView = Backbone.View.extend(/** @lends QueryValuesView.prototype */{
     /**

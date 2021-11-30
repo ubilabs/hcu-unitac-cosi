@@ -609,7 +609,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .PopulationRequest {
         max-width:500px;
     }
@@ -640,12 +640,12 @@ export default {
     }
 </style>
 
-<style lang="less">
-    @import "~/css/mixins.less";
+<style lang="scss">
+    @import "~/css/mixins.scss";
 
     #tooltip-overlay {
         position: relative;
-        background: @accent_active;
+        background: $accent_active;
         color: #fff;
         max-width: 200px;
         padding: 4px 8px;
@@ -654,7 +654,7 @@ export default {
     #circle-overlay {
         position: relative;
         top: -20px;
-        background: @accent_active;
+        background: $accent_active;
         color: #fff;
         max-width: 70px;
         padding: 4px 8px;

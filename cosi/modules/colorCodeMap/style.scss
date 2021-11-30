@@ -1,14 +1,14 @@
-@import "../../../../css/mixins.less";
+@import "~/css/mixins.scss";
 
-@color_1           : rgb(0, 0, 0);
-@background_color_1: rgba(255, 255, 255);
+$color_1           : rgb(0, 0, 0);
+$background_color_1: rgba(255, 255, 255);
 
 .color-code {
     left            : 0;
     bottom          : 28px;
     position        : absolute;
-    background-color: @background_color_1;
-    color           : @color_1;
+    background-color: $background_color_1;
+    color           : $color_1;
     font-size       : 11px;
     padding         : 4px;
 
@@ -22,7 +22,7 @@
         margin-top: 4px;
         padding   : 6px 10px 5px 8px;
         &:hover {
-            .primary_action_hover();
+            @include primary_action_hover;
         }
     }
 

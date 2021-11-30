@@ -442,7 +442,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .gfi-school-living-location {
         max-width: 420px;
         table {
@@ -458,7 +458,7 @@ export default {
     }
 </style>
 
-<style lang="less">
+<style lang="scss">
      .schulWohnort {
         &.table {
             max-width: 420px;

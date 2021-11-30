@@ -1,4 +1,4 @@
-import "./style.less";
+import "./style.scss";
 import template from "text-loader!./template.html";
 import ToleranceCollection from "./tolerance/list";
 import ToleranceModel from "./tolerance/model";

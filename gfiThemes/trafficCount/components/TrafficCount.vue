@@ -534,7 +534,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .trafficCount-gfi{
         padding: 10px 5px 0;
         @media (max-width: 600px) {

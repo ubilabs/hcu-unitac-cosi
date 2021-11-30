@@ -127,11 +127,11 @@ export default {
     </table>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     @import "~variables";
 
     th {
-        font-family: @font_family_accent;
+        font-family: $font_family_accent;
         background-color: #f2f2f2;
     }
 

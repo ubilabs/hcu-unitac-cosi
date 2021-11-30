@@ -1,6 +1,6 @@
 import Template from "text-loader!./template.html";
 import InfoTemplate from "text-loader!./info.html";
-import "./style.less";
+import "./style.scss";
 import SnippetDropdownView from "../../../../modules/snippets/dropdown/view";
 
 const SelectDistrictView = Backbone.View.extend(/** @lends SelectDistrictView.prototype */{

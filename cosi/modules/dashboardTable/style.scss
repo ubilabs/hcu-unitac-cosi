@@ -1,8 +1,8 @@
-@import "../../../../css/mixins.less";
+@import "~/css/mixins.scss";
 
-@color_1: #fff;
-@font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
-@background_color_1: rgba(0, 0, 0,.5);
+$color_1: #fff;
+$font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
+$background_color_1: rgba(0, 0, 0,.5);
 
 .dashboard-table {
     .head-bar, .table-footer {
@@ -96,7 +96,7 @@
                     cursor: pointer;
                 }
                 &:hover {
-                    .primary_action_hover();
+                    @include primary_action_hover;
                     .move {
                         visibility: visible;
                     }
@@ -115,7 +115,7 @@
                     span {
                         color: white;
                         &:hover {
-                            .primary_action_hover();
+                            @include primary_action_hover;
                         }
                     }
                 }
@@ -129,7 +129,7 @@
                     transform: rotate(-45deg);
                     color: white;
                     &:hover {
-                        .primary_action_hover();
+                        @include primary_action_hover;
                     }
                 }
                 ul.list-group {
@@ -150,7 +150,7 @@
                             display:none;
                         }
                         small {
-                            color: @accent_focus;
+                            color: $accent_focus;
                         }
                     }
                 }
@@ -172,15 +172,15 @@
                     color: black;
                     transform: rotate(180deg);
                     span:hover {
-                        .primary_action_hover();
+                        @include primary_action_hover;
                         border-right: 1px solid white;
                         border-bottom: 1px solid white;
                     }
                 }
             }
             &:hover {
-                background-color: darken(@accent_hover, 5%);
-                color: @primary_contrast;
+                background-color: darken($accent_hover, 5%);
+                color: $primary_contrast;
                 cursor: pointer;
                 button.open span {
                     border-right: 1px solid white;
@@ -189,7 +189,7 @@
             }
             &.selected {
                 td, th {
-                    background: @accent_focus;
+                    background: $accent_focus;
                     color: white;
                     button.open span {
                         border-right: 1px solid white;
@@ -201,7 +201,7 @@
                 }
                 td {
                     &:hover {
-                        .primary_action_hover();
+                        @include primary_action_hover;
                         button.open span {
                             border-right: 1px solid white;
                             border-bottom: 1px solid white;
@@ -213,7 +213,7 @@
     }
     .tool-name {
         padding-left: 15px;
-        font-family: @font_family_1;
+        font-family: $font_family_1;
         font-size: 16px;
     }
     .simple-view {
@@ -222,8 +222,8 @@
         }
     }
     .btn-select {
-        color: @color_1;
-        background-color: @background_color_1;
+        color: $color_1;
+        background-color: $background_color_1;
         .name {
             &:hover {
                 font-weight: normal;

@@ -1,5 +1,5 @@
 import RefocusTemplate from "text-loader!./template.html";
-import "./style.less";
+import "./style.scss";
 
 const RefocusView = Backbone.View.extend(/** @lends RefocusView.prototype */{
     events: {

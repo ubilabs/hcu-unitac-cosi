@@ -1,4 +1,4 @@
-@font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
+$font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
 
 #context-menu {
     min-width: 240px;
@@ -18,7 +18,7 @@
 
         #name {
             padding-left: 15px;
-            font-family: @font_family_1;
+            font-family: $font_family_1;
             font-size: 16px;
         }
 

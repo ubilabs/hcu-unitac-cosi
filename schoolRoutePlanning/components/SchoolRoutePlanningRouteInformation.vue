@@ -70,19 +70,19 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 @import "~variables";
-@font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
-@background_color_1: rgb(229, 229, 229);
+$font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
+$background_color_1: rgb(229, 229, 229);
 
     .route-information-container {
         span {
-            font-family: @font_family_1;
+            font-family: $font_family_1;
             font-size: 15px;
         }
 
         .result {
-            background-color: @background_color_1;
+            background-color: $background_color_1;
             p {
                 &:first-child {
                     padding-top: 20px;
