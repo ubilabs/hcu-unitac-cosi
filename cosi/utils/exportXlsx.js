@@ -80,7 +80,7 @@ export function parseJsonToXlsx (json, options, conversionType = "json_to_sheet"
     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
 
         header = conversionType === "json_to_sheet" ? Object.keys(json[0]) : undefined,
-        colOptions = options.colOptions || generateColOptions(header, options.multiplyColWidth),
+        colOptions = options.colOptions || header ? generateColOptions(header, options.multiplyColWidth) : undefined,
         rowOptions = options.rowOptions,
         workbook = XLSX.utils.book_new(),
         sheet = XLSX.utils[conversionType](json, {header});

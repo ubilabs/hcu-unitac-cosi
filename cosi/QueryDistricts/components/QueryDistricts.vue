@@ -580,12 +580,35 @@ export default {
         },
 
         exportTable: function () {
-            const exportData = this.results.map(r=>renameKeys(r, Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))))),
+            const
+                // exportData = this.results.map(r=>renameKeys(r, Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))))),
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
-                filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
+                filename = `${this.$t("additional:modules.tools.cosi.queryDistricts.exportFilename")}_${date}`,
+                data = [
+                    this.resultTableHeaders.map(header => header.text),
+                    ...this.results.map(row => {
+                        const _row = Object.values(row);
 
-            console.log(this.result);
-            exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
+                        return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)]
+                    })
+                ],
+                headers = ["Referenzgebiet", "Filter-Nr.", "Name", "Attribut", "Quotient", "Feld", "Min.", "Max.", "Ref.-Wert", "- Toleranz", "+ Toleranz"],
+                filters = this.layerFilterModels.map((filter, i) => [
+                    this.selectedDistrict,
+                    i + 1,
+                    filter.name,
+                    filter.property || "-",
+                    filter.quotientLayer || "-",
+                    filter.field,
+                    filter.min,
+                    filter.max,
+                    filter.value,
+                    filter.low,
+                    filter.high
+
+                ]);
+
+            exportXlsx([headers, [], ...filters, ...data], filename, {exclude: this.excludedPropsForExport}, "aoa_to_sheet");
         }
     }
 };
@@ -612,11 +635,6 @@ export default {
                         <div class="mb-5 overline">
                             {{ $t('additional:modules.tools.cosi.queryDistricts.subTitle') }}
                         </div>
-                        <div
-                            id="help"
-                            class="glyphicon glyphicon-question-sign ml-auto"
-                            @click="showHelp()"
-                        />
                     </div>
                     <v-autocomplete
                         id="layerfilter-selector-container"
