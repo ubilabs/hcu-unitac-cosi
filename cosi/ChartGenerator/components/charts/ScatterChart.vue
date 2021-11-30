@@ -93,9 +93,7 @@ export default {
         }
     },
     mounted () {
-        this.$nextTick(() => {
-            this.prepareRendering();
-        });
+        this.prepareRendering();
     },
     methods: {
         prepareRendering () {

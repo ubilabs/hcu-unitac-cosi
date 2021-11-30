@@ -2,18 +2,6 @@
 import {Bar} from "vue-chartjs";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 
-let promiseResolve, promiseReject,
-
-    promise = new Promise(function (resolve, reject) {
-        promiseResolve = resolve;
-        promiseReject = reject;
-    });
-
-export function getPromise () {
-    return promise;
-}
-
-
 export default {
     name: "BarChart",
     extends: Bar,
@@ -80,9 +68,7 @@ export default {
         }
     },
     async mounted () {
-        this.$nextTick(() => {
-            this.prepareRendering();
-        });
+        this.prepareRendering();
     },
     methods: {
         prepareRendering () {
@@ -100,18 +86,6 @@ export default {
             this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
             this._options.title.text = beautifyKey(this.chartData.name);
             this.renderChart(this.chartData.graph, this._options);
-
-            // console.log("resolve");
-            // promiseResolve();
-
-            // if (!this.chartData) {
-            //     return;
-            // }
-
-            // this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
-            // this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
-            // this._options.title.text = beautifyKey(this.chartData.name);
-            // this.renderChart(this.chartData.graph, this._options);
         }
     }
 };
