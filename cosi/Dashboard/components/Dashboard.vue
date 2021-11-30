@@ -184,7 +184,7 @@ export default {
         ...mapActions("Tools/Dashboard", Object.keys(actions)),
         ...mapMutations("Tools/DistrictSelector", ["addCategoryToMapping", "removeCategoryFromMapping"]),
         ...mapMutations("Tools/ColorCodeMap", ["setSelectedYear"]),
-        ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["updateDistricts"]),
         generateTable () {
             this.timestamps = [];
@@ -374,14 +374,14 @@ export default {
                     this.timestampPrefix
                 );
 
-            this.setNewChartDataSet(chart);
+            this.channelGraphData(chart);
         },
 
         renderScatterplot () {
             const correlation = this.calculateCorrelation(),
                 chart = generateChartForCorrelation(correlation, this.fields.B.category, this.fields.A.category);
 
-            this.setNewChartDataSet(chart);
+            this.channelGraphData(chart);
         },
 
         onVisualizationChanged () {

@@ -33,7 +33,7 @@ function getGraphData () {
     return JSON.parse(JSON.stringify(chartdata01));
 }
 
-describe.only("CharGenerator.vue", () => {
+describe("CharGenerator.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, addSingleAlertStub, cleanupStub, vuetify;
 
@@ -209,6 +209,18 @@ describe.only("CharGenerator.vue", () => {
 
         await wrapper.findAll(".nxt").at(1).trigger("click");
         expect(wrapper.vm.activeGraph).to.be.equal(0);
+    });
+
+    it("should remove graph", async function () {
+        const wrapper = await mountComponent(),
+            data1 = {...getGraphData(), type: "BarChart", cgid: "1"};
+
+        await wrapper.vm.channelGraphData(data1);
+
+        await wrapper.findAll(".rmv_btn").at(0).trigger("click");
+
+        expect(wrapper.vm.dataSets.length).to.be.equal(0);
+        expect(wrapper.vm.active).to.be.equal(false);
     });
 });
 

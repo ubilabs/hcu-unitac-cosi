@@ -135,7 +135,6 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
-        ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         /**

@@ -212,7 +212,6 @@ export default {
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
-        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
