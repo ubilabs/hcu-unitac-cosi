@@ -7,7 +7,6 @@ import mutations from "../store/mutationsQueryDistricts";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
-import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
@@ -391,7 +390,7 @@ export default {
                 if (feature.getProperties()[attributeSelector] === row.name) {
                     const extent = feature.getGeometry().getExtent();
 
-                    this.zoomTo(extent, {padding: [20, 20, 20, 20]});
+                    this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
                     return;
                 }
             }
@@ -409,40 +408,6 @@ export default {
             this.layerFilterModels = [];
             this.updateAvailableLayerOptions();
             this.selectedDistrict = null;
-        },
-
-        /**
-         * @deprecated
-         * @returns {void}
-         */
-        showInDashboard: function () {
-            const Ctor = Vue.extend(DashboardResult),
-                root = document.createElement("div"),
-                cont = document.createElement("div"), // nested container needed for mount
-                i18n = this.$t("additional:modules.tools.cosi.queryDistricts", {"returnObjects": true});
-
-            root.appendChild(cont);
-
-            /**
-             * @deprecated
-             * @todo replace with new storage
-             */
-            // Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
-            // Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
-            //     id: "compareDistricts",
-            //     name: "Vergleichbare Gebiete ermitteln",
-            //     glyphicon: "glyphicon glyphicon-random",
-            //     scalable: true
-            // });
-
-            if (this.dashboard !== null) {
-                this.dashboard.$destroy();
-                this.dashboard = null;
-            }
-
-            this.dashboard = new Ctor({
-                propsData: {resultTableHeaders: this.resultTableHeaders, results: this.results, i18n}
-            }).$mount(cont);
         },
 
         async updateFilter (value) {
@@ -619,6 +584,7 @@ export default {
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
 
+            console.log(this.result);
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         }
     }

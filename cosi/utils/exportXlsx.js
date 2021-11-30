@@ -49,20 +49,41 @@ function convertObject (data) {
     return objArr;
 }
 
+// /**
+//  * 
+//  * @param {*} aoa 
+//  * @param {*} options 
+//  */
+// export function parseAoaToXlsx (aoa, options) {
+//     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
+
+//         header = Object.keys(json[0]),
+//         colOptions = options.colOptions || generateColOptions(header, options.multiplyColWidth),
+//         rowOptions = options.rowOptions,
+//         workbook = XLSX.utils.book_new(),
+//         sheet = XLSX.utils.aoa_to_sheet(aoa);
+
+//     sheet["!cols"] = colOptions;
+//     sheet["!rows"] = rowOptions;
+//     XLSX.utils.book_append_sheet(workbook, sheet, sheetname);
+
+//     return workbook;
+// }
+
 /**
  * @description Converts a json array of objects to an styled and exportable XLSX format.
  * @param {Object[]} json - the array of objects to export
  * @param {Object} [options={}] - (optional) sheetname: name of the worksheet, tablename: name of the table, creator: editor of the document, theme: the styletheme of the table
  * @returns {module:exceljs/workbook} returns the XLSX workbook
  */
-export function parseJsonToXlsx (json, options) {
+export function parseJsonToXlsx (json, options, conversionType = "json_to_sheet") {
     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
 
-        header = Object.keys(json[0]),
+        header = conversionType === "json_to_sheet" ? Object.keys(json[0]) : undefined,
         colOptions = options.colOptions || generateColOptions(header, options.multiplyColWidth),
         rowOptions = options.rowOptions,
         workbook = XLSX.utils.book_new(),
-        sheet = XLSX.utils.json_to_sheet(json, {header});
+        sheet = XLSX.utils[conversionType](json, {header});
 
     sheet["!cols"] = colOptions;
     sheet["!rows"] = rowOptions;
@@ -78,7 +99,7 @@ export function parseJsonToXlsx (json, options) {
  * @param {Object} [options={}] - (optional) exlcude: keys to exclude from columns, sheetname: name of the worksheet, rowOptions: height etc., colOptions: width etc.
  * @returns {void}
  */
-export default async function exportXlsx (json, filename, options = {}) {
+export default async function exportXlsx (json, filename, options = {}, conversionType = "json_to_sheet") {
     let _json = json;
 
     // catch not provided data
@@ -110,7 +131,7 @@ export default async function exportXlsx (json, filename, options = {}) {
             rowOptions: options.rowOptions,
             colOptions: options.colOptions,
             multiplyColWidth: options.multiplyColWidth
-        });
+        }, conversionType);
 
     // open download dialog
     XLSX.writeFile(workbook, filename + ".xlsx");

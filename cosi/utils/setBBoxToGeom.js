@@ -7,7 +7,6 @@
 export function setBBoxToGeom (bboxGeometry) {
     const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
 
-    // Radio.trigger("BboxSettor", "setBboxGeometryToLayer", layerlist, bboxGeometry);
     setBboxGeometryToLayer(layerlist, bboxGeometry);
 }
 
@@ -21,7 +20,7 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry) {
     const modelList = Radio.request("ModelList", "getCollection");
 
     itemList.forEach(function (item) {
-        const model = modelList.get(item.id);
+        const model = modelList.get({id: item.id});
 
         // layer already exists in the model list
         if (model) {

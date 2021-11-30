@@ -7,7 +7,7 @@ import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style, Circle, Text} from "ol/style.js";
 import {Vector} from "ol/source.js";
 import {Heatmap} from "ol/layer.js";
-import {generateColorScale, generateColorScaleByColor} from "../../../utils/colorScale";
+import {generateColorScale, generateColorScaleByColor} from "../../utils/colorScale";
 import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";
 import {scaleSequential} from "d3-scale";
 import {interpolateRdYlGn} from "d3-scale-chromatic";
@@ -30,7 +30,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "layerById", "projectionCode"]),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"])
     },
     watch: {

@@ -106,7 +106,7 @@ export default {
             const extent = this.item.feature.getGeometry().getExtent(),
                 buffered = buffer(extent, 500);
 
-            this.zoomTo(buffered);
+            this.zoomTo({geometryOrExtent: buffered, options: {}});
 
             if (!this.item.enabled) {
                 this.addSingleAlert({

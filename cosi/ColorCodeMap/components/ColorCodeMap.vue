@@ -6,7 +6,7 @@ import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 // import Info from "text-loader!./info.html";
-import {generateColorScale} from "../../../utils/colorScale.js";
+import {generateColorScale} from "../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
 // import ToolInfo from "../../components/ToolInfo.vue";
