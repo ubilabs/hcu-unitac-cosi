@@ -7,7 +7,6 @@ import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
 import actions from "../store/actionsChartGenerator";
 import {color} from "d3-color";
-import {interpolateRainbow} from "d3";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
@@ -29,14 +28,8 @@ export default {
     },
     data () {
         return {
-            // All dataSets that have been passed to the component
-            // dataSets: [],
-            // All generated Chart components and data sets
-            allCharts: [],
             // The ID of the active Graph in the ChartGenerator Tool Winodw
             activeGraph: 0,
-            // Type Of The Graph to render
-            newType: "BarChart",
             // UpdateHelper to force rerender of the DOM
             forceGraphUpdate: 1,
             // Download Object
@@ -50,61 +43,46 @@ export default {
         ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
     },
     watch: {
-        dataSets (newDataSets, oldValue) {
-            console.log("newDataSet new", newDataSets);
-            console.log("newDataSet old", oldValue);
-            for (const dataSet of newDataSets) {
-                if (oldValue && oldValue.indexOf(dataSet) >= 0) {
-                    continue;
-                }
-                if (dataSet === oldValue) {
-                    return;
-                }
-                if (!dataSet.cgid) {
-                    dataSet.cgid = dataSet.id + "-" + dataSet.name;
-                }
-                // const checkDouble = this.dataSets.find(x => x.cgid === dataSet.cgid);
+        // dataSets (newDataSets, oldValue) {
+        //     // console.log("newDataSet new", newDataSets);
+        //     // console.log("newDataSet old", oldValue);
+        //     console.log("newDataSet new", newDataSets.length);
+        //     for (const dataSet of newDataSets) {
+        //         if (oldValue && oldValue.indexOf(dataSet) >= 0) {
+        //             continue;
+        //         }
+        //         if (dataSet === oldValue) {
+        //             return;
+        //         }
+        //         if (!dataSet.cgid) {
+        //             dataSet.cgid = dataSet.id + "-" + dataSet.name;
+        //         }
+        //         // const checkDouble = this.dataSets.find(x => x.cgid === dataSet.cgid);
 
-                // if (checkDouble) {
-                //     const index = this.dataSets.indexOf(checkDouble);
+        //         // if (checkDouble) {
+        //         //     const index = this.dataSets.indexOf(checkDouble);
 
-                //     this.dataSets.splice(index, 1);
-                //     dataSet.init = this.dataSets.length;
-                // }
-                // else {
-                // }
-                dataSet.init = this.dataSets.length;
+        //         //     this.dataSets.splice(index, 1);
+        //         //     dataSet.init = this.dataSets.length;
+        //         // }
+        //         // else {
+        //         // }
+        //         dataSet.init = this.dataSets.length;
 
-                if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
-                    this.setActive(true);
-                }
+        //         if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
+        //             this.setActive(true);
+        //         }
 
-                if (Array.isArray(dataSet.type)) {
-                    this.prepareMultiple(dataSet);
-                }
-                else {
-                    dataSet[dataSet.type] = this.generateGraphComponent(dataSet);
-                }
+        //         if (Array.isArray(dataSet.type)) {
+        //             if (!dataSet.sub_graph) {
+        //                 dataSet.sub_graph = 0;
+        //             }
+        //             this.prepareMultiple(dataSet);
+        //         }
+        //     }
+        //     this.activeGraph = this.dataSets.length - 1;
+        // }
 
-                // this.dataSets.push(dataSet);
-                this.allCharts = [...this.allCharts, dataSet];
-
-                console.log(dataSet);
-                console.log("this.dataSets", this.dataSets);
-            }
-        },
-        active (state) {
-            // if (state) {
-            //     this.dataSets.forEach(dataSet => {
-            //         if (Array.isArray(dataSet.type)) {
-            //             this.prepareMultiple(dataSet);
-            //         }
-            //         else {
-            //             this.generateGraphComponent(dataSet);
-            //         }
-            //     });
-            // }
-        }
     },
     created () {
         this.$on("close", this.close);
@@ -118,8 +96,10 @@ export default {
 
         const dat = {"type": ["LineChart", "BarChart", "PieChart"], "id": "ccm", "name": "Stadtteile - Bevölkerung insgesamt", "color": ["#55eb34", "rgb(14, 150, 240)", "yellow"], "data": {"labels": ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"], "dataSets": [{"label": "Fuhlsbüttel", "data": ["12135.0", "12130.0", "12204.0", "12572.0", "12590.0", "12701.0", "13384.0", "13441.0", "13348.0"]}, {"label": "Groß Borstel", "data": ["7969.0", "8086.0", "8013.0", "8769.0", "8459.0", "8499.0", "8734.0", "9284.0", "9642.0"]}, {"label": "Alsterdorf", "data": ["13657.0", "13749.0", "14009.0", "14123.0", "14428.0", "15031.0", "15174.0", "15204.0", "15227.0"]}, {"label": "Ohlsdorf", "data": ["15154.0", "15085.0", "15043.0", "15471.0", "15794.0", "16471.0", "16463.0", "16666.0", "16686.0"]}]}, "scaleLabels": ["Bevölkerung insgesamt", "Jahre"], "source": "Kartenvisualisierungswerkzeug", "beginAtZero": true, "sub": false, "cgid": "ccm-Stadtteile - Bevölkerung insgesamt"};
 
-        await this.channelGraphData(dat);
-        await this.channelGraphData({...dat, cgid: "2", id: "2"});
+        await this.channelGraphData(JSON.parse(JSON.stringify(dat)));
+
+        await this.channelGraphData(JSON.parse(JSON.stringify({...dat, type: ["BarChart", "PieChart"], cgid: "2", id: "2"})));
+        await this.channelGraphData(JSON.parse(JSON.stringify({...dat, type: "LineChart", cgid: "3", id: "3"})));
     },
     methods: {
         ...mapMutations("Tools/ChartGenerator", Object.keys(mutations)),
@@ -169,15 +149,15 @@ export default {
                 typeData.sub_index = i;
                 typeData.sub_length = dataSet.type.length;
                 typeData.sub_graph = 0;
-                dataSet[type] = this.generateGraphComponent(typeData);
             });
         },
         /**
          * @description Generates the graph component and passes the data dynamically.
          * @param {Object} arg dataSet containing the data and a String for type property.
+         * @param {Object} type type
          * @returns {void}
          */
-        generateGraphComponent (arg) {
+        generateGraphComponent (arg, type) {
             const dataSet = JSON.parse(JSON.stringify(arg)),
                 colorRange = generateColorScale(dataSet);
 
@@ -190,59 +170,11 @@ export default {
                 set.backgroundColor = d3Color;
             });
 
-            // if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
-            //     this.newType = "BarChart";
-            // }
-            if (dataSet.type === "PieChart") {
+            if (type === "PieChart") {
                 return this.createPieChartData(dataSet);
-
-                // this.newType = "PieChart";
-                // this.createPieChart(pieChartData);
-                // return;
             }
-            // else {
-            //     this.newType = dataSet.type;
-            // }
 
-            // this.renderGraph(dataSet);
             return dataSet;
-        },
-        renderGraph (dataSet) {
-            const target = document.getElementById(dataSet.target),
-                // Extend Component dynamically
-                DynamicComponent = Vue.extend(this.$options.components[this.newType]),
-                dynamicComponentInstance = new DynamicComponent({propsData: {dataSets: dataSet, options: dataSet.options}});
-
-            dataSet.component = dynamicComponentInstance;
-            // this.allCharts.push(dataSet);
-
-            // if (target !== null) {
-            //     if (!dataSet.sub) {
-            //         this.$nextTick(function () {
-            //             dynamicComponentInstance.$mount(target);
-            //         });
-            //     }
-            // }
-            // else if (!dataSet.sub) {
-            //     const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
-
-            //     this.$nextTick(function () {
-            //         const altTarget = document.getElementById("graph-" + index);
-
-            //         dynamicComponentInstance.$mount(altTarget);
-            //         this.activeGraph = index;
-            //     });
-            // }
-            // else {
-            //     const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
-
-            //     this.$nextTick(function () {
-            //         const altTarget = document.getElementById("graph-" + index + "-" + dataSet.sub_index);
-
-            //         dynamicComponentInstance.$mount(altTarget);
-            //         this.activeGraph = index;
-            //     });
-            // }
         },
         /**
          * @description Modifies the dataSet to match chart.js requirements for PieCharts.
@@ -254,7 +186,7 @@ export default {
 
             dataSet.data.labels.forEach((label, i) => {
                 const obj = {
-                    name: this.beautifyKey(dataSet.name) + " - " + label,
+                    name: beautifyKey(dataSet.name) + " - " + label,
                     type: "PieChart",
                     group: label,
                     label: [],
@@ -284,50 +216,6 @@ export default {
 
             return newPieChartData;
         },
-        createPieChart (dataSets) {
-            const index = this.dataSets.findIndex(x => x.cgid === dataSets[0].cgid),
-                target = this.targetHelper(dataSets[0]);
-
-            dataSets.forEach(dataSet => {
-                const pieTarget = document.createElement("div");
-
-                pieTarget.id = "graph-" + index + "-" + dataSet.sub_index + "-pie-" + dataSet.pie_index;
-                pieTarget.classList.add("pie_chart");
-
-                dataSet.target = pieTarget.id;
-
-                this.$nextTick(function () {
-                    document.getElementById(target).appendChild(pieTarget);
-                    dataSet.sub = false;
-                    this.renderGraph(dataSet);
-                });
-            });
-        },
-        /**
-         * @description Determines the target div-id for the graph to be generated.
-         * @param {Object} dataSet dataSet containing the information necessary to determine the target div.
-         * @returns {String} id of the div.
-         */
-        targetHelper (dataSet) {
-            const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
-
-            if (dataSet.target !== "" && dataSet.target !== undefined) {
-                const target = dataSet.target;
-
-                return target;
-            }
-            else if (!dataSet.sub) {
-                const target = "graph-" + index;
-
-                return target;
-            }
-
-            // eslint-disable-next-line
-            const target = "graph-" + index + "-" + dataSet.sub_index;
-
-            return target;
-
-        },
         /**
          * @description Activates the tool window of the chartgenerator.
          * @returns {Void} Function returns nothing.
@@ -350,7 +238,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
-            this.$set(graph, "sub_graph", index);
+            this.$set(this.dataSets, this.dataSets.indexOf(graph), {...graph, sub_graph: index});
         },
         /**
          * @description Selects the next or the previous graph in the Tool Window.
@@ -358,17 +246,9 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         graphPrevNext (value) {
-            if (this.activeGraph + value < 0) {
-                this.activeGraph = this.dataSets.length;
-            }
+            const l = this.dataSets.length;
 
-            if (this.activeGraph + value >= this.dataSets.length) {
-                this.activeGraph = 0;
-            }
-
-            else {
-                this.activeGraph = this.activeGraph + value;
-            }
+            this.activeGraph = (((this.activeGraph + value) % l) + l) % l; // modulo with negative handling
         },
         /**
          * @description Updates chart canvas to display yAxes starting from zero or reverse.
@@ -376,38 +256,27 @@ export default {
          * @param  {Int} subindex Index of the sub graph in main dataset (if there are different types of graphs in the maindataset)
          * @returns {Void} Function returns nothing.
          */
-        yToZero (index, subindex) {
-            const chartComponent = subindex >= 0 ?
-                this.allCharts.find(dataSet => dataSet.init === index && dataSet.sub_index === subindex) :
-                this.allCharts.find(dataSet => dataSet.init === index);
+        yToZero () {
+            const i = this.activeGraph,
+                graph = this.dataSets[i];
 
-            chartComponent.beginAtZero = !chartComponent.beginAtZero;
+            this.$set(this.dataSets, i, {...graph, beginAtZero: !graph.beginAtZero});
         },
         /**
          * @description Turns closest Canvas to PNG and passes it the download function.
          * @param {$event} event Click event handler.
          * @returns {Void} Function returns nothing.
          */
-        downloadGraph (event) {
-            const canvasContainer = event.target.parentNode.previousElementSibling,
-                canvas = canvasContainer.lastChild;
+        downloadGraph () {
+            const chartBox = this.$el.querySelectorAll(".current_graph");
 
-            if (canvas.classList.contains("pie_chart")) {
-                const nodes = canvasContainer.childNodes;
+            chartBox.forEach(graph => {
+                graph.querySelectorAll("canvas").forEach(canvas => {
+                    const canvasPNG = canvas.toDataURL("image/png");
 
-                for (let i = 0; i < nodes.length; i++) {
-                    if (nodes[i].nodeName.toLowerCase() === "div") {
-                        const canvasPNG = nodes[i].lastChild.toDataURL("image/png");
-
-                        this.downloadFile(canvasPNG);
-                    }
-                }
-            }
-            else {
-                const canvasPNG = canvas.toDataURL("image/png");
-
-                this.downloadFile(canvasPNG);
-            }
+                    this.downloadFile(canvasPNG);
+                });
+            });
 
         },
         /**
@@ -482,7 +351,6 @@ export default {
                     id="chart_panel"
                     class="wrapper"
                 >
-                    <div id="testgraph" />
                     <div
                         v-for="(graph, index) in dataSets"
                         :key="graph.cgid"
@@ -540,27 +408,39 @@ export default {
                                                     :is="type"
                                                     v-if="type!=='PieChart'"
                                                     :id="`graph-${index}-${i}`"
-                                                    :data-sets="graph[type]"
+                                                    :data-sets="generateGraphComponent(graph, type)"
                                                     :options="graph.options"
+                                                    :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                 />
+                                                <template
+                                                    v-if="type==='PieChart'"
+                                                >
+                                                    <PieChart
+                                                        v-for="(pieData, j) in generateGraphComponent(graph, type)"
+                                                        :id="`graph-${index}-${i}-${j}`"
+                                                        :key="`graph-${index}-${i}-${j}`"
+                                                        :data-sets="pieData"
+                                                        :options="graph.options"
+                                                        :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
+                                                    />
+                                                </template>
                                                 <div class="graph_functions">
                                                     <button
                                                         v-if="type === 'LineChart'"
                                                         class="switch right"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
-                                                        @click="yToZero(index, -1)"
+                                                        @click="yToZero()"
                                                     >
                                                         {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
                                                     </button>
                                                     <button
                                                         class="dl right"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                                        @click="downloadGraph($event)"
+                                                        @click="downloadGraph()"
                                                     >
                                                         PNG
                                                         <span class="glyphicon glyphicon-download-alt" />
                                                     </button>
-                                                    div
                                                 </div>
                                             </div>
                                         </div>
@@ -568,19 +448,39 @@ export default {
                                 </div>
 
                                 <template v-if="!Array.isArray(graph.type)">
+                                    <component
+                                        :is="graph.type"
+                                        v-if="graph.type!=='PieChart'"
+                                        :id="`graph-${index}`"
+                                        :data-sets="generateGraphComponent(graph, graph.type)"
+                                        :options="graph.options"
+                                        :class="{current_graph: activeGraph === index}"
+                                    />
+                                    <template
+                                        v-if="graph.type==='PieChart'"
+                                    >
+                                        <PieChart
+                                            v-for="(pieData, j) in generateGraphComponent(graph, graph.type)"
+                                            :id="`graph-${index}-${j}`"
+                                            :key="`graph-${index}-${j}`"
+                                            :data-sets="pieData"
+                                            :options="graph.options"
+                                            :class="{current_graph: activeGraph === index}"
+                                        />
+                                    </template>
                                     <div class="graph_functions">
                                         <button
                                             v-if="graph.type === 'LineChart'"
                                             class="switch right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
-                                            @click="yToZero(index, i)"
+                                            @click="yToZero()"
                                         >
                                             {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
                                         </button>
                                         <button
                                             class="dl right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                            @click="downloadGraph($event)"
+                                            @click="downloadGraph()"
                                         >
                                             PNG
                                             <span class="glyphicon glyphicon-download-alt" />

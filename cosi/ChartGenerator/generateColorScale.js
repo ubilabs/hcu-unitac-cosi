@@ -63,15 +63,3 @@ export default function generateColorScale (dataSet) {
     return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
 }
 
-
-// <template
-//     v-if="type==='PieChart'"
-// >
-//     <!-- <PieChart
-//         v-for="(pieData, j) in graph['PieChart']"
-//         :id="`graph-${index}-${i}-${j}`"
-//         :key="`graph-${index}-${i}-${j}`"
-//         :data-sets="pieData"
-//         :options="graph.options"
-//     /> -->
-// </template>
