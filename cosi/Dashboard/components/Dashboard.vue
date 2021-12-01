@@ -314,17 +314,21 @@ export default {
         },
 
         getValue (item, header, timestamp) {
-            const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
+            let val;
+
+            if (item[header.value]) {
+                val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
+            }
 
             return val ? val.toLocaleString(this.currentLocale) : "-";
         },
 
         getValueClass (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? "modified" : "";
+            return item[header.value]?.isModified <= timestamp ? "modified" : "";
         },
 
         getValueTooltip (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
+            return item[header.value]?.isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
         },
 
         getAverage (item, timestamp) {
