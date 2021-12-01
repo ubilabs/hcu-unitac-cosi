@@ -610,6 +610,7 @@ export default {
                                                 v-on="on"
                                             >
                                                 <StatsTrend
+                                                    v-if="getValue(item, header, currentTimeStamp) !== '-'"
                                                     :item="item"
                                                     :header="header"
                                                     :timestamp-prefix="timestampPrefix"
