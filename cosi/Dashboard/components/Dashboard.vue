@@ -159,7 +159,7 @@ export default {
          * @returns {void}
          */
         selectedYear (v) {
-            this.currentTimeStamp = v;
+            this.currentTimeStamp = parseInt(v, 10);
         }
     },
     created () {
@@ -191,7 +191,7 @@ export default {
             this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictNames, []);
             this.rows = this.getRows();
             this.items = this.getData();
-            this.currentTimeStamp = this.timestamps[0];
+            this.currentTimeStamp = this.selectedYear;
         },
         getRows () {
             let counter = 0;

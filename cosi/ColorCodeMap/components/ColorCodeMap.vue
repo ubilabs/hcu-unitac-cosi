@@ -146,6 +146,7 @@ export default {
             this.featuresList = [];
             if (this.selectedStatFeatures.length) {
                 this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
+                this.setSelectedYear(utils.getAvailableYears([this.selectedStatFeatures[0]], this.yearSelector)[0]);
                 this.updateFeaturesList();
             }
         },
@@ -156,7 +157,6 @@ export default {
          */
         updateFeaturesList () {
             this.setSelectedFeature(mapping[0].value);
-            this.setSelectedYear(this.availableYears[0]);
 
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats]) {
