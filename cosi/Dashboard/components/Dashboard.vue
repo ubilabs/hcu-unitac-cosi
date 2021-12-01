@@ -92,7 +92,7 @@ export default {
             selectedItems: [],
             timestampPrefix: "jahr_",
             timestamps: [],
-            currentTimeStamp: null,
+            // currentTimeStamp: null,
             search: "",
             statsFeatureFilter: [],
             fields: {
@@ -137,6 +137,14 @@ export default {
         },
         unselectedColumnLabels () {
             return [...this.districtColumns, ...this.aggregateColumns].filter(col => !this.selectedColumns.includes(col)).map(col => col.text);
+        },
+        currentTimeStamp: {
+            get () {
+                return parseInt(this.selectedYear, 10);
+            },
+            set (v) {
+                this.setSelectedYear(v);
+            }
         }
     },
 
@@ -148,18 +156,6 @@ export default {
             if (v) {
                 this.generateTable();
             }
-        },
-        currentTimeStamp (v) {
-            this.setSelectedYear(v);
-        },
-
-        /**
-         * @todo merge both properties!
-         * @param {Number} v - the current value of ColorCodeMaps selectedYear
-         * @returns {void}
-         */
-        selectedYear (v) {
-            this.currentTimeStamp = parseInt(v, 10);
         }
     },
     created () {
@@ -617,6 +613,7 @@ export default {
                                                     v-if="getValue(item, header, currentTimeStamp) !== '-'"
                                                     :item="item"
                                                     :header="header"
+                                                    :current-timestamp="currentTimeStamp"
                                                     :timestamp-prefix="timestampPrefix"
                                                     :locale="currentLocale"
                                                 />
