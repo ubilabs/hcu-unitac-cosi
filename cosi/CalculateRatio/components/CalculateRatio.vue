@@ -614,7 +614,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: result[this.columnSelector.key].toLocaleString("de-DE")
+                            data: Math.round(1000 * result[this.columnSelector.key]) / 1000
                         };
 
                         prepareData.push(data);

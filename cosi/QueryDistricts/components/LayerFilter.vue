@@ -200,6 +200,7 @@ export default {
                     <td>{{ min.toLocaleString(locale) }}</td>
                     <td>{{ max.toLocaleString(locale) }}</td>
                     <td>
+                        <!--eslint-disable-next-line vuejs-accessibility/form-control-has-label-->
                         <input
                             ref="inputValue"
                             class="number-input"
@@ -221,6 +222,7 @@ export default {
                                     <span>-</span>
                                 </td>
                                 <td>
+                                    <!--eslint-disable-next-line vuejs-accessibility/form-control-has-label-->
                                     <input
                                         ref="inputLow"
                                         class="number-input"
@@ -236,6 +238,7 @@ export default {
                                     <span>+</span>
                                 </td>
                                 <td>
+                                    <!--eslint-disable-next-line vuejs-accessibility/form-control-has-label-->
                                     <input
                                         ref="inputHigh"
                                         class="number-input"

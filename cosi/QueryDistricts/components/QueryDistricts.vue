@@ -1,5 +1,4 @@
 <script>
-import Vue from "vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getters from "../store/gettersQueryDistricts";
@@ -13,7 +12,6 @@ import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
-import {renameKeys} from "../../utils/modifyObject.js";
 import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
@@ -581,7 +579,6 @@ export default {
 
         exportTable: function () {
             const
-                // exportData = this.results.map(r=>renameKeys(r, Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))))),
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("additional:modules.tools.cosi.queryDistricts.exportFilename")}_${date}`,
                 data = [
@@ -589,7 +586,7 @@ export default {
                     ...this.results.map(row => {
                         const _row = Object.values(row);
 
-                        return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)]
+                        return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)];
                     })
                 ],
                 headers = ["Referenzgebiet", "Filter-Nr.", "Name", "Attribut", "Quotient", "Feld", "Min.", "Max.", "Ref.-Wert", "- Toleranz", "+ Toleranz"],
@@ -708,6 +705,7 @@ export default {
                                     id="reference-district-button"
                                     class="name-tag district-name"
                                     @click="zoomToDistrict({'name': selectedDistrict})"
+                                    @keyUp="() => null"
                                 >{{ selectedDistrict }}</span>
                             </div>
                         </div>
@@ -748,6 +746,7 @@ export default {
                                         id="reference-district-button"
                                         class="name-tag district-name"
                                         @click="zoomToDistrict({'name': selectedDistrict})"
+                                        @keyUp="() => null"
                                     >{{ selectedDistrict }}</span>
                                 </div>
                             </div>
