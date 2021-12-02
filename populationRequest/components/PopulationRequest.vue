@@ -34,7 +34,15 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
-        ...mapGetters(["isDefaultStyle"]),
+        ...mapGetters(["uiStyle"]),
+
+        /**
+         * Indicates whether the ui style is default.
+         * @returns {Boolean} Is the uiStyle default.
+         */
+        isDefaultStyle () {
+            return this.uiStyle !== "SIMPLE" && this.uiStyle !== "TABLE";
+        },
 
         /**
          * returns if the Raster Layer is Visible in the map
