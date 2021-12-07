@@ -61,6 +61,7 @@ export default class ScenarioFeature {
         // unbind the listener
         unByKey(this.eventKeys.modifier);
         unByKey(this.eventKeys[this.feature.getId()]);
+        unByKey(this.eventKeys.modifier);
         if (source.getFeatureById(this.feature.getId())) {
             source.removeFeature(this.feature);
         }

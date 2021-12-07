@@ -12,6 +12,10 @@ export default {
             type: Object,
             required: true
         },
+        currentTimestamp: {
+            type: Number,
+            default: undefined
+        },
         timestampPrefix: {
             type: String,
             default: "jahr_"
@@ -23,7 +27,7 @@ export default {
     },
     computed: {
         dy () {
-            return this.getTrend(this.item[this.header.value], this.item.years, this.timestampPrefix);
+            return this.getTrend(this.item[this.header.value], this.item.years, this.currentTimestamp, this.timestampPrefix);
         }
     },
     methods: {

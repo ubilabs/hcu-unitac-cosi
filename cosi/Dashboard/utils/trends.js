@@ -38,12 +38,14 @@ function averageSlope (arr, steps = 5) {
  * Looks at the slope and change of slope for the last 5 timesteps
  * @param {Object} stats - the stats properties per indicator and district
  * @param {Number[]} timestamps - all relevant timesteps
+ * @param {String} [currentTimestamp] - the currentTimestamp (last entry if not provided)
  * @param {String} [timestampPrefix="jahr_"] - timestamp props prefix
  * @return {Number} the projected growth for the next timestep
  */
-export function getTrend (stats, timestamps, timestampPrefix = "jahr_") {
+export function getTrend (stats, timestamps, currentTimestamp, timestampPrefix = "jahr_") {
     const
-        vals = timestamps.map(t => parseFloat(stats[timestampPrefix + t])).reverse(),
+        _timestamps = currentTimestamp ? timestamps.filter(t => t <= currentTimestamp) : timestamps,
+        vals = _timestamps.map(t => parseFloat(stats[timestampPrefix + t])).reverse(),
         dy_1 = deriveLocalLinear(vals),
         dy_2 = deriveLocalLinear(dy_1),
         avg_dy_2 = averageSlope(dy_2),
