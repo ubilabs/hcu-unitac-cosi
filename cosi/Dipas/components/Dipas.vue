@@ -285,11 +285,7 @@ export default {
                             stroke: new Stroke({color: "#000", width: 1})
                         }),
                         text
-                    }),
-                    idc = feature.getProperties().id;
-                if (idc === "1263" || idc === "1239") {
-                    console.log(idc, feature, style);
-                }
+                    });
                 feature.setStyle(style);
             }
         },
