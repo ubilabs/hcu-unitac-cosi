@@ -354,7 +354,7 @@ export default {
             v-if="active"
             #toolBody
         >
-            <ToolInfo :url="readmeUrl[currentLocale]"/>
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app>
                 <ScenarioManager @pruneScenario="resetFeature" />
                 <v-divider />
