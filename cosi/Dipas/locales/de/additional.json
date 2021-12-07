@@ -13,7 +13,8 @@
                         "byCategories": "nach Kategorien im Projektfarbenspektrum",
                         "byCategoriesRainbow": "nach Kategorien im Regenbogenspektrum",
                         "byVoting": "nach Bewertungen"
-                    }
+                    },
+                    "contributions": "Beiträge"
                 }
             }
         }
