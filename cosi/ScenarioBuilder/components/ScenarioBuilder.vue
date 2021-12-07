@@ -142,6 +142,7 @@ export default {
         featureProperties: {
             deep: true,
             handler () {
+                console.log("wurde jetz bearbeitet");
                 this.isCreated = false;
             }
         }

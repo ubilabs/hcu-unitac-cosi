@@ -153,7 +153,7 @@ export default {
             // ..
         },
         loadend (v) {
-            if (v) {
+            if (v && this.selectedDistrictNames.length > 0) {
                 this.generateTable();
             }
         }
