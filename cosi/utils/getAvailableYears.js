@@ -15,7 +15,7 @@ export default function getAvailableYears (features, year_selector = "jahr_") {
         });
     });
 
-    return [...new Set(availableYears)];
+    return [...new Set(availableYears)].sort().reverse();
 }
 
 /**
