@@ -285,8 +285,11 @@ export default {
                             stroke: new Stroke({color: "#000", width: 1})
                         }),
                         text
-                    });
-
+                    }),
+                    idc = feature.getProperties().id;
+                if (idc === "1263" || idc === "1239") {
+                    console.log(idc, feature, style);
+                }
                 feature.setStyle(style);
             }
         },
@@ -441,7 +444,7 @@ export default {
                                 >
                                     <template #activator>
                                         <v-list-item-content>
-                                            <v-list-item-title v-text="feature.getProperties().nameFull" />
+                                            <v-list-item-title class="text-wrap" v-text="feature.getProperties().nameFull" />
                                         </v-list-item-content>
                                         <v-list-item-icon>
                                             <v-btn
