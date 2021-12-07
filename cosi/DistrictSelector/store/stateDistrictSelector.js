@@ -41,7 +41,11 @@ const state = {
     additionalInfoLayers: {},
     bufferValue: 0,
     loadend: false,
-    mapping: MappingJson
+    mapping: MappingJson,
+    readmeUrl: {
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/districtselector.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/gebietsauswahl.md"
+    }
 };
 
 export default state;

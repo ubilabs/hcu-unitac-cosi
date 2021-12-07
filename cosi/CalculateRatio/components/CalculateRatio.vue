@@ -9,11 +9,13 @@ import exportXlsx from "../../utils/exportXlsx";
 import DataTable from "./DataTable.vue";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "CalculateRatio",
     components: {
         Tool,
+        ToolInfo,
         Multiselect,
         DataTable
     },
@@ -308,18 +310,6 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
-        },
-        /**
-         * @description Shows component info as popup.
-         * @returns {Void} Function returns nothing.
-         */
-        openManual () {
-            /* this.addSingleAlert({
-                category: "Info",
-                content: Info
-            });*/
-
-            window.open(this.readmeUrl[this.currentLocale], "_blank");
         },
         /**
          * @description Checks if the user selected a summable statistical data set (feature).
@@ -714,13 +704,7 @@ export default {
                 :class="{ expanded: results.length > 0 }"
             >
                 <div class="addon_wrapper">
-                    <button
-                        class="info_button"
-                        :title="$t('additional:modules.tools.cosi.calculateRatio.infoTooltip')"
-                        @click="openManual()"
-                    >
-                        <span class="glyphicon glyphicon-question-sign" />
-                    </button>
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <p class="section intro">
                         {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
                     </p>
@@ -1185,7 +1169,6 @@ export default {
 
         .section {
             &.intro {
-                border-top:1px solid #ccc;
                 padding-top:30px;
             }
 

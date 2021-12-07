@@ -68,5 +68,9 @@ export default {
     importedLayers: [],
     activeLayer: 0,
     updateLayerStyles: false,
-    crs: "EPSG:4326"
+    crs: "EPSG:4326",
+    readmeUrl: {
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/fileimport.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/geodatenimportieren.md"
+    }
 };

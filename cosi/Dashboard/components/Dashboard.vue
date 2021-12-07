@@ -16,11 +16,13 @@ import composeFilename from "../../utils/composeFilename";
 import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import StatsTrend from "./StatsTrend.vue";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "Dashboard",
     components: {
         Tool,
+        ToolInfo,
         TableRowMenu,
         DashboardToolbar,
         StatsTrend
@@ -90,7 +92,7 @@ export default {
             selectedItems: [],
             timestampPrefix: "jahr_",
             timestamps: [],
-            currentTimeStamp: null,
+            // currentTimeStamp: null,
             search: "",
             statsFeatureFilter: [],
             fields: {
@@ -135,6 +137,14 @@ export default {
         },
         unselectedColumnLabels () {
             return [...this.districtColumns, ...this.aggregateColumns].filter(col => !this.selectedColumns.includes(col)).map(col => col.text);
+        },
+        currentTimeStamp: {
+            get () {
+                return parseInt(this.selectedYear, 10);
+            },
+            set (v) {
+                this.setSelectedYear(v);
+            }
         }
     },
 
@@ -146,18 +156,6 @@ export default {
             if (v) {
                 this.generateTable();
             }
-        },
-        currentTimeStamp (v) {
-            this.setSelectedYear(v);
-        },
-
-        /**
-         * @todo merge both properties!
-         * @param {Number} v - the current value of ColorCodeMaps selectedYear
-         * @returns {void}
-         */
-        selectedYear (v) {
-            this.currentTimeStamp = v;
         }
     },
     created () {
@@ -189,7 +187,7 @@ export default {
             this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictNames, []);
             this.rows = this.getRows();
             this.items = this.getData();
-            this.currentTimeStamp = this.timestamps[0];
+            this.currentTimeStamp = this.selectedYear;
         },
         getRows () {
             let counter = 0;
@@ -312,17 +310,21 @@ export default {
         },
 
         getValue (item, header, timestamp) {
-            const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
+            let val;
+
+            if (item[header.value]) {
+                val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
+            }
 
             return val ? val.toLocaleString(this.currentLocale) : "-";
         },
 
         getValueClass (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? "modified" : "";
+            return item[header.value]?.isModified <= timestamp ? "modified" : "";
         },
 
         getValueTooltip (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
+            return item[header.value]?.isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
         },
 
         getAverage (item, timestamp) {
@@ -459,6 +461,7 @@ export default {
                 absolute
             >
                 <v-main>
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <v-container fluid>
                         <DashboardToolbar
                             :stats-feature-filter="statsFeatureFilter"
@@ -607,8 +610,10 @@ export default {
                                                 v-on="on"
                                             >
                                                 <StatsTrend
+                                                    v-if="getValue(item, header, currentTimeStamp) !== '-'"
                                                     :item="item"
                                                     :header="header"
+                                                    :current-timestamp="currentTimeStamp"
                                                     :timestamp-prefix="timestampPrefix"
                                                     :locale="currentLocale"
                                                 />

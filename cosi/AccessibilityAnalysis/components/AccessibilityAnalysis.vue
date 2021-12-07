@@ -82,13 +82,14 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
         ...mapGetters("Map", ["map", "getOverlayById"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         _mode: {
             get () {
                 return this.mode;
@@ -161,7 +162,7 @@ export default {
         isochroneFeatures (newFeatures) {
             this.renderIsochrones(newFeatures);
         },
-        async activeSimulatedFeatures () {
+        async scenarioUpdated () {
             await this.$nextTick();
             this.tryUpdateIsochrones();
         },
@@ -290,7 +291,7 @@ export default {
         >
             <template #toolBody>
                 <v-app>
-                    <ToolInfo :info-text="mode === 'point' ? InfoTemplatePoint : InfoTemplateRegion" />
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <div
                         v-if="active"
                         id="accessibilityanalysis"

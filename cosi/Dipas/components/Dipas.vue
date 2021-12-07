@@ -30,7 +30,8 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "layerById", "projectionCode"])
+        ...mapGetters("Map", ["map", "layerById", "projectionCode"]),
+        ...mapGetters("Language", ["currentLocale"])
     },
     watch: {
         selectedStyling: function (newValue) {
@@ -56,7 +57,7 @@ export default {
             for (const [id, value] of Object.entries(this.contributions)) {
                 if (value.features) {
                     this.selectedStylingFunction(id);
-                    this.requireUpdate();
+                    this.$root.$emit("updateFeaturesList");
                 }
             }
         }
@@ -111,7 +112,7 @@ export default {
     methods: {
         ...mapActions("Map", ["createLayer"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
-        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping", "requireUpdate"]),
+        ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
 
@@ -351,6 +352,7 @@ export default {
 
             if (!layer) {
                 const vector = new Vector();
+                let maxVotes = 0;
 
                 if (!this.contributions[id].features) {
                     Radio.trigger("Util", "showLoader");
@@ -360,14 +362,20 @@ export default {
                 for (const feature of this.contributions[id].features) {
                     vector.addFeature(feature);
                 }
+
+                maxVotes = Math.max(...this.contributions[id].features.map(
+                    f => parseInt(f.get("votingPro"), 10) + parseInt(f.get("votingPro"), 10))
+                );
                 layer = new Heatmap({
                     source: vector,
-                    radius: 10,
+                    radius: 40,
+                    blur: 20,
                     id: layerId,
                     weight: function (feature) {
                         const votingPro = parseInt(feature.getProperties().votingPro, 10),
                             votingContra = parseInt(feature.getProperties().votingContra, 10),
-                            weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
+                            weight = (votingPro + votingContra) / maxVotes;
+                            // weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
 
                         return weight;
                     }
@@ -412,6 +420,7 @@ export default {
         >
             <template #toolBody>
                 <v-app class="clamp-600px">
+                    <ToolInfo :url="readmeUrl[currentLocale]" />
                     <div
                         v-if="active"
                         id="dipas"

@@ -18,7 +18,11 @@ const state = {
     name: "Sitzung speichern",
     renderToWindow: true,
     resizableWindow: true,
-    sessionToLoad: null
+    sessionToLoad: null,
+    readmeUrl: {
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/savesession.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/sitzungspeichern.md"
+    }
 };
 
 export default state;

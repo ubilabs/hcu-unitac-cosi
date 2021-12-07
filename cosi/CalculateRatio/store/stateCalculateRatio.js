@@ -36,8 +36,8 @@ const state = {
     results: [],
     resultHeaders: {},
     readmeUrl: {
-        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/7ec194d74626913b87e886b736dfe43f2523b6f3/cosi/README.md?at=cosi%2Fdev#markdown-header-calculate-ratio",
-        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/7ec194d74626913b87e886b736dfe43f2523b6f3/cosi/README.de.md?at=cosi%2Fdev#markdown-header-versorgungsanalyse"
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/calculateratio.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/versorgungsanalyse.md"
     }
 };
 

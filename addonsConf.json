@@ -3,7 +3,6 @@
   "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
-  "sdpdownload": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "cosiFileImport": {
