@@ -48,14 +48,20 @@ function calculateSingle (calcObj, dataSet) {
 */
 function calculateTotals (results) {
     const filteredResults = results.filter(function (dataSet) {
-            if (dataSet.paramA_val === undefined || dataSet.paramB_val === undefined) {
-                return false;
-            }
+        if (dataSet.paramA_val === undefined || dataSet.paramB_val === undefined) {
+            return false;
+        }
 
-            return true;
+        return true;
 
-        }),
-        dataHelpers_total = {
+    });
+
+    if (filteredResults.length === 0) {
+        return results;
+    }
+
+    // eslint-disable-next-line one-var
+    const dataHelpers_total = {
             faktorf_A: filteredResults[0].data.faktorf_A,
             faktorf_B: filteredResults[0].data.faktorf_B,
             perCalc_A: filteredResults[0].data.perCalc_A,

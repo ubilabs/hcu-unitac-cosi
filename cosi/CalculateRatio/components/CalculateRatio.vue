@@ -145,11 +145,11 @@ export default {
                 this.updateFeaturesList();
             }
         },
-        availableYears (newYears) {
-            if (newYears.length > 0) {
-                this.selectedYear = newYears[0];
-            }
-        },
+        // availableYears (newYears) {
+        //     if (newYears.length > 0) {
+        //         this.selectedYear = newYears[0];
+        //     }
+        // },
         results (newResults) {
             if (newResults.length > 0) {
                 this.resultsClone = [...newResults];
@@ -227,6 +227,7 @@ export default {
         updateFeaturesList () {
             this.featuresList = [];
             this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
+            this.selectedYear = utils.getLastAvailableYear(this.selectedStatFeatures, this.yearSelector);
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);

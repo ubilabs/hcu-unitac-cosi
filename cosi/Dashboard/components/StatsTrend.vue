@@ -27,7 +27,9 @@ export default {
     },
     computed: {
         dy () {
-            return this.getTrend(this.item[this.header.value], this.item.years, this.currentTimestamp, this.timestampPrefix);
+            const timestamp = this.item.expanded ? this.item.years[0] : this.currentTimestamp;
+
+            return this.getTrend(this.item[this.header.value], this.item.years, timestamp, this.timestampPrefix);
         }
     },
     methods: {

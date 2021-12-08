@@ -284,6 +284,7 @@ export default {
                                                     <button
                                                         v-if="type === 'LineChart'"
                                                         class="switch right"
+                                                        :color="graph.beginAtZero ? '' : 'primary'"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                                         @click="yToZero()"
                                                     >
@@ -328,6 +329,7 @@ export default {
                                         <button
                                             v-if="graph.type === 'LineChart'"
                                             class="switch right"
+                                            :color="graph.beginAtZero ? '' : 'primary'"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                             @click="yToZero()"
                                         >
