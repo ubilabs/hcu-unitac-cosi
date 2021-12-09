@@ -10,7 +10,6 @@ import BarChart from "./charts/BarChart.vue";
 import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
-import generateGraphData from "../generateGraphData";
 
 export default {
     name: "ChartGenerator",
@@ -27,8 +26,7 @@ export default {
             // The ID of the active Graph in the ChartGenerator Tool Winodw
             activeGraph: 0,
             // String Beautifier
-            beautifyKey: beautifyKey,
-            generateGraphData: generateGraphData
+            beautifyKey: beautifyKey
         };
     },
     computed: {
@@ -116,15 +114,23 @@ export default {
         },
         /**
          * @description Updates chart canvas to display yAxes starting from zero or reverse.
-         * @param {Int} index Index of the main dataset.
-         * @param  {Int} subindex Index of the sub graph in main dataset (if there are different types of graphs in the maindataset)
          * @returns {Void} Function returns nothing.
          */
         yToZero () {
-            const i = this.activeGraph,
-                graph = this.dataSets[i];
+            const
+                i = this.activeGraph,
+                graph = this.dataSets[i],
+                config = this.chartConfigs[i],
+                beginAtZero = !graph.beginAtZero;
 
-            this.$set(this.dataSets, i, {...graph, beginAtZero: !graph.beginAtZero});
+            if (graph.sub_graph !== null && graph.sub_graph !== undefined) {
+                config[graph.sub_graph].beginAtZero = beginAtZero;
+            }
+            else {
+                config.beginAtZero = beginAtZero;
+            }
+
+            this.$set(this.dataSets, i, {...graph, beginAtZero});
         },
         /**
          * @description Turns closest Canvas to PNG and passes it the download function.
@@ -175,6 +181,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         removeGraph (index) {
+            this.chartConfigs.splice(index, 1);
             this.dataSets.splice(index, 1);
         },
         /**
@@ -182,7 +189,8 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         removeAll () {
-            this.dataSets = [];
+            this.setDataSets([]);
+            this.setChartConfigs([]);
             this.setActive(false);
         }
     }
@@ -234,9 +242,7 @@ export default {
                                             :style="{backgroundImage: 'url(' + require('../assets/' + type + '.png') + ')'}"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.' + type + '') + $t('additional:modules.tools.cosi.chartGenerator.switchChartType')"
                                             @click="changeGraph(graph, i)"
-                                        >
-                                            <!-- {{ type }} -->
-                                        </button>
+                                        />
                                     </template>
                                     <button
                                         class="rmv_btn"
@@ -264,7 +270,7 @@ export default {
                                                     :is="type"
                                                     v-if="type!=='PieChart'"
                                                     :id="`graph-${index}-${i}`"
-                                                    :data-sets="generateGraphData(graph, type)"
+                                                    :data-sets="chartConfigs[index][i]"
                                                     :options="graph.options"
                                                     :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                 />
@@ -272,7 +278,7 @@ export default {
                                                     v-if="type==='PieChart'"
                                                 >
                                                     <PieChart
-                                                        v-for="(pieData, j) in generateGraphData(graph, type)"
+                                                        v-for="(pieData, j) in chartConfigs[index][i]"
                                                         :id="`graph-${index}-${i}-${j}`"
                                                         :key="`graph-${index}-${i}-${j}`"
                                                         :data-sets="pieData"
@@ -309,7 +315,7 @@ export default {
                                         :is="graph.type"
                                         v-if="graph.type!=='PieChart'"
                                         :id="`graph-${index}`"
-                                        :data-sets="generateGraphData(graph, graph.type)"
+                                        :data-sets="chartConfigs[index]"
                                         :options="graph.options"
                                         :class="{current_graph: activeGraph === index}"
                                     />
@@ -317,7 +323,7 @@ export default {
                                         v-if="graph.type==='PieChart'"
                                     >
                                         <PieChart
-                                            v-for="(pieData, j) in generateGraphData(graph, graph.type)"
+                                            v-for="(pieData, j) in chartConfigs[index]"
                                             :id="`graph-${index}-${j}`"
                                             :key="`graph-${index}-${j}`"
                                             :data-sets="pieData"

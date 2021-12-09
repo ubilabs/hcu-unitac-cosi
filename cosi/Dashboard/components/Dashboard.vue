@@ -726,7 +726,7 @@ export default {
         .container {
             height: 100%;
             .dashboard-table-wrapper {
-                height: calc(100% - 40px);
+                height: calc(100% - 80px);
             }
         }
     }

@@ -18,6 +18,7 @@ import Modal from "../../../../src/share-components/modals/components/Modal.vue"
 import processStats from "../utils/processStats";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 import ToolInfo from "../../components/ToolInfo.vue";
+import TrinkwasserVue from '../../../gfiThemes/trinkwasser/components/Trinkwasser.vue';
 
 export default {
     name: "ResidentialSimulation",
@@ -182,9 +183,10 @@ export default {
                 return;
             }
 
-            for (const chartOptions of this.referenceDistrictCharts) {
-                this.visualizeDemographics(chartOptions);
-            }
+            this.visualizeDemographics();
+            // for (const chartOptions of this.referenceDistrictCharts) {
+            //     this.visualizeDemographics(chartOptions);
+            // }
 
             this.extrapolateNeighborhoodStatistics();
         },
@@ -312,17 +314,22 @@ export default {
             ];
         },
 
-        visualizeDemographics ({id, name, scaleLabels, labels, type}) {
-            const chartData = new ChartDataSet({
-                id: id + "-" + this.baseStats.reference.districtName,
-                name,
-                scaleLabels,
-                data: {
-                    dataSets: [this.getChartDataSet(labels, this.baseStats.reference.districtName)],
-                    labels
-                },
-                type,
-                options: this.baseStatsChartData.options
+        visualizeDemographics () {
+            const chartData = this.referenceDistrictCharts.map(chartOptions => {
+                const {id, name, scaleLabels, labels, type} = chartOptions;
+
+                return new ChartDataSet({
+                    id: id + "-" + this.baseStats.reference.districtName,
+                    name,
+                    scaleLabels,
+                    data: {
+                        dataSets: [this.getChartDataSet(labels, this.baseStats.reference.districtName)],
+                        labels
+                    },
+                    type,
+                    options: this.baseStatsChartData.options,
+                    beginAtZero: true
+                });
             });
 
             this.channelGraphData(chartData);

@@ -1,10 +1,16 @@
+import generateGraphData from "../generateGraphData";
+
 /**
  *
  * @param {*} newDataSets newDataSets
  * @return {void}
  */
 function addDataSets ({commit, getters}, newDataSets) {
-    const dataSets = [... getters.dataSets];
+    const
+        dataSets = [...getters.dataSets],
+        chartConfigs = [...getters.chartConfigs];
+    let
+        chartConfig;
 
     for (const dataSet of newDataSets) {
         if (!dataSet.cgid) {
@@ -27,9 +33,17 @@ function addDataSets ({commit, getters}, newDataSets) {
             if (!dataSet.sub_graph) {
                 dataSet.sub_graph = 0;
             }
+
+            chartConfig = dataSet.type.map(type => generateGraphData(dataSet, type));
         }
+        else {
+            chartConfig = generateGraphData(dataSet, dataSet.type);
+        }
+
+        chartConfigs.push(chartConfig);
         dataSets.push(dataSet);
     }
+    commit("setChartConfigs", chartConfigs);
     commit("setDataSets", dataSets);
 }
 

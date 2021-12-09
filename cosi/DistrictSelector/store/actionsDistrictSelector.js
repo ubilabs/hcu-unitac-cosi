@@ -53,7 +53,7 @@ const actions = {
                         // store original data on the district as a copy
                         districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
                     }
-                    else if (olFeatures.length > 0 && j === 1) {
+                    else if (olFeatures.length > 0 && j >= 1) {
                         const features = createStatFeaturesFromLTF(olFeatures, districtLevel.stats.keyOfAttrName);
 
                         // add statFeatures to district
@@ -134,6 +134,7 @@ const actions = {
         if (foundDistrict.statFeatures.length > 0) {
             return foundDistrict.statFeatures;
         }
+
         await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
             districtLevel: districtLevel,

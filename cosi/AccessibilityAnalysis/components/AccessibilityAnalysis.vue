@@ -206,6 +206,7 @@ export default {
 
         this.mapLayer = await this.createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
+        this.mapLayer.setZIndex(10);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
 

@@ -818,6 +818,7 @@ export default {
                                             v-if="fActive_A"
                                             class="input"
                                         >
+                                            <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                             <input
                                                 v-model="faktorf_A"
                                                 type="number"
@@ -853,6 +854,7 @@ export default {
                                 <div class="sub_wrapper">
                                     <div class="custom_wrapper">
                                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
+                                        <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                         <input
                                             v-model="perCalc_A"
                                             type="number"
@@ -965,6 +967,7 @@ export default {
                                             v-if="fActive_B"
                                             class="input"
                                         >
+                                            <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                             <input
                                                 v-model="faktorf_B"
                                                 type="number"
@@ -1000,6 +1003,7 @@ export default {
                                 <div class="sub_wrapper">
                                     <div class="custom_wrapper">
                                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
+                                        <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                         <input
                                             v-model="perCalc_B"
                                             type="number"

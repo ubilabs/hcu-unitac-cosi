@@ -53,14 +53,14 @@ export default {
 
             this.category = evt.currentTarget.id;
 
-            buttons.forEach((button) => {
+            for (const button of buttons) {
                 if (button.id !== evt.currentTarget.id) {
                     button.className = button.className.replace("active", "");
                 }
                 else {
                     button.className += " active";
                 }
-            });
+            }
             this.drawChart();
         },
 
