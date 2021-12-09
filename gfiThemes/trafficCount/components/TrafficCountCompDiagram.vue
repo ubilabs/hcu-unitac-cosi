@@ -416,7 +416,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     div.graph {
         width: 580px;
         min-height: 285px;
@@ -430,7 +430,7 @@ export default {
     }
 </style>
 
-<style lang="less">
+<style lang="scss">
     .trafficCount-gfi .dateSelector {
         width: 230px;
         height: 35px;

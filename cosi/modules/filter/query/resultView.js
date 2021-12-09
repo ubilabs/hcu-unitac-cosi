@@ -1,5 +1,5 @@
 import resultTemplate from "text-loader!./resultTemplate.html";
-import "./style.less";
+import "./style.scss";
 
 const ResultView = Backbone.View.extend(/** @lends ResultView.prototype */{
     /**

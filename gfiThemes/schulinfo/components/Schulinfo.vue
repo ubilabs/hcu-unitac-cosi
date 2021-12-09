@@ -226,13 +226,13 @@ export default {
 </template>
 
 
-<style lang="less" scoped>
-@import "~/css/mixins.less";
+<style lang="scss" scoped>
+@import "~/css/mixins.scss";
 
-@color_1: #fff;
-@color_2: #fec44f;
-@background_color_1: rgba(227, 227, 227, 0.5);
-@background_color_2: rgba(0,0,0,.5);
+$color_1: #fff;
+$color_2: #fec44f;
+$background_color_1: rgba(227, 227, 227, 0.5);
+$background_color_2: rgba(0,0,0,.5);
 
 .schulinfo {
     max-width: 40vw;
@@ -247,7 +247,7 @@ export default {
     }
     .schulinfo-head {
         padding: 8px 0;
-        background-color: @background_color_1;
+        background-color: $background_color_1;
         position: relative;
     }
     .btn-group-sm {
@@ -255,10 +255,10 @@ export default {
         .btn-default {
             margin: 4px;
             &:focus {
-                .primary_action_focus();
+                @include primary_action_focus;
             }
             &:hover {
-                .primary_action_hover();
+                @include primary_action_hover;
             }
         }
         padding-right: 64px;
@@ -270,8 +270,8 @@ export default {
         font-size: 0;
     }
     .btn-select {
-        color: @color_1;
-        background-color: @background_color_2;
+        color: $color_1;
+        background-color: $background_color_2;
     }
     table {
         border-top: 1px solid rgb(229,229,229);
@@ -281,7 +281,7 @@ export default {
         padding: 0 2px;
     }
     .glyphicon-star {
-        color: @color_2;
+        color: $color_2;
     }
 }
 </style>

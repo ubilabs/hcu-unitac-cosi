@@ -91,7 +91,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .verkehrsstaerken-table {
         margin: 6px 15px 0 12px;
         overflow: auto;

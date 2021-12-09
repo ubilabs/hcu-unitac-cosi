@@ -1,6 +1,6 @@
 import Template from "text-loader!./template.html";
 import InfoTemplate from "text-loader!./info.html";
-import "./style.less";
+import "./style.scss";
 
 const DashboardView = Backbone.View.extend(/** @lends DashboardView.prototype */{
     events: {

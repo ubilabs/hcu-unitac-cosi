@@ -2,7 +2,7 @@ import Template from "text-loader!./selectTemplate.html";
 import SnippetDropdownView from "../../../../modules/snippets/dropdown/view";
 import ResultView from "./resultView";
 import InfoTemplate from "text-loader!./info.html";
-import "./style.less";
+import "./style.scss";
 
 const SelectView = Backbone.View.extend(/** @lends SelectView.prototype */{
     events: {

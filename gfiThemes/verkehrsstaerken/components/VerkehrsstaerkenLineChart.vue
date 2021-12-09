@@ -347,7 +347,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="scss">
 #verkehrsstaerken-line-chart {
     margin: 6px;
 

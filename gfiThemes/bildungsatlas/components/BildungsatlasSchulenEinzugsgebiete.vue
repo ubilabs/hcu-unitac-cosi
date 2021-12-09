@@ -492,7 +492,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .gfi-school-catchment-area {
         max-width: 420px;
 

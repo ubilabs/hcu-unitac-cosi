@@ -1,4 +1,4 @@
-import "./style.less";
+import "./style.scss";
 import template from "text-loader!./template.html";
 import SnippetDropdownView from "../../../../modules/snippets/dropdown/view";
 import InfoTemplate from "text-loader!./info.html";

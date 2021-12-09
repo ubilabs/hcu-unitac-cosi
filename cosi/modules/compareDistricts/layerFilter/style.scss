@@ -1,4 +1,4 @@
-@import "../../../../../css/mixins.less";
+@import "~/css/mixins.scss";
 
 .table {
     margin : 0;
@@ -27,13 +27,13 @@
         opacity: 1;
         span {
             padding: 5px;
-            color: @secondary_icon_button;
+            color: $secondary_icon_button;
             font-size: 20px;
-            &:hover {
-                .primary_action_hover();
-            }
             &:focus {
-                .primary_action_focus();
+                @include primary_action_focus;
+            }
+            &:hover {
+                @include primary_action_hover;
             }
         }
     }

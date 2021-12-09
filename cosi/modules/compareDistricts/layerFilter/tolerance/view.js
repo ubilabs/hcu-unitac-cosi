@@ -1,4 +1,4 @@
-import "./style.less";
+import "./style.scss";
 import template from "text-loader!./template.html";
 
 const ToleranceView = Backbone.View.extend(/** @lends ToleranceView.prototype */{

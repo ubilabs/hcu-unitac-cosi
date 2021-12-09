@@ -1,7 +1,7 @@
 import AdjustParameterModel from "./model";
 import Template from "text-loader!./template.html";
 import "bootstrap-select";
-import "./style.less";
+import "./style.scss";
 
 const AdjustParameterView = Backbone.View.extend(/** @lends AdjustParameterView.prototype */{
     events: {

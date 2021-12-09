@@ -1,6 +1,6 @@
-@color_1: #fff;
-@font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
-@background_color_1: rgba(0, 0, 0,.5);
+$color_1: #fff;
+$font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
+$background_color_1: rgba(0, 0, 0,.5);
 
 /*SimpleView*/
 .filter {
@@ -21,7 +21,7 @@
     }
     .tool-name {
         padding-left: 15px;
-        font-family: @font_family_1;
+        font-family: $font_family_1;
         font-size: 16px;
     }
     .simple-view {
@@ -30,8 +30,8 @@
         }
     }
     .btn-select {
-        color: @color_1;
-        background-color: @background_color_1;
+        color: $color_1;
+        background-color: $background_color_1;
         .name {
             &:hover {
                 font-weight: normal;

@@ -346,7 +346,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .content-school-route-planning {
         padding-top: 20px;
         .input-group {
@@ -377,7 +377,7 @@ export default {
     }
 </style>
 
-<style lang="less">
+<style lang="scss">
     .content-school-route-planning {
         .bootstrap-select {
             .dropdown-menu {

@@ -130,20 +130,20 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     @import "~variables";
 
     .dipas-gfi-content {
         margin: 12px;
-        font-family: @font_family_default;
+        font-family: $font_family_default;
         .dipas-gfi-thema {
-            font-family: @font_family_default;
+            font-family: $font_family_default;
             font-size: 14px;
             color: #808080;
             text-transform: uppercase;
         }
         .dipas-gfi-name {
-            font-family: @font_family_accent;
+            font-family: $font_family_accent;
             font-size: 18px;
             color: #003063;
             padding-bottom: 16px;
@@ -153,7 +153,7 @@ export default {
             }
         }
         .dipas-gfi-description {
-            font-family: @font_family_default;
+            font-family: $font_family_default;
             font-size: 14px;
             color: #808080;
         }
@@ -171,8 +171,8 @@ export default {
             padding: 7px 8px 4px;
             background-color: #E40613;
             border-color: #800040;
-            color: @accent_contrast;
-            font-family: @font_family_accent;
+            color: $accent_contrast;
+            font-family: $font_family_accent;
             text-transform: uppercase;
             display: inline-block;
         }

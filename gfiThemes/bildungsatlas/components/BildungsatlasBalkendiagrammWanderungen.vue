@@ -323,7 +323,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .gfi-balkendiagramm-wanderungen {
     max-width: 420px;
     font-size: 13px;

@@ -1,5 +1,5 @@
 import template from "text-loader!./template.html";
-import "./style.less";
+import "./style.scss";
 import DistrictSelectorView from "./districtSelector/view";
 import LayerFilterSelectorModel from "./layerFilterSelector/model";
 import LayerFilterSelectorView from "./layerFilterSelector/view";

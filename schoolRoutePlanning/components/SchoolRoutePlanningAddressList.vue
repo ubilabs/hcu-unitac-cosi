@@ -55,9 +55,9 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 @import "~variables";
-@background_color_1: #e3e3e3;
+$background_color_1: #e3e3e3;
 
     .address-list {
         z-index: 3;
@@ -68,7 +68,7 @@ export default {
             }
             &:hover {
                 cursor: pointer;
-                background-color: @background_color_1;
+                background-color: $background_color_1;
             }
         }
     }

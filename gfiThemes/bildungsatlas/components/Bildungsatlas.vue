@@ -177,7 +177,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="scss">
     .portal-title a img[alt*="Bildungsatlas"] {
         width: 80px;
     }

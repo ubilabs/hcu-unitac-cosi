@@ -1,7 +1,7 @@
 import Template from "text-loader!./template.html";
 import SnippetSliderView from "../../../../modules/snippets/slider/view";
 import TimeSliderModel from "./model";
-import "./style.less";
+import "./style.scss";
 
 const TimeSliderView = Backbone.View.extend({
     events: {

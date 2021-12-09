@@ -11,15 +11,12 @@
     "versionHotfix": "npm version patch && git push --tags",
     "versionMinor": "npm version minor && git push --tags",
     "versionMajor": "npm version major && git push --tags",
-    "postinstall": "cd cosi && npm install && cd .. && cd qr && npm install && cd .. && cd sdpDownload && npm install"
+    "postinstall": "cd cosi && npm install && cd .. && cd qr && npm install && cd .. && cd sdpDownload && npm install",
+    "prePushHook": "cd .. && npm run prePushHook",
+    "prepare": "husky install"
   },
   "dependencies": {},
   "devDependencies": {
-    "husky": "^4.3.8"
-  },
-  "husky": {
-    "hooks": {
-      "pre-push": "cd .. && node ./node_modules/@masterportal/mpconfigparser/cli.js ./doc/config.json.md ./doc/config.json.de.md && eslint --max-warnings 0 \"./**/*.{vue,js}\" && npm run buildJsDoc && npm run test:all && cd addons"
-    }
+    "husky": "^7.0.4"
   }
 }

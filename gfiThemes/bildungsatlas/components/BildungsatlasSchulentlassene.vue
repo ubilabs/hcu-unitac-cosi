@@ -544,7 +544,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .gfi-schulentlassene {
     max-width: 420px;
     font-size: 13px;

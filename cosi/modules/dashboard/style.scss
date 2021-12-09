@@ -1,8 +1,8 @@
-@import "../../../../css/mixins.less";
+@import "~/css/mixins.scss";
 
-@color_1: #fff;
-@font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
-@background_color_1: rgba(0, 0, 0,.5);
+$color_1: #fff;
+$font_family_1: "UniversNextW04-620CondB","Arial Narrow",Arial,sans-serif;
+$background_color_1: rgba(0, 0, 0,.5);
 
 .sidebar .header, .sidebar .dashboard-footer, .dashboard-inner .header, .dashboard-inner .dashboard-footer {
     width: 100%;
@@ -49,30 +49,30 @@
                 background-color: transparent;
                 span {
                     padding: 5px;
-                    color: @secondary_icon_button;
+                    color: $secondary_icon_button;
                     font-size: 20px;
-                    &:hover {
-                        .primary_action_hover();
-                    }
                     &:focus {
-                        .primary_action_focus();
+                        @include primary_action_focus;
+                    }
+                    &:hover {
+                        @include primary_action_hover;
                     }
                 }
             }
             button#help {
                 font-size: 12px;
                 margin: 0px;
-                color: @secondary_icon_button;
+                color: $secondary_icon_button;
                 float: right;
                 border: none;
                 width: auto;
                 padding: 0;
-                &:hover {
-                    .primary_action_hover();
-                }
                 &:focus {
-                    .primary_action_focus();
-                }            
+                    @include primary_action_focus;
+                }
+                &:hover {
+                    @include primary_action_hover;
+                }
             }
             .btn-group button {
                 margin-right: 4px;
@@ -81,17 +81,17 @@
                     font-size: 14px;
                     padding:5px;
                     margin-right: 5px;
-                    color: @secondary_icon_button;
-                    &:hover {
-                        .primary_action_hover();
-                    }
+                    color: $secondary_icon_button;
                     &:focus {
-                        .primary_action_focus();
+                        @include primary_action_focus;
+                    }
+                    &:hover {
+                        @include primary_action_hover;
                     }
                 }
             }
             #reset-button {
-                color: @secondary_icon_button;
+                color: $secondary_icon_button;
             }
         }
     }
@@ -136,4 +136,3 @@
     }
 }
 
-   

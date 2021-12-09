@@ -1,14 +1,14 @@
-@import "../../../../css/mixins.less";
+@import "~/css/mixins.scss";
 
 // The css selectors from the parent element are more precise, so we need to redefine it here
 .dashboard .dashboard-inner {
     .dashboard-widget {
         &.minimized {
             .header button.win-control.open span{
-                background-color: @accent_active;
+                background-color: $accent_active;
                 color: white;
                 &:hover {
-                    .primary_action_hover();
+                    @include primary_action_hover;
                 }
             }
         }
@@ -35,7 +35,7 @@
             background: rgba(0, 0, 255, 0.05);
         }
     }
-    
+
     .detail-view-container {
         padding: 8px 15px;
         width: 100%;
@@ -49,7 +49,7 @@
             pointer-events: none;
         }
     }
-    
+
     .svg-container {
         width: 100%;
         height:100%;

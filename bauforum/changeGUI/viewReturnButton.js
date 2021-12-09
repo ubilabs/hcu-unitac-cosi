@@ -1,5 +1,5 @@
 import Template from "text-loader!./templateReturnButton.html";
-import "./style.less";
+import "./style.scss";
 
 const ViewReturnButton = Backbone.View.extend({
 

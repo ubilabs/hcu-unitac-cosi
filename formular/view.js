@@ -1,6 +1,6 @@
 import GrenznachweisModel from "./grenznachweis";
 import Grenznachweistemplate from "text-loader!./grenznachweis.html";
-import Grenznachweiscss from "text-loader!./grenznachweis.less";
+import Grenznachweiscss from "text-loader!./grenznachweis.scss";
 /**
  * @member GrenznachweisTemplate
  * @description Template used to create the formular for the Grenznachweis
