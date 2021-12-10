@@ -11,12 +11,13 @@ import {generateColorScale, generateColorScaleByColor} from "../../utils/colorSc
 import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";
 import {scaleSequential} from "d3-scale";
 import {interpolateRdYlGn} from "d3-scale-chromatic";
-import Vue from "vue";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "Dipas",
     components: {
-        Tool
+        Tool,
+        ToolInfo
     },
     data () {
         return {
@@ -105,8 +106,8 @@ export default {
             layer.setVisible(false);
             layer.getSource().addFeature(feature);
 
-            Vue.set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
-            Vue.set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
+            this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
+            this.$set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
             for (const [catIndex, category] of Object.values(feature.getProperties().standardCategories).entries()) {
                 this.contributions[id].colors[category] = colorScale(catIndex);
                 this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
