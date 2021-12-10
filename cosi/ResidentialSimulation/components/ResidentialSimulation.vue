@@ -18,7 +18,6 @@ import Modal from "../../../../src/share-components/modals/components/Modal.vue"
 import processStats from "../utils/processStats";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 import ToolInfo from "../../components/ToolInfo.vue";
-import TrinkwasserVue from '../../../gfiThemes/trinkwasser/components/Trinkwasser.vue';
 
 export default {
     name: "ResidentialSimulation",
@@ -821,6 +820,13 @@ export default {
                                 @click="deleteNeighborhood"
                             >
                                 {{ $t("common:button.delete") }}
+                            </v-btn>
+                            <v-btn
+                                text
+                                v-bind="attrs"
+                                @click="editDialog = false"
+                            >
+                                <v-icon>mdi-close</v-icon>
                             </v-btn>
                             <!-- NOT IMPLEMENTED -->
                             <!-- <v-btn
