@@ -5,47 +5,47 @@ import moment from "moment";
 // change language from moment.js to german
 moment.locale("de");
 
-describe("addons/trafficCount/utils/trafficCountApi.js", function () {
-    describe("TrafficCountApi.constructor", function () {
-        describe("SensorThingsHttp", function () {
-            it("should take the given dummy instead of creating a new instance of SensorThingsHttp", function () {
+describe("addons/trafficCount/utils/trafficCountApi.js", () => {
+    describe("TrafficCountApi.constructor", () => {
+        describe("SensorThingsHttp", () => {
+            it("should take the given dummy instead of creating a new instance of SensorThingsHttp", () => {
                 const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "foo", "sensorThingsMqttOpt", "noSingletonOpt");
 
                 expect(api.getSensorThingsHttp()).to.equal("foo");
             });
-            it("should create a new instance of SensorThingsHttp on construction if no dummy was given", function () {
+            it("should create a new instance of SensorThingsHttp on construction if no dummy was given", () => {
                 const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", false, "sensorThingsMqttOpt", "noSingletonOpt");
 
                 expect(api.getSensorThingsHttp().constructor.name).to.equal("SensorThingsHttp");
             });
         });
 
-        describe("SensorThingsMqtt", function () {
-            it("should take the given dummy instead of creating a new instance of SensorThingsMqtt", function () {
+        describe("SensorThingsMqtt", () => {
+            it("should take the given dummy instead of creating a new instance of SensorThingsMqtt", () => {
                 const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "foo", "noSingletonOpt");
 
                 expect(api.getMqttClient()).to.equal("foo");
             });
         });
 
-        describe("baseUrlHttp", function () {
-            it("should set the base url for http calls correctly at construction", function () {
+        describe("baseUrlHttp", () => {
+            it("should set the base url for http calls correctly at construction", () => {
                 const api = new TrafficCountApi("https://www.example.com/foo", "version1234", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt");
 
                 expect(api.getBaseUrlHttp()).to.equal("https://www.example.com/foo/version1234");
             });
         });
 
-        describe("subscriptionTopics", function () {
-            it("should set the subscription topics as an empty object at time of construction", function () {
+        describe("subscriptionTopics", () => {
+            it("should set the subscription topics as an empty object at time of construction", () => {
                 const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt");
 
                 expect(api.getSubscriptionTopics()).to.be.an("object").and.to.be.empty;
             });
         });
 
-        describe("SensorThingsMqttClient", function () {
-            it("should set the on message event with an event", function () {
+        describe("SensorThingsMqttClient", () => {
+            it("should set the on message event with an event", () => {
                 let lastEventName = false,
                     lastCallback = false;
                 const dummySensorThingsMqtt = {
@@ -60,7 +60,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 expect(lastEventName).to.equal("message");
                 expect(typeof lastCallback).to.equal("function");
             });
-            it("should set the on message event with an event(topic, payload) that will give payload to all callbacks stored in subscriptionTopics[topic]", function () {
+            it("should set the on message event with an event(topic, payload) that will give payload to all callbacks stored in subscriptionTopics[topic]", () => {
                 let lastCallback = false;
                 const dummySensorThingsMqtt = {
                         on: (eventName, callback) => {
@@ -95,8 +95,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.checkForObservations", function () {
-        it("should check if the given dataset is an array with an object that has a key Datastreams which is an array with an object with an id and a key Observations that is an array", function () {
+    describe("TrafficCountApi.checkForObservations", () => {
+        it("should check if the given dataset is an array with an object that has a key Datastreams which is an array with an object with an id and a key Observations that is an array", () => {
             const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt"),
                 dataset = [
                     {
@@ -114,8 +114,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.sumObservations", function () {
-        it("should sum up the given observations", function () {
+    describe("TrafficCountApi.sumObservations", () => {
+        it("should sum up the given observations", () => {
             const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt"),
                 dataset = [{
                     Datastreams: [{
@@ -134,8 +134,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.getFirstDate", function () {
-        it("should fetch the oldest date from the given observations", function () {
+    describe("TrafficCountApi.getFirstDate", () => {
+        it("should fetch the oldest date from the given observations", () => {
             const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt"),
                 dataset = [{
                     Datastreams: [{
@@ -152,7 +152,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(api.getFirstDate(dataset)).to.equal("000000");
             expect(api.getFirstDate([{}])).to.be.false;
         });
-        it("should take an initial date to account for the best first date initialy", function () {
+        it("should take an initial date to account for the best first date initialy", () => {
             const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt"),
                 dataset = [{
                     Datastreams: [{
@@ -171,22 +171,22 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.parsePhenomenonTime", function () {
+    describe("TrafficCountApi.parsePhenomenonTime", () => {
         const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt");
 
-        it("should split the given string interval delimited by '/' and return the agreed part", function () {
+        it("should split the given string interval delimited by '/' and return the agreed part", () => {
             const interval = "foo/bar",
                 expectedOutcome = "foo";
 
             expect(api.parsePhenomenonTime(interval)).to.equal(expectedOutcome);
         });
-        it("should return the given string if no delimitor was found", function () {
+        it("should return the given string if no delimitor was found", () => {
             const interval = "bar",
                 expectedOutcome = "bar";
 
             expect(api.parsePhenomenonTime(interval)).to.equal(expectedOutcome);
         });
-        it("should return an empty string if unexpected input is given", function () {
+        it("should return an empty string if unexpected input is given", () => {
             expect(api.parsePhenomenonTime(undefined)).to.be.a("string").and.to.be.empty;
             expect(api.parsePhenomenonTime(null)).to.be.a("string").and.to.be.empty;
             expect(api.parsePhenomenonTime("")).to.be.a("string").and.to.be.empty;
@@ -197,8 +197,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.mqttSubscribe", function () {
-        it("should push a handler for the given topic on subscription topics", function () {
+    describe("TrafficCountApi.mqttSubscribe", () => {
+        it("should push a handler for the given topic on subscription topics", () => {
             const api = new TrafficCountApi("httpHost", "sensorThingsVersion", "mqttOptions", "sensorThingsHttpOpt", "sensorThingsMqttOpt", "noSingletonOpt");
 
             api.setSubscriptionTopics({});
@@ -208,7 +208,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(api.getSubscriptionTopics().foo).to.be.an("array").that.is.not.empty;
             expect(api.getSubscriptionTopics().foo[0]).to.equal("bar");
         });
-        it("should use the mqtt client to subscribe to a topic with the given options", function () {
+        it("should use the mqtt client to subscribe to a topic with the given options", () => {
             let lastTopic = false,
                 lastMqttOptions = false;
             const dummySensorThingsMqtt = {
@@ -243,8 +243,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateTitle", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateTitle", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -269,7 +269,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with the property name of the first element in the received payload", function () {
+        it("should call onupdate with the property name of the first element in the received payload", () => {
             let lastTitle = false;
             const dummySensorThingsHttp = {
                     get: (url, onupdate) => {
@@ -286,7 +286,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastTitle).to.equal("foo");
         });
-        it("should call onerror with an error message if no property name was found on the first element in the received payload", function () {
+        it("should call onerror with an error message if no property name was found on the first element in the received payload", () => {
             let lastError = false;
             const dummySensorThingsHttp = {
                     get: false
@@ -336,8 +336,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateDirection", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateDirection", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -362,7 +362,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with the property child element 'richtung' of the first element in the received payload", function () {
+        it("should call onupdate with the property child element 'richtung' of the first element in the received payload", () => {
             let getDirection = "";
             const dummySensorThingsHttp = {
                     get: (url, onupdate) => {
@@ -381,7 +381,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(getDirection).to.equal("2");
         });
-        it("should call onerror with an error message if no property child element 'richtung' was found on the first element in the received payload", function () {
+        it("should call onerror with an error message if no property child element 'richtung' was found on the first element in the received payload", () => {
             let getError = false;
             const dummySensorThingsHttp = {
                     get: false
@@ -431,8 +431,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateDay", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateDay", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -459,7 +459,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with a sum of all given observation result values", function () {
+        it("should call onupdate with a sum of all given observation result values", () => {
             let lastDate = false,
                 lastValue = false;
             const dummySensorThingsHttp = {
@@ -489,7 +489,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastDate).to.equal(expectedDate);
             expect(lastValue).to.equal(expectedValue);
         });
-        it("should initialize mqtt subscription on topic with given options if the given day equals today", function () {
+        it("should initialize mqtt subscription on topic with given options if the given day equals today", () => {
             let lastTopic = false,
                 lastMqttOptions = false;
             const dummySensorThingsHttp = {
@@ -518,7 +518,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastTopic).to.equal(expectedTopic);
             expect(lastMqttOptions).to.deep.equal(expectedMqttOptions);
         });
-        it("should not initialize mqtt subscription on topic with given options if the given day does not equal today", function () {
+        it("should not initialize mqtt subscription on topic with given options if the given day does not equal today", () => {
             let lastTopic = false,
                 lastMqttOptions = false;
             const dummySensorThingsHttp = {
@@ -545,7 +545,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastTopic).to.be.false;
             expect(lastMqttOptions).to.be.false;
         });
-        it("should add any number received by observation.result via mqtt to the current sum and call onupdate", function () {
+        it("should add any number received by observation.result via mqtt to the current sum and call onupdate", () => {
             let lastSum = false;
 
             const dummySensorThingsHttp = {
@@ -585,7 +585,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastSum).to.equal(36);
         });
-        it("should call onerror if no observation was found in http response", function () {
+        it("should call onerror if no observation was found in http response", () => {
             let lastErrorMessage = false;
 
             const dummySensorThingsHttp = {
@@ -607,7 +607,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastErrorMessage).to.be.a("string");
         });
-        it("should call on error if a received observation via mqtt has no result key", function () {
+        it("should call on error if a received observation via mqtt has no result key", () => {
             let lastErrorMessage = false;
 
             const dummySensorThingsHttp = {
@@ -639,8 +639,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateYear", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateYear", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -667,7 +667,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with a sum of all given observation result values if year does not equal todays year", function () {
+        it("should call onupdate with a sum of all given observation result values if year does not equal todays year", () => {
             let lastDate = false,
                 lastValue = false;
             const dummySensorThingsHttp = {
@@ -697,7 +697,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastDate).to.equal(expectedDate);
             expect(lastValue).to.equal(expectedValue);
         });
-        it("should call onupdate with a sum of all observations for the _1-Tag and _15-Min urls if year does equal todays year", function () {
+        it("should call onupdate with a sum of all observations for the _1-Tag and _15-Min urls if year does equal todays year", () => {
             let lastDate = false,
                 lastValue = false;
             const dummySensorThingsHttp = {
@@ -742,7 +742,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastDate).to.equal(expectedDate);
             expect(lastValue).to.equal(expectedValue);
         });
-        it("should not initialize mqtt subscription on topic with given options if the given year does not equal todays year", function () {
+        it("should not initialize mqtt subscription on topic with given options if the given year does not equal todays year", () => {
             let lastTopic = false,
                 lastMqttOptions = false;
             const dummySensorThingsHttp = {
@@ -769,7 +769,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastTopic).to.be.false;
             expect(lastMqttOptions).to.be.false;
         });
-        it("should add any number received by observation.result via mqtt to the current sum and call onupdate", function () {
+        it("should add any number received by observation.result via mqtt to the current sum and call onupdate", () => {
             let lastSum = false;
 
             const dummySensorThingsHttp = {
@@ -824,7 +824,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastSum).to.equal(78);
         });
-        it("should call onerror if no observation was found in http response", function () {
+        it("should call onerror if no observation was found in http response", () => {
             let lastErrorMessage = false;
 
             const dummySensorThingsHttp = {
@@ -846,7 +846,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastErrorMessage).to.be.a("string");
         });
-        it("should call on error if a received observation via mqtt has no result key", function () {
+        it("should call on error if a received observation via mqtt has no result key", () => {
             let lastErrorMessage = false;
 
             const dummySensorThingsHttp = {
@@ -878,8 +878,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateTotal", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateTotal", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -905,7 +905,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal(false);
         });
-        it("should call onupdate with a sum of all given observation result values", function () {
+        it("should call onupdate with a sum of all given observation result values", () => {
             let lastFirstDate = false,
                 lastValue = false;
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -938,7 +938,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastFirstDate).to.equal(expectedDate);
             expect(lastValue).to.equal(expectedValue);
         });
-        it("should call onupdate with a sum of all observations for the _1-Woche and _15-Min urls", function () {
+        it("should call onupdate with a sum of all observations for the _1-Woche and _15-Min urls", () => {
             let lastDate = false,
                 lastValue = false;
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -981,7 +981,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastDate).to.equal(expectedDate);
             expect(lastValue).to.equal(expectedValue);
         });
-        it("should add any number received by observation.result via mqtt to the current sum and call onupdate", function () {
+        it("should add any number received by observation.result via mqtt to the current sum and call onupdate", () => {
             let lastSum = false;
 
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -1036,7 +1036,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastSum).to.equal(78);
         });
-        it("should call onerror if no observation was found in http response", function () {
+        it("should call onerror if no observation was found in http response", () => {
             let lastErrorMessage = false;
 
             const dummySensorThingsHttp = {
@@ -1057,7 +1057,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastErrorMessage).to.be.a("string");
         });
-        it("should call on error if a received observation via mqtt has no result key", function () {
+        it("should call on error if a received observation via mqtt has no result key", () => {
             let lastErrorMessage = false;
 
             const dummySensorThingsHttp = {
@@ -1088,8 +1088,43 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateHighestWorkloadDay", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateWorkingDayAverage", () => {
+        it("should call onupdate with the first found date and value", () => {
+            let lastDate = false,
+                lastValue = false;
+            const holidays = ["newYearsDay"],
+                dummySensorThingsHttp = {
+                    get: (url, onupdate) => {
+                        onupdate([{
+                            Datastreams: [{
+                                "@iot.id": "foo",
+                                Observations: [
+                                    {result: 1, phenomenonTime: "2020-12-31T00:00:00.000Z"},
+                                    {result: 2, phenomenonTime: "2021-01-01T00:00:00.000Z"},
+                                    {result: 3, phenomenonTime: "2021-01-02T00:00:00.000Z"},
+                                    {result: 4, phenomenonTime: "2021-01-03T00:00:00.000Z"},
+                                    {result: 5, phenomenonTime: "2021-01-04T00:00:00.000Z"}
+                                ]
+                            }]
+                        }]);
+                    }
+                },
+                api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
+                expectedDate = moment("2020-12-31T00:00:00.000Z").format("YYYY-MM-DD"),
+                expectedValue = 3;
+
+            api.updateWorkingDayAverage("thingId", "meansOfTransport", 365, holidays, (date, value) => {
+                lastDate = date;
+                lastValue = value;
+            }, "onerror", "onstart", "oncomplete");
+
+            expect(lastDate).to.equal(expectedDate);
+            expect(lastValue).to.equal(expectedValue);
+        });
+    });
+
+    describe("TrafficCountApi.updateHighestWorkloadDay", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -1117,7 +1152,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with the found date and value", function () {
+        it("should call onupdate with the found date and value", () => {
             let lastDate = false,
                 lastValue = false;
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -1147,8 +1182,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateHighestWorkloadWeek", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateHighestWorkloadWeek", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -1175,7 +1210,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with the found date and value", function () {
+        it("should call onupdate with the found date and value", () => {
             let lastCalendarWeek = false,
                 lastValue = false;
             const dummySensorThingsHttp = {
@@ -1204,8 +1239,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateHighestWorkloadMonth", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateHighestWorkloadMonth", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -1232,7 +1267,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with the best month and value of all received observations", function () {
+        it("should call onupdate with the best month and value of all received observations", () => {
             let lastMonth = false,
                 lastValue = false;
             const dummySensorThingsHttp = {
@@ -1252,7 +1287,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                expectedMonth = "Februar",
+                expectedMonth = "02",
                 expectedValue = 9;
 
             api.updateHighestWorkloadMonth("thingId", "meansOfTransport", "2020", (date, value) => {
@@ -1265,8 +1300,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.updateDataset", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.updateDataset", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -1298,7 +1333,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should call onupdate with a dataset generated out of the found observations without subscription if until does not equal todays date", function () {
+        it("should call onupdate with a dataset generated out of the found observations without subscription if until does not equal todays date", () => {
             let lastDataset = false;
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
                 phenomenonTimeB = "2020-03-23T12:14:30.123Z",
@@ -1340,7 +1375,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastDataset).to.deep.equal(expectedDataset);
         });
-        it("should subscribe via mqtt retain 2 if param until equals today", function () {
+        it("should subscribe via mqtt retain 2 if param until equals today", () => {
             let lastTopic = false,
                 lastMqttOptions = false;
             const dummySensorThingsHttp = {
@@ -1372,7 +1407,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastTopic).to.equal("v1234/Datastreams(foo)/Observations");
             expect(lastMqttOptions).to.deep.equal({rh: 2});
         });
-        it("should resend the result with new data to onupdate anytime a subscribed message was received", function () {
+        it("should resend the result with new data to onupdate anytime a subscribed message was received", () => {
             let lastDataset = false;
 
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -1425,10 +1460,11 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(lastDataset).to.deep.equal(expectedDataset);
         });
-        /*
+
         // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
         // use this code to test Kfz + SV
-        it("should add Anteil_SV data to dataset if meansOfTransport equals 'Anzahl_Kfz'; should resend data anytime a subscribed message was received", function () {
+        /*
+        it("should add Anzahl_SV data to dataset if meansOfTransport equals 'Anzahl_Kfz'; should resend data anytime a subscribed message was received", () => {
             let lastDataset = false;
 
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
@@ -1439,7 +1475,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 expectedDateTimeC = moment(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
-                        if (url.indexOf("AnzFahrzeuge") !== -1) {
+                        if (url.indexOf("Anzahl_Kfz") !== -1) {
                             onupdate([{
                                 Datastreams: [{
                                     "@iot.id": "foo",
@@ -1449,7 +1485,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                                 }]
                             }]);
                         }
-                        else if (url.indexOf("AntSV") !== -1) {
+                        else if (url.indexOf("Anzahl_SV") !== -1) {
                             onupdate([{
                                 Datastreams: [{
                                     "@iot.id": "bar",
@@ -1462,12 +1498,12 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                meansOfTransport = "AnzFahrzeuge",
+                meansOfTransport = "Anzahl_Kfz",
                 expectedTopicFahrzeuge = "v1234/Datastreams(foo)/Observations",
                 expectedTopicSV = "v1234/Datastreams(bar)/Observations",
                 expectedOutcome = {
-                    AnzFahrzeuge: {},
-                    AntSV: {}
+                    Anzahl_Kfz: {},
+                    Anzahl_SV: {}
                 },
                 timeSettings = {
                     interval: "interval",
@@ -1482,8 +1518,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
                 lastDataset = dataset;
             }, "onerror", "onstart", "oncomplete", "2020-03-20");
 
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopicFahrzeuge)).to.be.true;
-            expect(api.getSubscriptionTopics().hasOwnProperty(expectedTopicSV)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopicFahrzeuge)).to.be.true;
+            expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopicSV)).to.be.true;
             expect(api.getSubscriptionTopics()[expectedTopicFahrzeuge]).to.be.an("array").that.is.not.empty;
             expect(api.getSubscriptionTopics()[expectedTopicSV]).to.be.an("array").that.is.not.empty;
             expect(typeof api.getSubscriptionTopics()[expectedTopicFahrzeuge][0] === "function").to.be.true;
@@ -1491,20 +1527,20 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             // stimulate subscription handler
             api.getSubscriptionTopics()[expectedTopicFahrzeuge][0]({result: 2000, phenomenonTime: phenomenonTimeB});
-            expectedOutcome.AnzFahrzeuge[expectedDateTimeA] = 1000;
-            expectedOutcome.AnzFahrzeuge[expectedDateTimeB] = 2000;
-            expectedOutcome.AntSV[expectedDateTimeA] = 1;
+            expectedOutcome.Anzahl_Kfz[expectedDateTimeA] = 1000;
+            expectedOutcome.Anzahl_Kfz[expectedDateTimeB] = 2000;
+            expectedOutcome.Anzahl_SV[expectedDateTimeA] = 1;
             expect(lastDataset).to.deep.equal(expectedOutcome);
 
             api.getSubscriptionTopics()[expectedTopicSV][0]({result: 2, phenomenonTime: expectedDateTimeC});
-            expectedOutcome.AntSV[expectedDateTimeC] = 2;
+            expectedOutcome.Anzahl_SV[expectedDateTimeC] = 2;
             expect(lastDataset).to.deep.equal(expectedOutcome);
         });
-        */
+         */
     });
 
-    describe("TrafficCountApi.subscribeLastUpdate", function () {
-        it("should build a correct url and call it via given http dummy", function () {
+    describe("TrafficCountApi.subscribeLastUpdate", () => {
+        it("should build a correct url and call it via given http dummy", () => {
             let lastOnupdate = false,
                 lastOnstart = false,
                 lastOncomplete = false,
@@ -1529,7 +1565,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastOnstart).to.equal("onstart");
             expect(lastOncomplete).to.equal("oncomplete");
         });
-        it("should create a new subscription topic", function () {
+        it("should create a new subscription topic", () => {
             const dummySensorThingsHttp = {
                     get: (url, onupdate) => {
                         onupdate([{
@@ -1547,7 +1583,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(Object.prototype.hasOwnProperty.call(api.getSubscriptionTopics(), expectedTopic)).to.be.true;
         });
-        it("should subscribe to a subscription topic with mqtt options rh 0", function () {
+        it("should subscribe to a subscription topic with mqtt options rh 0", () => {
             let lastTopic = false,
                 lastMqttOptions = false;
             const dummySensorThingsHttp = {
@@ -1572,7 +1608,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastTopic).to.equal("v1234/Datastreams(foo)/Observations");
             expect(lastMqttOptions).to.deep.equal({rh: 0});
         });
-        it("should push an event to subscriptionTopics that will hand over resultTime to the given onupdate handler", function () {
+        it("should push an event to subscriptionTopics that will hand over resultTime to the given onupdate handler", () => {
             let lastDatetime = false,
                 lastErrorMessage = false;
             const resultTimeA = "2020-03-22T00:00:00.000Z",
@@ -1615,7 +1651,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
             expect(lastErrorMessage).to.be.a("string");
         });
 
-        it("should call onerror if no Datastream with a @iot.id was found in payload", function () {
+        it("should call onerror if no Datastream with a @iot.id was found in payload", () => {
             let lastErrorMessage = false;
             const dummySensorThingsHttp = {
                     get: (url, onupdate) => {
@@ -1638,8 +1674,8 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
         });
     });
 
-    describe("TrafficCountApi.unsubscribeEverything", function () {
-        it("should empty subscription topics", function () {
+    describe("TrafficCountApi.unsubscribeEverything", () => {
+        it("should empty subscription topics", () => {
             const api = new TrafficCountApi(false, false, {}, true, true, "noSingletonOpt");
 
             api.setSubscriptionTopics({
@@ -1651,7 +1687,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(api.getSubscriptionTopics()).to.be.empty;
         });
-        it("should call unsubscribe on the given mqtt client for each topic found in subscription topics", function () {
+        it("should call unsubscribe on the given mqtt client for each topic found in subscription topics", () => {
             const unsubscribedTopics = [],
                 dummySensorThingsMqtt = {
                     unsubscribe: (topic) => {
@@ -1669,7 +1705,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", function () {
 
             expect(unsubscribedTopics).to.be.an("array").to.deep.equal(["foo", "baz"]);
         });
-        it("should call onsuccess after unsubscribing everything topic found in subscription topics", function () {
+        it("should call onsuccess after unsubscribing everything topic found in subscription topics", () => {
             let onsuccessCalled = false;
             const api = new TrafficCountApi(false, false, {}, true, true, "noSingletonOpt");
 

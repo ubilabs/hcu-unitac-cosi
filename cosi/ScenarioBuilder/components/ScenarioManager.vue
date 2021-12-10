@@ -3,7 +3,7 @@ import getters from "../store/gettersScenarioBuilder";
 import mutations from "../store/mutationsScenarioBuilder";
 import actions from "../store/actionsScenarioBuilder";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/Modal.vue";
 import Scenario from "../classes/Scenario";
 
 export default {

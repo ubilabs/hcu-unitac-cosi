@@ -7,7 +7,6 @@ import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
 import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
 import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
 import BildungsatlasSchulenEinzugsgebiete from "./BildungsatlasSchulenEinzugsgebiete.vue";
-import BildungsatlasVorschulischeSF from "./BildungsatlasVorschulischeSF.vue";
 
 export default {
     name: "Bildungsatlas",
@@ -18,8 +17,7 @@ export default {
         BildungsatlasOKJA,
         BildungsatlasSchulentlassene,
         BildungsatlasSchulenWohnort,
-        BildungsatlasSchulenEinzugsgebiete,
-        BildungsatlasVorschulischeSF
+        BildungsatlasSchulenEinzugsgebiete
     },
     props: {
         /**
@@ -40,14 +38,6 @@ export default {
             api: null,
             configApiUrl: "config.api.json"
         };
-    },
-    computed: {
-        subThemeComponent () {
-            if (this.subTheme !== "") {
-                return this.subTheme;
-            }
-            return "BildungsatlasTest";
-        }
     },
     watch: {
         // When the gfi window switched with arrow, the connection will be refreshed
@@ -95,6 +85,9 @@ export default {
 
             this.properties = typeof properties === "object" && properties !== null ? properties : {};
 
+            if (this.subTheme === "") {
+                this.configApiUrl = false;
+            }
             // BildungsatlasApi is a singleton
             this.api = new BildungsatlasApi(this.configApiUrl);
         },
@@ -160,9 +153,12 @@ export default {
                 >{{ $t("additional:addons.gfiThemes.bildungsatlas.general.tabInfo") }}</a>
             </li>
         </ul>
-        <div class="tab-content">
+        <div
+            v-if="subTheme !== ''"
+            class="tab-content"
+        >
             <component
-                :is="subThemeComponent"
+                :is="subTheme"
                 :is-active-tab="isActiveTab"
                 :feature="feature"
                 :properties="properties"

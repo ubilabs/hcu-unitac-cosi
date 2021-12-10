@@ -153,7 +153,7 @@ export default {
             // ..
         },
         loadend (v) {
-            if (v) {
+            if (v && this.selectedDistrictNames.length > 0) {
                 this.generateTable();
             }
         }
@@ -180,7 +180,7 @@ export default {
         ...mapActions("Tools/Dashboard", Object.keys(actions)),
         ...mapMutations("Tools/DistrictSelector", ["addCategoryToMapping", "removeCategoryFromMapping"]),
         ...mapMutations("Tools/ColorCodeMap", ["setSelectedYear"]),
-        ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["updateDistricts"]),
         generateTable () {
             this.timestamps = [];
@@ -374,14 +374,14 @@ export default {
                     this.timestampPrefix
                 );
 
-            this.setNewChartDataSet(chart);
+            this.channelGraphData(chart);
         },
 
         renderScatterplot () {
             const correlation = this.calculateCorrelation(),
                 chart = generateChartForCorrelation(correlation, this.fields.B.category, this.fields.A.category);
 
-            this.setNewChartDataSet(chart);
+            this.channelGraphData(chart);
         },
 
         onVisualizationChanged () {
@@ -726,7 +726,7 @@ export default {
         .container {
             height: 100%;
             .dashboard-table-wrapper {
-                height: calc(100% - 40px);
+                height: calc(100% - 80px);
             }
         }
     }

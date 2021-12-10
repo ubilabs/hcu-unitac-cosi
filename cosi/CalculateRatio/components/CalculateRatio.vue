@@ -145,11 +145,11 @@ export default {
                 this.updateFeaturesList();
             }
         },
-        availableYears (newYears) {
-            if (newYears.length > 0) {
-                this.selectedYear = newYears[0];
-            }
-        },
+        // availableYears (newYears) {
+        //     if (newYears.length > 0) {
+        //         this.selectedYear = newYears[0];
+        //     }
+        // },
         results (newResults) {
             if (newResults.length > 0) {
                 this.resultsClone = [...newResults];
@@ -227,6 +227,7 @@ export default {
         updateFeaturesList () {
             this.featuresList = [];
             this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
+            this.selectedYear = utils.getLastAvailableYear(this.selectedStatFeatures, this.yearSelector);
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
                     const findGrp = this.featuresList.find(el => el.group === attr.group);
@@ -614,7 +615,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: result[this.columnSelector.key].toLocaleString("de-DE")
+                            data: Math.round(1000 * result[this.columnSelector.key]) / 1000
                         };
 
                         prepareData.push(data);
@@ -678,7 +679,6 @@ export default {
                 dataSet.data.reverse();
             });
 
-            // this.setNewDataSet(graphObj);
             this.channelGraphData(graphObj);
         },
 
@@ -818,6 +818,7 @@ export default {
                                             v-if="fActive_A"
                                             class="input"
                                         >
+                                            <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                             <input
                                                 v-model="faktorf_A"
                                                 type="number"
@@ -853,6 +854,7 @@ export default {
                                 <div class="sub_wrapper">
                                     <div class="custom_wrapper">
                                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
+                                        <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                         <input
                                             v-model="perCalc_A"
                                             type="number"
@@ -965,6 +967,7 @@ export default {
                                             v-if="fActive_B"
                                             class="input"
                                         >
+                                            <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                             <input
                                                 v-model="faktorf_B"
                                                 type="number"
@@ -1000,6 +1003,7 @@ export default {
                                 <div class="sub_wrapper">
                                     <div class="custom_wrapper">
                                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
+                                        <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                         <input
                                             v-model="perCalc_B"
                                             type="number"

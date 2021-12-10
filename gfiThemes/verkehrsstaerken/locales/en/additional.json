@@ -6,16 +6,19 @@
                     "verkehrsstaerken": {
                         "kind": "Kind: {{kind}}",
                         "table": "Info",
-                        "diagram": "Diagrams",
+                        "diagram": "Charts",
                         "download": "Download",
-                        "DTV": "DTV",
-                        "DTVw": "DTVw",
-                        "carsPerDay": "DTV (Car/24h)",
-                        "carsPerDayWeekly": "DTVw (Car/24h)",
-                        "HGVsPerWeek": "SV share in DTVw (%)",
+                        "DTV": "ADTV",
+                        "DTVTitle": "Average daily traffic volumes (Mon-Sun)",
+                        "DTVw": "ADTVw",
+                        "DTVwTitle": "Average weekday traffic volumes (Mon-Fri)",
+                        "carsPerDay": "ADTV (Car/24h)",
+                        "carsPerDayWeekly": "ADTVw (Car/24h)",
+                        "HGVsPerWeek": "SOHF share in ADTVw (%)",
+                        "HGVsPerWeekTitle": "Share of heavy traffic in ADTVw",
                         "constructionSiteInfluence": "Construction site influence",
                         "withConstructionSiteInfluence": "with construction site influence",
-                        "category": "Categorie",
+                        "category": "Category",
                         "year": "Year"
                     }
                 }

@@ -1,6 +1,6 @@
 <script>
 import {mapGetters, mapActions} from "vuex";
-import {omit} from "../../../../src/utils/objectHelpers";
+import omit from "../../../../src/utils/omit";
 import {extractEventCoordinates} from "../../../../src/utils/extractEventCoordinates";
 import {getWKTGeom} from "../../../../src/utils/getWKTGeom";
 

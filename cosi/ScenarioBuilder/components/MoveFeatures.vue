@@ -48,7 +48,7 @@ export default {
         }
     }),
     computed: {
-        ...mapGetters("Map", ["map", "layerById"]),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object

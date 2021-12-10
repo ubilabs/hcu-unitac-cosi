@@ -29,7 +29,7 @@ export default {
         checkbox: false
     }),
     computed: {
-        ...mapGetters("Map", ["map", "layerById"]),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
         ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel", "mapping"]),
 
         statsMapping () {

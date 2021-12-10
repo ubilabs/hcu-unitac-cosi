@@ -56,7 +56,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["activeLayerMapping", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["map", "layerById"]),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
 
         /**
          * Getter and Setter for the manuel coordinates Input for the geometry
@@ -144,6 +144,10 @@ export default {
             handler () {
                 this.isCreated = false;
             }
+        },
+
+        geometry () {
+            this.isCreated = false;
         }
     },
     /**
@@ -350,7 +354,7 @@ export default {
             v-if="active"
             #toolBody
         >
-            <ToolInfo :url="readmeUrl[currentLocale]"/>
+            <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app>
                 <ScenarioManager @pruneScenario="resetFeature" />
                 <v-divider />

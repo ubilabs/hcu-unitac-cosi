@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import Component from "../../../components/PopulationRequest.vue";
 import GraphicalSelectComponent from "../../../../../src/share-components/graphicalSelect/components/GraphicalSelect.vue";
-import ToggleCheckboxComponent from "../../../../../src/share-components/ToggleCheckbox.vue";
+import ToggleCheckboxComponent from "../../../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
 import Module from "../../../store/indexPopulationRequest";
 
 const localVue = createLocalVue();
@@ -65,7 +65,8 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
                 }
             },
             getters: {
-                isDefaultStyle: () => true
+                isDefaultStyle: () => true,
+                uiStyle: () => true
             }
         });
 
@@ -85,11 +86,12 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
         expect(toolWrapper.exists()).to.be.true;
     });
 
-    it("should not render if active is false", async () => {
-        store.commit("Tools/PopulationRequest/setActive", false);
-        const wrapper = shallowMount(Component, {store, localVue});
+    it("should not render if active is false", () => {
 
-        expect(wrapper.find("div.dropdown").exists()).to.be.false;
+        const wrapper = shallowMount(Component, {store, localVue}),
+            divWrapper = wrapper.findComponent({name: "div.dropdown"});
+
+        expect(divWrapper.exists()).to.be.false;
     });
 
     it("should render if active is true", async () => {

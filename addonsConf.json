@@ -16,6 +16,9 @@
   "populationRequest": {
     "type": "tool"
   },
+  "sdpDownload": {
+    "type": "tool"
+  },
   "commuterFlows": {
     "type": "tool"
   },
@@ -58,6 +61,15 @@
     "path": "cosi/TemplateManager",
     "type": "tool"
   },
+  "resetTree": {
+    "type": "tool"
+  },
+  "geoAnalyze": {
+    "type": "tool"
+  },
+  "vueAddon": {
+    "type": "tool"
+  },
   "schoolRoutePlanning": {
     "type": "tool"
   },
@@ -67,10 +79,6 @@
   },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
-    "type": "gfiTheme"
-  },
-  "continuousCountingBike": {
-    "path":"gfiThemes/continuousCountingBike",
     "type": "gfiTheme"
   },
   "dataTable": {
@@ -83,10 +91,6 @@
   },
   "flaecheninfo": {
     "path":"gfiThemes/flaecheninfo",
-    "type": "gfiTheme"
-  },
-  "reisezeiten": {
-    "path":"gfiThemes/reisezeiten",
     "type": "gfiTheme"
   },
   "schulinfo": {

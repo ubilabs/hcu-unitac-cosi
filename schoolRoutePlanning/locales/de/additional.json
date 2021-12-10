@@ -6,7 +6,7 @@
                 "inputPlaceHolder": "Startadresse",
                 "regionalPrimarySchool": "Regional zuständige Grundschule: ",
                 "selectSchool": "Schule auswählen",
-                "printRouteName": "Route drucken",
+                "printRouteName": "PDF erstellen",
                 "deleteRoute": "Route löschen",
                 "noSchoolFound": "Keine Schule gefunden!",
                 "showRouteDescription": "Routenbeschreibung einblenden",

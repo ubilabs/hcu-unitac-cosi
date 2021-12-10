@@ -6,6 +6,7 @@
                 "switchOffFilter": "Filter ausschalten",
                 "select": {
                     "info": "Die Abfrage der Einwohnerzahl ist sowohl für die Freie Hansestadt Hamburg als auch für die Metropolregion Hamburg möglich.",
+                    "action": "Auswahl des Gebietes durch",
                     "showRasterLayer": "Raster Layer anzeigen (ab 1: 100.000)",
                     "showAlkisAdresses": "ALKIS Adressen anzeigen (ab 1: 10.000)"
                 },

@@ -1,7 +1,7 @@
 <script>
 import {Select} from "ol/interaction";
 import {mapGetters} from "vuex";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/Modal.vue";
 
 export default {
     name: "ReferencePicker",
@@ -32,7 +32,7 @@ export default {
         showClusteredFeaturePicker: false
     }),
     computed: {
-        ...mapGetters("Map", ["map", "layerById"]),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object

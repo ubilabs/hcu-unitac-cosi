@@ -6,6 +6,7 @@
                 "switchOffFilter": "Switch off filter",
                 "select": {
                     "info": "You can query the number of inhabitants for both the Free Hanseatic City of Hamburg and the Hamburg metropolitan region.",
+                    "action": "Selection of area by",
                     "showRasterLayer": "Display Raster Layer (from 1: 100,000)",
                     "showAlkisAdresses": "Show ALKIS addresses (from 1: 10,000)"
                 },

@@ -45,9 +45,7 @@ export default {
         }
     },
     mounted () {
-        this.$nextTick(function () {
-            this.prepareRendering();
-        });
+        this.prepareRendering();
     },
     methods: {
         prepareRendering () {

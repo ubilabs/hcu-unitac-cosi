@@ -1,10 +1,13 @@
 <script>
 import moment from "moment";
-import ExportButtonModel from "../../../../modules/snippets/exportButton/model";
-import ExportButtonView from "../../../../modules/snippets/exportButton/view";
+import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
+import ExportButtonCSV from "../../../../src/share-components/exportButton/components/ExportButtonCSV.vue";
 
 export default {
     name: "TrafficCountFooter",
+    components: {
+        ExportButtonCSV
+    },
     props: {
         currentTabId: {
             type: String,
@@ -15,12 +18,25 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
+        },
+        downloadUrl: {
+            type: [String, Boolean],
+            required: true
+        },
+        downloadFilename: {
+            type: [String, Boolean],
+            required: false,
+            default: false
         }
     },
     data () {
@@ -30,16 +46,16 @@ export default {
             dayInterval: "15-Min",
             weekInterval: "1-Tag",
             yearInterval: "1-Woche",
-            exportModel: new ExportButtonModel({
-                tag: "Download",
-                rawData: [],
-                fileExtension: "csv"
-            })
+            downloadHandler: false
         };
     },
     computed: {
         indication: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.notice");
+        },
+
+        tableIndication: function () {
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.holidaySign");
         },
 
         lastupdateLabel: function () {
@@ -48,16 +64,6 @@ export default {
 
         tableClass: function () {
             return this.currentTabId + " table table-hover table-striped";
-        },
-
-        exportView: function () {
-            return new ExportButtonView({
-                model: this.exportModel
-            });
-        },
-
-        exportButtonTemplate: function () {
-            return this.exportView.render().el;
         }
     },
     watch: {
@@ -82,7 +88,7 @@ export default {
 
         currentTabId: function (newVal) {
             if (newVal !== "infos") {
-                this.updateFooter(newVal);
+                this.updateFooter(newVal, this.meansOfTransport);
             }
         }
     },
@@ -94,80 +100,67 @@ export default {
         /**
          * updates the footer of the trafficCount gfi
          * @param {String} currentTabId the id to identify the activated tab as day, week or year
+         * @param {String} meansOfTransport the means of transportation
          * @post the footer is updated to show the identified tab
-         * @returns {Void}  -
+         * @returns {void}
          */
-        updateFooter: function (currentTabId) {
+        updateFooter: function (currentTabId, meansOfTransport) {
+            const meansOfTransportSV = meansOfTransport === "Anzahl_Kfz" ? "Anzahl_SV" : "";
+
             // Making the postion of indication fixed when scroll
             this.fixIndicationPosition();
 
-            // tab body
-            if (currentTabId === "day") {
-                this.downloadDataDay(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-15min_Werte");
-                    // onerror
-                }, error => {
-                    console.warn("error", "downloadDataDay", error);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die Daten können im Moment nicht heruntergeladen werden",
-                        category: "Info"
-                    });
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // onstart
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // oncomplete
-                    this.exportModel.set("disabled", false);
-                });
+            if (typeof this.downloadUrl === "string") {
+                this.downloadHandler = false;
+                return;
             }
-            else if (currentTabId === "week") {
-                this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-Tageswerte");
-                    // onerror
-                }, error => {
-                    console.warn("error", "downloadDataWeek", error);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die Daten können im Moment nicht heruntergeladen werden",
-                        category: "Info"
-                    });
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // onstart
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // oncomplete
-                    this.exportModel.set("disabled", false);
-                });
-            }
-            else if (currentTabId === "year") {
-                this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
-                    this.exportModel.set("rawData", this.prepareDataForDownload(result.data[this.meansOfTransport], this.currentTabId));
-                    this.exportModel.set("filename", result.title.replace(" ", "_") + "-Wochenwerte");
-                    // onerror
-                }, error => {
-                    console.warn("error", "downloadDataYear", error);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die Daten können im Moment nicht heruntergeladen werden",
-                        category: "Info"
-                    });
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // onstart
-                    this.exportModel.set("disabled", true);
-                }, () => {
-                    // oncomplete
-                    this.exportModel.set("disabled", false);
-                });
 
-            }
+            this.downloadHandler = onsuccess => {
+                if (currentTabId === "day") {
+                    this.downloadDataDay(this.thingId, meansOfTransport, result => {
+                        const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false,
+                            jsonData = this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays);
+
+                        if (typeof onsuccess === "function") {
+                            onsuccess(jsonData);
+                        }
+                    }, error => {
+                        console.warn("error", "downloadDataDay", error);
+                        this.$store.dispatch("Alerting/addSingleAlert", i18next.t("common:modules.exportButton.error.download"));
+                    });
+                }
+                else if (currentTabId === "week") {
+                    this.downloadDataWeek(this.thingId, this.meansOfTransport, result => {
+                        const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false,
+                            jsonData = this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays);
+
+                        if (typeof onsuccess === "function") {
+                            onsuccess(jsonData);
+                        }
+                    }, error => {
+                        console.warn("error", "downloadDataWeek", error);
+                        this.$store.dispatch("Alerting/addSingleAlert", i18next.t("common:modules.exportButton.error.download"));
+                    });
+                }
+                else if (currentTabId === "year") {
+                    this.downloadDataYear(this.thingId, this.meansOfTransport, result => {
+                        const dataAnzahlSV = meansOfTransportSV === "Anzahl_SV" ? result.data[meansOfTransportSV] : false,
+                            jsonData = this.prepareDataForDownload(meansOfTransport, result.data[meansOfTransport], dataAnzahlSV, currentTabId, this.holidays);
+
+                        if (typeof onsuccess === "function") {
+                            onsuccess(jsonData);
+                        }
+                    }, error => {
+                        console.warn("error", "downloadDataYear", error);
+                        this.$store.dispatch("Alerting/addSingleAlert", i18next.t("common:modules.exportButton.error.download"));
+                    });
+                }
+            };
         },
 
         /**
          * Making the indication position always fixed when the window is scrolled
-         * @returns {Void} -
+         * @returns {void}
          */
         fixIndicationPosition: function () {
             const gfiContent = document.querySelector(".gfi-content");
@@ -189,7 +182,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {Void}  -
+         * @returns {void}
          */
         downloadDataDay: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api,
@@ -210,7 +203,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {Void}  -
+         * @returns {void}  -
          */
         downloadDataWeek: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api,
@@ -231,7 +224,7 @@ export default {
          * @param {Function} [onerror] as function(error) to fire on error
          * @param {Function} [onstart] as function() to fire before any async action has started
          * @param {Function} [oncomplete] as function() to fire after every async action no matter what
-         * @returns {Void}  -
+         * @returns {void}
          */
         downloadDataYear: function (thingId, meansOfTransport, onsuccess, onerror, onstart, oncomplete) {
             const api = this.api;
@@ -249,12 +242,16 @@ export default {
 
         /**
          * converts the data object into an array of objects for the csv download
-         * @param {Object} data - the data for download
+         * @param {String} meansOfTransport the transportation as 'Anzahl_Fahrraeder' or 'Anzahl_Kfz'
+         * @param {Object} data - the whole count of data for download
+         * @param {Object|Boolean} dataAnzahlSV - the count of trucks for download
          * @param {String} tabValue - day | week | year
+         * @param {String[]} holidays - the holidays from parent component in array format
          * @returns {Object[]} objArr - converted data
          */
-        prepareDataForDownload: function (data, tabValue) {
-            const objArr = [];
+        prepareDataForDownload: function (meansOfTransport, data, dataAnzahlSV, tabValue, holidays) {
+            const objArr = [],
+                countHeader = meansOfTransport === "Anzahl_Kfz" ? "Anzahl KFZ" : "Anzahl";
 
             for (const key in data) {
                 const obj = {},
@@ -263,14 +260,28 @@ export default {
                 if (tabValue === "day") {
                     obj.Datum = date[0];
                     obj["Uhrzeit von"] = date[1].slice(0, -3);
+                    obj[countHeader] = data[key];
+                    if (dataAnzahlSV) {
+                        obj["Anzahl SV"] = dataAnzahlSV[key];
+                    }
+                    obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "week") {
                     obj.Datum = date[0];
+                    obj[countHeader] = data[key];
+                    if (dataAnzahlSV) {
+                        obj["Anzahl SV"] = dataAnzahlSV[key];
+                    }
+                    obj.Feiertag = getPublicHoliday(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
                 else if (tabValue === "year") {
                     obj["Kalenderwoche ab"] = date[0];
+                    obj[countHeader] = data[key];
+                    if (dataAnzahlSV) {
+                        obj["Anzahl SV"] = dataAnzahlSV[key];
+                    }
+                    obj.Feiertag = hasHolidayInWeek(date[0], holidays, "YYYY-MM-DD") ? "Ja" : "";
                 }
-                obj.Anzahl = data[key];
                 objArr.push(obj);
             }
 
@@ -278,11 +289,11 @@ export default {
         },
 
         /**
-         * trigger the export function from snippet exportButton
-         * @returns {Void}  -
+         * trigger the function of resetting tab
+         * @returns {void}
          */
-        exportFile: function () {
-            this.exportView.export();
+        reset: function () {
+            this.$emit("resetTab");
         },
 
         /**
@@ -290,8 +301,7 @@ export default {
          * @param {Object} api instance of TrafficCountApi
          * @param {String} thingId the thingId to be send to any api call
          * @param {String} meansOfTransport the meansOfTransport to be send with any api call
-         * @fires   Alerting#RadioTriggerAlertAlert
-         * @returns {Void}  -
+         * @returns {void}
          */
         setFooterLastUpdate: function (api, thingId, meansOfTransport) {
             api.subscribeLastUpdate(thingId, meansOfTransport, datetime => {
@@ -299,17 +309,14 @@ export default {
             }, errormsg => {
                 this.setLastUpdate("(aktuell keine Zeitangabe)");
                 console.warn("The last update received is incomplete:", errormsg);
-                Radio.trigger("Alert", "alert", {
-                    content: "Das vom Sensor-Server erhaltene Datum der letzten Aktualisierung kann wegen eines API-Fehlers nicht ausgegeben werden.",
-                    category: "Info"
-                });
+                this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.subscribeLastUpdate"));
             });
         },
 
         /**
          * setter for lastUpdate
          * @param {String} value the datetime of the last update to be shown in the template
-         * @returns {Void}  -
+         * @returns {void}
          */
         setLastUpdate: function (value) {
             this.lastUpdate = value;
@@ -322,6 +329,20 @@ export default {
     <div>
         <div
             v-if="currentTabId !== 'infos'"
+            class="tableIndication"
+            :style="customStyle"
+        >
+            * {{ tableIndication }}
+        </div>
+        <div
+            v-if="currentTabId !== 'infos' && meansOfTransport === 'Anzahl_Kfz'"
+            class="trucksStatusIndication"
+            :style="customStyle"
+        >
+            {{ $t("additional:modules.tools.gfi.themes.trafficCount.trucksStatus") }}
+        </div>
+        <div
+            v-if="currentTabId !== 'infos'"
             class="indication"
             :style="customStyle"
         >
@@ -329,10 +350,27 @@ export default {
         </div>
         <div
             v-if="currentTabId !== 'infos'"
+            tabindex="0"
             class="download-container"
-            @click="exportFile"
-            v-html="exportButtonTemplate.innerHTML"
-        />
+        >
+            <ExportButtonCSV
+                :url="downloadUrl"
+                :filename="downloadFilename"
+                :handler="downloadHandler"
+            />
+        </div>
+        <div
+            v-if="currentTabId !== 'infos'"
+            class="reset-container"
+        >
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="reset"
+            >
+                {{ $t("additional:modules.tools.gfi.themes.trafficCount.reset") }}
+            </button>
+        </div>
         <div class="update">
             <table
                 :class="tableClass"
@@ -353,43 +391,45 @@ export default {
 </template>
 
 <style lang="less" scoped>
-@import "~variables";
+    @import "~variables";
 
-.indication {
-    font-size: 10px;
-    position: absolute;
-    left: 0px;
-}
-.download-container {
-    float: left;
-    padding-top: 25px;
-     @media (max-width: 600px) {
-          padding-top: 35px;
-     }
-}
-table {
-    margin-bottom: 0;
-    .text-right {
-        text-align: right;
+    .tableIndication, .trucksStatusIndication, .indication {
+        font-size: 10px;
     }
-    &:not(.infos) {
-        min-width: 280px;
-        width: 50%;
-        float: right;
-        margin-top: 25px;
-        @media (max-width: 600px) {
-            min-width: inherit;
+
+    .trucksStatusIndication {
+        display: none;
+    }
+
+    .download-container {
+        float: left;
+        padding-top: 10px;
+    }
+    .reset-container {
+        float: left;
+        padding-top: 10px;
+        margin-left: 10px;
+    }
+    table {
+        margin-bottom: 0;
+        .text-right {
+            text-align: right;
         }
-        tbody {
-            tr {
-                &:nth-of-type(odd){
-                    background-color: #ffffff;
-                }
-                td {
-                    border-top: none;
+        &:not(.infos) {
+            min-width: 280px;
+            width: 50%;
+            float: right;
+            margin-top: 10px;
+            tbody {
+                tr {
+                    &:nth-of-type(odd){
+                        background-color: #ffffff;
+                    }
+                    td {
+                        border-top: none;
+                    }
                 }
             }
         }
     }
-}
 </style>

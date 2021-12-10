@@ -1,7 +1,7 @@
 import {featuresToGeoJsonCollection, featureToGeoJson} from "../../utils/geomUtils";
 import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
-import {generateColorScale} from "../../../utils/colorScale.js";
+import {generateColorScale} from "../../utils/colorScale.js";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 

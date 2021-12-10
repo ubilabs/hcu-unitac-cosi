@@ -7,7 +7,7 @@ import getters from "../store/gettersOpenRouteService";
 import mutations from "../store/mutationsOpenRouteService";
 import {union} from "@turf/turf";
 import getRgbArray from "../../cosi/utils/getRgbArray";
-import {generateColorScale} from "../../utils/colorScale.js";
+import {generateColorScale} from "../../cosi/utils/colorScale.js";
 
 /**
  * Routing, Isochrones and Matrix Requests through OpenRouteService API
