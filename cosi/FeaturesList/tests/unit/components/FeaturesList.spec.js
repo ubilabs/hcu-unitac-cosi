@@ -414,6 +414,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             // call counts affected by other test runs, why?
             expect(clearStub.callCount).to.be.greaterThan(0);
             expect(sourceStub.addFeature.callCount).to.be.greaterThan(0);
+            expect(sourceStub.addFeature.firstCall.args[0].getStyle().getImage().getFill().getColor()).to.eql([255, 179, 0]);
         });
 
         it("should hide distance score features on deselect", async () => {

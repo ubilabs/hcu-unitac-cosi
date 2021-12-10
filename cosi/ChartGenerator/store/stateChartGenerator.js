@@ -21,7 +21,7 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: false,
     deactivateGFI: true,
-    newDataSet: null,
+    dataSets: [],
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/chartgenerator_en.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/chartgenerator.md"

@@ -1,4 +1,5 @@
 import mapping from "../../assets/mapping.json";
+import Feature from "ol/Feature";
 
 /**
  * Sets necessary properties on the feature, beautifies keys.
@@ -13,6 +14,32 @@ export function prepareStatsFeatures (feature) {
         feature.set("kategorie", mappingObject.value);
         feature.set("group", mappingObject.group);
     }
+}
+
+/**
+ * Creates new statistical features from the loaded long table format features.
+ * @param {module:ol/feature[]} ltfFeatures - long table format features.
+ * @param {String} keyOfAttrName - The key for the attribute containing the name of the district.
+ * @returns {module:ol/feature[]} The statistical features.
+ */
+export function createStatFeaturesFromLTF (ltfFeatures, keyOfAttrName) {
+    const statFeatureList = [],
+        mappingLtf = mapping.filter(obj => obj.ltf);
+
+    mappingLtf.forEach(obj => {
+        const statFeature = new Feature({
+            kategorie: obj.value,
+            group: obj.group
+        });
+
+        statFeature.set(keyOfAttrName, ltfFeatures[0].get(keyOfAttrName));
+        ltfFeatures.forEach(feature => {
+            statFeature.set("jahr_" + feature.get("jahr"), feature.get(obj.category));
+        });
+        statFeatureList.push(statFeature);
+    });
+
+    return statFeatureList;
 }
 
 /**

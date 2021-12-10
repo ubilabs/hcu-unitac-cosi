@@ -678,7 +678,6 @@ export default {
                 dataSet.data.reverse();
             });
 
-            // this.setNewDataSet(graphObj);
             this.channelGraphData(graphObj);
         },
 

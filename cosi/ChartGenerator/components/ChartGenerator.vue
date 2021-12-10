@@ -1,20 +1,16 @@
 <script>
-/* eslint-disable vue/no-unused-components */
-import Vue from "vue";
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
-import {scaleLinear} from "d3-scale";
-import {color, hsl} from "d3-color";
-import {interpolateRainbow} from "d3";
+import actions from "../store/actionsChartGenerator";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
 import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
-import Info from "text-loader!./info.html";
 import ToolInfo from "../../components/ToolInfo.vue";
+import generateGraphData from "../generateGraphData";
 
 export default {
     name: "ChartGenerator",
@@ -28,20 +24,11 @@ export default {
     },
     data () {
         return {
-            // All dataSets that have been passed to the component
-            dataSets: [],
-            // All generated Chart components and data sets
-            allCharts: [],
             // The ID of the active Graph in the ChartGenerator Tool Winodw
             activeGraph: 0,
-            // Type Of The Graph to render
-            newType: "BarChart",
-            // UpdateHelper to force rerender of the DOM
-            forceGraphUpdate: 1,
-            // Download Object
-            downloadHelper: {},
             // String Beautifier
-            beautifyKey: beautifyKey
+            beautifyKey: beautifyKey,
+            generateGraphData: generateGraphData
         };
     },
     computed: {
@@ -49,46 +36,18 @@ export default {
         ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
     },
     watch: {
-        newDataSet (dataSet) {
-            if (!dataSet.cgid) {
-                dataSet.cgid = dataSet.id + "-" + dataSet.name;
+        dataSets (newDataSets, oldValue) {
+            if (oldValue && newDataSets.length !== oldValue.length) {
+                this.activeGraph = this.dataSets.length - 1;
             }
-            const checkDouble = this.dataSets.find(x => x.cgid === dataSet.cgid);
-
-            if (checkDouble) {
-                const index = this.dataSets.indexOf(checkDouble);
-
-                this.dataSets.splice(index, 1);
-                dataSet.init = this.dataSets.length;
-                this.dataSets.push(dataSet);
+            if (newDataSets.length === 0) {
+                this.activeGraph -= 1;
             }
-            else {
-                dataSet.init = this.dataSets.length;
-                this.dataSets.push(dataSet);
-            }
-            if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
-                this.setActive(true);
-            }
-
-            if (Array.isArray(dataSet.type)) {
-                this.prepareMultiple(dataSet);
-            }
-            else {
-                this.generateGraphComponent(dataSet);
-            }
-        },
-        active (state) {
-            if (state) {
-                this.dataSets.forEach(dataSet => {
-                    if (Array.isArray(dataSet.type)) {
-                        this.prepareMultiple(dataSet);
-                    }
-                    else {
-                        this.generateGraphComponent(dataSet);
-                    }
-                });
+            if (this.dataSets.length === 0) {
+                this.setActive(false);
             }
         }
+
     },
     created () {
         this.$on("close", this.close);
@@ -97,11 +56,12 @@ export default {
      * Put initialize here if mounting occurs after config parsing
      * @returns {void}
      */
-    mounted () {
+    async mounted () {
         this.applyTranslationKey(this.name);
     },
     methods: {
         ...mapMutations("Tools/ChartGenerator", Object.keys(mutations)),
+        ...mapActions("Tools/ChartGenerator", Object.keys(actions)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
 
         /**
@@ -119,248 +79,6 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
-        },
-        /**
-         * @description Shows component info as popup.
-         * @returns {Void} Function returns nothing.
-         */
-        showInfo () {
-            this.addSingleAlert({
-                category: "Info",
-                content: Info
-            });
-        },
-        /**
-         * @description Function that handles the graphgeneration when multiple graph types has been passed.
-         * @param {Object} dataSet dataSet containing the data and an array for type property.
-         * @returns {void}
-         */
-        prepareMultiple (dataSet) {
-            dataSet.type.forEach((type, i) => {
-                const dataClone = JSON.parse(JSON.stringify(dataSet));
-
-                dataClone.type = type;
-                dataClone.init = dataSet.init;
-                dataClone.sub = true;
-                dataClone.sub_index = i;
-                dataClone.sub_length = dataSet.type.length;
-                dataClone.sub_graph = 0;
-                this.generateGraphComponent(dataClone);
-            });
-        },
-        /**
-         * @description Generates the graph component and passes the data dynamically.
-         * @param {Object} dataSet dataSet containing the data and a String for type property.
-         * @returns {void}
-         */
-        generateGraphComponent (dataSet) {
-            const colorRange = this.generateColorScale(dataSet);
-
-            dataSet.data.dataSets.forEach((set, index) => {
-                const getColor = colorRange(index),
-                    d3Color = color(getColor);
-
-                d3Color.opacity = 0.5;
-                set.borderColor = getColor;
-                set.backgroundColor = d3Color;
-            });
-
-            if (dataSet.type === undefined || dataSet.type === null || dataSet.type === "") {
-                this.newType = "BarChart";
-            }
-            else if (dataSet.type === "PieChart") {
-                const pieChartData = this.createPieChartData(dataSet);
-
-                this.newType = "PieChart";
-                this.createPieChart(pieChartData);
-                return;
-            }
-            else {
-                this.newType = dataSet.type;
-            }
-
-            this.renderGraph(dataSet);
-        },
-        renderGraph (dataSet) {
-            const target = document.getElementById(dataSet.target),
-                // Extend Component dynamically
-                DynamicComponent = Vue.extend(this.$options.components[this.newType]),
-                dynamicComponentInstance = new DynamicComponent({propsData: {dataSets: dataSet, options: dataSet.options}});
-
-            dataSet.component = dynamicComponentInstance;
-            this.allCharts.push(dataSet);
-
-            if (target !== null) {
-                if (!dataSet.sub) {
-                    this.$nextTick(function () {
-                        dynamicComponentInstance.$mount(target);
-                    });
-                }
-            }
-            else if (!dataSet.sub) {
-                const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
-
-                this.$nextTick(function () {
-                    const altTarget = document.getElementById("graph-" + index);
-
-                    dynamicComponentInstance.$mount(altTarget);
-                    this.activeGraph = index;
-                });
-            }
-            else {
-                const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
-
-                this.$nextTick(function () {
-                    const altTarget = document.getElementById("graph-" + index + "-" + dataSet.sub_index);
-
-                    dynamicComponentInstance.$mount(altTarget);
-                    this.activeGraph = index;
-                });
-            }
-        },
-        /**
-         * @description Modifies the dataSet to match chart.js requirements for PieCharts.
-         * @param {Object} dataSet dataSet containing the data to be rendered as graph.
-         * @returns {Array} Transformed Dataset.
-         */
-        createPieChartData (dataSet) {
-            const newPieChartData = [];
-
-            dataSet.data.labels.forEach((label, i) => {
-                const obj = {
-                    name: this.beautifyKey(dataSet.name) + " - " + label,
-                    type: "PieChart",
-                    group: label,
-                    label: [],
-                    dataSets: {backgroundColor: [], data: []},
-                    target: dataSet.target ? dataSet.target : "",
-                    cgid: dataSet.cgid,
-                    id: dataSet.id,
-                    source: dataSet.source,
-                    sub: dataSet.sub,
-                    sub_graph: dataSet.sub ? dataSet.sub_graph : false,
-                    sub_index: dataSet.sub ? dataSet.sub_index : false,
-                    sub_length: dataSet.sub ? dataSet.sub_length : false,
-                    pie_index: i
-                };
-
-                dataSet.data.dataSets.forEach((set) => {
-                    const labelScope = set.label,
-                        labelVal = set.data[i];
-
-                    obj.label.push(labelScope);
-                    obj.dataSets.backgroundColor.push(set.backgroundColor);
-                    obj.dataSets.data.push(labelVal);
-                });
-
-                newPieChartData.push(obj);
-            });
-
-            return newPieChartData;
-        },
-        createPieChart (dataSets) {
-            const index = this.dataSets.findIndex(x => x.cgid === dataSets[0].cgid),
-                target = this.targetHelper(dataSets[0]);
-
-            dataSets.forEach(dataSet => {
-                const pieTarget = document.createElement("div");
-
-                pieTarget.id = "graph-" + index + "-" + dataSet.sub_index + "-pie-" + dataSet.pie_index;
-                pieTarget.classList.add("pie_chart");
-
-                dataSet.target = pieTarget.id;
-
-                this.$nextTick(function () {
-                    document.getElementById(target).appendChild(pieTarget);
-                    dataSet.sub = false;
-                    this.renderGraph(dataSet);
-                });
-            });
-        },
-        /**
-         * @description Determines the target div-id for the graph to be generated.
-         * @param {Object} dataSet dataSet containing the information necessary to determine the target div.
-         * @returns {String} id of the div.
-         */
-        targetHelper (dataSet) {
-            const index = this.dataSets.findIndex(x => x.cgid === dataSet.cgid);
-
-            if (dataSet.target !== "" && dataSet.target !== undefined) {
-                const target = dataSet.target;
-
-                return target;
-            }
-            else if (!dataSet.sub) {
-                const target = "graph-" + index;
-
-                return target;
-            }
-
-            // eslint-disable-next-line
-            const target = "graph-" + index + "-" + dataSet.sub_index;
-
-            return target;
-
-        },
-        /**
-         * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
-         * @param {Object} dataSet dataSet containing the data to be rendered as graph.
-         * @returns {Array} ColorScale Array.
-         */
-        generateColorScale (dataSet) {
-
-            if (Array.isArray(dataSet.color)) {
-                const domainRange = [0];
-
-                dataSet.color.map(incColor => hsl(incColor));
-                dataSet.color.forEach((incColor, index) => {
-                    if (index < (dataSet.color.length - 2)) {
-                        domainRange.push(dataSet.data.dataSets.length / (index + 2));
-                    }
-                });
-
-                domainRange.push(dataSet.data.dataSets.length);
-                domainRange.sort();
-                return scaleLinear().domain(domainRange).range(dataSet.color);
-            }
-            else if (dataSet.color === "rainbow") {
-                const range = [],
-                    domainRange = [];
-
-                dataSet.data.dataSets.forEach((set, index) => {
-                    domainRange.push(index);
-                });
-
-                dataSet.data.dataSets.forEach((set, index) => {
-                    const indexValue = (index + 1) / dataSet.data.dataSets.length,
-                        rainbowColor = interpolateRainbow(indexValue).toString();
-
-                    range.push(rainbowColor);
-                });
-
-                return scaleLinear().domain(domainRange).range(range);
-            }
-
-            const d3Color = hsl(dataSet.color);
-            let colorA = "",
-                colorB = "",
-                range = "";
-
-            d3Color.h += 20;
-            d3Color.s += 0.3;
-            d3Color.l += 0.15;
-
-            colorA = String(d3Color);
-
-            d3Color.h -= 40;
-            d3Color.s -= 0.6;
-            d3Color.l -= 0.3;
-
-            colorB = String(d3Color);
-
-            range = [colorA, String(d3Color), colorB];
-
-            return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
         },
         /**
          * @description Activates the tool window of the chartgenerator.
@@ -384,7 +102,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
-            this.$set(graph, "sub_graph", index);
+            this.$set(this.dataSets, this.dataSets.indexOf(graph), {...graph, sub_graph: index});
         },
         /**
          * @description Selects the next or the previous graph in the Tool Window.
@@ -392,17 +110,9 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         graphPrevNext (value) {
-            if (this.activeGraph + value < 0) {
-                this.activeGraph = this.dataSets.length;
-            }
+            const l = this.dataSets.length;
 
-            if (this.activeGraph + value >= this.dataSets.length) {
-                this.activeGraph = 0;
-            }
-
-            else {
-                this.activeGraph = this.activeGraph + value;
-            }
+            this.activeGraph = (((this.activeGraph + value) % l) + l) % l; // modulo with negative handling
         },
         /**
          * @description Updates chart canvas to display yAxes starting from zero or reverse.
@@ -410,38 +120,27 @@ export default {
          * @param  {Int} subindex Index of the sub graph in main dataset (if there are different types of graphs in the maindataset)
          * @returns {Void} Function returns nothing.
          */
-        yToZero (index, subindex) {
-            const chartComponent = subindex >= 0 ?
-                this.allCharts.find(dataSet => dataSet.init === index && dataSet.sub_index === subindex) :
-                this.allCharts.find(dataSet => dataSet.init === index);
+        yToZero () {
+            const i = this.activeGraph,
+                graph = this.dataSets[i];
 
-            chartComponent.beginAtZero = !chartComponent.beginAtZero;
+            this.$set(this.dataSets, i, {...graph, beginAtZero: !graph.beginAtZero});
         },
         /**
          * @description Turns closest Canvas to PNG and passes it the download function.
          * @param {$event} event Click event handler.
          * @returns {Void} Function returns nothing.
          */
-        downloadGraph (event) {
-            const canvasContainer = event.target.parentNode.previousElementSibling,
-                canvas = canvasContainer.lastChild;
+        downloadGraph () {
+            const chartBox = this.$el.querySelectorAll(".current_graph");
 
-            if (canvas.classList.contains("pie_chart")) {
-                const nodes = canvasContainer.childNodes;
+            chartBox.forEach(graph => {
+                graph.querySelectorAll("canvas").forEach(canvas => {
+                    const canvasPNG = canvas.toDataURL("image/png");
 
-                for (let i = 0; i < nodes.length; i++) {
-                    if (nodes[i].nodeName.toLowerCase() === "div") {
-                        const canvasPNG = nodes[i].lastChild.toDataURL("image/png");
-
-                        this.downloadFile(canvasPNG);
-                    }
-                }
-            }
-            else {
-                const canvasPNG = canvas.toDataURL("image/png");
-
-                this.downloadFile(canvasPNG);
-            }
+                    this.downloadFile(canvasPNG);
+                });
+            });
 
         },
         /**
@@ -477,13 +176,6 @@ export default {
          */
         removeGraph (index) {
             this.dataSets.splice(index, 1);
-            if (this.activeGraph !== 0) {
-                this.activeGraph -= 1;
-            }
-
-            if (this.dataSets.length === 0) {
-                this.setActive(false);
-            }
         },
         /**
          * @description Clears dataSets Array and thus deleting all graphs from Chart Generator.
@@ -516,7 +208,6 @@ export default {
                     id="chart_panel"
                     class="wrapper"
                 >
-                    <div id="testgraph" />
                     <div
                         v-for="(graph, index) in dataSets"
                         :key="graph.cgid"
@@ -524,7 +215,6 @@ export default {
                         :class="{active: activeGraph === index}"
                     >
                         <div
-                            :key="forceGraphUpdate"
                             class="graph_wrapper"
                         >
                             <div class="graph_head">
@@ -570,22 +260,39 @@ export default {
                                                 class="multi_graph"
                                                 :class="{active: graph.sub_graph === i}"
                                             >
-                                                <div
+                                                <component
+                                                    :is="type"
+                                                    v-if="type!=='PieChart'"
                                                     :id="`graph-${index}-${i}`"
+                                                    :data-sets="generateGraphData(graph, type)"
+                                                    :options="graph.options"
+                                                    :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                 />
+                                                <template
+                                                    v-if="type==='PieChart'"
+                                                >
+                                                    <PieChart
+                                                        v-for="(pieData, j) in generateGraphData(graph, type)"
+                                                        :id="`graph-${index}-${i}-${j}`"
+                                                        :key="`graph-${index}-${i}-${j}`"
+                                                        :data-sets="pieData"
+                                                        :options="graph.options"
+                                                        :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
+                                                    />
+                                                </template>
                                                 <div class="graph_functions">
                                                     <button
                                                         v-if="type === 'LineChart'"
                                                         class="switch right"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
-                                                        @click="yToZero(index, -1)"
+                                                        @click="yToZero()"
                                                     >
                                                         {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
                                                     </button>
                                                     <button
                                                         class="dl right"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                                        @click="downloadGraph($event)"
+                                                        @click="downloadGraph()"
                                                     >
                                                         PNG
                                                         <span class="glyphicon glyphicon-download-alt" />
@@ -597,19 +304,39 @@ export default {
                                 </div>
 
                                 <template v-if="!Array.isArray(graph.type)">
+                                    <component
+                                        :is="graph.type"
+                                        v-if="graph.type!=='PieChart'"
+                                        :id="`graph-${index}`"
+                                        :data-sets="generateGraphData(graph, graph.type)"
+                                        :options="graph.options"
+                                        :class="{current_graph: activeGraph === index}"
+                                    />
+                                    <template
+                                        v-if="graph.type==='PieChart'"
+                                    >
+                                        <PieChart
+                                            v-for="(pieData, j) in generateGraphData(graph, graph.type)"
+                                            :id="`graph-${index}-${j}`"
+                                            :key="`graph-${index}-${j}`"
+                                            :data-sets="pieData"
+                                            :options="graph.options"
+                                            :class="{current_graph: activeGraph === index}"
+                                        />
+                                    </template>
                                     <div class="graph_functions">
                                         <button
                                             v-if="graph.type === 'LineChart'"
                                             class="switch right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
-                                            @click="yToZero(index, i)"
+                                            @click="yToZero()"
                                         >
                                             {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
                                         </button>
                                         <button
                                             class="dl right"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                            @click="downloadGraph($event)"
+                                            @click="downloadGraph()"
                                         >
                                             PNG
                                             <span class="glyphicon glyphicon-download-alt" />
