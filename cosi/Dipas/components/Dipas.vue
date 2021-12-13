@@ -93,8 +93,8 @@ export default {
             const id = feature.getProperties().id,
                 layer = {
                     id: id,
-                    project: true,
                     name: id,
+                    project: true,
                     features: [feature]
                 },
                 style = new Style({
@@ -103,13 +103,15 @@ export default {
                 }),
                 len = Object.values(feature.getProperties().standardCategories).length,
                 colorScale = generateColorScaleByColor(this.projectsColors[index], len),
-                rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale;
+                rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale,
+                model = await this.addLayer(layer),
+                layerOnMap = getLayerById(this.map.getLayers().getArray(), id);
 
-            layer.setZIndex(0);
-            layer.setStyle(style);
-
-            layer.setVisible(false);
-            layer.getSource().addFeature(feature);
+            layerOnMap.setZIndex(0);
+            layerOnMap.setStyle(style);
+            layerOnMap.setVisible(false);
+            model.set("isSelected", false);
+            //layerOnMap.getSource().addFeature(feature);
 
             this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
             this.$set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
@@ -228,6 +230,8 @@ export default {
          */
         async changeProjectVisibility (id, value) {
             const model = Radio.request("ModelList", "getModelByAttributes", {id: id});
+            console.log(value, model);
+
             model.set("isSelected", value);
         },
         /**
@@ -490,7 +494,7 @@ export default {
                                     <v-chip
                                         v-for="category in feature.getProperties().standardCategories"
                                         :key="feature.getProperties().id + category"
-                                        class="ma-1"
+                                        class="ma-1 category"
                                         :color="handleColor(feature.getProperties().id, category)"
                                         small
                                     >
@@ -609,5 +613,9 @@ p.description {
     max-height: 40vh;
     overflow-y: auto;
     line-height: 1.5rem;
+}
+
+.v-chip.category {
+    border: 1px solid rgb(0,0,0) !important;
 }
 </style>
