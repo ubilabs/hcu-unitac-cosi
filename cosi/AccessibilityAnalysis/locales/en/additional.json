@@ -8,6 +8,7 @@
                     "pointOfReference": "Point of reference: click on the map",
                     "setByFeature": "Select facilities as location (use perimeter of polygons)",
                     "topic": "Topic",
+                    "directions": "Calculated directions",
                     "transportType": "Type of transportation",
                     "transportTypes": {
                         "clear": "-clear-",

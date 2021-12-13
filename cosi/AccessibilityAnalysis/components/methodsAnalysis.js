@@ -10,6 +10,7 @@ import
 } from "ol/style.js";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import * as turf from "@turf/turf";
+import {readFeatures, transformFeatures} from "../components/util.js";
 
 
 export const methodConfig = {
@@ -22,13 +23,18 @@ export default {
      */
     createIsochrones: async function () {
         this.clear();
+        // TODO: Use store-method - see DistrictSelector component
+        this.askUpdate = false;
 
         try {
             if (this.mode === "point") {
                 await this.createIsochronesPoint();
             }
-            else {
+            else if (this.mode === "region") {
                 await this.createIsochronesRegion();
+            }
+            else if (this.mode === "path") {
+                await this.createBufferFromDirections();
             }
         }
         catch (err) {
@@ -74,8 +80,6 @@ export default {
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
-            // TODO: Use store-method - see DistrictSelector component
-            this.askUpdate = false;
             this.cleanup();
             const features = await this.getIsochrones({transportType: this.transportType, coordinates, scaleUnit: this.scaleUnit, distance: this.distance});
 
@@ -127,7 +131,7 @@ export default {
         }
         this.styleFeatures(newFeatures);
         this.mapLayer.getSource().addFeatures(newFeatures);
-        if (this.mode === "point") {
+        if (this.mode !== "region") {
             this.setIsochroneAsBbox();
         }
     },
@@ -184,6 +188,39 @@ export default {
         }
 
         return null;
+    },
+
+    createBufferFromDirections: function () {
+        let bufferFeatures;
+        const
+            featureType = "Erreichbarkeit entlang einer Route",
+            distance = parseFloat(this.distance) / 1000,
+            steps = [distance, distance * 2 / 3, distance / 3],
+            coords = this.selectedDirections?.lineString
+                .map(pt => Proj.transform(pt, this.projectionCode, "EPSG:4326")),
+            lineString = turf.lineString(coords),
+            buffer = turf.featureCollection(steps.map(dist => turf.buffer(lineString, dist)));
+
+        bufferFeatures = readFeatures(JSON.stringify(buffer));
+        bufferFeatures = transformFeatures(bufferFeatures, "EPSG:4326", this.projectionCode);
+        bufferFeatures.forEach((feature, i) => {
+            feature.set("featureType", featureType);
+            feature.set("value", steps[i]);
+            feature.set("mode", this.transportType);
+            feature.set("unit", this.scaleUnit);
+        });
+
+        this.setSteps([distance * 1000 / 3, distance * 2000 / 3, distance * 1000].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)));
+        this.setRawGeoJson(buffer);
+        this.setIsochroneFeatures(bufferFeatures);
+    },
+
+    pickDirections: function (evt) {
+        const feature = evt.selected[0];
+
+        if (feature) {
+            this._selectedDirections = feature;
+        }
     },
 
     /**

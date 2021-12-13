@@ -38,6 +38,10 @@ const state = {
         {
             type: "region",
             text: "Erreichbarkeit der ausgewählten Einrichtungen"
+        },
+        {
+            type: "path",
+            text: "Erreichbarkeit entlang einer Route"
         }
     ],
     rawGeoJson: null,
@@ -46,6 +50,7 @@ const state = {
     coordinate: [],
     clickCoordinate: null,
     selectedFacilityName: null,
+    selectedDirections: null,
     setByFeature: false,
     setBySearch: false,
     transportType: "",

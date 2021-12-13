@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 /**
  * send request to get Isochrone geoJSON
  * @param {String} pathType type of transportation
@@ -8,12 +7,13 @@ import axios from "axios";
  * @param {String} rangeType  type of range ("time" or "distance")
  * @param {Array} rangeArray array of time range values
  * @param {object} abort abort
+ * @param {String} [baseUrl="https://csl-lig.hcu-hamburg.de/ors/v2/"] baseUrl
  * @returns {void}
  */
-async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, abort) {
-    const baseUrl = "https://csl-lig.hcu-hamburg.de/ors/v2/isochrones/",
+async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, abort, baseUrl = "https://csl-lig.hcu-hamburg.de/ors/v2/") {
+    const _baseUrl = baseUrl + "isochrones/",
         opts = {"locations": coordinates, "range_type": rangeType, "range": rangeArray},
-        url = baseUrl + pathType.trim(),
+        url = _baseUrl + pathType.trim(),
 
         ret = await axios.post(url, JSON.stringify(opts), {
             headers: {

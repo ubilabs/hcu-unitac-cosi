@@ -144,7 +144,7 @@ const id = "AccessibilityAnalysisService",
             }
 
             try {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl}, (p) => commit("setProgress", p));
             }
             finally {
                 commit("setProgress", 0);
@@ -190,7 +190,8 @@ const id = "AccessibilityAnalysisService",
             batchSize: 50,
             filterPoly: null,
             filterUrl: "https://geodienste.hamburg.de/HH_WFS_Verwaltungsgrenzen",
-            filterFeatureType: "landesgrenze"
+            filterFeatureType: "landesgrenze",
+            baseUrl: "https://csl-lig.hcu-hamburg.de/ors/v2/"
         },
         getters: {
             progress: s => {
