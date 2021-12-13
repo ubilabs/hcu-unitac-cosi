@@ -26,7 +26,6 @@ export default {
             projectsActive: {},
             contributions: {},
             selectedStyling: null,
-            selectedStylingFunction: null,
             categoryRainbow: false
         };
     },
@@ -43,30 +42,12 @@ export default {
         }
     },
     watch: {
-        selectedStyling: function (newValue) {
-            switch (newValue) {
-                case "project":
-                    this.selectedStylingFunction = this.setContributionColorByProject;
-                    break;
-                case "category":
-                    this.categoryRainbow = false;
-                    this.selectedStylingFunction = this.setContributionColorByCategory;
-                    break;
-                case "categoryRainbow":
-                    this.categoryRainbow = true;
-                    this.selectedStylingFunction = this.setContributionColorByCategory;
-                    break;
-                case "voting":
-                    this.selectedStylingFunction = this.setContributionColorByVoting;
-                    break;
-                default:
-                    this.selectedStylingFunction = null;
-                    break;
-            }
+        selectedStyling: function () {
             for (const [id, value] of Object.entries(this.contributions)) {
-                if (value.features) {
-                    this.selectedStylingFunction(id);
-                    this.$root.$emit("updateFeaturesList");
+                if (value.features.length > 0) {
+                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+
+                    model.get("layerSource").changed();
                 }
             }
         }
@@ -111,7 +92,6 @@ export default {
             layerOnMap.setStyle(style);
             layerOnMap.setVisible(false);
             model.set("isSelected", false);
-            //layerOnMap.getSource().addFeature(feature);
 
             this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
             this.$set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
@@ -230,7 +210,6 @@ export default {
          */
         async changeProjectVisibility (id, value) {
             const model = Radio.request("ModelList", "getModelByAttributes", {id: id});
-            console.log(value, model);
 
             model.set("isSelected", value);
         },
@@ -256,7 +235,6 @@ export default {
                     this.contributions[id].features = await this.getContributionFeatures(id);
                     contribution.loading = false;
                 }
-                this.selectedStylingFunction(id);
                 for (const feature of contribution.features) {
                     const properties = feature.getProperties();
 
@@ -272,87 +250,120 @@ export default {
                 const layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
 
                 layerOnMap.setZIndex(2);
+                layerOnMap.setStyle(this.contributionStyles);
                 this.addVectorlayerToMapping(model.attributes);
             }
 
             model.set("isSelected", value);
         },
-        /**
-         * sets the contributions style of the given project id by project color
-         * @param {String} id the project id
-         * @returns {void}
-         */
-        setContributionColorByProject (id) {
-            for (const feature of this.contributions[id].features) {
-                const index = this.contributions[id].index,
-                    color = this.projectsColors[index],
-                    text = this.getContributionLabel(feature),
-                    style = new Style({
-                        image: new Circle({
-                            radius: 5,
-                            fill: new Fill({color: color.replace("rgb", "rgba").replace(")", ", 0.4)")}),
-                            stroke: new Stroke({color: "#000", width: 1})
-                        }),
-                        text
-                    });
+        contributionStyles (feature, resolution) {
+            let res;
 
-                feature.setStyle(style);
+            switch (this.selectedStyling) {
+                case "project":
+                    res = this.getContributionColorByProject(feature, resolution);
+                    break;
+                case "category":
+                    this.categoryRainbow = false;
+                    res = this.getContributionColorByCategory(feature, resolution);
+                    break;
+                case "categoryRainbow":
+                    this.categoryRainbow = true;
+                    res = this.getContributionColorByCategory(feature, resolution);
+                    break;
+                case "voting":
+                    res = this.getContributionColorByVoting(feature, resolution);
+                    break;
+                default:
+                    res = null;
+                    break;
             }
+            return res;
         },
         /**
-         * sets the contributions style of the given project id by the category of every contribution
-         * @param {String} id the project id
+         * creates a style for the given feature and resolution
+         * @param {ol.Feature} feature the feature to style
+         * @param {Number} resolution the current map resolution
          * @returns {void}
          */
-        setContributionColorByCategory (id) {
-            for (const feature of this.contributions[id].features) {
-                let colors = this.contributions[id].colors;
+        getContributionColorByProject (feature, resolution) {
+            const id = feature.getProperties().belongToProject,
+                index = this.contributions[id].index,
+                color = this.projectsColors[index],
+                text = this.getContributionLabel(feature),
+                style = new Style({
+                    image: new Circle({
+                        radius: 5,
+                        fill: new Fill({color: color.replace("rgb", "rgba").replace(")", ", 0.4)")}),
+                        stroke: new Stroke({color: "#000", width: 1})
+                    })
+                });
 
-                if (this.categoryRainbow) {
-                    colors = this.contributions[id].rainbowColors;
-                }
-                const category = feature.getProperties().category,
-                    color = colors[category],
-                    text = this.getContributionLabel(feature),
-                    style = new Style({
-                        image: new Circle({
-                            radius: 5,
-                            fill: new Fill({color: color}),
-                            stroke: new Stroke({color: "#000", width: 1})
-                        }),
-                        text
-                    });
-
-                feature.setStyle(style);
+            if (resolution < 10) {
+                style.setText(text);
             }
+            return style;
         },
         /**
-         * sets the contributions style of the given project id by the voting of every contribution
-         * red to green
-         * @param {String} id the project id
+         * creates a style for the given feature and resolution
+         * @param {ol.Feature} feature the feature to style
+         * @param {Number} resolution the current map resolution
          * @returns {void}
          */
-        setContributionColorByVoting (id) {
-            const colorScale = scaleSequential().interpolator(interpolateRdYlGn);
+        getContributionColorByCategory (feature, resolution) {
+            const id = feature.getProperties().belongToProject,
+                category = feature.getProperties().category;
+            let colors;
 
-            for (const feature of this.contributions[id].features) {
-                const properties = feature.getProperties(),
-                    votingPro = parseInt(properties.votingPro, 10),
-                    votingContra = parseInt(properties.votingContra, 10),
-                    weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1)),
-                    color = colorScale(weight),
-                    text = this.getContributionLabel(feature),
-                    style = new Style({
-                        image: new Circle({
-                            radius: Math.sqrt(votingPro + votingContra) + 5,
-                            fill: new Fill({color: color}),
-                            stroke: new Stroke({color: "#000", width: 1})
-                        }),
-                        text
-                    });
-
-                feature.setStyle(style);
+            if (this.categoryRainbow) {
+                colors = this.contributions[id].rainbowColors;
             }
+            else {
+                colors = this.contributions[id].colors;
+            }
+
+            // eslint-disable-next-line one-var
+            const color = colors[category],
+                text = this.getContributionLabel(feature),
+                style = new Style({
+                    image: new Circle({
+                        radius: 5,
+                        fill: new Fill({color: color}),
+                        stroke: new Stroke({color: "#000", width: 1})
+                    })
+                });
+
+            if (resolution < 10) {
+                style.setText(text);
+            }
+            return style;
+        },
+        /**
+         * creates a style for the given feature and resolution
+         * @param {ol.Feature} feature the feature to style
+         * @param {Number} resolution the current map resolution
+         * @returns {void}
+         */
+        getContributionColorByVoting (feature, resolution) {
+            const colorScale = scaleSequential().interpolator(interpolateRdYlGn),
+                properties = feature.getProperties(),
+                votingPro = parseInt(properties.votingPro, 10),
+                votingContra = parseInt(properties.votingContra, 10),
+                weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1)),
+                color = colorScale(weight),
+                text = this.getContributionLabel(feature),
+                style = new Style({
+                    image: new Circle({
+                        radius: Math.sqrt(votingPro + votingContra) + 5,
+                        fill: new Fill({color: color}),
+                        stroke: new Stroke({color: "#000", width: 1})
+                    })
+                });
+
+            if (resolution < 10) {
+                style.setText(text);
+            }
+            return style;
         },
         /**
          * changes the visibility of the heatmap layer for the given project id
@@ -415,18 +426,24 @@ export default {
                 offsetY: -8,
                 offsetX: 8
             });
-
-            // return undefined;
         },
 
         handleColor (id, category) {
-            let colors = this.contributions[id].colors;
+            let color;
 
-            if (this.categoryRainbow) {
-                colors = this.contributions[id].rainbowColors;
+            if (["project", "voting"].includes(this.selectedStyling)) {
+                const index = this.contributions[id].index;
+
+                color = this.projectsColors[index];
             }
-            const color = colors[category] ? colors[category] : "rgb(0,0,0)";
+            else {
+                let colors = this.contributions[id].colors;
 
+                if (this.categoryRainbow) {
+                    colors = this.contributions[id].rainbowColors;
+                }
+                color = colors[category] ? colors[category] : "rgb(0,0,0)";
+            }
             return color;
         }
     }
@@ -445,7 +462,10 @@ export default {
         >
             <template #toolBody>
                 <v-app class="clamp-600px">
-                    <ToolInfo :url="readmeUrl[currentLocale]" />
+                    <ToolInfo
+                        :url="readmeUrl[currentLocale]"
+                        :summary="$t('additional:modules.tools.cosi.dipas.summary')"
+                    />
                     <div
                         v-if="active"
                         id="dipas"
