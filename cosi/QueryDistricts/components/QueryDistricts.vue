@@ -13,6 +13,8 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {WFS} from "ol/format.js";
 
 export default {
     name: "QueryDistricts",
@@ -51,7 +53,7 @@ export default {
             "mapping"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["layerById"])
+        ...mapGetters("Map", ["layerById", "projectionCode"])
     },
     watch: {
         async layerFilterModels () {
@@ -71,7 +73,9 @@ export default {
         },
 
         facilityNames () {
-            this.setLayerOptions();
+            if (this.active) {
+                this.setLayerOptions();
+            }
         },
 
         active (value) {
@@ -143,9 +147,12 @@ export default {
         },
 
         setLayerOptions: function () {
-            const url = this.selectedDistrictLevel.stats.baseUrl[0], /** @todo allow multiple sources */
-                layers = this.getLayerList()
-                    .filter(layer=> layer.url === url);
+            const urls = this.selectedDistrictLevel.stats.baseUrl,
+                layers = [];
+
+            urls.forEach(url => {
+                layers.push(...this.getLayerList().filter(layer=> layer.url === url));
+            });
 
             this.allLayerOptions = [];
 
@@ -167,9 +174,13 @@ export default {
                 if (layer) {
                     this.allLayerOptions.push({
                         name: m.value,
-                        id: layer.id,
+                        id: m.ltf ? m.category : layer.id,
                         group: m.group,
-                        valueType: m.valueType
+                        valueType: m.valueType,
+                        ltf: m.ltf,
+                        category: m.category,
+                        url: layer.url,
+                        featureType: layer.featureType
                     });
                 }
             }
@@ -189,6 +200,7 @@ export default {
                 ret.push({header: g});
                 ret = ret.concat(groups[g]);
             }
+
             this.layerOptions = ret;
         },
 
@@ -248,13 +260,14 @@ export default {
         },
 
         loadFeatures: async function (layer) {
+
             if (this.propertiesMap[layer.id] && layer.property === undefined) {
                 return;
             }
-            const features = await this.getAllFeatures(layer.id);
 
             if (layer.facilityLayerName) {
-                const adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
+                const features = await this.getAllFeatures(layer.id),
+                    adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
                     fmap = this.countFacilitiesPerFeature(features, adminFeatures, layer.property);
 
                 this.propertiesMap[layer.id] = adminFeatures.map(feature => {
@@ -276,7 +289,39 @@ export default {
                     };
                 });
             }
+            else if (layer.ltf) {
+                const wfsReader = new WFS();
+
+                let features = await getFeaturePost(layer.url, {
+                        featureTypes: [layer.featureType],
+                        srsName: this.projectionCode,
+                        propertyNames: [layer.category, this.keyOfAttrNameStats, "jahr"]
+                    }),
+                    groupedFeatures = {};
+
+                features = wfsReader.readFeatures(features);
+                // group features by district
+                groupedFeatures = Radio.request("Util", "groupBy", features, (feature) => {
+                    return feature.get([this.keyOfAttrNameStats]);
+                });
+
+                this.propertiesMap[layer.id] = features.map(feature => {
+                    const ret = feature.getProperties();
+
+                    groupedFeatures[feature.get([this.keyOfAttrNameStats])].forEach(feat => {
+                        ret["jahr_" + feat.get("jahr")] = feat.get([layer.category]);
+                    });
+
+                    ret.feature = feature;
+                    ret[this.selectorField] = this.keyOfAttrNameStats;
+                    ret.kategorie = layer.category;
+                    ret.id = ret[this.keyOfAttrNameStats];
+                    return ret;
+                });
+            }
             else {
+                const features = await this.getAllFeatures(layer.id);
+
                 this.propertiesMap[layer.id] = features.map(feature => {
                     const ret = feature.getProperties();
 
