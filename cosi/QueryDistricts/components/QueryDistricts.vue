@@ -1,5 +1,4 @@
 <script>
-import Vue from "vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getters from "../store/gettersQueryDistricts";
@@ -7,14 +6,12 @@ import mutations from "../store/mutationsQueryDistricts";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
-import DashboardResult from "./DashboardResult.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
-import {renameKeys} from "../../utils/modifyObject.js";
 import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
@@ -391,7 +388,7 @@ export default {
                 if (feature.getProperties()[attributeSelector] === row.name) {
                     const extent = feature.getGeometry().getExtent();
 
-                    this.zoomTo(extent, {padding: [20, 20, 20, 20]});
+                    this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
                     return;
                 }
             }
@@ -409,40 +406,6 @@ export default {
             this.layerFilterModels = [];
             this.updateAvailableLayerOptions();
             this.selectedDistrict = null;
-        },
-
-        /**
-         * @deprecated
-         * @returns {void}
-         */
-        showInDashboard: function () {
-            const Ctor = Vue.extend(DashboardResult),
-                root = document.createElement("div"),
-                cont = document.createElement("div"), // nested container needed for mount
-                i18n = this.$t("additional:modules.tools.cosi.queryDistricts", {"returnObjects": true});
-
-            root.appendChild(cont);
-
-            /**
-             * @deprecated
-             * @todo replace with new storage
-             */
-            // Radio.trigger("Dashboard", "destroyWidgetById", "compareDistricts");
-            // Radio.trigger("Dashboard", "append", $(root), "#dashboard-containers", {
-            //     id: "compareDistricts",
-            //     name: "Vergleichbare Gebiete ermitteln",
-            //     glyphicon: "glyphicon glyphicon-random",
-            //     scalable: true
-            // });
-
-            if (this.dashboard !== null) {
-                this.dashboard.$destroy();
-                this.dashboard = null;
-            }
-
-            this.dashboard = new Ctor({
-                propsData: {resultTableHeaders: this.resultTableHeaders, results: this.results, i18n}
-            }).$mount(cont);
         },
 
         async updateFilter (value) {
@@ -615,11 +578,34 @@ export default {
         },
 
         exportTable: function () {
-            const exportData = this.results.map(r=>renameKeys(r, Object.assign({}, ...this.resultTableHeaders.map(h=>({[h.value]: h.text}))))),
+            const
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
-                filename = `${this.$t("additional:modules.tools.cosi.featuresList.exportFilename")}_${date}`;
+                filename = `${this.$t("additional:modules.tools.cosi.queryDistricts.exportFilename")}_${date}`,
+                data = [
+                    this.resultTableHeaders.map(header => header.text),
+                    ...this.results.map(row => {
+                        const _row = Object.values(row);
 
-            exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
+                        return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)];
+                    })
+                ],
+                headers = ["Referenzgebiet", "Filter-Nr.", "Name", "Attribut", "Quotient", "Feld", "Min.", "Max.", "Ref.-Wert", "- Toleranz", "+ Toleranz"],
+                filters = this.layerFilterModels.map((filter, i) => [
+                    this.selectedDistrict,
+                    i + 1,
+                    filter.name,
+                    filter.property || "-",
+                    filter.quotientLayer || "-",
+                    filter.field,
+                    filter.min,
+                    filter.max,
+                    filter.value,
+                    filter.low,
+                    filter.high
+
+                ]);
+
+            exportXlsx([headers, [], ...filters, ...data], filename, {exclude: this.excludedPropsForExport}, "aoa_to_sheet");
         }
     }
 };
@@ -646,11 +632,6 @@ export default {
                         <div class="mb-5 overline">
                             {{ $t('additional:modules.tools.cosi.queryDistricts.subTitle') }}
                         </div>
-                        <div
-                            id="help"
-                            class="glyphicon glyphicon-question-sign ml-auto"
-                            @click="showHelp()"
-                        />
                     </div>
                     <v-autocomplete
                         id="layerfilter-selector-container"
@@ -724,6 +705,7 @@ export default {
                                     id="reference-district-button"
                                     class="name-tag district-name"
                                     @click="zoomToDistrict({'name': selectedDistrict})"
+                                    @keyUp="() => null"
                                 >{{ selectedDistrict }}</span>
                             </div>
                         </div>
@@ -764,6 +746,7 @@ export default {
                                         id="reference-district-button"
                                         class="name-tag district-name"
                                         @click="zoomToDistrict({'name': selectedDistrict})"
+                                        @keyUp="() => null"
                                     >{{ selectedDistrict }}</span>
                                 </div>
                             </div>

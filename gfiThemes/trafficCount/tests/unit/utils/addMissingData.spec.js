@@ -41,6 +41,31 @@ describe("addons/trafficCount/utils/addMissingData.js", () => {
                 }
             });
         });
+        it("should split an hour by the given minutes", () => {
+            const from = "2020-09-15 00:00:01",
+                timeData = {
+                    "2020-09-15 00:00:42": 0,
+                    "2020-09-15 01:00:42": 1,
+                    "2020-09-15 03:00:42": 2
+                },
+                result = addMissingDataDay(from, timeData, 60),
+                keys = Object.keys(result);
+
+            expect(result).to.be.an("object").and.not.to.be.empty;
+            expect(keys).to.be.an("array").to.have.lengthOf(24);
+            expect(result[keys[0]]).to.equal(0);
+            expect(result[keys[1]]).to.equal(1);
+            expect(result[keys[3]]).to.equal(2);
+
+            keys.forEach((key, idx) => {
+                if (idx === 2) {
+                    expect(result[key]).to.be.null;
+                }
+                if (idx > 3) {
+                    expect(result[key]).to.be.null;
+                }
+            });
+        });
     });
     describe("addMissingDataWeek", () => {
         it("should set the seconds of timeData to zero", () => {

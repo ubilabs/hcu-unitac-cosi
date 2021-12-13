@@ -92,7 +92,7 @@ export default {
             selectedItems: [],
             timestampPrefix: "jahr_",
             timestamps: [],
-            currentTimeStamp: null,
+            // currentTimeStamp: null,
             search: "",
             statsFeatureFilter: [],
             fields: {
@@ -137,6 +137,14 @@ export default {
         },
         unselectedColumnLabels () {
             return [...this.districtColumns, ...this.aggregateColumns].filter(col => !this.selectedColumns.includes(col)).map(col => col.text);
+        },
+        currentTimeStamp: {
+            get () {
+                return parseInt(this.selectedYear, 10);
+            },
+            set (v) {
+                this.setSelectedYear(v);
+            }
         }
     },
 
@@ -145,21 +153,9 @@ export default {
             // ..
         },
         loadend (v) {
-            if (v) {
+            if (v && this.selectedDistrictNames.length > 0) {
                 this.generateTable();
             }
-        },
-        currentTimeStamp (v) {
-            this.setSelectedYear(v);
-        },
-
-        /**
-         * @todo merge both properties!
-         * @param {Number} v - the current value of ColorCodeMaps selectedYear
-         * @returns {void}
-         */
-        selectedYear (v) {
-            this.currentTimeStamp = v;
         }
     },
     created () {
@@ -184,14 +180,14 @@ export default {
         ...mapActions("Tools/Dashboard", Object.keys(actions)),
         ...mapMutations("Tools/DistrictSelector", ["addCategoryToMapping", "removeCategoryFromMapping"]),
         ...mapMutations("Tools/ColorCodeMap", ["setSelectedYear"]),
-        ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["updateDistricts"]),
         generateTable () {
             this.timestamps = [];
             this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictNames, []);
             this.rows = this.getRows();
             this.items = this.getData();
-            this.currentTimeStamp = this.timestamps[0];
+            this.currentTimeStamp = this.selectedYear;
         },
         getRows () {
             let counter = 0;
@@ -314,17 +310,21 @@ export default {
         },
 
         getValue (item, header, timestamp) {
-            const val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
+            let val;
+
+            if (item[header.value]) {
+                val = parseFloat(item[header.value][this.timestampPrefix + timestamp]);
+            }
 
             return val ? val.toLocaleString(this.currentLocale) : "-";
         },
 
         getValueClass (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? "modified" : "";
+            return item[header.value]?.isModified <= timestamp ? "modified" : "";
         },
 
         getValueTooltip (item, header, timestamp) {
-            return item[header.value].isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
+            return item[header.value]?.isModified <= timestamp ? this.$t("additional:modules.tools.cosi.dashboard.modifiedTooltip") : undefined;
         },
 
         getAverage (item, timestamp) {
@@ -374,14 +374,14 @@ export default {
                     this.timestampPrefix
                 );
 
-            this.setNewChartDataSet(chart);
+            this.channelGraphData(chart);
         },
 
         renderScatterplot () {
             const correlation = this.calculateCorrelation(),
                 chart = generateChartForCorrelation(correlation, this.fields.B.category, this.fields.A.category);
 
-            this.setNewChartDataSet(chart);
+            this.channelGraphData(chart);
         },
 
         onVisualizationChanged () {
@@ -610,8 +610,10 @@ export default {
                                                 v-on="on"
                                             >
                                                 <StatsTrend
+                                                    v-if="getValue(item, header, currentTimeStamp) !== '-'"
                                                     :item="item"
                                                     :header="header"
+                                                    :current-timestamp="currentTimeStamp"
                                                     :timestamp-prefix="timestampPrefix"
                                                     :locale="currentLocale"
                                                 />
@@ -724,7 +726,7 @@ export default {
         .container {
             height: 100%;
             .dashboard-table-wrapper {
-                height: calc(100% - 40px);
+                height: calc(100% - 80px);
             }
         }
     }

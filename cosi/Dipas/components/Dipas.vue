@@ -7,7 +7,7 @@ import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style, Circle, Text} from "ol/style.js";
 import {Vector} from "ol/source.js";
 import {Heatmap} from "ol/layer.js";
-import {generateColorScale, generateColorScaleByColor} from "../../../utils/colorScale";
+import {generateColorScale, generateColorScaleByColor} from "../../utils/colorScale";
 import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";
 import {scaleSequential} from "d3-scale";
 import {interpolateRdYlGn} from "d3-scale-chromatic";
@@ -21,7 +21,7 @@ export default {
     },
     data () {
         return {
-            projectsFeatureCollection: null,
+            projectsFeatureCollection: [],
             projectsColors: null,
             projectsActive: {},
             contributions: {},
@@ -32,8 +32,15 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
-        ...mapGetters("Map", ["map", "layerById", "projectionCode"]),
-        ...mapGetters("Language", ["currentLocale"])
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Language", ["currentLocale"]),
+        isProjectActive () {
+            return (id) => {
+                const projectActive = this.projectsActive[id];
+
+                return projectActive.layer || projectActive.contributions || projectActive.heatmap;
+            };
+        }
     },
     watch: {
         selectedStyling: function (newValue) {
@@ -96,18 +103,16 @@ export default {
                 }),
                 len = Object.values(feature.getProperties().standardCategories).length,
                 colorScale = generateColorScaleByColor(this.projectsColors[index], len),
-                rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale,
-                model = await this.addLayer(layer),
-                layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
-            layerOnMap.setZIndex(0);
-            layerOnMap.setStyle(style);
-            model.set("isSelected", false);
-            this.projectsActive[id] = {layer: false, contributions: false, heatmap: false};
+                rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale;
 
-            this.contributions[id] = Object();
-            this.contributions[id].colors = Object();
-            this.contributions[id].rainbowColors = Object();
-            this.contributions[id].index = index;
+            layer.setZIndex(0);
+            layer.setStyle(style);
+
+            layer.setVisible(false);
+            layer.getSource().addFeature(feature);
+
+            this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
+            this.$set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
             for (const [catIndex, category] of Object.values(feature.getProperties().standardCategories).entries()) {
                 this.contributions[id].colors[category] = colorScale(catIndex);
                 this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
@@ -233,22 +238,22 @@ export default {
          */
         async changeContributionVisibility (id, value) {
             const layer = {
-                id: id + "-contributions",
-                project: false,
-                name: id + " contributions",
-                features: []
-            };
+                    id: id + "-contributions",
+                    name: id + " contributions",
+                    features: []
+                },
+                contribution = this.contributions[id];
 
             let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
 
             if (!model) {
-                if (!this.contributions[id].features) {
-                    Radio.trigger("Util", "showLoader");
+                if (contribution.features.length === 0) {
+                    contribution.loading = true;
                     this.contributions[id].features = await this.getContributionFeatures(id);
-                    Radio.trigger("Util", "hideLoader");
+                    contribution.loading = false;
                 }
                 this.selectedStylingFunction(id);
-                for (const feature of this.contributions[id].features) {
+                for (const feature of contribution.features) {
                     const properties = feature.getProperties();
 
                     feature.setId(feature.get("id"));
@@ -258,7 +263,7 @@ export default {
                     }
                     feature.setProperties(properties);
                 }
-                layer.features = this.contributions[id].features;
+                layer.features = contribution.features;
                 model = await this.addLayer(layer);
                 const layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
 
@@ -447,13 +452,36 @@ export default {
                         >
                             <v-list>
                                 <v-list-group
-                                    v-for="feature in projectsFeatureCollection"
+                                    v-for="[index, feature] in projectsFeatureCollection.entries()"
                                     :key="feature.getProperties().id"
                                 >
                                     <template #activator>
                                         <v-list-item-content>
-                                            <v-list-item-title v-text="feature.getProperties().nameFull" />
+                                            <v-list-item-title
+                                                class="text-wrap"
+                                                v-text="feature.getProperties().nameFull"
+                                            />
                                         </v-list-item-content>
+                                        <v-list-item-icon>
+                                            <v-btn
+                                                :color="projectsColors[index]"
+                                                small
+                                                dark
+                                            >
+                                                <v-icon
+                                                    v-if="isProjectActive(feature.getProperties().id)"
+                                                    dark
+                                                >
+                                                    mdi-checkbox-marked-circle
+                                                </v-icon>
+                                                <v-icon
+                                                    v-else
+                                                    dark
+                                                >
+                                                    mdi-cancel
+                                                </v-icon>
+                                            </v-btn>
+                                        </v-list-item-icon>
                                     </template>
                                     <p
                                         class="description"
@@ -489,8 +517,17 @@ export default {
                                         <v-list-item-content>
                                             <v-list-item-title>
                                                 {{ $t('additional:modules.tools.cosi.dipas.showContributions') }}
+                                                <v-btn
+                                                    v-if="contributions[feature.getProperties().id].loading"
+                                                    plain
+                                                    loading
+                                                    small
+                                                />
                                             </v-list-item-title>
                                         </v-list-item-content>
+                                        <v-list-item-icon>
+                                            {{ feature.getProperties().hasParticipatoryText.length }} {{ $t('additional:modules.tools.cosi.dipas.contributions') }}
+                                        </v-list-item-icon>
                                     </v-list-item>
                                     <v-list-item>
                                         <v-list-item-action>

@@ -3,13 +3,13 @@
 import {mapGetters} from "vuex";
 import {createNewRowName, combineYearsData} from "../utils/helpers";
 import VerkehrsstaerkenTable from "./VerkehrsstaerkenTable.vue";
-import VerkehrsstaerkenDiagram from "./VerkehrsstaerkenDiagram.vue";
+import VerkehrsstaerkenLineChart from "./VerkehrsstaerkenLineChart.vue";
 
 export default {
     name: "Verkehrsstaerken",
     components: {
         VerkehrsstaerkenTable,
-        VerkehrsstaerkenDiagram
+        VerkehrsstaerkenLineChart
     },
     props: {
         feature: {
@@ -78,7 +78,7 @@ export default {
                     parsedYears.push(year);
                 }
             });
-            this.years = [...new Set(parsedYears)];
+            this.years = [...new Set(parsedYears)].length > 10 ? [...new Set(parsedYears)].slice(Math.max([...new Set(parsedYears)].length - 10, 1)) : [...new Set(parsedYears)];
             this.rowNames = [...new Set(newRowNames)];
             this.dataset = combineYearsData(dataPerYear, this.years);
         },
@@ -177,7 +177,7 @@ export default {
                 :dataset="dataset"
                 :type="String('table')"
             />
-            <VerkehrsstaerkenDiagram
+            <VerkehrsstaerkenLineChart
                 :show="isActiveTab('diagram')"
                 :class="getTabPaneClasses('diagram')"
                 :dataset="dataset"
@@ -231,9 +231,7 @@ export default {
         padding: 6px;
     }
     .tab-content {
-        overflow: auto;
         width: 100%;
-        height: 250px;
         padding: 0px 5px 5px 5px;
     }
     .downloadButton{

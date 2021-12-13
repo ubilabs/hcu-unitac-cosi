@@ -85,7 +85,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
-        ...mapGetters("Map", ["layerIds", "layers", "map", "projectionCode"]),
+        ...mapGetters("Map", {layerIds: "layerIds", layerIds: "layers", layerIds: "ol2DMap", projectionCode: "projectionCode"}),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;

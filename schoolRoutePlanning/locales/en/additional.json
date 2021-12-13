@@ -6,7 +6,7 @@
                 "inputPlaceHolder": "Start address",
                 "regionalPrimarySchool": "Regionally responsible primary school: ",
                 "selectSchool": "Select school",
-                "printRouteName": "Print route",
+                "printRouteName": "Create PDF",
                 "deleteRoute": "Delete route",
                 "noSchoolFound": "No school found!",
                 "showRouteDescription": "Show route description",

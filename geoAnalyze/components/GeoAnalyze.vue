@@ -3,7 +3,7 @@ import Tool from "../../../src/modules/tools/Tool.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersGeoAnalyze";
 import mutations from "../store/mutationsGeoAnalyze";
-import Dropdown from "../../../src/share-components/dropdowns/DropdownSimple.vue";
+import Dropdown from "../../../src/share-components/dropdowns/components/DropdownSimple.vue";
 import {Draw, Select} from "ol/interaction";
 import VectorLayer from "ol/layer/Vector.js";
 import VectorSource from "ol/source/Vector.js";
@@ -317,6 +317,7 @@ export default {
             <form>
                 <Dropdown
                     v-model="selectedOption"
+                    :focus-on-creation="true"
                     :options="options"
                 />
             </form>

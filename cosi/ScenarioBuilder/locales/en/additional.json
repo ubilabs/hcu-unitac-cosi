@@ -24,7 +24,8 @@
                     "essentialField": "Dieses Feld ist wichtig für die Darstellung bzw. Suche",
                     "defineFeature": "Neue Einrichtung definieren",
                     "undo": "Schritt zurück",
-                    "pick": "Polygon in der Karte wählen"
+                    "pick": "Polygon in der Karte wählen",
+                    "editFeature": "Delete simulated Feature?"
                 },
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",

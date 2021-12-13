@@ -16,7 +16,7 @@ function prepareGraphData (data, districtName, timestamps, timestampPrefix) {
         };
 
     for (const timestamp of timestamps) {
-        newDataSet.data.push(statFeature[timestampPrefix + timestamp]);
+        newDataSet.data.push(statFeature?.[timestampPrefix + timestamp]);
     }
 
     newDataSet.data.reverse();

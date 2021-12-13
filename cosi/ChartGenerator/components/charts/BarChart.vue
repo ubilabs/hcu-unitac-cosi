@@ -67,16 +67,12 @@ export default {
             this.prepareRendering();
         }
     },
-    mounted () {
-        this.$nextTick(() => {
-            this.prepareRendering();
-        });
+    async mounted () {
+        this.prepareRendering();
     },
     methods: {
         prepareRendering () {
-            if (!this.chartData) {
-                return;
-            }
+
 
             if (this.dataSets.beginAtZero) {
                 this._options.scales.yAxes[0].ticks.beginAtZero = true;

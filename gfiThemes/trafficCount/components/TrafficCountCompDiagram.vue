@@ -82,6 +82,24 @@ export default {
         renderLabelLegend: {
             type: Function,
             required: true
+        },
+        /**
+         * a function (datetime[]) to get the point style
+         * @param {String[]} datetime the full datetime of dataset (format ["YYYY-MM-DD HH:mm:ss", ...])
+         * @returns {String}  the pointStyle in Array
+         */
+        renderPointStyle: {
+            type: Function,
+            required: true
+        },
+        /**
+         * a function (datetime[]) to get the point size
+         * @param {String[]} datetime the full datetime of dataset (format ["YYYY-MM-DD HH:mm:ss", ...])
+         * @returns {String}  the pointSize in Array
+         */
+        renderPointSize: {
+            type: Function,
+            required: true
         }
     },
     data () {
@@ -108,11 +126,11 @@ export default {
     watch: {
         apiData (newData, oldValue) {
             if (!oldValue.length) {
-                this.chartData = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend);
+                this.chartData = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend, this.renderPointStyle, this.renderPointSize);
                 this.createChart(this.chartData, this.ctx);
             }
             else if (Array.isArray(newData) && newData.length) {
-                this.chart.data = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend);
+                this.chart.data = this.createDataForDiagram(newData, this.colors, this.renderLabelLegend, this.renderPointStyle, this.renderPointSize);
                 this.chart.update(this.updateAnimation);
             }
             else {
@@ -121,7 +139,7 @@ export default {
         }
     },
     mounted () {
-        this.chartData = this.createDataForDiagram(this.apiData, this.colors, this.renderLabelLegend);
+        this.chartData = this.createDataForDiagram(this.apiData, this.colors, this.renderLabelLegend, this.renderPointStyle, this.renderPointSize);
         this.ctx = this.$el.getElementsByTagName("canvas")[0].getContext("2d");
 
         /**
@@ -164,9 +182,11 @@ export default {
          * @param {Object[]} apiData the apiData as received by parent
          * @param {String[]} colors an array of colors to use for coloring the datasets
          * @param {Function} callbackRenderLabelLegend a function(datetime) to render the text of the legend
+         * @param {Function} callbackRenderPointStyle a function(datetime[]) to render the point style in Array
+         * @param {Function} callbackRenderPointSize a function(datetime[]) to render the point size in Array
          * @returns {Object}  an object {labels, datasets} to use for chartjs
          */
-        createDataForDiagram (apiData, colors, callbackRenderLabelLegend) {
+        createDataForDiagram (apiData, colors, callbackRenderLabelLegend, callbackRenderPointStyle, callbackRenderPointSize) {
             if (!Array.isArray(apiData) || apiData.length === 0 || typeof apiData[0] !== "object" || apiData[0] === null || Object.keys(apiData[0]).length === 0) {
                 return [];
             }
@@ -183,7 +203,16 @@ export default {
                 if (!Object.prototype.hasOwnProperty.call(dataObj, meansOfTransportKey)) {
                     return;
                 }
-                const datetimes = Object.keys(dataObj[meansOfTransportKey]);
+                const datetimes = Object.keys(dataObj[meansOfTransportKey]),
+                    holidayData = {
+                        borderColor: Array.isArray(colors) ? colors[idx] : "",
+                        fill: false,
+                        label: this.$t("additional:modules.tools.gfi.themes.trafficCount.holidaySign"),
+                        pointBorderColor: Array.isArray(colors) ? colors[idx] : "",
+                        pointBackgroundColor: Array.isArray(colors) ? colors[idx] : "",
+                        pointRadius: 3,
+                        pointStyle: "star"
+                    };
 
                 datasets.push({
                     label: datetimes.length > 0 && typeof callbackRenderLabelLegend === "function" ? callbackRenderLabelLegend(datetimes[0]) : "",
@@ -193,10 +222,15 @@ export default {
                     spanGaps: false,
                     fill: false,
                     borderWidth: 1,
-                    pointRadius: 2,
-                    pointHoverRadius: 2,
+                    pointRadius: datetimes.length > 0 && typeof callbackRenderPointSize === "function" ? callbackRenderPointSize(datetimes) : 2,
+                    pointHoverRadius: datetimes.length > 0 && typeof callbackRenderPointSize === "function" ? callbackRenderPointSize(datetimes) : 2,
+                    pointStyle: datetimes.length > 0 && typeof callbackRenderPointStyle === "function" ? callbackRenderPointStyle(datetimes) : "",
                     datetimes
                 });
+
+                if (datetimes.length > 0 && typeof callbackRenderPointStyle === "function" && callbackRenderPointStyle(datetimes).includes("star")) {
+                    datasets.push(holidayData);
+                }
             });
 
             return {labels: labelsXAxis, datasets};
@@ -244,6 +278,27 @@ export default {
                         onClick: (e) => e.stopPropagation(),
                         labels: {
                             usePointStyle: true,
+                            generateLabels: chart => {
+                                const chartData = chart.data,
+                                    legends = Array.isArray(chartData.datasets) ? chartData.datasets.map((dataset, i) => {
+                                        return {
+                                            text: dataset.label,
+                                            backgroundColor: dataset.backgroundColor,
+                                            borderColor: dataset.borderColor,
+                                            borderWidth: dataset.borderWidth,
+                                            pointStyle: dataset.pointStyle,
+                                            pointRadius: dataset.pointRadius,
+                                            pointHoverRadius: dataset.pointHoverRadius,
+                                            strokeStyle: dataset.borderColor,
+                                            fillStyle: dataset.borderColor,
+                                            spanGaps: dataset.spanGaps,
+                                            hidden: !chart.isDatasetVisible(i),
+                                            datasetIndex: i
+                                        };
+                                    }, this) : [];
+
+                                return legends;
+                            },
                             fontSize: options.fontSizeLegend,
                             fontColorLegend: options.fontColorLegend
                         },
@@ -253,6 +308,8 @@ export default {
                         bodyFontColor: options.colorTooltipFont,
                         backgroundColor: options.colorTooltipBack,
                         yAlign: "bottom",
+                        titleAlign: "center",
+                        bodyAlign: "center",
                         custom: (tooltip) => {
                             if (!tooltip) {
                                 return;

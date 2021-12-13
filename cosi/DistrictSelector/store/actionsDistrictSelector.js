@@ -1,6 +1,6 @@
 import {WFS} from "ol/format.js";
 import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
-import {prepareStatsFeatures} from "../utils/prepareStatsFeatures";
+import {prepareStatsFeatures, createStatFeaturesFromLTF} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
@@ -32,10 +32,10 @@ const actions = {
         const wfsFormat = new WFS(),
             urls = districtLevel.stats.baseUrl;
 
-        for (let j = 0; j < urls.length; j++) {
-            for (let i = 0; i < districts.length; i++) {
-                // check if statFeatures are already loaded
-                if (districts[i].statFeatures.length === 0) {
+        for (let i = 0; i < districts.length; i++) {
+            // check if statFeatures are already loaded
+            if (districts[i].statFeatures.length === 0) {
+                for (let j = 0; j < urls.length; j++) {
                     const districtName = compensateInconsistency(districts[i].getName()),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
@@ -45,13 +45,21 @@ const actions = {
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
-                    if (olFeatures.length > 0) {
+                    if (olFeatures.length > 0 && j === 0) {
                         olFeatures.forEach(prepareStatsFeatures);
 
                         // add statFeatures to district
                         districts[i].statFeatures.push(...olFeatures);
                         // store original data on the district as a copy
                         districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
+                    }
+                    else if (olFeatures.length > 0 && j >= 1) {
+                        const features = createStatFeaturesFromLTF(olFeatures, districtLevel.stats.keyOfAttrName);
+
+                        // add statFeatures to district
+                        districts[i].statFeatures.push(...features);
+                        // store original data on the district as a copy
+                        districts[i].originalStatFeatures.push(...olFeatures.map(f => f.clone()));
                     }
                     else {
                         dispatch("Alerting/addSingleAlert", {
@@ -126,6 +134,7 @@ const actions = {
         if (foundDistrict.statFeatures.length > 0) {
             return foundDistrict.statFeatures;
         }
+
         await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
             districtLevel: districtLevel,

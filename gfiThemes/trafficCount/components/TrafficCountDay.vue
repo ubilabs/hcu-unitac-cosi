@@ -7,6 +7,8 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataDay} from "../utils/addMissingData.js";
+import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 
 export default {
     name: "TrafficCountDay",
@@ -21,16 +23,29 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
+        },
+        checkGurlittInsel: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
         return {
+            tab: "day",
             dayDatepicker: null,
             apiData: [],
 
@@ -46,13 +61,42 @@ export default {
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
-            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay"),
+            descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay", {minutes: this.api instanceof DauerzaehlstellenRadApi ? 60 : 15}),
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
+            renderPointSize: (datetime) => {
+                const pointSize = [],
+                    format = "YYYY-MM-DD";
+
+                for (let i = 0; i < datetime.length; i++) {
+                    if (getPublicHoliday(datetime[i], this.holidays, format)) {
+                        pointSize.push(6);
+                    }
+                    else {
+                        pointSize.push(2);
+                    }
+                }
+
+                return pointSize;
+            },
             // props for table
-            tableTitle: "Datum",
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleDay"),
             setColTitle: datetime => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
@@ -62,10 +106,12 @@ export default {
                 switch (meansOfTransports) {
                     // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
                     // use this code to enable Kfz + SV
-                    // case "Anzahl_Kfz":
-                    //    return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
-                    case "Anteil_SV":
+                    /*
+                    case "Anzahl_Kfz":
+                        return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
+                    case "Anzahl_SV":
                         return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix");
+                    */
                     default:
                         return txt;
                 }
@@ -77,6 +123,12 @@ export default {
             diagramDay: "diagramDay",
             tableDay: "tableDay"
         };
+    },
+    watch: {
+        reset () {
+            this.dayDatepicker = null;
+            this.setDayDatepicker();
+        }
     },
     mounted () {
         moment.locale(i18next.language);
@@ -90,13 +142,22 @@ export default {
                 this.dayDatepicker = new DatepickerModel({
                     displayName: "Tag",
                     multidate: 5,
-                    preselectedValue: moment().toDate(),
+                    preselectedValue: this.checkGurlittInsel ? moment().subtract(1, "days") : moment().toDate(),
                     startDate: startDate.toDate(),
                     endDate: moment().toDate(),
                     type: "datepicker",
                     inputs: $(document.getElementById("dayDateInput")),
                     todayHighlight: false,
-                    language: i18next.language
+                    language: i18next.language,
+                    beforeShowDay: date => {
+                        const holiday = getPublicHoliday(date, this.holidays);
+
+                        if (holiday?.translationKey) {
+                            return {classes: "holiday", tooltip: i18next.t(holiday.translationKey)};
+                        }
+
+                        return true;
+                    }
                 });
 
                 this.dayDatepicker.on("valuesChanged", function (evt) {
@@ -111,7 +172,8 @@ export default {
                 if (document.querySelector("#dayDateSelector")) {
                     document.querySelector("#dayDateSelector").appendChild(new DatepickerView({model: this.dayDatepicker}).render().el);
                 }
-                this.dayDatepicker.updateValues(moment().toDate());
+
+                this.dayDatepicker.updateValues(this.checkGurlittInsel ? moment().subtract(1, "days") : moment().toDate());
             }
             else if (document.querySelector("#dayDateSelector")) {
                 document.querySelector("#dayDateSelector").appendChild(new DatepickerView({model: this.dayDatepicker}).render().el);
@@ -128,7 +190,8 @@ export default {
             const api = this.api,
                 thingId = this.thingId,
                 meansOfTransport = this.meansOfTransport,
-                timeSettings = [];
+                timeSettings = [],
+                minutesForMissingData = api instanceof DauerzaehlstellenRadApi ? 60 : 15;
 
             if (dates.length === 0) {
                 this.apiData = [];
@@ -153,7 +216,7 @@ export default {
                             const from = typeof timeSettings[idx] === "object" ? timeSettings[idx].from + " 00:00:00" : "";
 
                             Object.keys(transportData).forEach(transportKey => {
-                                datasets[idx][transportKey] = addMissingDataDay(from, datasets[idx][transportKey]);
+                                datasets[idx][transportKey] = addMissingDataDay(from, datasets[idx][transportKey], minutesForMissingData);
                             });
                         });
                     }
@@ -193,6 +256,7 @@ export default {
             <div class="input-group">
                 <input
                     id="dayDateInput"
+                    aria-label="Datum"
                     type="text"
                     class="form-control dpinput"
                     placeholder="Datum"
@@ -225,6 +289,8 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
+                :render-point-size="renderPointSize"
             />
         </div>
         <TrafficCountCheckbox
@@ -232,6 +298,8 @@ export default {
         />
         <div id="tableDay">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

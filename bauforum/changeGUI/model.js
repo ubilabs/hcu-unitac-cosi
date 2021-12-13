@@ -1,3 +1,5 @@
+import store from "../../../src/app-store";
+
 const BauforumGUIModeler = Backbone.Model.extend(/** @lends BauforumGUIModeler.prototype */{
     defaults: {
         mainStreet: {},
@@ -36,11 +38,11 @@ const BauforumGUIModeler = Backbone.Model.extend(/** @lends BauforumGUIModeler.p
      * @returns {Object | null} Data for main street from config.json
      */
     getMagistraleFromParametricURL: function () {
-        const parameters = Radio.request("ParametricURL", "getResult"),
+        const urlParamValue = store.state.urlParams?.MAGISTRALE,
             knownMainStreets = Radio.request("Parser", "getPortalConfig").bauforumHackathon;
 
-        if (parameters && Object.prototype.hasOwnProperty.call(parameters, "MAGISTRALE") && knownMainStreets && Object.prototype.hasOwnProperty.call(knownMainStreets, parameters.MAGISTRALE)) {
-            return Radio.request("Util", "pick", knownMainStreets, parameters.MAGISTRALE);
+        if (urlParamValue && knownMainStreets && Object.prototype.hasOwnProperty.call(knownMainStreets, urlParamValue)) {
+            return Radio.request("Util", "pick", knownMainStreets, [urlParamValue]);
         }
 
         return null;

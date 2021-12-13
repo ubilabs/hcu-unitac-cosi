@@ -5,11 +5,9 @@ import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
-// import Info from "text-loader!./info.html";
-import {generateColorScale} from "../../../utils/colorScale.js";
+import {generateColorScale} from "../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
 import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
-// import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "ColorCodeMap",
@@ -135,7 +133,6 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ColorCodeMap", Object.keys(mutations)),
-        ...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"}),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         /**
@@ -146,6 +143,7 @@ export default {
             this.featuresList = [];
             if (this.selectedStatFeatures.length) {
                 this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
+                this.setSelectedYear(utils.getAvailableYears([this.selectedStatFeatures[0]], this.yearSelector)[0]);
                 this.updateFeaturesList();
             }
         },
@@ -156,7 +154,6 @@ export default {
          */
         updateFeaturesList () {
             this.setSelectedFeature(mapping[0].value);
-            this.setSelectedYear(this.availableYears[0]);
 
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats]) {
@@ -471,25 +468,26 @@ export default {
          */
         loadToChartGenerator () {
             const graphObj = new ChartDataSet({
-                id: "ccm",
-                name: [this.label] + " - " + this.dataCategory,
-                type: ["LineChart", "BarChart", "PieChart"],
-                color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
-                beginAtZero: true,
-                source: this.$t("additional:modules.tools.colorCodeMap.title"),
-                scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabel")],
-                data: {
-                    labels: [],
-                    dataSets: []
-                }
-            });
+                    id: "ccm",
+                    name: [this.label] + " - " + this.dataCategory,
+                    type: ["LineChart", "BarChart", "PieChart"],
+                    color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
+                    beginAtZero: true,
+                    source: this.$t("additional:modules.tools.colorCodeMap.title"),
+                    scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabel")],
+                    data: {
+                        labels: [],
+                        dataSets: []
+                    }
+                }),
+                years = this.graphData[0].data.reduce((availableYears, val, i) => val ? [...availableYears, this.availableYears[i]] : availableYears, []);
 
-            this.availableYears.forEach(year => {
+            years.forEach(year => {
                 graphObj.data.labels.push(year);
             });
 
             this.graphData.forEach(dataSet => {
-                dataSet.data.reverse();
+                dataSet.data = dataSet.data.filter(x => Boolean(x)).reverse();
                 graphObj.data.dataSets.push(dataSet);
             });
 

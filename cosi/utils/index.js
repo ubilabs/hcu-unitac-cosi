@@ -6,7 +6,7 @@ import calculateRatio from "./calculateRatio";
 import setBBoxToGeom, {setBboxGeometryToLayer} from "./setBBoxToGeom";
 import downloadBlobToFile from "./downloadBlobToFile";
 import exportXlsx from "./exportXlsx";
-import getAvailableYears from "./getAvailableYears";
+import getAvailableYears, {getLastAvailableYear} from "./getAvailableYears";
 import compensateLackingData from "./compensateLackingData";
 import arrayIntersect from "./arrayIntersect";
 import arrayIsEqual from "./arrayIsEqual";
@@ -39,6 +39,7 @@ export default {
     downloadBlobToFile,
     exportXlsx,
     getAvailableYears,
+    getLastAvailableYear,
     arrayIntersect,
     arrayIsEqual,
     describeFeatureTypeByLayerId,

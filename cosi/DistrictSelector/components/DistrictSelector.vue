@@ -351,7 +351,7 @@ export default {
                 setBBoxToGeom(bboxGeom);
 
                 if (zoomToExtent) {
-                    this.zoomTo(extent);
+                    this.zoomTo({geometryOrExtent: extent, options: {}});
                 }
 
                 this.loadStatFeatures({

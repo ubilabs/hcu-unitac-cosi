@@ -8,28 +8,30 @@ import {getConverter} from "../utils/converters";
 
 /**
  *
- * @param {*} features features
- * @return {*} transformed features
+ * @param {module:ol/Feature[]} features features
+ * @param {String} sourceCrs current CRS
+ * @return {Number[]} transformed feature coordinates
  */
-function transformedCoordinates (features) {
-    return features.map(f => Proj.transform(f.getGeometry().flatCoordinates, "EPSG:25832", "EPSG:4326").slice(0, 2));
+function transformedCoordinates (features, sourceCrs) {
+    return features.map(f => Proj.transform(f.getGeometry().flatCoordinates, sourceCrs, "EPSG:4326").slice(0, 2));
 }
 
 /**
  *
  *
- * @param {*} feature feature
- * @param {*} layerId layerId
- * @param {*} extent extent
- * @param {*} initialBuffer initial buffer
- * @param {*} bufferIncrement buffer increment
- * @return {*} score
+ * @param {module:ol/Feature} feature feature
+ * @param {String} layerId layerId
+ * @param {Number[]} extent extent
+ * @param {Number} initialBuffer initial buffer
+ * @param {Number} bufferIncrement buffer increment
+ * @param {String} portalCrs current CRS
+ * @return {Number} score
  */
-async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement) {
-    const featureCoords = transformedCoordinates([feature]),
-        features = Array.isArray(extent) && extent.length > 0 ? await getAllFeatures(layerId, extent)
+async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement, portalCrs) {
+    const featureCoords = transformedCoordinates([feature], portalCrs),
+        features = Array.isArray(extent) && extent.length > 0 ? await getAllFeatures(layerId, extent, portalCrs)
             : await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement),
-        coords = transformedCoordinates(features),
+        coords = transformedCoordinates(features, portalCrs),
         dists = (await fetchDistances(featureCoords, coords))[0];
 
     if (dists === null) {
@@ -57,7 +59,7 @@ async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrem
  * @param {*} weights weights
  * @return {*} score
  */
-async function distanceScore ({getters, commit}, {feature, weights, layerIds, extent}) {
+async function distanceScore ({getters, commit, rootGetters}, {feature, weights, layerIds, extent}) {
     if (weights === undefined || weights.length !== layerIds.length) {
         throw Error("invalid argument: weights");
     }
@@ -72,8 +74,8 @@ async function distanceScore ({getters, commit}, {feature, weights, layerIds, ex
 
         let mindist = getters.mindists[id];
 
-        if (mindist === undefined) {
-            mindist = await layerScore(feature, layerIds[j], extent, getters.initialBuffer, getters.bufferIncrement);
+        if (!mindist) {
+            mindist = await layerScore(feature, layerIds[j], extent, getters.initialBuffer, getters.bufferIncrement, rootGetters["Map/projectionCode"]);
             commit("setMindists", {...getters.mindists, [id]: mindist});
         }
 

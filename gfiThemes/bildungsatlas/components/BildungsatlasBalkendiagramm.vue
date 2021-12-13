@@ -6,6 +6,7 @@ import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptio
 import {
     optimizeComplexTypeValues,
     optimizeValueRootedInComplexType,
+    confineComplexTypeValues,
     convertComplexTypeToBarchart,
     sortComplexType,
     isComplexType,
@@ -184,7 +185,7 @@ export default {
                     const complexType = this.properties[this.propertyName];
 
                     if (hasComplexTypeValues(complexType)) {
-                        this.barchartData = convertComplexTypeToBarchart(sortComplexType(optimizeComplexTypeValues(complexType, 2)));
+                        this.barchartData = convertComplexTypeToBarchart(confineComplexTypeValues(sortComplexType(optimizeComplexTypeValues(complexType, 2))));
                         this.barchartDataOptions = getChartOptions(this.propertyName, this.chartOptions);
                         if (this.barchartDataOptions === false && this.isComplexTypeBasedOnPercentage(complexType)) {
                             this.barchartDataOptions = getChartOptionsForPercentage(this.propertyName, this.chartOptions);
@@ -201,14 +202,20 @@ export default {
                     this.setValuesBasedOnFeatureTypeKey(featureTypeKey, complexType);
                     this.table_title = this.translate("additional:addons.gfiThemes.bildungsatlas.balkendiagramm.title." + this.propertyName);
 
-                    this.api.getValueBezirk(this.propertyName, this.properties?.bezirk_id, value => {
-                        this.bezirk_value = this.convertValueBasedOnComplexType(value, complexType);
+                    this.api.getComplexTypeBezirk(this.propertyName, this.properties?.bezirk_id, complexTypeBezirk => {
+                        this.bezirk_value = this.convertValueBasedOnComplexType(complexTypeBezirk.values[0]?.value, complexTypeBezirk);
+                        if (!this.bezirk_value) {
+                            this.bezirk_value = "g.F.";
+                        }
                     }, error => {
                         this.bezirk_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
                         console.error(error);
                     });
-                    this.api.getValueStadt(this.propertyName, value => {
-                        this.stadt_value = this.convertValueBasedOnComplexType(value, complexType);
+                    this.api.getComplexTypeStadt(this.propertyName, complexTypeStadt => {
+                        this.stadt_value = this.convertValueBasedOnComplexType(complexTypeStadt.values[0]?.value, complexTypeStadt);
+                        if (!this.stadt_value) {
+                            this.stadt_value = "g.F.";
+                        }
                     }, error => {
                         this.stadt_value = this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError");
                         console.error(error);
@@ -296,12 +303,11 @@ export default {
         /**
          * helper function to execute api call on "Stadtteil"
          * @param {String|Number} stadtteil_id the id of the "Stadtteil" - could be a piped string e.g. "101 | 102"
-         * @param {ComplexType} complexType the ComplexType with metadata to analyse the unit
          * @param {String[]} [joinedValues=[]] for recursion only in case of piped stadtteil_id
          * @post this.stadtteil_value is either a value or the error translation
          * @returns {void}
          */
-        loadValueStadtteil (stadtteil_id, complexType, joinedValues = []) {
+        loadValueStadtteil (stadtteil_id, joinedValues = []) {
             const id = String(stadtteil_id),
                 reducedIds = id.split("|"),
                 currentId = reducedIds.shift().trim();
@@ -321,19 +327,19 @@ export default {
             }
 
             // recursion
-            this.api.getValueStadtteil(this.propertyName, currentId, value => {
-                const stadtteil_value = this.convertValueBasedOnComplexType(value, complexType);
+            this.api.getComplexTypeStadtteil(this.propertyName, currentId, complexType => {
+                const value = isComplexType(complexType) ? complexType.values[0]?.value : false;
 
-                joinedValues.push(stadtteil_value ? stadtteil_value : "g.F.");
+                joinedValues.push(value ? this.convertValueBasedOnComplexType(value, complexType) : "g.F.");
 
-                this.loadValueStadtteil(reducedIds.join("|"), complexType, joinedValues);
+                this.loadValueStadtteil(reducedIds.join("|"), joinedValues);
                 // preview of already loaded data:
                 this.stadtteil_value = joinedValues.join(" | ");
             }, error => {
                 // errors should only be applied to the pipe part that has the error
                 joinedValues.push(this.translate("additional:addons.gfiThemes.bildungsatlas.general.loadingError"));
 
-                this.loadValueStadtteil(reducedIds.join("|"), complexType, joinedValues);
+                this.loadValueStadtteil(reducedIds.join("|"), joinedValues);
                 // preview of already loaded data:
                 this.stadtteil_value = joinedValues.join(" | ");
                 console.error(error);
@@ -370,26 +376,35 @@ export default {
                     if (isComplexType(complexType)) {
                         this.statgeb_value = this.convertValueBasedOnComplexType(complexType.values[0].value, complexType);
                     }
+                    else {
+                        this.statgeb_value = "g.F.";
+                    }
                     if (!this.statgeb_value) {
                         this.statgeb_value = "g.F.";
                     }
-                    this.loadValueStadtteil(this.properties?.stadtteil_id, complexType);
+                    this.loadValueStadtteil(this.properties?.stadtteil_id);
                     this.title = this.stadtteil_name + ": " + this.statgeb_id;
                     break;
                 case BildungsatlasApi.KEY_SOZIALRAUM:
                     if (isComplexType(complexType)) {
                         this.sozialraum_value = this.convertValueBasedOnComplexType(complexType.values[0].value, complexType);
                     }
+                    else {
+                        this.sozialraum_value = "g.F.";
+                    }
                     if (!this.sozialraum_value) {
                         this.sozialraum_value = "g.F.";
                     }
-                    this.loadValueStadtteil(this.properties?.stadtteil_id, complexType);
+                    this.loadValueStadtteil(this.properties?.stadtteil_id);
                     this.title = this.sozialraum_name;
                     break;
                 default:
                     // BildungsatlasApi.KEY_STADTTEIL
                     if (isComplexType(complexType)) {
                         this.stadtteil_value = this.convertValueBasedOnComplexType(complexType.values[0].value, complexType);
+                    }
+                    else {
+                        this.stadtteil_value = "g.F.";
                     }
                     if (!this.stadtteil_value) {
                         this.stadtteil_value = "g.F.";

@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {combineYearsData, createNewRowName, createLegendData, createYAxisLabel} from "../../../utils/helpers.js";
+import {combineYearsData, createNewRowName} from "../../../utils/helpers.js";
 
 describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/utils/helpers.js", () => {
 
@@ -43,25 +43,4 @@ describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/utils/helpers
             expect(combineYearsData()).to.be.an("array").to.have.lengthOf(0);
         });
     });
-
-    describe("createLegendData", function () {
-        it("should return array with length 2", function () {
-            expect(createLegendData("DTV")).to.be.an("array").that.have.lengthOf(2);
-        });
-        it("should return array with length 1", function () {
-            expect(createLegendData(undefined)).to.be.an("array").that.have.lengthOf(2);
-        });
-        it("should return array with length 1", function () {
-            expect(createLegendData()).to.be.an("array").that.have.lengthOf(2);
-        });
-    });
-
-    describe("createYAxisLabel", function () {
-        it("should return dedicated label", function () {
-            expect(createYAxisLabel("DTV")).to.be.equals("modules.tools.gfi.themes.verkehrsstaerken.carsPerDay");
-            expect(createYAxisLabel("DTVw")).to.be.equals("modules.tools.gfi.themes.verkehrsstaerken.carsPerDayWeekly");
-            expect(createYAxisLabel("Schwerverkehrsanteil am DTVw")).to.be.equals("modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeek");
-        });
-    });
-
 });

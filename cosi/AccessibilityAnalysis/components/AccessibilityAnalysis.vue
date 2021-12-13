@@ -85,11 +85,11 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Map", ["map", "getOverlayById"]),
+        ...mapGetters("Map", {map: "ol2DMap"}),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         _mode: {
             get () {
                 return this.mode;
@@ -162,7 +162,7 @@ export default {
         isochroneFeatures (newFeatures) {
             this.renderIsochrones(newFeatures);
         },
-        async activeSimulatedFeatures () {
+        async scenarioUpdated () {
             await this.$nextTick();
             this.tryUpdateIsochrones();
         },
@@ -206,6 +206,7 @@ export default {
 
         this.mapLayer = await this.createLayer("reachability-from-point");
         this.mapLayer.setVisible(true);
+        this.mapLayer.setZIndex(10);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
 

@@ -13,7 +13,8 @@
                         "byCategories": "by categories in project color spectrum",
                         "byCategoriesRainbow": "by categories in rainbow spectrum",
                         "byVoting": "by voting"
-                    }
+                    },
+                    "contributions": "contributions"
                 }
             }
         }

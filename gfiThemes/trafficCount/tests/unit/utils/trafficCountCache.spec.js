@@ -771,6 +771,82 @@ describe("addons/trafficCount/utils/trafficCountCache", function () {
         });
     });
 
+    describe("updateWorkingDayAverage", () => {
+        it("should create a cache key and a callback as a function", () => {
+            const expectedKey = "updateWorkingDayAveragethingIdmeansOfTransportdays";
+            let lastKey = "",
+                lastApiCall = null,
+                lastOnupdate = null,
+                lastObserver = null,
+                lastOnstart = null,
+                lastOncomplete = null;
+
+            cache.updateWorkingDayAverage("thingId", "meansOfTransport", "days", "holidays", "onupdate", "onerror", "onstart", "oncomplete", {
+                simpleCacheCallOpt: (key, apiCall, onupdate, observer, onstart, oncomplete) => {
+                    lastKey = key;
+                    lastApiCall = apiCall;
+                    lastOnupdate = onupdate;
+                    lastObserver = observer;
+                    lastOnstart = onstart;
+                    lastOncomplete = oncomplete;
+                }
+            });
+
+            expect(lastKey).to.equal(expectedKey);
+            expect(typeof lastApiCall).to.equal("function");
+            expect(lastOnupdate).to.equal("onupdate");
+            expect(lastObserver).to.equal("onupdate");
+            expect(lastOnstart).to.equal("onstart");
+            expect(lastOncomplete).to.equal("oncomplete");
+        });
+        it("should call updateWorkingDayAverage on the given api and fetch the received data", () => {
+            const expectedData = "data";
+            let lastData = null,
+                lastOnerror = null;
+
+            cache.updateWorkingDayAverage("thingId", "meansOfTransport", "days", "holidays", "onupdate", "onerror", "onstart", "oncomplete", {
+                simpleCacheCallOpt: (key, apiCall) => {
+                    apiCall((data) => {
+                        lastData = data;
+                    });
+                },
+                trafficCountApiOpt: {
+                    updateWorkingDayAverage: (thingId, meansOfTransport, days, holidays, callback, onerror) => {
+                        lastOnerror = onerror;
+                        callback("data");
+                    }
+                }
+            });
+
+            expect(lastData).to.equal(expectedData);
+            expect(lastOnerror).to.equal("onerror");
+        });
+        it("should be the handler of subscriptions for its key", () => {
+            let lastValue = null,
+                firstCallback = null;
+
+            // use inner simpleCacheCall
+            cache.updateWorkingDayAverage("thingId", "meansOfTransport", "days", "holidays", value => {
+                lastValue = value;
+            }, "onerror", "onstart", "oncomplete", {
+                simpleCacheCallOpt: null,
+                trafficCountApiOpt: {
+                    updateWorkingDayAverage: (thingId, meansOfTransport, days, holidays, callback) => {
+                        firstCallback = callback;
+                        callback("foo");
+                    }
+                }
+            });
+
+            expect(lastValue).to.equal("foo");
+            expect(typeof firstCallback).to.equal("function");
+
+            // simulate subscription
+            firstCallback("bar");
+            expect(lastValue).to.equal("bar");
+        });
+    });
+
     describe("updateHighestWorkloadDay", () => {
         it("should create a cache key and a callback as a function", () => {
             const expectedKey = "updateHighestWorkloadDaythingIdmeansOfTransportyear";

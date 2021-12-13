@@ -1,8 +1,9 @@
-import BuildSpecModel from "../../../modules/tools/print/buildSpec.js";
+import SpecModel from "../../../src/modules/tools/print/utils/buildSpec.js";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import WPS from "../../../src/api/wps";
 import store from "../../../src/app-store";
+import LoaderOverlay from "../../../src/utils/loaderOverlay";
 
 /**
  *todo
@@ -66,9 +67,9 @@ function initializeBrwAbfrageModel () {
          * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
          */
         requestParametricUrl: function () {
-            const brwId = Radio.request("ParametricURL", "getBrwId"),
-                brwLayerName = Radio.request("ParametricURL", "getBrwLayerName"),
-                center = Radio.request("ParametricURL", "getCenter"),
+            const brwId = store.state.urlParams?.brwId,
+                brwLayerName = store.state.urlParams?.brwLayerName,
+                center = store.state.urlParams && store.state.urlParams["Map/center"],
                 processFromParametricUrl = true;
 
             if (brwId && brwLayerName && center) {
@@ -163,6 +164,9 @@ function initializeBrwAbfrageModel () {
 
             this.unselectLayerModel(this.get("modelList"));
             layerModel = this.selectLayerModelByName(selectedLayername, this.get("modelList"));
+
+            store.dispatch("MapMarker/removePolygonMarker", null, {root: true});
+
             if (layerModel.attributes.layers.indexOf("flaeche") > -1) {
                 this.setAreaLayerSelected(true);
             }
@@ -345,9 +349,11 @@ function initializeBrwAbfrageModel () {
          */
         sendGetFeatureRequest: function (richtwertNummer, year) {
             const typeName = parseInt(year, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
-                xhttp = new XMLHttpRequest();
+                xhttp = new XMLHttpRequest(),
+                index = Config.layerConf.lastIndexOf("/"),
+                url = Config.layerConf.substring(0, index);
 
-            xhttp.open("POST", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte", true);
+            xhttp.open("POST", url + "/HH_WFS_Bodenrichtwerte", true);
             xhttp.onload = event => {
                 this.handleGetFeatureResponse(event.target.responseText, event.target.status, year);
             };
@@ -400,7 +406,9 @@ function initializeBrwAbfrageModel () {
          */
         sendGetFeatureRequestById: function (featureId, year) {
             const xhttp = new XMLHttpRequest(),
-                yearInt = parseInt(year, 10);
+                yearInt = parseInt(year, 10),
+                index = Config.layerConf.lastIndexOf("/"),
+                url = Config.layerConf.substring(0, index);
             let typeName,
                 urlParams = null,
                 geometryName = "geom_zone";
@@ -412,12 +420,15 @@ function initializeBrwAbfrageModel () {
             else if (yearInt <= 2008) {
                 typeName = "lgv_brw_lagetypisch_alle";
             }
+            else if (yearInt <= 2014) {
+                typeName = "lgv_brw_zoniert_" + year;
+            }
             else {
                 typeName = "lgv_brw_zonen_" + year;
             }
             urlParams = "typeName=" + typeName + "&featureID=" + featureId;
 
-            xhttp.open("GET", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
+            xhttp.open("GET", url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams, true);
             xhttp.onload = event => {
                 const feature = new WFS().readFeature(event.target.responseText);
 
@@ -491,10 +502,12 @@ function initializeBrwAbfrageModel () {
          * @returns {void}
          */
         unselectLayerModel: function (modelList) {
-            const layerModel = modelList.find(model => model.get("isSelected") === true);
+            const layerModels = modelList.filter(model => model.get("isSelected") === true);
 
-            layerModel.set("isVisibleInMap", false);
-            layerModel.set("isSelected", false);
+            layerModels.forEach(layerModel => {
+                layerModel.set("isVisibleInMap", false);
+                layerModel.set("isSelected", false);
+            });
         },
 
         /**
@@ -627,6 +640,7 @@ function initializeBrwAbfrageModel () {
             if (brw.get("zStrassenLage")) {
                 requestObj = this.setObjectAttribute(requestObj, "ZStrLage", brw.get("zStrassenLage"), "string");
             }
+            requestObj = this.setObjectAttribute(requestObj, "tm_ttl", 50, "integer");
 
             return requestObj;
         },
@@ -759,9 +773,10 @@ function initializeBrwAbfrageModel () {
 
         /**
          * Gathers information needed to trigger the print module
+         * @param {Function} getResponse the url post function
          * @return {void}
          */
-        preparePrint: function () {
+        preparePrint: function (getResponse) {
             const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                     return layer.getVisible() === true;
                 }),
@@ -820,14 +835,37 @@ function initializeBrwAbfrageModel () {
                             "scale": scale
                         }
                     }
-                };
+                },
+                spec = SpecModel;
+            let printJob = {};
 
-            let buildSpec = new BuildSpecModel(attr);
+            spec.setAttributes(attr);
+            spec.buildLayers(visibleLayerList);
 
-            buildSpec.buildLayers(visibleLayerList);
-            buildSpec = buildSpec.toJSON();
-            buildSpec = Radio.request("Util", "omit", buildSpec, ["uniqueIdList"]);
-            Radio.trigger("Print", "createPrintJob", encodeURIComponent(JSON.stringify(buildSpec)), "boris", "pdf");
+            printJob = {
+                payload: encodeURIComponent(JSON.stringify(spec.defaults)),
+                printAppId: "boris",
+                currentFormat: "pdf",
+                getResponse: getResponse
+            };
+
+            store.dispatch("Tools/Print/createPrintJob", printJob);
+            this.listenTo(Radio.channel("Print"), {
+                "printFileReady": this.startDownload
+            });
+        },
+
+        /**
+         * starts download for pdf
+         * @param {String} fileUrl the url for the download
+         * @return {void}
+         */
+        startDownload: function (fileUrl) {
+            const link = document.createElement("a");
+
+            link.href = fileUrl;
+            link.click();
+            LoaderOverlay.hide();
         },
 
         /**
@@ -920,9 +958,9 @@ function initializeBrwAbfrageModel () {
                 isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
             if (key === "convertedBrw") {
-                const valueDm = isDMTime ? Radio.request("Util", "thousandsSeparator", (parseFloat(value, 10) * 1.95583).toFixed(1)) : "";
+                const valueDm = isDMTime ? thousandsSeparator((parseFloat(value, 10) * 1.95583).toFixed(1)) : "";
 
-                feature.setProperties({"convertedBrw": Radio.request("Util", "thousandsSeparator", value)});
+                feature.setProperties({"convertedBrw": thousandsSeparator(value)});
                 feature.setProperties({"convertedBrwDM": valueDm});
             }
             else if (key === "zBauweise") {

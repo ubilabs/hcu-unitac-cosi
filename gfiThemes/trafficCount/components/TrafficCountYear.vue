@@ -7,6 +7,7 @@ import moment from "moment";
 import DatepickerModel from "../../../../modules/snippets/datepicker/model";
 import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataYear} from "../utils/addMissingData.js";
+import {hasHolidayInWeek} from "../../../../src/utils/calendar.js";
 
 export default {
     name: "TrafficCountYear",
@@ -21,16 +22,29 @@ export default {
             required: true
         },
         thingId: {
-            type: Number,
+            type: [Number, String],
             required: true
         },
         meansOfTransport: {
             type: String,
             required: true
+        },
+        reset: {
+            type: Boolean,
+            required: true
+        },
+        holidays: {
+            type: Array,
+            required: true
+        },
+        checkGurlittInsel: {
+            type: Boolean,
+            required: true
         }
     },
     data () {
         return {
+            tab: "year",
             yearDatepicker: null,
             apiData: [],
 
@@ -55,9 +69,38 @@ export default {
             renderLabelLegend: (datetime) => {
                 return moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
             },
+            renderPointStyle: (datetime) => {
+                const pointStyle = [],
+                    format = "YYYY-MM-DD";
 
+                for (let i = 0; i < datetime.length; i++) {
+                    if (hasHolidayInWeek(datetime[i], this.holidays, format)) {
+                        pointStyle.push("star");
+                    }
+                    else {
+                        pointStyle.push("circle");
+                    }
+                }
+
+                return pointStyle;
+            },
+            renderPointSize: (datetime) => {
+                const pointSize = [],
+                    format = "YYYY-MM-DD";
+
+                for (let i = 0; i < datetime.length; i++) {
+                    if (hasHolidayInWeek(datetime[i], this.holidays, format)) {
+                        pointSize.push(6);
+                    }
+                    else {
+                        pointSize.push(2);
+                    }
+                }
+
+                return pointSize;
+            },
             // props for table
-            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.yearLabel"),
+            tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleYear"),
             setColTitle: datetime => {
                 return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
             },
@@ -68,10 +111,12 @@ export default {
                 switch (meansOfTransports) {
                     // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
                     // use this code to enable Kfz + SV
-                    // case "Anzahl_Kfz":
-                    //    return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
-                    case "Anteil_SV":
+                    /*
+                    case "Anzahl_Kfz":
+                        return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.carsHeaderSuffix");
+                    case "Anzahl_SV":
                         return txt + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.trucksHeaderSuffix");
+                    */
                     default:
                         return txt;
                 }
@@ -84,7 +129,14 @@ export default {
             tableYear: "tableYear"
         };
     },
+    watch: {
+        reset () {
+            this.yearDatepicker = null;
+            this.setYearDatepicker();
+        }
+    },
     mounted () {
+        moment.locale(i18next.language);
         this.setYearDatepicker();
     },
     methods: {
@@ -92,10 +144,20 @@ export default {
          * Setup of the year tab.
          * This methode creates a datepicker model and triggers the view for rendering. Snippets must be added after view.render.
          * @listens Snippets#ValuesChanged
-         * @returns {Void}  -
+         * @returns {void}
          */
         setYearDatepicker: function () {
-            const startDate = moment("2020-01-01");
+            const startMoment = moment().startOf("year").subtract(10, "years"),
+                startYear = parseInt(startMoment.format("YYYY"), 10);
+
+            if (this.checkGurlittInsel) {
+                if (startYear < 2014) {
+                    startMoment.add(2014 - startYear, "years");
+                }
+            }
+            else if (startYear < 2020) {
+                startMoment.add(2020 - startYear, "years");
+            }
 
             // create datepicker only on first enter of tab
             if (!this.yearDatepicker) {
@@ -103,7 +165,7 @@ export default {
                     displayName: "Tag",
                     preselectedValue: moment().startOf("year").toDate(),
                     multidate: 5,
-                    startDate: startDate.toDate(),
+                    startDate: startMoment.toDate(),
                     endDate: moment().startOf("year").toDate(),
                     type: "datepicker",
                     minViewMode: "years",
@@ -207,6 +269,7 @@ export default {
             <div class="input-group">
                 <input
                     id="yearDateInput"
+                    aria-label="Datum"
                     type="text"
                     class="form-control dpinput"
                     placeholder="Datum"
@@ -238,6 +301,8 @@ export default {
                 :render-label-y-axis="renderLabelYAxis"
                 :description-y-axis="descriptionYAxis"
                 :render-label-legend="renderLabelLegend"
+                :render-point-style="renderPointStyle"
+                :render-point-size="renderPointSize"
             />
         </div>
         <TrafficCountCheckbox
@@ -245,6 +310,8 @@ export default {
         />
         <div id="tableYear">
             <TrafficCountCompTable
+                :holidays="holidays"
+                :current-tab-id="tab"
                 :api-data="apiData"
                 :table-title="tableTitle"
                 :set-col-title="setColTitle"

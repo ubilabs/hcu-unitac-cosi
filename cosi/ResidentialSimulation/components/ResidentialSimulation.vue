@@ -14,7 +14,7 @@ import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpa
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
-import Modal from "../../../../src/share-components/modals/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/Modal.vue";
 import processStats from "../utils/processStats";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 import ToolInfo from "../../components/ToolInfo.vue";
@@ -108,7 +108,7 @@ export default {
             selectedDistricts: "selectedDistricts",
             selectedDistrictLevel: "selectedDistrictLevel"
         }),
-        ...mapGetters("Map", ["map"]),
+        ...mapGetters("Map", {map: "ol2DMap"}),
         geomField () {
             return {
                 name: this.$t("additional:modules.tools.cosi.residentialSimulation.geom"),
@@ -182,9 +182,10 @@ export default {
                 return;
             }
 
-            for (const chartOptions of this.referenceDistrictCharts) {
-                this.visualizeDemographics(chartOptions);
-            }
+            this.visualizeDemographics();
+            // for (const chartOptions of this.referenceDistrictCharts) {
+            //     this.visualizeDemographics(chartOptions);
+            // }
 
             this.extrapolateNeighborhoodStatistics();
         },
@@ -212,7 +213,6 @@ export default {
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
         ...mapActions("Map", ["createLayer"]),
-        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
@@ -313,17 +313,22 @@ export default {
             ];
         },
 
-        visualizeDemographics ({id, name, scaleLabels, labels, type}) {
-            const chartData = new ChartDataSet({
-                id: id + "-" + this.baseStats.reference.districtName,
-                name,
-                scaleLabels,
-                data: {
-                    dataSets: [this.getChartDataSet(labels, this.baseStats.reference.districtName)],
-                    labels
-                },
-                type,
-                options: this.baseStatsChartData.options
+        visualizeDemographics () {
+            const chartData = this.referenceDistrictCharts.map(chartOptions => {
+                const {id, name, scaleLabels, labels, type} = chartOptions;
+
+                return new ChartDataSet({
+                    id: id + "-" + this.baseStats.reference.districtName,
+                    name,
+                    scaleLabels,
+                    data: {
+                        dataSets: [this.getChartDataSet(labels, this.baseStats.reference.districtName)],
+                        labels
+                    },
+                    type,
+                    options: this.baseStatsChartData.options,
+                    beginAtZero: true
+                });
             });
 
             this.channelGraphData(chartData);
@@ -815,6 +820,13 @@ export default {
                                 @click="deleteNeighborhood"
                             >
                                 {{ $t("common:button.delete") }}
+                            </v-btn>
+                            <v-btn
+                                text
+                                v-bind="attrs"
+                                @click="editDialog = false"
+                            >
+                                <v-icon>mdi-close</v-icon>
                             </v-btn>
                             <!-- NOT IMPLEMENTED -->
                             <!-- <v-btn

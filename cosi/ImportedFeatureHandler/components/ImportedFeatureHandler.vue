@@ -20,7 +20,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
-        ...mapGetters("Map", ["layerIds", "layers", "map"]),
+        ...mapGetters("Map", {layerIds: "layerIds", layers: "layers", map: "ol2DMap"}),
         ...mapGetters("Tools/DistrictSelector", ["selectedFeatures"])
     },
     watch: {

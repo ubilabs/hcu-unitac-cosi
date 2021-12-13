@@ -440,6 +440,7 @@ export default {
                                     depressed
                                     accept="text/json;charset=utf-8"
                                 /> -->
+                                <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                 <input
                                     id="file-prompt"
                                     ref="file-prompt"
