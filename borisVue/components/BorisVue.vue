@@ -224,6 +224,7 @@ export default {
                 v-if="active"
                 id="boris-vue"
             >
+<<<<<<< HEAD
                 <!-- {{ $t("additional:modules.tools.BorisVue.content") }} -->
             </div>
             <div class="content">
@@ -766,6 +767,9 @@ export default {
                         </div>
                     </div>
                 </div>
+=======
+                {{ $t("additional:modules.tools.BorisVue.content") }}
+>>>>>>> 51a7380e (BG-1869:initial commit boris to vue)
             </div>
         </template>
     </Tool>
@@ -773,6 +777,7 @@ export default {
 
 
 <style lang="scss" scoped>
+<<<<<<< HEAD
 .content {
         width: 450px;
         .first{
@@ -798,4 +803,6 @@ export default {
     padding: 8px;
     word-wrap: break-word;
 }
+=======
+>>>>>>> 51a7380e (BG-1869:initial commit boris to vue)
 </style>
