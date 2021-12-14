@@ -541,7 +541,7 @@ export default {
                                                 :title="$t('additional:modules.tools.cosi.dipas.showProject')"
                                                 @click="zoomToProject(feature)"
                                             >
-                                                mdi-eye
+                                                mdi-magnify
                                             </v-icon>
                                         </v-list-item-icon>
                                     </v-list-item>

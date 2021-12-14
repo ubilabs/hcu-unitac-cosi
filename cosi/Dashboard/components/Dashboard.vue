@@ -135,6 +135,9 @@ export default {
         selectedColumnNames () {
             return this.selectedColumns.map(col => col.value);
         },
+        selectedColumnLabels () {
+            return this.selectedColumns.map(col => col.value);
+        },
         unselectedColumnLabels () {
             return [...this.districtColumns, ...this.aggregateColumns].filter(col => !this.selectedColumns.includes(col)).map(col => col.text);
         },

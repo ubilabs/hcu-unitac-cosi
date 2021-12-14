@@ -124,7 +124,7 @@ export default {
         this.mapLayer.getSource().clear();
 
         if (newFeatures.length === 0) {
-            if (this.mode === "point" && this.extent?.length > 0) {
+            if (this.mode !== "region" && this.extent?.length > 0) {
                 setBBoxToGeom(this.boundingGeometry);
             }
             return;
