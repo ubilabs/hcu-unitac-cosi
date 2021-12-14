@@ -187,8 +187,8 @@ export default {
             this.setSetByFeature(false);
 
             if (this.mode === "path") {
-                this._scaleUnit = this.scaleUnits.find(el => el.type === "distance");
-                this._transportType = this.transportTypes.find(el => el.type === "foot-walking");
+                this._scaleUnit = "distance";
+                this._transportType = "foot-walking";
                 this.map.addLayer(this.directionsLayer);
             }
             else {
@@ -219,7 +219,7 @@ export default {
         routingDirections () {
             this._selectedDirections = this.routingDirections;
 
-            if (this.mode === "path") {
+            if (this.mode === "path" && this.isochroneFeatures.length > 0) {
                 this.askUpdate = true;
             }
         }
@@ -391,7 +391,7 @@ export default {
                                 placeholder="Keine Auswahl"
                                 :item-text="getDirectionsText"
                                 return-object
-                                :items="[routingDirections]"
+                                :items="[routingDirections || {distance: '-', duration: '-'}]"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.directions')"
                                 outlined
                                 dense
