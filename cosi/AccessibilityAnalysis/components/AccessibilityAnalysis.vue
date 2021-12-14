@@ -24,6 +24,7 @@ export default {
             InfoTemplateRegion,
             facilityNames: [],
             mapLayer: null,
+            directionsLayer: null,
             transportTypes: [
                 {
                     type: "",
@@ -85,11 +86,13 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Map", {map: "ol2DMap"}),
+        ...mapGetters("Map", {map: "ol2DMap", projectionCode: "projectionCode"}),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
+        ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
+        ...mapGetters("Tools/Routing", {routingActive: "active", activeRoutingToolOption: "activeRoutingToolOption"}),
         _mode: {
             get () {
                 return this.mode;
@@ -145,6 +148,14 @@ export default {
             set (v) {
                 this.setDistance(v);
             }
+        },
+        _selectedDirections: {
+            get () {
+                return this.selectedDirections;
+            },
+            set (v) {
+                this.setSelectedDirections(v);
+            }
         }
     },
     watch: {
@@ -152,11 +163,17 @@ export default {
             if (this.active) {
                 this.map.addEventListener("click", this.setCoordinateFromClick);
                 Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
+
+                if (this.mode === "path") {
+                    this.map.addLayer(this.directionsLayer);
+                }
             }
             else {
                 this.map.removeEventListener("click", this.setCoordinateFromClick);
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
                 this.removePointMarker();
+                this.select.getFeatures().clear();
+                this.map.removeLayer(this.directionsLayer);
             }
         },
         isochroneFeatures (newFeatures) {
@@ -168,6 +185,19 @@ export default {
         },
         mode () {
             this.setSetByFeature(false);
+
+            if (this.mode === "path") {
+                this._scaleUnit = this.scaleUnits.find(el => el.type === "distance");
+                this._transportType = this.transportTypes.find(el => el.type === "foot-walking");
+                this.map.addLayer(this.directionsLayer);
+            }
+            else {
+                this.map.removeLayer(this.directionsLayer);
+                if (!this.setByFeature) {
+                    this.map.removeInteraction(this.select);
+                    this.select.un("select", this.pickDirections.bind(this));
+                }
+            }
         },
         clickCoordinate (coord) {
             this.placingPointMarker(coord);
@@ -185,6 +215,13 @@ export default {
         },
         activeVectorLayerList (newValues) {
             this.setFacilityLayers(newValues);
+        },
+        routingDirections () {
+            this._selectedDirections = this.routingDirections;
+
+            if (this.mode === "path") {
+                this.askUpdate = true;
+            }
         }
     },
     /**
@@ -204,9 +241,15 @@ export default {
     async mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = await this.createLayer("reachability-from-point");
+        this.mapLayer = await this.createLayer("accessibility-analysis");
         this.mapLayer.setVisible(true);
         this.mapLayer.setZIndex(10);
+
+        this.directionsLayer = await this.createLayer("accessibility-directions");
+        this.directionsLayer.setZIndex(10);
+        this.directionsLayer.setStyle(this.directionsRouteLayer.getStyleFunction());
+        this.directionsLayer.setSource(this.directionsRouteSource);
+        this.map.removeLayer(this.directionsLayer);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
 
@@ -266,6 +309,10 @@ export default {
         */
         setFacilityLayers: function (vectorLayers) {
             this.facilityNames = vectorLayers.map(v => v.get("name"));
+        },
+
+        getDirectionsText: function (routingDirections) {
+            return `Route - ${routingDirections.distance} m, ${(routingDirections.duration / 60).toFixed(1)} min`;
         },
         /**
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
@@ -339,6 +386,18 @@ export default {
                                 dense
                             />
                             <v-select
+                                v-if="mode === 'path'"
+                                v-model="_selectedDirections"
+                                placeholder="Keine Auswahl"
+                                :item-text="getDirectionsText"
+                                return-object
+                                :items="[routingDirections]"
+                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.directions')"
+                                outlined
+                                dense
+                                readonly
+                            />
+                            <v-select
                                 v-model="_transportType"
                                 title="Verkehrsmittel"
                                 :items="transportTypes"
@@ -347,6 +406,7 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                :disabled="mode === 'path'"
                             />
                             <v-select
                                 v-model="_scaleUnit"
@@ -357,6 +417,7 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                :disabled="mode === 'path'"
                             />
                             <v-text-field
                                 id="range"
@@ -386,6 +447,7 @@ export default {
                                         class="form-check-input"
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                                        :disabled="mode === 'path'"
                                     />
                                 </v-col>
                             </v-row>

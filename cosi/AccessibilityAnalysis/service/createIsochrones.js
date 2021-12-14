@@ -1,5 +1,5 @@
 import requestIsochrones from "./requestIsochrones";
-import {readFeatures} from "../components/util.js";
+import {readFeatures, transformFeatures} from "../components/util.js";
 import * as turf from "@turf/turf";
 import axios from "axios";
 import * as Proj from "ol/proj.js";
@@ -30,20 +30,20 @@ export function setFilterPoly (coords) {
 /**
  * create isochrones features
  * @export
- * @param {*} {transportType, coordinates, scaleUnit, distance} parameters
+ * @param {*} {transportType, coordinates, scaleUnit, distance, batchSize, baseUrl} parameters
  * @param {*} progress progress callback
  * @return {*} features
  */
-export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, batchSize}, progress) {
+export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, batchSize, baseUrl}, progress) {
     let ret;
 
     if (coordinates.length === 1) {
         progress(50);
-        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance);
+        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, baseUrl);
         progress(100);
         return ret;
     }
-    return createIsochronesPoints(transportType, coordinates, scaleUnit, distance, null, batchSize || 200, progress);
+    return createIsochronesPoints(transportType, coordinates, scaleUnit, distance, null, batchSize || 200, progress, baseUrl);
 }
 
 /**
@@ -52,9 +52,10 @@ export async function createIsochrones ({transportType, coordinates, scaleUnit, 
  * @param {*} coordinate coordinate
  * @param {*} scaleUnit scaleUnit
  * @param {*} distance distance
+ * @param {*} baseUrl baseUrl
  * @return {*} steps and features
  */
-async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance) {
+async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, baseUrl) {
     if (abortController) {
         abortController.cancel();
     }
@@ -66,7 +67,8 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
             [coordinate],
             scaleUnit,
             [range / 3, range * 2 / 3, range],
-            abortController
+            abortController,
+            baseUrl
         ),
 
         // reverse JSON object sequence to render the isochrones in the correct order
@@ -100,9 +102,10 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
  * @param {*} selectedFacilityName selectedFacilityName
  * @param {*} batchSize batchSize
  * @param {*} progress progress callback
+ * @param {*} baseUrl baseUrl
  * @return {*} features
  */
-async function createIsochronesPoints (transportType, coordinates, scaleUnit, distance, selectedFacilityName, batchSize, progress) {
+async function createIsochronesPoints (transportType, coordinates, scaleUnit, distance, selectedFacilityName, batchSize, progress, baseUrl) {
 
     progress(1);
 
@@ -132,7 +135,7 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
     for (const coords of coordinatesList) {
         try {
             const json = await requestIsochrones(transportType, coords, scaleUnit,
-                    [range, range * 2 / 3, range / 3], abortController),
+                    [range, range * 2 / 3, range / 3], abortController, baseUrl),
                 // reverse JSON object sequence to render the isochrones in the correct order
                 // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
                 reversedFeatures = [...json.features].reverse(),
@@ -198,20 +201,20 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
     return features;
 }
 
-/**
-     * Transforms features between CRS
-     * @param   {feature[]} features Array of ol.features
-     * @param   {string}    crs      EPSG-Code of feature
-     * @param   {string}    mapCrs   EPSG-Code of ol.map
-     * @returns {void}
-     */
-function transformFeatures (features, crs, mapCrs) {
-    features.forEach(function (feature) {
-        const geometry = feature.getGeometry();
+// /**
+//      * Transforms features between CRS
+//      * @param   {feature[]} features Array of ol.features
+//      * @param   {string}    crs      EPSG-Code of feature
+//      * @param   {string}    mapCrs   EPSG-Code of ol.map
+//      * @returns {void}
+//      */
+// function transformFeatures (features, crs, mapCrs) {
+//     features.forEach(function (feature) {
+//         const geometry = feature.getGeometry();
 
-        if (geometry) {
-            geometry.transform(crs, mapCrs);
-        }
-    });
-    return features;
-}
+//         if (geometry) {
+//             geometry.transform(crs, mapCrs);
+//         }
+//     });
+//     return features;
+// }
