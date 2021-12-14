@@ -289,8 +289,7 @@ export default {
                                                 <div class="graph_functions">
                                                     <button
                                                         v-if="type === 'LineChart'"
-                                                        class="switch right"
-                                                        :color="graph.beginAtZero ? '' : 'primary'"
+                                                        :class="['switch', 'right', graph.beginAtZero ? '' : 'selected']"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                                         @click="yToZero()"
                                                     >
@@ -334,8 +333,7 @@ export default {
                                     <div class="graph_functions">
                                         <button
                                             v-if="graph.type === 'LineChart'"
-                                            class="switch right"
-                                            :color="graph.beginAtZero ? '' : 'primary'"
+                                            :class="['switch', 'right', graph.beginAtZero ? '' : 'selected']"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                             @click="yToZero()"
                                         >
@@ -524,6 +522,11 @@ export default {
                                 span {
                                     margin-left:5px;
                                 }
+                            }
+
+                            .selected {
+                                background-color: @brightblue;
+                                color: white;
                             }
                         }
                     }
