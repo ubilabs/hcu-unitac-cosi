@@ -372,7 +372,7 @@ export default {
 </script>
 
 <template lang="html">
-    <div class="tool-wrap">
+    <div :class="active ? 'tool-wrap' : ''">
         <Tool
             :title="$t('additional:modules.tools.cosi.scenarioBuilder.title')"
             :icon="glyphicon"

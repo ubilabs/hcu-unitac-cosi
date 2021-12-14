@@ -145,8 +145,6 @@ export default {
             this.editFeature = null;
             this.editDialog = false;
 
-            console.log(newActive, this);
-
             if (newActive) {
                 if (this.geometry) {
                     // wait for 2 ticks for the drawing layer to initialize

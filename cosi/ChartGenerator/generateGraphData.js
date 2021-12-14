@@ -13,8 +13,13 @@ export default function generateGraphData (arg, type) {
         colorRange = generateColorScale(dataSet);
 
     dataSet.data.dataSets.forEach((set, index) => {
-        const getColor = colorRange(index),
+        let getColor = colorRange(index),
             d3Color = color(getColor);
+
+        if (!getColor) {
+            getColor = "rgba(0, 40, 255, 1)";
+            d3Color = color(getColor);
+        }
 
         d3Color.opacity = 0.5;
         set.borderColor = getColor;
