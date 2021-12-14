@@ -102,7 +102,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Map", ["createLayer", "zoomTo"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
@@ -299,7 +299,7 @@ export default {
                     })
                 });
 
-            if (resolution < 10) {
+            if (resolution < 3) {
                 style.setText(text);
             }
             return style;
@@ -333,7 +333,7 @@ export default {
                     })
                 });
 
-            if (resolution < 10) {
+            if (resolution < 3) {
                 style.setText(text);
             }
             return style;
@@ -360,7 +360,7 @@ export default {
                     })
                 });
 
-            if (resolution < 10) {
+            if (resolution < 3) {
                 style.setText(text);
             }
             return style;
@@ -413,7 +413,7 @@ export default {
 
         getContributionLabel (feature) {
             return new Text({
-                font: "12px Calibri,sans-serif",
+                font: "16px Calibri,sans-serif",
                 fill: new Fill({
                     color: [255, 255, 255]
                 }),
@@ -445,6 +445,12 @@ export default {
                 color = colors[category] ? colors[category] : "rgb(0,0,0)";
             }
             return color;
+        },
+
+        zoomToProject (feature) {
+            const extent = feature.getGeometry().getExtent();
+
+            this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
         }
     }
 };
@@ -530,6 +536,14 @@ export default {
                                         <v-list-item-content>
                                             <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showProject') }}</v-list-item-title>
                                         </v-list-item-content>
+                                        <v-list-item-icon v-if="projectsActive[feature.getProperties().id]['layer']">
+                                            <v-icon
+                                                :title="$t('additional:modules.tools.cosi.dipas.showProject')"
+                                                @click="zoomToProject(feature)"
+                                            >
+                                                mdi-eye
+                                            </v-icon>
+                                        </v-list-item-icon>
                                     </v-list-item>
                                     <v-list-item>
                                         <v-list-item-action>

@@ -15,7 +15,8 @@
                         "byCategoriesRainbow": "by categories in rainbow spectrum",
                         "byVoting": "by voting"
                     },
-                    "contributions": "contributions"
+                    "contributions": "contributions",
+                    "zoomToProject": "Zoom to project area"
                 }
             }
         }

@@ -15,7 +15,8 @@
                         "byCategoriesRainbow": "nach Kategorien im Regenbogenspektrum",
                         "byVoting": "nach Bewertungen"
                     },
-                    "contributions": "Beiträge"
+                    "contributions": "Beiträge",
+                    "zoomToProject": "Auf Projektgebiet zoomen"
                 }
             }
         }
