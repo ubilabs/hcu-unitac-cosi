@@ -8,6 +8,9 @@
   "fileImportAddon": {
     "type": "tool"
   },
+  "borisVue": {
+    "type": "tool"
+  },
   "populationRequest": {
     "type": "tool"
   },
