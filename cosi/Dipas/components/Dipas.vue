@@ -299,7 +299,7 @@ export default {
                     })
                 });
 
-            if (resolution < 3) {
+            if (resolution < 1.5) {
                 style.setText(text);
             }
             return style;
@@ -333,7 +333,7 @@ export default {
                     })
                 });
 
-            if (resolution < 3) {
+            if (resolution < 1.5) {
                 style.setText(text);
             }
             return style;
@@ -354,13 +354,14 @@ export default {
                 text = this.getContributionLabel(feature),
                 style = new Style({
                     image: new Circle({
-                        radius: Math.sqrt(votingPro + votingContra) + 5,
+                        // radius: Math.sqrt(votingPro + votingContra) + 5,
+                        radius: Math.pow(votingPro + votingContra, 2 / 3) + 3,
                         fill: new Fill({color: color}),
                         stroke: new Stroke({color: "#000", width: 1})
                     })
                 });
 
-            if (resolution < 3) {
+            if (resolution < 1.5) {
                 style.setText(text);
             }
             return style;

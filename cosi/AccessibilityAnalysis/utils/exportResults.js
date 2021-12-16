@@ -45,7 +45,7 @@ export function exportAsGeoJson (mapLayer) {
 
         featureCollection.features.push(featureGeoJson);
     }
-    else {
+    else if (this.mode === "region") {
         const coordinates = this.getCoordinates();
 
         for (let i = 0; i < coordinates.length; i++) {

@@ -314,7 +314,7 @@ export default {
                                                 </template>
                                                 <div class="graph_functions">
                                                     <button
-                                                        v-if="type === 'LineChart'"
+                                                        v-if="type === 'LineChart' && !graph.stacked"
                                                         :class="['switch', 'right', graph.beginAtZero ? '' : 'selected']"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                                         @click="yToZero()"
@@ -366,7 +366,7 @@ export default {
                                     </template>
                                     <div class="graph_functions">
                                         <button
-                                            v-if="graph.type === 'LineChart'"
+                                            v-if="graph.type === 'LineChart' && !graph.stacked"
                                             :class="['switch', 'right', graph.beginAtZero ? '' : 'selected']"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
                                             @click="yToZero()"

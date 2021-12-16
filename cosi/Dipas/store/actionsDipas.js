@@ -93,6 +93,7 @@ function contributionsGfiAttributes () {
     return {
         dateCreated: "Erstellungsdatum",
         title: "Titel",
+        link: "Link",
         contributionType: "Beitragstyp",
         contributionContent: "Beitragstext",
         commentsNumber: "Anzahl Kommentare",
