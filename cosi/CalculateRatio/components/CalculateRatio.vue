@@ -10,6 +10,7 @@ import DataTable from "./DataTable.vue";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {getCenter} from "ol/extent";
 
 export default {
     name: "CalculateRatio",
@@ -461,9 +462,9 @@ export default {
                     this.featureVals = [];
                     layerFeatures.forEach(feature => {
                         if (this.filters[findLayer.get("id")][0].ids.includes(feature.getId())) {
-                            const layerGeometry = feature.getGeometry().getExtent();
+                            const layerGeometry = getCenter(feature.getGeometry().getExtent());
 
-                            if (geometry.intersectsExtent(layerGeometry)) {
+                            if (geometry.intersectsCoordinate(layerGeometry)) {
                                 if (this.paramFieldA.name !== "Anzahl") {
                                     if (
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||

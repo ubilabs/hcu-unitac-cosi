@@ -348,7 +348,7 @@ export default {
             this.map.forEachFeatureAtPixel(evt.pixel, feature => {
                 for (const feat of unpackCluster(feature)) {
                     if (feat.get("isSimulation")) {
-                        this.editFeature = feature;
+                        this.editFeature = feat;
                         this.editDialog = true;
                     }
                 }

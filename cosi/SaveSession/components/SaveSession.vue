@@ -267,6 +267,9 @@ export default {
             if (layer) {
                 return layer.olLayer;
             }
+            if (this.onlyUdpServices && isNaN(parseInt(layerId, 10))) {
+                return undefined;
+            }
 
             const model = this.initializeLayer(layerId);
 

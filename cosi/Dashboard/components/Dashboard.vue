@@ -10,7 +10,7 @@ import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
 import {calculateStats, calculateCorrelation, getTotal, getAverage} from "../utils/operations";
-import {generateChartForDistricts, generateChartForCorrelation} from "../utils/chart";
+import {generateChartForDistricts, generateChartForCorrelation, generateChartsForItems} from "../utils/chart";
 import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/export";
 import composeFilename from "../../utils/composeFilename";
 import exportXlsx from "../../utils/exportXlsx";
@@ -336,10 +336,28 @@ export default {
             return average.toLocaleString(this.currentLocale);
         },
 
+        getAverageForAllTimestamps (item) {
+            return Object.fromEntries(
+                item.years.map(timestamp => [
+                    this.timestampPrefix + timestamp,
+                    getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
+                ])
+            );
+        },
+
         getTotal (item, timestamp) {
             const total = getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
 
             return total.toLocaleString(this.currentLocale);
+        },
+
+        getTotalForAllTimestamps (item) {
+            return Object.fromEntries(
+                item.years.map(timestamp => [
+                    this.timestampPrefix + timestamp,
+                    getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
+                ])
+            );
         },
 
         setField (field, item) {
@@ -353,18 +371,9 @@ export default {
         },
 
         renderCharts (item) {
-            const total = Object.fromEntries(
-                    item.years.map(timestamp => [
-                        this.timestampPrefix + timestamp,
-                        getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
-                    ])
-                ),
-                average = Object.fromEntries(
-                    item.years.map(timestamp => [
-                        this.timestampPrefix + timestamp,
-                        getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
-                    ])
-                ),
+            const
+                total = this.getTotalForAllTimestamps(item),
+                average = this.getAverageForAllTimestamps(item),
                 data = {
                     ...item,
                     total,
@@ -378,6 +387,23 @@ export default {
                 );
 
             this.channelGraphData(chart);
+        },
+
+        renderGroupedCharts () {
+            const
+                datasets = this.selectedItems.map(item => ({
+                    ...item,
+                    total: this.getTotalForAllTimestamps(item),
+                    average: this.getAverageForAllTimestamps(item)
+                })),
+                charts = generateChartsForItems(
+                    datasets,
+                    this.selectedColumnNames,
+                    this.selectedDistrictLevel.label,
+                    this.timestampPrefix
+                );
+
+            this.channelGraphData(charts);
         },
 
         renderScatterplot () {
@@ -582,6 +608,7 @@ export default {
                                     <TableRowMenu
                                         :item="item"
                                         :fields="fields"
+                                        :selected-items="selectedItems"
                                         @setField="setField"
                                         @resetFields="resetFields"
                                         @add="calculateStats('add')"
@@ -591,6 +618,7 @@ export default {
                                         @correlate="renderScatterplot"
                                         @visualizationChanged="onVisualizationChanged"
                                         @renderCharts="renderCharts"
+                                        @renderGroupedChart="renderGroupedCharts"
                                     />
                                 </template>
 

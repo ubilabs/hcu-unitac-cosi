@@ -132,6 +132,32 @@ export default {
 
             this.$set(this.dataSets, i, {...graph, beginAtZero});
         },
+
+        /**
+         * @description Updates chart canvas to display yAxes to be stacked or reverse.
+         * @returns {Void} Function returns nothing.
+         */
+        yStacked () {
+            this.modifyChart("stacked");
+        },
+
+        modifyChart (param) {
+            const
+                i = this.activeGraph,
+                graph = this.dataSets[i],
+                config = this.chartConfigs[i],
+                value = !graph[param];
+
+            if (graph.sub_graph !== null && graph.sub_graph !== undefined) {
+                config[graph.sub_graph][param] = value;
+            }
+            else {
+                config[param] = value;
+            }
+
+            this.$set(this.dataSets, i, {...graph, [param]: value});
+        },
+
         /**
          * @description Turns closest Canvas to PNG and passes it the download function.
          * @param {$event} event Click event handler.
@@ -296,6 +322,14 @@ export default {
                                                         {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
                                                     </button>
                                                     <button
+                                                        v-if="type === 'LineChart'"
+                                                        :class="['switch', 'right', graph.stacked ? '' : 'selected']"
+                                                        :title="$t('additional:modules.tools.cosi.chartGenerator.yStacked')"
+                                                        @click="yStacked()"
+                                                    >
+                                                        {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
+                                                    </button>
+                                                    <button
                                                         class="dl right"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
                                                         @click="downloadGraph()"
@@ -338,6 +372,14 @@ export default {
                                             @click="yToZero()"
                                         >
                                             {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
+                                        </button>
+                                        <button
+                                            v-if="graph.type === 'LineChart'"
+                                            :class="['switch', 'right', graph.stacked ? '' : 'selected']"
+                                            :title="$t('additional:modules.tools.cosi.chartGenerator.yStacked')"
+                                            @click="yStacked()"
+                                        >
+                                            {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
                                         </button>
                                         <button
                                             class="dl right"

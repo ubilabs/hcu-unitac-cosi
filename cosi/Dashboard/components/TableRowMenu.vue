@@ -15,6 +15,10 @@ export default {
         fields: {
             type: Object,
             required: true
+        },
+        selectedItems: {
+            type: Array,
+            required: true
         }
     },
     data: () => ({
@@ -66,6 +70,7 @@ export default {
                 <v-toolbar
                     color="light-grey"
                     dark
+                    dense
                 >
                     <v-icon>mdi-home-analytics</v-icon>
                     <v-toolbar-title>{{ _item.category }}</v-toolbar-title>
@@ -75,10 +80,14 @@ export default {
                         v-model="selectedMenuItem"
                         color="primary"
                     >
-                        <v-list-item disabled>
+                        <v-list-item
+                            dense
+                            disabled
+                        >
                             Karte
                         </v-list-item>
                         <v-list-item
+                            dense
                             @click="renderVisualization"
                         >
                             <v-list-item-icon>
@@ -95,6 +104,7 @@ export default {
                             :title="!_item.visualized ? 'Visualisierung in der Karte muss aktiv sein.' : ''"
                         >
                             <v-list-item
+                                dense
                                 :disabled="!_item.visualized"
                                 @click="setPlayState(!playState)"
                             >
@@ -106,6 +116,7 @@ export default {
                                 </v-list-item-content>
                             </v-list-item>
                             <v-list-item
+                                dense
                                 :disabled="!_item.visualized"
                                 :title="!_item.visualized ? 'Visualisierung in der Karte muss aktiv sein.' : ''"
                                 @click="setShowMapNames(!showMapNames)"
@@ -125,10 +136,14 @@ export default {
                                     v-bind="attrs"
                                     v-on="on"
                                 >
-                                    <v-list-item disabled>
+                                    <v-list-item
+                                        dense
+                                        disabled
+                                    >
                                         Auswahl
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('setField', 'A', _item)"
                                     >
                                         <v-list-item-icon>
@@ -139,6 +154,7 @@ export default {
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('setField', 'B', _item)"
                                     >
                                         <v-list-item-icon>
@@ -149,6 +165,7 @@ export default {
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('resetFields')"
                                     >
                                         <v-list-item-icon>
@@ -169,10 +186,14 @@ export default {
                                     v-bind="attrs"
                                     v-on="on"
                                 >
-                                    <v-list-item disabled>
+                                    <v-list-item
+                                        dense
+                                        disabled
+                                    >
                                         Berechnen
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('add')"
                                     >
                                         <v-list-item-icon>
@@ -183,6 +204,7 @@ export default {
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('subtract')"
                                     >
                                         <v-list-item-icon>
@@ -193,6 +215,7 @@ export default {
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('multiply')"
                                     >
                                         <v-list-item-icon>
@@ -203,6 +226,7 @@ export default {
                                         </v-list-item-content>
                                     </v-list-item>
                                     <v-list-item
+                                        dense
                                         @click="$emit('divide')"
                                     >
                                         <v-list-item-icon>
@@ -215,6 +239,7 @@ export default {
                                     <template v-if="_item.isTemp">
                                         <v-divider />
                                         <v-list-item
+                                            dense
                                             @click="$emit('delete')"
                                         >
                                             <v-list-item-icon>
@@ -226,10 +251,16 @@ export default {
                                         </v-list-item>
                                     </template>
                                     <v-divider />
-                                    <v-list-item disabled>
+                                    <v-list-item
+                                        dense
+                                        disabled
+                                    >
                                         Diagramme
                                     </v-list-item>
-                                    <v-list-item @click="$emit('renderCharts', _item)">
+                                    <v-list-item
+                                        dense
+                                        @click="$emit('renderCharts', _item)"
+                                    >
                                         <v-list-item-icon>
                                             <v-icon>mdi-chart-bar</v-icon>
                                         </v-list-item-icon>
@@ -237,7 +268,22 @@ export default {
                                             Balken- / Linien- / Tortendiagramme erstellen
                                         </v-list-item-content>
                                     </v-list-item>
-                                    <v-list-item @click="$emit('correlate')">
+                                    <v-list-item
+                                        dense
+                                        :disabled="selectedItems.length <= 1"
+                                        @click="$emit('renderGroupedChart')"
+                                    >
+                                        <v-list-item-icon>
+                                            <v-icon>mdi-chart-areaspline</v-icon>
+                                        </v-list-item-icon>
+                                        <v-list-item-content>
+                                            Diagramme für ausgewählte Zeilen
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                    <v-list-item
+                                        dense
+                                        @click="$emit('correlate')"
+                                    >
                                         <v-list-item-icon>
                                             <v-icon>mdi-chart-scatter-plot</v-icon>
                                         </v-list-item-icon>
@@ -267,3 +313,11 @@ export default {
         </v-icon>
     </div>
 </template>
+
+<style lang="less" scoped>
+    #dashboard-wrapper {
+        .v-list-item--dense {
+            min-height: unset;
+        }
+    }
+</style>
