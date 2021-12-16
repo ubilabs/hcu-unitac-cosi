@@ -260,7 +260,6 @@ export default {
         },
 
         loadFeatures: async function (layer) {
-
             if (this.propertiesMap[layer.id] && layer.property === undefined) {
                 return;
             }
@@ -387,19 +386,25 @@ export default {
         },
 
         getMinMaxForField (layerId, field) {
-            const invalidFeatures = [],
+            const invalidValues = [],
                 features = this.propertiesMap[layerId],
                 values = features.reduce((res, f) => {
                     const v = parseFloat(f[field]);
 
                     if (isNaN(v)) {
-                        invalidFeatures.push(f[this.keyOfAttrNameStats]);
+                        if (f[this.keyOfAttrNameStats]) {
+                            invalidValues.push(f[this.keyOfAttrNameStats]);
+                        }
+                        else {
+                            invalidValues.push(f.feature.get([this.keyOfAttrNameStats]));
+                        }
                         return res;
                     }
                     return [...res, v];
                 }, []),
                 max = Math.max(...values),
-                min = Math.min(...values);
+                min = Math.min(...values),
+                invalidFeatures = [...new Set(invalidValues)];
 
             return {min, max, invalidFeatures};
         },
@@ -486,10 +491,7 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-            await this.loadFeatures({
-                id: value.quotientLayer,
-                facilityLayerName: this.facilityNames.find(item => item.id === value.quotientLayer)?.name
-            });
+            await this.loadFeatures(this.allLayerOptions.find(layer => layer.id === value.quotientLayer));
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
