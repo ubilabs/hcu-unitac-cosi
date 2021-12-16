@@ -323,7 +323,7 @@ export default {
                                                     </button>
                                                     <button
                                                         v-if="type === 'LineChart'"
-                                                        :class="['switch', 'right', graph.stacked ? '' : 'selected']"
+                                                        :class="['switch', 'right', graph.stacked ? 'selected' : '']"
                                                         :title="$t('additional:modules.tools.cosi.chartGenerator.yStacked')"
                                                         @click="yStacked()"
                                                     >
@@ -375,7 +375,7 @@ export default {
                                         </button>
                                         <button
                                             v-if="graph.type === 'LineChart'"
-                                            :class="['switch', 'right', graph.stacked ? '' : 'selected']"
+                                            :class="['switch', 'right', graph.stacked ? 'selected' : '']"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.yStacked')"
                                             @click="yStacked()"
                                         >
