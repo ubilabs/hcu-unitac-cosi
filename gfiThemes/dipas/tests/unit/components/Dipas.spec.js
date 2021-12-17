@@ -1,11 +1,13 @@
 import Vuex from "vuex";
-import {shallowMount, createLocalVue} from "@vue/test-utils";
+import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
 import Dipas from "../../../components/Dipas.vue";
 
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
+
+config.mocks.$t = key => key;
 
 describe("addons/dipas/components/Dipas.vue", () => {
     const iconPath = "https://geoportal-hamburg.de/lgv-beteiligung/icons/einzelmarker_dunkel.png",
@@ -16,40 +18,15 @@ describe("addons/dipas/components/Dipas.vue", () => {
 
             }
         },
-        mockConfigJsTABLE = {
-            uiStyle: "TABLE"
-        },
-        mockConfigJsDEFAULT = {
-            uiStyle: "DEFAULT"
-        },
         getters = {
-            uiStyle: state => state.configJs.uiStyle
+            uiStyle: () => "DEFAULT"
         },
-        mutations = {
-            setConfigJs (state, value) {
-                state.configJs = value;
-            },
-            setUiStyle (state, value) {
-                state.configJs.uiStyle = value;
-            }
+        gettersTable = {
+            uiStyle: () => "TABLE"
         };
     let wrapper,
         valueStyle = [],
         store;
-
-    beforeEach(() => {
-        store = new Vuex.Store({
-            namespaces: true,
-            modules: {
-                Dipas
-            },
-            state: {
-                configJs: mockConfigJsDEFAULT
-            },
-            getters,
-            mutations
-        });
-    });
 
     /**
      * Creates the wrapper
@@ -57,6 +34,13 @@ describe("addons/dipas/components/Dipas.vue", () => {
      * @returns {void}
      */
     function createWrapper (isTable) {
+        store = new Vuex.Store({
+            namespaces: true,
+            modules: {
+                Dipas
+            },
+            getters: isTable ? gettersTable : getters
+        });
         wrapper = shallowMount(Dipas, {
             store,
             localVue,
@@ -77,25 +61,12 @@ describe("addons/dipas/components/Dipas.vue", () => {
                 }
             }
         });
-        if (isTable) {
-            store.commit("setConfigJs", mockConfigJsTABLE);
-        }
-        else {
-            store.commit("setConfigJs", mockConfigJsDEFAULT);
-        }
     }
 
     describe("template", () => {
         it("uiStyle table, should place the values", () => {
             createWrapper(true);
-            /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
-            console.log(wrapper);
             wrapper.vm.$nextTick();
-            console.log(wrapper.vm.isTableStyle());
-            console.log(wrapper.findAll(".dipas-gfi-thema"));
-            console.log(wrapper.findAll(".dipas-gfi-name"));
-            console.log(wrapper.findAll(".dipas-gfi-description"));
-            console.log(wrapper.findAll("a").length);
             expect(wrapper.findAll(".dipas-gfi-thema").at(0).element.textContent.trim()).to.equal("Value Kategorie");
             expect(wrapper.findAll(".dipas-gfi-name").at(0).element.textContent.trim()).to.equal("Value name");
             expect(wrapper.findAll(".dipas-gfi-description").at(0).element.textContent.trim()).to.equal("Value description");
