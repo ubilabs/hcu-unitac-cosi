@@ -22,7 +22,8 @@ const state = {
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dashboard_en.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dashboard.md"
-    }
+    },
+    statsFeatureFilter: []
 };
 
 export default state;

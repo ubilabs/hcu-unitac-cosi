@@ -54,6 +54,9 @@ export default {
                         "distance",
                         "steps",
                         "active"
+                    ],
+                    Dashboard: [
+                        "statsFeatureFilter"
                     ]
                 }
             },
@@ -72,7 +75,7 @@ export default {
             saveDialog: false,
             saveMode: "quickSave",
             sessionFile: null,
-            autoSave: false,
+            autoSave: null,
             autoSaveInterval: undefined,
             autoSaveDialog: false,
             confirmDialog: false,

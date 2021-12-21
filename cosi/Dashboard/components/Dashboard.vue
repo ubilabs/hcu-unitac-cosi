@@ -94,7 +94,7 @@ export default {
             timestamps: [],
             // currentTimeStamp: null,
             search: "",
-            statsFeatureFilter: [],
+            // statsFeatureFilter: [],
             fields: {
                 A: null,
                 B: null
@@ -443,13 +443,13 @@ export default {
         calculateCorrelation,
         groupMapping,
 
-        /**
-         * @param {String[]} value -
-         * @returns {void}
-         */
-        setStatsFeatureFilter (value) {
-            this.statsFeatureFilter = value;
-        },
+        // /**
+        //  * @param {String[]} value -
+        //  * @returns {void}
+        //  */
+        // setStatsFeatureFilter (value) {
+        //     this.statsFeatureFilter = value;
+        // },
 
         /**
          * @param {String} value -

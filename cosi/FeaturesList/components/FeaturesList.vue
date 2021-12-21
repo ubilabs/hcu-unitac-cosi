@@ -308,13 +308,17 @@ export default {
         getVectorlayerMapping,
         getNumericalColumns () {
             const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
-                return [
-                    ...cols,
-                    ...mappingObj.numericalValues.map(v => ({
-                        text: v.name,
-                        value: v.id
-                    }))
-                ];
+                const _numCols = mappingObj.numericalValues.map(v => ({
+                    text: v.name,
+                    value: v.id
+                }));
+
+                for (const col of _numCols) {
+                    if (!cols.find(c => c.id === col.id)) {
+                        cols.push(col);
+                    }
+                }
+                return cols;
             }, []);
 
             // add divider to last col
