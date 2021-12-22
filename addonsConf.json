@@ -72,5 +72,6 @@
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   },
-  "qr": "view.js"
+  "qr": "view.js",
+  "addGeoJsonRemotely": "addGeoJsonRemotely.js"
 }
