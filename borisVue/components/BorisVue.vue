@@ -15,13 +15,14 @@ export default {
     },
     created () {
         this.$on("close", this.close);
+        this.initialize();
     },
     methods: {
         ...mapActions("Tools/BorisVue", [
-            "initialize"
+            "initialize",
+            "switchLayer"
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
-
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
@@ -55,7 +56,29 @@ export default {
                 v-if="active"
                 id="boris-vue"
             >
-                {{ $t("additional:modules.tools.BorisVue.content") }}
+                <!-- {{ $t("additional:modules.tools.BorisVue.content") }} -->
+            </div>
+            <div class="content">
+                <div class="form-group col-xs-12 first">
+                    <span>Die Bodenrichtwertabfrage erfolgt für das Jahr:</span>
+                </div>
+                <div class="form-group col-xs-12">
+                    <select
+                        class="form-control"
+                        @change="switchLayer($event.target.value)"
+                    >
+                        <option
+                            v-for="(model, index) in filteredModelList"
+                            :key="index"
+                            :value="model.get('name')"
+                        >
+                            {{ model.get("name") }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-xs-12">
+                    <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
+                </div>
             </div>
         </template>
     </Tool>
@@ -63,4 +86,16 @@ export default {
 
 
 <style lang="scss" scoped>
+.content {
+        width: 450px;
+        .first{
+            padding-top: 5px;
+        }
+        .form-group {
+            >label {
+                float: left;
+                width: 75%;
+            }
+        }
+    }
 </style>
