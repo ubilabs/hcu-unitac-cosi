@@ -1,5 +1,5 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
-import state from "./stateBorisVue";
+import stateBoris from "./stateBorisVue";
 
 const mutations = {
     /**
@@ -8,9 +8,17 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(state)
+    ...generateSimpleMutations(stateBoris),
 
     // NOTE overwrite (or create additional) mutations here if you need special behavior in them
+    setAreaLayerSelected (state, value) {
+        state.areaLayerSelected = value;
+    },
+
+    setShowStripesLayer (state, value) {
+        state.stripesLayer = value;
+    }
+
 };
 
 export default mutations;
