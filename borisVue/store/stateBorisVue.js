@@ -6,9 +6,13 @@ const state = {
     name: "common:menu.tools.borisVue",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: false,
-    resizableWindow: true,
+    resizableWindow: false,
     isVisibleInMenu: true,
-    deactivateGFI: false
+    deactivateGFI: false,
+    filteredModelList: [],
+    areaLayerSelected: false,
+    stripesLayer: false,
+    selectedLayer: null
 };
 
 export default state;
