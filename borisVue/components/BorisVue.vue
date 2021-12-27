@@ -225,16 +225,23 @@ export default {
                 id="boris-vue"
             >
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> afd967cb (added switchLayer to select data by year)
                 <!-- {{ $t("additional:modules.tools.BorisVue.content") }} -->
             </div>
             <div class="content">
                 <div class="form-group col-xs-12 first">
                     <span>Die Bodenrichtwertabfrage erfolgt für das Jahr:</span>
+<<<<<<< HEAD
                     <span>{{ brwLanduse === '' }}</span>
+=======
+>>>>>>> afd967cb (added switchLayer to select data by year)
                 </div>
                 <div class="form-group col-xs-12">
                     <select
                         class="form-control"
+<<<<<<< HEAD
                         @change="handleSelectBRWYear($event.target.value)"
                     >
                         <option
@@ -770,6 +777,22 @@ export default {
 =======
                 {{ $t("additional:modules.tools.BorisVue.content") }}
 >>>>>>> 51a7380e (BG-1869:initial commit boris to vue)
+=======
+                        @change="switchLayer($event.target.value)"
+                    >
+                        <option
+                            v-for="(model, index) in filteredModelList"
+                            :key="index"
+                            :value="model.get('name')"
+                        >
+                            {{ model.get("name") }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-xs-12">
+                    <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
+                </div>
+>>>>>>> afd967cb (added switchLayer to select data by year)
             </div>
         </template>
     </Tool>
@@ -778,6 +801,9 @@ export default {
 
 <style lang="scss" scoped>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> afd967cb (added switchLayer to select data by year)
 .content {
         width: 450px;
         .first{
@@ -789,6 +815,7 @@ export default {
                 width: 75%;
             }
         }
+<<<<<<< HEAD
         .form-check{
             padding-left: 15px;
             padding-bottom: 15px;
@@ -805,4 +832,7 @@ export default {
 }
 =======
 >>>>>>> 51a7380e (BG-1869:initial commit boris to vue)
+=======
+    }
+>>>>>>> afd967cb (added switchLayer to select data by year)
 </style>
