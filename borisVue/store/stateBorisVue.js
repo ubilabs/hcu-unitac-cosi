@@ -10,7 +10,7 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: false,
     filteredModelList: [],
-    areaLayerSelected: false,
+    areaLayerSelected: true,
     stripesLayer: false,
     selectedLayer: null
 };

@@ -11,7 +11,19 @@ export default {
         Tool
     },
     computed: {
-        ...mapGetters("Tools/BorisVue", Object.keys(getters))
+        ...mapGetters("Tools/BorisVue", Object.keys(getters)),
+        getFilterListWithoutStripes () {
+            const filteredListWithoutStripes = [];
+
+            for (const model in this.filteredModelList) {
+                const layerName = this.filteredModelList[model].attributes.name;
+
+                if (layerName.indexOf("-stripes") === -1) {
+                    filteredListWithoutStripes.push(layerName);
+                }
+            }
+            return filteredListWithoutStripes;
+        }
     },
     created () {
         this.$on("close", this.close);
@@ -20,7 +32,8 @@ export default {
     methods: {
         ...mapActions("Tools/BorisVue", [
             "initialize",
-            "switchLayer"
+            "switchLayer",
+            "toggleStripesLayer"
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
         /**
@@ -68,13 +81,31 @@ export default {
                         @change="switchLayer($event.target.value)"
                     >
                         <option
-                            v-for="(model, index) in filteredModelList"
+                            v-for="(model, index) in getFilterListWithoutStripes"
                             :key="index"
-                            :value="model.get('name')"
+                            :value="model"
                         >
-                            {{ model.get("name") }}
+                            {{ model }}
                         </option>
                     </select>
+                </div>
+                <div
+                    v-if="areaLayerSelected === true"
+                    class="form-check"
+                >
+                    <input
+                        id="showStripes"
+                        class="form-check-input"
+                        type="checkbox"
+                        :value="stripesLayer"
+                        @change="toggleStripesLayer(!stripesLayer)"
+                    >
+                    <label
+                        class="form-check-label"
+                        for="showStripes"
+                    >
+                        Blockrandstreifen darstellen
+                    </label>
                 </div>
                 <div class="form-group col-xs-12">
                     <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
@@ -96,6 +127,10 @@ export default {
                 float: left;
                 width: 75%;
             }
+        }
+        .form-check{
+            padding-left: 15px;
+            padding-bottom: 15px;
         }
     }
 </style>

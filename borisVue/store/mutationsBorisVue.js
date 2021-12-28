@@ -14,11 +14,9 @@ const mutations = {
     setAreaLayerSelected (state, value) {
         state.areaLayerSelected = value;
     },
-
     setShowStripesLayer (state, value) {
         state.stripesLayer = value;
     }
-
 };
 
 export default mutations;
