@@ -1,18 +1,18 @@
 const actions = {
-    // NOTE write actions here if you need them
     initialize: function ({commit}) {
         let modelList = Radio.request("ModelList", "getModelsByAttributes", {isNeverVisibleInTree: true});
 
         modelList = modelList.filter(function (model) {
-            return model.get("gfiAttributes") !== "ignore" && model.get("name").includes("-stripes") === false;
+            return model.get("gfiAttributes") !== "ignore";
         });
 
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
     },
-    // selectedLayerName = Name des zu aktivierenden Layers
     switchLayer: function ({state, dispatch, commit}, selectedLayerName) {
-        const layerModels = state.filteredModelList.filter(model => model.get("isSelected") === true);
+        const layerModels = state.filteredModelList.filter(function (model) {
+            return model.get("isSelected") === true;
+        });
 
         layerModels.forEach(layer => {
 
@@ -21,7 +21,6 @@ const actions = {
         });
 
         dispatch("selectLayerModelByName", selectedLayerName);
-
 
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
 
@@ -33,8 +32,8 @@ const actions = {
             dispatch("toggleStripesLayer", false);
         }
     },
-    toggleStripesLayer: function ({dispatch, commit}, value) {
-        const modelList = Radio.request("ModelList", "getModelsByAttributes", {isNeverVisibleInTree: true}),
+    toggleStripesLayer: function ({state, dispatch, commit}, value) {
+        const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             selectedModel = modelList.find(model => model.get("isSelected") === true),
             selectedModelName = selectedModel.attributes.name,
             modelName = selectedModelName + "-stripes";
@@ -54,7 +53,8 @@ const actions = {
         }
     },
     selectLayerModelByName: function ({state, commit}, value) {
-        const layerModel = state.filteredModelList.find(model => model.get("name") === value);
+        const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
+            layerModel = modelList.find(model => model.get("name") === value);
 
         layerModel.set("isVisibleInMap", true);
         layerModel.set("isSelected", true);
