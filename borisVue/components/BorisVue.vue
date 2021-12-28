@@ -774,65 +774,8 @@ export default {
                         </div>
                     </div>
                 </div>
-=======
-                {{ $t("additional:modules.tools.BorisVue.content") }}
->>>>>>> 51a7380e (BG-1869:initial commit boris to vue)
-=======
-                        @change="switchLayer($event.target.value)"
-                    >
-                        <option
-                            v-for="(model, index) in filteredModelList"
-                            :key="index"
-                            :value="model.get('name')"
-                        >
-                            {{ model.get("name") }}
-                        </option>
-                    </select>
-                </div>
-                <div class="form-group col-xs-12">
-                    <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
-                </div>
->>>>>>> afd967cb (added switchLayer to select data by year)
             </div>
         </template>
     </Tool>
 </template>
 
-
-<style lang="scss" scoped>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> afd967cb (added switchLayer to select data by year)
-.content {
-        width: 450px;
-        .first{
-            padding-top: 5px;
-        }
-        .form-group {
-            >label {
-                float: left;
-                width: 75%;
-            }
-        }
-<<<<<<< HEAD
-        .form-check{
-            padding-left: 15px;
-            padding-bottom: 15px;
-        }
-    };
-::v-deep dt {
-    background-color: rgba(227, 227, 227, 0.5);
-    font-family: "UniversNextW04-620CondB", "Arial Narrow", Arial, sans-serif;
-    padding: 8px;
-};
-::v-deep dd{
-    padding: 8px;
-    word-wrap: break-word;
-}
-=======
->>>>>>> 51a7380e (BG-1869:initial commit boris to vue)
-=======
-    }
->>>>>>> afd967cb (added switchLayer to select data by year)
-</style>
