@@ -66,7 +66,7 @@ const DashboardWidgetHandler = Backbone.Model.extend(/** @lends DashboardWidgetH
      * @param {boolean} cullButtons remove buttons when appending html to InfoScreen, defaults to false (optional)
      * @returns {void}
      */
-    append (child, parent = ".info-screen-children", opts, cullButtons = false) {
+    append (child, parent = ".info-screen-children", opts = null, cullButtons = false) {
         let _child = child;
         const _opts = opts ? this.assignId(opts) : this.assignId({});
 

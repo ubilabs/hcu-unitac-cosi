@@ -2,11 +2,11 @@ import SpecModel from "./../../../../src/modules/tools/print/utils/buildSpec";
 
 /**
  * Setes the school route layer to end of the visible vector layer list.
- * @param {ol/VectorLayer[]} [visibleLayerList=[]] The visible vector layers.
  * @param {String} layerName The name of the school route layer.
+ * @param {ol/VectorLayer[]} [visibleLayerList=[]] The visible vector layers.
  * @returns {ol/VectorLayer[]} The sorted vector layer list.
  */
-function sortVisibleLayerList (visibleLayerList = [], layerName) {
+function sortVisibleLayerList (layerName, visibleLayerList = []) {
     const sortedVisibleLayerList = [];
     let schoolRouteLayer = null;
 
@@ -34,7 +34,7 @@ export default {
      */
     printRoute ({state, rootGetters, dispatch}, getResponse) {
         const routeElements = state.routeElements,
-            visibleLayerList = sortVisibleLayerList(rootGetters["Map/visibleLayerList"], state.layerName),
+            visibleLayerList = sortVisibleLayerList(state.layerName, rootGetters["Map/visibleLayerList"]),
             attributes = {
                 "layout": state.printLayout,
                 "outputFormat": state.printOutputFormat,
