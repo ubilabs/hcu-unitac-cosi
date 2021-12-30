@@ -272,15 +272,24 @@ export default {
                     </label>
                     <span
                         class="glyphicon glyphicon-info-sign"
+<<<<<<< HEAD
                         @click="toggleInfoText(1)"
                     />
                     <div v-if="Object.values(textIds).includes(1)">
                         <div class="col-xs-12 info-text">
                             <span> Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten. </span>
+=======
+                        @click="toggleInfoText()"
+                    />
+                    <div>
+                        <div class="col-xs-12 info-text">
+                            <span>{{ infoText }} </span>
+>>>>>>> 9b3e5dbb (placing polygon and point marker after clicking individual brw zones)
                             <br>
                         </div>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <div
                     v-if="selectedPolygon === null"
                     class="form-group col-xs-12"
@@ -774,6 +783,29 @@ export default {
                         </div>
                     </div>
                 </div>
+=======
+                <div class="form-group col-xs-12">
+                    <!-- <span v-if></span> -->
+                    <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
+                </div>
+                <div class="form-group col-xs-12 first">
+                    <span>Gewählte Nutzung:</span>
+                </div>
+                <div class="form-group col-xs-12">
+                    <select
+                        class="form-control"
+                        @change="switchLayer($event.target.value)"
+                    >
+                        <option
+                            v-for="(model, index) in getFilterListWithoutStripes"
+                            :key="index"
+                            :value="model"
+                        >
+                            {{ model }}
+                        </option>
+                    </select>
+                </div>
+>>>>>>> 9b3e5dbb (placing polygon and point marker after clicking individual brw zones)
             </div>
         </template>
     </Tool>
