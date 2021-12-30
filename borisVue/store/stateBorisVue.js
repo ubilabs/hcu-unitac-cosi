@@ -12,7 +12,11 @@ const state = {
     filteredModelList: [],
     areaLayerSelected: true,
     stripesLayer: false,
-    selectedLayer: null
+    selectedLayer: null,
+    infoText: "",
+    gfiFeature: null,
+    brwLanduse: "",
+    brwFeature: []
 };
 
 export default state;
