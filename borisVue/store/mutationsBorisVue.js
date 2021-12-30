@@ -1,4 +1,5 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
+import state from "./stateBorisVue";
 import stateBoris from "./stateBorisVue";
 
 const mutations = {
@@ -16,6 +17,12 @@ const mutations = {
     },
     setShowStripesLayer (state, value) {
         state.stripesLayer = value;
+    },
+    setGfiFeature (state, value) {
+        state.gfiFeature = value;
+    },
+    setBrwFeatures ( state, value) {
+        state.brwFeature = value;
     }
 };
 
