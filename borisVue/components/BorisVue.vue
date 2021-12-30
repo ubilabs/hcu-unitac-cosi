@@ -33,7 +33,9 @@ export default {
         ...mapActions("Tools/BorisVue", [
             "initialize",
             "switchLayer",
-            "toggleStripesLayer"
+            "toggleStripesLayer",
+            "toggleInfoText"
+
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
         /**
@@ -106,9 +108,37 @@ export default {
                     >
                         Blockrandstreifen darstellen
                     </label>
+                    <span
+                        class="glyphicon glyphicon-info-sign"
+                        @click="toggleInfoText()"
+                    />
+                    <div>
+                        <div class="col-xs-12 info-text">
+                            <span>{{ infoText }} </span>
+                            <br>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group col-xs-12">
+                    <!-- <span v-if></span> -->
                     <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
+                </div>
+                <div class="form-group col-xs-12 first">
+                    <span>Gewählte Nutzung:</span>
+                </div>
+                <div class="form-group col-xs-12">
+                    <select
+                        class="form-control"
+                        @change="switchLayer($event.target.value)"
+                    >
+                        <option
+                            v-for="(model, index) in getFilterListWithoutStripes"
+                            :key="index"
+                            :value="model"
+                        >
+                            {{ model }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </template>
