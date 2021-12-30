@@ -1,23 +1,23 @@
 <script>
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
-import BildungsatlasBalkendiagramm from "./BildungsatlasBalkendiagramm.vue";
-import BildungsatlasBalkendiagrammWanderungen from "./BildungsatlasBalkendiagrammWanderungen.vue";
-import BildungsatlasFluechtlinge from "./BildungsatlasFluechtlinge.vue";
-import BildungsatlasOKJA from "./BildungsatlasOKJA.vue";
-import BildungsatlasSchulentlassene from "./BildungsatlasSchulentlassene.vue";
-import BildungsatlasSchulenWohnort from "./BildungsatlasSchulenWohnort.vue";
-import BildungsatlasSchulenEinzugsgebiete from "./BildungsatlasSchulenEinzugsgebiete.vue";
+import BildungsatlasThemeBalkendiagramm from "./BildungsatlasThemeBalkendiagramm.vue";
+import BildungsatlasThemeBalkendiagrammWanderungen from "./BildungsatlasThemeBalkendiagrammWanderungen.vue";
+import BildungsatlasThemeFluechtlinge from "./BildungsatlasThemeFluechtlinge.vue";
+import BildungsatlasThemeOKJA from "./BildungsatlasThemeOKJA.vue";
+import BildungsatlasThemeSchulentlassene from "./BildungsatlasThemeSchulentlassene.vue";
+import BildungsatlasThemeSchulenWohnort from "./BildungsatlasThemeSchulenWohnort.vue";
+import BildungsatlasThemeSchulenEinzugsgebiete from "./BildungsatlasThemeSchulenEinzugsgebiete.vue";
 
 export default {
-    name: "Bildungsatlas",
+    name: "BildungsatlasTheme",
     components: {
-        BildungsatlasBalkendiagramm,
-        BildungsatlasBalkendiagrammWanderungen,
-        BildungsatlasFluechtlinge,
-        BildungsatlasOKJA,
-        BildungsatlasSchulentlassene,
-        BildungsatlasSchulenWohnort,
-        BildungsatlasSchulenEinzugsgebiete
+        BildungsatlasThemeBalkendiagramm,
+        BildungsatlasThemeBalkendiagrammWanderungen,
+        BildungsatlasThemeFluechtlinge,
+        BildungsatlasThemeOKJA,
+        BildungsatlasThemeSchulentlassene,
+        BildungsatlasThemeSchulenWohnort,
+        BildungsatlasThemeSchulenEinzugsgebiete
     },
     props: {
         /**

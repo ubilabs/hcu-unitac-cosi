@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
-import Trinkwasser from "../../../components/Trinkwasser.vue";
+import TrinkwasserTheme from "../../../components/TrinkwasserTheme.vue";
 import {mock} from "sinon";
 
 const localVue = createLocalVue();
@@ -9,11 +9,11 @@ const localVue = createLocalVue();
 mock.$themeAddons = [];
 
 localVue.use(Vuex);
-describe("addons/trinkwasser/components/Trinkwasser.vue", () => {
+describe("addons/trinkwasser/components/TrinkwasserTheme.vue", () => {
     let wrapper;
 
     beforeEach(() => {
-        wrapper = shallowMount(Trinkwasser, {
+        wrapper = shallowMount(TrinkwasserTheme, {
             localVue,
             propsData: {
                 feature: {

@@ -5,7 +5,7 @@ import {extractEventCoordinates} from "../../../../src/utils/extractEventCoordin
 import {getWKTGeom} from "../../../../src/utils/getWKTGeom";
 
 export default {
-    name: "Flaecheninfo",
+    name: "FlaecheninfoTheme",
     props: {
         feature: {
             type: Object,

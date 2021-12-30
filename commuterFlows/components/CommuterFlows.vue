@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersCommuterFlows";
 import mutations from "../store/mutationsCommuterFlows";
@@ -11,7 +11,7 @@ import thousandsSeparator from "../../../src/utils/thousandsSeparator.js";
 export default {
     name: "CommuterFlows",
     components: {
-        Tool
+        ToolTemplate
     },
     data () {
         return {
@@ -491,7 +491,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="$t(name)"
         :icon="glyphicon"
         :active="active"
@@ -834,7 +834,7 @@ export default {
                 </div>
             </div>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>

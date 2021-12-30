@@ -2,7 +2,7 @@
 import {mapGetters} from "vuex";
 
 export default {
-    name: "Dipas",
+    name: "DipasTheme",
     props: {
         feature: {
             type: Object,

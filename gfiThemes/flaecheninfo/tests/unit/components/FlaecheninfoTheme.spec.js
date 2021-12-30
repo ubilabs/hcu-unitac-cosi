@@ -2,12 +2,12 @@ import Vuex from "vuex";
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
-import Flaecheninfo from "../../../components/Flaecheninfo.vue";
+import FlaecheninfoTheme from "../../../components/FlaecheninfoTheme.vue";
 
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
-describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
+describe("addons/flaecheninfo/components/FlaecheninfoTheme.vue", () => {
 
     const ring = "POLYGON ((563096.043 5933356.232,563096.639 5933358.031,563097.273 5933356.634,563096.043 5933356.232))",
         props = {"flurstueck": "aValue", "gemarkung": "bValue", "amtliche_flaeche": "10", "wktgeom": ring},
@@ -16,7 +16,7 @@ describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
         wrapper;
 
     beforeEach(() => {
-        wrapper = shallowMount(Flaecheninfo, {
+        wrapper = shallowMount(FlaecheninfoTheme, {
             propsData: {
                 feature: {
                     getProperties: () => props,
@@ -47,7 +47,7 @@ describe("addons/flaecheninfo/components/Flaecheninfo.vue", () => {
     });
 
     it("should exist", () => {
-        sinon.stub(Flaecheninfo.methods, "createReport").callsFake(function () {
+        sinon.stub(FlaecheninfoTheme.methods, "createReport").callsFake(function () {
             report = true;
         });
         expect(wrapper.find("div").exists()).to.be.true;

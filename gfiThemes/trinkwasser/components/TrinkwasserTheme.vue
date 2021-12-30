@@ -1,7 +1,7 @@
 <script>
 
 export default {
-    name: "Trinkwasser",
+    name: "TrinkwasserTheme",
     props: {
         feature: {
             type: Object,

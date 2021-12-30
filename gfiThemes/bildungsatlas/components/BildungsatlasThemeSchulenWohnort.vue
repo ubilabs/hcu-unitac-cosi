@@ -5,7 +5,7 @@ import mouseOverCotentLivingLocation from "../utils/mouseOverContent.js";
 import {optimizeValueRootedInComplexType} from "../../../utils/complexType.js";
 
 export default {
-    name: "BildungsatlasSchulenWohnort",
+    name: "BildungsatlasThemeSchulenWohnort",
     props: {
         /**
          * checks if the given tab name is currently active

@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "VerkehrsstaerkenTable",
+    name: "VerkehrsstaerkenThemeTable",
     props: {
         rowNames: {
             type: Array,

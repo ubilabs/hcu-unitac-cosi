@@ -7,7 +7,7 @@ import CompareFeatureIcon from "../../../../src/modules/tools/gfi/components/fav
 import TargetSchoolIcon from "./favoriteIcons/TargetSchoolIcon.vue";
 
 export default {
-    name: "Schulinfo",
+    name: "SchulinfoTheme",
     components: {
         CompareFeatureIcon,
         TargetSchoolIcon
@@ -54,7 +54,7 @@ export default {
          */
         setImportedComponents: function () {
             Object.keys(this.$options.components).forEach(componentName => {
-                if (componentName !== "Schulinfo") {
+                if (componentName !== "SchulinfoTheme") {
                     this.importedComponents.push(this.$options.components[componentName]);
                 }
             });

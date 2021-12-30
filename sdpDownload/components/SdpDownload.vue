@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersSdpDownload";
 import mutations from "../store/mutationsSdpDownload";
@@ -9,7 +9,7 @@ import GraphicalSelect from "../../../src/share-components/graphicalSelect/compo
 export default {
     name: "SdpDownload",
     components: {
-        Tool,
+        ToolTemplate,
         GraphicalSelect
     },
     data () {
@@ -123,7 +123,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="$t(name)"
         :icon="glyphicon"
         :active="active"
@@ -227,7 +227,7 @@ export default {
                 </div>
             </div>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>

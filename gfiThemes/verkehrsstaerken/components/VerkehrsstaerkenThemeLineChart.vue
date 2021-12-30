@@ -3,7 +3,7 @@ import Chart from "chart.js";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 
 export default {
-    name: "VerkehrsstaerkenLineChart",
+    name: "VerkehrsstaerkenThemeLineChart",
     components: {},
     props: {
         dataset: {

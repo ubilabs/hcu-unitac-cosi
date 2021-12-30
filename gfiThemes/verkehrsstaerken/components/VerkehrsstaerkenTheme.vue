@@ -2,14 +2,14 @@
 
 import {mapGetters} from "vuex";
 import {createNewRowName, combineYearsData} from "../utils/helpers";
-import VerkehrsstaerkenTable from "./VerkehrsstaerkenTable.vue";
-import VerkehrsstaerkenLineChart from "./VerkehrsstaerkenLineChart.vue";
+import VerkehrsstaerkenThemeTable from "./VerkehrsstaerkenThemeTable.vue";
+import VerkehrsstaerkenThemeLineChart from "./VerkehrsstaerkenThemeLineChart.vue";
 
 export default {
-    name: "Verkehrsstaerken",
+    name: "VerkehrsstaerkenTheme",
     components: {
-        VerkehrsstaerkenTable,
-        VerkehrsstaerkenLineChart
+        VerkehrsstaerkenThemeTable,
+        VerkehrsstaerkenThemeLineChart
     },
     props: {
         feature: {
@@ -169,7 +169,7 @@ export default {
             id="verkehrsstaerken-tab-content"
             class="tab-content"
         >
-            <VerkehrsstaerkenTable
+            <VerkehrsstaerkenThemeTable
                 :show="isActiveTab('table')"
                 :class="getTabPaneClasses('table')"
                 :row-names="rowNames"
@@ -177,7 +177,7 @@ export default {
                 :dataset="dataset"
                 :type="String('table')"
             />
-            <VerkehrsstaerkenLineChart
+            <VerkehrsstaerkenThemeLineChart
                 :show="isActiveTab('diagram')"
                 :class="getTabPaneClasses('diagram')"
                 :dataset="dataset"

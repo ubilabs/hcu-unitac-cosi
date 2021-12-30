@@ -1,5 +1,5 @@
 <script>
-import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
+import BarchartItem from "../../../../src/share-components/charts/components/BarchartItem.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
@@ -30,9 +30,9 @@ import {
  */
 
 export default {
-    name: "BildungsatlasBalkendiagrammWanderungen",
+    name: "BildungsatlasThemeBalkendiagrammWanderungen",
     components: {
-        Barchart
+        BarchartItem
     },
     props: {
         /**
@@ -268,7 +268,7 @@ export default {
                     v-if="barchartData"
                     class="rba_chart_content"
                 >
-                    <Barchart
+                    <BarchartItem
                         v-if="barchartData"
                         :given-options="barchartDataOptions"
                         :data="barchartData"
@@ -288,7 +288,7 @@ export default {
                     {{ translate("additional:addons.gfiThemes.bildungsatlas.balkendiagrammwanderungen.table.ausUmland") }}
                 </div>
                 <div class="rba_chart_content">
-                    <Barchart
+                    <BarchartItem
                         :given-options="barchartDataOptions_aus_umland"
                         :data="barchartData_aus_umland"
                     />
@@ -304,7 +304,7 @@ export default {
                     {{ translate("additional:addons.gfiThemes.bildungsatlas.balkendiagrammwanderungen.table.insUmland") }}
                 </div>
                 <div class="rba_chart_content">
-                    <Barchart
+                    <BarchartItem
                         :given-options="barchartDataOptions_ins_umland"
                         :data="barchartData_ins_umland"
                     />

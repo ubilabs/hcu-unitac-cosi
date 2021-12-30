@@ -1,6 +1,6 @@
 <script>
 import {BildungsatlasApi} from "../utils/bildungsatlasApi.js";
-import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
+import BarchartItem from "../../../../src/share-components/charts/components/BarchartItem.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
@@ -31,9 +31,9 @@ import {
  */
 
 export default {
-    name: "BildungsatlasBalkendiagramm",
+    name: "BildungsatlasThemeBalkendiagramm",
     components: {
-        Barchart
+        BarchartItem
     },
     props: {
         /**
@@ -491,7 +491,7 @@ export default {
                     v-if="barchartData"
                     class="rba_chart_content"
                 >
-                    <Barchart
+                    <BarchartItem
                         v-if="barchartData"
                         :given-options="barchartDataOptions"
                         :data="barchartData"

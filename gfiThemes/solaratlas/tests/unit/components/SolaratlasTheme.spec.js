@@ -1,10 +1,10 @@
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
-import SolaratlasTheme from "../../../components/Solaratlas.vue";
+import SolaratlasTheme from "../../../components/SolaratlasTheme.vue";
 
 const localVue = createLocalVue();
 
-describe("addons/solaratlas/components/Solaratlas.vue", () => {
+describe("addons/solaratlas/components/SolaratlasTheme.vue", () => {
     let wrapper;
 
     beforeEach(() => {

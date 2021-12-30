@@ -1,6 +1,6 @@
 <script>
-import Barchart from "../../../../src/share-components/charts/components/Barchart.vue";
-import Linechart from "../../../../src/share-components/charts/components/Linechart.vue";
+import BarchartItem from "../../../../src/share-components/charts/components/BarchartItem.vue";
+import LinechartItem from "../../../../src/share-components/charts/components/LinechartItem.vue";
 import {getChartOptions, getChartOptionsForPercentage} from "../utils/chartOptions.js";
 import {
     optimizeComplexTypeValues,
@@ -18,10 +18,10 @@ import {
 } from "../../../utils/complexType.js";
 
 export default {
-    name: "BildungsatlasSchulentlassene",
+    name: "BildungsatlasThemeSchulentlassene",
     components: {
-        Barchart,
-        Linechart
+        BarchartItem,
+        LinechartItem
     },
     props: {
         /**
@@ -468,7 +468,7 @@ export default {
                     v-if="barchartData"
                     class="rba_chart_content"
                 >
-                    <Barchart
+                    <BarchartItem
                         v-if="barchartData"
                         :given-options="barchartDataOptions"
                         :data="barchartData"
@@ -486,7 +486,7 @@ export default {
                     v-if="linechartData"
                     class="rba_chart_content"
                 >
-                    <Linechart
+                    <LinechartItem
                         v-if="linechartData"
                         :given-options="linechartDataOptions"
                         :data="linechartData"

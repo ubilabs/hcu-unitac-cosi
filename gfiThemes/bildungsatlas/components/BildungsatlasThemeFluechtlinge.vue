@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "BildungsatlasFluechtlinge",
+    name: "BildungsatlasThemeFluechtlinge",
     props: {
         /**
          * checks if the given tab name is currently active

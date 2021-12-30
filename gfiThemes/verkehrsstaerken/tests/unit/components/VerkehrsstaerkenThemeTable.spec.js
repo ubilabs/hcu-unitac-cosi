@@ -1,14 +1,14 @@
 import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
-import VerkehrsstaerkenTable from "../../../components/VerkehrsstaerkenTable.vue";
+import VerkehrsstaerkenThemeTable from "../../../components/VerkehrsstaerkenThemeTable.vue";
 
 const localVue = createLocalVue();
 
 config.mocks.$t = key => key;
 
 localVue.use(Vuex);
-describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/VerkehrsstaerkenTable.vue", () => {
+describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/VerkehrsstaerkenThemeTable.vue", () => {
 
     const years = [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
         rowNames = ["DTV", "DTVw", "Schwerverkehrsanteil am DTVw", "Baustelleneinfluss"],
@@ -16,7 +16,7 @@ describe("src/modules/tools/gfi/components/themes/verkehrsstaerken/components/Ve
     let wrapper;
 
     beforeEach(() => {
-        wrapper = shallowMount(VerkehrsstaerkenTable, {
+        wrapper = shallowMount(VerkehrsstaerkenThemeTable, {
             propsData: {
                 rowNames: rowNames,
                 years: years,

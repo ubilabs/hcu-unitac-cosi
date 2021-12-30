@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
-import Dipas from "../../../components/Dipas.vue";
+import DipasTheme from "../../../components/DipasTheme.vue";
 
 const localVue = createLocalVue();
 
@@ -9,7 +9,7 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("addons/dipas/components/Dipas.vue", () => {
+describe("addons/dipas/components/DipasTheme.vue", () => {
     const iconPath = "https://geoportal-hamburg.de/lgv-beteiligung/icons/einzelmarker_dunkel.png",
         theme = {
             "name": "dipas",
@@ -37,11 +37,11 @@ describe("addons/dipas/components/Dipas.vue", () => {
         store = new Vuex.Store({
             namespaces: true,
             modules: {
-                Dipas
+                DipasTheme
             },
             getters: isTable ? gettersTable : getters
         });
-        wrapper = shallowMount(Dipas, {
+        wrapper = shallowMount(DipasTheme, {
             store,
             localVue,
             propsData: {

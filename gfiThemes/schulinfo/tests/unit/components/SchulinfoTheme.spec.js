@@ -2,14 +2,14 @@ import Vuex from "vuex";
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
-import SchulinfoTheme from "../../../components/Schulinfo.vue";
+import SchulinfoTheme from "../../../components/SchulinfoTheme.vue";
 import ThemeConfig from "../../../themeConfig.json";
 
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
-describe("addons/schulinfo/components/Schulinfo.vue", () => {
+describe("addons/schulinfo/components/SchulinfoTheme.vue", () => {
     const properties = {
         "abschluss": "Allgemeine Hochschulreife|erster allgemeinbildender Schulabschluss|Erweiterter erster allgemeinbildender Schulabschluss|mittlerer Schulabschluss|schulischer Teil der Fachhochschulreife",
         "adresse_ort": "99999 Neverland",

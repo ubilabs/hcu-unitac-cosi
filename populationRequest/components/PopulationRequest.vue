@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
@@ -12,7 +12,7 @@ import LoaderOverlay from "../../../src/utils/loaderOverlay";
 export default {
     name: "PopulationRequest",
     components: {
-        Tool,
+        ToolTemplate,
         GraphicalSelect,
         ToggleCheckbox
     },
@@ -431,7 +431,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="translate(name)"
         :icon="glyphicon"
         :active="active"
@@ -606,7 +606,7 @@ export default {
                 </div>
             </div>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>

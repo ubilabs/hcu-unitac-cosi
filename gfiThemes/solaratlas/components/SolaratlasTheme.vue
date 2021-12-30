@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "Solaratlas",
+    name: "SolaratlasTheme",
     props: {
         feature: {
             type: Object,

@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {shallowMount, createLocalVue, config} from "@vue/test-utils";
 import {expect} from "chai";
-import Bildungsatlas from "../../../components/Bildungsatlas.vue";
+import BildungsatlasTheme from "../../../components/BildungsatlasTheme.vue";
 
 const localVue = createLocalVue();
 
@@ -9,11 +9,11 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
+describe("addons/bildungsatlas/components/BildungsatlasTheme.vue", () => {
     let wrapper;
 
     beforeEach(() => {
-        wrapper = shallowMount(Bildungsatlas, {
+        wrapper = shallowMount(BildungsatlasTheme, {
             propsData: {
                 feature: {
                     getProperties () {
@@ -85,8 +85,8 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
         });
     });
     describe("components", () => {
-        it("should find the child component BildungsatlasBalkendiagramm", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeThemeBalkendiagramm", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -95,7 +95,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasBalkendiagramm",
+                                    subTheme: "BildungsatlasThemeBalkendiagramm",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -105,10 +105,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasBalkendiagramm"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeBalkendiagramm"}).exists()).to.be.true;
         });
-        it("should find the child component BildungsatlasSchulentlassene", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeSchulentlassene", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -117,7 +117,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasSchulentlassene",
+                                    subTheme: "BildungsatlasThemeSchulentlassene",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -127,10 +127,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulentlassene"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeSchulentlassene"}).exists()).to.be.true;
         });
-        it("should find the child component BildungsatlasOKJA", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeOKJA", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -139,7 +139,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasOKJA",
+                                    subTheme: "BildungsatlasThemeOKJA",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -149,10 +149,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasOKJA"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeOKJA"}).exists()).to.be.true;
         });
-        it("should find the child component BildungsatlasFluechtlinge", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeFluechtlinge", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -161,7 +161,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasFluechtlinge",
+                                    subTheme: "BildungsatlasThemeFluechtlinge",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -171,10 +171,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasFluechtlinge"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeFluechtlinge"}).exists()).to.be.true;
         });
-        it("should find the child component BildungsatlasBalkendiagrammWanderungen", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeBalkendiagrammWanderungen", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -183,7 +183,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasBalkendiagrammWanderungen",
+                                    subTheme: "BildungsatlasThemeBalkendiagrammWanderungen",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -193,10 +193,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasBalkendiagrammWanderungen"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeBalkendiagrammWanderungen"}).exists()).to.be.true;
         });
-        it("should find the child component BildungsatlasSchulenWohnort", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeSchulenWohnort", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -205,7 +205,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasSchulenWohnort",
+                                    subTheme: "BildungsatlasThemeSchulenWohnort",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -215,10 +215,10 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenWohnort"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeSchulenWohnort"}).exists()).to.be.true;
         });
-        it("should find the child component BildungsatlasSchulenEinzugsgebiete", () => {
-            const singleTestWrapper = shallowMount(Bildungsatlas, {
+        it("should find the child component BildungsatlasThemeSchulenEinzugsgebiete", () => {
+            const singleTestWrapper = shallowMount(BildungsatlasTheme, {
                 propsData: {
                     feature: {
                         getProperties () {
@@ -227,7 +227,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                         getTheme () {
                             return {
                                 params: {
-                                    subTheme: "BildungsatlasSchulenEinzugsgebiete",
+                                    subTheme: "BildungsatlasThemeSchulenEinzugsgebiete",
                                     featureType: "someFeatureType"
                                 }
                             };
@@ -237,7 +237,7 @@ describe("addons/bildungsatlas/components/Bildungsatlas.vue", () => {
                 localVue
             });
 
-            expect(singleTestWrapper.findComponent({name: "BildungsatlasSchulenEinzugsgebiete"}).exists()).to.be.true;
+            expect(singleTestWrapper.findComponent({name: "BildungsatlasThemeSchulenEinzugsgebiete"}).exists()).to.be.true;
         });
     });
 });

@@ -3,7 +3,7 @@ import {mapGetters} from "vuex";
 import {optimizeValueRootedInComplexType} from "../../../utils/complexType.js";
 
 export default {
-    name: "BildungsatlasSchulenEinzugsgebiete",
+    name: "BildungsatlasThemeSchulenEinzugsgebiete",
     props: {
         /**
          * checks if the given tab name is currently active

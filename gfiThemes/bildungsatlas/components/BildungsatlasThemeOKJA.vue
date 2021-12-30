@@ -1,12 +1,12 @@
 <script>
-import Piechart from "../../../../src/share-components/charts/components/Piechart.vue";
+import PiechartItem from "../../../../src/share-components/charts/components/PiechartItem.vue";
 import {convertColor} from "../../../../src/utils/convertColor";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator";
 
 export default {
-    name: "BildungsatlasOKJA",
+    name: "BildungsatlasThemeOKJA",
     components: {
-        Piechart
+        PiechartItem
     },
     props: {
         /**
@@ -354,7 +354,7 @@ export default {
                     v-if="piechart_opening"
                     class="rba_chart_content piechart_opening"
                 >
-                    <Piechart
+                    <PiechartItem
                         :given-options="piechart_opening_options"
                         :data="piechart_opening"
                     />
@@ -374,7 +374,7 @@ export default {
                     v-if="piechart_offers"
                     class="rba_chart_content piechart_offers"
                 >
-                    <Piechart
+                    <PiechartItem
                         :given-options="piechart_offers_options"
                         :data="piechart_offers"
                     />
