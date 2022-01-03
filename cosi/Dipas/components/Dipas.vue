@@ -247,11 +247,18 @@ export default {
                 }
                 layer.features = contribution.features;
                 model = await this.addLayer(layer);
-                const layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id);
+
+                const
+                    layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id),
+                    heatmapLayer = getLayerById(this.map.getLayers().getArray(), id + "-heatmap");
 
                 layerOnMap.setZIndex(2);
                 layerOnMap.setStyle(this.contributionStyles);
                 this.addVectorlayerToMapping(model.attributes);
+
+                if (heatmapLayer) {
+                    heatmapLayer.setSource(layerOnMap.getSource());
+                }
             }
 
             model.set("isSelected", value);
@@ -373,8 +380,11 @@ export default {
          * @returns {void}
          */
         async changeHeatmapVisibility (id, value) {
-            const layerId = id + "-heatmap";
-            let layer = getLayerById(this.map.getLayers().getArray(), layerId);
+            const
+                layerId = id + "-heatmap",
+                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+            let
+                layer = getLayerById(this.map.getLayers().getArray(), layerId);
 
             if (!layer) {
                 const vector = new Vector();
@@ -409,6 +419,10 @@ export default {
                 layer.setZIndex(1);
                 this.map.addLayer(layer);
             }
+            if (contributionsModel && layer.getSource() !== contributionsModel.get("layerSource")) {
+                layer.setSource(contributionsModel.get("layerSource"));
+            }
+
             layer.setVisible(value);
         },
 
@@ -579,10 +593,12 @@ export default {
                                             <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showHeatmap') }}</v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
+                                    <v-divider />
                                 </v-list-group>
                             </v-list>
                         </v-card>
                     </div>
+                    <v-divider />
                     <div id="radio">
                         <div class="mb-1">
                             {{ $t('additional:modules.tools.cosi.dipas.styling.label') }}
@@ -626,6 +642,8 @@ export default {
 #dipas {
   width: auto;
   min-height: 100px;
+  max-height: 46vh;
+  overflow-y: auto;
 }
 
 #radio {
@@ -643,8 +661,7 @@ export default {
 }
 
 p.description {
-    margin-left: 20px;
-    margin-right: 20px;
+    padding: 20px;
     max-height: 40vh;
     overflow-y: auto;
     line-height: 1.5rem;

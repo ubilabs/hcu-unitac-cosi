@@ -163,7 +163,7 @@ export function generateChartsForItems (data, districtNames, districtLevelLabel,
             };
 
             return new ChartDataSet({
-                id: "ccm",
+                id: "ccm-" + data.map(d => d.category).join(","),
                 name: districtLevelLabel + " - " + districtName,
                 type: ["LineChart", "BarChart"],
                 color: "rainbow",
