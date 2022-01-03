@@ -1,4 +1,3 @@
-import Vue from "vue";
 import getClusterSource from "../../utils/getClusterSource";
 import {createVectorLayerMappingObject} from "../utils/getVectorlayerMapping";
 

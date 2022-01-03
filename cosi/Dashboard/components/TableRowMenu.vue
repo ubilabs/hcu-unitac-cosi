@@ -52,6 +52,8 @@ export default {
     <div class="no-wrap">
         <v-menu
             left
+            nudge-top="280"
+            :close-on-content-click="false"
             @input="selectedMenuItem = null"
         >
             <template #activator="{ on, attrs }">
@@ -80,12 +82,6 @@ export default {
                         v-model="selectedMenuItem"
                         color="primary"
                     >
-                        <v-list-item
-                            dense
-                            disabled
-                        >
-                            Karte
-                        </v-list-item>
                         <v-list-item
                             dense
                             @click="renderVisualization"
@@ -129,115 +125,146 @@ export default {
                                 </v-list-item-content>
                             </v-list-item>
                         </div>
-                        <v-divider />
                         <v-tooltip left>
                             <template #activator="{ on, attrs }">
                                 <div
                                     v-bind="attrs"
                                     v-on="on"
                                 >
-                                    <v-list-item
-                                        dense
-                                        disabled
+                                    <v-list-group
+                                        prepend-icon="mdi-checkbox-marked"
+                                        no-action
                                     >
-                                        Auswahl
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('setField', 'A', _item)"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-alpha-a-box</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Für Feld "A" setzen
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('setField', 'B', _item)"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-alpha-b-box</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Für Feld "B" setzen
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('resetFields')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-cancel</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Auswahl aufheben
-                                        </v-list-item-content>
-                                    </v-list-item>
+                                        <template #activator>
+                                            <v-list-item-content>
+                                                <v-list-item-title>Auswahl</v-list-item-title>
+                                            </v-list-item-content>
+                                        </template>
+
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('setField', 'A', _item)"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-alpha-a-box</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Für Feld "A" setzen
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('setField', 'B', _item)"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-alpha-b-box</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Für Feld "B" setzen
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('resetFields')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-cancel</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Auswahl aufheben
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list-group>
                                 </div>
                             </template>
                             <FieldsTooltip :fields="fields" />
                         </v-tooltip>
-                        <v-divider />
                         <v-tooltip left>
                             <template #activator="{ on, attrs }">
                                 <div
                                     v-bind="attrs"
                                     v-on="on"
                                 >
-                                    <v-list-item
-                                        dense
-                                        disabled
+                                    <v-list-group
+                                        prepend-icon="mdi-calculator-variant"
+                                        no-action
                                     >
-                                        Berechnen
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('add')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-plus</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Addieren (A + B)
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('subtract')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-minus</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Subtrahieren (A - B)
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('multiply')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-close</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Multiplizieren (A x B)
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('divide')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-slash-forward</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Dividieren (A / B)
-                                        </v-list-item-content>
-                                    </v-list-item>
+                                        <template #activator>
+                                            <v-list-item-content>
+                                                <v-list-item-title>Berechnen</v-list-item-title>
+                                            </v-list-item-content>
+                                        </template>
+
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('add')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-plus</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Addieren (A + B)
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('subtract')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-minus</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Subtrahieren (A - B)
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('multiply')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Multiplizieren (A x B)
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('divide')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-slash-forward</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Dividieren (A / B)
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            :disabled="selectedItems.length === 0"
+                                            @click="$emit('sum')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-plus-box-multiple</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Ausgewählte Aufsummieren
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            :disabled="selectedItems.length === 0"
+                                            @click="$emit('divideSelected')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-calculator</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Ausgewählte Dividieren (jeweils / B)
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list-group>
                                     <template v-if="_item.isTemp">
-                                        <v-divider />
                                         <v-list-item
                                             dense
                                             @click="$emit('delete')"
@@ -250,47 +277,51 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                     </template>
-                                    <v-divider />
-                                    <v-list-item
-                                        dense
-                                        disabled
+                                    <v-list-group
+                                        prepend-icon="mdi-file-chart"
+                                        no-action
                                     >
-                                        Diagramme
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('renderCharts', _item)"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-chart-bar</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Balken- / Linien- / Tortendiagramme erstellen
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        :disabled="selectedItems.length <= 1"
-                                        @click="$emit('renderGroupedChart')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-chart-areaspline</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Diagramme für ausgewählte Zeilen
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item
-                                        dense
-                                        @click="$emit('correlate')"
-                                    >
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-chart-scatter-plot</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            Korrelation / Streuungsdiagramm erstellen
-                                        </v-list-item-content>
-                                    </v-list-item>
+                                        <template #activator>
+                                            <v-list-item-content>
+                                                <v-list-item-title>Diagramme</v-list-item-title>
+                                            </v-list-item-content>
+                                        </template>
+
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('renderCharts', _item)"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-chart-bar</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Balken- / Linien- / Tortendiagramme erstellen
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            :disabled="selectedItems.length <= 1"
+                                            @click="$emit('renderGroupedChart')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-chart-areaspline</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Diagramme für ausgewählte Zeilen
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('correlate')"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-chart-scatter-plot</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                Korrelation / Streuungsdiagramm erstellen
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list-group>
                                 </div>
                             </template>
                             <FieldsTooltip :fields="fields" />

@@ -9,7 +9,7 @@ import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
-import {calculateStats, calculateCorrelation, getTotal, getAverage} from "../utils/operations";
+import {calculateStats, calculateCorrelation, getTotal, getAverage, sumUpSelected, divideSelected} from "../utils/operations";
 import {generateChartForDistricts, generateChartForCorrelation, generateChartsForItems} from "../utils/chart";
 import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/export";
 import composeFilename from "../../utils/composeFilename";
@@ -86,15 +86,11 @@ export default {
             ],
             districtColumns: [],
             items: [],
-            // all current (visible) items in the table
-            currentItems: [],
-            // selected items in the table
-            selectedItems: [],
+            currentItems: [], // all current (visible) items in the table
+            selectedItems: [], // selected items in the table
             timestampPrefix: "jahr_",
             timestamps: [],
-            // currentTimeStamp: null,
             search: "",
-            // statsFeatureFilter: [],
             fields: {
                 A: null,
                 B: null
@@ -208,6 +204,7 @@ export default {
                         category: category.value,
                         group: category.group,
                         valueType: category.valueType,
+                        isTemp: category.isTemp,
                         groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
                     }
                 ];
@@ -442,14 +439,8 @@ export default {
         calculateStats,
         calculateCorrelation,
         groupMapping,
-
-        // /**
-        //  * @param {String[]} value -
-        //  * @returns {void}
-        //  */
-        // setStatsFeatureFilter (value) {
-        //     this.statsFeatureFilter = value;
-        // },
+        sumUpSelected,
+        divideSelected,
 
         /**
          * @param {String} value -
@@ -615,6 +606,8 @@ export default {
                                         @subtract="calculateStats('subtract')"
                                         @multiply="calculateStats('multiply')"
                                         @divide="calculateStats('divide')"
+                                        @sum="sumUpSelected"
+                                        @divideSelected="divideSelected"
                                         @correlate="renderScatterplot"
                                         @visualizationChanged="onVisualizationChanged"
                                         @renderCharts="renderCharts"
