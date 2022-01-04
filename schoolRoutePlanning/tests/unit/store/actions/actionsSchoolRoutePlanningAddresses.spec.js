@@ -98,16 +98,23 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningAdd
     });
 
     describe("searchHousenumbers", () => {
-        it("searchHousenumbers with click event", done => {
+        it("searchHousenumbers with click event", () => {
             const payload = {
-                streetName: "Mickey-Mouse-Street",
-                eventType: "click"
-            };
+                    streetName: "Mickey-Mouse-Street",
+                    eventType: "click"
+                },
+                commit = sinon.spy(),
+                rootGetters = sinon.spy();
 
-            testAction(searchHousenumbers, payload, {}, {}, [
-                {type: "setStreetNames", payload: ["Mickey-Mouse-Street"]},
-                {type: "setInputAddress", payload: "Mickey-Mouse-Street"}
-            ], {}, done);
+            searchHousenumbers({rootGetters, commit}, payload);
+
+            expect(commit.calledTwice).to.be.true;
+            expect(commit.args[0]).to.deep.equal([
+                "setStreetNames", ["Mickey-Mouse-Street"]
+            ]);
+            expect(commit.args[1]).to.deep.equal([
+                "setInputAddress", "Mickey-Mouse-Street"
+            ]);
         });
     });
 
