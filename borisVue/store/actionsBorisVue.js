@@ -15,6 +15,8 @@ const actions = {
             return model.get("gfiAttributes") !== "ignore";
         });
 
+        // wenn gfi feature sich verändert, soll processFromParametricUrl gecheckt werden und dann simulateLanduseSelect(paramUrl)
+
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
 
