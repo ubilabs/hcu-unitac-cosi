@@ -290,6 +290,7 @@ export default {
                     </div>
                 </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <div
                     v-if="selectedPolygon === null"
                     class="form-group col-xs-12"
@@ -785,27 +786,94 @@ export default {
                 </div>
 =======
                 <div class="form-group col-xs-12">
+=======
+                <div
+                    v-if="gfiFeature === null"
+                    class="form-group col-xs-12">
+>>>>>>> 7e4243ea (progress in dealing with selected features)
                     <!-- <span v-if></span> -->
                     <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
                 </div>
-                <div class="form-group col-xs-12 first">
+                <!-- Nutzung auswählen  -->
+                <div
+                    v-else
+                    class="form-group col-xs-12 first">
                     <span>Gewählte Nutzung:</span>
-                </div>
-                <div class="form-group col-xs-12">
                     <select
                         class="form-control"
-                        @change="switchLayer($event.target.value)"
+                        @change="setBrwLanduse($event.target.value)"
                     >
                         <option
-                            v-for="(model, index) in getFilterListWithoutStripes"
-                            :key="index"
-                            :value="model"
+                            disabled
+                            selected
                         >
-                            {{ model }}
+                            Bitte wählen
+                        </option>
+                        <option
+                            v-for="(landuse, index) in gfiFeature"
+                            :key="index"
+                            :value="landuse.nutzungsart"
+                        >
+                            {{ landuse.nutzungsart }}
                         </option>
                     </select>
                 </div>
+<<<<<<< HEAD
 >>>>>>> 9b3e5dbb (placing polygon and point marker after clicking individual brw zones)
+=======
+                <div
+                    v-if="Object.keys(brwFeature).length !== 0 || brwLanduse !== ''"
+                    class="form-group col-xs-12 first"
+                >
+                    <div>
+                        <!-- Richtwertnummer: {{ Object.keys(brwFeature).length !== 0?brwFeature.get("richtwertnummer"):"gfiFeatureRichtwernummer" }} -->
+                    </div>
+                    <div
+                        class="btn-group btn-group-justified"
+                    >
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-info-sign" />
+                            </button>
+                        </div>
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-map-marker" />
+                            </button>
+                        </div>
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-euro" />
+                            </button>
+                        </div>
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-list" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+>>>>>>> 7e4243ea (progress in dealing with selected features)
             </div>
         </template>
     </Tool>
