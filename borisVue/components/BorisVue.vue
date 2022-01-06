@@ -29,12 +29,18 @@ export default {
         this.$on("close", this.close);
         this.initialize();
     },
+    mounted () {
+        this.$nextTick(() => {
+            this.requestParametricUrl();
+        });
+    },
     methods: {
         ...mapActions("Tools/BorisVue", [
             "initialize",
             "switchLayer",
             "toggleStripesLayer",
-            "toggleInfoText"
+            "toggleInfoText",
+            "requestParametricUrl"
 
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
@@ -119,26 +125,87 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
+                <div
+                    v-if="gfiFeature === null"
+                    class="form-group col-xs-12">
                     <!-- <span v-if></span> -->
                     <span>Bitte klicken Sie nun auf den gewünschten BRW in der Karte.</span>
                 </div>
-                <div class="form-group col-xs-12 first">
+                <!-- Nutzung auswählen  -->
+                <div
+                    v-else
+                    class="form-group col-xs-12 first">
                     <span>Gewählte Nutzung:</span>
-                </div>
-                <div class="form-group col-xs-12">
                     <select
                         class="form-control"
-                        @change="switchLayer($event.target.value)"
+                        @change="setBrwLanduse($event.target.value)"
                     >
                         <option
-                            v-for="(model, index) in getFilterListWithoutStripes"
-                            :key="index"
-                            :value="model"
+                            disabled
+                            selected
                         >
-                            {{ model }}
+                            Bitte wählen
+                        </option>
+                        <option
+                            v-for="(landuse, index) in gfiFeature"
+                            :key="index"
+                            :value="landuse.nutzungsart"
+                        >
+                            {{ landuse.nutzungsart }}
                         </option>
                     </select>
+                </div>
+                <div
+                    v-if="Object.keys(brwFeature).length !== 0 || brwLanduse !== ''"
+                    class="form-group col-xs-12 first"
+                >
+                    <div>
+                        <!-- Richtwertnummer: {{ Object.keys(brwFeature).length !== 0?brwFeature.get("richtwertnummer"):"gfiFeatureRichtwernummer" }} -->
+                    </div>
+                    <div
+                        class="btn-group btn-group-justified"
+                    >
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-info-sign" />
+                            </button>
+                        </div>
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-map-marker" />
+                            </button>
+                        </div>
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-euro" />
+                            </button>
+                        </div>
+                        <div
+                            class="btn-group"
+                            role="group"
+                        >
+                            <button
+                                class="btn btn-default"
+                            >
+                                <span class="glyphicon glyphicon-list" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>

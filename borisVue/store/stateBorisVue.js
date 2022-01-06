@@ -14,9 +14,14 @@ const state = {
     stripesLayer: false,
     selectedLayer: null,
     infoText: "",
+    // Daten unter "Gewählte Nutzung"
     gfiFeature: null,
     brwLanduse: "",
-    brwFeature: []
+    brwFeature: [],
+    // param URL
+    selectedBrwFeature: {},
+    processFromParametricUrl: false,
+    paramUrlParams: {}
 };
 
 export default state;

@@ -1,5 +1,4 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
-import state from "./stateBorisVue";
 import stateBoris from "./stateBorisVue";
 
 const mutations = {
@@ -19,10 +18,22 @@ const mutations = {
         state.stripesLayer = value;
     },
     setGfiFeature (state, value) {
-        state.gfiFeature = value;
+        state.gfiFeature = value.get("nutzungsart");
     },
-    setBrwFeatures ( state, value) {
+    setBrwFeatures (state, value) {
         state.brwFeature = value;
+    },
+    setBrwLanduse (state, value) {
+        state.brwLanduse = value;
+    },
+    setSelectedBrwFeature (state, value) {
+        state.selectedBrwFeature = value;
+    },
+    setProcessFromParametricUrl (state, value) {
+        state.processFromParametricUrl = value;
+    },
+    setParamUrlParams (state, value) {
+        state.paramUrlParams = value;
     }
 };
 
