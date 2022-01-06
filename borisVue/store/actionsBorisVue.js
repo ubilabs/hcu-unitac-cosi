@@ -1,4 +1,5 @@
 import state from "./stateBorisVue";
+import store from "../../../src/app-store";
 import axios from "axios";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 
@@ -10,24 +11,44 @@ const actions = {
             return model.get("gfiAttributes") !== "ignore";
         });
 
+        // wenn gfi feature sich verändert, soll processFromParametricUrl gecheckt werden und dann simulateLanduseSelect(paramUrl)
+
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
 
-        Radio.request("Map", "registerListener", "click", (event) => dispatch("clickCallback", event));
+        Radio.request("Map", "registerListener", "click", (event) => dispatch("clickCallback", {event}));
     },
-    switchLayer ({state, dispatch, commit}, selectedLayerName) {
+    requestParametricUrl ({commit, dispatch}) {
+        const brwId = store.state.urlParams?.brwId,
+            brwLayerName = store.state.urlParams?.brwLayerName,
+            center = store.state.urlParams && store.state.urlParams["Map/center"],
+            processFromParametricUrl = true;
+
+        if (brwId && brwLayerName && center) {
+            commit("setProcessFromParametricUrl", processFromParametricUrl);
+            commit("setParamUrlParams", {
+                brwId: brwId,
+                brwLayerName: brwLayerName,
+                center: center});
+
+            dispatch("switchLayer", brwLayerName);
+            dispatch("Map/setCenter", center, {root: true});
+            dispatch("clickCallback", {undefined, processFromParametricUrl, center});
+        }
+        console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
+    },
+    switchLayer ({dispatch, commit}, selectedLayerName) {
+
         const layerModels = state.filteredModelList.filter(function (model) {
             return model.get("isSelected") === true;
         });
 
         layerModels.forEach(layer => {
-
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
         });
 
         dispatch("selectLayerModelByName", selectedLayerName);
-
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
 
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
@@ -38,7 +59,7 @@ const actions = {
             dispatch("toggleStripesLayer", false);
         }
     },
-    toggleStripesLayer ({state, dispatch, commit}, value) {
+    toggleStripesLayer ({dispatch, commit}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             selectedModel = modelList.find(model => model.get("isSelected") === true),
             selectedModelName = selectedModel.attributes.name,
@@ -58,7 +79,7 @@ const actions = {
             }
         }
     },
-    selectLayerModelByName ({state, commit}, value) {
+    selectLayerModelByName ({commit}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             layerModel = modelList.find(model => model.get("name") === value);
 
@@ -69,62 +90,90 @@ const actions = {
     },
     toggleInfoText () {
         if (state.infoText.length === 0) {
-            state.infoText = "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten."
+            state.infoText = "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.";
         }
         else {
             state.infoText = "";
         }
     },
-    clickCallback ({state, dispatch}, event) {
+    // was passiert hier?
+    // sends a get feature info request to the currently selected layer
+    clickCallback ({dispatch}, {event, processFromParametricUrl, center}) {
+
         if (!state.active) {
             return;
         }
 
         const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
-            layerSource = selectedModel.get("layer").getSource(),
+            layerSource = selectedModel.get("layer").getSource();
+        let map,
+            mapView,
+            url;
 
-            // siehe altes boris: ausnahmen mit processFromParametricUrl
-            map = event.map,
-            mapView = map.getView(),
+        if (processFromParametricUrl) {
+            map = Radio.request("Map", "getMap");
+            mapView = map.getView();
+            url = layerSource.getFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
+        }
+        else {
+            map = event.map;
+            mapView = map.getView();
             url = layerSource.getFeatureInfoUrl(event.coordinate, mapView.getResolution(), mapView.getProjection());
+            // this.setBackdrop(true);
+        }
 
         axios.get(url)
             .then((response) => {
-                dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: event.coordinate});
+                if (processFromParametricUrl) {
+                    dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: center});
+                }
+                else {
+                    dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: event.coordinate});
+                }
             })
             .catch((error) => {
                 console.error(error.response);
             });
     },
-    handleGfiResponse ({state, commit, dispatch}, {response, status, coordinate}) {
+    handleGfiResponse ({commit, dispatch}, {response, status, coordinate}) {
         if (status === 200) {
             const feature = new WMSGetFeatureInfo().readFeature(response);
 
             if (feature !== null) {
                 // polygon
                 if (parseInt(feature.get("jahrgang"), 10) > 2008) {
-
-                    // define necessary data
-                    const featureValues = feature.values_,
-                        featureNutzungen = JSON.parse(featureValues.nutzungsart).nutzungen,
-                        featureYear = featureValues.jahrgang,
-                        // featureId = featureValues.zonen_nr,
-                        featureId = feature.getId();
-
-                    dispatch("sendGetFeatureRequestById", {featureId: featureId, featureYear: featureYear});
+                    feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
+                    dispatch("sendGetFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
                     commit("setGfiFeature", feature);
-                    dispatch("checkGfiFeatureByLanduse", {feature: feature, selectedLanduse: state.brwLanduse});
-                    console.log("state", state.gfiFeature);
+                    dispatch("checkGfiFeatureByLanduse", {feature, selectedLanduse: state.brwLanduse});
                 }
                 // point
                 else {
                     commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
+                    dispatch("Map/setCenter", coordinate, {root: true});
+                    // FEHLT NOCH:
+                    // this.handleNewFeature(feature);
                 }
             }
+            else {
+                Radio.trigger("Alert", "alert", {
+                    text: "An dieser Stelle ist kein BRW vorhanden.",
+                    kategorie: "alert-warning"
+                });
+            }
         }
+        else {
+            console.error("Datenabfrage fehlgeschlagen:" + status);
+            Radio.trigger("Alert", "alert", {
+                text: "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut.",
+                kategorie: "alert-danger"
+            });
+        }
+        // FEHLT NOCH:
+        // this.setBackdrop(false);
     },
-    // sendGetFeatureRequestById --> getWFS
+    // getWFS for polygon with id and year and place polygon marker
     sendGetFeatureRequestById ({dispatch}, {featureId, featureYear}) {
         const yearInt = parseInt(featureYear, 10),
             index = Config.layerConf.lastIndexOf("/"),
@@ -153,9 +202,6 @@ const actions = {
             .then((response) =>{
                 const feature = new WFS().readFeature(response.data);
 
-                // remove point geometry from feature = green marked brw
-                // feature.unset("geom_brw_grdstk");
-                // set polygon geometry as feature's geometry
                 feature.setGeometryName(geometryName);
                 dispatch("MapMarker/placingPolygonMarker", feature, {root: true});
             })
@@ -164,23 +210,71 @@ const actions = {
             });
 
     },
-    checkGfiFeatureByLanduse ({dispatch},{feature, selectedLanduse}) {
-        const landuse = JSON.parse(feature.values_.nutzungsart).nutzungen;
+    // checks if there is a brw for the selected landuse
+    // if so, the function sendGetFeatureRequest is called
+    checkGfiFeatureByLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
+        const landuse = feature.get("nutzungsart");
 
         for (const land in landuse) {
-            // console.log("landuse", landuse[land])
-            landuse[land].nutzungsart === selectedLanduse;
-
-            if (landuse) {
-                dispatch("sendGetFeatureRequest", {landuse: landuse.richtwertnummer, featureYear: feature.values_.jahrgang })
+            if (landuse[land].nutzungsart === selectedLanduse) {
+                dispatch("sendGetFeatureRequest", {richtwertNummer: landuse[land].richtwertnummer, featureYear: feature.get("jahrgang")});
             }
             else {
-                // console.log("else")
+                commit("setBrwLanduse", "");
+                commit("setSelectedBrwFeature", {});
             }
         }
     },
-    sendGetFeatureRequest ({state}, {landuse, featureYear}) {
-        // console.log("hello dispatch", landuse, featureYear)
+    sendGetFeatureRequest ({dispatch}, {richtwertNummer, featureYear}) {
+        const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
+            index = Config.layerConf.lastIndexOf("/"),
+            url = Config.layerConf.substring(0, index),
+            wfsString = `<GetFeature version='1.1.0' xmlns:wfs='http://www.opengis.net/wfs'>
+            <wfs:Query typeName='${typeName}'>
+                <Filter xmlns='http://www.opengis.net/ogc'>
+                    <PropertyIsEqualTo>
+                        <PropertyName>richtwertnummer</PropertyName>
+                        <Literal>${richtwertNummer}</Literal>
+                    </PropertyIsEqualTo>
+                </Filter>
+            </wfs:Query>
+        </GetFeature>`;
+
+        axios({
+            method: "post",
+            url: url + "/HH_WFS_Bodenrichtwerte",
+            data: wfsString,
+            headers: {"Content-Type": "text/xml"}
+        }).then((response) => {
+            dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
+        }).catch((response) => {
+            dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
+        });
+
+    },
+    handleGetFeatureResponse ({commit, dispatch}, {response, status, year}) {
+        if (status === 200) {
+            const features = new WFS().readFeatures(response);
+
+            commit("setBrwFeatures", features);
+            dispatch("findBrwFeatureByYear", {features, year}).then((result) => {
+                const feature = result;
+
+                dispatch("handleNewFeature", feature);
+            });
+        }
+        else {
+            Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Detailsss: " + status);
+        }
+    },
+    findBrwFeatureByYear (context, payload) {
+        return payload.features.find((feature) => {
+            return feature.get("jahrgang") === payload.year;
+        });
+    },
+    handleNewFeature ({commit}, feature) {
+        commit("setSelectedBrwFeature", feature);
+        // dispatch("sendWpsConvertRequest");
     }
 };
 
