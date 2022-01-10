@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
@@ -12,7 +12,7 @@ import LoaderOverlay from "../../../src/utils/loaderOverlay";
 export default {
     name: "PopulationRequest",
     components: {
-        Tool,
+        ToolTemplate,
         GraphicalSelect,
         ToggleCheckbox
     },
@@ -34,7 +34,15 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/PopulationRequest", Object.keys(getters)),
-        ...mapGetters(["isDefaultStyle"]),
+        ...mapGetters(["uiStyle"]),
+
+        /**
+         * Indicates whether the ui style is default.
+         * @returns {Boolean} Is the uiStyle default.
+         */
+        isDefaultStyle () {
+            return this.uiStyle !== "SIMPLE" && this.uiStyle !== "TABLE";
+        },
 
         /**
          * returns if the Raster Layer is Visible in the map
@@ -120,11 +128,6 @@ export default {
             this.makeRequest(geoJson);
         });
 
-        this.$root.$on("populationRequest", (geoJson) => {
-            this.setActive(true);
-            this.makeRequest(geoJson);
-        });
-
         const service = Radio.request("RestReader", "getServiceById", this.populationReqServiceId);
 
         if (service !== undefined) {
@@ -150,7 +153,7 @@ export default {
             this.searcharea = 0;
             LoaderOverlay.show();
 
-            WPS.wpsRequest("1001", "einwohner_ermitteln.fmw", {
+            WPS.wpsRequest(this.wpsId, this.fmwProcess, {
                 "such_flaeche": JSON.stringify(geoJson)
             }, this.handleResponse.bind(this));
         },
@@ -207,7 +210,7 @@ export default {
             let responseResult = null;
 
             try {
-                responseResult = JSON.parse(response.ergebnis);
+                responseResult = JSON.parse(response?.ergebnis);
                 if (responseResult?.einwohner_fhh) {
                     this.inhabitantsFHHNum = responseResult.einwohner_fhh;
                     this.inhabitantsFHH = thousandsSeparator(responseResult.einwohner_fhh);
@@ -428,7 +431,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="translate(name)"
         :icon="glyphicon"
         :active="active"
@@ -603,10 +606,10 @@ export default {
                 </div>
             </div>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .PopulationRequest {
         max-width:500px;
     }
@@ -637,12 +640,12 @@ export default {
     }
 </style>
 
-<style lang="less">
-    @import "~/css/mixins.less";
+<style lang="scss">
+    @import "~/css/mixins.scss";
 
     #tooltip-overlay {
         position: relative;
-        background: @accent_active;
+        background: $accent_active;
         color: #fff;
         max-width: 200px;
         padding: 4px 8px;
@@ -651,7 +654,7 @@ export default {
     #circle-overlay {
         position: relative;
         top: -20px;
-        background: @accent_active;
+        background: $accent_active;
         color: #fff;
         max-width: 70px;
         padding: 4px 8px;
