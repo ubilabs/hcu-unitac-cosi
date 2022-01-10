@@ -35,7 +35,7 @@
             "2019": 35828,
             "2020": 35880
         },
-        "incompleteDataSets_A": 0,
+        "incompleteDatasets_A": 0,
         "faktorf_B": 1,
         "perCalc_B": 1,
         "type_B": "feature",
@@ -61,7 +61,7 @@
             "2019": 18637,
             "2020": 18658
         },
-        "incompleteDataSets_B": 0
+        "incompleteDatasets_B": 0
     }
 }, {
     "scope": "Winterhude",
@@ -100,7 +100,7 @@
             "2019": 55492,
             "2020": 56382
         },
-        "incompleteDataSets_A": 0,
+        "incompleteDatasets_A": 0,
         "faktorf_B": 1,
         "perCalc_B": 1,
         "type_B": "feature",
@@ -126,7 +126,7 @@
             "2019": 29354,
             "2020": 29748
         },
-        "incompleteDataSets_B": 0
+        "incompleteDatasets_B": 0
     }
 }, {
     "scope": "Gesamt",
@@ -143,10 +143,10 @@
         "faktorf_B": 1,
         "perCalc_A": 1,
         "perCalc_B": 1,
-        "incompleteDataSets_A": 0,
-        "incompleteDataSets_B": 0,
-        "dataSets_A": null,
-        "dataSets_B": null
+        "incompleteDatasets_A": 0,
+        "incompleteDatasets_B": 0,
+        "datasets_A": null,
+        "datasets_B": null
     }
 }, {
     "scope": "Durchschnitt",
@@ -163,9 +163,9 @@
         "faktorf_B": 1,
         "perCalc_A": 1,
         "perCalc_B": 1,
-        "incompleteDataSets_A": 0,
-        "incompleteDataSets_B": 0,
-        "dataSets_A": null,
-        "dataSets_B": null
+        "incompleteDatasets_A": 0,
+        "incompleteDatasets_B": 0,
+        "datasets_A": null,
+        "datasets_B": null
     }
 }]

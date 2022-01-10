@@ -1,4 +1,4 @@
-import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
+import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 
 /**
  * @description Adjusting data for Graph Generator Tool.
@@ -10,18 +10,18 @@ import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
  */
 function prepareGraphData (data, districtName, timestamps, timestampPrefix) {
     const statFeature = data[districtName],
-        newDataSet = {
+        newDataset = {
             label: districtName,
             data: []
         };
 
     for (const timestamp of timestamps) {
-        newDataSet.data.push(statFeature?.[timestampPrefix + timestamp]);
+        newDataset.data.push(statFeature?.[timestampPrefix + timestamp]);
     }
 
-    newDataSet.data.reverse();
+    newDataset.data.reverse();
 
-    return newDataSet;
+    return newDataset;
 }
 
 /**
@@ -77,7 +77,7 @@ function prepareLinRegData (correlation) {
 * @returns {Void} Function returns nothing.
 */
 export function generateGraphObj (graphData, districtLevelLabel, category, timestamps) {
-    return new ChartDataSet({
+    return new ChartDataset({
         id: "ccm",
         name: districtLevelLabel + " - " + category,
         type: ["LineChart", "BarChart", "PieChart"],
@@ -86,7 +86,7 @@ export function generateGraphObj (graphData, districtLevelLabel, category, times
         scaleLabels: [category, "Jahre"],
         data: {
             labels: [...timestamps].reverse(),
-            dataSets: graphData
+            datasets: graphData
         }
     });
 }
@@ -99,7 +99,7 @@ export function generateGraphObj (graphData, districtLevelLabel, category, times
 * @returns {Void} Function returns nothing.
 */
 export function generateScatterGraphObj (graphData, categoryX, categoryY) {
-    return new ChartDataSet({
+    return new ChartDataset({
         id: "ccm",
         name: `${categoryY} / ${categoryX}`,
         type: "ScatterChart",
@@ -107,7 +107,7 @@ export function generateScatterGraphObj (graphData, categoryX, categoryY) {
         source: "Dashboard",
         scaleLabels: [categoryY, categoryX],
         data: {
-            dataSets: graphData
+            datasets: graphData
         }
     });
 }
@@ -118,7 +118,7 @@ export function generateScatterGraphObj (graphData, categoryX, categoryY) {
  * @param {String[]} districtNames - the districts objects to generate the chart data for
  * @param {String} districtLevelLabel - the label of the districtLevel
  * @param {String} timestampPrefix - the string the timestamps start with (e.g. jahr_)
- * @returns {ChartDataSet} the chart data
+ * @returns {ChartDataset} the chart data
  */
 export function generateChartForDistricts (data, districtNames, districtLevelLabel, timestampPrefix = "jahr_") {
     const graphData = districtNames.map(dist => prepareGraphData(data, dist, data.years, timestampPrefix)),
@@ -132,7 +132,7 @@ export function generateChartForDistricts (data, districtNames, districtLevelLab
  * @param {Object} correlation - the correlation data calculated from dashboardTable
  * @param {String} categoryX - the category displayed on the x Axis
  * @param {String} categoryY - the category displayed on the y Axis
- * @returns {ChartDataSet} the chart data
+ * @returns {ChartDataset} the chart data
  */
 export function generateChartForCorrelation (correlation, categoryX, categoryY) {
     const scatterData = prepareScatterData(correlation.data),
@@ -148,7 +148,7 @@ export function generateChartForCorrelation (correlation, categoryX, categoryY) 
  * @param {String[]} districtNames - the districts objects to generate the chart data for
  * @param {String} districtLevelLabel - the label of the districtLevel
  * @param {String} timestampPrefix - the string the timestamps start with (e.g. jahr_)
- * @returns {ChartDataSet} the chart data
+ * @returns {ChartDataset} the chart data
  */
 export function generateChartsForItems (data, districtNames, districtLevelLabel, timestampPrefix = "jahr_") {
     const
@@ -156,13 +156,13 @@ export function generateChartsForItems (data, districtNames, districtLevelLabel,
         graphs = districtNames.map(districtName => {
             const chartData = {
                 labels: timestamps,
-                dataSets: data.map(item => ({
+                datasets: data.map(item => ({
                     label: item.category,
                     data: timestamps.map(t => parseFloat(item[districtName]?.[timestampPrefix + t]))
                 }))
             };
 
-            return new ChartDataSet({
+            return new ChartDataset({
                 id: "ccm-" + data.map(d => d.category).join(","),
                 name: districtLevelLabel + " - " + districtName,
                 type: ["LineChart", "BarChart"],

@@ -465,6 +465,7 @@ export default {
 
 <template lang="html">
     <Tool
+        class="no-scroll"
         :title="$t('additional:modules.tools.cosi.dashboard.title')"
         :icon="glyphicon"
         :active="active"

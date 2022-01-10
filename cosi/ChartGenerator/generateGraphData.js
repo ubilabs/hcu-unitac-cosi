@@ -4,15 +4,15 @@ import beautifyKey from "../../../src/utils/beautifyKey";
 
 /**
          * @description Generates the graph component and passes the data dynamically.
-         * @param {Object} arg dataSet containing the data and a String for type property.
+         * @param {Object} arg dataset containing the data and a String for type property.
          * @param {Object} type type
          * @returns {void}
          */
 export default function generateGraphData (arg, type) {
-    const dataSet = JSON.parse(JSON.stringify(arg)),
-        colorRange = generateColorScale(dataSet);
+    const dataset = JSON.parse(JSON.stringify(arg)),
+        colorRange = generateColorScale(dataset);
 
-    dataSet.data.dataSets.forEach((set, index) => {
+    dataset.data.datasets.forEach((set, index) => {
         let getColor = colorRange(index),
             d3Color = color(getColor);
 
@@ -27,40 +27,40 @@ export default function generateGraphData (arg, type) {
     });
 
     if (type === "PieChart") {
-        return createPieChartData(dataSet);
+        return createPieChartData(dataset);
     }
 
-    return dataSet;
+    return dataset;
 }
 
 /**
- * @description Modifies the dataSet to match chart.js requirements for PieCharts.
- * @param {Object} dataSet dataSet containing the data to be rendered as graph.
+ * @description Modifies the dataset to match chart.js requirements for PieCharts.
+ * @param {Object} dataset dataset containing the data to be rendered as graph.
  * @returns {Array} Transformed Dataset.
  */
-function createPieChartData (dataSet) {
+function createPieChartData (dataset) {
     const newPieChartData = [];
 
-    dataSet.data.labels.forEach((label, i) => {
+    dataset.data.labels.forEach((label, i) => {
         const obj = {
-            name: beautifyKey(dataSet.name) + " - " + label,
+            name: beautifyKey(dataset.name) + " - " + label,
             type: "PieChart",
             group: label,
             label: [],
-            dataSets: {backgroundColor: [], data: []},
-            target: dataSet.target ? dataSet.target : "",
-            cgid: dataSet.cgid,
-            id: dataSet.id,
-            source: dataSet.source
+            datasets: {backgroundColor: [], data: []},
+            target: dataset.target ? dataset.target : "",
+            cgid: dataset.cgid,
+            id: dataset.id,
+            source: dataset.source
         };
 
-        dataSet.data.dataSets.forEach((set) => {
+        dataset.data.datasets.forEach((set) => {
             const labelScope = set.label,
                 labelVal = set.data[i];
 
             obj.label.push(labelScope);
-            obj.dataSets.backgroundColor.push(set.backgroundColor);
-            obj.dataSets.data.push(labelVal);
+            obj.datasets.backgroundColor.push(set.backgroundColor);
+            obj.datasets.data.push(labelVal);
         });
 
         newPieChartData.push(obj);

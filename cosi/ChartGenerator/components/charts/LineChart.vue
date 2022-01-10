@@ -3,67 +3,62 @@
 import {Line} from "vue-chartjs";
 import {color} from "d3-color";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
+import deepAssign from "../../../../../src/utils/deepAssign";
 
 export default {
     name: "LineChart",
     extends: Line,
     props: {
-        dataSets: {
+        datasets: {
             type: Object,
             default: null
         },
         options: {
             type: Object,
             required: false,
-            default: () => ({
-                title: {
-                    display: true,
-                    text: "",
-                    position: "top"
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            beginAtZero: false
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: ""
-                        }
-                    }],
-                    yAxes: [{
-                        stacked: false,
-                        ticks: {
-                            beginAtZero: false
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: ""
-                        }
-                    }]
-                }
-            })
+            default: () => ({})
         }
     },
+    data: () => ({
+        defaultOptions: {
+            title: {
+                display: true,
+                text: "",
+                position: "top"
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero: false
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: ""
+                    }
+                }],
+                yAxes: [{
+                    stacked: false,
+                    ticks: {
+                        beginAtZero: false
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: ""
+                    }
+                }]
+            }
+        }
+    }),
     computed: {
         chartData () {
-            if (!this.dataSets) {
+            if (!this.datasets) {
                 return null;
             }
 
-            return {
-                name: this.dataSets.name,
-                scaleLabels: this.dataSets.scaleLabels,
-                beginAtZero: this.dataSets.beginAtZero,
-                stacked: this.dataSets.stacked,
-                graph: {
-                    labels: this.dataSets.data.labels,
-                    datasets: this.dataSets.data.dataSets
-                }
-            };
+            return this.datasets;
         },
         _options () {
-            return this.options;
+            return deepAssign(this.defaultOptions, this.options);
         }
     },
     watch: {
@@ -80,21 +75,21 @@ export default {
                 return;
             }
 
-            this.chartData.graph.datasets.forEach(dataset => {
+            this.chartData.data.datasets.forEach(dataset => {
                 const newColor = color(dataset.backgroundColor);
 
                 newColor.opacity = 0;
                 dataset.backgroundColor = newColor;
             });
 
-            this._options.scales.yAxes[0].stacked = this.dataSets.stacked || false;
-            this._options.scales.yAxes[0].ticks.beginAtZero = this.dataSets.beginAtZero || false;
+            this._options.scales.yAxes[0].stacked = this.chartData.stacked || false;
+            this._options.scales.yAxes[0].ticks.beginAtZero = this.chartData.beginAtZero || false;
 
-            this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
-            this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];
+            this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels?.[0];
+            this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels?.[1];
             this._options.title.text = beautifyKey(this.chartData.name);
 
-            this.renderChart(this.chartData.graph, this.options);
+            this.renderChart(this.chartData.data, this.options);
         }
     }
 };

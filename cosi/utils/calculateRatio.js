@@ -6,13 +6,13 @@
 export default function calculateRatio (dataArray, year) {
     const results = [];
 
-    dataArray.forEach(dataSet => {
+    dataArray.forEach(dataset => {
         const calcObj = {
-                scope: dataSet.name,
-                paramA_val: typeof dataSet.paramA_calc === "object" ? dataSet.paramA_calc[year] : dataSet.paramA_calc,
-                paramB_val: typeof dataSet.paramB_calc === "object" ? dataSet.paramB_calc[year] : dataSet.paramB_calc
+                scope: dataset.name,
+                paramA_val: typeof dataset.paramA_calc === "object" ? dataset.paramA_calc[year] : dataset.paramA_calc,
+                paramB_val: typeof dataset.paramB_calc === "object" ? dataset.paramB_calc[year] : dataset.paramB_calc
             },
-            calculation = calculateSingle(calcObj, dataSet);
+            calculation = calculateSingle(calcObj, dataset);
 
         results.push(calculation);
     });
@@ -20,17 +20,17 @@ export default function calculateRatio (dataArray, year) {
     return calculateTotals(results);
 }
 /** Calculates the extent of a set of features.
-* @param {Object} calcObj pre-transformed dataSet.
-* @param {Object} dataSet Original dataSet from dataArray.
+* @param {Object} calcObj pre-transformed dataset.
+* @param {Object} dataset Original dataset from dataArray.
 * @returns {Object} calculated single dataset.
 */
-function calculateSingle (calcObj, dataSet) {
+function calculateSingle (calcObj, dataset) {
     const relation = calcObj.paramA_val / calcObj.paramB_val,
-        capacity = calcObj.paramA_val * (dataSet.faktorf_B / dataSet.faktorf_A),
-        need = calcObj.paramB_val * (dataSet.faktorf_A / dataSet.faktorf_B),
-        coverageA = ((calcObj.paramA_val / need) * dataSet.perCalc_B) * 100,
-        coverageB = ((calcObj.paramB_val / need) * dataSet.perCalc_A) * 100,
-        weightedRelation = relation * (dataSet.perCalc_A / dataSet.perCalc_B);
+        capacity = calcObj.paramA_val * (dataset.faktorf_B / dataset.faktorf_A),
+        need = calcObj.paramB_val * (dataset.faktorf_A / dataset.faktorf_B),
+        coverageA = ((calcObj.paramA_val / need) * dataset.perCalc_B) * 100,
+        coverageB = ((calcObj.paramB_val / need) * dataset.perCalc_A) * 100,
+        weightedRelation = relation * (dataset.perCalc_A / dataset.perCalc_B);
 
     calcObj.relation = relation;
     calcObj.capacity = capacity;
@@ -38,7 +38,7 @@ function calculateSingle (calcObj, dataSet) {
     calcObj.coverage = coverageA;
     calcObj.mirrorCoverage = coverageB;
     calcObj.weightedRelation = weightedRelation;
-    calcObj.data = dataSet;
+    calcObj.data = dataset;
 
     return calcObj;
 }
@@ -47,8 +47,8 @@ function calculateSingle (calcObj, dataSet) {
 * @returns {Array} Updated Array.
 */
 function calculateTotals (results) {
-    const filteredResults = results.filter(function (dataSet) {
-        if (dataSet.paramA_val === undefined || dataSet.paramB_val === undefined) {
+    const filteredResults = results.filter(function (dataset) {
+        if (dataset.paramA_val === undefined || dataset.paramB_val === undefined) {
             return false;
         }
 
@@ -66,10 +66,10 @@ function calculateTotals (results) {
             faktorf_B: filteredResults[0].data.faktorf_B,
             perCalc_A: filteredResults[0].data.perCalc_A,
             perCalc_B: filteredResults[0].data.perCalc_B,
-            incompleteDataSets_A: filteredResults.reduce((total, district) => total + district.data.incompleteDataSets_A, 0),
-            incompleteDataSets_B: filteredResults.reduce((total, district) => total + district.data.incompleteDataSets_B, 0),
-            dataSets_A: filteredResults.reduce((total, district) => total + district.data.dataSets_A, 0),
-            dataSets_B: filteredResults.reduce((total, district) => total + district.data.dataSets_B, 0)
+            incompleteDatasets_A: filteredResults.reduce((total, district) => total + district.data.incompleteDatasets_A, 0),
+            incompleteDatasets_B: filteredResults.reduce((total, district) => total + district.data.incompleteDatasets_B, 0),
+            datasets_A: filteredResults.reduce((total, district) => total + district.data.datasets_A, 0),
+            datasets_B: filteredResults.reduce((total, district) => total + district.data.datasets_B, 0)
         },
         resultsTotal = {
             scope: "Gesamt",
@@ -82,10 +82,10 @@ function calculateTotals (results) {
             faktorf_B: filteredResults[0].data.faktorf_B,
             perCalc_A: filteredResults[0].data.perCalc_A,
             perCalc_B: filteredResults[0].data.perCalc_B,
-            incompleteDataSets_A: resultsTotal.data.incompleteDataSets_A / filteredResults.length,
-            incompleteDataSets_B: resultsTotal.data.incompleteDataSets_B / filteredResults.length,
-            dataSets_A: resultsTotal.data.dataSets_A / filteredResults.length,
-            dataSets_B: resultsTotal.data.dataSets_B / filteredResults.length
+            incompleteDatasets_A: resultsTotal.data.incompleteDatasets_A / filteredResults.length,
+            incompleteDatasets_B: resultsTotal.data.incompleteDatasets_B / filteredResults.length,
+            datasets_A: resultsTotal.data.datasets_A / filteredResults.length,
+            datasets_B: resultsTotal.data.datasets_B / filteredResults.length
         },
         resultsAverage = {
             scope: "Durchschnitt",

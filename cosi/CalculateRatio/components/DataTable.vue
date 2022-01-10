@@ -5,7 +5,7 @@ export default {
     },
     props: {
         // Dataset to be displayed in the table
-        dataSet: {
+        dataset: {
             type: Array,
             default: () => []
         },
@@ -86,7 +86,7 @@ export default {
         },
 
         formatData () {
-            return this.dataSet.map(scope => ({
+            return this.dataset.map(scope => ({
                 ...scope,
                 paramA_val: scope.paramA_val === undefined || scope.paramA_val === null || scope.paramA_val === "NaN" ? "Keine Daten vorhanden" : scope.paramA_val.toLocaleString("de-DE"),
                 paramB_val: scope.paramB_val === undefined || scope.paramB_val === null || scope.paramB_val === "NaN" ? "Keine Daten vorhanden" : scope.paramB_val.toLocaleString("de-DE"),
@@ -144,16 +144,16 @@ export default {
             >
                 <div
                     class="table_cell"
-                    :class="{ lower: item.index >= dataSet.length/2 }"
+                    :class="{ lower: item.index >= dataset.length/2 }"
                 >
                     {{ item.paramA_val }}
 
-                    <span v-if="item.data.incompleteDataSets_A > 0">*</span>
+                    <span v-if="item.data.incompleteDatasets_A > 0">*</span>
                     <div
-                        v-if="item.data.incompleteDataSets_A > 0"
+                        v-if="item.data.incompleteDatasets_A > 0"
                         class="hover_helper"
                     >
-                        <h2><strong>{{ item.data.incompleteDataSets_A.toLocaleString("de-DE") }} / {{ item.data.dataSets_A }}</strong> Datensätze unvollständig</h2>
+                        <h2><strong>{{ item.data.incompleteDatasets_A.toLocaleString("de-DE") }} / {{ item.data.datasets_A }}</strong> Datensätze unvollständig</h2>
                         <p>Mit einem * gekennzeichnete Datensätze enthalten Einrichtungen, für die das ausgewählte Parameter (wie bspw. bei Schulen "Schülerzahl") nicht hinterlegt ist. In diesem Fall wird für diesen Datensatz mit dem Medianwert der vorhandenen vollständigen Datensätze kalkuliert.</p>
                     </div>
                 </div>
@@ -163,12 +163,12 @@ export default {
                 <div class="table_cell">
                     {{ item.paramB_val }}
 
-                    <span v-if="item.data.incompleteDataSets_B > 0">*</span>
+                    <span v-if="item.data.incompleteDatasets_B > 0">*</span>
                     <div
-                        v-if="item.data.incompleteDataSets_B > 0"
+                        v-if="item.data.incompleteDatasets_B > 0"
                         class="hover_helper"
                     >
-                        <h2><strong>{{ item.data.incompleteDataSets_B.toLocaleString("de-DE") }} / {{ item.data.dataSets_B }}</strong> Datensätze unvollständig</h2>
+                        <h2><strong>{{ item.data.incompleteDatasets_B.toLocaleString("de-DE") }} / {{ item.data.datasets_B }}</strong> Datensätze unvollständig</h2>
                         <p>Mit einem * gekennzeichnete Datensätze enthalten Einrichtungen, für die das ausgewählte Parameter (wie bspw. bei Schulen "Schülerzahl") nicht hinterlegt ist. In diesem Fall wird für diesen Datensatz mit dem Medianwert der vorhandenen vollständigen Datensätze kalkuliert.</p>
                     </div>
                 </div>

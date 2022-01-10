@@ -1,3 +1,29 @@
+<script>
+import Histogram from "./Histogram.vue";
+export default {
+    name: "ScoreValues",
+    components: {Histogram},
+    props: {
+        value: Boolean,
+        label: {type: String, default: null},
+        histLabel: {type: String, default: null},
+        scores: {type: Object, default: null},
+        allScores: {type: Array, default: null},
+        layers: {type: Array, default: null}
+    },
+    computed: {
+        show: {
+            get () {
+                return this.value;
+            },
+            set (value) {
+                this.$emit("input", value);
+            }
+        }
+    }
+};
+</script>
+
 <template>
     <div class="text-center">
         <v-dialog
@@ -44,29 +70,3 @@
         </v-dialog>
     </div>
 </template>
-
-<script>
-import Histogram from "./Histogram.vue";
-export default {
-    name: "ScoreValues",
-    components: {Histogram},
-    props: {
-        value: Boolean,
-        label: {type: String, default: null},
-        histLabel: {type: String, default: null},
-        scores: {type: Object, default: null},
-        allScores: {type: Array, default: null},
-        layers: {type: Array, default: null}
-    },
-    computed: {
-        show: {
-            get () {
-                return this.value;
-            },
-            set (value) {
-                this.$emit("input", value);
-            }
-        }
-    }
-};
-</script>

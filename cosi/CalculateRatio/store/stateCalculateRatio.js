@@ -32,7 +32,7 @@ const state = {
     deactivateGFI: true,
     yearSelector: "jahr_",
     dataToColorCodeMap: false,
-    colorCodeMapDataSet: [],
+    colorCodeMapDataset: [],
     results: [],
     resultHeaders: {},
     readmeUrl: {

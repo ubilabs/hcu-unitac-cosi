@@ -9,6 +9,7 @@ import LineChart from "./charts/LineChart.vue";
 import BarChart from "./charts/BarChart.vue";
 import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
+import RadarChart from "./charts/RadarChart.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
@@ -19,7 +20,8 @@ export default {
         LineChart,
         BarChart,
         PieChart,
-        ScatterChart
+        ScatterChart,
+        RadarChart
     },
     data () {
         return {
@@ -34,14 +36,14 @@ export default {
         ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
     },
     watch: {
-        dataSets (newDataSets, oldValue) {
-            if (oldValue && newDataSets.length !== oldValue.length) {
-                this.activeGraph = this.dataSets.length - 1;
+        datasets (newDatasets, oldValue) {
+            if (oldValue && newDatasets.length !== oldValue.length) {
+                this.activeGraph = this.datasets.length - 1;
             }
-            if (newDataSets.length === 0) {
+            if (newDatasets.length === 0) {
                 this.activeGraph -= 1;
             }
-            if (this.dataSets.length === 0) {
+            if (this.datasets.length === 0) {
                 this.setActive(false);
             }
         }
@@ -87,20 +89,20 @@ export default {
         },
         /**
          * @description Select graph to be displayed in tool window.
-         * @param {Integer} value Index of the dataset in this.dataSets array.
+         * @param {Integer} value Index of the dataset in this.datasets array.
          * @returns {Void} Function returns nothing.
          */
         selectGraph (value) {
             this.activeGraph = value;
         },
         /**
-         * @description Changes between the styles if a dataSet has multiple graph types.
+         * @description Changes between the styles if a dataset has multiple graph types.
          * @param {Object} graph Data of the graph.
          * @param {Integer} index Subindex of the type of the graph.
          * @returns {Void} Function returns nothing.
          */
         changeGraph (graph, index) {
-            this.$set(this.dataSets, this.dataSets.indexOf(graph), {...graph, sub_graph: index});
+            this.$set(this.datasets, this.datasets.indexOf(graph), {...graph, sub_graph: index});
         },
         /**
          * @description Selects the next or the previous graph in the Tool Window.
@@ -108,7 +110,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         graphPrevNext (value) {
-            const l = this.dataSets.length;
+            const l = this.datasets.length;
 
             this.activeGraph = (((this.activeGraph + value) % l) + l) % l; // modulo with negative handling
         },
@@ -119,7 +121,7 @@ export default {
         yToZero () {
             const
                 i = this.activeGraph,
-                graph = this.dataSets[i],
+                graph = this.datasets[i],
                 config = this.chartConfigs[i],
                 beginAtZero = !graph.beginAtZero;
 
@@ -130,7 +132,7 @@ export default {
                 config.beginAtZero = beginAtZero;
             }
 
-            this.$set(this.dataSets, i, {...graph, beginAtZero});
+            this.$set(this.datasets, i, {...graph, beginAtZero});
         },
 
         /**
@@ -144,7 +146,7 @@ export default {
         modifyChart (param) {
             const
                 i = this.activeGraph,
-                graph = this.dataSets[i],
+                graph = this.datasets[i],
                 config = this.chartConfigs[i],
                 value = !graph[param];
 
@@ -155,7 +157,7 @@ export default {
                 config[param] = value;
             }
 
-            this.$set(this.dataSets, i, {...graph, [param]: value});
+            this.$set(this.datasets, i, {...graph, [param]: value});
         },
 
         /**
@@ -203,19 +205,19 @@ export default {
         },
         /**
          * @description Deletes a graph from the Tool Window.
-         * @param {Integer} index Index of the graph to be deleted in the this.dataSets Array.
+         * @param {Integer} index Index of the graph to be deleted in the this.datasets Array.
          * @returns {Void} Function returns nothing.
          */
         removeGraph (index) {
             this.chartConfigs.splice(index, 1);
-            this.dataSets.splice(index, 1);
+            this.datasets.splice(index, 1);
         },
         /**
-         * @description Clears dataSets Array and thus deleting all graphs from Chart Generator.
+         * @description Clears datasets Array and thus deleting all graphs from Chart Generator.
          * @returns {Void} Function returns nothing.
          */
         removeAll () {
-            this.setDataSets([]);
+            this.setDatasets([]);
             this.setChartConfigs([]);
             this.setActive(false);
         }
@@ -243,7 +245,7 @@ export default {
                     class="wrapper"
                 >
                     <div
-                        v-for="(graph, index) in dataSets"
+                        v-for="(graph, index) in datasets"
                         :key="graph.cgid"
                         class="graph"
                         :class="{active: activeGraph === index}"
@@ -296,7 +298,7 @@ export default {
                                                     :is="type"
                                                     v-if="type!=='PieChart'"
                                                     :id="`graph-${index}-${i}`"
-                                                    :data-sets="chartConfigs[index][i]"
+                                                    :datasets="chartConfigs[index][i]"
                                                     :options="graph.options"
                                                     :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                 />
@@ -307,7 +309,7 @@ export default {
                                                         v-for="(pieData, j) in chartConfigs[index][i]"
                                                         :id="`graph-${index}-${i}-${j}`"
                                                         :key="`graph-${index}-${i}-${j}`"
-                                                        :data-sets="pieData"
+                                                        :datasets="pieData"
                                                         :options="graph.options"
                                                         :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                     />
@@ -341,62 +343,66 @@ export default {
                                             </div>
                                         </div>
                                     </template>
-                                </div>
+                                    <!-- </div> -->
 
-                                <template v-if="!Array.isArray(graph.type)">
-                                    <component
-                                        :is="graph.type"
-                                        v-if="graph.type!=='PieChart'"
-                                        :id="`graph-${index}`"
-                                        :data-sets="chartConfigs[index]"
-                                        :options="graph.options"
-                                        :class="{current_graph: activeGraph === index}"
-                                    />
-                                    <template
-                                        v-if="graph.type==='PieChart'"
-                                    >
-                                        <PieChart
-                                            v-for="(pieData, j) in chartConfigs[index]"
-                                            :id="`graph-${index}-${j}`"
-                                            :key="`graph-${index}-${j}`"
-                                            :data-sets="pieData"
-                                            :options="graph.options"
-                                            :class="{current_graph: activeGraph === index}"
-                                        />
+                                    <template v-if="!Array.isArray(graph.type)">
+                                        <!-- eslint-disable-next-line -->
+                                        <div class="singlegraph">
+                                            <component
+                                                :is="graph.type"
+                                                v-if="graph.type!=='PieChart'"
+                                                :id="`graph-${index}`"
+                                                :datasets="chartConfigs[index]"
+                                                :options="graph.options"
+                                                :class="{current_graph: activeGraph === index}"
+                                            />
+                                            <template
+                                                v-if="graph.type==='PieChart'"
+                                            >
+                                                <PieChart
+                                                    v-for="(pieData, j) in chartConfigs[index]"
+                                                    :id="`graph-${index}-${j}`"
+                                                    :key="`graph-${index}-${j}`"
+                                                    :datasets="pieData"
+                                                    :options="graph.options"
+                                                    :class="{current_graph: activeGraph === index}"
+                                                />
+                                            </template>
+                                            <div class="graph_functions">
+                                                <button
+                                                    v-if="graph.type === 'LineChart' && !graph.stacked"
+                                                    :class="['switch', 'right', graph.beginAtZero ? '' : 'selected']"
+                                                    :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
+                                                    @click="yToZero()"
+                                                >
+                                                    {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
+                                                </button>
+                                                <button
+                                                    v-if="graph.type === 'LineChart'"
+                                                    :class="['switch', 'right', graph.stacked ? 'selected' : '']"
+                                                    :title="$t('additional:modules.tools.cosi.chartGenerator.yStacked')"
+                                                    @click="yStacked()"
+                                                >
+                                                    {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
+                                                </button>
+                                                <button
+                                                    class="dl right"
+                                                    :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
+                                                    @click="downloadGraph()"
+                                                >
+                                                    PNG
+                                                    <span class="glyphicon glyphicon-download-alt" />
+                                                </button>
+                                            </div>
+                                        </div>
                                     </template>
-                                    <div class="graph_functions">
-                                        <button
-                                            v-if="graph.type === 'LineChart' && !graph.stacked"
-                                            :class="['switch', 'right', graph.beginAtZero ? '' : 'selected']"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.yToZeroTooltip')"
-                                            @click="yToZero()"
-                                        >
-                                            {{ $t('additional:modules.tools.cosi.chartGenerator.yToZero') }}
-                                        </button>
-                                        <button
-                                            v-if="graph.type === 'LineChart'"
-                                            :class="['switch', 'right', graph.stacked ? 'selected' : '']"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.yStacked')"
-                                            @click="yStacked()"
-                                        >
-                                            {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
-                                        </button>
-                                        <button
-                                            class="dl right"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                            @click="downloadGraph()"
-                                        >
-                                            PNG
-                                            <span class="glyphicon glyphicon-download-alt" />
-                                        </button>
-                                    </div>
-                                </template>
+                                </div>
                             </div>
                             <div class="graph_footer">
-                                <template v-if="dataSets.length > 1">
+                                <template v-if="datasets.length > 1">
                                     <div class="btn_grp">
                                         <button
-                                            v-for="(b, i) in dataSets"
+                                            v-for="(b, i) in datasets"
                                             :key="b.cgid"
                                             class="select_button"
                                             :class="{highlight: activeGraph === i}"

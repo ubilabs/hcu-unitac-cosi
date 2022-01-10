@@ -21,15 +21,19 @@
                     "exportDetails": "Detailansicht mit exportieren",
                     "exportFilename": "CoSI_Einrichtungsübersicht",
                     "weighting": "Gewichtung",
-                    "distanceScore": "Anbindung (Ø/m)",
+                    "distanceScoreChartTooltip": "Standortbewertung für ausgewählte visualisieren",
+                    "distanceScoreHistogramTooltip": "Verteilung der Standortbewertungen visualisieren",
+                    "distanceScore": "Anbindung (Ø in m)",
                     "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung",
                     "abort": "Abbrechen",
                     "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
                     "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
-                    "scoresDialogTitle": "Zusammensetzung",
+                    "scoresDialogTitle": "Zusammensetzung der Anbindung",
                     "scoresDialogHistogramTitle": "Verteilung der Bewertungen",
                     "itemsPerPage": "Einträge pro Seite",
-                    "itemsPerPageAll": "Alle"
+                    "itemsPerPageAll": "Alle",
+                    "count": "Anzahl",
+                    "createChart": "Diagramme erstellen"
                 }
             }
         }

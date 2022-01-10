@@ -13,17 +13,17 @@ export default function compensateLackingData (dataArray, strategy = "median") {
     if (dataArray.length === 0) {
         return {
             data: [],
-            incompleteDataSets: 0,
-            totalDataSets: 0
+            incompleteDatasets: 0,
+            totalDatasets: 0
         };
     }
 
-    dataArray.forEach(dataSet => {
-        if (dataSet === undefined || dataSet === "") {
-            incompleteData.push(dataSet);
+    dataArray.forEach(dataset => {
+        if (dataset === undefined || dataset === "") {
+            incompleteData.push(dataset);
         }
         else {
-            completeData.push(dataSet);
+            completeData.push(dataset);
         }
     });
 
@@ -46,7 +46,7 @@ export default function compensateLackingData (dataArray, strategy = "median") {
 
     return {
         data: completeData,
-        incompleteDataSets: incompleteData.length,
-        totalDataSets: completeData.length
+        incompleteDatasets: incompleteData.length,
+        totalDatasets: completeData.length
     };
 }

@@ -3,36 +3,36 @@ import {hsl} from "d3-color";
 import {interpolateRainbow} from "d3";
 
 /**
- * @description Generates colorScale for the amount of dataSets in the data property of the dataSet to be generated.
- * @param {Object} dataSet dataSet containing the data to be rendered as graph.
+ * @description Generates colorScale for the amount of datasets in the data property of the dataset to be generated.
+ * @param {Object} dataset dataset containing the data to be rendered as graph.
  * @returns {Array} ColorScale Array.
  */
-export default function generateColorScale (dataSet) {
+export default function generateColorScale (dataset) {
 
-    if (Array.isArray(dataSet.color)) {
+    if (Array.isArray(dataset.color)) {
         const domainRange = [0];
 
-        dataSet.color.map(incColor => hsl(incColor));
-        dataSet.color.forEach((incColor, index) => {
-            if (index < (dataSet.color.length - 2)) {
-                domainRange.push(dataSet.data.dataSets.length / (index + 2));
+        dataset.color.map(incColor => hsl(incColor));
+        dataset.color.forEach((incColor, index) => {
+            if (index < (dataset.color.length - 2)) {
+                domainRange.push(dataset.data.datasets.length / (index + 2));
             }
         });
 
-        domainRange.push(dataSet.data.dataSets.length);
+        domainRange.push(dataset.data.datasets.length);
         domainRange.sort();
-        return scaleLinear().domain(domainRange).range(dataSet.color);
+        return scaleLinear().domain(domainRange).range(dataset.color);
     }
-    else if (dataSet.color === "rainbow") {
+    else if (dataset.color === "rainbow") {
         const range = [],
             domainRange = [];
 
-        dataSet.data.dataSets.forEach((set, index) => {
+        dataset.data.datasets.forEach((set, index) => {
             domainRange.push(index);
         });
 
-        dataSet.data.dataSets.forEach((set, index) => {
-            const indexValue = (index + 1) / dataSet.data.dataSets.length,
+        dataset.data.datasets.forEach((set, index) => {
+            const indexValue = (index + 1) / dataset.data.datasets.length,
                 rainbowColor = interpolateRainbow(indexValue).toString();
 
             range.push(rainbowColor);
@@ -41,7 +41,7 @@ export default function generateColorScale (dataSet) {
         return scaleLinear().domain(domainRange).range(range);
     }
 
-    const d3Color = hsl(dataSet.color);
+    const d3Color = hsl(dataset.color);
     let colorA = "",
         colorB = "",
         range = "";
@@ -60,6 +60,6 @@ export default function generateColorScale (dataSet) {
 
     range = [colorA, String(d3Color), colorB];
 
-    return scaleLinear().domain([0, dataSet.data.dataSets.length]).range(range);
+    return scaleLinear().domain([0, dataset.data.datasets.length]).range(range);
 }
 

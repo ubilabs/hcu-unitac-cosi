@@ -7,7 +7,7 @@ import {Fill, Stroke, Style, Text} from "ol/style.js";
 import Multiselect from "vue-multiselect";
 import {generateColorScale} from "../../utils/colorScale.js";
 import mapping from "../../assets/mapping.json";
-import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
+import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 
 export default {
     name: "ColorCodeMap",
@@ -43,7 +43,7 @@ export default {
             updateLegendList: 1,
             // Helper to pass data to the graph generator
             graphData: [],
-            // Helper to store type of feature dataSet
+            // Helper to store type of feature dataset
             dataCategory: "",
             // Statistical features of the selected districts
             selectedStatFeatures: []
@@ -53,7 +53,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"]),
-        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataSet"]),
+        ...mapGetters("Tools/CalculateRatio", ["dataToColorCodeMap", "colorCodeMapDataset"]),
         _selectedFeature: {
             get () {
                 return this.selectedFeature;
@@ -109,7 +109,7 @@ export default {
                 this.setVisualizationState(false);
             }
         },
-        colorCodeMapDataSet () {
+        colorCodeMapDataset () {
             if (this.dataToColorCodeMap) {
                 this.renderDataFromCalculateRatio();
             }
@@ -307,7 +307,7 @@ export default {
                 this.setVisualizationState(true);
             }
 
-            const resultValues = this.colorCodeMapDataSet.map(x => {
+            const resultValues = this.colorCodeMapDataset.map(x => {
                     return x.data;
                 }),
                 colorScale = this.getColorsByValues(resultValues);
@@ -315,7 +315,7 @@ export default {
             // todo generate Legend for CC Data
             this.selectedFeatures.forEach(district => {
                 const getStyling = district.getStyle(),
-                    matchResults = this.colorCodeMapDataSet.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
+                    matchResults = this.colorCodeMapDataset.find(x => utils.unifyString(x.name) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
 
                 if (matchResults) {
                     if (this.originalStyling === null) {
@@ -446,28 +446,28 @@ export default {
         },
         /**
          * @description Adjusting CCM data for Graph Generator Tool.
-         * @param {Object} dataSet dataSet from renderVisualization function.
+         * @param {Object} dataset dataset from renderVisualization function.
          * @returns {void}
          */
-        prepareGraphData (dataSet) {
-            const newDataSet = {
-                label: dataSet.getProperties()[this.keyOfAttrNameStats],
+        prepareGraphData (dataset) {
+            const newDataset = {
+                label: dataset.getProperties()[this.keyOfAttrNameStats],
                 data: []
             };
 
-            this.dataCategory = dataSet.getProperties().kategorie;
+            this.dataCategory = dataset.getProperties().kategorie;
             this.availableYears.forEach(year => {
-                newDataSet.data.push(dataSet.getProperties()[this.yearSelector + year]);
+                newDataset.data.push(dataset.getProperties()[this.yearSelector + year]);
             });
 
-            this.graphData.push(newDataSet);
+            this.graphData.push(newDataset);
         },
         /**
          * @description Passes data to the Chart Generator Tool.
          * @returns {Void} Function returns nothing.
          */
         loadToChartGenerator () {
-            const graphObj = new ChartDataSet({
+            const graphObj = new ChartDataset({
                     id: "ccm",
                     name: [this.label] + " - " + this.dataCategory,
                     type: ["LineChart", "BarChart", "PieChart"],
@@ -477,7 +477,7 @@ export default {
                     scaleLabels: [this.selectedFeature, this.$t("additional:modules.tools.colorCodeMap.yearsLabel")],
                     data: {
                         labels: [],
-                        dataSets: []
+                        datasets: []
                     }
                 }),
                 years = this.graphData[0].data.reduce((availableYears, val, i) => val ? [...availableYears, this.availableYears[i]] : availableYears, []);
@@ -486,9 +486,9 @@ export default {
                 graphObj.data.labels.push(year);
             });
 
-            this.graphData.forEach(dataSet => {
-                dataSet.data = dataSet.data.filter(x => Boolean(x)).reverse();
-                graphObj.data.dataSets.push(dataSet);
+            this.graphData.forEach(dataset => {
+                dataset.data = dataset.data.filter(x => Boolean(x)).reverse();
+                graphObj.data.datasets.push(dataset);
             });
 
             graphObj.data.labels.reverse();

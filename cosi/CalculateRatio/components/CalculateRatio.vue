@@ -194,7 +194,7 @@ export default {
         ...mapMutations("Tools/CalculateRatio", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
-        ...mapMutations("Tools/ChartGenerator", ["setNewDataSet"]),
+        ...mapMutations("Tools/ChartGenerator", ["setNewDataset"]),
         /**
          * @description Updates theme layer selection and sorting/ grouping it for display in multiselect.
          * @todo triggers too often!!! refactor
@@ -496,8 +496,8 @@ export default {
 
                     this.calcHelper["param" + letter + "_count"] = this.featureVals.length;
                     this.calcHelper["param" + letter + "_val"] = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
-                    this.calcHelper["incompleteDataSets_" + letter] = checkForLackingData.incompleteDataSets;
-                    this.calcHelper["dataSets_" + letter] = checkForLackingData.totalDataSets;
+                    this.calcHelper["incompleteDatasets_" + letter] = checkForLackingData.incompleteDatasets;
+                    this.calcHelper["datasets_" + letter] = checkForLackingData.totalDatasets;
                     if (this["paramField" + letter].name === "Anzahl") {
                         this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_count"];
                     }
@@ -540,7 +540,7 @@ export default {
 
                     this.calcHelper["param" + letter + "_val"] = this.featureVals;
                     this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_val"];
-                    this.calcHelper["incompleteDataSets_" + letter] = 0;
+                    this.calcHelper["incompleteDatasets_" + letter] = 0;
                 }
 
                 dataArray.push(this.calcHelper);
@@ -623,7 +623,7 @@ export default {
                     }
                 });
 
-                this.setColorCodeMapDataSet(prepareData);
+                this.setColorCodeMapDataset(prepareData);
                 this.setDataToColorCodeMap(!switchVar);
             }
             else {
@@ -645,7 +645,7 @@ export default {
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
-                        dataSets: []
+                        datasets: []
                     }
                 },
 
@@ -658,26 +658,26 @@ export default {
             this.availableYears.forEach(year => {
                 const dataPerYear = utils.calculateRatio(dataArray, year);
 
-                dataPerYear.forEach(dataSet => {
-                    const checkExisting = graphObj.data.dataSets.find(set => set.label === dataSet.scope);
+                dataPerYear.forEach(dataset => {
+                    const checkExisting = graphObj.data.datasets.find(set => set.label === dataset.scope);
 
                     if (checkExisting) {
-                        checkExisting.data.push(dataSet[this.columnSelector.key]);
+                        checkExisting.data.push(dataset[this.columnSelector.key]);
                     }
                     else {
                         const obj = {
-                            label: dataSet.scope,
-                            data: [dataSet[this.columnSelector.key]]
+                            label: dataset.scope,
+                            data: [dataset[this.columnSelector.key]]
                         };
 
-                        graphObj.data.dataSets.push(obj);
+                        graphObj.data.datasets.push(obj);
                     }
                 });
             });
 
             graphObj.data.labels.reverse();
-            graphObj.data.dataSets.forEach(dataSet => {
-                dataSet.data.reverse();
+            graphObj.data.datasets.forEach(dataset => {
+                dataset.data.reverse();
             });
 
             this.channelGraphData(graphObj);

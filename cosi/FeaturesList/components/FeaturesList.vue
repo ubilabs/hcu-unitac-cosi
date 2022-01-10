@@ -14,14 +14,15 @@ import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
 import LayerWeights from "./LayerWeights.vue";
-import ScoreValues from "./ScoreValues.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
-import * as convert from "color-convert";
+import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
+import {createHistogram} from "../utils/charts";
+
 import
 {
     Fill,
@@ -41,8 +42,7 @@ export default {
         Multiselect,
         DetailView,
         FeatureIcon,
-        LayerWeights,
-        ScoreValues
+        LayerWeights
     },
     data () {
         return {
@@ -53,7 +53,7 @@ export default {
             layerWeights: {},
             currentScores: {},
             allScores: [],
-            selectedLayers: [],
+            selectedDistanceScoreLayers: [],
             search: "",
             layerFilter: [],
             expanded: [],
@@ -174,10 +174,10 @@ export default {
             return ret;
         },
         selectedFeatureLayers () {
-            return this.selectedLayers.filter(l=>l.group !== "Wms Layers");
+            return this.selectedDistanceScoreLayers.filter(l=>l.group !== "Wms Layers");
         },
         selectedWmsLayers () {
-            return this.selectedLayers.filter(l=>l.group === "Wms Layers");
+            return this.selectedDistanceScoreLayers.filter(l=>l.group === "Wms Layers");
         }
     },
     watch: {
@@ -242,17 +242,14 @@ export default {
             this.numericalColumns = this.getNumericalColumns();
         },
 
-        selectedFeatureLayers () {
-            this.numericalColumns = this.getNumericalColumns();
-        },
-
-        selectedLayers () {
+        selectedDistanceScoreLayers () {
             for (const layer of this.selectedFeatureLayers) {
                 if (this.layerWeights[layer.layerId] === undefined) {
                     this.layerWeights[layer.layerId] = 1;
                 }
             }
             this.updateDistanceScores();
+            this.numericalColumns = this.getNumericalColumns();
         },
 
         items (newItems, oldItems) {
@@ -304,6 +301,7 @@ export default {
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
         ...mapActions("Map", ["removeHighlightFeature", "createLayer"]),
+        ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
 
         getVectorlayerMapping,
         getNumericalColumns () {
@@ -327,7 +325,13 @@ export default {
             }
 
             if (this.selectedFeatureLayers.length > 0) {
-                numCols.push({text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"), value: "distanceScore", divider: true, hasAction: true, invertColor: true});
+                numCols.push({
+                    text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"),
+                    value: "distanceScore",
+                    divider: true,
+                    hasAction: true,
+                    invertColor: true
+                });
             }
 
             for (const l of this.selectedWmsLayers) {
@@ -442,6 +446,21 @@ export default {
             this.filteredItems = items;
         },
 
+        getActiveItems () {
+            return this.items.filter(item => {
+                if (this.search && !this.filteredItems.includes(item)) {
+                    return false;
+                }
+                if (this.selected.length > 0 && !this.selected.includes(item)) {
+                    return false;
+                }
+                if (this.layerFilter.length > 0 && !this.layerFilter.map(l => l.layerId).includes(item.layerId)) {
+                    return false;
+                }
+                return true;
+            });
+        },
+
         /**
          * Export the table as XLSX
          * Either the simple view or incl. details
@@ -449,18 +468,7 @@ export default {
          * @returns {void}
          */
         exportTable () {
-            const data = this.items.filter(item => {
-                    if (this.search && !this.filteredItems.includes(item)) {
-                        return false;
-                    }
-                    if (this.selected.length > 0 && !this.selected.includes(item)) {
-                        return false;
-                    }
-                    if (this.layerFilter.length > 0 && !this.layerFilter.map(l => l.layerId).includes(item.layerId)) {
-                        return false;
-                    }
-                    return true;
-                }),
+            const data = this.getActiveItems(),
                 exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
@@ -548,8 +556,8 @@ export default {
 
             return allLayers;
         },
-        async updateSelectedLayers (layerIds) {
-            this.selectedLayers = layerIds;
+        async updateSelectedDistanceScoreLayers (layerIds) {
+            this.selectedDistanceScoreLayers = layerIds;
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
@@ -605,20 +613,109 @@ export default {
                 width: Math.round(100 * val / maxVal) + "%"
             };
         },
-        showInfo (item) {
-            this.currentScores = item.weightedDistanceScores;
-            this.allScores = this.items
-                .filter(i=>!isNaN(i.weightedDistanceScores.score))
-                .map(i=>i.weightedDistanceScores.score);
-            this.showScoresDialog = true;
+        showDistanceScoreForItem (item) {
+            const
+                data = {
+                    labels: this.selectedFeatureLayers.map(l => l.id),
+                    datasets: [{
+                        label: item.name,
+                        data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value)
+                    }]
+                },
+                chartDataset = new ChartDataset({
+                    id: "sb-" + item.key,
+                    name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score}`,
+                    type: "RadarChart",
+                    color: "rainbow",
+                    source: "Standortanalyse",
+                    data
+                });
+
+            this.channelGraphData(chartDataset);
+        },
+        showDistanceScoresForSelected () {
+            const
+                data = {
+                    labels: this.getActiveItems().map(l => l.id),
+                    datasets: this.getActiveItems().map(item => ({
+                        label: item.name,
+                        data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
+                        tooltip: `Gewichteter Durchschnitt: ${item.weightedDistanceScores.score}`
+                    }))
+                },
+                chartDataset = new ChartDataset({
+                    id: "sb-" + this.getActiveItems().map(item => item.key).join(","),
+                    name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")}`,
+                    type: "RadarChart",
+                    color: "rainbow",
+                    source: "Standortanalyse",
+                    data
+                });
+
+            this.channelGraphData(chartDataset);
+        },
+        showDistanceScoreHistogram () {
+            const
+                histogram = createHistogram(this.getActiveItems()),
+                chartData = {
+                    labels: histogram.quantiles.map(v => Math.round(v)),
+                    datasets: [{
+                        data: histogram.data,
+                        label: this.selectedFeatureLayers.map(l => l.id).join(", "),
+                        barPercentage: 1,
+                        categoryPercentage: 1
+                    }]
+                },
+                chartOptions = {
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                labelOffset: -20
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: ""
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: ""
+                            }
+                        }]
+                    }
+                },
+                chartDataset = new ChartDataset({
+                    id: "sb-histogram",
+                    name: this.$t("additional:modules.tools.cosi.featuresList.scoresDialogHistogramTitle"),
+                    type: "BarChart",
+                    color: "rainbow",
+                    source: "Standortanalyse",
+                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.count"), this.$t("additional:modules.tools.cosi.featuresList.distanceScore")],
+                    data: chartData,
+                    options: chartOptions,
+                    beginAtZero: true
+                });
+
+            this.channelGraphData(chartDataset);
+        },
+        createCharts () {
+            console.log(this.filterProps);
+            console.log(this.getActiveItems());
+            console.log(this.activeLayerMapping);
+            console.log(this.numericalColumns);
+
+            const
+                activeItems = this.getActiveItems(),
+                layerFeatures = this.activeLayerMapping.map(layerMap => activeItems.filter(item => item.layerId === layerMap.layerId));
         },
         showDistanceScoreFeatures () {
             if (this.distScoreLayer === null) {
                 return;
             }
 
-            const colorMap = this.selectedLayers.reduce((acc, layer, index) => (
-                {...acc, [layer.layerId]: getColorFromNumber(index, this.selectedLayers.length)}), {});
+            const colorMap = this.selectedDistanceScoreLayers.reduce((acc, layer, index) => (
+                {...acc, [layer.layerId]: getColorFromNumber(index, this.selectedDistanceScoreLayers.length)}), {});
 
 
             this.distScoreLayer.getSource().clear();
@@ -662,6 +759,7 @@ export default {
 <template lang="html">
     <Tool
         ref="tool"
+        class=""
         :title="$t('additional:modules.tools.cosi.featuresList.title')"
         :icon="glyphicon"
         :active="active"
@@ -675,14 +773,55 @@ export default {
         >
             <ToolInfo :url="readmeUrl[currentLocale]" />
             <v-app id="features-list-wrapper">
-                <div class="my-2">
+                <div class="mb-4">
+                    <div class="selection">
+                        <Multiselect
+                            v-if="activeLayerMapping.length > 0"
+                            v-model="layerFilter"
+                            class="layer_selection"
+                            :options="activeLayerMapping"
+                            group-label="group"
+                            :group-select="false"
+                            group-values="layer"
+                            track-by="id"
+                            label="id"
+                            :multiple="true"
+                            selected-label=""
+                            select-label=""
+                            deselect-label=""
+                            :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
+                        >
+                            <template slot="singleLabel">
+                                <strong>{{ layerFilter.id }}</strong>
+                            </template>
+                        </Multiselect>
+                    </div>
+                    <div class="selection">
+                        <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
+                        <input
+                            v-model="search"
+                            class="form-control search"
+                            type="text"
+                            :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
+                        >
+                    </div>
+                    <v-btn
+                        id="create-charts"
+                        dense
+                        small
+                        tile
+                        :title="$t('additional:modules.tools.cosi.featuresList.createCharts')"
+                        @click.native="createCharts"
+                    >
+                        <v-icon>mdi-chart-histogram</v-icon>
+                    </v-btn>
                     <v-btn
                         id="export-table"
                         dense
                         small
                         tile
                         color="grey lighten-1"
-                        class="my-2"
+                        class="mb-2 ml-2 float-right"
                         :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
                         @click="exportTable"
                     >
@@ -691,7 +830,7 @@ export default {
                     <v-checkbox
                         id="export-details"
                         v-model="exportDetails"
-                        class="form-check-input"
+                        class="form-check-input float-right"
                         dense
                         hide-details
                         :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
@@ -699,38 +838,6 @@ export default {
                     />
                 </div>
                 <div id="features-list">
-                    <form class="form-inline features-list-controls">
-                        <div class="form-group selection">
-                            <Multiselect
-                                v-if="activeLayerMapping.length > 0"
-                                v-model="layerFilter"
-                                class="layer_selection"
-                                :options="activeLayerMapping"
-                                group-label="group"
-                                :group-select="false"
-                                group-values="layer"
-                                track-by="id"
-                                label="id"
-                                :multiple="true"
-                                selected-label=""
-                                select-label=""
-                                deselect-label=""
-                                :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
-                            >
-                                <template slot="singleLabel">
-                                    <strong>{{ layerFilter.id }}</strong>
-                                </template>
-                            </Multiselect>
-                        </div>
-                        <div class="form-group selection">
-                            <input
-                                v-model="search"
-                                class="form-control search"
-                                type="text"
-                                :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
-                            >
-                        </div>
-                    </form>
                     <form class="features-list-table-wrapper">
                         <div class="form-group features-list-table">
                             <v-data-table
@@ -818,11 +925,12 @@ export default {
                                     #[`item.${col.value}`]="{ item }"
                                 >
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
+                                        <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
                                         <div
                                             :key="col.value"
                                             class="text-right"
-                                            :class="col.hasAction? 'number-action': ''"
-                                            @click="showInfo(item)"
+                                            :class="col.hasAction ? 'number-action' : ''"
+                                            @click="col.hasAction ? showDistanceScoreForItem(item) : null"
                                         >
                                             <div>
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
@@ -840,21 +948,39 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <v-row v-if="distanceScoreEnabled">
+                        <v-row
+                            v-if="distanceScoreEnabled"
+                            dense
+                        >
                             <v-col>
                                 <v-autocomplete
-                                    id="selectedLayers"
-                                    :value="selectedLayers"
+                                    id="selectedDistanceScoreLayers"
+                                    :value="selectedDistanceScoreLayers"
                                     :items="layerOptions"
                                     :label="$t('additional:modules.tools.cosi.featuresList.distanceScoreLayerLabel')"
                                     outlined
                                     dense
                                     multiple
-                                    small-chips
                                     item-text="id"
                                     return-object
-                                    @input="updateSelectedLayers"
-                                />
+                                    hide-details
+                                    @input="updateSelectedDistanceScoreLayers"
+                                >
+                                    <template #selection="{ item, index }">
+                                        <v-chip
+                                            v-if="index < 2"
+                                            small
+                                        >
+                                            <span>{{ item.id }}</span>
+                                        </v-chip>
+                                        <span
+                                            v-if="index === 2"
+                                            class="grey--text text-caption"
+                                        >
+                                            (+{{ selectedDistanceScoreLayers.length - 1 }} andere)
+                                        </span>
+                                    </template>
+                                </v-autocomplete>
                             </v-col>
                             <v-col>
                                 <v-btn
@@ -867,7 +993,27 @@ export default {
                                     {{ $t('additional:modules.tools.cosi.featuresList.weighting') }}
                                 </v-btn>
                                 <v-btn
-                                    v-if="distanceScoreQueue.length>0"
+                                    v-if="selectedFeatureLayers.length > 0"
+                                    id="distance-score-chart-btn"
+                                    depressed
+                                    tile
+                                    :title="$t('additional:modules.tools.cosi.featuresList.distanceScoreChartTooltip')"
+                                    @click.native="showDistanceScoresForSelected"
+                                >
+                                    <v-icon>mdi-radar</v-icon>
+                                </v-btn>
+                                <v-btn
+                                    v-if="selectedFeatureLayers.length > 0"
+                                    id="distance-score-histogram-btn"
+                                    depressed
+                                    tile
+                                    :title="$t('additional:modules.tools.cosi.featuresList.distanceScoreHistogramTooltip')"
+                                    @click.native="showDistanceScoreHistogram"
+                                >
+                                    <v-icon>mdi-chart-histogram</v-icon>
+                                </v-btn>
+                                <v-btn
+                                    v-if="distanceScoreQueue.length > 0"
                                     id="weights"
                                     depressed
                                     tile
@@ -890,14 +1036,6 @@ export default {
                     :layers="selectedFeatureLayers"
                     @update="updateWeights"
                 />
-                <ScoreValues
-                    v-model="showScoresDialog"
-                    :label="$t('additional:modules.tools.cosi.featuresList.scoresDialogTitle')"
-                    :hist-label="$t('additional:modules.tools.cosi.featuresList.scoresDialogHistogramTitle')"
-                    :scores="currentScores"
-                    :all-scores="allScores"
-                    :layers="selectedFeatureLayers"
-                />
             </v-app>
         </template>
     </Tool>
@@ -908,16 +1046,22 @@ export default {
     #features-list-wrapper {
         height: 100%;
         position: relative;
-        overflow: hidden;
+        // overflow: hidden;
+
+        .selection {
+            display: inline-block;
+            width: 25%;
+        }
     }
     #features-list {
         height: 100%;
         .features-list-table-wrapper {
-           height: calc(100% - 200px);
+           height: calc(100% - 220px);
             display: block;
             position: relative;
            .features-list-table {
                height: 100%;
+               margin-bottom: 60px;
                .v-data-table {
                    height: 100%;
                    .v-data-table__wrapper {

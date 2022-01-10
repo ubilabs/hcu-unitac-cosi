@@ -133,8 +133,8 @@ describe("CharGenerator.vue", () => {
 
         await wrapper.vm.channelGraphData(getGraphData());
 
-        expect(wrapper.vm.dataSets[0].cgid).to.be.equal(chartdata01.cgid);
-        expect(wrapper.vm.dataSets[0].sub_graph).to.be.equal(0);
+        expect(wrapper.vm.datasets[0].cgid).to.be.equal(chartdata01.cgid);
+        expect(wrapper.vm.datasets[0].sub_graph).to.be.equal(0);
         expect(await wrapper.findComponent(LineChart).classes()).to.be.eql(["current_graph"]);
         expect(await wrapper.findComponent(PieChart).classes()).to.be.eql([]);
         expect(await wrapper.findComponent(BarChart).classes()).to.be.eql([]);
@@ -147,13 +147,13 @@ describe("CharGenerator.vue", () => {
 
         await wrapper.findAll(".switch_btn").at(1).trigger("click");
 
-        expect(wrapper.vm.dataSets[0].sub_graph).to.be.equal(1);
+        expect(wrapper.vm.datasets[0].sub_graph).to.be.equal(1);
         expect(await wrapper.findComponent(LineChart).classes()).to.be.eql([]);
         expect(await wrapper.findComponent(BarChart).classes()).to.be.eql(["current_graph"]);
         expect(await wrapper.findComponent(PieChart).classes()).to.be.eql([]);
 
         await wrapper.findAll(".switch_btn").at(2).trigger("click");
-        expect(wrapper.vm.dataSets[0].sub_graph).to.be.equal(2);
+        expect(wrapper.vm.datasets[0].sub_graph).to.be.equal(2);
         expect(await wrapper.findComponent(LineChart).classes()).to.be.eql([]);
         expect(await wrapper.findComponent(BarChart).classes()).to.be.eql([]);
         expect(await wrapper.findComponent(PieChart).classes()).to.be.eql(["current_graph"]);
@@ -165,7 +165,7 @@ describe("CharGenerator.vue", () => {
 
         await wrapper.vm.channelGraphData(data);
 
-        expect(wrapper.vm.dataSets[0].cgid).to.be.equal(chartdata01.cgid);
+        expect(wrapper.vm.datasets[0].cgid).to.be.equal(chartdata01.cgid);
         expect(await wrapper.findComponent(BarChart).exists()).to.be.true;
         expect(await wrapper.findComponent(PieChart).exists()).to.be.false;
     });
@@ -189,8 +189,8 @@ describe("CharGenerator.vue", () => {
         await wrapper.vm.channelGraphData(data1);
         await wrapper.vm.channelGraphData(data2);
 
-        expect(wrapper.vm.dataSets[0].type).to.be.equal("LineChart");
-        expect(wrapper.vm.dataSets.length).to.be.equal(1);
+        expect(wrapper.vm.datasets[0].type).to.be.equal("LineChart");
+        expect(wrapper.vm.datasets.length).to.be.equal(1);
     });
 
     it("should switch graph", async function () {
@@ -219,7 +219,7 @@ describe("CharGenerator.vue", () => {
 
         await wrapper.findAll(".rmv_btn").at(0).trigger("click");
 
-        expect(wrapper.vm.dataSets.length).to.be.equal(0);
+        expect(wrapper.vm.datasets.length).to.be.equal(0);
         expect(wrapper.vm.active).to.be.equal(false);
     });
 });

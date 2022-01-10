@@ -2,58 +2,59 @@ import generateGraphData from "../generateGraphData";
 
 /**
  *
- * @param {*} newDataSets newDataSets
+ * @param {*} newDatasets newDatasets
  * @return {void}
  */
-function addDataSets ({commit, getters}, newDataSets) {
+function addDatasets ({commit, getters}, newDatasets) {
     const
-        dataSets = [...getters.dataSets],
-        chartConfigs = [...getters.chartConfigs];
+        datasets = [...getters.datasets];
     let
+        chartConfigs = [...getters.chartConfigs],
         chartConfig;
 
-    for (const dataSet of newDataSets) {
-        if (!dataSet.cgid) {
-            dataSet.cgid = dataSet.id + "-" + dataSet.name;
+    for (const dataset of newDatasets) {
+        if (!dataset.cgid) {
+            dataset.cgid = dataset.id + "-" + dataset.name;
         }
 
-        const checkDouble = dataSets.find(x => x.cgid === dataSet.cgid);
+        const checkDouble = datasets.find(x => x.cgid === dataset.cgid);
 
         if (checkDouble) {
-            const index = dataSets.indexOf(checkDouble);
+            const index = datasets.indexOf(checkDouble);
 
-            dataSets.splice(index, 1);
+            datasets.splice(index, 1);
+            chartConfigs = chartConfigs.filter(x => x.cgid !== dataset.cgid);
         }
 
-        if (dataSet.target === "" || dataSet.target === undefined || dataSet.target === null) {
+        if (dataset.target === "" || dataset.target === undefined || dataset.target === null) {
             commit("setActive", true);
         }
 
-        if (Array.isArray(dataSet.type)) {
-            if (!dataSet.sub_graph) {
-                dataSet.sub_graph = 0;
+        if (Array.isArray(dataset.type)) {
+            if (!dataset.sub_graph) {
+                dataset.sub_graph = 0;
             }
 
-            chartConfig = dataSet.type.map(type => generateGraphData(dataSet, type));
+            chartConfig = dataset.type.map(type => generateGraphData(dataset, type));
         }
         else {
-            chartConfig = generateGraphData(dataSet, dataSet.type);
+            chartConfig = generateGraphData(dataset, dataset.type);
         }
 
         chartConfigs.push(chartConfig);
-        dataSets.push(dataSet);
+        datasets.push(dataset);
     }
     commit("setChartConfigs", chartConfigs);
-    commit("setDataSets", dataSets);
+    commit("setDatasets", datasets);
 }
 
 const actions = {
-    async channelGraphData ({commit, getters}, dataSet) {
-        if (Array.isArray(dataSet)) {
-            addDataSets({commit, getters}, dataSet);
+    async channelGraphData ({commit, getters}, dataset) {
+        if (Array.isArray(dataset)) {
+            addDatasets({commit, getters}, dataset);
         }
         else {
-            addDataSets({commit, getters}, [dataSet]);
+            addDatasets({commit, getters}, [dataset]);
         }
     }
 };

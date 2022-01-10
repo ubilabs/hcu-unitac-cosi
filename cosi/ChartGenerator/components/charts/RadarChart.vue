@@ -1,11 +1,11 @@
-
 <script>
-import {Pie} from "vue-chartjs";
+import {Radar} from "vue-chartjs";
+import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
 
 export default {
-    name: "PieChart",
-    extends: Pie,
+    name: "RadarChart",
+    extends: Radar,
     props: {
         datasets: {
             type: Object,
@@ -24,8 +24,25 @@ export default {
                 text: "",
                 position: "top"
             },
-            responsive: true,
-            maintainAspectRatio: false
+            scale: {
+                angleLines: {},
+                gridLines: {},
+                pointLabels: {},
+                ticks: {}
+            },
+            tooltips: {
+                callbacks: {
+                    title: (item, data) => {
+                        return data.labels[item[0].index];
+                    },
+                    footer: (item, data) => {
+                        const dataset = data.datasets[item[0].datasetIndex],
+                            footer = dataset.tooltip;
+
+                        return footer;
+                    }
+                }
+            }
         }
     }),
     computed: {
@@ -34,13 +51,7 @@ export default {
                 return null;
             }
 
-            // eslint-disable-next-line
-            this.options.title.text = this.datasets.name;
-
-            return {
-                labels: this.datasets.label,
-                datasets: [this.datasets.datasets]
-            };
+            return this.datasets;
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
@@ -51,7 +62,7 @@ export default {
             this.prepareRendering();
         }
     },
-    mounted () {
+    async mounted () {
         this.prepareRendering();
     },
     methods: {
@@ -60,7 +71,8 @@ export default {
                 return;
             }
 
-            this.renderChart(this.chartData, this._options);
+            this._options.title.text = beautifyKey(this.chartData.name);
+            this.renderChart(this.chartData.data, this._options);
         }
     }
 };

@@ -9,7 +9,7 @@
  * @property {boolean} resizableWindow if true, window is resizable (config-param)
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
  * @property {boolean} deactivateGFI flag if tool should deactivate gfi (config-param)
- * @property {object} newDataSet Incoming dataSet Object from different component to be displayed as graph
+ * @property {object} newDataset Incoming dataset Object from different component to be displayed as graph
  */
 const state = {
     active: false,
@@ -21,7 +21,7 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: false,
     deactivateGFI: true,
-    dataSets: [],
+    datasets: [],
     chartConfigs: [],
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/chartgenerator_en.md",

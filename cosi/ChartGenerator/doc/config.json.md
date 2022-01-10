@@ -1,11 +1,11 @@
 **ChartGenerator**
 
 Der ChartGenerator erstellt aus entsprechend formatierten Daten Visualisierungen mit Hilfe von vue-chart.js und verwalted alle in der Session erstellten Graphen in einem Toolfenster.
-Das Tool kann angesprochen werden, indem der State newDataSet im Store (stateChartGenerator.js) mit setNewDataSet überschrieben wird. Dazu beispielsweise wie folgt in die eigene Component mit einbinden:
+Das Tool kann angesprochen werden, indem der State newDataset im Store (stateChartGenerator.js) mit setNewDataset überschrieben wird. Dazu beispielsweise wie folgt in die eigene Component mit einbinden:
 
-...mapMutations("Tools/ChartGenerator", {setNewChartDataSet: "setNewDataSet"});
+...mapMutations("Tools/ChartGenerator", {setNewChartDataset: "setNewDataset"});
 
-Übergeben werden muss eine Instanz der Klasse ChartDataSet (ChartGenerator/classes/ChartDataSet.js).
+Übergeben werden muss eine Instanz der Klasse ChartDataset (ChartGenerator/classes/ChartDataset.js).
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|
 |----|-------------|---|-------|------------|

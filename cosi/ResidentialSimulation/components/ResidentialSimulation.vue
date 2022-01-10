@@ -9,7 +9,7 @@ import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue"
 import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../ScenarioBuilder/utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
-import ChartDataSet from "../../ChartGenerator/classes/ChartDataSet";
+import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
@@ -317,12 +317,12 @@ export default {
             const chartData = this.referenceDistrictCharts.map(chartOptions => {
                 const {id, name, scaleLabels, labels, type} = chartOptions;
 
-                return new ChartDataSet({
+                return new ChartDataset({
                     id: id + "-" + this.baseStats.reference.districtName,
                     name,
                     scaleLabels,
                     data: {
-                        dataSets: [this.getChartDataSet(labels, this.baseStats.reference.districtName)],
+                        datasets: [this.getChartDataset(labels, this.baseStats.reference.districtName)],
                         labels
                     },
                     type,
@@ -334,7 +334,7 @@ export default {
             this.channelGraphData(chartData);
         },
 
-        getChartDataSet (labels, districtName) {
+        getChartDataset (labels, districtName) {
             return {
                 borderColor: "darkblue",
                 backgroundColor: "darkblue",
