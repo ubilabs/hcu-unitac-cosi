@@ -1,6 +1,6 @@
 /**
  * Gets all available Years from array of features.
- * @param {Object[]} features Array Of Features.
+ * @param {module:ol/Feature[] | Object[]} features Array Of Features or properties of features.
  * @param {String} [year_selector="jahr_"] The identifier for year data (usually "jahr_").
  * @returns {String[]} The Array of all available Years in the data set.
  */
@@ -8,7 +8,9 @@ export default function getAvailableYears (features, year_selector = "jahr_") {
     const availableYears = [];
 
     features.forEach(feature => {
-        Object.keys(feature.getProperties()).forEach(key => {
+        const properties = Object.hasOwnProperty.call(feature, "getProperties") ? feature.getProperties() : feature;
+
+        Object.keys(properties).forEach(key => {
             if (key.includes(year_selector)) {
                 availableYears.push(key.replace(year_selector, ""));
             }

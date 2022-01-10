@@ -15,6 +15,7 @@ import * as turf from "@turf/turf";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
 import {WFS} from "ol/format.js";
+import getAvailableYears from "../../utils/getAvailableYears";
 
 export default {
     name: "QueryDistricts",
@@ -472,7 +473,7 @@ export default {
                             await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
                         }
                         if (value.quotientLayer) {
-                            await this.computeQuotientLayer(value);
+                            await this.computeQuotientLayer(filters[i]);
                             currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
                         }
 
@@ -495,21 +496,28 @@ export default {
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
-                qid = `${value.layerId}/${value.quotientLayer}`;
+                qid = `${value.layerId}/${value.quotientLayer}`,
+                fieldValues = getAvailableYears(qprops).map(val => "jahr_" + val);
 
             this.propertiesMap[qid] = lprops.map(entry => {
-
                 const props = qprops.find(p=>p.id === entry.id),
-                    ret = {...props};
+                    ret = {...props},
+                    /**
+                     * @todo Dirty, since facilities might have timelines in the future themselves! Overhaul in "countFacilitiesPerFeature" method
+                     */
+                    facilityVal = entry.isFacility ? entry.jahr_2012 : undefined;
 
                 for (const p in props) {
                     if (p.startsWith("jahr_")) {
-                        ret[p] = entry[p] / props[p];
+                        ret[p] = (facilityVal || entry[p]) / props[p];
                     }
                 }
                 ret.feature = entry.feature;
                 return ret;
             });
+
+            // update available years
+            value.fieldValues = fieldValues;
         },
 
         closeFilter (value) {
