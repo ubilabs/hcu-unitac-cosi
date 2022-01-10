@@ -25,7 +25,8 @@ export function calculateStats (operation) {
     const mappingObject = {
             category: this.fields.A.category + ` ${operationSymbols[operation]} ` + this.fields.B.category,
             group: "Berechnungen",
-            valueType: valueTypes[operation]
+            valueType: valueTypes[operation],
+            isTemp: true
         },
         timestamps = arrayIntersect(this.fields.A.years, this.fields.B.years);
 
@@ -48,9 +49,62 @@ export function calculateStats (operation) {
 
         feature = new Feature(properties);
         col.district.statFeatures.push(feature);
-
-        this.updateDistricts();
     }
+
+    this.updateDistricts();
+}
+
+/**
+ * Sums up the values for all selected rows
+ * @returns {void}
+ */
+export function sumUpSelected () {
+    let properties, feature, vals, res;
+    const
+        mappingObject = {
+            category: this.selectedItems.map(item => item.category).join(", "),
+            group: "Berechnungen",
+            valueType: "absolute",
+            isTemp: true
+        },
+        timestamps = this.selectedItems.reduce((years, item) => arrayIntersect(years, item.years), [...this.selectedItems[0].years]);
+
+    this.addCategoryToMapping(mappingObject);
+
+    for (const col of this.districtColumns) {
+        properties = {
+            ...this.selectedItems[0][col.value],
+            kategorie: mappingObject.category,
+            group: mappingObject.group
+        };
+
+        for (const timestamp of timestamps) {
+            vals = this.selectedItems.map(item => parseFloat(item[col.value][this.timestampPrefix + timestamp])); // parseFloat(this.fields.A[col.value][this.timestampPrefix + timestamp])
+            res = mathutils.sum(vals);
+
+            properties[this.timestampPrefix + timestamp] = res;
+        }
+
+        feature = new Feature(properties);
+        col.district.statFeatures.push(feature);
+    }
+
+    this.updateDistricts();
+}
+
+/**
+ * Divides all selected rows by field B
+ * @returns {void}
+ */
+export function divideSelected () {
+    const currA = this.fields.A;
+
+    for (const item of this.selectedItems) {
+        this.fields.A = item;
+        this.calculateStats("divide");
+    }
+
+    this.fields.A = currA;
 }
 
 /**

@@ -22,6 +22,7 @@ import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
 import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../utils/geomPickerHandler";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {unpackCluster} from "../../utils/getClusterSource";
 
 export default {
     name: "ScenarioBuilder",
@@ -345,9 +346,11 @@ export default {
         openEditDialog (evt) {
             this.editFeature = null;
             this.map.forEachFeatureAtPixel(evt.pixel, feature => {
-                if (feature.get("isSimulation")) {
-                    this.editFeature = feature;
-                    this.editDialog = true;
+                for (const feat of unpackCluster(feature)) {
+                    if (feat.get("isSimulation")) {
+                        this.editFeature = feat;
+                        this.editDialog = true;
+                    }
                 }
             }, {
                 layerFilter: l => {
@@ -369,7 +372,7 @@ export default {
 </script>
 
 <template lang="html">
-    <div class="tool-wrap">
+    <div :class="active ? 'tool-wrap' : ''">
         <Tool
             :title="$t('additional:modules.tools.cosi.scenarioBuilder.title')"
             :icon="glyphicon"

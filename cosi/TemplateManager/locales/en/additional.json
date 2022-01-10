@@ -12,7 +12,8 @@
                     "layers": "Topics",
                     "districtLevel": "District Level",
                     "selectedDistricts": "Selected Districts",
-                    "activeTool": "Active Tool"
+                    "activeTool": "Active Tool",
+                    "categories": "Statistical Data"
                 }
             }
         }

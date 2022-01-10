@@ -141,3 +141,37 @@ export function generateChartForCorrelation (correlation, categoryX, categoryY) 
 
     return graphObj;
 }
+
+/**
+ * Generates chart data from a set of districts and their stats feature
+ * @param {Object} data - the item from the dashboardTable
+ * @param {String[]} districtNames - the districts objects to generate the chart data for
+ * @param {String} districtLevelLabel - the label of the districtLevel
+ * @param {String} timestampPrefix - the string the timestamps start with (e.g. jahr_)
+ * @returns {ChartDataSet} the chart data
+ */
+export function generateChartsForItems (data, districtNames, districtLevelLabel, timestampPrefix = "jahr_") {
+    const
+        timestamps = [...new Set(data.reduce((res, item) => [...res, ...item.years], []))].sort(),
+        graphs = districtNames.map(districtName => {
+            const chartData = {
+                labels: timestamps,
+                dataSets: data.map(item => ({
+                    label: item.category,
+                    data: timestamps.map(t => parseFloat(item[districtName]?.[timestampPrefix + t]))
+                }))
+            };
+
+            return new ChartDataSet({
+                id: "ccm-" + data.map(d => d.category).join(","),
+                name: districtLevelLabel + " - " + districtName,
+                type: ["LineChart", "BarChart"],
+                color: "rainbow",
+                source: "Dashboard",
+                scaleLabels: ["", "Jahre"],
+                data: chartData
+            });
+        });
+
+    return graphs;
+}

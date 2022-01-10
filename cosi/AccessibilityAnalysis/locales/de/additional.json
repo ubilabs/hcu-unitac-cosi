@@ -9,6 +9,7 @@
                     "setByFeature": "Von Flächenaußengrenzen ermitteln",
                     "setByFeatureInfo": "Verwendet die Eckpunkte von Polygonen für die Berechnung. Achtung: Kann bei extrem komplexen Flächen zu Fehlern führen.",
                     "topic": "Thema",
+                    "directions": "Berechnete Routen",
                     "transportType": "Verkehrsmittel",
                     "transportTypes": {
                         "clear": "-Leeren-",

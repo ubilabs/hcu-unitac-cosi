@@ -32,6 +32,7 @@ export default {
                         }
                     }],
                     yAxes: [{
+                        stacked: false,
                         ticks: {
                             beginAtZero: false
                         },
@@ -54,6 +55,7 @@ export default {
                 name: this.dataSets.name,
                 scaleLabels: this.dataSets.scaleLabels,
                 beginAtZero: this.dataSets.beginAtZero,
+                stacked: this.dataSets.stacked,
                 graph: {
                     labels: this.dataSets.data.labels,
                     datasets: this.dataSets.data.dataSets
@@ -85,12 +87,8 @@ export default {
                 dataset.backgroundColor = newColor;
             });
 
-            if (this.dataSets.beginAtZero) {
-                this._options.scales.yAxes[0].ticks.beginAtZero = true;
-            }
-            else {
-                this._options.scales.yAxes[0].ticks.beginAtZero = false;
-            }
+            this._options.scales.yAxes[0].stacked = this.dataSets.stacked || false;
+            this._options.scales.yAxes[0].ticks.beginAtZero = this.dataSets.beginAtZero || false;
 
             this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[0];
             this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels[1];

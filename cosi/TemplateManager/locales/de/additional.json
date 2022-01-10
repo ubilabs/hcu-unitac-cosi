@@ -12,7 +12,8 @@
                     "layers": "Themen",
                     "districtLevel": "Bezugsrahmen",
                     "selectedDistricts": "Ausgewählte Gebiete",
-                    "activeTool": "Aktive Werkzeuge"
+                    "activeTool": "Aktive Werkzeuge",
+                    "categories": "Statistische Daten"
                 }
             }
         }

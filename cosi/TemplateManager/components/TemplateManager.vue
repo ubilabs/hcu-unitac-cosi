@@ -110,6 +110,10 @@ export default {
 
         getSelectedDistricts (template) {
             return template.state.Tools?.DistrictSelector?.selectedDistrictNames || [];
+        },
+
+        getStatsCategories (template) {
+            return template.state.Tools?.Dashboard?.statsFeatureFilter || [];
         }
     }
 };
@@ -207,6 +211,19 @@ export default {
                                                                 small
                                                             >
                                                                 {{ districtName }}
+                                                            </v-chip>
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="getStatsCategories(template).length > 0">
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.categories')" />
+                                                        <td>
+                                                            <v-chip
+                                                                v-for="category in getStatsCategories(template)"
+                                                                :key="template.meta.title + category"
+                                                                class="ma-1"
+                                                                small
+                                                            >
+                                                                {{ category }}
                                                             </v-chip>
                                                         </td>
                                                     </tr>

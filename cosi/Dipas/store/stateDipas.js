@@ -10,7 +10,7 @@
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
  * @property {boolean} deactivateGFI flag if tool should deactivate gfi (config-param)
  */
-const state = {
+ const state = {
     active: false,
     id: "Dipas",
     name: "DIPAS",

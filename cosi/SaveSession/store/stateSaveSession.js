@@ -22,7 +22,8 @@ const state = {
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/savesession.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/sitzungspeichern.md"
-    }
+    },
+    onlyUdpServices: true
 };
 
 export default state;

@@ -17,9 +17,10 @@ const mutations = {
      * @param {String} category - the new category
      * @param {String} group - the group the category belongs to
      * @param {String} [valueType="relative"] - absolute or relative
+     * @param {String} [isTemp=true] - whether created on runtime
      * @returns {void}
      */
-    addCategoryToMapping (state, {category, group, valueType = "relative"}) {
+    addCategoryToMapping (state, {category, group, valueType = "relative", isTemp = true}) {
         const mappingObject = state.mapping.find(el => el.value === category && el.group === group);
 
         if (!mappingObject) {
@@ -30,7 +31,8 @@ const mutations = {
                 statgebiet: true,
                 stadtteil: true,
                 bezirk: true,
-                valueType: valueType
+                valueType: valueType,
+                isTemp: isTemp
             });
         }
     },

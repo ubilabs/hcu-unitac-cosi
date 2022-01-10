@@ -9,8 +9,8 @@ import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
-import {calculateStats, calculateCorrelation, getTotal, getAverage} from "../utils/operations";
-import {generateChartForDistricts, generateChartForCorrelation} from "../utils/chart";
+import {calculateStats, calculateCorrelation, getTotal, getAverage, sumUpSelected, divideSelected} from "../utils/operations";
+import {generateChartForDistricts, generateChartForCorrelation, generateChartsForItems} from "../utils/chart";
 import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/export";
 import composeFilename from "../../utils/composeFilename";
 import exportXlsx from "../../utils/exportXlsx";
@@ -86,15 +86,11 @@ export default {
             ],
             districtColumns: [],
             items: [],
-            // all current (visible) items in the table
-            currentItems: [],
-            // selected items in the table
-            selectedItems: [],
+            currentItems: [], // all current (visible) items in the table
+            selectedItems: [], // selected items in the table
             timestampPrefix: "jahr_",
             timestamps: [],
-            // currentTimeStamp: null,
             search: "",
-            statsFeatureFilter: [],
             fields: {
                 A: null,
                 B: null
@@ -133,6 +129,9 @@ export default {
                 : [...this.districtColumns, ...this.aggregateColumns];
         },
         selectedColumnNames () {
+            return this.selectedColumns.map(col => col.value);
+        },
+        selectedColumnLabels () {
             return this.selectedColumns.map(col => col.value);
         },
         unselectedColumnLabels () {
@@ -205,6 +204,7 @@ export default {
                         category: category.value,
                         group: category.group,
                         valueType: category.valueType,
+                        isTemp: category.isTemp,
                         groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
                     }
                 ];
@@ -333,10 +333,28 @@ export default {
             return average.toLocaleString(this.currentLocale);
         },
 
+        getAverageForAllTimestamps (item) {
+            return Object.fromEntries(
+                item.years.map(timestamp => [
+                    this.timestampPrefix + timestamp,
+                    getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
+                ])
+            );
+        },
+
         getTotal (item, timestamp) {
             const total = getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
 
             return total.toLocaleString(this.currentLocale);
+        },
+
+        getTotalForAllTimestamps (item) {
+            return Object.fromEntries(
+                item.years.map(timestamp => [
+                    this.timestampPrefix + timestamp,
+                    getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
+                ])
+            );
         },
 
         setField (field, item) {
@@ -350,18 +368,9 @@ export default {
         },
 
         renderCharts (item) {
-            const total = Object.fromEntries(
-                    item.years.map(timestamp => [
-                        this.timestampPrefix + timestamp,
-                        getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
-                    ])
-                ),
-                average = Object.fromEntries(
-                    item.years.map(timestamp => [
-                        this.timestampPrefix + timestamp,
-                        getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
-                    ])
-                ),
+            const
+                total = this.getTotalForAllTimestamps(item),
+                average = this.getAverageForAllTimestamps(item),
                 data = {
                     ...item,
                     total,
@@ -375,6 +384,23 @@ export default {
                 );
 
             this.channelGraphData(chart);
+        },
+
+        renderGroupedCharts () {
+            const
+                datasets = this.selectedItems.map(item => ({
+                    ...item,
+                    total: this.getTotalForAllTimestamps(item),
+                    average: this.getAverageForAllTimestamps(item)
+                })),
+                charts = generateChartsForItems(
+                    datasets,
+                    this.selectedColumnNames,
+                    this.selectedDistrictLevel.label,
+                    this.timestampPrefix
+                );
+
+            this.channelGraphData(charts);
         },
 
         renderScatterplot () {
@@ -413,14 +439,8 @@ export default {
         calculateStats,
         calculateCorrelation,
         groupMapping,
-
-        /**
-         * @param {String[]} value -
-         * @returns {void}
-         */
-        setStatsFeatureFilter (value) {
-            this.statsFeatureFilter = value;
-        },
+        sumUpSelected,
+        divideSelected,
 
         /**
          * @param {String} value -
@@ -579,15 +599,19 @@ export default {
                                     <TableRowMenu
                                         :item="item"
                                         :fields="fields"
+                                        :selected-items="selectedItems"
                                         @setField="setField"
                                         @resetFields="resetFields"
                                         @add="calculateStats('add')"
                                         @subtract="calculateStats('subtract')"
                                         @multiply="calculateStats('multiply')"
                                         @divide="calculateStats('divide')"
+                                        @sum="sumUpSelected"
+                                        @divideSelected="divideSelected"
                                         @correlate="renderScatterplot"
                                         @visualizationChanged="onVisualizationChanged"
                                         @renderCharts="renderCharts"
+                                        @renderGroupedChart="renderGroupedCharts"
                                     />
                                 </template>
 

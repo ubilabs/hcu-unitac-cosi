@@ -62,6 +62,15 @@ export function divide (a, b) {
 }
 
 /**
+ * Sums up a list of numbers
+ * @param {Number[]} arr - array of numbers
+ * @returns {Number} the result
+ */
+export function sum (arr) {
+    return arr.reduce((res, e) => res + e, 0);
+}
+
+/**
  * Computes the difference between concordant and discordant observation pairs in X and Y
  * Does not elegantly handle ties
  * @param {Number[]} arrX - the x-Axis values
@@ -247,6 +256,7 @@ export default {
     subtract,
     multiply,
     divide,
+    sum,
     standardError,
     covar,
     pearsons,

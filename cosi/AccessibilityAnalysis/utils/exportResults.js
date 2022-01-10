@@ -25,7 +25,7 @@ export function exportAsGeoJson (mapLayer) {
             color: "White",
             width: 1
         },
-        colors = this.getFeatureColors();
+        colors = this.featureColors;
 
     for (let i = 0; i < featureCollection.features.length; i++) {
         const style = {
@@ -45,7 +45,7 @@ export function exportAsGeoJson (mapLayer) {
 
         featureCollection.features.push(featureGeoJson);
     }
-    else {
+    else if (this.mode === "region") {
         const coordinates = this.getCoordinates();
 
         for (let i = 0; i < coordinates.length; i++) {

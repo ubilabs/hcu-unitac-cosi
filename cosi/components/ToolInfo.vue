@@ -15,6 +15,10 @@ export default {
         infoText: {
             type: String,
             default: undefined
+        },
+        summary: {
+            type: String,
+            default: null
         }
     },
     methods: {
@@ -46,17 +50,30 @@ export default {
             dense
             justify="end"
         >
-            <v-btn
-                :title="title"
-                class="info_btn"
-                depressed
-                right
-                icon
-                x-small
-                @click="showInfo"
+            <v-col
+                cols="17"
             >
-                <v-icon>mdi-help-circle</v-icon>
-            </v-btn>
+                <p
+                    v-if="summary"
+                >
+                    {{ summary }}
+                </p>
+            </v-col>
+            <v-col
+                cols="1"
+            >
+                <v-btn
+                    :title="title"
+                    class="info_btn"
+                    depressed
+                    right
+                    icon
+                    x-small
+                    @click="showInfo"
+                >
+                    <v-icon>mdi-help-circle</v-icon>
+                </v-btn>
+            </v-col>
         </v-row>
         <v-divider />
     </div>
