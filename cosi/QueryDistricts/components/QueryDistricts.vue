@@ -13,6 +13,9 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {WFS} from "ol/format.js";
+import getAvailableYears from "../../utils/getAvailableYears";
 
 export default {
     name: "QueryDistricts",
@@ -51,7 +54,7 @@ export default {
             "mapping"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["layerById"])
+        ...mapGetters("Map", ["layerById", "projectionCode"])
     },
     watch: {
         async layerFilterModels () {
@@ -71,7 +74,9 @@ export default {
         },
 
         facilityNames () {
-            this.setLayerOptions();
+            if (this.active) {
+                this.setLayerOptions();
+            }
         },
 
         active (value) {
@@ -143,9 +148,12 @@ export default {
         },
 
         setLayerOptions: function () {
-            const url = this.selectedDistrictLevel.stats.baseUrl[0], /** @todo allow multiple sources */
-                layers = this.getLayerList()
-                    .filter(layer=> layer.url === url);
+            const urls = this.selectedDistrictLevel.stats.baseUrl,
+                layers = [];
+
+            urls.forEach(url => {
+                layers.push(...this.getLayerList().filter(layer=> layer.url === url));
+            });
 
             this.allLayerOptions = [];
 
@@ -167,9 +175,13 @@ export default {
                 if (layer) {
                     this.allLayerOptions.push({
                         name: m.value,
-                        id: layer.id,
+                        id: m.ltf ? m.category : layer.id,
                         group: m.group,
-                        valueType: m.valueType
+                        valueType: m.valueType,
+                        ltf: m.ltf,
+                        category: m.category,
+                        url: layer.url,
+                        featureType: layer.featureType
                     });
                 }
             }
@@ -189,6 +201,7 @@ export default {
                 ret.push({header: g});
                 ret = ret.concat(groups[g]);
             }
+
             this.layerOptions = ret;
         },
 
@@ -251,10 +264,10 @@ export default {
             if (this.propertiesMap[layer.id] && layer.property === undefined) {
                 return;
             }
-            const features = await this.getAllFeatures(layer.id);
 
             if (layer.facilityLayerName) {
-                const adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
+                const features = await this.getAllFeatures(layer.id),
+                    adminFeatures = this.cloneDistrictFeatures(this.selectedDistrictLevel.districts),
                     fmap = this.countFacilitiesPerFeature(features, adminFeatures, layer.property);
 
                 this.propertiesMap[layer.id] = adminFeatures.map(feature => {
@@ -276,7 +289,39 @@ export default {
                     };
                 });
             }
+            else if (layer.ltf) {
+                const wfsReader = new WFS();
+
+                let features = await getFeaturePost(layer.url, {
+                        featureTypes: [layer.featureType],
+                        srsName: this.projectionCode,
+                        propertyNames: [layer.category, this.keyOfAttrNameStats, "jahr"]
+                    }),
+                    groupedFeatures = {};
+
+                features = wfsReader.readFeatures(features);
+                // group features by district
+                groupedFeatures = Radio.request("Util", "groupBy", features, (feature) => {
+                    return feature.get([this.keyOfAttrNameStats]);
+                });
+
+                this.propertiesMap[layer.id] = features.map(feature => {
+                    const ret = feature.getProperties();
+
+                    groupedFeatures[feature.get([this.keyOfAttrNameStats])].forEach(feat => {
+                        ret["jahr_" + feat.get("jahr")] = feat.get([layer.category]);
+                    });
+
+                    ret.feature = feature;
+                    ret[this.selectorField] = this.keyOfAttrNameStats;
+                    ret.kategorie = layer.category;
+                    ret.id = ret[this.keyOfAttrNameStats];
+                    return ret;
+                });
+            }
             else {
+                const features = await this.getAllFeatures(layer.id);
+
                 this.propertiesMap[layer.id] = features.map(feature => {
                     const ret = feature.getProperties();
 
@@ -342,19 +387,25 @@ export default {
         },
 
         getMinMaxForField (layerId, field) {
-            const invalidFeatures = [],
+            const invalidValues = [],
                 features = this.propertiesMap[layerId],
                 values = features.reduce((res, f) => {
                     const v = parseFloat(f[field]);
 
                     if (isNaN(v)) {
-                        invalidFeatures.push(f[this.keyOfAttrNameStats]);
+                        if (f[this.keyOfAttrNameStats]) {
+                            invalidValues.push(f[this.keyOfAttrNameStats]);
+                        }
+                        else {
+                            invalidValues.push(f.feature.get([this.keyOfAttrNameStats]));
+                        }
                         return res;
                     }
                     return [...res, v];
                 }, []),
                 max = Math.max(...values),
-                min = Math.min(...values);
+                min = Math.min(...values),
+                invalidFeatures = [...new Set(invalidValues)];
 
             return {min, max, invalidFeatures};
         },
@@ -422,7 +473,7 @@ export default {
                             await this.loadFeatures({id: value.layerId, property: value.property, facilityLayerName: filters[i].facilityLayerName});
                         }
                         if (value.quotientLayer) {
-                            await this.computeQuotientLayer(value);
+                            await this.computeQuotientLayer(filters[i]);
                             currentLayerId = `${filters[i].layerId}/${filters[i].quotientLayer}`;
                         }
 
@@ -441,28 +492,32 @@ export default {
         },
 
         async computeQuotientLayer (value) {
-            await this.loadFeatures({
-                id: value.quotientLayer,
-                facilityLayerName: this.facilityNames.find(item => item.id === value.quotientLayer)?.name
-            });
+            await this.loadFeatures(this.allLayerOptions.find(layer => layer.id === value.quotientLayer));
 
             const lprops = this.propertiesMap[value.layerId],
                 qprops = this.propertiesMap[value.quotientLayer],
-                qid = `${value.layerId}/${value.quotientLayer}`;
+                qid = `${value.layerId}/${value.quotientLayer}`,
+                fieldValues = getAvailableYears(qprops).map(val => "jahr_" + val);
 
             this.propertiesMap[qid] = lprops.map(entry => {
-
                 const props = qprops.find(p=>p.id === entry.id),
-                    ret = {...props};
+                    ret = {...props},
+                    /**
+                     * @todo Dirty, since facilities might have timelines in the future themselves! Overhaul in "countFacilitiesPerFeature" method
+                     */
+                    facilityVal = entry.isFacility ? entry.jahr_2012 : undefined;
 
                 for (const p in props) {
                     if (p.startsWith("jahr_")) {
-                        ret[p] = entry[p] / props[p];
+                        ret[p] = (facilityVal || entry[p]) / props[p];
                     }
                 }
                 ret.feature = entry.feature;
                 return ret;
             });
+
+            // update available years
+            value.fieldValues = fieldValues;
         },
 
         closeFilter (value) {
