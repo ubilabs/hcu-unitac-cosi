@@ -164,7 +164,7 @@ export function generateChartsForItems (data, districtCols, districtLevelLabel, 
 
             return new ChartDataset({
                 id: "ccm-" + data.map(d => d.category).join(","),
-                name: (col.districtLevel || districtLevelLabel) + " - " + col.value,
+                name: (col.districtLevel || districtLevelLabel) + " - " + col.text,
                 type: ["LineChart", "BarChart"],
                 color: "rainbow",
                 source: "Dashboard",
