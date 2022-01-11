@@ -80,7 +80,8 @@ export default {
             autoSaveDialog: false,
             confirmDialog: false,
             settingsChanged: false,
-            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon}
+            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon},
+            warningDialog: false
         };
     },
     computed: {
@@ -99,11 +100,7 @@ export default {
          */
         active (state) {
             if (state) {
-                this.addSingleAlert({
-                    content: "Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!",
-                    category: "Info",
-                    displayClass: "info"
-                });
+                this.warningDialog = true;
             }
             else {
                 const model = getComponent(this.id);
@@ -582,6 +579,22 @@ export default {
                         v-bind="attrs"
                         text
                         @click="confirmDialog = false"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </template>
+            </v-snackbar>
+            <v-snackbar
+                v-model="warningDialog"
+                :timeout="4000"
+                color="secondary"
+            >
+                Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!
+                <template #action="{ attrs }">
+                    <v-btn
+                        v-bind="attrs"
+                        text
+                        @click="warningDialog = false"
                     >
                         <v-icon>mdi-close</v-icon>
                     </v-btn>

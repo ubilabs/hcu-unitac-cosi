@@ -265,6 +265,10 @@ export default {
 
         extent () {
             this.updateDistanceScores();
+        },
+
+        layerFilter () {
+            this.numericalColumns = this.getNumericalColumns();
         }
     },
     created () {
@@ -305,7 +309,7 @@ export default {
 
         getVectorlayerMapping,
         getNumericalColumns () {
-            const numCols = this.flatActiveLayerMapping.reduce((cols, mappingObj) => {
+            const numCols = this.getActiveLayers().reduce((cols, mappingObj) => {
                 const _numCols = mappingObj.numericalValues.map(v => ({
                     text: v.name,
                     value: v.id
