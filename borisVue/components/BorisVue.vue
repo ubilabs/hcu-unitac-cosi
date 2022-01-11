@@ -810,7 +810,7 @@ export default {
                             Bitte wählen
                         </option>
                         <option
-                            v-for="(landuse, index) in gfiFeature"
+                            v-for="(landuse, index) in gfiFeature.get('nutzungsart')"
                             :key="index"
                             :value="landuse.nutzungsart"
                         >
