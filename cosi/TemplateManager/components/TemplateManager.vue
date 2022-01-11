@@ -138,9 +138,9 @@ export default {
                     <ToolInfo
                         :url="readmeUrl[currentLocale]"
                     />
-                    <v-subheader>
+                    <div class="mb-2">
                         {{ $t("additional:modules.tools.cosi.templateManager.infoLoadFromTemplates") }}
-                    </v-subheader>
+                    </div>
                     <v-divider />
                     <div>
                         <span class="text-subtitle-2">

@@ -312,7 +312,7 @@ export default {
                 }));
 
                 for (const col of _numCols) {
-                    if (!cols.find(c => c.id === col.id)) {
+                    if (!cols.find(c => c.value === col.value)) {
                         cols.push(col);
                     }
                 }
@@ -459,6 +459,12 @@ export default {
                 }
                 return true;
             });
+        },
+
+        getActiveLayers () {
+            return this.layerFilter.length > 0 ?
+                this.flatActiveLayerMapping.filter(layerMap => this.layerFilter.map(l => l.layerId).includes(layerMap.layerId)) :
+                this.flatActiveLayerMapping;
         },
 
         /**
@@ -613,6 +619,11 @@ export default {
                 width: Math.round(100 * val / maxVal) + "%"
             };
         },
+        /**
+         * @todo Refactor to utils
+         * @param {Object} item - the table item
+         * @returns {void}
+         */
         showDistanceScoreForItem (item) {
             const
                 data = {
@@ -633,6 +644,10 @@ export default {
 
             this.channelGraphData(chartDataset);
         },
+        /**
+         * @todo Refactor to utils
+         * @returns {void}
+         */
         showDistanceScoresForSelected () {
             const
                 data = {
@@ -654,6 +669,10 @@ export default {
 
             this.channelGraphData(chartDataset);
         },
+        /**
+         * @todo Refactor to utils
+         * @returns {void}
+         */
         showDistanceScoreHistogram () {
             const
                 histogram = createHistogram(this.getActiveItems()),
@@ -699,15 +718,76 @@ export default {
 
             this.channelGraphData(chartDataset);
         },
+        /**
+         * @todo Refactor to utils
+         * @returns {void}
+         */
         createCharts () {
-            console.log(this.filterProps);
-            console.log(this.getActiveItems());
-            console.log(this.activeLayerMapping);
-            console.log(this.numericalColumns);
-
             const
                 activeItems = this.getActiveItems(),
-                layerFeatures = this.activeLayerMapping.map(layerMap => activeItems.filter(item => item.layerId === layerMap.layerId));
+                {districts, types} = this.getDistrictsAndTypes(activeItems),
+                activeLayerMapping = this.getActiveLayers(),
+                layerCharts = activeLayerMapping.reduce((res, layerMap) => {
+                    const
+                        numVals = this.selectedFeatureLayers.length > 0 ?
+                            [...layerMap.numericalValues, {id: "distanceScore", name: "Anbindng"}, {id: "count", name: "Anzahl"}] :
+                            [...layerMap.numericalValues, {id: "count", name: "Anzahl"}],
+                        charts = numVals.map(numVal => {
+                            const
+                                layerItems = activeItems.filter(item => item.layerId === layerMap.layerId),
+                                chartData = {
+                                    labels: districts[layerMap.layerId],
+                                    datasets: types[layerMap.layerId].map(type => ({
+                                        label: type,
+                                        data: districts[layerMap.layerId].map(district => {
+                                            return layerItems.reduce((sum, item) => {
+                                                if (numVal.id !== "count") {
+                                                    return item.district === district && item.type === type ? sum + parseFloat(item[numVal.id]) : sum;
+                                                }
+                                                return item.district === district && item.type === type ? sum + 1 : sum;
+                                            }, 0);
+                                        })
+                                    }))
+                                };
+
+                            return new ChartDataset({
+                                id: this.id + "-" + layerMap.layerId + "-" + numVal.id,
+                                name: layerMap.id,
+                                type: "BarChart",
+                                color: "rainbow",
+                                source: this.$t("additional:modules.tools.cosi.featuresList.title"),
+                                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.colDistrict"), numVal.name],
+                                data: chartData,
+                                beginAtZero: true
+                            });
+                        });
+
+                    return [...res, ...charts];
+                }, []);
+
+            this.channelGraphData(layerCharts);
+        },
+        getDistrictsAndTypes (items) {
+            const
+                districts = {},
+                types = {};
+
+            for (const layerMap of this.flatActiveLayerMapping) {
+                districts[layerMap.layerId] = [];
+                types[layerMap.layerId] = [];
+
+                for (const item of items.filter(el => el.layerId === layerMap.layerId)) {
+                    if (!districts[layerMap.layerId].includes(item.district)) {
+                        districts[layerMap.layerId].push(item.district);
+
+                    }
+                    if (!types[layerMap.layerId].includes(item.type)) {
+                        types[layerMap.layerId].push(item.type);
+                    }
+                }
+            }
+
+            return {districts, types};
         },
         showDistanceScoreFeatures () {
             if (this.distScoreLayer === null) {
@@ -810,10 +890,12 @@ export default {
                         dense
                         small
                         tile
+                        color="grey lighten-1"
+                        class="mb-2 ml-2"
                         :title="$t('additional:modules.tools.cosi.featuresList.createCharts')"
-                        @click.native="createCharts"
+                        @click="createCharts"
                     >
-                        <v-icon>mdi-chart-histogram</v-icon>
+                        <v-icon>mdi-poll</v-icon>
                     </v-btn>
                     <v-btn
                         id="export-table"

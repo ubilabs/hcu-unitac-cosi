@@ -62,7 +62,7 @@ export default {
                 return null;
             }
 
-            return this.datasets;
+            return {...this.datasets};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
@@ -83,6 +83,7 @@ export default {
             }
 
             this._options.scales.yAxes[0].stacked = this.chartData.stacked || false;
+            this._options.scales.xAxes[0].stacked = this.chartData.stacked || false;
             this._options.scales.yAxes[0].ticks.beginAtZero = this.chartData.beginAtZero || false;
 
             this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels?.[0];

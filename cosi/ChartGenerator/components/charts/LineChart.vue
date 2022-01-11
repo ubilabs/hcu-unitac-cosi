@@ -55,7 +55,7 @@ export default {
                 return null;
             }
 
-            return this.datasets;
+            return {...this.datasets};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
@@ -89,7 +89,7 @@ export default {
             this._options.scales.xAxes[0].scaleLabel.labelString = this.chartData.scaleLabels?.[1];
             this._options.title.text = beautifyKey(this.chartData.name);
 
-            this.renderChart(this.chartData.data, this.options);
+            this.renderChart(this.chartData.data, this._options);
         }
     }
 };

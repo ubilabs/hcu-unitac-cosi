@@ -1,6 +1,7 @@
 
 <script>
 import {Pie} from "vue-chartjs";
+import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
 
 export default {
@@ -34,9 +35,6 @@ export default {
                 return null;
             }
 
-            // eslint-disable-next-line
-            this.options.title.text = this.datasets.name;
-
             return {
                 labels: this.datasets.label,
                 datasets: [this.datasets.datasets]
@@ -59,6 +57,8 @@ export default {
             if (!this.chartData) {
                 return;
             }
+
+            this._options.title.text = beautifyKey(this.chartData.name);
 
             this.renderChart(this.chartData, this._options);
         }

@@ -51,7 +51,7 @@ export default {
                 return null;
             }
 
-            return this.datasets;
+            return {...this.datasets};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
