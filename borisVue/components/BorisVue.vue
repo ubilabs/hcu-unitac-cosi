@@ -40,7 +40,8 @@ export default {
             "switchLayer",
             "toggleStripesLayer",
             "toggleInfoText",
-            "requestParametricUrl"
+            "requestParametricUrl",
+            "checkGfiFeatureByLanduse"
 
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
@@ -147,7 +148,7 @@ export default {
                             Bitte wählen
                         </option>
                         <option
-                            v-for="(landuse, index) in gfiFeature"
+                            v-for="(landuse, index) in gfiFeature.get('nutzungsart')"
                             :key="index"
                             :value="landuse.nutzungsart"
                         >
