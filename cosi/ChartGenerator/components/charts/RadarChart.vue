@@ -28,7 +28,9 @@ export default {
                 angleLines: {},
                 gridLines: {},
                 pointLabels: {},
-                ticks: {}
+                ticks: {
+                    beginAtZero: true
+                }
             },
             tooltips: {
                 callbacks: {
@@ -71,6 +73,7 @@ export default {
                 return;
             }
 
+            this._options.scale.ticks.beginAtZero = this.chartData.beginAtZero || true;
             this._options.title.text = beautifyKey(this.chartData.name);
             this.renderChart(this.chartData.data, this._options);
         }

@@ -5,7 +5,7 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import FeaturesList from "../../../components/FeaturesList.vue";
-import ScoreValues from "../../../components/ScoreValues.vue";
+// import ScoreValues from "../../../components/ScoreValues.vue";
 import FeaturesListStore from "../../../store/indexFeaturesList";
 import DetailView from "../../../components/DetailView.vue";
 import {expect} from "chai";
@@ -386,14 +386,10 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             await wrapper.vm.$nextTick();
 
             // act
-            wrapper.vm.showInfo(wrapper.vm.items[0]);
+            wrapper.vm.showDistanceScoreForItem(wrapper.vm.items[0]);
 
             // assert
-            expect(wrapper.vm.allScores).to.be.eql([1]);
-            expect(wrapper.vm.showScoresDialog).be.true;
-            expect(wrapper.vm.currentScores).to.be.eql(wrapper.vm.items[0].weightedDistanceScores);
-
-            expect(wrapper.findComponent(ScoreValues).exists()).to.be.true;
+            expect(wrapper.vm.channelGraphData).to.be.calledOnce();
         });
 
         it("should show distance score features", async () => {

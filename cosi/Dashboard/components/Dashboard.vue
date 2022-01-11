@@ -128,12 +128,6 @@ export default {
                 ? selectedCols
                 : [...this.districtColumns, ...this.aggregateColumns];
         },
-        selectedColumnNames () {
-            return this.selectedColumns.map(col => col.value);
-        },
-        selectedColumnLabels () {
-            return this.selectedColumns.map(col => col.value);
-        },
         unselectedColumnLabels () {
             return [...this.districtColumns, ...this.aggregateColumns].filter(col => !this.selectedColumns.includes(col)).map(col => col.text);
         },
@@ -378,7 +372,7 @@ export default {
                 },
                 chart = generateChartForDistricts(
                     data,
-                    this.selectedColumnNames,
+                    this.selectedColumns,
                     this.selectedDistrictLevel.label,
                     this.timestampPrefix
                 );
@@ -395,7 +389,7 @@ export default {
                 })),
                 charts = generateChartsForItems(
                     datasets,
-                    this.selectedColumnNames,
+                    this.selectedColumns,
                     this.selectedDistrictLevel.label,
                     this.timestampPrefix
                 );
