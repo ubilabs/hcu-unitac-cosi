@@ -8,7 +8,7 @@ export default function getAvailableYears (features, year_selector = "jahr_") {
     const availableYears = [];
 
     features.forEach(feature => {
-        const properties = Object.hasOwnProperty.call(feature, "getProperties") ? feature.getProperties() : feature;
+        const properties = feature.getProperties ? feature.getProperties() : feature;
 
         Object.keys(properties).forEach(key => {
             if (key.includes(year_selector)) {
