@@ -1,5 +1,5 @@
 import {WFS} from "ol/format.js";
-import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {getFeaturePOST as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
 import {prepareStatsFeatures, createStatFeaturesFromLTF} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
@@ -87,7 +87,7 @@ const actions = {
             dispatch("loadStatFeatures", {
                 districts: referenceLevel.label === "Hamburg" ? referenceLevel.districts : refDistricts,
                 districtLevel: referenceLevel,
-                getStatFeatures: getFeaturePost
+                getStatFeatures: wfsGetFeature
             });
             /**
              * @deprecated
@@ -138,7 +138,7 @@ const actions = {
         await dispatch("loadStatFeatures", {
             districts: [foundDistrict],
             districtLevel: districtLevel,
-            getStatFeatures: getFeaturePost,
+            getStatFeatures: wfsGetFeature,
             recursive: false
         });
 

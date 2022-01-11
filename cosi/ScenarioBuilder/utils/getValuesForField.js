@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import {getFeature} from "../../../../src/api/wfs/getFeature.js";
+import {getFeatureGET as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import store from "../../../../src/app-store";
 import {WFS} from "ol/format.js";
@@ -27,7 +27,10 @@ export default async function getValuesForField (field, layerId) {
     const rawLayer = getLayerWhere({id: layerId});
 
     if (rawLayer) {
-        const response = await getFeature(rawLayer.url, rawLayer.featureType, rawLayer.version);
+        const response = await wfsGetFeature(rawLayer.url, {
+            featureType: rawLayer.featureType,
+            version: rawLayer.version
+        });
 
         allFeatures = wfsReader.readFeatures(response);
     }

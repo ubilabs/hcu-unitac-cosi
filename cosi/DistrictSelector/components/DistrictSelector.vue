@@ -12,7 +12,7 @@ import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
 import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
-import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {getFeaturePOST as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
 import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
@@ -357,7 +357,7 @@ export default {
                 this.loadStatFeatures({
                     districts: selectedDistricts,
                     districtLevel: this.selectedDistrictLevel,
-                    getStatFeatures: getFeaturePost
+                    getStatFeatures: wfsGetFeature
                 });
             }
             else {
