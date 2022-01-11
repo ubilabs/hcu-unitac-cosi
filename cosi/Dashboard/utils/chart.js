@@ -3,15 +3,15 @@ import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 /**
  * @description Adjusting data for Graph Generator Tool.
  * @param {Object} data - the item from the dashboardTable
- * @param {String} districtName the district name
+ * @param {String} dist the district
  * @param {Number[]} timestamps - the timestamps for the x-Axis
  * @param {String} timestampPrefix - the string the timestamps start with (e.g. jahr_)
  * @returns {void}
  */
-function prepareGraphData (data, districtName, timestamps, timestampPrefix) {
-    const statFeature = data[districtName],
+function prepareGraphData (data, dist, timestamps, timestampPrefix) {
+    const statFeature = data[dist.value],
         newDataset = {
-            label: districtName,
+            label: dist.text,
             data: []
         };
 
@@ -115,13 +115,13 @@ export function generateScatterGraphObj (graphData, categoryX, categoryY) {
 /**
  * Generates chart data from a set of districts and their stats feature
  * @param {Object} data - the item from the dashboardTable
- * @param {String[]} districtNames - the districts objects to generate the chart data for
+ * @param {String[]} districtCols - the districts objects to generate the chart data for
  * @param {String} districtLevelLabel - the label of the districtLevel
  * @param {String} timestampPrefix - the string the timestamps start with (e.g. jahr_)
  * @returns {ChartDataset} the chart data
  */
-export function generateChartForDistricts (data, districtNames, districtLevelLabel, timestampPrefix = "jahr_") {
-    const graphData = districtNames.map(dist => prepareGraphData(data, dist, data.years, timestampPrefix)),
+export function generateChartForDistricts (data, districtCols, districtLevelLabel, timestampPrefix = "jahr_") {
+    const graphData = districtCols.map(dist => prepareGraphData(data, dist, data.years, timestampPrefix)),
         graphObj = generateGraphObj(graphData, districtLevelLabel, data.category, data.years);
 
     return graphObj;
