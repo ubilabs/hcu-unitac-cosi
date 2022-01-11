@@ -4,11 +4,11 @@ List of all configurable tools. Each tool inherits from **[tool](#markdown-heade
 
 |Name|Required|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
-|schulwegrouting|nein|**[schulwegrouting](#markdown-header-portalconfigmenutoolschulwegrouting)**||Schulwegrouting.|true|
+|schoolRoutePlanning|no|**[schoolRoutePlanning](#markdown-header-portalconfigmenutoolschulwegrouting)**||schoolRoutePlanning.|true|
 
 ***
 
-#### Portalconfig.menu.tool.schulwegrouting
+#### Portalconfig.menu.tool.schoolRoutePlanning
 
 With this Hamburg-specific tool, the route can be calculated from any Hamburg address to any Hamburg school. The official school entrances are also considered.
 
@@ -18,19 +18,26 @@ With this Hamburg-specific tool, the route can be calculated from any Hamburg ad
 
 |Name|Required|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
-|layerId|nein|String|"8712"|Id of the layer that contains the schools. This layer must also be configured in the **[themeconfig](#markdown-header-themeconfig)**.|true|
-|wpsId|nein|String|"1001"|Id of the WPS from the rest-services.json that triggers the configured FME process.|true|
-|fmwProcess|nein|String|"schulwegrouting_wps.fmw"|FME process that calculates a school route.|true|
+|fmwProcess|no|String|"schulwegrouting_wps.fmw"|FME process that calculates a school route.|true|
+|layerId|no|String|"8712"|Id of the layer that contains the schools. This layer must also be configured in the **[themeconfig](#markdown-header-themeconfig)**.|true|
+|wpsId|no|String|"1001"|Id of the WPS from the rest-services.json that triggers the configured FME process.|true|
+|wpsTimeout|no|Object|{"tm_ttl": {"dataType": "integer", "value": 10}}|Timout parameters for the wps. If false oder empty object then this parameter is not sent in the post body.|true|
 
-**Beispiel**
+**Example**
 ```
 #!json
-"schulwegrouting": {
-    "name": "Schulweg-Routing",
-    "glyphicon": "glyphicon-filter",
+"schoolRoutePlanning": {
+    "name": "translate#additional:modules.tools.schoolRoutePlanning.title",
+    "glyphicon": "glyphicon-road",
+    "fmwProcess": "schulwegrouting_wps.fmw",
     "layerId": "8712",
     "wpsId: "1001",
-    "fmwProcess": "schulwegrouting_wps.fmw"
+    "wpsTimeout": {
+        "tm_ttl": {
+            "dataType": "integer",
+            "value": 50
+        }
+    }
 }
 ```
 
