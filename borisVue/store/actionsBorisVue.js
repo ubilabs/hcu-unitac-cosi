@@ -2,6 +2,7 @@ import state from "./stateBorisVue";
 import store from "../../../src/app-store";
 import axios from "axios";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
+// import WPS from "../../../src/api/wps";
 
 const actions = {
     initialize ({commit, dispatch}) {
@@ -12,6 +13,13 @@ const actions = {
         });
 
         // wenn gfi feature sich verändert, soll processFromParametricUrl gecheckt werden und dann simulateLanduseSelect(paramUrl)
+        // this.listenTo(this, {
+        //     "change:gfiFeature": function () {
+        //         if (this.get("processFromParametricUrl")) {
+        //             this.simulateLanduseSelect(this.get("paramUrlParams"));
+        //         }
+        //     }
+        // });
 
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
@@ -88,6 +96,7 @@ const actions = {
 
         commit("setSelectedLayer", layerModel);
     },
+    // soll das in mutations?
     toggleInfoText () {
         if (state.infoText.length === 0) {
             state.infoText = "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.";
@@ -106,6 +115,7 @@ const actions = {
 
         const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
             layerSource = selectedModel.get("layer").getSource();
+
         let map,
             mapView,
             url;
@@ -143,6 +153,7 @@ const actions = {
                 // polygon
                 if (parseInt(feature.get("jahrgang"), 10) > 2008) {
                     feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
+                    // getWFS for polygon by id and year and place polygon marker
                     dispatch("sendGetFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
                     commit("setGfiFeature", feature);
                     dispatch("checkGfiFeatureByLanduse", {feature, selectedLanduse: state.brwLanduse});
@@ -152,8 +163,7 @@ const actions = {
                     commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
                     dispatch("Map/setCenter", coordinate, {root: true});
-                    // FEHLT NOCH:
-                    // this.handleNewFeature(feature);
+                    dispatch("handleNewFeature", feature);
                 }
             }
             else {
@@ -173,7 +183,7 @@ const actions = {
         // FEHLT NOCH:
         // this.setBackdrop(false);
     },
-    // getWFS for polygon with id and year and place polygon marker
+    // getWFS for polygon by id and year and place polygon marker
     sendGetFeatureRequestById ({dispatch}, {featureId, featureYear}) {
         const yearInt = parseInt(featureYear, 10),
             index = Config.layerConf.lastIndexOf("/"),
@@ -213,16 +223,17 @@ const actions = {
     // checks if there is a brw for the selected landuse
     // if so, the function sendGetFeatureRequest is called
     checkGfiFeatureByLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
-        const landuse = feature.get("nutzungsart");
 
-        for (const land in landuse) {
-            if (landuse[land].nutzungsart === selectedLanduse) {
-                dispatch("sendGetFeatureRequest", {richtwertNummer: landuse[land].richtwertnummer, featureYear: feature.get("jahrgang")});
-            }
-            else {
-                commit("setBrwLanduse", "");
-                commit("setSelectedBrwFeature", {});
-            }
+        const landuse = feature.get("nutzungsart").find((nutzung) => {
+            return nutzung.nutzungsart === selectedLanduse;
+        });
+
+        if (landuse) {
+            dispatch("sendGetFeatureRequest", {richtwertNummer: landuse.richtwertnummer, featureYear: feature.get("jahrgang")});
+        }
+        else {
+            commit("setBrwLanduse", "");
+            commit("setSelectedBrwFeature", {});
         }
     },
     sendGetFeatureRequest ({dispatch}, {richtwertNummer, featureYear}) {
@@ -250,7 +261,6 @@ const actions = {
         }).catch((response) => {
             dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
         });
-
     },
     handleGetFeatureResponse ({commit, dispatch}, {response, status, year}) {
         if (status === 200) {
@@ -264,7 +274,7 @@ const actions = {
             });
         }
         else {
-            Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Detailsss: " + status);
+            Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + status);
         }
     },
     findBrwFeatureByYear (context, payload) {
@@ -272,9 +282,15 @@ const actions = {
             return feature.get("jahrgang") === payload.year;
         });
     },
-    handleNewFeature ({commit}, feature) {
+    handleNewFeature ({commit, dispatch}, feature) {
         commit("setSelectedBrwFeature", feature);
-        // dispatch("sendWpsConvertRequest");
+        dispatch("sendWpsConvertRequest");
+    },
+    // MONTAG: hier weiter
+    sendWpsConvertRequest ({dispatch}) {
+        // const data = dispatch("getConvertObject", state.selectedBrwFeature);
+
+        // WPS.wpsRequest(this.get("wpsId"), this.get("fmwProcess"), data, this.handleConvertResponse.bind(this));
     }
 };
 

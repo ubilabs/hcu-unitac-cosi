@@ -18,7 +18,7 @@ const mutations = {
         state.stripesLayer = value;
     },
     setGfiFeature (state, value) {
-        state.gfiFeature = value.get("nutzungsart");
+        state.gfiFeature = value;
     },
     setBrwFeatures (state, value) {
         state.brwFeature = value;
