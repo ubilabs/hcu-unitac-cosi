@@ -395,7 +395,7 @@ export default {
                 })),
                 charts = generateChartsForItems(
                     datasets,
-                    this.selectedColumnNames,
+                    this.selectedColumns,
                     this.selectedDistrictLevel.label,
                     this.timestampPrefix
                 );

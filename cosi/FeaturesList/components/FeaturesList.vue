@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable new-cap */
 import Tool from "../../../../src/modules/tools/Tool.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
@@ -52,7 +51,6 @@ export default {
             showScoresDialog: false,
             layerWeights: {},
             currentScores: {},
-            allScores: [],
             selectedDistanceScoreLayers: [],
             search: "",
             layerFilter: [],
@@ -634,12 +632,12 @@ export default {
                     labels: this.selectedFeatureLayers.map(l => l.id),
                     datasets: [{
                         label: item.name,
-                        data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value)
+                        data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value?.toFixed(3))
                     }]
                 },
                 chartDataset = new ChartDataset({
                     id: "sb-" + item.key,
-                    name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score}`,
+                    name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)}`,
                     type: "RadarChart",
                     color: "rainbow",
                     source: "Standortanalyse",
@@ -655,7 +653,7 @@ export default {
         showDistanceScoresForSelected () {
             const
                 data = {
-                    labels: this.getActiveItems().map(l => l.id),
+                    labels: this.selectedFeatureLayers.map(l => l.id),
                     datasets: this.getActiveItems().map(item => ({
                         label: item.name,
                         data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
@@ -706,6 +704,13 @@ export default {
                                 labelString: ""
                             }
                         }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: (item, data) => {
+                                return "> " + data.labels[item[0].index] + "m";
+                            }
+                        }
                     }
                 },
                 chartDataset = new ChartDataset({
