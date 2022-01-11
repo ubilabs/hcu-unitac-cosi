@@ -16,6 +16,13 @@ const actions = {
         });
 
         // wenn gfi feature sich verändert, soll processFromParametricUrl gecheckt werden und dann simulateLanduseSelect(paramUrl)
+        // this.listenTo(this, {
+        //     "change:gfiFeature": function () {
+        //         if (this.get("processFromParametricUrl")) {
+        //             this.simulateLanduseSelect(this.get("paramUrlParams"));
+        //         }
+        //     }
+        // });
 
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
