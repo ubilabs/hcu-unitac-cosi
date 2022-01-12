@@ -21,7 +21,7 @@ With this Hamburg-specific tool, the route can be calculated from any Hamburg ad
 |fmwProcess|no|String|"schulwegrouting_wps.fmw"|FME process that calculates a school route.|true|
 |layerId|no|String|"8712"|Id of the layer that contains the schools. This layer must also be configured in the **[themeconfig](#markdown-header-themeconfig)**.|true|
 |wpsId|no|String|"1001"|Id of the WPS from the rest-services.json that triggers the configured FME process.|true|
-|wpsTimeout|no|Object|{"tm_ttl": {"dataType": "integer", "value": 10}}|Timout parameters for the wps. If false oder empty object then this parameter is not sent in the post body.|true|
+|wpsTimeout|no|Object|{"tm_ttl": {"dataType": "integer", "value": 10}}|Timeout parameters for the wps. If false or empty object then this parameter is not send in the post body.|true|
 
 **Example**
 ```

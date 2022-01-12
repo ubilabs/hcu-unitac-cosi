@@ -7,7 +7,7 @@
  * @property {String} glyphicon Icon next to the title.
  * @property {String} layerId The if of the wfs service that contains the schools.
  * @property {String} wpsId The id of the used web processing service.
- * @property {Object} wpsTimeout Timout parameters for the wps.
+ * @property {Object} wpsTimeout Timeout parameters for the wps.
  * @property {String} fmwProcess FME process triggered via the WPS.
  * @property {Boolean} renderToWindow If true, tool is rendered in a window, else in the sidebar.
  * @property {Boolean} resizableWindow Specifies whether the window should be resizable.
