@@ -1,7 +1,6 @@
 {
   "bauforum": "changeGUI/loader.js",
   "boris": "bodenrichtwertabfrage/view.js",
-  "cosi": "modules/loader.js",
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
   "showParcelGFI": "showParcelGFI.js",
