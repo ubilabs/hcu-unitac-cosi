@@ -12,6 +12,7 @@ import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.j
 import {scaleSequential} from "d3-scale";
 import {interpolateRdYlGn} from "d3-scale-chromatic";
 import ToolInfo from "../../components/ToolInfo.vue";
+import axios from "axios";
 
 export default {
     name: "Dipas",
@@ -131,14 +132,14 @@ export default {
          */
         async fetchProjects () {
             const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
-                ret = await fetch(url, {
+                ret = await axios(url, {
                     method: "GET",
                     headers: {
                         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
                         "Content-Type": "application/json"
                     }
                 }),
-                json = await ret.json();
+                json = await ret.data;
 
             if (json.error) {
                 throw Error(JSON.stringify(json));
@@ -152,14 +153,14 @@ export default {
          */
         async fetchContributions (id) {
             const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects/" + id + "/contributions",
-                ret = await fetch(url, {
+                ret = await axios(url, {
                     method: "GET",
                     headers: {
                         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
                         "Content-Type": "application/json"
                     }
                 }),
-                json = await ret.json();
+                json = await ret.data;
 
             if (json.error) {
                 throw Error(JSON.stringify(json));
