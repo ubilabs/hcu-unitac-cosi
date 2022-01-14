@@ -80,8 +80,8 @@ export default {
                     color: "rgba(255, 255, 255, 0)"
                 },
                 stroke: {
-                    color: "rgba(140, 120, 120, 0.8)",
-                    width: 3,
+                    color: "rgba(100, 80, 80, 1)",
+                    width: 2,
                     lineDash: [10, 8]
                 }
             },
@@ -468,7 +468,7 @@ export default {
                                     v-model="_time"
                                     class="time-slider"
                                     :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.time')"
-                                    :hint="travelTimeIndex[_time] * 100 + '% ' + $t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.title')"
+                                    :hint="`${(travelTimeIndex[_time] / Math.min(...Object.values(travelTimeIndex))).toFixed(2)} ${$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.title')}`"
                                     :disabled="!useTravelTimeIndex || transportType !== 'driving-car' || scaleUnit !== 'time'"
                                     :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
                                     step="1"
@@ -583,7 +583,7 @@ export default {
                                     </template>
                                     <v-icon
                                         v-if="isochroneFeatures.length > 0 && steps.length === 4"
-                                        :title="$t('additional:modules.tools.cosi.queryDistricts.travelTimeIndex.warning')"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
                                     >
                                         mdi-alert
                                     </v-icon>
