@@ -13,7 +13,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import * as turf from "@turf/turf";
 import ToolInfo from "../../components/ToolInfo.vue";
-import {getFeaturePost} from "../../../../src/api/wfs/getFeature.js";
+import {getFeaturePOST} from "../../../../src/api/wfs/getFeature.js";
 import {WFS} from "ol/format.js";
 import getAvailableYears from "../../utils/getAvailableYears";
 
@@ -292,7 +292,7 @@ export default {
             else if (layer.ltf) {
                 const wfsReader = new WFS();
 
-                let features = await getFeaturePost(layer.url, {
+                let features = await getFeaturePOST(layer.url, {
                         featureTypes: [layer.featureType],
                         srsName: this.projectionCode,
                         propertyNames: [layer.category, this.keyOfAttrNameStats, "jahr"]
