@@ -1141,7 +1141,7 @@ export default {
                             </div>
                         </div>
                         <DataTable
-                            :data-set="results"
+                            :dataset="results"
                             :type-a="resultHeaders.typeA"
                             :type-b="resultHeaders.typeB"
                             :f-active="resultHeaders.fActive"

@@ -25,18 +25,24 @@ export function exportAsGeoJson (mapLayer) {
             color: "White",
             width: 1
         },
-        colors = this.featureColors;
+        colors = this.featureColors,
+        startIndex = featureCollection.features.length === 3 ? 0 : 1;
 
-    for (let i = 0; i < featureCollection.features.length; i++) {
+    for (let i = startIndex; i < featureCollection.features.length; i++) {
         const style = {
             fill: {
-                color: colors[i]
+                color: colors[i - startIndex]
             },
             stroke: stroke
         };
 
         featureCollection.features[i].style = style;
         featureCollection.features[i].properties.index = i;
+    }
+
+    if (startIndex === 1) {
+        featureCollection.features[0].style = this.refFeatureStyle;
+        featureCollection.features[0].properties.index = "ref";
     }
 
     if (this.mode === "point") {

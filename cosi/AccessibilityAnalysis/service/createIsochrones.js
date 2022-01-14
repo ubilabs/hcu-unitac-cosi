@@ -30,16 +30,16 @@ export function setFilterPoly (coords) {
 /**
  * create isochrones features
  * @export
- * @param {*} {transportType, coordinates, scaleUnit, distance, batchSize, baseUrl} parameters
+ * @param {*} {transportType, coordinates, scaleUnit, distance, maxDistance, minDistance batchSize, baseUrl} parameters
  * @param {*} progress progress callback
  * @return {*} features
  */
-export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, batchSize, baseUrl}, progress) {
+export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, maxDistance, minDistance, batchSize, baseUrl}, progress) {
     let ret;
 
     if (coordinates.length === 1) {
         progress(50);
-        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, baseUrl);
+        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, maxDistance, minDistance, baseUrl);
         progress(100);
         return ret;
     }
@@ -52,21 +52,26 @@ export async function createIsochrones ({transportType, coordinates, scaleUnit, 
  * @param {*} coordinate coordinate
  * @param {*} scaleUnit scaleUnit
  * @param {*} distance distance
+ * @param {*} maxDistance maxDistance
+ * @param {*} minDistance minDistance
  * @param {*} baseUrl baseUrl
  * @return {*} steps and features
  */
-async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, baseUrl) {
+async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, maxDistance, minDistance, baseUrl) {
     if (abortController) {
         abortController.cancel();
     }
     abortController = axios.CancelToken.source();
 
-    const range = scaleUnit === "time" ? distance * 60 : distance,
+    const
+        range = scaleUnit === "time" ? distance * 60 : distance,
+        maxRange = scaleUnit === "time" ? maxDistance * 60 : maxDistance,
+        rangeArray = [range / 3, range * 2 / 3, range],
         json = await requestIsochrones(
             transportType,
             [coordinate],
             scaleUnit,
-            [range / 3, range * 2 / 3, range],
+            maxDistance ? [...rangeArray, maxRange] : rangeArray,
             abortController,
             baseUrl
         ),

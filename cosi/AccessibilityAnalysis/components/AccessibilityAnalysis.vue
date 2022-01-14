@@ -9,8 +9,7 @@ import deepEqual from "deep-equal";
 import {exportAsGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
-import InfoTemplatePoint from "text-loader!./info_point.html";
-import InfoTemplateRegion from "text-loader!./info_region.html";
+import travelTimeIndex from "../assets/inrix_traveltimeindex_2020.json";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -20,8 +19,7 @@ export default {
     },
     data () {
         return {
-            InfoTemplatePoint,
-            InfoTemplateRegion,
+            travelTimeIndex,
             facilityNames: [],
             mapLayer: null,
             directionsLayer: null,
@@ -69,13 +67,24 @@ export default {
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
-                "rgba(240, 0, 3, 0.6)"
+                "rgba(240, 0, 3, 0.6)",
+                "rgba(180, 165, 165, 0.8)"
             ],
             featureColors: [
                 "rgba(240, 0, 3, 0.2)",
                 "rgba(200, 200, 3, 0.2)",
                 "rgba(0, 240, 3, 0.2)"
             ],
+            refFeatureStyle: {
+                fill: {
+                    color: "rgba(255, 255, 255, 0)"
+                },
+                stroke: {
+                    color: "rgba(180, 165, 165, 0.8)",
+                    width: 3,
+                    lineDash: [10, 8]
+                }
+            },
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
@@ -155,6 +164,22 @@ export default {
             },
             set (v) {
                 this.setSelectedDirections(v);
+            }
+        },
+        _time: {
+            get () {
+                return this.time;
+            },
+            set (v) {
+                this.setTime(v);
+            }
+        },
+        _useTravelTimeIndex: {
+            get () {
+                return this.useTravelTimeIndex;
+            },
+            set (v) {
+                this.setUseTravelTimeIndex(v);
             }
         }
     },
@@ -428,7 +453,66 @@ export default {
                                 outlined
                                 dense
                             />
-                            <v-row>
+                            <div class="travel-time-index">
+                                <v-icon
+                                    small
+                                    @click="addSingleAlert({
+                                        category: 'Info',
+                                        displayClass: 'info',
+                                        content: $t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.help')
+                                    })"
+                                >
+                                    mdi-help-circle-outline
+                                </v-icon>
+                                <v-slider
+                                    v-model="_time"
+                                    class="time-slider"
+                                    :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.time')"
+                                    :hint="travelTimeIndex[_time] * 100 + '% ' + $t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.title')"
+                                    :disabled="!useTravelTimeIndex || transportType !== 'driving-car' || scaleUnit !== 'time'"
+                                    :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
+                                    step="1"
+                                    ticks="always"
+                                    tick-size="4"
+                                    min="0"
+                                    max="23"
+                                    dense
+                                    hide-details="auto"
+                                >
+                                    <template #append>
+                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
+                                        <div class="append-text-field">
+                                            {{ _time }}:00
+                                            <v-icon small>
+                                                mdi-clock
+                                            </v-icon>
+                                        </div>
+                                    </template>
+                                </v-slider>
+                            </div>
+                            <v-row dense>
+                                <v-col cols="12">
+                                    <v-checkbox
+                                        v-model="_setByFeature"
+                                        dense
+                                        hide-details
+                                        class="form-check-input"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                                        :disabled="mode === 'path'"
+                                    />
+                                    <v-checkbox
+                                        v-model="_useTravelTimeIndex"
+                                        dense
+                                        hide-details
+                                        class="form-check-input"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.toggle')"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
+                                        :disabled="transportType !== 'driving-car' || scaleUnit !== 'time'"
+                                    />
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
                                 <v-col cols="12">
                                     <v-btn
                                         id="create-isochrones"
@@ -440,19 +524,11 @@ export default {
                                     >
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
-                                    <v-checkbox
-                                        v-model="_setByFeature"
-                                        dense
-                                        hide-details
-                                        class="form-check-input"
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                                        :disabled="mode === 'path'"
-                                    />
                                 </v-col>
                             </v-row>
                             <v-row
                                 v-if="isochroneFeatures.length > 0"
+                                dense
                             >
                                 <v-col cols="12">
                                     <v-btn
@@ -589,6 +665,21 @@ export default {
 
 .snackbar-text{
     color: black
+}
+
+.append-text-field {
+    width: 70px;
+    text-align: right;
+}
+
+.travel-time-index {
+    display: flex;
+    position: relative;
+    align-items: baseline;
+    justify-content: space-between;
+    .time-slider {
+        margin-left: 10px;
+    }
 }
 
 </style>

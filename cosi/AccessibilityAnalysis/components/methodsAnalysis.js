@@ -12,7 +12,6 @@ import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import * as turf from "@turf/turf";
 import {readFeatures, transformFeatures} from "../components/util.js";
 
-
 export const methodConfig = {
     store: null
 };
@@ -70,9 +69,9 @@ export default {
      * @returns {void}
      */
     createIsochronesRegion: async function () {
-
-        const coordinates = this.getCoordinates(this.setByFeature),
-            distance = parseFloat(this.distance);
+        const
+            coordinates = this.getCoordinates(this.setByFeature),
+            {distance, maxDistance, minDistance, steps} = this.getDistances();
 
         if (
             coordinates !== null &&
@@ -81,10 +80,18 @@ export default {
             distance !== 0
         ) {
             this.cleanup();
-            const features = await this.getIsochrones({transportType: this.transportType, coordinates, scaleUnit: this.scaleUnit, distance: this.distance});
+
+            const features = await this.getIsochrones({
+                transportType: this.transportType,
+                coordinates,
+                scaleUnit: this.scaleUnit,
+                distance,
+                maxDistance,
+                minDistance
+            });
 
             // TODO: get locale from store
-            this.setSteps([distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)));
+            this.setSteps(steps);
             this.setIsochroneFeatures(features);
             this.currentCoordinates = coordinates;
         }
@@ -98,7 +105,8 @@ export default {
      * @returns {void}
      */
     createIsochronesPoint: async function () {
-        const distance = parseFloat(this.distance);
+        const
+            {distance, maxDistance, minDistance, steps} = this.getDistances();
 
         if (
             this.coordinate.length > 0 &&
@@ -108,9 +116,16 @@ export default {
         ) {
             this.setSetByFeature(false);
 
-            const features = await this.getIsochrones({transportType: this.transportType, coordinates: this.coordinate, scaleUnit: this.scaleUnit, distance: this.distance});
+            const features = await this.getIsochrones({
+                transportType: this.transportType,
+                coordinates: this.coordinate,
+                scaleUnit: this.scaleUnit,
+                distance,
+                maxDistance,
+                minDistance
+            });
 
-            this.setSteps([distance / 3, distance * 2 / 3, distance].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)));
+            this.setSteps(steps);
             this.setRawGeoJson(await this.featureToGeoJson(features[0]));
             this.setIsochroneFeatures(features);
             this.showRequestButton = true;
@@ -268,16 +283,27 @@ export default {
      * @returns {void}
      */
     styleFeatures: function (features) {
-        for (let i = 0; i < features.length; i++) {
+        const startIndex = features.length === 3 ? 0 : 1;
+
+        for (let i = startIndex; i < features.length; i++) {
             features[i].setStyle(
                 new Style({
                     fill: new Fill({
-                        color: this.featureColors[i]
+                        color: this.featureColors[i - startIndex]
                     }),
                     stroke: new Stroke({
                         color: "white",
                         width: 1
                     })
+                })
+            );
+        }
+
+        if (startIndex === 1) {
+            features[0].setStyle(
+                new Style({
+                    fill: new Fill(this.refFeatureStyle.fill),
+                    stroke: new Stroke(this.refFeatureStyle.stroke)
                 })
             );
         }
@@ -304,6 +330,30 @@ export default {
         this.setSteps([0, 0, 0]);
         this.setRawGeoJson(null);
         this.setIsochroneFeatures([]);
+    },
+
+    /**
+     * gets the distance weighted by travel time index
+     * @returns {{distance: Number, maxDistance: Number, minDistance: Number, steps: String[]}} distance with penalty and legend
+     */
+    getDistances: function () {
+        const
+            hasPenalty = this.useTravelTimeIndex && this.scaleUnit === "time" && this.transportType === "driving-car",
+            penalty = this.travelTimeIndex[this.time] / Math.min(...Object.values(this.travelTimeIndex)),
+            rawDistance = parseFloat(this.distance);
+        let
+            distance = rawDistance,
+            maxDistance, minDistance,
+            steps = [rawDistance / 3, rawDistance * 2 / 3, rawDistance].map(n => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2));
+
+        if (hasPenalty) {
+            distance = rawDistance / penalty;
+            maxDistance = rawDistance;
+            minDistance = rawDistance / (Math.max(...Object.values(this.travelTimeIndex)) / Math.min(...Object.values(this.travelTimeIndex)));
+            steps = [...steps, "max"];
+        }
+
+        return {distance, maxDistance, minDistance, steps};
     },
     getCoordinates: function (setByFeature) {
         const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
