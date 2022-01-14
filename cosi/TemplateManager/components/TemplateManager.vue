@@ -6,6 +6,7 @@ import getters from "../store/gettersTemplateManager";
 import mutations from "../store/mutationsTemplateManager";
 import actions from "../store/actionsTemplateManager";
 import ToolInfo from "../../components/ToolInfo.vue";
+import axios from "axios";
 
 export default {
     name: "TemplateManager",
@@ -66,8 +67,8 @@ export default {
                 path = `${this.templatePath}/${filename}.json`;
 
                 try {
-                    res = await fetch(path);
-                    templates.push(await res.json());
+                    res = await axios(path);
+                    templates.push(await res.data);
                 }
                 catch (e) {
                     console.warn(`Template at ${path} could not be loaded. Please check that it is a valid JSON file.`);
