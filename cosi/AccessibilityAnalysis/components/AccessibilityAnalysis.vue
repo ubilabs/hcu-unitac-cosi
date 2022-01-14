@@ -80,7 +80,7 @@ export default {
                     color: "rgba(255, 255, 255, 0)"
                 },
                 stroke: {
-                    color: "rgba(180, 165, 165, 0.8)",
+                    color: "rgba(140, 120, 120, 0.8)",
                     width: 3,
                     lineDash: [10, 8]
                 }
@@ -581,6 +581,12 @@ export default {
                                             </span>
                                         </span>
                                     </template>
+                                    <v-icon
+                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
+                                        :title="$t('additional:modules.tools.cosi.queryDistricts.travelTimeIndex.warning')"
+                                    >
+                                        mdi-alert
+                                    </v-icon>
                                 </div>
                             </v-col>
                             <v-col cols="6">
