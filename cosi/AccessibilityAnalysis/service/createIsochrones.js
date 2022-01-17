@@ -30,20 +30,20 @@ export function setFilterPoly (coords) {
 /**
  * create isochrones features
  * @export
- * @param {*} {transportType, coordinates, scaleUnit, distance, batchSize, baseUrl} parameters
+ * @param {*} {transportType, coordinates, scaleUnit, distance, maxDistance, minDistance batchSize, baseUrl} parameters
  * @param {*} progress progress callback
  * @return {*} features
  */
-export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, batchSize, baseUrl}, progress) {
+export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, maxDistance, minDistance, batchSize, baseUrl}, progress) {
     let ret;
 
     if (coordinates.length === 1) {
         progress(50);
-        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, baseUrl);
+        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, maxDistance, minDistance, baseUrl);
         progress(100);
         return ret;
     }
-    return createIsochronesPoints(transportType, coordinates, scaleUnit, distance, null, batchSize || 200, progress, baseUrl);
+    return createIsochronesPoints(transportType, coordinates, scaleUnit, distance, maxDistance, null, batchSize || 200, progress, baseUrl);
 }
 
 /**
@@ -52,21 +52,26 @@ export async function createIsochrones ({transportType, coordinates, scaleUnit, 
  * @param {*} coordinate coordinate
  * @param {*} scaleUnit scaleUnit
  * @param {*} distance distance
+ * @param {*} maxDistance maxDistance
+ * @param {*} minDistance minDistance
  * @param {*} baseUrl baseUrl
  * @return {*} steps and features
  */
-async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, baseUrl) {
+async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, maxDistance, minDistance, baseUrl) {
     if (abortController) {
         abortController.cancel();
     }
     abortController = axios.CancelToken.source();
 
-    const range = scaleUnit === "time" ? distance * 60 : distance,
+    const
+        range = scaleUnit === "time" ? distance * 60 : distance,
+        maxRange = scaleUnit === "time" ? maxDistance * 60 : maxDistance,
+        rangeArray = [range / 3, range * 2 / 3, range],
         json = await requestIsochrones(
             transportType,
             [coordinate],
             scaleUnit,
-            [range / 3, range * 2 / 3, range],
+            maxDistance ? [...rangeArray, maxRange] : rangeArray,
             abortController,
             baseUrl
         ),
@@ -99,13 +104,14 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
  * @param {*} coordinates coordinates
  * @param {*} scaleUnit scaleUnit
  * @param {*} distance distance
+ * @param {*} maxDistance maxDistance
  * @param {*} selectedFacilityName selectedFacilityName
  * @param {*} batchSize batchSize
  * @param {*} progress progress callback
  * @param {*} baseUrl baseUrl
  * @return {*} features
  */
-async function createIsochronesPoints (transportType, coordinates, scaleUnit, distance, selectedFacilityName, batchSize, progress, baseUrl) {
+async function createIsochronesPoints (transportType, coordinates, scaleUnit, distance, maxDistance, selectedFacilityName, batchSize, progress, baseUrl) {
 
     progress(1);
 
@@ -114,7 +120,12 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
     }
     abortController = axios.CancelToken.source();
 
-    const range = scaleUnit === "time" ? distance * 60 : distance,
+    const
+        range = scaleUnit === "time" ? distance * 60 : distance,
+        maxRange = scaleUnit === "time" ? maxDistance * 60 : maxDistance,
+        rawRangeArray = [range, range * 2 / 3, range / 3],
+        rangeArray = maxDistance ? [maxRange, ...rawRangeArray] : rawRangeArray,
+        steps = rangeArray.length,
 
         // group coordinates into groups of 5
         coordinatesList = [],
@@ -134,21 +145,31 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
 
     for (const coords of coordinatesList) {
         try {
-            const json = await requestIsochrones(transportType, coords, scaleUnit,
-                    [range, range * 2 / 3, range / 3], abortController, baseUrl),
+            const json = await requestIsochrones(
+                    transportType,
+                    coords,
+                    scaleUnit,
+                    rangeArray,
+                    abortController,
+                    baseUrl
+                ),
                 // reverse JSON object sequence to render the isochrones in the correct order
                 // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
                 reversedFeatures = [...json.features].reverse(),
-                groupedFeatures = [
-                    [],
-                    [],
-                    []
-                ];
+                groupedFeatures = [];
 
-            for (let i = 0; i < reversedFeatures.length; i = i + 3) {
-                groupedFeatures[i % 3].push(reversedFeatures[i]);
-                groupedFeatures[(i + 1) % 3].push(reversedFeatures[i + 1]);
-                groupedFeatures[(i + 2) % 3].push(reversedFeatures[i + 2]);
+            for (let i = 0; i < steps; i++) {
+                groupedFeatures.push([]);
+            }
+
+            for (let i = 0; i < reversedFeatures.length; i = i + steps) {
+                groupedFeatures[i % steps].push(reversedFeatures[i]);
+                groupedFeatures[(i + 1) % steps].push(reversedFeatures[i + 1]);
+                groupedFeatures[(i + 2) % steps].push(reversedFeatures[i + 2]);
+
+                if (steps === 4) {
+                    groupedFeatures[(i + 3) % steps].push(reversedFeatures[i + 3]);
+                }
             }
             json.features = reversedFeatures;
             groupedFeaturesList.push(groupedFeatures);
@@ -163,7 +184,7 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
     }
 
     if (groupedFeaturesList.length) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < steps; i++) {
             let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
                 layerUnion,
                 layerUnionFeatures;

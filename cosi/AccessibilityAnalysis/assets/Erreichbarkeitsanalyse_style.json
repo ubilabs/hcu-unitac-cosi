@@ -68,6 +68,23 @@
             }
         },
         {
+            "condition": {
+                "properties": {
+                    "index": "ref"
+                }
+            },
+            "style": {
+                "polygonStrokeColor": [
+                    180,
+                    165,
+                    165,
+                    0.8
+                ],
+                "polygonStrokeWidth": 3,
+                "polygonStrokeDash": [10, 8]
+            }
+        },
+        {
             "style": {
                 "circleRadius": 6,
                 "circleStrokeColor": [

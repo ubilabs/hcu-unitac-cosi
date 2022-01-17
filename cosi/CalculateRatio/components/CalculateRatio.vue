@@ -622,7 +622,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: Math.round(1000 * result[this.columnSelector.value]) / 1000
+                            data: Math.round(1000 * result[this.columnSelector.key]) / 1000
                         };
 
                         prepareData.push(data);
@@ -644,11 +644,11 @@ export default {
         loadToChartGenerator () {
             const graphObj = {
                     id: "calcratio",
-                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.text,
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
                     source: "Versorgungsanalyse",
-                    scaleLabels: [this.columnSelector.text, "Jahre"],
+                    scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
                         datasets: []
@@ -668,12 +668,12 @@ export default {
                     const checkExisting = graphObj.data.datasets.find(set => set.label === dataset.scope);
 
                     if (checkExisting) {
-                        checkExisting.data.push(dataset[this.columnSelector.value]);
+                        checkExisting.data.push(dataset[this.columnSelector.key]);
                     }
                     else {
                         const obj = {
                             label: dataset.scope,
-                            data: [dataset[this.columnSelector.value]]
+                            data: [dataset[this.columnSelector.key]]
                         };
 
                         graphObj.data.datasets.push(obj);
