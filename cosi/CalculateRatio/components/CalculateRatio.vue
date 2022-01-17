@@ -4,7 +4,6 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCalculateRatio";
 import mutations from "../store/mutationsCalculateRatio";
 import utils from "../../utils";
-import Multiselect from "vue-multiselect";
 import exportXlsx from "../../utils/exportXlsx";
 import DataTable from "./DataTable.vue";
 import {exportAsGeoJson} from "../utils/exportResults";
@@ -17,7 +16,6 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        Multiselect,
         DataTable
     },
     data () {
@@ -86,7 +84,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
-        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
+        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         // Transforming results data for excel export
@@ -130,6 +128,16 @@ export default {
         }
     },
     watch: {
+        sumUpSwitchA (value) {
+            if (value) {
+                this.selectedFieldA.id = [this.selectedFieldA.id];
+            }
+        },
+        sumUpSwitchB (value) {
+            if (value) {
+                this.selectedFieldB.id = [this.selectedFieldB.id];
+            }
+        },
         layerList () {
             this.layerIdList = this.layerList.map(x => x.getProperties().name);
             this.updateFacilities();
@@ -227,35 +235,29 @@ export default {
          */
         updateFeaturesList () {
             this.featuresList = [];
+            this.subFeaturesList = [];
             this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
-            this.selectedYear = utils.getLastAvailableYear(this.selectedStatFeatures, this.yearSelector);
+            this.selectedYear = utils.getLastAvailableYear(this.selectedStatFeatures, this.yearSelector).toString();
+
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
-                    const findGrp = this.featuresList.find(el => el.group === attr.group);
+                    const findGrp = this.featuresList.find(el => el.header === attr.group);
 
                     if (findGrp) {
-                        findGrp.data.push(attr.value);
+                        this.featuresList.push({value: attr.value, text: attr.value});
                     }
                     else {
-                        const createObj = {
-                            group: attr.group,
-                            data: [attr.value]
-                        };
-
-                        this.featuresList.push(createObj);
+                        this.featuresList.push({header: attr.group});
+                        this.featuresList.push({value: attr.value, text: attr.value});
                     }
 
                     if (attr.summable) {
                         if (this.subFeaturesList.length === 0) {
-                            const createSubObj = {
-                                group: "Aufsummierbar",
-                                data: [attr.value]
-                            };
-
-                            this.subFeaturesList.push(createSubObj);
+                            this.subFeaturesList.push({header: "Aufsummierbar"});
+                            this.subFeaturesList.push({value: attr.value, text: attr.value});
                         }
                         else {
-                            this.subFeaturesList[0].data.push(attr.value);
+                            this.subFeaturesList.push({value: attr.value, text: attr.value});
                         }
 
                     }
@@ -280,6 +282,7 @@ export default {
                     this[letter + "Switch"] = !this[letter + "Switch"];
                     this["selectedField" + letter] = {id: ""};
                     this["paramField" + letter] = "";
+                    this["sumUpSwitch" + letter] = false;
                 }
             }
             else if (this.facilityList.length === 0) {
@@ -288,6 +291,7 @@ export default {
             else {
                 this[letter + "Switch"] = !this[letter + "Switch"];
                 this["selectedField" + letter] = {id: ""};
+                this["sumUpSwitch" + letter] = false;
             }
         },
         showAlert (content, category = "Warnung", cssClass = "warning") {
@@ -377,6 +381,8 @@ export default {
             this.fActive_B = false;
             this.faktorf_A = 1;
             this.faktorf_B = 1;
+            this.sumUpSwitchA = false;
+            this.sumUpSwitchB = false;
             this.setResults([]);
         },
         /**
@@ -616,7 +622,7 @@ export default {
                     if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                         const data = {
                             name: result.scope,
-                            data: Math.round(1000 * result[this.columnSelector.key]) / 1000
+                            data: Math.round(1000 * result[this.columnSelector.value]) / 1000
                         };
 
                         prepareData.push(data);
@@ -638,11 +644,11 @@ export default {
         loadToChartGenerator () {
             const graphObj = {
                     id: "calcratio",
-                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.text,
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
                     source: "Versorgungsanalyse",
-                    scaleLabels: [this.columnSelector.name, "Jahre"],
+                    scaleLabels: [this.columnSelector.text, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
                         datasets: []
@@ -662,12 +668,12 @@ export default {
                     const checkExisting = graphObj.data.datasets.find(set => set.label === dataset.scope);
 
                     if (checkExisting) {
-                        checkExisting.data.push(dataset[this.columnSelector.key]);
+                        checkExisting.data.push(dataset[this.columnSelector.value]);
                     }
                     else {
                         const obj = {
                             label: dataset.scope,
-                            data: [dataset[this.columnSelector.key]]
+                            data: [dataset[this.columnSelector.value]]
                         };
 
                         graphObj.data.datasets.push(obj);
@@ -739,62 +745,37 @@ export default {
                             </button>
                         </div>
                         <template v-if="ASwitch">
-                            <Multiselect
-                                v-if="facilityList.length"
+                            <v-select
+                                v-if="groupActiveLayer.length > 0"
                                 v-model="selectedFieldA"
                                 class="facility_selection selection"
-                                :options="facilityList"
-                                group-label="group"
-                                :group-select="false"
-                                group-values="layer"
-                                track-by="id"
-                                label="id"
-                                :multiple="false"
-                                selected-label=""
-                                select-label=""
-                                deselect-label=""
+                                :items="groupActiveLayer"
+                                dense
+                                outlined
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
-                                :toggle-select-option="false"
-                                :allow-empty="false"
-                                :close-on-select="true"
-                                :clear-on-select="true"
                                 @input="getFacilityData('A')"
-                            >
-                                <template
-                                    slot="singleLabel"
-                                >
-                                    <strong>{{ selectedFieldA.id }}</strong>
-                                </template>
-                            </Multiselect>
+                            />
                         </template>
                         <template v-else>
-                            <Multiselect
+                            <v-select
                                 v-if="featuresList.length"
                                 id="feature_selector_A"
                                 v-model="selectedFieldA.id"
                                 class="feature_selection selection"
-                                :options="sumUpSwitchA ? subFeaturesList : featuresList"
-                                group-label="group"
-                                :group-select="false"
-                                group-values="data"
+                                :items="sumUpSwitchA ? subFeaturesList : featuresList"
+                                dense
+                                outlined
                                 :multiple="sumUpSwitchA ? true : false"
-                                selected-label=""
-                                select-label=""
-                                deselect-label=""
+                                :small-chips="sumUpSwitchA ? true : false"
+                                :deletable-chips="sumUpSwitchA ? true : false"
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
-                                :toggle-select-option="false"
-                                :allow-empty="false"
-                                :close-on-select="true"
+                                :menu-props="{ closeOnContentClick: true }"
                                 @input="checkSumUp('A')"
-                            >
-                                <template slot="singleLabel">
-                                    <strong>{{ selectedFieldA.id }}</strong>
-                                </template>
-                            </Multiselect>
+                            />
                         </template>
 
                         <div
-                            v-if="selectedFieldA.id"
+                            v-if="selectedFieldA.id.length > 0"
                             class="subsection"
                         >
                             <template v-if="ASwitch">
@@ -826,29 +807,17 @@ export default {
                                             >
                                         </div>
                                     </div>
-                                    <Multiselect
+                                    <v-select
                                         v-if="facilityList.length"
                                         v-model="paramFieldA"
-                                        track-by="name"
-                                        label="name"
                                         class="feature_selection selection"
-                                        :options="facilityPropertyList_A"
-                                        :multiple="false"
-                                        :preselect-first="true"
+                                        :items="facilityPropertyList_A"
+                                        item-text="name"
+                                        item-value="name"
+                                        dense
+                                        outlined
                                         :disabled="facilityPropertyList_A.length < 2"
-                                        selected-label=""
-                                        select-label=""
-                                        deselect-label=""
-                                        placeholder=""
-                                        :toggle-select-option="false"
-                                        :allow-empty="false"
-                                        :close-on-select="true"
-                                        :clear-on-select="true"
-                                    >
-                                        <template slot="singleLabel">
-                                            <strong>{{ paramFieldA.name }}</strong>
-                                        </template>
-                                    </Multiselect>
+                                    />
                                 </div>
                             </template>
                             <template v-else>
@@ -867,7 +836,7 @@ export default {
                         </div>
                     </div>
                     <div
-                        v-if="selectedFieldA.id"
+                        v-if="selectedFieldA.id.length > 0"
                         class="select_wrapper section second"
                         :class="{ grouped: selectedFieldB.id }"
                     >
@@ -888,57 +857,33 @@ export default {
                             </button>
                         </div>
                         <template v-if="BSwitch">
-                            <Multiselect
-                                v-if="facilityList.length"
+                            <v-select
+                                v-if="groupActiveLayer.length > 0"
                                 v-model="selectedFieldB"
                                 class="facility_selection selection"
-                                :options="facilityList"
-                                group-label="group"
-                                :group-select="false"
-                                group-values="layer"
-                                track-by="id"
-                                label="id"
-                                :multiple="false"
-                                selected-label=""
-                                select-label=""
-                                deselect-label=""
-                                :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
-                                :toggle-select-option="false"
-                                :allow-empty="false"
-                                :close-on-select="true"
-                                :clear-on-select="true"
+                                :items="groupActiveLayer"
+                                dense
+                                outlined
+                                :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
                                 @input="getFacilityData('B')"
-                            >
-                                <template slot="singleLabel">
-                                    <strong>{{ selectedFieldB.id }}</strong>
-                                </template>
-                            </Multiselect>
+                            />
                         </template>
                         <template v-else>
-                            <Multiselect
+                            <v-select
                                 v-if="featuresList.length"
                                 id="feature_selector_B"
                                 v-model="selectedFieldB.id"
                                 class="feature_selection selection"
-                                :options="sumUpSwitchB ? subFeaturesList : featuresList"
-                                group-label="group"
-                                :group-select="false"
-                                group-values="data"
+                                :items="sumUpSwitchB ? subFeaturesList : featuresList"
+                                dense
+                                outlined
                                 :multiple="sumUpSwitchB ? true : false"
-                                selected-label=""
-                                select-label=""
-                                deselect-label=""
+                                :small-chips="sumUpSwitchB ? true : false"
+                                :deletable-chips="sumUpSwitchB ? true : false"
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
-                                :toggle-select-option="false"
-                                :allow-empty="false"
-                                :close-on-select="true"
+                                :menu-props="{ closeOnContentClick: true }"
                                 @input="checkSumUp('B')"
-                            >
-                                <template slot="singleLabel">
-                                    <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                    <strong>{{ selectedFieldB.id }}</strong>
-                                </template>
-                            </Multiselect>
+                            />
                         </template>
                         <div
                             v-if="selectedFieldB.id"
@@ -975,29 +920,17 @@ export default {
                                             >
                                         </div>
                                     </div>
-                                    <Multiselect
+                                    <v-select
                                         v-if="facilityList.length"
                                         v-model="paramFieldB"
-                                        track-by="name"
-                                        label="name"
                                         class="feature_selection selection"
-                                        :options="facilityPropertyList_B"
-                                        :multiple="false"
-                                        :preselect-first="true"
+                                        :items="facilityPropertyList_B"
+                                        item-text="name"
+                                        item-value="name"
+                                        dense
+                                        outlined
                                         :disabled="facilityPropertyList_B.length < 2"
-                                        selected-label=""
-                                        select-label=""
-                                        deselect-label=""
-                                        placeholder=""
-                                        :toggle-select-option="false"
-                                        :allow-empty="false"
-                                        :close-on-select="true"
-                                        :clear-on-select="true"
-                                    >
-                                        <template slot="singleLabel">
-                                            <strong>{{ paramFieldB.name }}</strong>
-                                        </template>
-                                    </Multiselect>
+                                    />
                                 </div>
                             </template>
                             <template v-else>
@@ -1016,7 +949,7 @@ export default {
                         </div>
                     </div>
                     <div
-                        v-if="selectedFieldA.id && selectedFieldB.id"
+                        v-if="selectedFieldA.id.length > 0 && selectedFieldB.id"
                         class="select_wrapper section third"
                     >
                         <div class="btn_grp finalization">
@@ -1077,27 +1010,15 @@ export default {
                                     class="glyphicon glyphicon-stats"
                                 />
                             </button>
-                            <Multiselect
+                            <v-select
                                 v-model="columnSelector"
-                                track-by="name"
-                                label="name"
+                                dense
+                                outlined
                                 class="column_selection selection"
-                                :options="availableColumns"
-                                :multiple="false"
-                                :preselect-first="true"
-                                selected-label=""
-                                select-label=""
-                                deselect-label=""
-                                placeholder=""
-                                :toggle-select-option="false"
-                                :allow-empty="false"
-                                :close-on-select="true"
-                                :clear-on-select="true"
-                            >
-                                <template slot="singleLabel">
-                                    <span><strong>{{ columnSelector.name }}</strong></span>
-                                </template>
-                            </Multiselect>
+                                :items="availableColumns"
+                                item-text="name"
+                                item-value="name"
+                            />
                             <button
                                 class="ccm"
                                 :class="{ highlight: !dataToColorCodeMap}"
@@ -1117,31 +1038,19 @@ export default {
                                 v-if="!ASwitch || !BSwitch"
                                 class="year_selector"
                             >
-                                <Multiselect
+                                <v-select
                                     v-model="selectedYear"
                                     class="year_selection selection"
-                                    :options="availableYears"
-                                    :allow-empty="false"
-                                    :multiple="false"
-                                    :preselect-first="true"
+                                    :items="availableYears"
                                     :disabled="ASwitch && BSwitch"
-                                    selected-label=""
-                                    select-label=""
-                                    deselect-label=""
-                                    placeholder=""
-                                    :toggle-select-option="false"
-                                    :close-on-select="true"
-                                    :clear-on-select="true"
+                                    dense
+                                    outlined
                                     @input="recalcData()"
-                                >
-                                    <template slot="singleLabel">
-                                        <strong>{{ selectedYear }}</strong>
-                                    </template>
-                                </Multiselect>
+                                />
                             </div>
                         </div>
                         <DataTable
-                            :data-set="results"
+                            :dataset="results"
                             :type-a="resultHeaders.typeA"
                             :type-b="resultHeaders.typeB"
                             :f-active="resultHeaders.fActive"
@@ -1157,7 +1066,6 @@ export default {
 
 <style lang="less">
     @import "../../utils/variables.less";
-    @import (less) "../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
 
     #calculateratio {
         background:rgba(255,255,255,0.95);
