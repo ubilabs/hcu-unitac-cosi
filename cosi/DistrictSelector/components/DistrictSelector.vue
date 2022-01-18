@@ -395,18 +395,27 @@ export default {
          * @returns {boolean} the state of at least one of the addtional layers
          */
         checkAdditionalLayers () {
-            const activeLayers = [];
+            let state, states, oldState, newState;
 
             for (const key in this.additionalInfoLayers) {
-                if (this.additionalInfoLayers[key].some(layerId => {
-                    const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+                states = [];
 
-                    return model?.get("isSelected");
-                })) {
-                    activeLayers.push(key);
+                for (const layerId of this.additionalInfoLayers[key]) {
+                    state = Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.get("isSelected");
+                    states = states.includes(state) ? states : [...states, state];
+                }
+
+                if (states.length === 1) {
+                    oldState = this.visibleInfoLayers.includes(key);
+                    newState = states[0];
+                    if (newState && !oldState) {
+                        this.visibleInfoLayers.push(key);
+                    }
+                    else if (!newState && oldState) {
+                        this.visibleInfoLayers = this.visibleInfoLayers.filter(e => e !== key);
+                    }
                 }
             }
-            this.visibleInfoLayers = activeLayers;
         },
 
         /**

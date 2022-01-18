@@ -551,6 +551,12 @@ export default {
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.requestInhabitants') }}
                                     </v-btn>
+                                    <v-icon
+                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
+                                    >
+                                        mdi-alert
+                                    </v-icon>
                                 </v-col>
                             </v-row>
                         </v-form>
@@ -581,12 +587,6 @@ export default {
                                             </span>
                                         </span>
                                     </template>
-                                    <v-icon
-                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
-                                    >
-                                        mdi-alert
-                                    </v-icon>
                                 </div>
                             </v-col>
                             <v-col cols="6">

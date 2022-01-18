@@ -146,11 +146,6 @@ export default {
                 this.updateFeaturesList();
             }
         },
-        // availableYears (newYears) {
-        //     if (newYears.length > 0) {
-        //         this.selectedYear = newYears[0];
-        //     }
-        // },
         results (newResults) {
             if (newResults.length > 0) {
                 this.resultsClone = [...newResults];
