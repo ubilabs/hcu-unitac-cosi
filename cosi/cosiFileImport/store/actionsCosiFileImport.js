@@ -3,7 +3,7 @@ import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
 import {color as d3Color, hsl} from "d3-color";
-import {interpolateRainbow} from "d3";
+import {interpolateRainbow} from "d3-scale-chromatic";
 import {scaleLinear} from "d3-scale";
 
 const supportedFormats = {

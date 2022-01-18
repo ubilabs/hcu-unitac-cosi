@@ -12,7 +12,9 @@
   "dependencies": {
     "@turf/turf": "^6.4.0",
     "chart.js": "^2.9.4",
-    "d3": "^7.1.1",
+    "d3-array": "^3.1.1",
+    "d3-color": "^3.0.1",
+    "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.0.0",
     "object-hash": "^2.1.1",
     "vue-chartjs": "^3.5.1",
