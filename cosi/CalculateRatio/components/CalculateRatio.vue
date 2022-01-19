@@ -399,7 +399,11 @@ export default {
                 h_faktorf_A = this.faktorf_A,
                 h_faktorf_B = this.faktorf_B,
                 h_ASwitch = this.ASwitch,
-                h_BSwitch = this.BSwitch;
+                h_BSwitch = this.BSwitch,
+                h_perCalc_A = this.perCalc_A,
+                h_perCalc_B = this.perCalc_B,
+                h_facilityPropertyList_A = this.facilityPropertyList_A,
+                h_facilityPropertyList_B = this.facilityPropertyList_B;
 
             this.ASwitch = h_BSwitch;
             this.BSwitch = h_ASwitch;
@@ -411,6 +415,10 @@ export default {
             this.fActive_B = h_fActive_A;
             this.faktorf_A = h_faktorf_B;
             this.faktorf_B = h_faktorf_A;
+            this.perCalc_A = h_perCalc_B;
+            this.perCalc_B = h_perCalc_A;
+            this.facilityPropertyList_A = h_facilityPropertyList_B;
+            this.facilityPropertyList_B = h_facilityPropertyList_A;
 
             if (this.results.length > 0) {
                 this.prepareCoverage();
@@ -459,6 +467,7 @@ export default {
                 this.calcHelper.name = name;
                 this.calcHelper["faktorf_" + letter] = this["faktorf_" + letter];
                 this.calcHelper["perCalc_" + letter] = this["perCalc_" + letter];
+
                 if (this[letter + "Switch"]) {
                     const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = findLayer.getSource().getFeatures();
@@ -471,7 +480,7 @@ export default {
                             const layerGeometry = getCenter(feature.getGeometry().getExtent());
 
                             if (geometry.intersectsCoordinate(layerGeometry)) {
-                                if (this.paramFieldA.name !== "Anzahl") {
+                                if (this["paramField" + letter].name !== "Anzahl") {
                                     if (
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
@@ -802,7 +811,7 @@ export default {
                                         >
                                             <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                             <input
-                                                v-model="faktorf_A"
+                                                v-model.number="faktorf_A"
                                                 type="number"
                                             >
                                         </div>
@@ -816,6 +825,7 @@ export default {
                                         item-value="name"
                                         dense
                                         outlined
+                                        return-object
                                         :disabled="facilityPropertyList_A.length < 2"
                                     />
                                 </div>
@@ -826,7 +836,7 @@ export default {
                                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
                                         <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                         <input
-                                            v-model="perCalc_A"
+                                            v-model.number="perCalc_A"
                                             type="number"
                                         >
                                         <p><strong> {{ $t("additional:modules.tools.cosi.calculateRatio.ofData") }}</strong></p>
@@ -886,7 +896,7 @@ export default {
                             />
                         </template>
                         <div
-                            v-if="selectedFieldB.id"
+                            v-if="selectedFieldB.id.length > 0"
                             class="subsection"
                         >
                             <template v-if="BSwitch">
@@ -915,7 +925,7 @@ export default {
                                         >
                                             <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                             <input
-                                                v-model="faktorf_B"
+                                                v-model.number="faktorf_B"
                                                 type="number"
                                             >
                                         </div>
@@ -929,6 +939,7 @@ export default {
                                         item-value="name"
                                         dense
                                         outlined
+                                        return-object
                                         :disabled="facilityPropertyList_B.length < 2"
                                     />
                                 </div>
@@ -939,7 +950,7 @@ export default {
                                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.calcPer") }} </p>
                                         <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                         <input
-                                            v-model="perCalc_B"
+                                            v-model.number="perCalc_B"
                                             type="number"
                                         >
                                         <p><strong> {{ $t("additional:modules.tools.cosi.calculateRatio.ofData") }}</strong></p>
@@ -949,7 +960,7 @@ export default {
                         </div>
                     </div>
                     <div
-                        v-if="selectedFieldA.id.length > 0 && selectedFieldB.id"
+                        v-if="selectedFieldA.id.length > 0 && selectedFieldB.id.length > 0"
                         class="select_wrapper section third"
                     >
                         <div class="btn_grp finalization">
@@ -1017,7 +1028,8 @@ export default {
                                 class="column_selection selection"
                                 :items="availableColumns"
                                 item-text="name"
-                                item-value="name"
+                                item-value="key"
+                                return-object
                             />
                             <button
                                 class="ccm"
