@@ -73,5 +73,5 @@
     "type": "gfiTheme"
   },
   "qr": "view.js",
-  "addGeoJsonRemotely": "addGeoJsonRemotely.js"
+  "addLayerRemotely": "addLayerRemotely.js"
 }

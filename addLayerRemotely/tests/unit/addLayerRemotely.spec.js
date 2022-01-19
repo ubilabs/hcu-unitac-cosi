@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import getFeatureIds from "../addGeoJsonRemotely";
+import {getFeatureIds} from "../../addLayerRemotely";
 import sinon from "sinon";
 
 const geojson = {
@@ -31,12 +31,12 @@ const geojson = {
     ]
 };
 
-describe("ADDON: addGeoJSONRemotely", () => {
+describe("ADDON: addLayerRemotely", () => {
     const spy = sinon.spy(Radio, "trigger");
 
-    Radio.trigger("addGeoJson", "addGeoJson", "LayerName", "LayerID", geojson, "customStyle", "tree", {"test1": "xyz", "test2": "abc"});
+    Radio.trigger("addLayerRemotely", "addGeoJson", "LayerName", "LayerID", geojson, "customStyle", "tree", {"test1": "xyz", "test2": "abc"});
 
-    it("should trigger the right Radio functions", () => {
+    it("addGeoJsonRemotely should trigger the right Radio functions", () => {
         expect(spy.getCall(1).calledWithExactly("StyleList", "addToStyleList", geojson.styles)).to.be.true;
         expect(spy.getCall(2).calledWithExactly("Parser", "addGeoJSONLayer", "LayerName", "LayerID", geojson, "customStyle", "tree", {"test1": "xyz", "test2": "abc"})).to.be.true;
         expect(spy.getCall(3).calledWithExactly("ModelList", "addModelsByAttributes", {id: "LayerID"})).to.be.true;
@@ -44,9 +44,8 @@ describe("ADDON: addGeoJSONRemotely", () => {
     });
 });
 
-describe("ADDON: addGeoJSONRemotely - getFeatureIds", function () {
-    const spy = sinon.spy(),
-        correctId = "42",
+describe("ADDON: addLayerRemotely - getFeatureIds", function () {
+    const correctId = "42",
         fakeLayer = {
             get: () => correctId,
             getSource: () => {
@@ -59,12 +58,9 @@ describe("ADDON: addGeoJSONRemotely - getFeatureIds", function () {
             getArray: () => [fakeLayer]
         });
 
-    beforeEach(function () {
-        sinon.stub(console, "warn").callsFake(spy);
-    });
     afterEach(function () {
         sinon.restore();
-        spy.resetHistory();
+        sinon.resetHistory();
     });
 
     /**
@@ -77,14 +73,13 @@ describe("ADDON: addGeoJSONRemotely - getFeatureIds", function () {
     beforeEach(function () {
         sinon.stub(Radio, "request").callsFake(fakeFunction);
     });
-    it("should return an array of feature Ids if the layer was found", function () {
+    it("addGeoJsonRemotely should return an array of feature Ids if the layer was found", function () {
         expect(getFeatureIds(correctId)).to.eql(["66", "89"]);
     });
 
-    it("should log an error on the console if no layer was found with the specified layerId and return an empty array", function () {
+    it("addGeoJsonRemotely should log an error on the console if no layer was found with the specified layerId and return an empty array", function () {
         const wrongId = "402";
 
         expect(getFeatureIds(wrongId)).to.eql([]);
-        expect(spy.calledOnce).to.be.true;
     });
 });
