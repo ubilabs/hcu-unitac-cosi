@@ -15,8 +15,12 @@ const state = {
     stripesLayer: false,
     selectedLayer: null,
     selectedLayerName: null,
+<<<<<<< HEAD
     selectedLayerArray: ["2020"],
     textIds: [],
+=======
+    infoText: "",
+>>>>>>> 6cff35af (information chart filled)
     // Daten unter "Gewählte Nutzung"
     gfiFeature: null,
     brwLanduse: "",
