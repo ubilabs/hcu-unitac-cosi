@@ -9,10 +9,12 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: false,
+    // daten
     filteredModelList: [],
     areaLayerSelected: true,
     stripesLayer: false,
     selectedLayer: null,
+    selectedLayerName: null,
     infoText: "",
     // Daten unter "Gewählte Nutzung"
     gfiFeature: null,
@@ -21,7 +23,10 @@ const state = {
     // param URL
     selectedBrwFeature: {},
     processFromParametricUrl: false,
-    paramUrlParams: {}
+    paramUrlParams: {},
+    buttonValue: "info"
 };
 
 export default state;
+
+
