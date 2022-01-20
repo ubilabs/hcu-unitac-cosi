@@ -12,6 +12,7 @@ const mutations = {
 
     // NOTE overwrite (or create additional) mutations here if you need special behavior in them
     setAreaLayerSelected (state, value) {
+        // console.log("setAreaLayerSelected", value)
         state.areaLayerSelected = value;
     },
     setShowStripesLayer (state, value) {
@@ -34,8 +35,28 @@ const mutations = {
     },
     setParamUrlParams (state, value) {
         state.paramUrlParams = value;
+    },
+    setButtonValue (state, value) {
+        state.buttonValue = value;
+    },
+    unsetBrwFeature (state) {
+        state.brwFeature = [];
+    },
+    unsetSelectedBrwFeature (state) {
+        state.selectedBrwFeature = {};
+
+        // if (state.gfiFeature !== null) {
+        //     state.selectedBrwFeature = {};
+        // }
+        // else if (state.brwFeature.length !== 0) {
+        //     state.selectedBrwFeature = {};
+        // }
+
     }
+    // unsetGfiFeature (state) {
+    //     console.log("unset")
+    //     // state.gfiFeature = null;
+    // }
 };
 
 export default mutations;
-
