@@ -48,7 +48,9 @@ const actions = {
     },
     switchLayer ({dispatch, commit}, selectedLayerName) {
 
-        const layerYear = selectedLayerName.split(".").pop(),
+        const selectedLayerYear = selectedLayerName.split(".").pop(),
+            arrayLength = state.selectedLayerArray.length,
+            previousYear = state.selectedLayerArray[arrayLength - 1],
             layerModels = state.filteredModelList.filter(function (model) {
                 return model.get("isSelected") === true;
             });
@@ -58,16 +60,15 @@ const actions = {
             layer.set("isSelected", false);
         });
         dispatch("selectLayerModelByName", selectedLayerName);
+        commit("updateSelectedLayerArray", selectedLayerYear);
 
-
-        // unset selectedBrwFeature
-        // past layerName and newLayerName?
-        if (layerYear <= 2008) {
+        // if switching between polygon and point layer: unset selectedBrwFeature and remove marker
+        if (selectedLayerYear <= 2008 && previousYear > 2008) {
             commit("unsetSelectedBrwFeature");
             dispatch("MapMarker/removePolygonMarker", null, {root: true});
-            dispatch("MapMarker/removePointMarker", null, {root: true});
         }
-        else {
+        else if (selectedLayerYear > 2008 && previousYear <= 2008) {
+            commit("unsetSelectedBrwFeature");
             dispatch("MapMarker/removePointMarker", null, {root: true});
         }
 

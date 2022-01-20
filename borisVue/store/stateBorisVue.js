@@ -15,6 +15,7 @@ const state = {
     stripesLayer: false,
     selectedLayer: null,
     selectedLayerName: null,
+    selectedLayerArray: ["2020"],
     infoText: "",
     // Daten unter "Gewählte Nutzung"
     gfiFeature: null,
