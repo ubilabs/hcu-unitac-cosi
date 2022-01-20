@@ -80,7 +80,9 @@ const actions = {
      */
     switchLayer ({commit, dispatch, state}, selectedLayerName) {
 
-        const layerYear = selectedLayerName.split(".").pop(),
+        const selectedLayerYear = selectedLayerName.split(".").pop(),
+            arrayLength = state.selectedLayerArray.length,
+            previousYear = state.selectedLayerArray[arrayLength - 1],
             layerModels = state.filteredModelList.filter(function (model) {
                 return model.get("isSelected") === true;
             });
@@ -90,6 +92,7 @@ const actions = {
             layer.set("isSelected", false);
         });
         dispatch("selectLayerModelByName", selectedLayerName);
+        commit("updateSelectedLayerArray", selectedLayerYear);
 
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
