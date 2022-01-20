@@ -7,6 +7,8 @@ import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style, Circle, Text} from "ol/style.js";
 import {Vector} from "ol/source.js";
 import {Heatmap} from "ol/layer.js";
+import {getCenter} from "ol/extent.js";
+import {Point} from "ol/geom.js";
 import {generateColorScale, generateColorScaleByColor} from "../../utils/colorScale";
 import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";
 import {scaleSequential} from "d3-scale";
@@ -233,7 +235,25 @@ export default {
             if (!model) {
                 if (contribution.features.length === 0) {
                     contribution.loading = true;
-                    this.contributions[id].features = await this.getContributionFeatures(id);
+                    const contributions = await this.getContributionFeatures(id);
+
+                    for (const feature of contributions) {
+                        const geometryType = feature.getGeometry().getType();
+
+                        if (geometryType !== "Point") {
+                            const extent = feature.getGeometry().getExtent(),
+                                center = getCenter(extent);
+
+                            feature.setGeometry(new Point(center));
+                            // needs to be set after resetting the geometry
+                            // eslint-disable-next-line one-var
+                            const props = feature.getProperties();
+
+                            props.originalGeometryType = geometryType;
+                            feature.setProperties(props);
+                        }
+                    }
+                    this.contributions[id].features = contributions;
                     contribution.loading = false;
                 }
                 for (const feature of contribution.features) {
@@ -265,28 +285,36 @@ export default {
             model.set("isSelected", value);
         },
         contributionStyles (feature, resolution) {
-            let res;
+            const styles = [];
 
             switch (this.selectedStyling) {
                 case "project":
-                    res = this.getContributionColorByProject(feature, resolution);
+                    styles.push(this.getContributionColorByProject(feature, resolution));
                     break;
                 case "category":
                     this.categoryRainbow = false;
-                    res = this.getContributionColorByCategory(feature, resolution);
+                    styles.push(this.getContributionColorByCategory(feature, resolution));
                     break;
                 case "categoryRainbow":
                     this.categoryRainbow = true;
-                    res = this.getContributionColorByCategory(feature, resolution);
+                    styles.push(this.getContributionColorByCategory(feature, resolution));
                     break;
                 case "voting":
-                    res = this.getContributionColorByVoting(feature, resolution);
+                    styles.push(this.getContributionColorByVoting(feature, resolution));
                     break;
                 default:
-                    res = null;
+                    styles.push(null);
                     break;
             }
-            return res;
+            if (typeof feature.getProperties().originalGeometryType !== "undefined") {
+                const secondary_style = new Style();
+
+                if (resolution < 1.5) {
+                    secondary_style.setText(this.getContributionGeometryLabel());
+                }
+                styles.push(secondary_style);
+            }
+            return styles;
         },
         /**
          * creates a style for the given feature and resolution
@@ -441,6 +469,23 @@ export default {
                 textAlign: "left",
                 offsetY: -8,
                 offsetX: 8
+            });
+        },
+
+        getContributionGeometryLabel () {
+            return new Text({
+                font: "16px Calibri,sans-serif",
+                fill: new Fill({
+                    color: [255, 0, 0]
+                }),
+                stroke: new Stroke({
+                    color: [0, 0, 0],
+                    width: 2
+                }),
+                text: "*",
+                textAlign: "left",
+                offsetY: -8,
+                offsetX: -8
             });
         },
 

@@ -4,17 +4,13 @@ import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
-import Multiselect from "vue-multiselect";
 import {generateColorScale} from "../../utils/colorScale.js";
+import groupMapping from "../../utils/groupMapping";
 import mapping from "../../assets/mapping.json";
 import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 
 export default {
     name: "ColorCodeMap",
-    components: {
-        // ToolInfo,
-        Multiselect
-    },
     data () {
         return {
             // List of available features for selected Districts
@@ -27,8 +23,6 @@ export default {
             legendValues: [],
             // Saves the last year when user changes year manually.
             lastYear: null,
-            // Index in Array of selected Feature
-            selectorPosition: 0,
             // Saves riginal Map Styling before ColorCodeMap changes styling
             originalStyling: null,
             // Highest Value of selected feature among all selected districts
@@ -72,6 +66,9 @@ export default {
         },
         dashboardOpen () {
             return this.$store.getters["Tools/Dashboard/active"] || this.$store.getters["Tools/FeaturesList/active"];
+        },
+        statsMapping () {
+            return groupMapping(mapping);
         }
     },
     watch: {
@@ -560,49 +557,33 @@ export default {
                     >
                         <span class="glyphicon glyphicon-chevron-right" />
                     </button>
-
-                    <Multiselect
+                    <v-select
                         v-if="selectedStatFeatures.length"
                         v-model="_selectedYear"
-                        class="year_selection selection"
-                        :allow-empty="false"
-                        :options="availableYears"
-                        :multiple="false"
-                        selected-label=""
-                        select-label=""
-                        deselect-label=""
-                        placeholder=""
+                        outlined
+                        dense
+                        :items="availableYears"
                         :title="$t('additional:modules.tools.colorCodeMap.yearsLabel')"
+                        class="year_selection selection"
                     />
-                    <Multiselect
+                    <v-select
                         v-if="selectedStatFeatures.length"
                         v-model="lastYear"
+                        outlined
+                        dense
+                        :items="availableYears"
+                        clearable
                         class="year_selection selection"
-                        :class="{disable: !selectedYear}"
-                        :allow-empty="true"
-                        :options="availableYears"
-                        :multiple="false"
-                        selected-label=""
-                        select-label=""
-                        deselect-label="Entfernen"
-                        placeholder=""
                     />
                 </div>
-                <Multiselect
+                <v-select
                     v-if="featuresList.length"
                     v-model="_selectedFeature"
                     class="feature_selection selection"
-                    :allow-empty="false"
-                    :options="featuresList"
-                    group-label="group"
-                    :tab-index="selectorPosition"
-                    :group-select="false"
-                    group-values="data"
-                    :multiple="false"
-                    selected-label=""
-                    select-label=""
-                    deselect-label=""
-                    placeholder=""
+                    :items="statsMapping"
+                    item-text="value"
+                    outlined
+                    dense
                 />
             </div>
             <div
@@ -696,7 +677,6 @@ export default {
 
 <style lang="less">
 @import "../../utils/variables.less";
-@import (less) "../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
 
     .addon_container {
         position:fixed;
@@ -801,7 +781,7 @@ export default {
             height:100%;
             padding:10px;
             box-sizing: border-box;
-            z-index:3;
+            // z-index:3;
 
             .select_wrapper {
                 display:flex;
@@ -845,32 +825,11 @@ export default {
                         border-radius:none;
                         margin:0px 3px;
                         min-height:0px;
-                        border:1px solid #aaa;
+                        // border:1px solid #aaa;
 
                         &.disable {
                             opacity:0.5;
                             pointer-events:none;
-                        }
-
-                        .multiselect__single {
-                            font-size:90%;
-                        }
-
-                        .multiselect__element {
-                            font-size:90%;
-                        }
-
-                        .multiselect__tags {
-                            border-radius:0px;
-                            min-height:0px;
-                            height:30px;
-                            padding: 5px 30px 0 5px;
-                            box-sizing: border-box;
-                        }
-
-                        .multiselect__select {
-                            height:30px;
-                            line-height: 15px;
                         }
                     }
                 }
@@ -879,25 +838,8 @@ export default {
                     flex:1 0 100%;
                     margin:10px auto;
                     padding:10px 0px;
-                    border-top:1px solid #aaa;
-                    border-bottom:1px solid #aaa;
-
-                    .multiselect__single {
-                        font-size:80%;
-                    }
-
-                    .multiselect__element {
-                        font-size:10px;
-                    }
-
-                    .multiselect__tags {
-                        border-radius:0px;
-                    }
-
-                    .multiselect__select {
-                        height: 40px;
-                        line-height: 30px;
-                    }
+                    // border-top:1px solid #aaa;
+                    // border-bottom:1px solid #aaa;
                 }
             }
         }
@@ -1061,19 +1003,6 @@ export default {
                     height: 30px;
                     min-height: 0px;
                     padding: 0;
-
-                    .multiselect__tags {
-                            border-radius:0px;
-                            min-height:0px;
-                            height:30px;
-                            padding: 5px 30px 0 5px;
-                            box-sizing: border-box;
-                        }
-
-                        .multiselect__select {
-                            height:30px;
-                            line-height: 15px;
-                        }
                 }
             }
         }
