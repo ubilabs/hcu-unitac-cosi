@@ -16,9 +16,13 @@ const state = {
     selectedLayer: null,
     selectedLayerName: null,
 <<<<<<< HEAD
+<<<<<<< HEAD
     selectedLayerArray: ["2020"],
     textIds: [],
 =======
+=======
+    selectedLayerArray: ["2020"],
+>>>>>>> 93fce7a3 (remove features if layer switch between point-layer and polygon-layer)
     infoText: "",
 >>>>>>> 6cff35af (information chart filled)
     // Daten unter "Gewählte Nutzung"
