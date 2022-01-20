@@ -36,13 +36,35 @@ const getters = {
             const groupLayers = group.layer.filter(layer => activeLayerList.includes(layer.layerId));
 
             if (groupLayers.length > 0) {
-                return [...groups, {
-                    group: group.group,
-                    layer: groupLayers
-                }];
+                return [...groups,
+                    {
+                        group: group.group,
+                        layer: groupLayers
+                    }
+                ];
             }
             return groups;
         }, []);
+    },
+
+    /**
+     * Create and return an items array with headers for grouped v-select.
+     * @param {Object} state - The FeatureList state.
+     * @param {Object} getters - The FeatureList getters.
+     * @param {Object[]} getters.activeLayerMapping - The mapped active layer by opendata category.
+     * @returns {Object[]} .
+     * @see {@link  https://vuetifyjs.com/en/api/v-select/#props-items}
+     */
+    groupActiveLayer (state, {activeLayerMapping}) {
+        const items = [];
+
+        activeLayerMapping.forEach(group => {
+            items.push({header: group.group});
+            group.layer.forEach(layer => {
+                items.push({value: layer, text: layer.id});
+            });
+        });
+        return items;
     },
     flatLayerMapping (state, {mapping}) {
         return mapping.reduce((list, group) => {

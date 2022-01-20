@@ -6,7 +6,6 @@ import getters from "../store/gettersFeaturesList";
 import mutations from "../store/mutationsFeaturesList";
 import actions from "../store/actionsFeaturesList";
 import getVectorlayerMapping from "../utils/getVectorlayerMapping";
-import Multiselect from "vue-multiselect";
 import {getContainingDistrictForFeature} from "../../utils/geomUtils";
 import getClusterSource from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
@@ -38,7 +37,6 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        Multiselect,
         DetailView,
         FeatureIcon,
         LayerWeights
@@ -236,7 +234,7 @@ export default {
             }
         },
 
-        activeLayerMapping () {
+        groupActiveLayer () {
             this.numericalColumns = this.getNumericalColumns();
         },
 
@@ -353,7 +351,7 @@ export default {
          * @returns {void}
          */
         updateFeaturesList () {
-            if (this.activeLayerMapping.length > 0) {
+            if (this.groupActiveLayer.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
@@ -864,26 +862,19 @@ export default {
             <v-app id="features-list-wrapper">
                 <div class="mb-4">
                     <div class="selection">
-                        <Multiselect
-                            v-if="activeLayerMapping.length > 0"
+                        <v-select
+                            v-if="groupActiveLayer.length > 0"
                             v-model="layerFilter"
                             class="layer_selection"
-                            :options="activeLayerMapping"
-                            group-label="group"
-                            :group-select="false"
-                            group-values="layer"
-                            track-by="id"
-                            label="id"
-                            :multiple="true"
-                            selected-label=""
-                            select-label=""
-                            deselect-label=""
+                            :items="groupActiveLayer"
+                            multiple
+                            dense
+                            outlined
+                            small-chips
+                            deletable-chips
+                            :menu-props="{ closeOnContentClick: true }"
                             :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
-                        >
-                            <template slot="singleLabel">
-                                <strong>{{ layerFilter.id }}</strong>
-                            </template>
-                        </Multiselect>
+                        />
                     </div>
                     <div class="selection">
                         <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->

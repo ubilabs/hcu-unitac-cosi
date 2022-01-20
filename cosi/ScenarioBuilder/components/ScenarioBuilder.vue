@@ -5,7 +5,6 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersScenarioBuilder";
 import mutations from "../store/mutationsScenarioBuilder";
 import actions from "../store/actionsScenarioBuilder";
-import Multiselect from "vue-multiselect";
 import describeFeatureTypeByLayerId from "../../utils/describeFeatureType";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import validateProp, {compareLayerMapping} from "../utils/validateProp";
@@ -29,7 +28,6 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        Multiselect,
         ReferencePicker,
         MoveFeatures,
         ScenarioManager,
@@ -58,7 +56,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
-        ...mapGetters("Tools/FeaturesList", ["activeLayerMapping", "activeVectorLayerList"]),
+        ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
 
         /**
@@ -399,7 +397,7 @@ export default {
                         Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
                     </div>
                     <div
-                        v-if="activeLayerMapping.length === 0"
+                        v-if="groupActiveLayer.length === 0"
                         class="warning_wrapper section"
                     >
                         <p class="warning">
@@ -416,25 +414,16 @@ export default {
                                 {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }}
                             </div>
                             <div class="form-group">
-                                <Multiselect
+                                <v-select
+                                    v-if="groupActiveLayer.length > 0"
                                     v-model="workingLayer"
                                     class="layer_selection selection"
-                                    :options="activeLayerMapping"
-                                    group-label="group"
-                                    :group-select="false"
-                                    group-values="layer"
-                                    track-by="id"
-                                    label="id"
-                                    :multiple="false"
-                                    selected-label=""
-                                    select-label=""
-                                    deselect-label=""
+                                    :items="groupActiveLayer"
+                                    dense
+                                    outlined
+                                    clearable
                                     :placeholder="$t('additional:modules.tools.cosi.scenarioBuilder.layerSelector')"
-                                >
-                                    <template slot="singleLabel">
-                                        <strong v-if="workingLayer">{{ workingLayer.id }}</strong>
-                                    </template>
-                                </Multiselect>
+                                />
                             </div>
                             <v-divider />
                             <template v-if="featureTypeDesc.length > 0">
