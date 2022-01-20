@@ -236,8 +236,6 @@ export default {
         updateFeaturesList () {
             this.featuresList = [];
             this.subFeaturesList = [];
-            this.availableYears = utils.getAvailableYears(this.selectedStatFeatures, this.yearSelector);
-            this.selectedYear = utils.getLastAvailableYear(this.selectedStatFeatures, this.yearSelector).toString();
 
             mapping.forEach(attr => {
                 if (attr[this.keyOfAttrNameStats] && attr.valueType === "absolute") {
@@ -529,7 +527,6 @@ export default {
 
                             this.featureVals.push(featureData);
                         });
-
                         const sumUpYearValues = {};
 
                         this.featureVals = [].concat(...this.featureVals);
@@ -541,6 +538,8 @@ export default {
                                 sumUpYearValues[year.jahr] = year.wert;
                             }
                         });
+                        this.availableYears = Object.keys(sumUpYearValues).sort().reverse();
+                        this.selectedYear = this.availableYears[0];
                         this.featureVals = sumUpYearValues;
                     }
                     else {
@@ -550,6 +549,9 @@ export default {
                         featureData.forEach(year => {
                             yearValues[year.jahr] = year.wert;
                         });
+
+                        this.availableYears = Object.keys(yearValues).sort().reverse();
+                        this.selectedYear = this.availableYears[0];
                         this.featureVals = yearValues;
                     }
 
