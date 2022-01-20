@@ -73,6 +73,19 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextId", []);
 
+
+        // unset selectedBrwFeature
+        // past layerName and newLayerName?
+        if (layerYear <= 2008) {
+            commit("unsetSelectedBrwFeature");
+            dispatch("MapMarker/removePolygonMarker", null, {root: true});
+            dispatch("MapMarker/removePointMarker", null, {root: true});
+        }
+        else {
+            dispatch("MapMarker/removePointMarker", null, {root: true});
+        }
+
+        // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
         }
