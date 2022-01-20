@@ -73,15 +73,13 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextId", []);
 
-
-        // unset selectedBrwFeature
-        // past layerName and newLayerName?
-        if (layerYear <= 2008) {
+        // if switching between polygon and point layer: unset selectedBrwFeature and remove marker
+        if (selectedLayerYear <= 2008 && previousYear > 2008) {
             commit("unsetSelectedBrwFeature");
             dispatch("MapMarker/removePolygonMarker", null, {root: true});
-            dispatch("MapMarker/removePointMarker", null, {root: true});
         }
-        else {
+        else if (selectedLayerYear > 2008 && previousYear <= 2008) {
+            commit("unsetSelectedBrwFeature");
             dispatch("MapMarker/removePointMarker", null, {root: true});
         }
 
