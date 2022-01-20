@@ -25,25 +25,6 @@ export default {
             return filteredListWithoutStripes;
         }
     },
-    // Hier weitermachen
-    watch: {
-        // selectedLayer (value) {
-        //     // console.log("WATCH selectedLayer", this.brwFeature);
-        //     if (Object.keys(this.brwFeature).length !== 0) {
-        //         // console.log("true")
-        //         this.unsetBrwFeature();
-        //     }
-        //     // console.log("after", this.brwFeature)
-        // },
-        // selectedBrwFeature (value) {
-        //     console.log("WATCH SelectedBrwFeature", value)
-        //     if (Object.keys(this.brwFeature).length !== 0) {
-        //         console.log("true")
-        //         this.unsetBrwFeature();
-        //     }
-        //     console.log("after", this.brwFeature)
-        // }
-    },
     created () {
         this.$on("close", this.close);
         this.initialize();
@@ -68,9 +49,6 @@ export default {
             this.checkGfiFeatureByLanduse({feature: this.gfiFeature, selectedLanduse: value});
             this.setBrwLanduse(value);
         },
-        // checkLayerSwitch () {
-        //     console.log("checkLayerSwitch")
-        // },
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
