@@ -39,24 +39,12 @@ const mutations = {
     setButtonValue (state, value) {
         state.buttonValue = value;
     },
-    unsetBrwFeature (state) {
-        state.brwFeature = [];
+    updateSelectedLayerArray (state, value) {
+        state.selectedLayerArray.push(value);
     },
     unsetSelectedBrwFeature (state) {
         state.selectedBrwFeature = {};
-
-        // if (state.gfiFeature !== null) {
-        //     state.selectedBrwFeature = {};
-        // }
-        // else if (state.brwFeature.length !== 0) {
-        //     state.selectedBrwFeature = {};
-        // }
-
     }
-    // unsetGfiFeature (state) {
-    //     console.log("unset")
-    //     // state.gfiFeature = null;
-    // }
 };
 
 export default mutations;
