@@ -43,7 +43,7 @@
                         "title": "Reisezeitindex",
                         "toggle": "Verkehrsfluss berücksichtigen",
                         "tooltip": "Reisezeitindex ggü. freiem Verkehrsfluss, gem. INRIX, 2020, FRC234",
-                        "help": "<h4>Reisezeitindex</h4><p>Der Reisezeitindex beschreibt die Veränderung der Reisezeiten zu verschiedenen Tageszeiten gegenüber einem normierten freien Verkehrsfluss. Die Daten wurden von der Firma INRIX erhoben und beziehen sich, aggregiert für das gesamte Stadtgebiet für die Straßenklassen 2, 3 und 4, auf das Jahr 2020.</p><p>Der Reisezeitindex bezieht sich ausschließlich auf den Automobilverkehr.</p>",
+                        "help": "<h4>Reisezeitindex</h4><p>Der Reisezeitindex beschreibt die Veränderung der Reisezeiten zu verschiedenen Tageszeiten gegenüber einem normierten freien Verkehrsfluss. Die Daten wurden von der Firma INRIX erhoben und beziehen sich, aggregiert für das gesamte Stadtgebiet für die Straßenklassen 2, 3 und 4 (Bundesstraßen, Kreisstraßen, Gemeindestraßen), auf das Jahr 2020.</p><p>Der Reisezeitindex bezieht sich ausschließlich auf den Kfz-verkehr.</p>",
                         "warning": "ACHTUNG: Die Erreichbarkeit wurde unter Berücksichtigung des Reisezeitindizes für die ausgewählte Uhrzeit ermittelt. Das Ergebnis erhebt keinen Anspruch auf Genauigkeit und stellt keinen rechtlich verbindlichen Wert dar."
                     }
                 }

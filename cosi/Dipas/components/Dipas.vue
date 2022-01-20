@@ -53,6 +53,8 @@ export default {
                     model.get("layerSource").changed();
                 }
             }
+
+            this.$root.$emit("updateFeaturesList");
         }
     },
     /**

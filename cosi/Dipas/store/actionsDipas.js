@@ -14,7 +14,7 @@ function setLayerAttributes (model) {
         group: "DIPAS",
         mouseHoverField: "title",
         searchField: "category",
-        addressField: "contributionType",
+        addressField: "originalGeometryType",
         numericalValues: [
             {
                 id: "commentsNumber",
