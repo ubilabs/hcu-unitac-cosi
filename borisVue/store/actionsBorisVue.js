@@ -80,9 +80,10 @@ const actions = {
      */
     switchLayer ({commit, dispatch, state}, selectedLayerName) {
 
-        const layerModels = state.filteredModelList.filter(function (model) {
-            return model.get("isSelected") === true;
-        });
+        const layerYear = selectedLayerName.split(".").pop(),
+            layerModels = state.filteredModelList.filter(function (model) {
+                return model.get("isSelected") === true;
+            });
 
         layerModels.forEach(layer => {
             layer.set("isVisibleInMap", false);
