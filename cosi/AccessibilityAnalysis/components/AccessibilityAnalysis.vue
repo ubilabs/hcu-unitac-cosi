@@ -493,15 +493,6 @@ export default {
                             <v-row dense>
                                 <v-col cols="12">
                                     <v-checkbox
-                                        v-model="_setByFeature"
-                                        dense
-                                        hide-details
-                                        class="form-check-input"
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                                        :disabled="mode === 'path'"
-                                    />
-                                    <v-checkbox
                                         v-model="_useTravelTimeIndex"
                                         dense
                                         hide-details
@@ -509,6 +500,15 @@ export default {
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.toggle')"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
                                         :disabled="transportType !== 'driving-car' || scaleUnit !== 'time'"
+                                    />
+                                    <v-checkbox
+                                        v-model="_setByFeature"
+                                        dense
+                                        hide-details
+                                        class="form-check-input"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                                        :disabled="mode === 'path'"
                                     />
                                 </v-col>
                             </v-row>
@@ -551,6 +551,12 @@ export default {
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.requestInhabitants') }}
                                     </v-btn>
+                                    <v-icon
+                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
+                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
+                                    >
+                                        mdi-alert
+                                    </v-icon>
                                 </v-col>
                             </v-row>
                         </v-form>
@@ -581,12 +587,6 @@ export default {
                                             </span>
                                         </span>
                                     </template>
-                                    <v-icon
-                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
-                                    >
-                                        mdi-alert
-                                    </v-icon>
                                 </div>
                             </v-col>
                             <v-col cols="6">

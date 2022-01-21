@@ -955,7 +955,7 @@ export default {
                                         />
                                     </td>
                                 </template>
-                                <template #item.warning="{ item }">
+                                <template #[`item.warning`]="{ item }">
                                     <v-icon
                                         v-if="item.isModified"
                                         :title="$t('additional:modules.tools.cosi.featuresList.warningIsModified')"
@@ -969,10 +969,10 @@ export default {
                                         mdi-sprout
                                     </v-icon> -->
                                 </template>
-                                <template #item.style="{ item }">
+                                <template #[`item.style`]="{ item }">
                                     <FeatureIcon :item="item" />
                                 </template>
-                                <template #item.actions="{ item }">
+                                <template #[`item.actions`]="{ item }">
                                     <v-icon
                                         small
                                         disabled
@@ -992,7 +992,7 @@ export default {
                                         mdi-delete
                                     </v-icon>
                                 </template>
-                                <template #item.enabled="{ item }">
+                                <template #[`item.enabled`]="{ item }">
                                     <div class="text-center">
                                         <v-icon
                                             right

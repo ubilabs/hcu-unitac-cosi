@@ -14,7 +14,7 @@ function setLayerAttributes (model) {
         group: "DIPAS",
         mouseHoverField: "title",
         searchField: "category",
-        addressField: "contributionType",
+        addressField: "originalGeometryType",
         numericalValues: [
             {
                 id: "commentsNumber",
@@ -100,7 +100,8 @@ function contributionsGfiAttributes () {
         category: "Kategorie",
         votingPro: "Pos. Bewertungen",
         votingContra: "Neg. Bewertung",
-        belongToProject: "Verfahren"
+        belongToProject: "Verfahren",
+        originalGeometryType: "Urspr. Geometrietyp"
     };
 }
 

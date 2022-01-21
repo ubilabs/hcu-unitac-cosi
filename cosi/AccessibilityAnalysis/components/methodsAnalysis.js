@@ -315,7 +315,7 @@ export default {
      * @returns {void}
      */
     setIsochroneAsBbox: function () {
-        const polygonGeometry = this.isochroneFeatures[0].getGeometry(),
+        const polygonGeometry = this.isochroneFeatures[this.isochroneFeatures.length === 4 ? 1 : 0].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
         setBBoxToGeom(geometryCollection);

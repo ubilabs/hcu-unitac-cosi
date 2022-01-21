@@ -1,6 +1,6 @@
 import {scaleLinear} from "d3-scale";
 import {hsl} from "d3-color";
-import {interpolateRainbow} from "d3";
+import {interpolateRainbow} from "d3-scale-chromatic";
 
 /**
  * @description Generates colorScale for the amount of datasets in the data property of the dataset to be generated.
