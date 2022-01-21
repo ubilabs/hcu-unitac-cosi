@@ -576,7 +576,7 @@ export default {
                         class="year_selection selection"
                     />
                 </div>
-                <v-select
+                <v-autocomplete
                     v-if="featuresList.length"
                     v-model="_selectedFeature"
                     class="feature_selection selection"
