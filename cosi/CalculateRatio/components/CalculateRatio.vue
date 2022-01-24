@@ -764,7 +764,7 @@ export default {
                             />
                         </template>
                         <template v-else>
-                            <v-select
+                            <v-autocomplete
                                 v-if="featuresList.length"
                                 id="feature_selector_A"
                                 v-model="selectedFieldA.id"
@@ -877,7 +877,7 @@ export default {
                             />
                         </template>
                         <template v-else>
-                            <v-select
+                            <v-autocomplete
                                 v-if="featuresList.length"
                                 id="feature_selector_B"
                                 v-model="selectedFieldB.id"
