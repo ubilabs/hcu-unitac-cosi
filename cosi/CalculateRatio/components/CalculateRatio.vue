@@ -10,6 +10,7 @@ import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {getCenter} from "ol/extent";
+import getClusterSource from "../../utils/getClusterSource";
 
 export default {
     name: "CalculateRatio",
@@ -339,7 +340,7 @@ export default {
                 this["facilityPropertyList_" + letter] = [];
                 const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                     layerId = findLayer.get("id"),
-                    layerFeatures = findLayer.getSource().getFeatures(),
+                    layerFeatures = getClusterSource(findLayer).getFeatures(),
                     countData = {
                         name: "Anzahl",
                         // count: layerFeatures.length,

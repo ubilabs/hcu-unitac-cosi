@@ -365,6 +365,7 @@ export default {
             this.neighborhood.gfz = this.defaults.gfz;
             this.neighborhood.populationDensity = this.defaults.populationDensity;
             this.neighborhood.livingSpace = this.defaults.livingSpace;
+            this.neighborhood.year = new Date().toISOString().substr(0, 7);
 
             // reset fallback data to defaults
             this.fallbacks.avgHouseholdSize = this.defaults.avgHouseholdSize;

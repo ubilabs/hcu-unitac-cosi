@@ -288,6 +288,7 @@ export default {
          * @deprecated
          */
         Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
+        Radio.on("VectorLayer", "resetFeatures", this.updateFeaturesList);
         Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
         Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
 
@@ -353,6 +354,7 @@ export default {
         updateFeaturesList () {
             if (this.groupActiveLayer.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
+
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(this.isFeatureActive),
@@ -1006,6 +1008,7 @@ export default {
                                     v-for="col in numericalColumns"
                                     #[`item.${col.value}`]="{ item }"
                                 >
+                                    <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
                                         <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
                                         <div
@@ -1059,7 +1062,7 @@ export default {
                                             v-if="index === 2"
                                             class="grey--text text-caption"
                                         >
-                                            (+{{ selectedDistanceScoreLayers.length - 1 }} andere)
+                                            (+{{ selectedDistanceScoreLayers.length - 2 }} andere)
                                         </span>
                                     </template>
                                 </v-autocomplete>
