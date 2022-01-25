@@ -768,7 +768,7 @@ export default {
                                 >
                                     <v-icon>mdi-pencil</v-icon>
                                     <span>
-                                        {{ $t("common:button.edit") }}
+                                        {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }}
                                     </span>
                                 </v-btn>
                                 <v-btn

@@ -11,19 +11,37 @@ const actions = {
      * @returns {void}
      */
     toggleFeatureDisabled ({dispatch, commit, rootGetters}, featureItem) {
-        const layerById = rootGetters["Map/layerById"],
+        const
+            layerById = rootGetters["Map/layerById"],
             layer = layerById(featureItem.layerId)?.olLayer,
             source = getClusterSource(layer);
 
         // remove all highlightings to avoid undefined errors on the map
         dispatch("Map/removeHighlightFeature", null, {root: true});
         if (layer) {
+            let scenarioFeature;
+
+            if (featureItem.isModified || featureItem.isSimulation) {
+                scenarioFeature = rootGetters["Tools/ScenarioBuilder/activeScenario"]?.getScenarioFeature(featureItem.feature);
+            }
+
             if (!featureItem.enabled) {
-                source.removeFeature(featureItem.feature);
+                if (scenarioFeature) {
+                    scenarioFeature.hideFeature();
+                }
+                else {
+                    source.removeFeature(featureItem.feature);
+                }
+
                 commit("addDisabledFeatureItem", featureItem);
             }
             else {
-                source.addFeature(featureItem.feature);
+                if (scenarioFeature) {
+                    scenarioFeature.renderFeature();
+                }
+                else {
+                    source.addFeature(featureItem.feature);
+                }
                 commit("removeDisabledFeatureItem", featureItem);
             }
         }
