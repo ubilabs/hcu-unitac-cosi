@@ -40,11 +40,9 @@ export default {
              * @returns {String} The input address.
              */
             get () {
-                this.$nextTick(() => {
-                    if (this.$refs.input) {
-                        this.$refs.input.focus();
-                    }
-                });
+                if (this.$refs.input) {
+                    this.$refs.input.focus();
+                }
 
                 return this.$store.state.Tools.SchoolRoutePlanning.inputAddress;
             },
