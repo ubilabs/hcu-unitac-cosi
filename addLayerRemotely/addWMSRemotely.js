@@ -14,7 +14,7 @@ import store from "../../src/app-store";
  * @param {Boolean} zoomTo Parameter to indicate whether the layer is turned on
  * @returns {void}
  */
-export default function importLayers (url, layersToLoad = undefined, folderName = "Externe Daten", zoomTo = false) {
+export default function importLayers (url, layersToLoad, folderName, zoomTo) {
 
     if (url.includes("http:")) {
         console.error("https required");
@@ -201,7 +201,7 @@ function getReversedData (data) {
  * @returns {String} parsedTitle - The parsed title
  */
 function getParsedTitle (title) {
-    return String(title).replace(/\s+/g, "-").replace(/\//g, "-").replace(/:/g, "-");
+    return String(title).replace(/\s+/g, "-").replace(/\//g, "-").replace(/:/g, "-").replace(/\(/g, "-").replace(/\)/g, "-");
 }
 
 export {

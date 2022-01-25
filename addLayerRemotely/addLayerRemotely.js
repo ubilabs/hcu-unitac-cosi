@@ -13,7 +13,7 @@ Radio.channel("addLayerRemotely").on({
      * @param {Object} gfiAttributes Attributes to be shown in the GFI
      * @returns {void}
      */
-    "addGeoJson": async function (name, id, geoJSON, styleId, folderName, gfiAttributes) {
+    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes}) {
 
         const treeType = Radio.request("Parser", "getTreeType");
         let parentID = "";
@@ -55,7 +55,7 @@ Radio.channel("addLayerRemotely").on({
      * @param {Boolean} zoomTo Parameter to indicate whether the layer is turned on
      * @returns {void}
      */
-    "addWMS": function (url, layersToLoad = undefined, folderName = "Externe Daten", zoomTo = false) {
+    "addWMS": function ({url, layersToLoad = undefined, folderName = "Externe Daten", zoomTo = false}) {
         importLayers(url, layersToLoad, folderName, zoomTo);
     }
 

@@ -34,7 +34,7 @@ const geojson = {
 describe("ADDON: addLayerRemotely", () => {
     const spy = sinon.spy(Radio, "trigger");
 
-    Radio.trigger("addLayerRemotely", "addGeoJson", "LayerName", "LayerID", geojson, "customStyle", "tree", {"test1": "xyz", "test2": "abc"});
+    Radio.trigger("addLayerRemotely", "addGeoJson", {"name": "LayerName", "id": "LayerID", "geoJSON": geojson, "styleId": "customStyle", "folderName": "tree", "gfiAttributes": {"test1": "xyz", "test2": "abc"}});
 
     it("addGeoJsonRemotely should trigger the right Radio functions", () => {
         expect(spy.getCall(1).calledWithExactly("StyleList", "addToStyleList", geojson.styles)).to.be.true;
