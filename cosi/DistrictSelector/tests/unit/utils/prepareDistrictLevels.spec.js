@@ -1,4 +1,4 @@
-import {getAllDistrictsWithoutLayer, getDistricts, getHamburgDistrict, getFeatureTypes, getLayerById, getNameList, getPropertyNameList, prepareDistrictLevels, setProperties} from "../../../utils/prepareDistrictLevels.js";
+import {getAllDistrictsWithoutLayer, getDistricts, getFeatureTypes, getLayerById, getNameList, getPropertyNameList, prepareDistrictLevels, setProperties} from "../../../utils/prepareDistrictLevels.js";
 import {expect} from "chai";
 import {initializeLayerList} from "masterportalAPI/src/rawLayerList";
 import Source from "ol/source/Vector.js";
@@ -17,6 +17,8 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(getAllDistrictsWithoutLayer(42)).to.be.empty;
             expect(getAllDistrictsWithoutLayer([])).to.be.empty;
         });
+
+
 
         it("should return an array with length three", () => {
             const testArray = [{}, {}, {}],
@@ -79,10 +81,10 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
         });
 
         it("should return district hamburg if label is 'Hamburg'", () => {
-            const districts = getDistricts({label: "Hamburg", layer: {}, keyOfAttrName: ""});
+            const districts = getDistricts({label: "Hamburg", layer: layer, keyOfAttrName: "verwaltungseinheit"});
 
             expect(districts).to.be.an("array");
-            expect(districts[0].getLabel()).to.equal("Hamburg (gesamt)");
+            expect(districts[0].getLabel()).to.equal("hamburg_gesamt");
         });
 
         it("should returns two districts", () => {
@@ -143,18 +145,6 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
                 expect(featureTypes[0]).to.include("v_hh_bezirk_bev_insgesamt");
                 done();
             });
-        });
-    });
-
-    describe("getHamburgDistrict", () => {
-        it("should return the hamburg district", () => {
-            const hamburgDistrict = getHamburgDistrict();
-
-            expect(hamburgDistrict).to.be.an("object");
-            expect(hamburgDistrict.getId()).to.equal("Hamburg");
-            expect(hamburgDistrict.getLabel()).to.equal("Hamburg (gesamt)");
-            expect(hamburgDistrict.getName()).to.equal("hamburg_gesamt");
-            expect(hamburgDistrict.statFeatures).to.be.empty;
         });
     });
 
@@ -390,17 +380,17 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             spyOnSource = sinon.spy(layerOne.getSource(), "on"),
             layerList = [layerOne];
 
-        it("should call on listener", () => {
+        it("should call on listener", async () => {
             const testArray = [{layerId: "123", stats: {}}];
 
-            prepareDistrictLevels(testArray, layerList);
+            await prepareDistrictLevels(testArray, layerList);
             expect(spyOnSource.calledOnce).to.be.true;
         });
 
-        it("should return an object with the properties 'nameList', 'layer' , 'featureTypes', 'propertyNameList', 'referenceLevel' and 'districts'", () => {
+        it("should return an object with the properties 'nameList', 'layer' , 'featureTypes', 'propertyNameList', 'referenceLevel' and 'districts'", async () => {
             const testArray = [{layerId: "123", stats: {}}];
 
-            prepareDistrictLevels(testArray, layerList);
+            await prepareDistrictLevels(testArray, layerList);
 
             expect(testArray[0]).to.have.property("nameList");
             expect(testArray[0]).to.have.property("layer");

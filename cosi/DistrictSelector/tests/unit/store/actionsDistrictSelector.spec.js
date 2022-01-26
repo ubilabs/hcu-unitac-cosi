@@ -141,7 +141,7 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
 
             expect(dispatch.calledOnce).to.be.true;
             expect(dispatch.args[0][0]).to.equal("loadStatFeatures");
-            expect(dispatch.args[0][1]).to.be.an("object").to.have.all.keys("districts", "districtLevel", "getStatFeatures");
+            expect(dispatch.args[0][1]).to.be.an("object").to.have.all.keys("districts", "districtLevel", "getStatFeatures", "recursive");
         });
 
         it("should return an empty array, if the statFeatures need to be loaded", async () => {
