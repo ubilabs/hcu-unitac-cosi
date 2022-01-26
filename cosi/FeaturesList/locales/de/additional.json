@@ -33,7 +33,8 @@
                     "itemsPerPage": "Einträge pro Seite",
                     "itemsPerPageAll": "Alle",
                     "count": "Anzahl",
-                    "createCharts": "Diagramme erstellen"
+                    "createCharts": "Diagramme erstellen",
+                    "createDipasCharts": "DIPAS Diagramme erstellen"
                 }
             }
         }

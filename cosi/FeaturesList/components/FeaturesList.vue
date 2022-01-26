@@ -124,7 +124,8 @@ export default {
             ],
             numericalColumns: [],
             distScoreLayer: null,
-            exportDetails: false
+            exportDetails: false,
+            dipasInFeaturesList: true
         };
     },
     computed: {
@@ -252,6 +253,11 @@ export default {
             if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
             }
+            if (newItems.length > 0 && newItems.some(item => item.group === "DIPAS")) {
+                this.dipasInFeaturesList = true;
+            } else {
+                this.dipasInFeaturesList = false;
+            }
             this.showDistanceScoreFeatures();
         },
 
@@ -288,6 +294,7 @@ export default {
          * @deprecated
          */
         Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
+        Radio.on("VectorLayer", "resetFeatures", this.updateFeaturesList);
         Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
         Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
 
@@ -353,6 +360,7 @@ export default {
         updateFeaturesList () {
             if (this.groupActiveLayer.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
+
                     const features = getClusterSource(vectorLayer).getFeatures(),
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(this.isFeatureActive),
@@ -774,6 +782,13 @@ export default {
 
             this.channelGraphData(layerCharts);
         },
+        /**
+         * @todo Refactor to utils
+         * @returns {void}
+         */
+        createDipasCharts () {
+            return;
+        },
         getDistrictsAndTypes (items) {
             const
                 districts = {},
@@ -898,6 +913,19 @@ export default {
                         <v-icon>mdi-poll</v-icon>
                     </v-btn>
                     <v-btn
+                        v-if="dipasInFeaturesList"
+                        id="create-dipas-charts"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        class="mb-2 ml-2"
+                        :title="$t('additional:modules.tools.cosi.featuresList.createDipasCharts')"
+                        @click="createDipasCharts"
+                    >
+                        <v-icon>mdi-poll</v-icon>
+                    </v-btn>
+                    <v-btn
                         id="export-table"
                         dense
                         small
@@ -1006,6 +1034,7 @@ export default {
                                     v-for="col in numericalColumns"
                                     #[`item.${col.value}`]="{ item }"
                                 >
+                                    <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                                     <template v-if="!isNaN(parseFloat(item[col.value]))">
                                         <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
                                         <div
@@ -1059,7 +1088,7 @@ export default {
                                             v-if="index === 2"
                                             class="grey--text text-caption"
                                         >
-                                            (+{{ selectedDistanceScoreLayers.length - 1 }} andere)
+                                            (+{{ selectedDistanceScoreLayers.length - 2 }} andere)
                                         </span>
                                     </template>
                                 </v-autocomplete>
