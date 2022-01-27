@@ -466,6 +466,7 @@ export default {
                             :groups-list="groupsList"
                             :timeline-prefix="timelinePrefix"
                             :has-reference="hasReference"
+                            :selected-name="baseStats.reference.districtName"
                             @referencePickerActive="onReferencePickerActive"
                             @pickReference="onPickReference"
                             @resetReference="resetBaseStats"

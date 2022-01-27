@@ -20,6 +20,10 @@ export default {
         hasReference: {
             type: Boolean,
             default: false
+        },
+        selectedName: {
+            type: String,
+            default: null
         }
     },
     data: () => ({
@@ -28,8 +32,6 @@ export default {
         workingDistrictLevel: null,
         selectedStatsFeature: null,
         layer: null,
-        // name of the selected reference district
-        selectedName: null,
         checkbox: false
     }),
     computed: {
@@ -45,7 +47,6 @@ export default {
          * @returns {String[]} The district names or an empty array.
          */
         namesOfDistricts: function () {
-            console.log(this.workingDistrictLevel);
             if (this.workingDistrictLevel?.nameList) {
                 return this.workingDistrictLevel.nameList;
             }
@@ -171,7 +172,7 @@ export default {
                 this.$emit("pickReference", baseStats);
             }
 
-            this.selectedName = feature.get(this.workingDistrictLevel.keyOfAttrName);
+            // this.selectedName = feature.get(this.workingDistrictLevel.keyOfAttrName);
             this.referencePickerActive = false;
         },
 
@@ -315,25 +316,29 @@ export default {
                 />
             </v-col>
         </v-row>
-        <v-row
+        <div
             v-else
-            dense
+            class="mt-4"
         >
-            <v-btn
-                v-if="hasReference"
-                dense
-                small
-                tile
-                color="grey lighten-1"
-                :label="$t('additional:modules.tools.cosi.residentialSimulation.noReference')"
-                :title="$t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics')"
-                @click="visualizeDemographics"
-            >
-                <v-icon>mdi-chart-bell-curve</v-icon>
-                <span>
-                    {{ $t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics') }}
-                </span>
-            </v-btn>
-        </v-row>
+            <div class="mb-2">
+                <v-btn
+                    v-if="hasReference"
+                    dense
+                    small
+                    tile
+                    color="grey lighten-1"
+                    :title="$t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics')"
+                    @click="visualizeDemographics"
+                >
+                    <v-icon>mdi-chart-bell-curve</v-icon>
+                    <span>
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics') }}
+                    </span>
+                </v-btn>
+            </div>
+            <div>
+                {{ $t('additional:modules.tools.cosi.residentialSimulation.noReference') }}
+            </div>
+        </div>
     </v-form>
 </template>
