@@ -16,6 +16,10 @@ export default {
             type: String,
             required: false,
             default: "jahr_"
+        },
+        hasReference: {
+            type: Boolean,
+            default: false
         }
     },
     data: () => ({
@@ -41,6 +45,7 @@ export default {
          * @returns {String[]} The district names or an empty array.
          */
         namesOfDistricts: function () {
+            console.log(this.workingDistrictLevel);
             if (this.workingDistrictLevel?.nameList) {
                 return this.workingDistrictLevel.nameList;
             }
@@ -212,6 +217,10 @@ export default {
                 content: this.$t("additional:modules.tools.cosi.residentialSimulation.errorPickReference"),
                 displayClass: "warning"
             });
+        },
+
+        visualizeDemographics () {
+            this.$emit("visualizeDemographics");
         }
     }
 };
@@ -266,7 +275,7 @@ export default {
             v-if="checkbox"
             dense
         >
-            <v-col cols="6">
+            <v-col cols="7">
                 <v-btn
                     dense
                     small
@@ -280,17 +289,51 @@ export default {
                         {{ $t('additional:modules.tools.cosi.residentialSimulation.pickReference') }}
                     </span>
                 </v-btn>
+                <v-btn
+                    v-if="hasReference"
+                    dense
+                    small
+                    tile
+                    color="grey lighten-1"
+                    :title="$t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics')"
+                    @click="visualizeDemographics"
+                >
+                    <v-icon>mdi-chart-bell-curve</v-icon>
+                    <span>
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics') }}
+                    </span>
+                </v-btn>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="5">
                 <v-autocomplete
                     :value="selectedName"
                     :items="namesOfDistricts"
-                    :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
+                    :label="workingDistrictLevel.label"
                     outlined
                     dense
                     @change="findReference"
                 />
             </v-col>
+        </v-row>
+        <v-row
+            v-else
+            dense
+        >
+            <v-btn
+                v-if="hasReference"
+                dense
+                small
+                tile
+                color="grey lighten-1"
+                :label="$t('additional:modules.tools.cosi.residentialSimulation.noReference')"
+                :title="$t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics')"
+                @click="visualizeDemographics"
+            >
+                <v-icon>mdi-chart-bell-curve</v-icon>
+                <span>
+                    {{ $t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics') }}
+                </span>
+            </v-btn>
         </v-row>
     </v-form>
 </template>

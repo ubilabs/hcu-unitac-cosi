@@ -57,7 +57,7 @@ const state = {
                 "Bevölkerung 45 bis unter 65 Jahren",
                 "Bevölkerung ab 65 Jahren"
             ],
-            type: "LineChart"
+            type: "BarChart"
         }
     ],
     readmeUrl: {

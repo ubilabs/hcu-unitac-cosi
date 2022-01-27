@@ -182,11 +182,7 @@ export default {
                 return;
             }
 
-            this.visualizeDemographics();
-            // for (const chartOptions of this.referenceDistrictCharts) {
-            //     this.visualizeDemographics(chartOptions);
-            // }
-
+            // this.visualizeDemographics();
             this.extrapolateNeighborhoodStatistics();
         },
 
@@ -198,6 +194,12 @@ export default {
             deep: true,
             handler () {
                 this.isCreated = false;
+            }
+        },
+
+        editDialog (state) {
+            if (!state) {
+                this.editFeature = null;
             }
         }
     },
@@ -402,6 +404,13 @@ export default {
             }
         },
 
+        editNeighborhood () {
+            this.editStatsTable = true;
+            this.editDialog = false;
+
+            console.log(this.editFeature);
+        },
+
         deleteNeighborhood () {
             this.activeScenario.removeNeighborhood(this.editFeature);
             this.editDialog = false;
@@ -456,9 +465,11 @@ export default {
                         <ReferenceDistrictPicker
                             :groups-list="groupsList"
                             :timeline-prefix="timelinePrefix"
+                            :has-reference="hasReference"
                             @referencePickerActive="onReferencePickerActive"
                             @pickReference="onPickReference"
                             @resetReference="resetBaseStats"
+                            @visualizeDemographics="visualizeDemographics"
                         />
                         <v-divider />
                         <div class="mb-5 overline">
@@ -823,20 +834,19 @@ export default {
                                 {{ $t("common:button.delete") }}
                             </v-btn>
                             <v-btn
+                                v-bind="attrs"
+                                text
+                                @click="editNeighborhood"
+                            >
+                                {{ $t("common:button.edit") }}
+                            </v-btn>
+                            <v-btn
                                 text
                                 v-bind="attrs"
                                 @click="editDialog = false"
                             >
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
-                            <!-- NOT IMPLEMENTED -->
-                            <!-- <v-btn
-                                v-bind="attrs"
-                                text
-                                @click="editStatsTable = true; editDialog = false;"
-                            >
-                                {{ $t("common:button.edit") }}
-                            </v-btn> -->
                         </template>
                     </v-snackbar>
                     <Modal
@@ -853,10 +863,19 @@ export default {
                                 {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
                             </v-subheader>
                             <div class="stats-table-modal">
-                                <StatisticsTable
-                                    v-if="neighborhood.stats && geometry !== null"
-                                    v-model="neighborhood.stats"
-                                />
+                                <template v-if="!editFeature">
+                                    <StatisticsTable
+                                        v-if="neighborhood.stats && geometry !== null"
+                                        v-model="neighborhood.stats"
+                                    />
+                                </template>
+                                <template v-else>
+                                    dudelu
+                                    <!-- <StatisticsTable
+                                        v-if="neighborhood.stats && geometry !== null"
+                                        v-model="neighborhood.stats"
+                                    /> -->
+                                </template>
                             </div>
                         </v-container>
                     </Modal>
