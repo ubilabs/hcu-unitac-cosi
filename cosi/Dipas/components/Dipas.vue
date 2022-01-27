@@ -514,6 +514,13 @@ export default {
             const extent = feature.getGeometry().getExtent();
 
             this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
+        },
+
+        getDateString (feature) {
+            const startDate = new Date(feature.getProperties().dateStart).toLocaleDateString(this.currentLocale),
+                endDate = new Date(feature.getProperties().dateEnd).toLocaleDateString(this.currentLocale);
+
+            return startDate + " - " + endDate;
         }
     }
 };
@@ -553,6 +560,10 @@ export default {
                                             <v-list-item-title
                                                 class="text-wrap"
                                                 v-text="feature.getProperties().nameFull"
+                                            />
+                                            <v-list-item-subtitle
+                                                class="text-wrap"
+                                                v-text="getDateString(feature)"
                                             />
                                         </v-list-item-content>
                                         <v-list-item-icon>
