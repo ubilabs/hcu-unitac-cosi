@@ -4,6 +4,7 @@ import storeOriginalFeatureData from "../utils/storeOriginalFeatureData";
 import checkAndReplaceOriginalFeature from "../utils/checkAndReplaceOriginalFeature";
 import translateFeature from "../../utils/translateFeature";
 import {unByKey} from "ol/Observable";
+import store from "../../../../src/app-store";
 
 /**
  * @description Stores the scenario specific properties of a feature
@@ -39,7 +40,12 @@ export default class ScenarioFeature {
 
         // Here the feauture is added again, if it has been removed from an other Tool. For example by an accessibility analysis.
         this.eventKeys[this.feature.getId()] = getClusterSource(this.layer).on("change", () => {
-            if (!getClusterSource(this.layer).hasFeature(this.feature) && this.scenario.isActive) {
+            if (
+                !getClusterSource(this.layer).hasFeature(this.feature) &&
+                // eslint-disable-next-line new-cap
+                store.getters["Tools/FeaturesList/isFeatureActive"](this.feature) &&
+                this.scenario.isActive
+            ) {
                 getClusterSource(this.layer).addFeature(this.feature);
             }
         });

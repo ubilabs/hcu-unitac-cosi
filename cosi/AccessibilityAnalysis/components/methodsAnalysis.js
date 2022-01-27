@@ -11,6 +11,7 @@ import
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import * as turf from "@turf/turf";
 import {readFeatures, transformFeatures} from "../components/util.js";
+import getClusterSource from "../../utils/getClusterSource";
 
 export const methodConfig = {
     store: null
@@ -362,8 +363,8 @@ export default {
         });
 
         if (selectedLayerModel) {
-            const features = selectedLayerModel.get("layer")
-                .getSource().getFeatures()
+            const features = getClusterSource(selectedLayerModel.get("layer"))
+                .getFeatures()
                 .filter(this.isFeatureActive);
 
             return features
