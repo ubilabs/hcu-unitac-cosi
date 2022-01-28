@@ -796,10 +796,11 @@ export default {
                                             :class="{ reduced: fActive_A }"
                                         >
                                             <button @click="fActive_A = !fActive_A">
-                                                <span
+                                                <v-icon
                                                     v-if="fActive_A"
-                                                    class="glyphicon glyphicon-remove"
-                                                />
+                                                >
+                                                    mdi-close
+                                                </v-icon>
                                                 <span v-else>{{ $t('additional:modules.tools.cosi.calculateRatio.addFactor') }}</span>
                                             </button>
                                         </div>
@@ -910,10 +911,11 @@ export default {
                                                 :title="$t('additional:modules.tools.cosi.calculateRatio.addFactorTooltip')"
                                                 @click="fActive_B = !fActive_B"
                                             >
-                                                <span
+                                                <v-icon
                                                     v-if="fActive_B"
-                                                    class="glyphicon glyphicon-remove"
-                                                />
+                                                >
+                                                    mdi-close
+                                                </v-icon>
                                                 <span v-else>{{ $t('additional:modules.tools.cosi.calculateRatio.addFactor') }}</span>
                                             </button>
                                         </div>
@@ -967,14 +969,20 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.swapFields')"
                                 @click="switchSelection"
                             >
-                                <span class="glyphicon glyphicon-retweet" />
+                                <v-icon>
+                                    mdi-swap-horizontal
+                                </v-icon>
                             </button>
                             <button
                                 class="cancel"
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.resetTooltip')"
                                 @click="clearAllValues"
                             >
-                                <span class="glyphicon glyphicon-remove-circle" />
+                                <v-icon
+                                    left
+                                >
+                                    mdi-close-circle
+                                </v-icon>
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.reset') }}
                             </button>
                             <button
@@ -982,7 +990,11 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.calculateTooltip')"
                                 @click="prepareCoverage"
                             >
-                                <span class="glyphicon glyphicon-ok-circle" />
+                                <v-icon
+                                    left
+                                >
+                                    mdi-check-circle
+                                </v-icon>
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.calculate') }}
                             </button>
                         </div>
@@ -998,7 +1010,11 @@ export default {
                                 class="btn btn-default xl_btn"
                                 @click="exportAsXlsx"
                             >
-                                <span class="glyphicon glyphicon-download" />
+                                <v-icon
+                                    left
+                                >
+                                    mdi-download
+                                </v-icon>
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
                             </button>
                             <button
@@ -1006,7 +1022,11 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')"
                                 @click="exportAsGeoJson()"
                             >
-                                <span class="glyphicon glyphicon-floppy-disk" />
+                                <v-icon
+                                    left
+                                >
+                                    mdi-floppy
+                                </v-icon>
                                 {{ $t('additional:modules.tools.cosi.calculateRatio.downloadGeoJson') }}
                             </button>
 
@@ -1015,9 +1035,9 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.visualizeChart')"
                                 @click="loadToChartGenerator()"
                             >
-                                <span
-                                    class="glyphicon glyphicon-stats"
-                                />
+                                <v-icon>
+                                    mdi-poll
+                                </v-icon>
                             </button>
                             <v-select
                                 v-model="columnSelector"
@@ -1035,14 +1055,16 @@ export default {
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.visualizeMap')"
                                 @click="loadToColorCodeMap()"
                             >
-                                <span
+                                <v-icon
                                     v-if="!dataToColorCodeMap"
-                                    class="glyphicon glyphicon-eye-open"
-                                />
-                                <span
+                                >
+                                    mdi-eye
+                                </v-icon>
+                                <v-icon
                                     v-else
-                                    class="glyphicon glyphicon-eye-close"
-                                />
+                                >
+                                    mdi-eye-off
+                                </v-icon>
                             </button>
                             <div
                                 v-if="!ASwitch || !BSwitch"
