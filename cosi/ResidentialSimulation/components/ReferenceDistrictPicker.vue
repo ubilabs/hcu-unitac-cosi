@@ -318,7 +318,7 @@ export default {
         </v-row>
         <div
             v-else
-            class="mt-4"
+            class="mt-1"
         >
             <div class="mb-2">
                 <v-btn

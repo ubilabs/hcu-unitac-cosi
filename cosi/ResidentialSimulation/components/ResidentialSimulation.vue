@@ -34,7 +34,10 @@ export default {
         return {
             datePicker: false,
             editDialog: false,
-            editFeature: null,
+            selectedNeighborhood: {
+                scenarioFeature: null,
+                editFeature: null
+            },
             editStatsTable: false,
             geometry: null,
             neighborhood: {
@@ -142,7 +145,8 @@ export default {
          * @returns {void}
          */
         async active (newActive) {
-            this.editFeature = null;
+            this.selectedNeighborhood.scenarioFeature = null;
+            this.selectedNeighborhood.editFeature = null;
             this.editDialog = false;
 
             if (newActive) {
@@ -194,12 +198,6 @@ export default {
             deep: true,
             handler () {
                 this.isCreated = false;
-            }
-        },
-
-        editDialog (state) {
-            if (!state) {
-                this.editFeature = null;
             }
         }
     },
@@ -391,15 +389,21 @@ export default {
         },
 
         openEditDialog (evt) {
-            this.editFeature = null;
+            this.selectedNeighborhood.editFeature = null;
+            this.selectedNeighborhood.scenarioFeature = null;
             this.map.forEachFeatureAtPixel(evt.pixel, feature => {
-                this.editFeature = feature;
+                this.selectedNeighborhood.scenarioFeature = this.activeScenario.getNeighborhood(feature);
+                this.selectedNeighborhood.editFeature = feature.clone();
+
+                // ugly, but necessary
+                this.selectedNeighborhood.editFeature.set("stats", JSON.parse(JSON.stringify(feature.get("stats"))));
+
                 this.editDialog = true;
             }, {
                 layerFilter: l => l === this.drawingLayer
             });
 
-            if (!this.editFeature) {
+            if (!this.selectedNeighborhood) {
                 this.editDialog = false;
             }
         },
@@ -407,16 +411,27 @@ export default {
         editNeighborhood () {
             this.editStatsTable = true;
             this.editDialog = false;
+        },
 
-            console.log(this.editFeature);
+        updateSelectedNeighborhood () {
+            this.selectedNeighborhood.scenarioFeature.setFeature(this.selectedNeighborhood.editFeature);
+            this.escapeEditStatsTable();
+        },
+
+        editProp (v, prop) {
+            this.selectedNeighborhood.editFeature.set(prop, v);
         },
 
         deleteNeighborhood () {
-            this.activeScenario.removeNeighborhood(this.editFeature);
+            this.activeScenario.removeNeighborhood(this.selectedNeighborhood.scenarioFeature.feature);
             this.editDialog = false;
+            this.selectedNeighborhood.editFeature = null;
+            this.selectedNeighborhood.scenarioFeature = null;
         },
 
         escapeEditStatsTable () {
+            this.selectedNeighborhood.editFeature = null;
+            this.selectedNeighborhood.scenarioFeature = null;
             this.editStatsTable = false;
         },
 
@@ -844,7 +859,7 @@ export default {
                             <v-btn
                                 text
                                 v-bind="attrs"
-                                @click="editDialog = false"
+                                @click="editDialog = false; selectedNeighborhood.editFeature = null; selectedNeighborhood.scenarioFeature = null;"
                             >
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
@@ -852,30 +867,85 @@ export default {
                     </v-snackbar>
                     <Modal
                         :show-modal="editStatsTable"
-                        @modalHid="escapeEditStatsTable"
+                        @modalHid="editDialog = false"
                         @clickedOnX="escapeEditStatsTable"
                         @clickedOutside="escapeEditStatsTable"
                     >
                         <v-container>
                             <v-card-title primary-title>
-                                {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }}
+                                {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }} : {{ selectedNeighborhood.editFeature ? selectedNeighborhood.editFeature.get("name") : neighborhood.name }}
                             </v-card-title>
                             <v-subheader>
                                 {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
                             </v-subheader>
+                            <template v-if="selectedNeighborhood.editFeature">
+                                <v-card-text>
+                                    <v-row dense>
+                                        <v-text-field
+                                            :value="selectedNeighborhood.editFeature.get('year')"
+                                            :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
+                                            :rules="[
+                                                value => Boolean(value) || $t('additional:modules.tools.cosi.scenarioBuilder.required'),
+                                                value => value.match(/^\d{4}\-(0?[1-9]|1[012])$/) !== null || $t('additional:modules.tools.cosi.residentialSimulation.invalidDate')
+                                            ]"
+                                            prepend-icon="mdi-calendar"
+                                            @change="editProp($event, 'year')"
+                                        />
+                                        <v-text-field
+                                            :value="selectedNeighborhood.editFeature.get('name')"
+                                            :label="$t('additional:modules.tools.cosi.residentialSimulation.changeName')"
+                                            :rules="[
+                                                value => Boolean(value) || $t('additional:modules.tools.cosi.scenarioBuilder.required'),
+                                            ]"
+                                            prepend-icon="mdi-home"
+                                            @change="editProp($event, 'name')"
+                                        />
+                                    </v-row>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-row dense>
+                                        <v-btn
+                                            dense
+                                            small
+                                            tile
+                                            color="grey lighten-1"
+                                            :title="$t('additional:modules.tools.cosi.residentialSimulation.updateStats')"
+                                            class="flex-item"
+                                            @click="updateSelectedNeighborhood"
+                                        >
+                                            <v-icon>mdi-pencil</v-icon>
+                                            <span>
+                                                {{ $t('additional:modules.tools.cosi.residentialSimulation.updateStats') }}
+                                            </span>
+                                        </v-btn>
+                                        <v-btn
+                                            dense
+                                            small
+                                            tile
+                                            color="grey lighten-1"
+                                            :title="$t('common:button.cancel')"
+                                            class="flex-item"
+                                            @click="escapeEditStatsTable"
+                                        >
+                                            <v-icon>mdi-close</v-icon>
+                                            <span>
+                                                {{ $t('common:button.cancel') }}
+                                            </span>
+                                        </v-btn>
+                                    </v-row>
+                                </v-card-actions>
+                            </template>
                             <div class="stats-table-modal">
-                                <template v-if="!editFeature">
+                                <template v-if="!selectedNeighborhood.editFeature">
                                     <StatisticsTable
                                         v-if="neighborhood.stats && geometry !== null"
                                         v-model="neighborhood.stats"
                                     />
                                 </template>
                                 <template v-else>
-                                    dudelu
-                                    <!-- <StatisticsTable
-                                        v-if="neighborhood.stats && geometry !== null"
-                                        v-model="neighborhood.stats"
-                                    /> -->
+                                    <StatisticsTable
+                                        :value="selectedNeighborhood.editFeature.get('stats')"
+                                    />
                                 </template>
                             </div>
                         </v-container>

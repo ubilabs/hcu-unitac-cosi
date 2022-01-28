@@ -23,7 +23,7 @@ export default {
             return this.scenarios.map(scenario => scenario.name);
         },
 
-        validScenarioName () {
+        invalidScenarioName () {
             return this.newScenarioName.length === 0 || this.scenarioNames.includes(this.newScenarioName);
         },
 
@@ -55,15 +55,30 @@ export default {
             if (newActiveScenario) {
                 newActiveScenario.restore();
             }
+        },
+        createNewScenarioModalOpen (state) {
+            return state ?
+                document.addEventListener("keyup", this.checkKey) :
+                document.removeEventListener("keyup", this.checkKey);
         }
     },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
 
-        // escapeCreateNewScenario () {
-        //     // ...
-        // },
+        /**
+         * quickly checks the key evt code
+         * and executes createNewScenario
+         * @param {Event} evt - the key event
+         * @returns {void}
+         */
+        checkKey (evt) {
+            if (evt.code === "Enter") {
+                if (!this.invalidScenarioName) {
+                    this.createNewScenario();
+                }
+            }
+        },
 
         createNewScenario () {
             const newScenario = new Scenario(this.newScenarioName, this.guideLayer);
@@ -351,16 +366,19 @@ export default {
         </v-row>
         <v-row dense>
             <v-col cols="12">
-                <label v-if="!activeScenario">
+                <div v-if="!activeScenario">
                     {{ $t('additional:modules.tools.cosi.scenarioManager.noActiveScenario') }}
-                </label>
+                </div>
             </v-col>
         </v-row>
         <Modal
             :show-modal="createNewScenarioModalOpen"
+            @modalHid="createNewScenarioModalOpen = false"
+            @clickedOnX="createNewScenarioModalOpen = false"
+            @clickedOutside="createNewScenarioModalOpen = false"
         >
-            <label> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </label>
-            <form id="new-scenario-form">
+            <h4> {{ $t('additional:modules.tools.cosi.scenarioManager.createNewTitle') }} </h4>
+            <div id="new-scenario-form">
                 <v-container>
                     <v-row>
                         <v-col cols="12">
@@ -377,7 +395,7 @@ export default {
                                 tile
                                 color="grey lighten-1"
                                 type="button"
-                                :disabled="validScenarioName"
+                                :disabled="invalidScenarioName"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.createNewTitle')"
                                 @click="createNewScenario"
                             >
@@ -386,7 +404,7 @@ export default {
                         </v-col>
                     </v-row>
                 </v-container>
-            </form>
+            </div>
         </Modal>
     </div>
 </template>

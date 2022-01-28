@@ -341,21 +341,21 @@
     "valueType": "absolute"
   },
   {
-    "category": "soz_sozverpflichtig_beschaeftigte_ins_anz",
-    "value": "Sozialversicherungspflichtig Beschäftigte insgesamt",
-    "group": "Sozialversicherungspflichtige",
-    "statgebiet": "16017",
-    "stadtteil": "19068",
-    "bezirk": "19004",
-    "valueType": "absolute"
-  },
-  {
     "category": "soz_sozverpflichtig_beschaeftigte_maenner",
     "value": "Sozialversicherungspflichtig beschäftigte Männer",
     "group": "Sozialversicherungspflichtige",
     "statgebiet": "16018",
     "stadtteil": "19069",
     "bezirk": "19005",
+    "valueType": "absolute"
+  },
+  {
+    "category": "soz_sozverpflichtig_beschaeftigte_ins_anz",
+    "value": "Sozialversicherungspflichtig Beschäftigte insgesamt",
+    "group": "Sozialversicherungspflichtige",
+    "statgebiet": "16017",
+    "stadtteil": "19068",
+    "bezirk": "19004",
     "valueType": "absolute"
   },
   {

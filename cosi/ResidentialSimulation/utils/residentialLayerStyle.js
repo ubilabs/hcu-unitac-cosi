@@ -1,6 +1,15 @@
 import {Stroke, Fill, Style, Text} from "ol/style.js";
 
 /**
+ * gets the real number of residents from the stats
+ * @param {*} feature - the feature
+ * @returns {number} the number of residents
+ */
+function getResidents (feature) {
+    return feature.get("stats")?.find(el => el.category === "Bevölkerung insgesamt")?.value || Math.round(feature.get("residents"));
+}
+
+/**
  * Style function for the guide layer
  * @param {module:ol/Feature} feature - the simulated feature
  * @returns {Function} the style function
@@ -29,7 +38,7 @@ export default function residentialLayerStyle (feature) {
                     color: "#fff",
                     width: 1
                 }),
-                text: Math.round(feature.get("residents")).toLocaleString("de-DE") + " EW",
+                text: getResidents(feature).toLocaleString("de-DE") + " EW",
                 offsetY: 20
             })
         }),

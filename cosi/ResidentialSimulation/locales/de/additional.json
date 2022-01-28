@@ -35,7 +35,10 @@
                     "createFeatureHelp": "Wohnquartier anlegen - Statistische Daten werden dem umliegenden Gebiet zugerechnet",
                     "resetFeature": "Zurücksetzen",
                     "editFeature": "Wohnquartier löschen?",
-                    "dateOfCompletion": "Jahr der Fertigstellung"
+                    "dateOfCompletion": "Jahr der Fertigstellung",
+                    "invalidDate": "Bitte geben Sie ein Datum im Format YYYY-MM ein",
+                    "updateStats": "Änderungen speichern",
+                    "changeName": "Name ändern"
                 }
             }
         }
