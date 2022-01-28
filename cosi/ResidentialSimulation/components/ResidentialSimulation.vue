@@ -903,36 +903,32 @@ export default {
                                     </v-row>
                                 </v-card-text>
                                 <v-card-actions>
-                                    <v-row dense>
-                                        <v-btn
-                                            dense
-                                            small
-                                            tile
-                                            color="grey lighten-1"
-                                            :title="$t('additional:modules.tools.cosi.residentialSimulation.updateStats')"
-                                            class="flex-item"
-                                            @click="updateSelectedNeighborhood"
-                                        >
-                                            <v-icon>mdi-pencil</v-icon>
-                                            <span>
-                                                {{ $t('additional:modules.tools.cosi.residentialSimulation.updateStats') }}
-                                            </span>
-                                        </v-btn>
-                                        <v-btn
-                                            dense
-                                            small
-                                            tile
-                                            color="grey lighten-1"
-                                            :title="$t('common:button.cancel')"
-                                            class="flex-item"
-                                            @click="escapeEditStatsTable"
-                                        >
-                                            <v-icon>mdi-close</v-icon>
-                                            <span>
-                                                {{ $t('common:button.cancel') }}
-                                            </span>
-                                        </v-btn>
-                                    </v-row>
+                                    <v-btn
+                                        dense
+                                        small
+                                        tile
+                                        color="grey"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.updateStats')"
+                                        @click="updateSelectedNeighborhood"
+                                    >
+                                        <v-icon>mdi-pencil</v-icon>
+                                        <span>
+                                            {{ $t('additional:modules.tools.cosi.residentialSimulation.updateStats') }}
+                                        </span>
+                                    </v-btn>
+                                    <v-btn
+                                        dense
+                                        small
+                                        tile
+                                        color="grey"
+                                        :title="$t('common:button.cancel')"
+                                        @click="escapeEditStatsTable"
+                                    >
+                                        <v-icon>mdi-close</v-icon>
+                                        <span>
+                                            {{ $t('common:button.cancel') }}
+                                        </span>
+                                    </v-btn>
                                 </v-card-actions>
                             </template>
                             <div class="stats-table-modal">
