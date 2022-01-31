@@ -1050,13 +1050,12 @@ export default {
                         />
                     </div>
                     <div class="selection">
-                        <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
-                        <input
+                        <v-text-field
                             v-model="search"
-                            class="form-control search"
-                            type="text"
                             :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
-                        >
+                            dense
+                            outlined
+                        />
                     </div>
                     <v-btn
                         id="create-charts"
@@ -1107,7 +1106,7 @@ export default {
                 </div>
                 <div id="features-list">
                     <form class="features-list-table-wrapper">
-                        <div class="form-group features-list-table">
+                        <div class="features-list-table">
                             <v-data-table
                                 v-model="selected"
                                 :headers="columns"
@@ -1341,19 +1340,11 @@ export default {
                }
            }
         }
-        input.form-control {
-            font-size: 12px;
-            border-color: #e8e8e8;
-            height: 40px;
-        }
         .detail-view {
             padding: 0;
         }
         .selection {
             width: 40%;
-            .search {
-                width: 100%;
-            }
         }
         .number-action{
             cursor: pointer;

@@ -521,10 +521,14 @@ export default {
                         @click="minimize = !minimize"
                     >
                         <template v-if="minimize">
-                            <span class="glyphicon glyphicon-plus" />
+                            <v-icon>
+                                mdi-plus
+                            </v-icon>
                         </template>
                         <template v-else>
-                            <span class="glyphicon glyphicon-minus" />
+                            <v-icon>
+                                mdi-minus
+                            </v-icon>
                         </template>
                     </button>
                     <button
@@ -534,28 +538,34 @@ export default {
                         :title="$t('additional:modules.tools.colorCodeMap.toggleVisualization')"
                         @click="toggleVisualizationState()"
                     >
-                        <span
+                        <v-icon
                             v-if="visualizationState"
-                            class="glyphicon glyphicon-eye-close"
-                        />
-                        <span
+                        >
+                            mdi-eye-off
+                        </v-icon>
+                        <v-icon
                             v-else
-                            class="glyphicon glyphicon-eye-open"
-                        />
+                        >
+                            mdi-eye
+                        </v-icon>
                     </button>
                     <button
                         class="prev btn btn-default btn-sm"
                         :title="$t('additional:modules.tools.colorCodeMap.prev')"
                         @click="changeSelector(-1)"
                     >
-                        <span class="glyphicon glyphicon-chevron-left" />
+                        <v-icon>
+                            mdi-chevron-left
+                        </v-icon>
                     </button>
                     <button
                         class="next btn btn-default btn-sm"
                         :title="$t('additional:modules.tools.colorCodeMap.next')"
                         @click="changeSelector(1)"
                     >
-                        <span class="glyphicon glyphicon-chevron-right" />
+                        <v-icon>
+                            mdi-chevron-right
+                        </v-icon>
                     </button>
                     <v-select
                         v-if="selectedStatFeatures.length"
@@ -584,9 +594,11 @@ export default {
                     item-text="value"
                     outlined
                     dense
+                    hide-details
                 />
             </div>
             <div
+                v-if="visualizationState && legendValues && selectedFeatures.length > 1"
                 id="colorCodeMapLegend"
                 class="legend"
                 :class="{ active: visualizationState && legendValues && selectedFeatures.length > 1 }"
@@ -626,7 +638,9 @@ export default {
                     :title="$t('additional:modules.tools.colorCodeMap.infoTooltip')"
                     @click="showInfo"
                 >
-                    <span class="glyphicon glyphicon-question-sign" />
+                    <v-icon>
+                        mdi-help-circle
+                    </v-icon>
                 </button>
                 <div
                     v-if="visualizationState && !minimize"
@@ -638,12 +652,16 @@ export default {
                         :title="$t('additional:modules.tools.colorCodeMap.animate')"
                         @click="setPlayState(!playState)"
                     >
-                        <template v-if="!playState">
-                            <span class="glyphicon glyphicon-play" />
-                        </template>
-                        <template v-else>
-                            <span class="glyphicon glyphicon-pause" />
-                        </template>
+                        <v-icon
+                            v-if="!playState"
+                        >
+                            mdi-play-circle
+                        </v-icon>
+                        <v-icon
+                            v-else
+                        >
+                            mdi-pause-circle-outline
+                        </v-icon>
                     </button>
                     <input
                         v-model="playSpeed"
@@ -655,20 +673,26 @@ export default {
                     :title="$t('additional:modules.tools.colorCodeMap.generateChart')"
                     @click="loadToChartGenerator()"
                 >
-                    <span class="glyphicon glyphicon-stats" />
+                    <v-icon>
+                        mdi-poll
+                    </v-icon>
                 </button>
                 <button
                     class="map_button"
                     :title="$t('additional:modules.tools.colorCodeMap.showDistrictNames')"
                     @click="setShowMapNames(!showMapNames)"
                 >
-                    <span class="glyphicon glyphicon-map-marker" />
+                    <v-icon>
+                        mdi-map-marker
+                    </v-icon>
                 </button>
                 <button
                     :title="$t('additional:modules.tools.colorCodeMap.metadata')"
                     @click="openMetadata()"
                 >
-                    <span class="glyphicon glyphicon-info-sign" />
+                    <v-icon>
+                        mdi-information
+                    </v-icon>
                 </button>
             </div>
         </div>
@@ -795,11 +819,9 @@ export default {
                     flex-flow:row wrap;
                     justify-content: flex-start;
                     flex-basis:100%;
-                    height:30px;
 
                     button {
                         flex-basis:40px;
-                        height:30px;
                         border-radius:0px;
                         border:1px solid #aaa;
                         margin-right:3px;
@@ -807,7 +829,6 @@ export default {
 
                         &.switch {
                             flex-basis:40px;
-                            height:30px;
                             border-radius:0px;
                             background-color:#eee;
 
@@ -993,11 +1014,11 @@ export default {
                 }
 
                 .btn_group {
-                    flex-basis:40%;
+                    flex-basis:45%;
                 }
 
                 .feature_selection {
-                    flex: 1 0 58%;
+                    flex: 1 0 54%;
                     border: none;
                     margin: 0px 2px;
                     height: 30px;
