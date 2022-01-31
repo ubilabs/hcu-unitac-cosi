@@ -121,6 +121,7 @@ export default {
 </script>
 
 <template>
+    <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
     <div
         class="feature-icon"
         :title="item.isSimulation ? $t('additional:modules.tools.cosi.featuresList.warningIsSimulated') : ''"
