@@ -930,8 +930,8 @@ export default {
 
                                         return name;
                                     },
-                                    title: function (_, data) {
-                                        return data.datasets[0].label;
+                                    title: function (tooltipItem, data) {
+                                        return data.datasets[0].label + " (" + tooltipItem[0].yLabel + "/" + tooltipItem[0].xLabel + ")";
                                     },
                                     footer: () => {
                                         return null;
