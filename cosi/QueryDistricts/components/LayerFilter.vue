@@ -128,7 +128,11 @@ export default {
             aria-label="Close"
             @click="close"
         >
-            <span aria-hidden="true">&times;</span>
+            <v-icon
+                dense
+            >
+                mdi-close
+            </v-icon>
         </button>
         <h6>
             <strong>{{ name }}</strong>

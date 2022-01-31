@@ -603,7 +603,11 @@ export default {
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
                                         @click="exportAsGeoJson(mapLayer)"
                                     >
-                                        <span class="glyphicon glyphicon-floppy-disk" />
+                                        <v-icon
+                                            left
+                                        >
+                                            mdi-floppy
+                                        </v-icon>
                                         Download GeoJSON
                                     </v-btn>
                                 </div>
