@@ -474,7 +474,7 @@ export default {
         >
             <v-app>
                 <ToolInfo :url="readmeUrl[currentLocale]" />
-                <form class="district-selector">
+                <form>
                     <v-select
                         v-model="selectedLevelId"
                         :items="districtLevels"
@@ -525,27 +525,23 @@ export default {
                             mdi-help-circle
                         </v-icon>
                     </div>
-                    <div
-                        class="form-group"
-                    >
-                        <v-row dense>
-                            <v-col
-                                v-for="(ids, key) in additionalInfoLayers"
-                                :key="key"
-                            >
-                                <v-checkbox
-                                    v-model="visibleInfoLayers"
-                                    :value="key"
-                                    multiple
-                                    dense
-                                    hide-details
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
-                                />
-                            </v-col>
-                        </v-row>
-                    </div>
+                    <v-row dense>
+                        <v-col
+                            v-for="(ids, key) in additionalInfoLayers"
+                            :key="key"
+                        >
+                            <v-checkbox
+                                v-model="visibleInfoLayers"
+                                :value="key"
+                                multiple
+                                dense
+                                hide-details
+                                class="form-check-input"
+                                type="checkbox"
+                                :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
+                            />
+                        </v-col>
+                    </v-row>
                     <v-divider />
                     <v-btn
                         dense
@@ -580,25 +576,13 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
+<style lang="css" scoped>
     form {
         max-width: 430px;;
     }
 </style>
 
-<style lang="less">
-    .district-selector {
-        .form-group {
-            .v-input--selection-controls {
-                margin-top: 0px;
-            }
-            .v-label {
-                font-size: 12px;
-                padding-bottom: 0px;
-                padding-top: 6px;
-            }
-        }
-    }
+<style lang="css">
     .ol-dragbox {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);

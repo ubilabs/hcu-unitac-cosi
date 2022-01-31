@@ -69,9 +69,11 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
         return [];
     }
 
-    // special case for FHH
+    // Sets missing attribute "verwaltungseinheit" = "hamburg_gesamt" to the hamburg administration feature
     if (label === "Hamburg") {
-        getHamburgDistrict(layer);
+        layer.getSource().getFeatures().forEach(feature => {
+            feature.set("verwaltungseinheit", "hamburg_gesamt");
+        });
     }
 
     const districts = [];
@@ -147,19 +149,6 @@ export function getFeatureTypes (urls) {
     }
 
     return featureTypes;
-}
-
-/**
- * Returns the district object for the district level Hamburg.
- * This is a special case, because there is no own 'adminFeature' for this level.
- * The statistical features are get via the source of the Bezirke.
- * @param {module:ol/layer/Vector} layer - The geometry layer
- * @returns {void}
- */
-export function getHamburgDistrict (layer) {
-    layer.getSource().getFeatures().forEach(feature => {
-        feature.set("verwaltungseinheit", "hamburg_gesamt");
-    });
 }
 
 /**

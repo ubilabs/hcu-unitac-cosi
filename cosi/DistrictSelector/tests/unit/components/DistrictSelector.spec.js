@@ -1,10 +1,11 @@
-import {config, shallowMount, createLocalVue} from "@vue/test-utils";
+import {config, mount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import Vuex from "vuex";
 import DistrictSelector from "../../../components/DistrictSelector.vue";
 import DistrictSelectorStore from "../../../store/indexDistrictSelector";
 import Vuetify from "vuetify";
 import Layer from "ol/layer/Vector.js";
+import FeatureCollection from "ol/Collection";
 import Source from "ol/source/Vector.js";
 import sinon from "sinon";
 import Vue from "vue";
@@ -16,7 +17,7 @@ const localVue = createLocalVue();
 Vue.use(Vuetify);
 localVue.use(Vuex);
 
-config.mocks.$t = key => key;
+global.requestAnimationFrame = (fn) => fn();
 
 describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
     let vuetify, store;
@@ -25,7 +26,8 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
             visibleLayerList: () => sinon.stub()
         },
         mockMapActions = {
-            addInteraction: () => sinon.stub()
+            addInteraction: () => sinon.stub(),
+            resetView: () => sinon.stub()
         },
         mockMapMutations = {
         },
@@ -42,8 +44,8 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
             ]
         },
         factory = {
-            getShallowMount: (values = {}, isActive = true) => {
-                return shallowMount(DistrictSelector, {
+            getMount: (values = {}, isActive = true) => {
+                return mount(DistrictSelector, {
                     store,
                     localVue,
                     vuetify,
@@ -71,6 +73,7 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
         sinon.spy(layerOne.getSource(), "on");
     });
 
+
     beforeEach(() => {
         vuetify = new Vuetify();
         store = new Vuex.Store({
@@ -87,96 +90,126 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                     getters: mockMapGetters,
                     mutations: mockMapMutations,
                     actions: mockMapActions
+                },
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => sinon.stub()
+                    }
+                },
+                Alerting: {
+                    namespaced: true,
+                    actions: {
+                        addSingleAlert: () => sinon.stub()
+                    }
                 }
+            },
+            getters: {
+                uiStyle: () => true
             }
         });
     });
 
     describe("Component DOM", () => {
         it("should exist", () => {
-            const wrapper = factory.getShallowMount();
+            const wrapper = factory.getMount();
 
             expect(wrapper.exists()).to.be.true;
         });
 
         it("should find Tool component", () => {
-            const wrapper = factory.getShallowMount(),
+            const wrapper = factory.getMount(),
                 toolWrapper = wrapper.findComponent({name: "Tool"});
 
             expect(toolWrapper.exists()).to.be.true;
         });
 
         it("should not render if active is false", () => {
-            const wrapper = factory.getShallowMount({}, false);
+            const wrapper = factory.getMount({}, false);
 
             expect(wrapper.find("form").exists()).to.be.false;
         });
 
-        it("should find a select component with the value '123'", () => {
-            const wrapper = factory.getShallowMount(),
-                selectWrapper = wrapper.findAllComponents({name: "v-select"});
+        it("should find a select component with the text 'Stube'", () => {
+            const wrapper = factory.getMount(),
+                selectWrapper = wrapper.findComponent({name: "v-select"});
 
-            expect(selectWrapper.at(0).attributes("value")).to.equal("123");
+            expect(selectWrapper.find(".v-select__selection").text()).to.equal("Stube");
         });
 
-        it("should find a select component with the given 'selectedNames'", () => {
-            const wrapper = factory.getShallowMount({selectedNames: ["Uwe"]}),
-                selectWrapper = wrapper.findAllComponents({name: "v-select"});
+        it("should find an empty multiple autocomplete component with the items 'Kamin, Sessel, Sofa'", async () => {
+            const wrapper = factory.getMount(),
+                autoCompleteWrapper = wrapper.findComponent({name: "v-autocomplete"});
 
-            expect(selectWrapper.at(1).attributes("value")).to.equal("Uwe");
+            await wrapper.setData({selectedDistrictLevel: {nameList: ["Kamin", "Sessel", "Sofa"]}});
+
+            expect(autoCompleteWrapper.props("multiple")).to.be.true;
+            expect(autoCompleteWrapper.props("items")).to.deep.equal(["Kamin", "Sessel", "Sofa"]);
+            expect(autoCompleteWrapper.find(".v-select__selections").text()).to.equal("");
         });
 
         it("should find a text-field component with the type 'number'", () => {
-            const wrapper = factory.getShallowMount(),
+            const wrapper = factory.getMount(),
                 textFieldWrapper = wrapper.findComponent({name: "v-text-field"});
 
             expect(textFieldWrapper.exists()).to.be.true;
-            expect(textFieldWrapper.attributes().type).to.equal("number");
+            expect(textFieldWrapper.props("type")).to.equal("number");
         });
 
         it("should find a checkbox component with the value Sozialräume", () => {
-            const wrapper = factory.getShallowMount(),
-                checkboxWrapper = wrapper.findAllComponents({name: "v-checkbox"});
+            const wrapper = factory.getMount(),
+                checkboxWrapperArray = wrapper.findAllComponents({name: "v-checkbox"});
 
-            expect(checkboxWrapper.exists()).to.be.true;
-            expect(checkboxWrapper.at(0).attributes("value")).to.equal("Sozialräume");
+            expect(checkboxWrapperArray.exists()).to.be.true;
+            expect(checkboxWrapperArray.at(0).props("value")).to.equal("Sozialräume");
         });
 
         it("should find a checkbox component with the value RISE", () => {
-            const wrapper = factory.getShallowMount(),
-                checkboxWrapper = wrapper.findAllComponents({name: "v-checkbox"});
+            const wrapper = factory.getMount(),
+                checkboxWrapperArray = wrapper.findAllComponents({name: "v-checkbox"});
 
-            expect(checkboxWrapper.exists()).to.be.true;
-            expect(checkboxWrapper.at(1).attributes("value")).to.equal("RISE");
+            expect(checkboxWrapperArray.exists()).to.be.true;
+            expect(checkboxWrapperArray.at(1).props("value")).to.equal("RISE");
         });
 
-        it("should find three button components with the right text", () => {
-            const wrapper = factory.getShallowMount(),
-                buttonWrapper = wrapper.findAllComponents({name: "v-btn"});
+        it("should find three button components with the right content", () => {
+            const wrapper = factory.getMount(),
+                buttonWrapperArray = wrapper.findAllComponents({name: "v-btn"});
 
-            expect(buttonWrapper.exists()).to.be.true;
-            expect(buttonWrapper).to.have.lengthOf(3);
-            expect(buttonWrapper.wrappers[0].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonConfirm");
-            expect(buttonWrapper.wrappers[1].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonReset");
-            expect(buttonWrapper.wrappers[2].text()).to.equal("mdi-pencil");
+            expect(buttonWrapperArray.exists()).to.be.true;
+            expect(buttonWrapperArray).to.have.lengthOf(3);
+            expect(buttonWrapperArray.wrappers[0].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonConfirm");
+            expect(buttonWrapperArray.wrappers[1].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonReset");
+            expect(buttonWrapperArray.wrappers[2].findComponent({name: "v-icon"}).classes("mdi-pencil")).to.be.true;
 
         });
     });
 
     describe("Computed Properties", () => {
         it("should update 'namesOfDistricts' if 'selectedDistrictLevel' was changed", async () => {
-            const dummyDistrict = {
-                    nameList: ["Marc", "Uwe", "Kling"]
-                },
-                dummyDistrictTwo = {
+            const dummyDistrictTwo = {
                     nameList: ["Mario", "und", "Luigi"]
                 },
-                wrapper = factory.getShallowMount({selectedDistrictLevel: dummyDistrict});
+                wrapper = factory.getMount();
 
             await wrapper.setData({
                 selectedDistrictLevel: dummyDistrictTwo
             });
             expect(wrapper.vm.namesOfDistricts).to.deep.equal(["Mario", "und", "Luigi"]);
+        });
+
+        it("should update 'selectedNames' if 'selectedDistrictName' was changed", () => {
+            const wrapper = factory.getMount();
+
+            wrapper.vm.setSelectedDistrictNames(["Laurel", "und", "Hardy"]);
+            expect(wrapper.vm.selectedNames).to.deep.equal(["Laurel", "und", "Hardy"]);
+        });
+
+        it("should update 'selectedLevelId' if 'selectedDistrictLevelId' was changed", () => {
+            const wrapper = factory.getMount();
+
+            wrapper.vm.setSelectedDistrictLevelId("456");
+            expect(wrapper.vm.selectedLevelId).to.equal("456");
         });
     });
 
@@ -184,73 +217,91 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
         it("created", () => {
             const spySetNonReactiveData = sinon.spy(DistrictSelector.methods, "setNonReactiveData"),
                 spyInitializeAdditionalInfoLayers = sinon.spy(DistrictSelector.methods, "initializeAdditionalInfoLayers"),
-                wrapper = factory.getShallowMount();
+                wrapper = factory.getMount();
 
             expect(wrapper.vm.districtLevels[0]).to.have.all.keys("districts", "referenceLevel", "featureTypes", "propertyNameList", "nameList", "layer", "label", "stats", "layerId");
             expect(wrapper.vm.selectedLevelId).to.equal("123");
             expect(spySetNonReactiveData.calledOnce).to.be.true;
             expect(spyInitializeAdditionalInfoLayers.calledOnce).to.be.true;
+            spySetNonReactiveData.restore();
+            spyInitializeAdditionalInfoLayers.restore();
         });
     });
 
-    describe("User Interactions", () => {
+    describe("Watchers", () => {
+        it("should call 'transferFeatures' after selectedDistrictsCollection was changed", async () => {
+            const spyTransferFeatures = sinon.spy(DistrictSelector.methods, "transferFeatures"),
+                wrapper = factory.getMount();
 
-        it("should call 'clearFeatures' and 'changeSelectedDistrictLevel' if user changes district level", async () => {
-            const spyClearFeatures = sinon.spy(DistrictSelector.methods, "clearFeatures"),
-                spyChangeSelectedDistrictLevel = sinon.spy(DistrictSelector.methods, "changeSelectedDistrictLevel"),
-                wrapper = factory.getShallowMount(),
-                selectWrapperArray = wrapper.findAllComponents({name: "v-select"});
+            await wrapper.vm.setSelectedDistrictsCollection(new FeatureCollection());
 
-            await selectWrapperArray.at(0).trigger("input");
+
+            expect(spyTransferFeatures.calledOnce).to.be.true;
+            spyTransferFeatures.restore();
+        });
+
+        it("should call 'clearFeatures' and 'changeSelectedDistrictLevel' after selectedLevelId was changed", async () => {
+            const spyChangeSelectedDistrictLevel = sinon.spy(DistrictSelector.methods, "changeSelectedDistrictLevel"),
+                spyClearFeatures = sinon.spy(DistrictSelector.methods, "clearFeatures"),
+                wrapper = factory.getMount();
+
+            await wrapper.setData({selectedLevelId: "456"});
 
             expect(spyClearFeatures.calledOnce).to.be.true;
             expect(spyChangeSelectedDistrictLevel.calledOnce).to.be.true;
             spyClearFeatures.restore();
+            spyChangeSelectedDistrictLevel.restore();
         });
 
-        // keine Ahnung warum der Test nicht funktioniert
-        // it("should call 'updateSelectedFeatures' if user selects district names", async () => {
-        //     const spyUpdateSelectedFeatures = sinon.spy(DistrictSelector.methods, "updateSelectedFeatures"),
-        //         wrapper = factory.getShallowMount(),
-        //         selectWrapperArray = wrapper.findAllComponents({name: "v-select"});
+        it("should call 'toggleAdditionalLayers' after visibleInfoLayers was changed", async () => {
+            const spyToggleAdditionalLayers = sinon.spy(DistrictSelector.methods, "toggleAdditionalLayers"),
+                wrapper = factory.getMount();
 
-        //     await selectWrapperArray.at(1).trigger("input");
+            await wrapper.setData({visibleInfoLayers: [true, false]});
 
-        //     expect(spyUpdateSelectedFeatures.calledOnce).to.be.true;
-        // });
+            expect(spyToggleAdditionalLayers.calledOnce).to.be.true;
+            spyToggleAdditionalLayers.restore();
+        });
+    });
 
-        // keine Ahnung warum der Test nicht funktioniert
-        // it("should call 'setActive' if user clicks the confirm button", async () => {
-        //     const spySetActive = sinon.spy(DistrictSelector.methods, "setActive"),
-        //         wrapper = factory.getShallowMount(),
-        //         btnWrapperArray = wrapper.findAllComponents({name: "v-btn"});
+    describe("User Interactions", () => {
+        it("should display the correct value if the user changes the district level selection", async () => {
+            const wrapper = factory.getMount(),
+                selectWrapper = wrapper.findComponent({name: "v-select"});
 
-        //     await btnWrapperArray.at(0).trigger("click");
-        //     expect(spySetActive.calledOnce).to.be.true;
-        //     spySetActive.restore();
-        // });
+            selectWrapper.vm.selectItem("456");
+            await wrapper.vm.$nextTick();
 
-        it("should call 'clearFeatures' if user clicks the reset button", async () => {
-            const spyClearFeatures = sinon.spy(DistrictSelector.methods, "clearFeatures"),
-                wrapper = factory.getShallowMount(),
+            expect(selectWrapper.find(".v-select__selection").text()).to.equal("Kueche");
+        });
+
+        it("should remove all features if user clicks the reset button", async () => {
+            const wrapper = factory.getMount(),
                 btnWrapperArray = wrapper.findAllComponents({name: "v-btn"});
 
             await btnWrapperArray.at(1).trigger("click");
-            expect(spyClearFeatures.calledOnce).to.be.true;
-            spyClearFeatures.restore();
+            expect(wrapper.vm.select.getFeatures().getLength()).to.be.equal(0);
+        });
+
+        it("should activate the dropbox interaction if user clicks the mdi-pencil button", async () => {
+            const wrapper = factory.getMount(),
+                btnWrapperArray = wrapper.findAllComponents({name: "v-btn"});
+
+            await btnWrapperArray.at(2).trigger("click");
+            expect(wrapper.vm.dragBox.getActive()).to.be.true;
         });
     });
 
     describe("Methdos", () => {
         it("changeSelectedDistrictLevel", () => {
-            const wrapper = factory.getShallowMount();
+            const wrapper = factory.getMount();
 
             wrapper.vm.changeSelectedDistrictLevel("456");
             expect(wrapper.vm.selectedDistrictLevel.layerId).to.equal("456");
         });
 
         it("getDistrictLevelById", () => {
-            const wrapper = factory.getShallowMount(),
+            const wrapper = factory.getMount(),
                 districtLevel = wrapper.vm.getDistrictLevelById("456");
 
             expect(districtLevel).to.be.an("object");
@@ -259,14 +310,15 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
 
         it("showAlert", () => {
             const spyShowAlert = sinon.spy(DistrictSelector.methods, "showAlert"),
-                wrapper = factory.getShallowMount();
+                wrapper = factory.getMount();
 
             wrapper.vm.showAlert();
             expect(spyShowAlert.calledOnce).to.be.true;
+            spyShowAlert.restore();
         });
 
         it("toggleDragBox", () => {
-            const wrapper = factory.getShallowMount();
+            const wrapper = factory.getMount();
 
             wrapper.vm.toggleDragBox();
             expect(wrapper.vm.dragBox.getActive()).to.be.true;

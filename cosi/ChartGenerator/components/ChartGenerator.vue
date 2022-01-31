@@ -277,7 +277,11 @@ export default {
                                         :title="$t('additional:modules.tools.cosi.chartGenerator.removeChart')"
                                         @click="removeGraph(index)"
                                     >
-                                        <span class="glyphicon glyphicon-remove" />
+                                        <v-icon
+                                            dense
+                                        >
+                                            mdi-close
+                                        </v-icon>
                                     </button>
                                 </div>
                             </div>
@@ -337,7 +341,11 @@ export default {
                                                         @click="downloadGraph()"
                                                     >
                                                         PNG
-                                                        <span class="glyphicon glyphicon-download-alt" />
+                                                        <v-icon
+                                                            dense
+                                                        >
+                                                            mdi-download
+                                                        </v-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -391,7 +399,11 @@ export default {
                                                     @click="downloadGraph()"
                                                 >
                                                     PNG
-                                                    <span class="glyphicon glyphicon-download-alt" />
+                                                    <v-icon
+                                                        dense
+                                                    >
+                                                        mdi-download
+                                                    </v-icon>
                                                 </button>
                                             </div>
                                         </div>
@@ -418,28 +430,44 @@ export default {
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.prevChart')"
                                             @click="graphPrevNext(-1)"
                                         >
-                                            <span class="glyphicon glyphicon-chevron-left" />
+                                            <v-icon
+                                                dense
+                                            >
+                                                mdi-chevron-left
+                                            </v-icon>
                                         </button>
                                         <button
                                             class="nxt"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.nextChart')"
                                             @click="graphPrevNext(+1)"
                                         >
-                                            <span class="glyphicon glyphicon-chevron-right" />
+                                            <v-icon
+                                                dense
+                                            >
+                                                mdi-chevron-right
+                                            </v-icon>
                                         </button>
                                         <button
                                             class="dl"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.downloadAll')"
                                             @click="downloadAll()"
                                         >
-                                            <span class="glyphicon glyphicon-download-alt" />
+                                            <v-icon
+                                                dense
+                                            >
+                                                mdi-download
+                                            </v-icon>
                                         </button>
                                         <button
                                             class="rm"
                                             :title="$t('additional:modules.tools.cosi.chartGenerator.deleteAll')"
                                             @click="removeAll()"
                                         >
-                                            <span class="glyphicon glyphicon-remove" />
+                                            <v-icon
+                                                dense
+                                            >
+                                                mdi-close
+                                            </v-icon>
                                         </button>
                                     </div>
                                 </template>

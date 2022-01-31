@@ -408,204 +408,198 @@ export default {
                         v-else
                         id="scenario-builder"
                     >
-                        <form class="form-inline features-list-controls">
+                        <form class="features-list-controls">
                             <v-divider />
                             <div class="mb-5 overline">
                                 {{ $t('additional:modules.tools.cosi.scenarioBuilder.layerSelector') }}
                             </div>
-                            <div class="form-group">
-                                <v-select
-                                    v-if="groupActiveLayer.length > 0"
-                                    v-model="workingLayer"
-                                    class="layer_selection selection"
-                                    :items="groupActiveLayer"
-                                    dense
-                                    outlined
-                                    clearable
-                                    :placeholder="$t('additional:modules.tools.cosi.scenarioBuilder.layerSelector')"
-                                />
-                            </div>
+                            <v-select
+                                v-if="groupActiveLayer.length > 0"
+                                v-model="workingLayer"
+                                class="layer_selection selection"
+                                :items="groupActiveLayer"
+                                dense
+                                outlined
+                                clearable
+                                :placeholder="$t('additional:modules.tools.cosi.scenarioBuilder.layerSelector')"
+                            />
                             <v-divider />
                             <template v-if="featureTypeDesc.length > 0">
                                 <div class="mb-5 overline">
                                     {{ $t('additional:modules.tools.cosi.scenarioBuilder.toolMenu') }}
                                 </div>
-                                <div class="form-group">
-                                    <v-row>
-                                        <v-col cols="4">
-                                            <ReferencePicker
-                                                :working-layer="workingLayer"
-                                                :active="active"
-                                                :use-icons="useIcons"
-                                                @pickReference="getDataFromReferenceFeature"
-                                                @referencePickerActive="geomPickerUnlisten"
-                                            />
-                                        </v-col>
-                                        <v-col cols="8">
-                                            <MoveFeatures
-                                                :active-scenario="activeScenario"
-                                                :working-layer="workingLayer"
-                                                :active="active"
-                                                :use-icons="useIcons"
-                                                :guide-layer="guideLayer"
-                                                @moveFeaturesActive="geomPickerUnlisten"
-                                            />
-                                        </v-col>
-                                    </v-row>
-                                    <v-divider />
-                                </div>
+                                <v-row>
+                                    <v-col cols="4">
+                                        <ReferencePicker
+                                            :working-layer="workingLayer"
+                                            :active="active"
+                                            :use-icons="useIcons"
+                                            @pickReference="getDataFromReferenceFeature"
+                                            @referencePickerActive="geomPickerUnlisten"
+                                        />
+                                    </v-col>
+                                    <v-col cols="8">
+                                        <MoveFeatures
+                                            :active-scenario="activeScenario"
+                                            :working-layer="workingLayer"
+                                            :active="active"
+                                            :use-icons="useIcons"
+                                            :guide-layer="guideLayer"
+                                            @moveFeaturesActive="geomPickerUnlisten"
+                                        />
+                                    </v-col>
+                                </v-row>
+                                <v-divider />
                                 <div class="mb-5 overline">
                                     {{ $t('additional:modules.tools.cosi.scenarioBuilder.configureFeature') }}
                                 </div>
-                                <div class="form-group">
-                                    <v-expansion-panels
-                                        v-model="panel"
-                                        accordion
-                                        multiple
+                                <v-expansion-panels
+                                    v-model="panel"
+                                    accordion
+                                    multiple
+                                >
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.geomFieldHeader') }}
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <GeometryPicker
+                                                ref="geometry-picker"
+                                                :geom-field="featureTypeDescSorted.geom"
+                                                :use-icons="useIcons"
+                                                @updateGeometry="updateGeometry"
+                                            />
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.essentialFieldHeader') }}
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <v-row
+                                                v-for="field in featureTypeDescSorted.required"
+                                                :key="field.name"
+                                                class="essential-field"
+                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.essentialField')"
+                                                dense
+                                            >
+                                                <v-col cols="3">
+                                                    <v-subheader :title="beautifyKey(field.name)">
+                                                        {{ beautifyKey(field.name) }}
+                                                    </v-subheader>
+                                                </v-col>
+                                                <v-col cols="9">
+                                                    <v-switch
+                                                        v-if="typesMapping[field.type] === 'boolean'"
+                                                        v-model="featureProperties[field.name]"
+                                                        :label="mapDataTypes(field.type)"
+                                                        dense
+                                                        :hide-details="false"
+                                                        @change="formValid = requiredFieldsSet()"
+                                                    />
+                                                    <!-- Add Date Picker for dates -->
+                                                    <!-- <v-date-picker
+                                                        v-else-if="typesMapping[field.type] !== 'date'"
+                                                        v-model="featureProperties[field.name]"
+                                                    /> -->
+                                                    <v-combobox
+                                                        v-else
+                                                        v-model="featureProperties[field.name]"
+                                                        :items="valuesForFields[field.name]"
+                                                        :name="field.name"
+                                                        :label="mapDataTypes(field.type)"
+                                                        :rules="validateProp(field, workingLayer)"
+                                                        dense
+                                                        @change="formValid = requiredFieldsSet()"
+                                                    />
+                                                </v-col>
+                                            </v-row>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.optionalFieldHeader') }}
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <v-row
+                                                v-for="field in featureTypeDescSorted.optional"
+                                                :key="field.name"
+                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.optionalField')"
+                                                dense
+                                            >
+                                                <v-col cols="3">
+                                                    <v-subheader :title="beautifyKey(field.name)">
+                                                        {{ beautifyKey(field.name) }}
+                                                    </v-subheader>
+                                                </v-col>
+                                                <v-col cols="9">
+                                                    <v-switch
+                                                        v-if="typesMapping[field.type] === 'boolean'"
+                                                        v-model="featureProperties[field.name]"
+                                                        :label="mapDataTypes(field.type)"
+                                                        dense
+                                                    />
+                                                    <!-- Add Date Picker for dates -->
+                                                    <!-- <v-date-picker
+                                                        v-else-if="typesMapping[field.type] !== 'date'"
+                                                        v-model="featureProperties[field.name]"
+                                                    /> -->
+                                                    <v-combobox
+                                                        v-else
+                                                        v-model="featureProperties[field.name]"
+                                                        :items="valuesForFields[field.name]"
+                                                        :name="field.name"
+                                                        :label="mapDataTypes(field.type)"
+                                                        :rules="validateProp(field, workingLayer)"
+                                                        dense
+                                                    />
+                                                </v-col>
+                                            </v-row>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
+                                <v-row dense>
+                                    <v-progress-linear
+                                        v-if="featureTypeDesc.length > 0 && Object.keys(valuesForFields).length / featureTypeDesc.length < 1"
+                                        :value="100 * Object.keys(valuesForFields).length / featureTypeDesc.length"
+                                        background-color="white"
+                                    />
+                                </v-row>
+                                <v-row>
+                                    <v-col
+                                        class="flex"
+                                        cols="12"
                                     >
-                                        <v-expansion-panel>
-                                            <v-expansion-panel-header>
-                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.geomFieldHeader') }}
-                                            </v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                <GeometryPicker
-                                                    ref="geometry-picker"
-                                                    :geom-field="featureTypeDescSorted.geom"
-                                                    :use-icons="useIcons"
-                                                    @updateGeometry="updateGeometry"
-                                                />
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
-                                        <v-expansion-panel>
-                                            <v-expansion-panel-header>
-                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.essentialFieldHeader') }}
-                                            </v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                <v-row
-                                                    v-for="field in featureTypeDescSorted.required"
-                                                    :key="field.name"
-                                                    class="essential-field"
-                                                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.essentialField')"
-                                                    dense
-                                                >
-                                                    <v-col cols="3">
-                                                        <v-subheader :title="beautifyKey(field.name)">
-                                                            {{ beautifyKey(field.name) }}
-                                                        </v-subheader>
-                                                    </v-col>
-                                                    <v-col cols="9">
-                                                        <v-switch
-                                                            v-if="typesMapping[field.type] === 'boolean'"
-                                                            v-model="featureProperties[field.name]"
-                                                            :label="mapDataTypes(field.type)"
-                                                            dense
-                                                            :hide-details="false"
-                                                            @change="formValid = requiredFieldsSet()"
-                                                        />
-                                                        <!-- Add Date Picker for dates -->
-                                                        <!-- <v-date-picker
-                                                            v-else-if="typesMapping[field.type] !== 'date'"
-                                                            v-model="featureProperties[field.name]"
-                                                        /> -->
-                                                        <v-combobox
-                                                            v-else
-                                                            v-model="featureProperties[field.name]"
-                                                            :items="valuesForFields[field.name]"
-                                                            :name="field.name"
-                                                            :label="mapDataTypes(field.type)"
-                                                            :rules="validateProp(field, workingLayer)"
-                                                            dense
-                                                            @change="formValid = requiredFieldsSet()"
-                                                        />
-                                                    </v-col>
-                                                </v-row>
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
-                                        <v-expansion-panel>
-                                            <v-expansion-panel-header>
-                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.optionalFieldHeader') }}
-                                            </v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                <v-row
-                                                    v-for="field in featureTypeDescSorted.optional"
-                                                    :key="field.name"
-                                                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.optionalField')"
-                                                    dense
-                                                >
-                                                    <v-col cols="3">
-                                                        <v-subheader :title="beautifyKey(field.name)">
-                                                            {{ beautifyKey(field.name) }}
-                                                        </v-subheader>
-                                                    </v-col>
-                                                    <v-col cols="9">
-                                                        <v-switch
-                                                            v-if="typesMapping[field.type] === 'boolean'"
-                                                            v-model="featureProperties[field.name]"
-                                                            :label="mapDataTypes(field.type)"
-                                                            dense
-                                                        />
-                                                        <!-- Add Date Picker for dates -->
-                                                        <!-- <v-date-picker
-                                                            v-else-if="typesMapping[field.type] !== 'date'"
-                                                            v-model="featureProperties[field.name]"
-                                                        /> -->
-                                                        <v-combobox
-                                                            v-else
-                                                            v-model="featureProperties[field.name]"
-                                                            :items="valuesForFields[field.name]"
-                                                            :name="field.name"
-                                                            :label="mapDataTypes(field.type)"
-                                                            :rules="validateProp(field, workingLayer)"
-                                                            dense
-                                                        />
-                                                    </v-col>
-                                                </v-row>
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
-                                    </v-expansion-panels>
-                                    <v-row dense>
-                                        <v-progress-linear
-                                            v-if="featureTypeDesc.length > 0 && Object.keys(valuesForFields).length / featureTypeDesc.length < 1"
-                                            :value="100 * Object.keys(valuesForFields).length / featureTypeDesc.length"
-                                            background-color="white"
-                                        />
-                                    </v-row>
-                                    <v-row>
-                                        <v-col
-                                            class="flex"
-                                            cols="12"
+                                        <v-btn
+                                            dense
+                                            small
+                                            tile
+                                            color="primary"
+                                            :disabled="!activeScenario || geometry === null || !formValid || isCreated"
+                                            class="flex-item"
+                                            :title="!formValid ? $t('additional:modules.tools.cosi.scenarioBuilder.requiredFieldMissing') : ''"
+                                            @click="createFeature"
                                         >
-                                            <v-btn
-                                                dense
-                                                small
-                                                tile
-                                                color="primary"
-                                                :disabled="!activeScenario || geometry === null || !formValid || isCreated"
-                                                class="flex-item"
-                                                :title="!formValid ? $t('additional:modules.tools.cosi.scenarioBuilder.requiredFieldMissing') : ''"
-                                                @click="createFeature"
-                                            >
-                                                <v-icon>mdi-home-plus</v-icon>
-                                                <span>
-                                                    {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
-                                                </span>
-                                            </v-btn>
-                                            <v-btn
-                                                dense
-                                                small
-                                                tile
-                                                color="grey lighten-1"
-                                                :disabled="!activeScenario"
-                                                :title="$t('additional:modules.tools.cosi.scenarioBuilder.helpResetFeature')"
-                                                class="flex-item"
-                                                @click="resetFeature"
-                                            >
-                                                <v-icon>mdi-eraser</v-icon>
-                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}
-                                            </v-btn>
-                                        </v-col>
-                                    </v-row>
-                                </div>
+                                            <v-icon>mdi-home-plus</v-icon>
+                                            <span>
+                                                {{ $t('additional:modules.tools.cosi.scenarioBuilder.createFeature') }}
+                                            </span>
+                                        </v-btn>
+                                        <v-btn
+                                            dense
+                                            small
+                                            tile
+                                            color="grey lighten-1"
+                                            :disabled="!activeScenario"
+                                            :title="$t('additional:modules.tools.cosi.scenarioBuilder.helpResetFeature')"
+                                            class="flex-item"
+                                            @click="resetFeature"
+                                        >
+                                            <v-icon>mdi-eraser</v-icon>
+                                            {{ $t('additional:modules.tools.cosi.scenarioBuilder.resetFeature') }}
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
                             </template>
                         </form>
                     </div>
@@ -653,8 +647,7 @@ export default {
     @import "../../utils/variables.less";
 
     #scenario-builder {
-        .form-group {
-            width: 100%;
+        form {
             .row {
                 margin-top: 0px;
             }

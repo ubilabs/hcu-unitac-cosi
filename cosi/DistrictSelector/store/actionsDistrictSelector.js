@@ -5,6 +5,7 @@ import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
 import {compensateInconsistency} from "../../utils/unifyString";
+import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 
 const actions = {
     /**
@@ -23,11 +24,7 @@ const actions = {
     async loadStatFeatures ({dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
         // commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
-        /**
-         * @deprecated
-         * @todo refactor when Radio removed
-         */
-        Radio.trigger("Util", "showLoader");
+        LoaderOverlay.show();
 
         const wfsFormat = new WFS(),
             urls = districtLevel.stats.baseUrl;
@@ -45,7 +42,7 @@ const actions = {
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
-                    if (olFeatures.length > 0 && j === 0) {
+                    if (olFeatures.length > 0 && urls[j].search("prognose") === -1) {
                         olFeatures.forEach(prepareStatsFeatures);
 
                         // add statFeatures to district
@@ -53,7 +50,7 @@ const actions = {
                         // store original data on the district as a copy
                         districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
                     }
-                    else if (olFeatures.length > 0 && j >= 1) {
+                    else if (olFeatures.length > 0 && urls[j].search("prognose") !== -1) {
                         const features = createStatFeaturesFromLTF(olFeatures, districtLevel.stats.keyOfAttrName);
 
                         // add statFeatures to district
@@ -89,22 +86,14 @@ const actions = {
                 districtLevel: referenceLevel,
                 getStatFeatures: wfsGetFeature
             });
-            /**
-             * @deprecated
-             * @todo refactor when Radio removed
-             */
-            Radio.trigger("Util", "hideLoader");
+            LoaderOverlay.hide();
         }
 
         else {
             // commit("setLoadend", true);
             dispatch("updateDistricts");
             dispatch("Alerting/cleanup", null, {root: true});
-            /**
-             * @deprecated
-             * @todo refactor when Radio removed
-             */
-            Radio.trigger("Util", "hideLoader");
+            LoaderOverlay.hide();
         }
     },
 
