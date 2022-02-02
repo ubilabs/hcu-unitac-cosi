@@ -772,7 +772,7 @@ export default {
                         >
                             <v-container>
                                 <v-card-title primary-title>
-                                    {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }} : {{ neighborhood.name }}
+                                    {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }} : {{ neighborhood.name }}
                                 </v-card-title>
                                 <v-subheader>
                                     {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}

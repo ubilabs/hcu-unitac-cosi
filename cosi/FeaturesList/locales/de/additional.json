@@ -33,7 +33,18 @@
                     "itemsPerPage": "Einträge pro Seite",
                     "itemsPerPageAll": "Alle",
                     "count": "Anzahl",
-                    "createCharts": "Diagramme erstellen"
+                    "createCharts": "Diagramme erstellen",
+                    "dipas": {
+                        "createCharts": "DIPAS Diagramme erstellen",
+                        "comments": "Kommentare",
+                        "commentsPerCategory": " Kommentare pro Kategorie",
+                        "category": "Kategorie",
+                        "contributions": "Beiträge",
+                        "contributionsOverTime": " Beiträge im Verlauf der Zeit",
+                        "commentsVoting": "Kommentare/Voting",
+                        "commentsVotingText": " Anzahl Kommentare nach Voting",
+                        "voting": "Voting"
+                    }
                 }
             }
         }

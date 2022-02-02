@@ -215,7 +215,7 @@ export default {
         alertError () {
             this.addSingleAlert({
                 category: "Warnung",
-                content: this.$t("additional:modules.tools.cosi.residentialSimulation.errorPickReference"),
+                content: this.$t("additional:modules.tools.cosi.referencePicker.errorPickReference"),
                 displayClass: "warning"
             });
         },
@@ -232,7 +232,7 @@ export default {
         <v-row dense>
             <v-col>
                 <div class="overline float-left">
-                    {{ $t('additional:modules.tools.cosi.residentialSimulation.titleReference') }}
+                    {{ $t('additional:modules.tools.cosi.referencePicker.titleReference') }}
                 </div>
                 <v-checkbox
                     v-model="checkbox"
@@ -258,20 +258,6 @@ export default {
                 />
             </v-col>
         </v-row>
-        <!-- TODO: Combine with CompareDistricts/DistrictQuery -->
-        <!-- <v-row>
-            <v-col cols="12">
-                <v-select
-                    v-model="selectedStatsFeature"
-                    :items="statsMapping"
-                    item-text="value"
-                    return-object
-                    :label="$t('additional:modules.tools.cosi.residentialSimulation.statsFeatures')"
-                    :title="$t('additional:modules.tools.cosi.residentialSimulation.showStatsFeatures')"
-                    append-icon="mdi-chart-box"
-                />
-            </v-col>
-        </v-row> -->
         <v-row
             v-if="checkbox"
             dense
@@ -282,12 +268,12 @@ export default {
                     small
                     tile
                     :color="referencePickerActive ? 'primary' : 'grey lighten-1'"
-                    :title="$t('additional:modules.tools.cosi.residentialSimulation.pickReference')"
+                    :title="$t('additional:modules.tools.cosi.referencePicker.pickReference')"
                     @click="togglePickReference"
                 >
                     <v-icon>mdi-eyedropper</v-icon>
                     <span>
-                        {{ $t('additional:modules.tools.cosi.residentialSimulation.pickReference') }}
+                        {{ $t('additional:modules.tools.cosi.referencePicker.pickReference') }}
                     </span>
                 </v-btn>
                 <v-btn
@@ -337,7 +323,7 @@ export default {
                 </v-btn>
             </div>
             <div>
-                {{ $t('additional:modules.tools.cosi.residentialSimulation.noReference') }}
+                {{ $t('additional:modules.tools.cosi.referencePicker.noReference') }}
             </div>
         </div>
     </v-form>

@@ -16,6 +16,7 @@ import getFieldTypeForValue from "../utils/getFieldTypeForValue";
 import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
+import FeatureEditor from "./FeatureEditor.vue";
 import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
@@ -31,7 +32,8 @@ export default {
         ReferencePicker,
         MoveFeatures,
         ScenarioManager,
-        GeometryPicker
+        GeometryPicker,
+        FeatureEditor
     },
     data () {
         return {
@@ -161,9 +163,9 @@ export default {
         });
         await this.createGuideLayer();
     },
-    mounted () {
-        this.map.addEventListener("click", this.openEditDialog.bind(this));
-    },
+    // mounted () {
+    //     this.map.addEventListener("click", this.openEditDialog.bind(this));
+    // },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
@@ -606,7 +608,7 @@ export default {
                 </v-app>
             </template>
         </Tool>
-        <v-app>
+        <!-- <v-app>
             <v-snackbar
                 v-model="editDialog"
                 :timeout="-1"
@@ -629,17 +631,10 @@ export default {
                     >
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <!-- NOT IMPLEMENTED -->
-                    <!-- <v-btn
-                        v-bind="attrs"
-                        text
-                        @click="editStatsTable = true; editDialog = false;"
-                    >
-                        {{ $t("common:button.edit") }}
-                    </v-btn> -->
                 </template>
             </v-snackbar>
-        </v-app>
+        </v-app> -->
+        <FeatureEditor />
     </div>
 </template>
 
