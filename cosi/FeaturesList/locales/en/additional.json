@@ -27,7 +27,20 @@
                     "scoresDialogHistogramTitle": "Distribution of scores",
                     "scoresDialogTitle": "Zusammensetzung",
                     "itemsPerPage": "Rows per Page",
-                    "itemsPerPageAll": "All"
+                    "itemsPerPageAll": "All",
+                    "count": "count",
+                    "createCharts": "create charts",
+                    "dipas": {
+                        "createCharts": "create DIPAS charts",
+                        "comments": "comments",
+                        "commentsPerCategory": " comments per category",
+                        "category": "category",
+                        "contributions": "contributions",
+                        "contributionsOverTime": " contributions over time",
+                        "commentsVoting": "comments/voting",
+                        "commentsVotingText": " number of comments by voting",
+                        "voting": "voting"
+                    }
                 }
             }
         }

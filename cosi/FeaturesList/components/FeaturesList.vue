@@ -124,7 +124,8 @@ export default {
             ],
             numericalColumns: [],
             distScoreLayer: null,
-            exportDetails: false
+            exportDetails: false,
+            dipasInFeaturesList: true
         };
     },
     computed: {
@@ -251,6 +252,12 @@ export default {
         items (newItems, oldItems) {
             if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
                 this.updateDistanceScores();
+            }
+            if (newItems.length > 0 && newItems.some(item => item.group === "DIPAS")) {
+                this.dipasInFeaturesList = true;
+            }
+            else {
+                this.dipasInFeaturesList = false;
             }
             this.showDistanceScoreFeatures();
         },
@@ -463,10 +470,28 @@ export default {
             });
         },
 
+        getActiveDipasItems () {
+            return this.getActiveItems().filter(item => {
+                if (item.group === "DIPAS") {
+                    return true;
+                }
+                return false;
+            });
+        },
+
         getActiveLayers () {
             return this.layerFilter.length > 0 ?
                 this.flatActiveLayerMapping.filter(layerMap => this.layerFilter.map(l => l.layerId).includes(layerMap.layerId)) :
                 this.flatActiveLayerMapping;
+        },
+
+        getActiveDipasLayers () {
+            return this.getActiveLayers().filter(layer => {
+                if (layer.group === "DIPAS") {
+                    return true;
+                }
+                return false;
+            });
         },
 
         /**
@@ -776,6 +801,152 @@ export default {
 
             this.channelGraphData(layerCharts);
         },
+        /**
+         * @todo Refactor to utils
+         * @returns {void}
+         */
+        createDipasCharts () {
+            const graphData = [];
+
+            this.createDipasCommentsNumberGraphs(graphData);
+            this.createDipasTimeGraphs(graphData);
+            this.createDipasScatterGraphs(graphData);
+            this.channelGraphData(graphData);
+        },
+        createDipasCommentsNumberGraphs (graphData) {
+            const activeItems = this.getActiveDipasItems(),
+                types = this.getDistrictsAndTypes(activeItems).types,
+                activeLayerMapping = this.getActiveDipasLayers(),
+                layerCharts = activeLayerMapping.map(layer => {
+                    const chartData = {
+                        labels: types[layer.layerId],
+                        datasets: [{
+                            label: this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"),
+                            data: types[layer.layerId].map(type => {
+                                return activeItems.reduce((sum, item) => {
+                                    return item.layerId === layer.layerId && item.type === type ? sum + parseInt(item.commentsNumber, 10) : sum;
+                                }, 0);
+                            })
+                        }]
+                    };
+
+                    return new ChartDataset({
+                        id: this.id + "-" + layer.layerId + "-commentsNumberChart",
+                        name: layer.id.replace(" contributions", "") + this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsPerCategory"),
+                        type: "BarChart",
+                        color: "rainbow",
+                        source: this.$t("additional:modules.tools.cosi.dipas.title"),
+                        scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"), this.$t("additional:modules.tools.cosi.featuresList.dipas.category")],
+                        data: chartData,
+                        beginAtZero: true
+                    });
+                });
+
+            graphData.push(...layerCharts);
+        },
+        createDipasTimeGraphs (graphData) {
+            const activeItems = this.getActiveDipasItems(),
+                activeLayerMapping = this.getActiveDipasLayers(),
+                layerCharts = activeLayerMapping.map(layer => {
+                    const dates = activeItems.filter(item => {
+                            if (item.layerId === layer.layerId) {
+                                return true;
+                            }
+                            return false;
+                        }).map(item => {
+                            return item.feature.values_.dateCreated;
+                        }).sort(),
+                        chartData = {
+                            labels: dates,
+                            datasets: [{
+                                label: this.$t("additional:modules.tools.cosi.featuresList.dipas.contributions"),
+                                data: dates.map((date, index) => {
+                                    return {t: date, y: index + 1};
+                                })
+                            }]
+                        },
+                        currentLocale = this.currentLocale;
+
+                    return new ChartDataset({
+                        id: this.id + "-" + layer.layerId + "-timeChart",
+                        name: layer.id.replace(" contributions", "") + this.$t("additional:modules.tools.cosi.featuresList.dipas.contributionsOverTime"),
+                        type: "LineChart",
+                        color: "rainbow",
+                        source: this.$t("additional:modules.tools.cosi.dipas.title"),
+                        scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.dipas.contributions"), this.$t("additional:modules.tools.cosi.featuresList.dipas.contributions")],
+                        options: {
+                            scales: {
+                                xAxes: [{
+                                    type: "time"
+                                }]
+                            },
+                            tooltips: {
+                                callbacks: {
+                                    title: function (tooltipItem) {
+                                        return new Date(tooltipItem[0].label).toLocaleString(currentLocale);
+                                    }
+                                }
+                            }
+                        },
+                        data: chartData,
+                        beginAtZero: true
+                    });
+                });
+
+            graphData.push(...layerCharts);
+        },
+
+        createDipasScatterGraphs (graphData) {
+            const activeItems = this.getActiveDipasItems(),
+                activeLayerMapping = this.getActiveDipasLayers(),
+                layerCharts = activeLayerMapping.map(layer => {
+                    const chartData = {
+                        datasets: [{
+                            label: this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsVoting"),
+                            data: activeItems.filter(item => {
+                                if (item.layerId === layer.layerId) {
+                                    return true;
+                                }
+                                return false;
+                            }).map(item => {
+                                return {x: parseInt(item.votingPro, 10) - parseInt(item.votingContra, 10), y: parseInt(item.commentsNumber, 10), name: item.name};
+                            })
+                        }]
+                    };
+
+                    return new ChartDataset({
+                        id: this.id + "-" + layer.layerId + "-scatterChart",
+                        name: layer.id.replace(" contributions", "") + this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsVotingText"),
+                        type: "ScatterChart",
+                        color: "rainbow",
+                        source: this.$t("additional:modules.tools.cosi.dipas.title"),
+                        scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"), this.$t("additional:modules.tools.cosi.featuresList.dipas.voting")],
+                        options: {
+                            tooltips: {
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        const index = tooltipItem.index,
+                                            name = data.datasets[0].data[index].name;
+
+                                        return name;
+                                    },
+                                    title: function (tooltipItem, data) {
+                                        return data.datasets[0].label + " (" + tooltipItem[0].yLabel + "/" + tooltipItem[0].xLabel + ")";
+                                    },
+                                    footer: () => {
+                                        return null;
+                                    }
+                                }
+                            }
+                        },
+                        data: chartData,
+                        beginAtZero: true
+                    });
+                });
+
+            graphData.push(...layerCharts);
+        },
+
         getDistrictsAndTypes (items) {
             const
                 districts = {},
@@ -897,6 +1068,19 @@ export default {
                         @click="createCharts"
                     >
                         <v-icon>mdi-poll</v-icon>
+                    </v-btn>
+                    <v-btn
+                        v-if="dipasInFeaturesList"
+                        id="create-dipas-charts"
+                        dense
+                        small
+                        tile
+                        color="grey lighten-1"
+                        class="mb-2 ml-2"
+                        :title="$t('additional:modules.tools.cosi.featuresList.createDipasCharts')"
+                        @click="createDipasCharts"
+                    >
+                        <v-icon>mdi-thumbs-up-down</v-icon>
                     </v-btn>
                     <v-btn
                         id="export-table"
