@@ -107,7 +107,7 @@ export default {
                 buffered = buffer(extent, 500);
 
             this.zoomTo({geometryOrExtent: buffered, options: {}});
-            console.log(this.item);
+
             if (!this.item.enabled) {
                 this.addSingleAlert({
                     content: this.$t("additional:modules.tools.cosi.featuresList.inactiveFeature"),
