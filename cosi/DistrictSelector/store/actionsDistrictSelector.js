@@ -21,8 +21,8 @@ const actions = {
      * @param {Boolean} [payload.recursive=true] - Should reference districts be loaded automatically?.
      * @returns {void}
      */
-    async loadStatFeatures ({commit, dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
-        commit("setLoadend", false);
+    async loadStatFeatures ({dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
+        // commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         LoaderOverlay.show();
 
@@ -90,7 +90,8 @@ const actions = {
         }
 
         else {
-            commit("setLoadend", true);
+            // commit("setLoadend", true);
+            dispatch("updateDistricts");
             dispatch("Alerting/cleanup", null, {root: true});
             LoaderOverlay.hide();
         }

@@ -3,6 +3,7 @@ import getAvailableYears from "../../utils/getAvailableYears";
 import getIntersectionCoverage from "../../ResidentialSimulation/utils/getIntersectionCoverage";
 import {getAllContainingDistricts} from "../../utils/geomUtils";
 import store from "../../../../src/app-store";
+import hash from "object-hash";
 
 /**
  * @description Stores the scenario specific properties of a residential district feature
@@ -21,7 +22,20 @@ export default class ScenarioNeighborhood {
         this.active = false;
         this.activeDistrictLevels = districtLevels;
 
+        this.setDefaultProperties();
         this.computeContainingDistricts(districtLevels);
+    }
+
+    /**
+     * @private
+     * @description sets the ID and default flags
+     * @returns {void}
+     */
+    setDefaultProperties () {
+        // flag the feature as a neighborhood
+        this.feature.set("isNeighborhood", true);
+        // create unique hash as ID
+        this.feature.setId(hash({...this.feature.getProperties(), geom: this.feature.getGeometry()}));
     }
 
     /**
@@ -134,5 +148,17 @@ export default class ScenarioNeighborhood {
         }
 
         store.dispatch("Tools/DistrictSelector/updateDistricts");
+    }
+
+    /**
+     * Replaces the map feature and rerenders the neighborhood
+     * @param {module:ol/Feature} feature the OpenLayers Feature created
+     * @returns {void}
+     */
+    setFeature (feature) {
+        this.hideFeature();
+        this.feature = feature;
+        this.setDefaultProperties();
+        this.renderFeature();
     }
 }

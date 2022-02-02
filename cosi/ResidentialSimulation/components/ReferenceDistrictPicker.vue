@@ -16,6 +16,14 @@ export default {
             type: String,
             required: false,
             default: "jahr_"
+        },
+        hasReference: {
+            type: Boolean,
+            default: false
+        },
+        selectedName: {
+            type: String,
+            default: null
         }
     },
     data: () => ({
@@ -24,8 +32,6 @@ export default {
         workingDistrictLevel: null,
         selectedStatsFeature: null,
         layer: null,
-        // name of the selected reference district
-        selectedName: null,
         checkbox: false
     }),
     computed: {
@@ -166,7 +172,7 @@ export default {
                 this.$emit("pickReference", baseStats);
             }
 
-            this.selectedName = feature.get(this.workingDistrictLevel.keyOfAttrName);
+            // this.selectedName = feature.get(this.workingDistrictLevel.keyOfAttrName);
             this.referencePickerActive = false;
         },
 
@@ -212,6 +218,10 @@ export default {
                 content: this.$t("additional:modules.tools.cosi.residentialSimulation.errorPickReference"),
                 displayClass: "warning"
             });
+        },
+
+        visualizeDemographics () {
+            this.$emit("visualizeDemographics");
         }
     }
 };
@@ -266,7 +276,7 @@ export default {
             v-if="checkbox"
             dense
         >
-            <v-col cols="6">
+            <v-col cols="7">
                 <v-btn
                     dense
                     small
@@ -280,17 +290,55 @@ export default {
                         {{ $t('additional:modules.tools.cosi.residentialSimulation.pickReference') }}
                     </span>
                 </v-btn>
+                <v-btn
+                    v-if="hasReference"
+                    dense
+                    small
+                    tile
+                    color="grey lighten-1"
+                    :title="$t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics')"
+                    @click="visualizeDemographics"
+                >
+                    <v-icon>mdi-chart-bell-curve</v-icon>
+                    <span>
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics') }}
+                    </span>
+                </v-btn>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="5">
                 <v-autocomplete
                     :value="selectedName"
                     :items="namesOfDistricts"
-                    :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
+                    :label="workingDistrictLevel.label"
                     outlined
                     dense
                     @change="findReference"
                 />
             </v-col>
         </v-row>
+        <div
+            v-else
+            class="mt-1"
+        >
+            <div class="mb-2">
+                <v-btn
+                    v-if="hasReference"
+                    dense
+                    small
+                    tile
+                    color="grey lighten-1"
+                    :title="$t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics')"
+                    @click="visualizeDemographics"
+                >
+                    <v-icon>mdi-chart-bell-curve</v-icon>
+                    <span>
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.visualizeDemographics') }}
+                    </span>
+                </v-btn>
+            </div>
+            <div>
+                {{ $t('additional:modules.tools.cosi.residentialSimulation.noReference') }}
+            </div>
+        </div>
     </v-form>
 </template>

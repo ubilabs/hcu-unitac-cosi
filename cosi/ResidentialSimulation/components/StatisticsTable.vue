@@ -40,13 +40,16 @@ export default {
         },
         cancel () {
             this.snack = true;
-            this.snackColor = "error";
-            this.snackText = this.$t("common:general.error");
+            this.snackColor = "warning";
+            this.snackText = this.$t("common:general.cancelled");
         },
         open () {
             this.snack = true;
             this.snackColor = "info";
             this.snackText = this.$t("common:general.opened");
+        },
+        editStats (v, item) {
+            item.value = parseFloat(v);
         }
     }
 };
@@ -81,10 +84,10 @@ export default {
                             {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsField") }}
                         </div>
                         <v-text-field
-                            v-model="item.value"
+                            :value="item.value"
                             type="number"
                             single-line
-                            autofocus
+                            @change="editStats($event, item)"
                         />
                         {{ $t('additional:modules.tools.cosi.residentialSimulation.editStatsInfo') }}
                     </template>
@@ -98,7 +101,7 @@ export default {
         >
             {{ snackText }}
 
-            <template v-slot:action="{ attrs }">
+            <template #action="{ attrs }">
                 <v-btn
                     v-bind="attrs"
                     text

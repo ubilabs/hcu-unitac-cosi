@@ -23,8 +23,6 @@ export default {
     },
     data () {
         return {
-            // The current id (layer id) of the selected district level
-            // selectedLevelId: "",
             // A buffer for the extent of the selected district(s)
             bufferVal: 0,
             // color for the drag box button
