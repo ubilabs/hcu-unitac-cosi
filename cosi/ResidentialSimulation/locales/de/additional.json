@@ -15,27 +15,31 @@
                     "helpGfa": "Bruttogeschossfläche (BGF) in m² festlegen",
                     "householdSize": "Ø Haushaltsgröße",
                     "helpHouseholdSize": " Durchschnittliche Haushaltsgröße festlegen",
+                    "visualizeDemographics": "Bevölkerungsverteilung",
+                    "createFeature": "Anlegen",
+                    "createFeatureHelp": "Wohnquartier anlegen - Statistische Daten werden dem umliegenden Gebiet zugerechnet",
+                    "resetFeature": "Zurücksetzen",
+                    "editFeature": "Wohnquartier bearbeiten",
+                    "dateOfCompletion": "Jahr der Fertigstellung"
+                },
+                "referencePicker": {
                     "reference": "Referenzgebiet",
                     "titleReference": "Referenzgebiet auswählen (optional)",
                     "pickReference": "Gebiet auswählen",
                     "helpPickReference": "Statistische Daten aus einem Referenzgebiet extrapolieren",
                     "errorPickReference": "Statistische Daten des Referenzgebiets konnten nicht geladen werden. Bitte versuchen Sie es erneut oder laden Sie die Anwendung neu.",
-                    "noReference": "Ohne Referenzgebiet werden die Daten des umliegenden Gebietes herangezogen.",
-                    "visualizeDemographics": "Bevölkerungsverteilung",
-                    "statsFeatures": "Statistische Daten",
-                    "showStatsFeatures": "Statistische Daten einblenden",
+                    "noReference": "Ohne Referenzgebiet werden die Daten des umliegenden Gebietes herangezogen."
+                },
+                "statisticsTable": {
                     "statsCategory": "Kategorie",
                     "statsValue": "Wert",
                     "statsType": "Typ",
                     "editStatsTable": "Daten bearbeiten",
                     "editStatsField": "Wert bearbeiten",
                     "editStatsInfo": "Bitte beachten Sie, dass nach der Veränderung eines Wertes keine Sicherheit mehr besteht, dass relative und absolute Werte zueinander passen oder Abhängigkeiten zwischen Werten realistisch abgebildet werden.",
-                    "isNotNumber": "Muss eine Zahl sein",
-                    "createFeature": "Anlegen",
-                    "createFeatureHelp": "Wohnquartier anlegen - Statistische Daten werden dem umliegenden Gebiet zugerechnet",
-                    "resetFeature": "Zurücksetzen",
-                    "editFeature": "Wohnquartier bearbeiten",
-                    "dateOfCompletion": "Jahr der Fertigstellung",
+                    "isNotNumber": "Muss eine Zahl sein"
+                },
+                "neighborhoodEditor": {
                     "invalidDate": "Bitte geben Sie ein Datum im Format YYYY-MM ein",
                     "updateStats": "Änderungen speichern",
                     "changeName": "Name ändern"
