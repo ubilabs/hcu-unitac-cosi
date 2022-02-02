@@ -14,7 +14,13 @@ export default {
     data: () => ({
         newScenarioName: "",
         newScenarioValid: true,
-        createNewScenarioModalOpen: false
+        createNewScenarioModalOpen: false,
+        confirmDialog: false,
+        confirmText: "",
+        confirmAction: {
+            function: () => null,
+            text: ""
+        }
     }),
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
@@ -91,36 +97,53 @@ export default {
         },
 
         deleteScenario () {
-            // eslint-disable-next-line no-alert
-            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.deleteScenarioWarning"))) {
-                this.activeScenario.prune();
-                this.setScenarios(this.scenarios.filter(scenario => scenario !== this.activeScenario));
-                this.setActiveScenario(null);
-            }
+            this.activeScenario.prune();
+            this.setScenarios(this.scenarios.filter(scenario => scenario !== this.activeScenario));
+            this.setActiveScenario(null);
+            this.confirmDialog = false;
         },
 
         pruneActiveScenario () {
-            // eslint-disable-next-line no-alert
-            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning"))) {
-                this.activeScenario.prune();
-                this.$emit("pruneScenario");
-            }
+            this.activeScenario.prune();
+            this.confirmDialog = false;
+            this.$emit("pruneScenario");
         },
 
         pruneActiveScenarioNeighborhoods () {
-            // eslint-disable-next-line no-alert
-            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneNeighborhoodsWarning"))) {
-                this.activeScenario.pruneNeighborhoods();
-                this.$emit("pruneScenario", "neighborhoods");
-            }
+            this.activeScenario.pruneNeighborhoods();
+            this.confirmDialog = false;
+            this.$emit("pruneScenario", "neighborhoods");
         },
 
         pruneActiveScenarioSimulatedFeatures () {
-            // eslint-disable-next-line no-alert
-            if (confirm(this.$t("additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeaturesWarning"))) {
-                this.activeScenario.pruneSimulatedFeatures();
-                this.$emit("pruneScenario", "simulated");
-            }
+            this.activeScenario.pruneSimulatedFeatures();
+            this.confirmDialog = false;
+            this.$emit("pruneScenario", "simulated");
+        },
+
+        onDelete () {
+            this.confirmDialog = true;
+            this.confirmText = this.$t("additional:modules.tools.cosi.scenarioManager.deleteScenarioWarning");
+            this.confirmAction.function = this.deleteScenario;
+            this.confirmAction.text = this.$t("common:button.delete");
+        },
+        onPruneAll () {
+            this.confirmDialog = true;
+            this.confirmText = this.$t("additional:modules.tools.cosi.scenarioManager.pruneAllFeaturesWarning");
+            this.confirmAction.function = this.pruneActiveScenario;
+            this.confirmAction.text = this.$t("common:button.delete");
+        },
+        onPruneNeighborhoods () {
+            this.confirmDialog = true;
+            this.confirmText = this.$t("additional:modules.tools.cosi.scenarioManager.pruneNeighborhoodsWarning");
+            this.confirmAction.function = this.pruneActiveScenarioNeighborhoods;
+            this.confirmAction.text = this.$t("common:button.delete");
+        },
+        onPruneSimulation () {
+            this.confirmDialog = true;
+            this.confirmText = this.$t("additional:modules.tools.cosi.scenarioManager.pruneSimulatedFeaturesWarning");
+            this.confirmAction.function = this.pruneActiveScenarioSimulatedFeatures;
+            this.confirmAction.text = this.$t("common:button.delete");
         }
     }
 };
@@ -267,7 +290,7 @@ export default {
                     :disabled="!_activeScenario"
                     :title="$t('additional:modules.tools.cosi.scenarioManager.deleteScenario')"
                     class="flex-item"
-                    @click="deleteScenario"
+                    @click="onDelete"
                 >
                     <span v-if="useIcons">
                         <v-icon>mdi-delete-forever</v-icon>
@@ -299,7 +322,7 @@ export default {
                             class="flex-item"
                             v-bind="attrs"
                             v-on="on"
-                            @click="pruneActiveScenario"
+                            @click="onPruneAll"
                         >
                             <v-icon left>
                                 mdi-domain-remove
@@ -318,7 +341,7 @@ export default {
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneSimulatedFeatures')"
                                 class="flex-item"
-                                @click="pruneActiveScenarioSimulatedFeatures"
+                                @click="onPruneSimulation"
                             >
                                 <v-icon left>
                                     mdi-map-marker-remove
@@ -335,7 +358,7 @@ export default {
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneNeighborhoods')"
                                 class="flex-item"
-                                @click="pruneActiveScenarioNeighborhoods"
+                                @click="onPruneNeighborhoods"
                             >
                                 <v-icon left>
                                     mdi-home-remove
@@ -352,7 +375,7 @@ export default {
                                 :disabled="!activeScenario"
                                 :title="$t('additional:modules.tools.cosi.scenarioManager.helpPruneAllFeatures')"
                                 class="flex-item"
-                                @click="pruneActiveScenario"
+                                @click="onPruneAll"
                             >
                                 <v-icon left>
                                     mdi-domain-remove
@@ -406,6 +429,32 @@ export default {
                 </v-container>
             </div>
         </Modal>
+        <v-snackbar
+            v-model="confirmDialog"
+            :timeout="-1"
+            color="white"
+            light
+            centered
+        >
+            {{ confirmText }}
+
+            <template #action="{ attrs }">
+                <v-btn
+                    v-bind="attrs"
+                    text
+                    @click="confirmAction.function"
+                >
+                    {{ confirmAction.text }}
+                </v-btn>
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="confirmDialog = false"
+                >
+                    {{ $t('common:button.cancel') }}
+                </v-btn>
+            </template>
+        </v-snackbar>
     </div>
 </template>
 

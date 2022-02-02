@@ -1,6 +1,4 @@
 <script>
-import {mapGetters} from "vuex";
-
 export default {
     name: "StatisticsTable",
     props: {
@@ -16,7 +14,6 @@ export default {
         isNumber: v => !isNaN(parseFloat(v)) || this.$t("additional:modules.tools.cosi.residentialSimulation.isNotNumber")
     }),
     computed: {
-        ...mapGetters("Tools/DistrictSelector", ["mapping"]),
         headers () {
             return [
                 {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsCategory"), value: "category"},
@@ -113,6 +110,3 @@ export default {
         </v-snackbar>
     </div>
 </template>
-
-<style lang="less" scoped>
-</style>

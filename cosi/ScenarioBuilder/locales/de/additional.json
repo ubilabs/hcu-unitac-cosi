@@ -74,6 +74,15 @@
                     "boolean": "Ja/Nein",
                     "geometry": "Geometrie",
                     "object": "-"
+                },
+                "featureEditor": {
+                    "editFeature": "Einrichtung bearbeiten",
+                    "layer": "Fachdatenlayer",
+                    "update": "Änderungen speichern",
+                    "noScenarioWarning": "Bitte erstellen Sie erst ein Szenario um Einrichtungen bearbeiten zu können.",
+                    "reset": "Zurücksetzen",
+                    "confirmDelete": "Möchten Sie die ausgewählte Einrichtung wirklich löschen?",
+                    "confirmReset": "Möchten Sie die ausgewählte Einrichtung wirklich auf ihren Ursprungszustand zurücksetzen?"
                 }
             }
         }

@@ -12,7 +12,7 @@ export default {
     props: {
         drawingLayer: {
             type: Object,
-            required: true
+            default: undefined
         }
     },
     data: () => ({
@@ -128,7 +128,7 @@ export default {
                 <v-btn
                     text
                     v-bind="attrs"
-                    @click="editDialog = false; selectedNeighborhood.editFeature = null; selectedNeighborhood.scenarioFeature = null;"
+                    @click="escapeEditModal"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
