@@ -26,14 +26,17 @@
                     "distanceScore": "Anbindung (Ø in m)",
                     "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung",
                     "abort": "Abbrechen",
-                    "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert",
-                    "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert",
+                    "warningIsModified": "ACHTUNG: Wurde in CoSI modifiziert.",
+                    "warningIsSimulated": "ACHTUNG: Wurde in CoSI simuliert.",
                     "scoresDialogTitle": "Zusammensetzung der Anbindung",
                     "scoresDialogHistogramTitle": "Verteilung der Bewertungen",
                     "itemsPerPage": "Einträge pro Seite",
                     "itemsPerPageAll": "Alle",
                     "count": "Anzahl",
-                    "createCharts": "Diagramme erstellen"
+                    "createCharts": "Diagramme erstellen",
+                    "dipas": {
+                        "warning": "Ursprünglich keine Punktgeometrie: "
+                    }
                 }
             }
         }

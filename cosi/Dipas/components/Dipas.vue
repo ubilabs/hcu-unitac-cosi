@@ -247,13 +247,13 @@ export default {
                                 center = getCenter(extent);
 
                             feature.setGeometry(new Point(center));
-                            // needs to be set after resetting the geometry
-                            // eslint-disable-next-line one-var
-                            const props = feature.getProperties();
-
-                            props.originalGeometryType = geometryType;
-                            feature.setProperties(props);
                         }
+                        // needs to be set after resetting the geometry
+                        // eslint-disable-next-line one-var
+                        const props = feature.getProperties();
+
+                        props.originalGeometryType = geometryType;
+                        feature.setProperties(props);
                     }
                     this.contributions[id].features = contributions;
                     contribution.loading = false;
@@ -308,7 +308,7 @@ export default {
                     styles.push(null);
                     break;
             }
-            if (typeof feature.getProperties().originalGeometryType !== "undefined") {
+            if (feature.getProperties().originalGeometryType !== "Point") {
                 const secondary_style = new Style();
 
                 if (resolution < 1.5) {

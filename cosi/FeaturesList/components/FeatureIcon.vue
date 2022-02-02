@@ -107,7 +107,7 @@ export default {
                 buffered = buffer(extent, 500);
 
             this.zoomTo({geometryOrExtent: buffered, options: {}});
-
+            console.log(this.item);
             if (!this.item.enabled) {
                 this.addSingleAlert({
                     content: this.$t("additional:modules.tools.cosi.featuresList.inactiveFeature"),
@@ -115,6 +115,22 @@ export default {
                     displayClass: "info"
                 });
             }
+        },
+        getTitle (item) {
+            let title = "";
+
+            if (item.isSimulation) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated")
+            }
+            const originalGeometryType = item.feature.getProperties().originalGeometryType
+            if (originalGeometryType !== "Point") {
+                if (item.isSimulation) {
+                    title += " "
+                }
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType
+            }
+
+            return title;
         }
     }
 };
@@ -124,7 +140,7 @@ export default {
     <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
     <div
         class="feature-icon"
-        :title="item.isSimulation ? $t('additional:modules.tools.cosi.featuresList.warningIsSimulated') : ''"
+        :title="getTitle(item)"
         @click="zoomToFeature"
     >
         <InlineSvg
@@ -170,6 +186,13 @@ export default {
         >
             ⇄
         </span>
+        <span
+            v-if="item.feature.getProperties().originalGeometryType !== 'Point'"
+            class="dipas-geometry-overlay"
+            :title="Test"
+        >
+            *
+        </span>
     </div>
 </template>
 
@@ -196,5 +219,14 @@ export default {
         color: #FC176B;
         font-size: 32px;
         line-height: 24px;
+    }
+    span.dipas-geometry-overlay {
+        position: absolute;
+        font-family: 'Material Design Icons';
+        right: 24px;
+        top: -8px;
+        color: #ff0000;
+        font-size: 20px;
+        line-height: 20px;
     }
 </style>

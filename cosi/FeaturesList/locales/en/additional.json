@@ -27,7 +27,10 @@
                     "scoresDialogHistogramTitle": "Distribution of scores",
                     "scoresDialogTitle": "Zusammensetzung",
                     "itemsPerPage": "Rows per Page",
-                    "itemsPerPageAll": "All"
+                    "itemsPerPageAll": "All",
+                    "dipas": {
+                        "warning": "Initially no point geometry: "
+                    }
                 }
             }
         }
