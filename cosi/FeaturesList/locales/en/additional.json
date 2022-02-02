@@ -28,8 +28,19 @@
                     "scoresDialogTitle": "Zusammensetzung",
                     "itemsPerPage": "Rows per Page",
                     "itemsPerPageAll": "All",
+                    "count": "count",
+                    "createCharts": "create charts",
                     "dipas": {
-                        "warning": "Initially no point geometry: "
+                        "warning": "Initially no point geometry: ",
+                        "createCharts": "create DIPAS charts",
+                        "comments": "comments",
+                        "commentsPerCategory": " comments per category",
+                        "category": "category",
+                        "contributions": "contributions",
+                        "contributionsOverTime": " contributions over time",
+                        "commentsVoting": "comments/voting",
+                        "commentsVotingText": " number of comments by voting",
+                        "voting": "voting"
                     }
                 }
             }
