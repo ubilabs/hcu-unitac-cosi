@@ -743,7 +743,7 @@ export default {
 #dipas {
   width: auto;
   min-height: 100px;
-  max-height: 40vh;
+  max-height: 45vh;
   overflow-y: auto;
 }
 
