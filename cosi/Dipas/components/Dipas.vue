@@ -205,6 +205,27 @@ export default {
             const fetch = await this.fetchContributions(id),
                 features = new GeoJSON().readFeatures(fetch);
 
+
+            for (let feature of features) {
+                if (feature.getGeometry().intersectsCoordinate([0, 0])) {
+                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
+                        extent = model.get('features')[0].getGeometry().getExtent(),
+                        center = getCenter(extent);
+
+                    feature.setGeometry(new Point(center));
+                    // needs to be set after resetting the geometry
+                    // eslint-disable-next-line one-var
+                    const props = feature.getProperties();
+
+                    props.noGeometryGiven = true;
+                    feature.setProperties(props);
+                    // TODO: Skip these features for transform so there's no need to transform back and forth?
+                    let referenceSystem = feature.getProperties().referenceSystem;
+
+                    referenceSystem = referenceSystem === undefined ? "4326" : referenceSystem;
+                    feature.getGeometry().transform(this.projectionCode, "EPSG:" + referenceSystem);
+                }
+            }
             return this.transformFeatures(features);
         },
         /**
@@ -315,6 +336,12 @@ export default {
                     secondary_style.setText(this.getContributionGeometryLabel());
                 }
                 styles.push(secondary_style);
+            }
+            if (feature.getProperties().noGeometryGiven) {
+                const tertiary_style = new Style();
+
+                tertiary_style.setText(this.getContributionErrorLabel());
+                styles.push(tertiary_style);
             }
             return styles;
         },
@@ -488,6 +515,23 @@ export default {
                 textAlign: "left",
                 offsetY: -8,
                 offsetX: -8
+            });
+        },
+
+        getContributionErrorLabel () {
+            return new Text({
+                font: "16px Calibri,sans-serif",
+                fill: new Fill({
+                    color: [255, 0, 0]
+                }),
+                stroke: new Stroke({
+                    color: [0, 0, 0],
+                    width: 2
+                }),
+                text: "?",
+                textAlign: "left",
+                offsetY: -12,
+                offsetX: -2.5
             });
         },
 

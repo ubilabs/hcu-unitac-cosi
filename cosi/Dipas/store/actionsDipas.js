@@ -101,7 +101,8 @@ function contributionsGfiAttributes () {
         votingPro: "Pos. Bewertungen",
         votingContra: "Neg. Bewertung",
         belongToProject: "Verfahren",
-        originalGeometryType: "Urspr. Geometrietyp"
+        originalGeometryType: "Urspr. Geometrietyp",
+        noGeometryGiven: "Keine Geometrie vorhanden"
     };
 }
 
