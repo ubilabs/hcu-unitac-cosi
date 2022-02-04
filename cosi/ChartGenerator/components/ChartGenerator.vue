@@ -237,9 +237,6 @@ export default {
          * @returns {void}
          */
         onEndResizing (evt) {
-            console.log(evt);
-            console.log(this.$refs);
-
             const
                 width = evt.targetElement.clientWidth - 40, // padding of tool-content ...
                 height = evt.targetElement.clientHeight - 275; // hard coded from the DOM ...
