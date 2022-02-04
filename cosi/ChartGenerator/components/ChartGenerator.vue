@@ -50,9 +50,12 @@ export default {
         async active (state) {
             if (state) {
                 await this.$nextTick();
-                for (const chart of this.$refs.chart) {
-                    chart.$el.style.height = "400px";
-                    chart.$el.style.width = "400px";
+
+                if (this.$refs.chart) {
+                    for (const chart of this.$refs.chart) {
+                        chart.$el.style.height = "400px";
+                        chart.$el.style.width = "400px";
+                    }
                 }
             }
         }
@@ -241,9 +244,11 @@ export default {
                 width = evt.targetElement.clientWidth - 40, // padding of tool-content ...
                 height = evt.targetElement.clientHeight - 275; // hard coded from the DOM ...
 
-            for (const chart of this.$refs.chart) {
-                chart.$el.style.width = width + "px";
-                chart.$el.style.height = height + "px";
+            if (this.$refs.chart) {
+                for (const chart of this.$refs.chart) {
+                    chart.$el.style.width = width + "px";
+                    chart.$el.style.height = height + "px";
+                }
             }
         }
     }
@@ -390,6 +395,7 @@ export default {
                                                 :is="graph.type"
                                                 v-if="graph.type!=='PieChart'"
                                                 :id="`graph-${index}`"
+                                                ref="chart"
                                                 :datasets="chartConfigs[index]"
                                                 :options="graph.options"
                                                 :class="{current_graph: activeGraph === index}"
@@ -401,6 +407,7 @@ export default {
                                                     v-for="(pieData, j) in chartConfigs[index]"
                                                     :id="`graph-${index}-${j}`"
                                                     :key="`graph-${index}-${j}`"
+                                                    ref="chart"
                                                     :datasets="pieData"
                                                     :options="graph.options"
                                                     :class="{current_graph: activeGraph === index}"
