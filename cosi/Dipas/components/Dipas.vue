@@ -213,12 +213,7 @@ export default {
                         center = getCenter(extent);
 
                     feature.setGeometry(new Point(center));
-                    // needs to be set after resetting the geometry
-                    // eslint-disable-next-line one-var
-                    const props = feature.getProperties();
-
-                    props.noGeometryGiven = true;
-                    feature.setProperties(props);
+                    feature.set("noGeometryGiven", true);
                     // TODO: Skip these features for transform so there's no need to transform back and forth?
                     let referenceSystem = feature.getProperties().referenceSystem;
 
@@ -268,13 +263,13 @@ export default {
                                 center = getCenter(extent);
 
                             feature.setGeometry(new Point(center));
-                            // needs to be set after resetting the geometry
-                            // eslint-disable-next-line one-var
-                            const props = feature.getProperties();
-
-                            props.originalGeometryType = geometryType;
-                            feature.setProperties(props);
                         }
+                        // needs to be set after resetting the geometry
+                        // eslint-disable-next-line one-var
+                        const props = feature.getProperties();
+
+                        props.originalGeometryType = geometryType;
+                        feature.setProperties(props);
                     }
                     this.contributions[id].features = contributions;
                     contribution.loading = false;
@@ -329,19 +324,19 @@ export default {
                     styles.push(null);
                     break;
             }
-            if (typeof feature.getProperties().originalGeometryType !== "undefined") {
-                const secondary_style = new Style();
+            if (feature.getProperties().originalGeometryType !== "Point") {
+                const secondaryStyle = new Style();
 
                 if (resolution < 1.5) {
-                    secondary_style.setText(this.getContributionGeometryLabel());
+                    secondaryStyle.setText(this.getContributionGeometryLabel());
                 }
-                styles.push(secondary_style);
+                styles.push(secondaryStyle);
             }
             if (feature.getProperties().noGeometryGiven) {
-                const tertiary_style = new Style();
+                const tertiaryStyle = new Style();
 
-                tertiary_style.setText(this.getContributionErrorLabel());
-                styles.push(tertiary_style);
+                tertiaryStyle.setText(this.getContributionErrorLabel());
+                styles.push(tertiaryStyle);
             }
             return styles;
         },

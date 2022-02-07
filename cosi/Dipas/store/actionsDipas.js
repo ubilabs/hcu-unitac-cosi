@@ -53,7 +53,7 @@ function addLayerToTree (newLayer) {
     setLayerAttributes(model, newLayer);
     if (!newLayer.project) {
         const filterModel = {
-                attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType"],
+                attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType", "originalGeometryType"],
                 isActive: false,
                 isSelected: false,
                 layerId: newLayer.id,
