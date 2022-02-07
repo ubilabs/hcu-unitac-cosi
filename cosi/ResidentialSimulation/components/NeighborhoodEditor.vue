@@ -128,7 +128,7 @@ export default {
                 <v-btn
                     text
                     v-bind="attrs"
-                    @click="escapeEditModal"
+                    @click="editDialog = false"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -137,7 +137,7 @@ export default {
         <Modal
             v-if="selectedNeighborhood.editFeature"
             :show-modal="editModal"
-            @modalHid="editModal = false"
+            @modalHid="escapeEditModal"
             @clickedOnX="escapeEditModal"
             @clickedOutside="escapeEditModal"
         >
