@@ -34,7 +34,7 @@
                     "statsCategory": "Kategorie",
                     "statsValue": "Wert",
                     "statsType": "Typ",
-                    "editStatsTable": "Daten bearbeiten",
+                    "editStatsTable": "Statistische Daten bearbeiten",
                     "editStatsField": "Wert bearbeiten",
                     "editStatsInfo": "Bitte beachten Sie, dass nach der Veränderung eines Wertes keine Sicherheit mehr besteht, dass relative und absolute Werte zueinander passen oder Abhängigkeiten zwischen Werten realistisch abgebildet werden.",
                     "isNotNumber": "Muss eine Zahl sein"

@@ -23,6 +23,7 @@ import ScenarioFeature from "../classes/ScenarioFeature";
 import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../utils/geomPickerHandler";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
+import {getAddress} from "../../utils/geocode";
 
 export default {
     name: "ScenarioBuilder",
@@ -59,7 +60,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
 
         /**
          * Getter and Setter for the manuel coordinates Input for the geometry
@@ -149,8 +150,9 @@ export default {
             }
         },
 
-        geometry () {
+        geometry (geom) {
             this.isCreated = false;
+            this.getAddress(geom);
         }
     },
     /**
@@ -312,6 +314,19 @@ export default {
 
         mapDataTypes (type) {
             return this.$t(`additional:modules.tools.cosi.dataTypes.${type}`);
+        },
+
+        async getAddress (geom) {
+            const address = await getAddress(geom, this.projectionCode);
+
+            if (address) {
+                for (const prop of this.workingLayer.addressField) {
+                    this.featureProperties[prop] = "";
+                }
+
+                this.$set(this.featureProperties, this.workingLayer.addressField[0], address);
+                this.$forceUpdate();
+            }
         },
 
         getDescriptionBySource (layerId) {

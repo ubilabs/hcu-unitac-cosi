@@ -80,6 +80,7 @@ export default {
         active (newActive) {
             if (newActive) {
                 this.select.setActive(true);
+                document.addEventListener("keyup", this.checkKey);
 
                 // add overlay if no districts are selected at this point
                 if (this.selectedNames.length === 0) {
@@ -92,6 +93,7 @@ export default {
                 this.updateExtent();
                 this.dragBox.setActive(false);
                 this.select.setActive(false);
+                document.removeEventListener("keyup", this.checkKey);
 
                 if (model) {
                     model.set("isActive", false);
@@ -159,6 +161,10 @@ export default {
                 this.districtLevelLayersLoaded = true;
             }
         });
+
+        if (this.active) {
+            document.addEventListener("keyup", this.checkKey);
+        }
     },
 
     methods: {
@@ -166,6 +172,18 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures"]),
         ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
+
+        /**
+         * quickly checks the key evt code
+         * and executes createNewScenario
+         * @param {Event} evt - the key event
+         * @returns {void}
+         */
+        checkKey (evt) {
+            if (evt.code === "Enter") {
+                this.setActive(false);
+            }
+        },
 
         /**
          * Remove all features from the features collection of the select interaction.

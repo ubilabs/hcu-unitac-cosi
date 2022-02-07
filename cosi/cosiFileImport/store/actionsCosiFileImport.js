@@ -495,7 +495,7 @@ export default {
     },
     deleteLayerFromTree ({state, commit, rootGetters}, filename) {
         const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
-            map = rootGetters["Map/map"],
+            map = rootGetters["Map/ol2DMap"],
             importedFiles = state.importedFileNames.filter(file => file !== filename);
 
         map.removeLayer(model.get("layer"));

@@ -378,6 +378,7 @@ export default {
                             group: layerMap.group,
                             layerName: layerMap.id,
                             layerId: layerMap.layerId,
+                            gfiAttributes: vectorLayer.values_.gfiAttributes,
                             type: feature.get(layerMap.categoryField),
                             address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,
@@ -605,7 +606,6 @@ export default {
                     return ret;
                 });
 
-
                 while (this.distanceScoreQueue.length) {
                     const item = this.distanceScoreQueue.shift();
 
@@ -653,6 +653,7 @@ export default {
          */
         showDistanceScoreForItem (item) {
             const
+                type = this.selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
                 data = {
                     labels: this.selectedFeatureLayers.map(l => l.id),
                     datasets: [{
@@ -663,7 +664,7 @@ export default {
                 chartDataset = new ChartDataset({
                     id: "sb-" + item.key,
                     name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)}`,
-                    type: "RadarChart",
+                    type,
                     color: "rainbow",
                     source: "Standortanalyse",
                     data
@@ -677,6 +678,7 @@ export default {
          */
         showDistanceScoresForSelected () {
             const
+                type = this.selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
                 data = {
                     labels: this.selectedFeatureLayers.map(l => l.id),
                     datasets: this.getActiveItems().map(item => ({
@@ -688,7 +690,7 @@ export default {
                 chartDataset = new ChartDataset({
                     id: "sb-" + this.getActiveItems().map(item => item.key).join(","),
                     name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")}`,
-                    type: "RadarChart",
+                    type,
                     color: "rainbow",
                     source: "Standortanalyse",
                     data

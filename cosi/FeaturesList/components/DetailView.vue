@@ -55,6 +55,14 @@ export default {
          */
         beautifyKey: key => beautifyKey(key),
         /**
+         * Normalizes the key according to the gfiAttributes of the layer or beautifies it
+         * @param {String} key - the key to normalize
+         * @returns {String} the normalized key
+         */
+        gfiOrBeautifyKey (key) {
+            return this.item.gfiAttributes[key] ? this.item.gfiAttributes[key] : beautifyKey(key);
+        },
+        /**
          * Fires when the property selection for export is changed
          * @fires #emit:filterProps Emits an event to the list to update all other detail tables
          * @returns {void}
@@ -94,7 +102,7 @@ export default {
                                     @change="onChangeProps"
                                 />
                             </td>
-                            <th>{{ beautifyKey(prop) }}</th>
+                            <th>{{ gfiOrBeautifyKey(prop) }}</th>
                             <td>{{ val }}</td>
                         </tr>
                     </tbody>

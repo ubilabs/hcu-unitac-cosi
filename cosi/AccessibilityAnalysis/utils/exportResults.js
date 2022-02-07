@@ -15,7 +15,6 @@ function getPortalCrs () {
 /**
  * Exports the results of the supply analysis as geojson
  * @param {*} mapLayer - the components mapLayer
- * @param {*} selectedFacilityName - the selected facility for analysis
  * @returns {void}
  */
 export function exportAsGeoJson (mapLayer) {
