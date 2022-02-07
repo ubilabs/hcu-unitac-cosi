@@ -165,6 +165,7 @@ export default {
     <div class="import_manager">
         <div class="list">
             <ul id="layerList">
+                <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
                 <li
                     v-for="(layer, i) in importedLayers"
                     :key="layer.id"
@@ -205,9 +206,9 @@ export default {
 </template>
 
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     @import "~variables";
-    @import "../../utils/variables.less";
+    @import "../../utils/variables.scss";
 
     .list {
         ul {
@@ -275,7 +276,7 @@ export default {
                     border-radius:0;
                     color:whitesmoke;
                     opacity:0.75;
-                    background:@error_red;
+                    background:$error_red;
 
                     .v-icon {
                         font-size:18px;

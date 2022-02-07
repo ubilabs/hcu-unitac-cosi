@@ -333,7 +333,7 @@ export default {
     </v-app>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .flex {
         display: flex;
         .flex-item {

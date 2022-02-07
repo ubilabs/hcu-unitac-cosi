@@ -653,8 +653,8 @@ export default {
     </div>
 </template>
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
 
     #scenario-builder {
         form {

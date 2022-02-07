@@ -300,7 +300,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .error-msg{
     color: #a94442
 }

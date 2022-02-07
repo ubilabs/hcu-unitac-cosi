@@ -1310,8 +1310,9 @@ export default {
     </Tool>
 </template>
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
+
     #features-list-wrapper {
         height: 100%;
         position: relative;

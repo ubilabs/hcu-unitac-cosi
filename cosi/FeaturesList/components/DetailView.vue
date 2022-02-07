@@ -104,5 +104,5 @@ export default {
     </v-sheet>
 </template>
 
-<style lang="less">
+<style lang="scss">
 </style>

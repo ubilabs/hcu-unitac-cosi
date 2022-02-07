@@ -118,7 +118,7 @@ export default {
     </v-row>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     #dashboard-toolbar {
         display: block;
     }

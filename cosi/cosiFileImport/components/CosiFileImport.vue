@@ -864,9 +864,9 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
-    @import "~variables";
-    @import "../../utils/variables.less";
+<style lang="scss" scoped>
+    @import "~/css/variables.scss";
+    @import "../../utils/variables.scss";
 
     .h-seperator {
         margin:12px 0 12px 0;
@@ -888,7 +888,7 @@ export default {
         padding: 8px 12px;
         cursor: pointer;
         margin:12px 0 0 0;
-        font-size: @font_size_big;
+        font-size: $font_size_big;
         transition: background 0.25s;
 
         &:hover {
@@ -903,12 +903,12 @@ export default {
 
     .drop-area-fake {
         background-color: #FFFFFF;
-        border: 2px dashed @brightblue;
+        border: 2px dashed $brightblue;
         padding:24px;
         transition: background 0.25s, border-color 0.25s;
 
         &.dzReady {
-            background-color:@masterportal_blue;
+            background-color:$masterportal_blue;
             border-color:transparent;
 
             p.caption {
@@ -920,9 +920,9 @@ export default {
             margin:0;
             text-align:center;
             transition: color 0.35s;
-            font-family: @font_family_accent;
-            font-size: @font_size_huge;
-            color: @accent_disabled;
+            font-family: $font_family_accent;
+            font-size: $font_size_huge;
+            color: $accent_disabled;
         }
     }
     .drop-area {
@@ -970,7 +970,7 @@ export default {
             position:absolute;
             top:5px;
             right:20px;
-            background:@green;
+            background:$green;
             color:whitesmoke;
             min-width:0px;
             width:40px;
@@ -1031,7 +1031,7 @@ export default {
                     ::v-deep .v-label--active {
                         left:1px !important;
                         font-size:80%;
-                        color:@masterportal_blue;
+                        color:$masterportal_blue;
                         transform-origin:center left;
                     }
                 }
@@ -1254,9 +1254,9 @@ export default {
                                     height:auto;
                                     margin-left:-14px;
                                     margin-top:-10px;
-                                    border:1px solid @masterportal_blue;
+                                    border:1px solid $masterportal_blue;
                                     border-bottom:none;
-                                    background:@brightblue;
+                                    background:$brightblue;
                                     color:whitesmoke;
                                     line-height: 30px;
 
@@ -1366,7 +1366,7 @@ export default {
                                             ::v-deep .v-label--active {
                                                 display:none;
                                                 left:1px !important;
-                                                color:@masterportal_blue;
+                                                color:$masterportal_blue;
                                                 transform-origin:center left;
                                             }
 
@@ -1418,7 +1418,7 @@ export default {
                                     }
 
                                     .v-icon {
-                                        color:@green;
+                                        color:$green;
                                         display:inline-block;
                                         margin:0 0 0 auto;
                                     }
@@ -1461,7 +1461,7 @@ export default {
                                             box-shadow:none;
 
                                             .v-icon {
-                                                color:@masterportal_red;
+                                                color:$masterportal_red;
                                                 opacity:0.5;
                                             }
                                         }
@@ -1485,7 +1485,7 @@ export default {
                     display:block;
                     margin-right:3px;
                     border-radius:0px;
-                    background:@masterportal_red;
+                    background:$masterportal_red;
                     color:white;
                     box-shadow:none;
                     opacity:0.75;
@@ -1494,7 +1494,7 @@ export default {
                 .submit_btn {
                     display:block;
                     border-radius:0px;
-                    background:@masterportal_blue;
+                    background:$masterportal_blue;
                     color:white;
                     box-shadow:none;
                 }
@@ -1512,7 +1512,7 @@ export default {
         border-radius:3px;
         box-shadow:none;
         color:white;
-        background:@masterportal_red;
+        background:$masterportal_red;
         opacity:0.5;
 
         .v-icon {
@@ -1540,7 +1540,7 @@ export default {
 
                 .v-btn {
                     &.highlight {
-                        background-color:@masterportal_blue !important;
+                        background-color:$masterportal_blue !important;
                     }
                 }
 
