@@ -15,6 +15,7 @@ import {scaleSequential} from "d3-scale";
 import {interpolateRdYlGn} from "d3-scale-chromatic";
 import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
+import {exportAsGeoJson} from "../utils/exportResults";
 
 export default {
     name: "Dipas",
@@ -560,6 +561,26 @@ export default {
                 endDate = new Date(feature.getProperties().dateEnd).toLocaleDateString(this.currentLocale);
 
             return startDate + " - " + endDate;
+        },
+        exportDipas () {
+            const layers = [],
+                layersOnMap = [];
+
+            for (let project in this.projectsActive) {
+                if (this.projectsActive[project].layer) {
+                    layers.push(project)
+                }
+                if (this.projectsActive[project].contributions) {
+                    layers.push(project + "-contributions")
+                }
+                if (this.projectsActive[project].heatmap) {
+                    layers.push(project + "-heatmap")
+                }
+            }
+            for (let layerId of layers) {
+                layersOnMap.push(getLayerById(this.map.getLayers().getArray(), layerId));
+            }
+            exportAsGeoJson(layersOnMap);
         }
     }
 };
@@ -730,6 +751,27 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
+                    <div
+                        id="download"
+                    >
+                        <v-btn
+                            id="download-geojson"
+                            dense
+                            small
+                            tile
+                            color="green lighten-1"
+                            :title="$t('additional:modules.tools.cosi.dipas.download.title')"
+                            :disabled="!Object.values(projectsActive).map(project => project.layer || project.contributions || project.heatmap).reduce((t, value) => t || value, false)"
+                            @click="exportDipas()"
+                        >
+                            <v-icon
+                                left
+                            >
+                                mdi-floppy
+                            </v-icon>
+                            Download GeoJSON
+                        </v-btn>
+                    </div>
                 </v-app>
             </template>
         </Tool>
@@ -740,7 +782,7 @@ export default {
 #dipas {
   width: auto;
   min-height: 100px;
-  max-height: 46vh;
+  max-height: 45vh;
   overflow-y: auto;
 }
 

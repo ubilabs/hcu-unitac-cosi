@@ -317,17 +317,15 @@ export default {
         },
 
         async getAddress (geom) {
-            console.log(this.geometry);
-            console.log(this.workingLayer);
-            console.log(this);
-
             const address = await getAddress(geom, this.projectionCode);
 
             if (address) {
                 for (const prop of this.workingLayer.addressField) {
                     this.featureProperties[prop] = "";
                 }
-                this.featureProperties[this.workingLayer.addressField[0]] = address;
+
+                this.$set(this.featureProperties, this.workingLayer.addressField[0], address);
+                this.$forceUpdate();
             }
         },
 

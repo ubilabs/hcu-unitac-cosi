@@ -229,7 +229,7 @@ export default {
          * @returns {void}
          */
         resetFeatureLocations () {
-            this.activeScenario.resetFeaturesByLayer(this.layer, ["geometry"], true);
+            this.activeScenario.resetFeaturesByLayer(this.layer, ["geometry", ...this.workingLayer.addressField], true);
         },
 
         /**
