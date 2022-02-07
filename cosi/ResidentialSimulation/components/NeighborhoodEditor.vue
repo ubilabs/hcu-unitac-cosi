@@ -12,7 +12,7 @@ export default {
     props: {
         drawingLayer: {
             type: Object,
-            required: true
+            default: undefined
         }
     },
     data: () => ({
@@ -128,7 +128,7 @@ export default {
                 <v-btn
                     text
                     v-bind="attrs"
-                    @click="editDialog = false; selectedNeighborhood.editFeature = null; selectedNeighborhood.scenarioFeature = null;"
+                    @click="editDialog = false"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -137,14 +137,14 @@ export default {
         <Modal
             v-if="selectedNeighborhood.editFeature"
             :show-modal="editModal"
-            @modalHid="editModal = false"
+            @modalHid="escapeEditModal"
             @clickedOnX="escapeEditModal"
             @clickedOutside="escapeEditModal"
         >
             <v-app>
                 <v-container>
                     <v-card-title primary-title>
-                        {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }} : {{ neighborhoodName }}
+                        {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }} : {{ neighborhoodName }}
                     </v-card-title>
                     <v-card-subtitle>
                         {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
@@ -160,14 +160,14 @@ export default {
                                     :label="$t('additional:modules.tools.cosi.residentialSimulation.dateOfCompletion')"
                                     :rules="[
                                         value => Boolean(value) || $t('additional:modules.tools.cosi.scenarioBuilder.required'),
-                                        value => value.match(/^\d{4}\-(0?[1-9]|1[012])$/) !== null || $t('additional:modules.tools.cosi.residentialSimulation.invalidDate')
+                                        value => value.match(/^\d{4}\-(0?[1-9]|1[012])$/) !== null || $t('additional:modules.tools.cosi.neighborhoodEditor.invalidDate')
                                     ]"
                                     prepend-icon="mdi-calendar"
                                     @change="editProp($event, 'year')"
                                 />
                                 <v-text-field
                                     :value="neighborhoodName"
-                                    :label="$t('additional:modules.tools.cosi.residentialSimulation.changeName')"
+                                    :label="$t('additional:modules.tools.cosi.neighborhoodEditor.changeName')"
                                     :rules="[
                                         value => Boolean(value) || $t('additional:modules.tools.cosi.scenarioBuilder.required'),
                                     ]"
@@ -188,12 +188,12 @@ export default {
                             small
                             tile
                             color="primary"
-                            :title="$t('additional:modules.tools.cosi.residentialSimulation.updateStats')"
+                            :title="$t('additional:modules.tools.cosi.neighborhoodEditor.updateStats')"
                             @click="updateSelectedNeighborhood"
                         >
                             <v-icon>mdi-pencil</v-icon>
                             <span>
-                                {{ $t('additional:modules.tools.cosi.residentialSimulation.updateStats') }}
+                                {{ $t('additional:modules.tools.cosi.neighborhoodEditor.updateStats') }}
                             </span>
                         </v-btn>
                         <v-btn

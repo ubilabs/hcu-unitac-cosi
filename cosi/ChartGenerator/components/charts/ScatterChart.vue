@@ -21,6 +21,8 @@ export default {
     },
     data: () => ({
         defaultOptions: {
+            responsive: true,
+            maintainAspectRatio: false,
             title: {
                 display: true,
                 text: "",

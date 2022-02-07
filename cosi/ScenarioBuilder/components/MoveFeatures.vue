@@ -3,9 +3,9 @@ import {Select, Translate} from "ol/interaction";
 import {mapGetters, mapActions} from "vuex";
 import {unpackCluster} from "../../utils/getClusterSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
-import {addSimulationTag, removeSimulationTag} from "../utils/guideLayer";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import Point from "ol/geom/Point";
+import {getAddress} from "../../utils/geocode";
 
 export default {
     name: "MoveFeatures",
@@ -48,7 +48,7 @@ export default {
         }
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object
@@ -199,7 +199,7 @@ export default {
          * @param {Event} evt the translatestart event
          * @returns {void}
          */
-        onTranslateEnd (evt) {
+        async onTranslateEnd (evt) {
             const feature = evt.features.item(0),
                 targetGeometry = feature.getGeometry().clone();
             let originalFeature;
@@ -207,14 +207,20 @@ export default {
             for (originalFeature of unpackCluster(feature)) {
                 originalFeature.setGeometry(targetGeometry);
 
+                const
+                    address = await getAddress(targetGeometry, this.projectionCode),
+                    addressData = {};
+
+                if (address) {
+                    for (const prop of this.workingLayer.addressField) {
+                        addressData[prop] = "";
+                    }
+                    addressData[this.workingLayer.addressField[0]] = address;
+                }
+
                 // modify the feature on the scenario. Update features already stored in the scenario
                 // use the cloned geometry of the point or polygon as reference
-                this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
-
-                if (originalFeature.get("isSimulation") || originalFeature.get("isModified")) {
-                    removeSimulationTag(originalFeature, this.guideLayer);
-                    addSimulationTag(originalFeature, this.guideLayer, this.layer);
-                }
+                this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry, ...addressData});
             }
         },
 
@@ -223,7 +229,7 @@ export default {
          * @returns {void}
          */
         resetFeatureLocations () {
-            this.activeScenario.resetFeaturesByLayer(this.layer, ["geometry"], true);
+            this.activeScenario.resetFeaturesByLayer(this.layer, ["geometry", ...this.workingLayer.addressField], true);
         },
 
         /**
@@ -263,10 +269,6 @@ export default {
                 // modify the feature on the scenario. Update features already stored in the scenario
                 // use the cloned geometry of the point or polygon as reference
                 this.activeScenario.modifyFeature(originalFeature, {geometry: targetGeometry});
-                if (originalFeature.get("isSimulation")) {
-                    removeSimulationTag(originalFeature, this.guideLayer);
-                    addSimulationTag(originalFeature, this.guideLayer, this.layer);
-                }
             }
         },
 

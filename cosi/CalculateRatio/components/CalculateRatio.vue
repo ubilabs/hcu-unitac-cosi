@@ -177,6 +177,30 @@ export default {
         },
         filters () {
             this.prepareCoverage();
+        },
+
+        /**
+         * Updates the ColorCodeMap if visualized.
+         * @returns {void}
+         */
+        columnSelector () {
+            if (this.dataToColorCodeMap) {
+                const data = this.getDataForColorCodeMap();
+
+                this.setColorCodeMapDataset(data);
+            }
+        },
+
+        /**
+         * Updates the ColorCodeMap if visualized.
+         * @returns {void}
+         */
+        selectedYear () {
+            if (this.dataToColorCodeMap) {
+                const data = this.getDataForColorCodeMap();
+
+                this.setColorCodeMapDataset(data);
+            }
         }
     },
     created () {
@@ -623,20 +647,9 @@ export default {
             const switchVar = this.dataToColorCodeMap;
 
             if (!switchVar) {
-                const prepareData = [];
+                const data = this.getDataForColorCodeMap();
 
-                this.results.forEach(result => {
-                    if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
-                        const data = {
-                            name: result.scope,
-                            data: Math.round(1000 * result[this.columnSelector.key]) / 1000
-                        };
-
-                        prepareData.push(data);
-                    }
-                });
-
-                this.setColorCodeMapDataset(prepareData);
+                this.setColorCodeMapDataset(data);
                 this.setDataToColorCodeMap(!switchVar);
             }
             else {
@@ -644,6 +657,28 @@ export default {
                 this.setDataToColorCodeMap(!switchVar);
             }
         },
+
+        /**
+         * Gets the data for ColorCodeMap.
+         * @returns {Object[]} The prepared data for the ColorCodeMap.
+         */
+        getDataForColorCodeMap () {
+            const prepareData = [];
+
+            this.results.forEach(result => {
+                if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
+                    const data = {
+                        name: result.scope,
+                        data: Math.round(1000 * result[this.columnSelector.key]) / 1000
+                    };
+
+                    prepareData.push(data);
+                }
+            });
+
+            return prepareData;
+        },
+
         /**
          * @description Passes data to the Chart Generator Tool.
          * @returns {Void} Function returns nothing.
@@ -1319,7 +1354,7 @@ export default {
                         }
 
                         .year_selector {
-                            width: 200px;
+                            width: 160px;
                             margin: 5px 0px;
                         }
                     }

@@ -31,8 +31,8 @@
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",
                     "toggleOnlySimulated": "Nur Simulierte",
-                    "toggleOnlySimulatedTooltip": "Verriegelt: Nur simulierte Einrichtungen können verschoben werden",
-                    "toggleOnlySimulatedOffTooltip": "Offen: Alle Einrichtungen des Themas können verschoben werden",
+                    "toggleOnlySimulatedTooltip": "Verriegelt: Nur simulierte Einrichtungen können bearbeitet werden",
+                    "toggleOnlySimulatedOffTooltip": "Offen: Alle Einrichtungen des Themas können bearbeitet werden",
                     "onlySimulatedWarning": "Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen sind nur temporär und werden nach der Sitzung nicht gespeichert.",
                     "resetFeatureLocations": "Verschobene Einrichtungen Zurücksetzen",
                     "help": "Einrichtung zum Verschieben auswählen. Der Cursor zeigt an, wenn eine Einrichtung durchs Ziehen verschoben werden kann."
@@ -74,6 +74,15 @@
                     "boolean": "Ja/Nein",
                     "geometry": "Geometrie",
                     "object": "-"
+                },
+                "featureEditor": {
+                    "editFeature": "Einrichtung bearbeiten",
+                    "layer": "Fachdatenlayer",
+                    "update": "Änderungen speichern",
+                    "noScenarioWarning": "Bitte erstellen Sie erst ein Szenario um Einrichtungen bearbeiten zu können.",
+                    "reset": "Zurücksetzen",
+                    "confirmDelete": "Möchten Sie die ausgewählte Einrichtung wirklich löschen?",
+                    "confirmReset": "Möchten Sie die ausgewählte Einrichtung wirklich auf ihren Ursprungszustand zurücksetzen?"
                 }
             }
         }

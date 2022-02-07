@@ -743,7 +743,7 @@ export default {
                                     >
                                         <v-icon>mdi-pencil</v-icon>
                                         <span>
-                                            {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }}
+                                            {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }}
                                         </span>
                                     </v-btn>
                                     <v-btn
@@ -772,10 +772,10 @@ export default {
                         >
                             <v-container>
                                 <v-card-title primary-title>
-                                    {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsTable") }} : {{ neighborhood.name }}
+                                    {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }} : {{ neighborhood.name }}
                                 </v-card-title>
                                 <v-subheader>
-                                    {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
+                                    {{ $t("additional:modules.tools.cosi.statisticsTable.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
                                 </v-subheader>
                                 <div class="stats-table-modal">
                                     <StatisticsTable

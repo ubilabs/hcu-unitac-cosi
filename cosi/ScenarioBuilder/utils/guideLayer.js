@@ -58,8 +58,8 @@ export function featureTagStyleMod (feature) {
  * @returns {module:ol/Feature | null} the feature of the tag
  */
 export function addSimulationTag (feature, layer, featureLayer) {
-    if (!(feature.constructor === Feature && layer.constructor === VectorLayer)) {
-        console.warn(`addSimulationTag: Layer must be of type "ol/Layer/Vector", got ${layer.constructor}. Feature must be of type "ol/Feature, got ${feature.constructor}`);
+    if (!(feature.constructor === Feature && layer.constructor === VectorLayer && featureLayer.constructor === VectorLayer)) {
+        console.warn(`addSimulationTag: FeatureLayer must be of type "ol/Layer/Vector", got ${featureLayer.constructor}. Layer must be of type "ol/Layer/Vector", got ${layer.constructor}. Feature must be of type "ol/Feature, got ${feature.constructor}`);
         return null;
     }
     const source = layer.getSource(),

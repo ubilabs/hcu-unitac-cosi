@@ -16,12 +16,14 @@ import getFieldTypeForValue from "../utils/getFieldTypeForValue";
 import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
+import FeatureEditor from "./FeatureEditor.vue";
 import GeometryPicker from "./GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
 import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../utils/geomPickerHandler";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
+import {getAddress} from "../../utils/geocode";
 
 export default {
     name: "ScenarioBuilder",
@@ -31,7 +33,8 @@ export default {
         ReferencePicker,
         MoveFeatures,
         ScenarioManager,
-        GeometryPicker
+        GeometryPicker,
+        FeatureEditor
     },
     data () {
         return {
@@ -57,7 +60,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
 
         /**
          * Getter and Setter for the manuel coordinates Input for the geometry
@@ -147,8 +150,9 @@ export default {
             }
         },
 
-        geometry () {
+        geometry (geom) {
             this.isCreated = false;
+            this.getAddress(geom);
         }
     },
     /**
@@ -161,9 +165,9 @@ export default {
         });
         await this.createGuideLayer();
     },
-    mounted () {
-        this.map.addEventListener("click", this.openEditDialog.bind(this));
-    },
+    // mounted () {
+    //     this.map.addEventListener("click", this.openEditDialog.bind(this));
+    // },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
@@ -310,6 +314,19 @@ export default {
 
         mapDataTypes (type) {
             return this.$t(`additional:modules.tools.cosi.dataTypes.${type}`);
+        },
+
+        async getAddress (geom) {
+            const address = await getAddress(geom, this.projectionCode);
+
+            if (address) {
+                for (const prop of this.workingLayer.addressField) {
+                    this.featureProperties[prop] = "";
+                }
+
+                this.$set(this.featureProperties, this.workingLayer.addressField[0], address);
+                this.$forceUpdate();
+            }
         },
 
         getDescriptionBySource (layerId) {
@@ -606,7 +623,7 @@ export default {
                 </v-app>
             </template>
         </Tool>
-        <v-app>
+        <!-- <v-app>
             <v-snackbar
                 v-model="editDialog"
                 :timeout="-1"
@@ -629,17 +646,10 @@ export default {
                     >
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <!-- NOT IMPLEMENTED -->
-                    <!-- <v-btn
-                        v-bind="attrs"
-                        text
-                        @click="editStatsTable = true; editDialog = false;"
-                    >
-                        {{ $t("common:button.edit") }}
-                    </v-btn> -->
                 </template>
             </v-snackbar>
-        </v-app>
+        </v-app> -->
+        <FeatureEditor />
     </div>
 </template>
 

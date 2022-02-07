@@ -1,6 +1,4 @@
 <script>
-import {mapGetters} from "vuex";
-
 export default {
     name: "StatisticsTable",
     props: {
@@ -13,14 +11,13 @@ export default {
         snack: false,
         snackColor: "",
         snackText: "",
-        isNumber: v => !isNaN(parseFloat(v)) || this.$t("additional:modules.tools.cosi.residentialSimulation.isNotNumber")
+        isNumber: v => !isNaN(parseFloat(v)) || this.$t("additional:modules.tools.cosi.statisticsTable.isNotNumber")
     }),
     computed: {
-        ...mapGetters("Tools/DistrictSelector", ["mapping"]),
         headers () {
             return [
-                {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsCategory"), value: "category"},
-                {text: this.$t("additional:modules.tools.cosi.residentialSimulation.statsValue"), value: "value"}
+                {text: this.$t("additional:modules.tools.cosi.statisticsTable.statsCategory"), value: "category"},
+                {text: this.$t("additional:modules.tools.cosi.statisticsTable.statsValue"), value: "value"}
             ];
         }
     },
@@ -81,7 +78,7 @@ export default {
                     <div>{{ item.value }}</div>
                     <template #input>
                         <div class="mt-4 text-h6">
-                            {{ $t("additional:modules.tools.cosi.residentialSimulation.editStatsField") }}
+                            {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsField") }}
                         </div>
                         <v-text-field
                             :value="item.value"
@@ -89,7 +86,7 @@ export default {
                             single-line
                             @change="editStats($event, item)"
                         />
-                        {{ $t('additional:modules.tools.cosi.residentialSimulation.editStatsInfo') }}
+                        {{ $t('additional:modules.tools.cosi.statisticsTable.editStatsInfo') }}
                     </template>
                 </v-edit-dialog>
             </template>
@@ -113,6 +110,3 @@ export default {
         </v-snackbar>
     </div>
 </template>
-
-<style lang="less" scoped>
-</style>

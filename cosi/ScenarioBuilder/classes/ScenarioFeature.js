@@ -124,13 +124,6 @@ export default class ScenarioFeature {
         if (originalGeom) {
             translateFeature(this.feature, originalGeom);
 
-            if (this.guideLayer) {
-                removeSimulationTag(this.feature, this.guideLayer);
-                if (this.feature.get("isSimulation")) {
-                    addSimulationTag(this.feature, this.guideLayer);
-                }
-            }
-
             if (purge) {
                 delete this.scenarioData.geometry;
                 this.checkScenarioData();
@@ -146,6 +139,13 @@ export default class ScenarioFeature {
         if (Object.keys(this.scenarioData).length === 0) {
             this.feature.unset("isModified");
             unByKey(this.eventKeys.modifier);
+        }
+
+        if (this.guideLayer) {
+            removeSimulationTag(this.feature, this.guideLayer);
+            if (this.feature.get("isSimulation") || this.feature.get("isModified")) {
+                addSimulationTag(this.feature, this.guideLayer, this.layer);
+            }
         }
     }
 
@@ -188,6 +188,11 @@ export default class ScenarioFeature {
         }
 
         this.feature.set("isModified", true);
+
+        if (this.guideLayer) {
+            removeSimulationTag(this.feature, this.guideLayer);
+            addSimulationTag(this.feature, this.guideLayer, this.layer);
+        }
     }
 
     /**
