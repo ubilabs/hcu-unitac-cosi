@@ -189,7 +189,6 @@ export default {
         <span
             v-if="item.feature.getProperties().originalGeometryType !== 'Point'"
             class="dipas-geometry-overlay"
-            :title="Test"
         >
             *
         </span>
