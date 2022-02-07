@@ -118,15 +118,15 @@ export default {
         },
         getTitle (item) {
             let title = "";
+            const originalGeometryType = item.feature.getProperties().originalGeometryType;
 
-            if (item.isSimulation) {
-                title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated")
+            if (item.isSimulation || originalGeometryType !== "Point") {
+                title += this.$t("additional:modules.tools.cosi.featuresList.warning")
             }
-            const originalGeometryType = item.feature.getProperties().originalGeometryType
+            if (item.isSimulation) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n"
+            }
             if (originalGeometryType !== "Point") {
-                if (item.isSimulation) {
-                    title += " "
-                }
                 title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType
             }
 

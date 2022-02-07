@@ -215,7 +215,7 @@ export default {
             }
         },
         addFile (files) {
-            files.forEach(file => {
+            for (const file of files) {
                 const reader = new FileReader();
 
                 reader.onload = f => {
@@ -228,7 +228,7 @@ export default {
                 };
 
                 reader.readAsText(file);
-            });
+            }
         },
         /**
          * @description Pass layer to actions (store) and add it to layer tree.
@@ -401,6 +401,7 @@ export default {
                         </p>
                     </div>
 
+                    <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
                     <div
                         class="drop-area"
                         @drop.prevent="onDrop"
@@ -488,6 +489,7 @@ export default {
                         <div class="body">
                             <div class="wrapper">
                                 <div class="features">
+                                    <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
                                     <div
                                         class="feat_wrapper active style"
                                         @click="e => e.target.classList.toggle('active')"
@@ -582,6 +584,8 @@ export default {
                                                         label="Regenbogenfarbspektrum"
                                                         type="checkbox"
                                                     />
+                                                    // eslint-disable-next-line vuejs-accessibility/click-events-have-key-events
+                                                    // eslint-disable-next-line vuejs-accessibility/click-events-have-key-events
                                                     <div
                                                         class="info_icon"
                                                         @click="showInfo($t('additional:modules.tools.cosiFileImport.rainbowTooltip'))"
