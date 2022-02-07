@@ -378,6 +378,7 @@ export default {
                             group: layerMap.group,
                             layerName: layerMap.id,
                             layerId: layerMap.layerId,
+                            gfiAttributes: vectorLayer.values_.gfiAttributes,
                             type: feature.get(layerMap.categoryField),
                             address: layerMap.addressField.map(field => feature.get(field)).join(", "),
                             feature: feature,

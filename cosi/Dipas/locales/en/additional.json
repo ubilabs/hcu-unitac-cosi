@@ -16,7 +16,10 @@
                         "byVoting": "by voting"
                     },
                     "contributions": "contributions",
-                    "zoomToProject": "Zoom to project area"
+                    "zoomToProject": "Zoom to project area",
+                    "download": {
+                        "title": "Download results as geodata (GeoJSON)"
+                    }
                 }
             }
         }
