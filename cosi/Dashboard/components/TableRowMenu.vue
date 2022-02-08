@@ -345,7 +345,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     #dashboard-wrapper {
         .v-list-item--dense {
             min-height: unset;

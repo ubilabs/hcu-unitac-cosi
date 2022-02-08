@@ -269,8 +269,8 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
-    @import "../../utils/variables.less";
+<style lang="scss" scoped>
+    @import "../../utils/variables.scss";
 
     .hidden {
         display: hidden;

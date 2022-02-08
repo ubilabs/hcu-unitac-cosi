@@ -896,6 +896,7 @@ export default {
                                     <span>{{ $t("additional:modules.tools.cosi.calculateRatio.dataA") }}</span>
                                 </template>
                                 <template v-else>
+                                    <!-- eslint-disable-next-line -->
                                     <span>{{ $t("additional:modules.tools.cosi.calculateRatio.dataB") }}</span>
                                 </template>
                             </button>
@@ -1131,8 +1132,8 @@ export default {
 </template>
 
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
 
     #calculateratio {
         background:rgba(255,255,255,0.95);
@@ -1311,7 +1312,7 @@ export default {
                             line-height:40px;
                             width:auto;
                             opacity:0.75;
-                            background:@green;
+                            background: $green;
                             color:white;
                             padding: 0px 10px;
                             margin:5px 0px;
@@ -1339,8 +1340,8 @@ export default {
 
                             &.highlight {
                                 color:white;
-                                border:1px solid @brightblue;
-                                background:@brightblue;
+                                border:1px solid $brightblue;
+                                background: $brightblue;
                             }
                         }
 

@@ -517,8 +517,8 @@ export default {
     </Tool>
 </template>
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
     #chart-generator-win {
         height: 675px;
     }
@@ -600,8 +600,8 @@ export default {
 
                             .rmv_btn {
                                 margin:2px 0px 2px 2px;
-                                background:@error_red;
-                                border:1px solid @error_red;
+                                background: $error_red;
+                                border:1px solid $error_red;
                                 color:white;
                                 width:26px;
                                 height:26px;
@@ -641,7 +641,7 @@ export default {
                             }
 
                             .selected {
-                                background-color: @brightblue;
+                                background-color: $brightblue;
                                 color: white;
                             }
                         }
@@ -693,13 +693,13 @@ export default {
                                 }
 
                                 &.dl {
-                                    background:@green;
-                                    border:1px solid @green;
+                                    background: $green;
+                                    border:1px solid $green;
                                 }
 
                                 &.rm {
-                                    background:@error_red;
-                                    border:1px solid @error_red;
+                                    background: $error_red;
+                                    border:1px solid $error_red;
                                 }
                             }
                         }

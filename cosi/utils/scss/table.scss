@@ -1,13 +1,13 @@
 .forged_table {
     border: 1px solid #aaa;
-    .drop_shadow();
+    @include drop_shadow();
     
     tr {
         position:relative;
         padding:0;
 
         &.head_row {
-            background-color:@brightblue !important;
+            background-color: $brightblue !important;
             z-index:10;
 
             th {
@@ -39,7 +39,7 @@
                         left:0;
                         width:100%;
                         height:100%;
-                        background:@masterportal_blue;
+                        background:$masterportal_blue;
                         z-index:1;
                     }
 
@@ -65,7 +65,7 @@
             &.row_head {
                 &:hover {
                     .styling_helper {
-                        background:@brightblue !important;
+                        background: $brightblue !important;
                         color:white;
                     }
 
@@ -115,7 +115,7 @@
                     font-size:80%;
                     transform:translateY(-50%);
                     z-index:5;
-                    .drop_shadow();
+                    @include drop_shadow();
                 }
 
                 &:hover {

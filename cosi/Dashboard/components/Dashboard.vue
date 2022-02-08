@@ -735,8 +735,8 @@ export default {
     </Tool>
 </template>
 
-<style lang="less">
-@import "../../utils/variables.less";
+<style lang="scss">
+@import "../../utils/variables.scss";
 
 #dashboard-wrapper {
     height: 100%;
@@ -824,13 +824,13 @@ export default {
             }
         }
         .timestamp {
-            color: @brightblue;
+            color: $brightblue;
         }
         .no-wrap {
             white-space: nowrap;
         }
         .modified {
-            color: @brightred;
+            color: $brightred;
         }
         .minimized {
             // overflow: hidden;

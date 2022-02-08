@@ -94,7 +94,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .slider-text {
         width: 50px;
     }

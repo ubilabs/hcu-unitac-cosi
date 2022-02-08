@@ -195,7 +195,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .feature-icon {
         margin-top: 8px;
         position: relative;

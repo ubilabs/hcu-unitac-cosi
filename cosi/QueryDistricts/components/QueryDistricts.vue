@@ -858,7 +858,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .layer-filter {
     margin-bottom: 10px;
     border: 1px solid rgba(0,0,0,.12);
