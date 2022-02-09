@@ -35,7 +35,7 @@ export default {
             if (this.style?.getImage()?.constructor === Icon) {
                 const src = this.style.getImage().getSrc();
 
-                if (src.substr(src.length - 4) === ".svg") {
+                if (src.substring(src.length - 4) === ".svg") {
                     return src;
                 }
             }
@@ -121,13 +121,13 @@ export default {
             const originalGeometryType = item.feature.getProperties().originalGeometryType;
 
             if (item.isSimulation || originalGeometryType !== "Point") {
-                title += this.$t("additional:modules.tools.cosi.featuresList.warning")
+                title += this.$t("additional:modules.tools.cosi.featuresList.warning");
             }
             if (item.isSimulation) {
-                title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n"
+                title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n";
             }
             if (originalGeometryType !== "Point") {
-                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType;
             }
 
             return title;

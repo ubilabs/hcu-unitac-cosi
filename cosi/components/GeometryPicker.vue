@@ -1,12 +1,13 @@
 <script>
 import {mapGetters, mapActions} from "vuex";
-import beautifyKey from "../../../../src/utils/beautifyKey";
+import beautifyKey from "../../../src/utils/beautifyKey";
 import {getOlGeomTypeByGmlType} from "../utils/getOlGeomByGmlType";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
 import {Draw, Select} from "ol/interaction";
-import {getSearchResultsCoordinates, getSearchResultsGeometry} from "../../utils/getSearchResultsGeom";
+import {getSearchResultsCoordinates, getSearchResultsGeometry} from "../utils/getSearchResultsGeom";
+import {circleToPolygon} from "../utils/geomUtils";
 
 export default {
     name: "GeometryPicker",
@@ -24,6 +25,14 @@ export default {
             type: Boolean,
             required: false,
             default: true
+        },
+        id: {
+            type: String,
+            default: "geometry_picker"
+        },
+        additionalSelectLayerIds: {
+            type: Array,
+            default: () => ["import_draw_layer"]
         }
     },
     data () {
@@ -37,32 +46,20 @@ export default {
             pickPolygonActive: false,
             drawPolygonInteraction: null,
             drawLayer: null,
-            polygonSelect: null
+            polygonSelect: null,
+            foo: "bar"
         };
     },
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
 
         /**
-         * Getter and Setter for the manuel coordinates Input for the geometry
+         * Getter for the current value of the geometry as coordinates array
+         * @returns {number[]} the current geometry object as coordinates array
          */
-        geomCoords: {
-            /**
-             * Getter for the current value of the geometry as coordinates array
-             * @returns {number[]} the current geometry object as coordinates array
-             */
-            get () {
-                return this.geometry.value ? JSON.stringify(this.geometry.value.getCoordinates()) : undefined;
-            },
-            /**
-             * Setter for the current value of the geometry as coordinates array, or single coordinate
-             * @param {String} v - the value of the input field
-             * @returns {void}
-             */
-            set (v) {
-                this.setGeomByInput(v);
-            }
+        geomCoords () {
+            return this.geometry.value ? JSON.stringify(this.geometry.value.getCoordinates()) : undefined;
         },
 
         /**
@@ -248,8 +245,13 @@ export default {
          * @returns {void}
          */
         pickPolygon () {
+            const layers = [
+                ...this.activeVectorLayerList,
+                ...this.additionalSelectLayerIds.map(id => this.layerById(id)?.olLayer)
+            ];
+
             this.polygonSelect = new Select({
-                layers: this.activeVectorLayerList,
+                layers,
                 style: null
             });
 
@@ -264,9 +266,15 @@ export default {
          * @returns {void}
          */
         onPolygonSelect (evt) {
-            const feature = evt.selected[0],
-                geometry = feature?.getGeometry().clone(),
+            const feature = evt.selected[0];
+            let geometry = feature?.getGeometry().clone(),
                 type = geometry?.getType();
+
+            // Transform a circle to an approx. polygon for use with all other tools
+            if (type === "Circle") {
+                geometry = circleToPolygon(geometry, 64, this.projectionCode);
+                type = "Polygon";
+            }
 
             if (type === "Polygon" || type === "MultiPolygon") {
                 this.geometry.value = geometry;
@@ -385,7 +393,7 @@ export default {
                 coords = JSON.parse(value);
             }
             catch (e) {
-                coords = value.split(",").map(coord => parseFloat(coord));
+                coords = value?.split(",").map(coord => parseFloat(coord));
             }
 
             if (this.geometry.type === "Point") {
@@ -396,10 +404,13 @@ export default {
             }
         },
 
-        setGeometry (geometry) {
-            const type = geometry.getType();
+        async setGeometry (geom) {
+            const
+                type = geom.getType(),
+                geometry = geom.clone();
 
-            this.geometry.value = geometry;
+            await this.$nextTick();
+            this.$set(this.geometry, "value", geometry);
 
             if (this.geometry.type === "Point" && type === "Point") {
                 this.placingPointMarker(geometry.getCoordinates());
@@ -423,10 +434,11 @@ export default {
         </v-col>
         <v-col cols="9">
             <v-text-field
-                v-model="geomCoords"
+                :value="geomCoords"
                 :name="geomField.name"
                 :label="$t('additional:modules.tools.cosi.dataTypes.geometry')"
                 dense
+                @change="setGeomByInput"
             >
                 <template #append>
                     <v-btn
@@ -485,7 +497,7 @@ export default {
                         tile
                         color="grey lighten-1"
                         class="ms-1"
-                        :disabled="geometry.value === null"
+                        :disabled="!geom"
                         :title="$t('additional:modules.tools.cosi.scenarioBuilder.resetLocation')"
                         @click="resetLocation"
                     >

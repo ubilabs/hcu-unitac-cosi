@@ -611,7 +611,7 @@ export default {
                     Object.entries(feature.getProperties()).forEach(([key, val]) => {
                         if (key.includes(this.yearSelector)) {
                             const obj = {
-                                jahr: key.substr(key.indexOf("_") + 1),
+                                jahr: key.substring(key.indexOf("_") + 1),
                                 wert: parseFloat(val)
                             };
 

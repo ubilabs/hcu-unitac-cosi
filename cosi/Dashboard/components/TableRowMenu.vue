@@ -267,7 +267,7 @@ export default {
                                     <template v-if="_item.isTemp">
                                         <v-list-item
                                             dense
-                                            @click="$emit('delete')"
+                                            @click="$emit('delete', _item.category, _item.group)"
                                         >
                                             <v-list-item-icon>
                                                 <v-icon>mdi-delete</v-icon>

@@ -207,10 +207,10 @@ export default {
                 features = new GeoJSON().readFeatures(fetch);
 
 
-            for (let feature of features) {
+            for (const feature of features) {
                 if (feature.getGeometry().intersectsCoordinate([0, 0])) {
                     const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
-                        extent = model.get('features')[0].getGeometry().getExtent(),
+                        extent = model.get("features")[0].getGeometry().getExtent(),
                         center = getCenter(extent);
 
                     feature.setGeometry(new Point(center));
@@ -561,18 +561,18 @@ export default {
             const layers = [],
                 layersOnMap = [];
 
-            for (let project in this.projectsActive) {
+            for (const project in this.projectsActive) {
                 if (this.projectsActive[project].layer) {
-                    layers.push(project)
+                    layers.push(project);
                 }
                 if (this.projectsActive[project].contributions) {
-                    layers.push(project + "-contributions")
+                    layers.push(project + "-contributions");
                 }
                 if (this.projectsActive[project].heatmap) {
-                    layers.push(project + "-heatmap")
+                    layers.push(project + "-heatmap");
                 }
             }
-            for (let layerId of layers) {
+            for (const layerId of layers) {
                 layersOnMap.push(getLayerById(this.map.getLayers().getArray(), layerId));
             }
             exportAsGeoJson(layersOnMap);

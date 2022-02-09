@@ -5,7 +5,6 @@ import {
     createLocalVue
 } from "@vue/test-utils";
 import FeaturesList from "../../../components/FeaturesList.vue";
-// import ScoreValues from "../../../components/ScoreValues.vue";
 import FeaturesListStore from "../../../store/indexFeaturesList";
 import DetailView from "../../../components/DetailView.vue";
 import {expect} from "chai";

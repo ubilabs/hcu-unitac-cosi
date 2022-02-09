@@ -357,7 +357,7 @@ export default {
          * @returns {String} Returns the layer name
          */
         getLayerName (fileName) {
-            return fileName.substr(0, fileName.lastIndexOf("."));
+            return fileName.substring(0, fileName.lastIndexOf("."));
         }
     }
 };
