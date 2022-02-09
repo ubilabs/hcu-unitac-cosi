@@ -54,19 +54,10 @@ const state = {
     isProcessFromParametricUrl: false,
     paramUrlParams: {},
     buttonValue: "info",
-<<<<<<< HEAD
     buildingDesigns: ["eh Einzelhaus (freistehend)", "dh Doppelhaushälfte", " dd Doppelhaus (ganzes Doppelhaus)", "rm Reihenmittelhaus", "rm Reihenmittelhäuser", "re Reihenendhaus", "g geschlossene Bauweise", "a abweichende Bauweise (Gartenhofhaus)"],
     roadPositions: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"],
     selectedOption: "",
     wpsId: "1001",
-=======
-    bauweisen: ["eh Einzelhaus (freistehend)", "dh Doppelhaushälfte", " dd Doppelhaus (ganzes Doppelhaus)", "rm Reihenmittelhaus", "rm Reihenmittelhäuser", "re Reihenendhaus", "g geschlossene Bauweise", "a abweichende Bauweise (Gartenhofhaus)"],
-    selectedBauweise: "",
-    selectedStrassenlage: "",
-    strassenlagen: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"],
-    // wps
-    wpsId: 1001,
->>>>>>> 36c53192 (BG-1869 comments from inka included)
     fmwProcess: "BRWConvert.fmw"
 };
 
