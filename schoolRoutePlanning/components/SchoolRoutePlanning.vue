@@ -4,7 +4,7 @@ import getters from "../store/gettersSchoolRoutePlanning";
 import mutations from "../store/mutationsSchoolRoutePlanning";
 import actions from "../store/actionsSchoolRoutePlanning";
 
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import AddressList from "./SchoolRoutePlanningAddressList.vue";
 import RouteInformation from "./SchoolRoutePlanningRouteInformation.vue";
 import Schools from "./SchoolRoutePlanningSchools.vue";
@@ -17,7 +17,7 @@ import axios from "axios";
 export default {
     name: "SchoolRoutePlanning",
     components: {
-        Tool,
+        ToolTemplate,
         AddressList,
         RouteInformation,
         Schools,
@@ -40,11 +40,9 @@ export default {
              * @returns {String} The input address.
              */
             get () {
-                this.$nextTick(() => {
-                    if (this.$refs.input) {
-                        this.$refs.input.focus();
-                    }
-                });
+                if (this.$refs.input) {
+                    this.$refs.input.focus();
+                }
 
                 return this.$store.state.Tools.SchoolRoutePlanning.inputAddress;
             },
@@ -251,7 +249,7 @@ export default {
 </script>
 
 <template>
-    <Tool
+    <ToolTemplate
         :title="$t(name)"
         :icon="glyphicon"
         :active="active"
@@ -343,7 +341,7 @@ export default {
             </div>
             <RouteInformation />
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>

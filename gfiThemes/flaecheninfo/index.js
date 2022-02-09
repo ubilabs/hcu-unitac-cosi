@@ -1,4 +1,4 @@
-import component from "./components/Flaecheninfo.vue";
+import component from "./components/FlaecheninfoTheme.vue";
 
 export default {
     component: component

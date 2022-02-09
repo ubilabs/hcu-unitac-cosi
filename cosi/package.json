@@ -14,5 +14,7 @@
     "d3": "4.13.x",
     "d3-scale-chromatic": "^1.5.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "whatwg-fetch": "^3.6.2"
+  }
 }

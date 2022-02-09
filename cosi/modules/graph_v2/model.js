@@ -119,7 +119,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @param {number} yAxisMaxValue - max value for the y-axis
      * @return {object} - Object with attribute "minValue" and "maxValue".
      */
-    createValues: function (data, attrToShowArray, dynamicAxisStart = false, axisTicks, yAxisMaxValue) {
+    createValues: function (data, attrToShowArray, dynamicAxisStart = false, axisTicks = null, yAxisMaxValue = null) {
         const valueObj = {};
 
         if (axisTicks && axisTicks?.start && axisTicks?.end) {
@@ -154,7 +154,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @param {Object} xAxisTicks Ticks object.
      * @returns {Object} - scaleX
      */
-    createScaleX: function (data, width, scaletype, attr, dynamicAxisStart = false, xAxisTicks) {
+    createScaleX: function (data, width, scaletype, attr, dynamicAxisStart = false, xAxisTicks = null) {
         const rangeArray = [0, width];
         let scale,
             valueObj;
@@ -182,7 +182,7 @@ const GraphModelV2 = Backbone.Model.extend(/** @lends GraphModelV2.prototype */{
      * @param {number} yAxisMaxValue - max value for the y-axis
      * @returns {Object} - scaleY
      */
-    createScaleY: function (data, height, scaletype, attrToShowArray, dynamicAxisStart = false, yAxisTicks, yAxisMaxValue) {
+    createScaleY: function (data, height, scaletype, attrToShowArray, dynamicAxisStart = false, yAxisTicks = null, yAxisMaxValue = null) {
         const rangeArray = [height, 0];
         let scale,
             valueObj;
