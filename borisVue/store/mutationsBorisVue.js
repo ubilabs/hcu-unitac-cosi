@@ -39,9 +39,6 @@ const mutations = {
     setButtonValue (state, value) {
         state.buttonValue = value;
     },
-    updateSelectedLayerArray (state, value) {
-        state.selectedLayerArray.push(value);
-    },
     unsetSelectedBrwFeature (state) {
         state.selectedBrwFeature = {};
     }

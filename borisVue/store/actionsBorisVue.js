@@ -48,29 +48,19 @@ const actions = {
     },
     switchLayer ({dispatch, commit}, selectedLayerName) {
 
-        const selectedLayerYear = selectedLayerName.split(".").pop(),
-            arrayLength = state.selectedLayerArray.length,
-            previousYear = state.selectedLayerArray[arrayLength - 1],
-            layerModels = state.filteredModelList.filter(function (model) {
-                return model.get("isSelected") === true;
-            });
+        const layerModels = state.filteredModelList.filter(function (model) {
+            return model.get("isSelected") === true;
+        });
 
         layerModels.forEach(layer => {
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
         });
         dispatch("selectLayerModelByName", selectedLayerName);
-        commit("updateSelectedLayerArray", selectedLayerYear);
 
-        // if switching between polygon and point layer: unset selectedBrwFeature and remove marker
-        if (selectedLayerYear <= 2008 && previousYear > 2008) {
-            commit("unsetSelectedBrwFeature");
-            dispatch("MapMarker/removePolygonMarker", null, {root: true});
-        }
-        else if (selectedLayerYear > 2008 && previousYear <= 2008) {
-            commit("unsetSelectedBrwFeature");
-            dispatch("MapMarker/removePointMarker", null, {root: true});
-        }
+        commit("unsetSelectedBrwFeature");
+        dispatch("MapMarker/removePolygonMarker", null, {root: true});
+        dispatch("MapMarker/removePointMarker", null, {root: true});
 
         // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
