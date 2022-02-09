@@ -136,9 +136,13 @@
     "path": "cosi/ResidentialSimulation",
     "type": "tool"
   },
-  "qr": "view.js",
   "Dipas": {
     "path": "cosi/Dipas",
     "type": "tool"
-  }
+  },
+  "AreaSelector": {
+    "path": "cosi/AreaSelector",
+    "type": "tool"
+  },
+  "qr": "view.js"
 }

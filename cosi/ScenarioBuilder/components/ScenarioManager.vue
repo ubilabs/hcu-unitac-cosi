@@ -458,7 +458,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     #new-scenario-form {
         width: 40vw;
     }

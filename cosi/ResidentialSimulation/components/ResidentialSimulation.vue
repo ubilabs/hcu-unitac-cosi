@@ -5,8 +5,8 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
-import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import GeometryPicker from "../../components/GeometryPicker.vue";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
 import NeighborhoodEditor from "./NeighborhoodEditor.vue";
@@ -47,7 +47,7 @@ export default {
                 populationDensity: 5000,
                 livingSpace: 30,
                 stats: null,
-                year: new Date().toISOString().substr(0, 7)
+                year: new Date().toISOString().substring(0, 7)
             },
             fallbacks: {
                 residents: 0,
@@ -143,9 +143,6 @@ export default {
         async active (newActive) {
             if (newActive) {
                 if (this.geometry) {
-                    // wait for 2 ticks for the drawing layer to initialize
-                    await this.$nextTick();
-                    this.$refs["geometry-picker"].geometry.value = this.geometry;
                     await this.$nextTick();
                     geomPickerSetGeometry(this.$refs["geometry-picker"], this.geometry);
                 }
@@ -355,7 +352,7 @@ export default {
             this.neighborhood.gfz = this.defaults.gfz;
             this.neighborhood.populationDensity = this.defaults.populationDensity;
             this.neighborhood.livingSpace = this.defaults.livingSpace;
-            this.neighborhood.year = new Date().toISOString().substr(0, 7);
+            this.neighborhood.year = new Date().toISOString().substring(0, 7);
 
             // reset fallback data to defaults
             this.fallbacks.avgHouseholdSize = this.defaults.avgHouseholdSize;
@@ -796,7 +793,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="scss">
     .slider-val {
         width: 60px;
     }

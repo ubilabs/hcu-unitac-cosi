@@ -61,7 +61,7 @@ export default {
     </v-tooltip>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .float-left {
         float: left;
     }

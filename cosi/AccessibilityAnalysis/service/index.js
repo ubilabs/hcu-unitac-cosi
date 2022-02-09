@@ -175,11 +175,6 @@ const id = "AccessibilityAnalysisService",
                 worker.postMessage({type: "getFilterPoly"});
             });
         }
-
-        // async abort ({getters, commit}, params) {
-        //     worker.terminate();
-        //     commit("setProgress", 0);
-        // }
     },
     store = {
         namespaced: true,

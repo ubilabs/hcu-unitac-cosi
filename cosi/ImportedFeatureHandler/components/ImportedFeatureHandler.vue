@@ -120,8 +120,8 @@ export default {
 </template>
 
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
 
     #ifh-popup {
         position: fixed;
@@ -129,7 +129,7 @@ export default {
         max-width:300px;
         box-sizing: border-box;
         background:white;
-        .drop_shadow();
+        @include drop_shadow();
     }
 </style>
 

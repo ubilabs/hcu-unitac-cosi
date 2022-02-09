@@ -1,11 +1,29 @@
 import * as d3 from "d3-array";
 
 /**
+ * Determines whether all values are numbers
+ * @param {*} values - all number values
+ * @returns {Boolean} are all numbers?
+ */
+function assertValues (...values) {
+    for (const v of values) {
+        if (typeof v !== "number") {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
  * Calculates the median for a given sample
  * @param {Number[]} data The array of existing values
  * @returns {Number} the median
  */
 export function median (data) {
+    if (!assertValues(...data)) {
+        return undefined;
+    }
     const sortData = data.sort(),
         mid = Math.ceil(sortData.length / 2);
 
@@ -18,6 +36,9 @@ export function median (data) {
  * @returns {Number} the mean
  */
 export function mean (data) {
+    if (!assertValues(...data)) {
+        return undefined;
+    }
     return data.reduce((total, datum) => total + datum, 0) / data.length;
 }
 
@@ -28,6 +49,9 @@ export function mean (data) {
  * @returns {Number} the result
  */
 export function add (a, b) {
+    if (!assertValues(a, b)) {
+        return undefined;
+    }
     return a + b;
 }
 
@@ -38,6 +62,9 @@ export function add (a, b) {
  * @returns {Number} the result
  */
 export function subtract (a, b) {
+    if (!assertValues(a, b)) {
+        return undefined;
+    }
     return a - b;
 }
 
@@ -48,6 +75,9 @@ export function subtract (a, b) {
  * @returns {Number} the result
  */
 export function multiply (a, b) {
+    if (!assertValues(a, b)) {
+        return undefined;
+    }
     return a * b;
 }
 
@@ -58,6 +88,9 @@ export function multiply (a, b) {
  * @returns {Number} the result
  */
 export function divide (a, b) {
+    if (!assertValues(a, b)) {
+        return undefined;
+    }
     return a / b;
 }
 
@@ -67,6 +100,9 @@ export function divide (a, b) {
  * @returns {Number} the result
  */
 export function sum (arr) {
+    if (!assertValues(...arr)) {
+        return undefined;
+    }
     return arr.reduce((res, e) => res + e, 0);
 }
 

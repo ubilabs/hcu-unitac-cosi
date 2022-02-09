@@ -35,7 +35,7 @@ export default {
             if (this.style?.getImage()?.constructor === Icon) {
                 const src = this.style.getImage().getSrc();
 
-                if (src.substr(src.length - 4) === ".svg") {
+                if (src.substring(src.length - 4) === ".svg") {
                     return src;
                 }
             }
@@ -196,7 +196,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .feature-icon {
         margin-top: 8px;
         position: relative;
