@@ -145,12 +145,10 @@ const id = "AccessibilityAnalysisService",
             }
 
             try {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl, projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(getters.serviceId), projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
             }
             catch {
-                const baseUrl = Radio.request("RestReader", "getServiceById", "csl_ors").get("url") + "/v2/";
-
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: baseUrl, projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(), projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
             }
             finally {
                 commit("setProgress", 0);
@@ -192,7 +190,8 @@ const id = "AccessibilityAnalysisService",
             filterPoly: null,
             filterUrl: "https://geodienste.hamburg.de/HH_WFS_Verwaltungsgrenzen",
             filterFeatureType: "landesgrenze",
-            serviceId: "bkg_ors"
+            serviceId: "bkg_ors",
+            fallbackServiceId: "csl_ors"
         },
         getters: {
             progress: s => {
@@ -210,8 +209,14 @@ const id = "AccessibilityAnalysisService",
             filterPoly: s => {
                 return s.filterPoly;
             },
-            baseUrl: s => {
-                return Radio.request("RestReader", "getServiceById", s.serviceId).get("url") + "/v2/";
+            baseUrl: s => serviceId => {
+                return Radio.request("RestReader", "getServiceById", serviceId || s.fallbackServiceId).get("url") + "/v2/";
+            },
+            serviceId: s => {
+                return s.serviceId;
+            },
+            fallbackServiceId: s => {
+                return s.fallbackServiceId;
             }
         },
         mutations: {
