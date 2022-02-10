@@ -2,6 +2,7 @@ import Worker from "worker-loader!./isochronesWorker.js";
 import {readFeatures} from "../components/util";
 import axios from "axios";
 import {WFS} from "ol/format.js";
+import appStore from "../../../../src/app-store";
 
 let worker,
     // eslint-disable-next-line func-style, require-jsdoc
@@ -33,7 +34,7 @@ async function getFeatures (url, featureType, version = "1.1.0") {
                 request: "GetFeature",
                 version: version,
                 typeName: featureType,
-                srsName: "EPSG:25832"
+                srsName: appStore.getters["Map/projectionCode"]
             }
         }),
         json = ret.data;
@@ -144,12 +145,12 @@ const id = "AccessibilityAnalysisService",
             }
 
             try {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl, projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
             }
             catch {
                 const baseUrl = Radio.request("RestReader", "getServiceById", "csl_ors").get("url") + "/v2/";
 
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: baseUrl}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: baseUrl, projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
             }
             finally {
                 commit("setProgress", 0);

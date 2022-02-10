@@ -160,7 +160,7 @@ export default {
         const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(evt) : [evt.coordinate],
             coordinates = rawCoords.map(coord => Proj.transform(
                 coord,
-                "EPSG:25832",
+                this.projectionCode,
                 "EPSG:4326"
             ));
 
@@ -379,7 +379,7 @@ export default {
                     }
                     return [...res, Extent.getCenter(geometry.getExtent())];
 
-                }, []).map(coord => Proj.transform(coord, "EPSG:25832", "EPSG:4326"));
+                }, []).map(coord => Proj.transform(coord, this.projectionCode, "EPSG:4326"));
         }
         return null;
     }

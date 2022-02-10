@@ -34,16 +34,16 @@ export function setFilterPoly (coords) {
  * @param {*} progress progress callback
  * @return {*} features
  */
-export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, maxDistance, minDistance, batchSize, baseUrl}, progress) {
+export async function createIsochrones ({transportType, coordinates, scaleUnit, distance, maxDistance, minDistance, batchSize, baseUrl, projectionCode}, progress) {
     let ret;
 
     if (coordinates.length === 1) {
         progress(50);
-        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, maxDistance, minDistance, baseUrl);
+        ret = await createIsochronesPoint(transportType, coordinates[0], scaleUnit, distance, maxDistance, minDistance, baseUrl, projectionCode);
         progress(100);
         return ret;
     }
-    return createIsochronesPoints(transportType, coordinates, scaleUnit, distance, maxDistance, null, batchSize || 200, progress, baseUrl);
+    return createIsochronesPoints(transportType, coordinates, scaleUnit, distance, maxDistance, null, batchSize || 200, progress, baseUrl, projectionCode);
 }
 
 /**
@@ -55,9 +55,10 @@ export async function createIsochrones ({transportType, coordinates, scaleUnit, 
  * @param {*} maxDistance maxDistance
  * @param {*} minDistance minDistance
  * @param {*} baseUrl baseUrl
+ * @param {*} projectionCode projectionCode
  * @return {*} steps and features
  */
-async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, maxDistance, minDistance, baseUrl) {
+async function createIsochronesPoint (transportType, coordinate, scaleUnit, distance, maxDistance, minDistance, baseUrl, projectionCode) {
     if (abortController) {
         abortController.cancel();
     }
@@ -87,7 +88,7 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
     newFeatures = transformFeatures(
         newFeatures,
         "EPSG:4326",
-        "EPSG:25832"
+        projectionCode
     );
 
     newFeatures.forEach((feature) => {
@@ -109,9 +110,11 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
  * @param {*} batchSize batchSize
  * @param {*} progress progress callback
  * @param {*} baseUrl baseUrl
+ * @param {*} projectionCode projectionCode
  * @return {*} features
  */
-async function createIsochronesPoints (transportType, coordinates, scaleUnit, distance, maxDistance, selectedFacilityName, batchSize, progress, baseUrl) {
+// eslint-disable-next-line max-params, require-jsdoc
+async function createIsochronesPoints (transportType, coordinates, scaleUnit, distance, maxDistance, selectedFacilityName, batchSize, progress, baseUrl, projectionCode) {
 
     progress(1);
 
@@ -132,7 +135,7 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
         groupedFeaturesList = [],
         filteredCoordinates = filterPoly === undefined ? coordinates :
             coordinates.filter(c => turf.booleanPointInPolygon(
-                Proj.transform(c, "EPSG:4326", "EPSG:25832"), filterPoly));
+                Proj.transform(c, "EPSG:4326", projectionCode), filterPoly));
 
     for (let i = 0; i < filteredCoordinates.length; i += batchSize) {
         const arrayItem = filteredCoordinates.slice(i, i + batchSize);
@@ -203,7 +206,7 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
             layerUnionFeatures = readFeatures(JSON.stringify(layerUnion));
 
             // TODO: get projections via arguments and/or store
-            layerUnionFeatures = transformFeatures(layerUnionFeatures, "EPSG:4326", "EPSG:25832");
+            layerUnionFeatures = transformFeatures(layerUnionFeatures, "EPSG:4326", projectionCode);
 
             const featureType = "Erreichbarkeit im Gebiet";
 
