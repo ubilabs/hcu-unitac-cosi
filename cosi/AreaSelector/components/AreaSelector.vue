@@ -9,6 +9,7 @@ import {geomPickerUnlisten, geomPickerSetGeometry, geomPickerGetFeature} from ".
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import GeometryPicker from "../../components/GeometryPicker.vue";
 import {Stroke, Style} from "ol/style.js";
+import {featureToGeoJson} from "../../utils/geomUtils";
 
 export default {
     name: "AreaSelector",
@@ -19,8 +20,6 @@ export default {
     },
     data () {
         return {
-            geometry: null,
-            feature: null,
             polygonStyle: new Style({
                 stroke: new Stroke({
                     width: 3,
@@ -60,7 +59,7 @@ export default {
         },
 
         geometry (geom) {
-            this.feature = geomPickerGetFeature(this.$refs["geometry-picker"]);
+            this.setFeature(geomPickerGetFeature(this.$refs["geometry-picker"]));
             this.drawingLayer.getSource().clear();
             if (this.feature) {
                 this.drawingLayer.getSource().addFeature(this.feature);
@@ -86,7 +85,7 @@ export default {
          * @returns {void}
          */
         updateGeometry (geom) {
-            this.geometry = geom;
+            this.setGeometry(geom);
             geomPickerUnlisten(this.$refs["geometry-picker"]);
         },
 
@@ -102,6 +101,17 @@ export default {
             this.setDrawingLayer(newLayer);
 
             return newLayer;
+        },
+
+        /**
+        * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
+        * @returns {void}
+        */
+        requestInhabitants: function () {
+            const geoJson = featureToGeoJson(this.feature);
+
+            this.close();
+            this.$root.$emit("populationRequest", geoJson);
         },
 
         /**
@@ -141,6 +151,16 @@ export default {
                         @updateGeometry="updateGeometry"
                     />
                 </div>
+                <v-btn
+                    v-if="geometry"
+                    dense
+                    small
+                    tile
+                    color="grey lighten-1"
+                    @click="requestInhabitants"
+                >
+                    {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.requestInhabitants') }}
+                </v-btn>
             </v-app>
         </template>
     </Tool>
