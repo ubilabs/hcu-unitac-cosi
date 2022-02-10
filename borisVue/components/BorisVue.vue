@@ -137,14 +137,6 @@ export default {
             }
             return bauweise === zBauweise;
         },
-        toggleInfoText () {
-            if (this.infoText.length === 0) {
-                this.setInfoText("Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.");
-            }
-            else {
-                this.setInfoText("");
-            }
-        },
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
