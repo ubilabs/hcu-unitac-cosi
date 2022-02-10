@@ -49,6 +49,25 @@ export default {
             this.checkGfiFeatureByLanduse({feature: this.gfiFeature, selectedLanduse: value});
             this.setBrwLanduse(value);
         },
+        bauweiseSelectionChanged (event) {
+            this.setSelectedBauweise(event.target.value);
+        },
+        strassenlageSelectionChanged (event) {
+            const eventValue = event.target.value;
+
+            this.setSelectedStrassenlage(eventValue[0]);
+        },
+        checkForBauweiseMatch (bauweise) {
+            let zBauweise = this.selectedBrwFeature.get("zBauweise");
+
+            if (this.selectedBrwFeature.get("zBauweise") === "eh Einzelhäuser") {
+                zBauweise = "eh Einzelhaus (freistehend)";
+            }
+            else if (this.selectedBrwFeature.get("zBauweise") === "dh Doppelhaushälften") {
+                zBauweise = "dh Doppelhaushälfte";
+            }
+            return bauweise === zBauweise;
+        },
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
@@ -350,117 +369,25 @@ export default {
                                 v-if="selectedBrwFeature.get('zBauweise')"
                             >
                                 <dt>
-                                    <span>Anbauart:</span>
+                                    <span>Anbauart: </span>
                                     <span class="glyphicon glyphicon-question-sign" />
                                 </dt>
                                 <dd>
-                                    <!-- @change="getSelectedBauweise($event.target.value)" -->
                                     <select
                                         id="zBauwSelect"
                                         class="form-control"
+                                        @change="bauweiseSelectionChanged($event)"
                                     >
                                         <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'eh Einzelhäuser' || selectedBrwFeature.get('zBauweise') === 'eh Einzelhaus'"
-                                            value="eh Einzelhaus (freistehend)"
+                                            v-for="(bauweise, i) in bauweiseArray"
+                                            :key="i"
+                                            :value="bauweise"
+                                            :SELECTED="checkForBauweiseMatch(bauweise)"
                                         >
-                                            Einzelhäuser: {{ selectedBrwFeature.get('zBauweise') }}
-                                        </option>
-                                        <!-- <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'eh Einzelhäuser' || selectedBrwFeature.get('zBauweise') === 'eh Einzelhaus'"
-                                            value="eh Einzelhaus (freistehend)"
-                                        >
-                                            eh Einzelhaus (freistehend)
-                                        </option> -->
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'dh Doppelhaushälften' || selectedBrwFeature.get('zBauweise') === 'dh Doppelhaushälfte'"
-                                            value="dh Doppelhaushälfte"
-                                        >
-                                            dh Doppelhaushälfte
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'dd Doppelhaus (ganzes Doppelhaus)'"
-                                            value="dd Doppelhaus (ganzes Doppelhaus)"
-                                        >
-                                            dd Doppelhaus (ganzes Doppelhaus)
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'rm Reihenmittelhäuser' || selectedBrwFeature.get('zBauweise') === 'rm Reihenmittelhaus'"
-                                            value="rm Reihenmittelhaus"
-                                        >
-                                            rm Reihenmittelhaus
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 're Reihenendhaus'"
-                                            value="re Reihenendhaus"
-                                        >
-                                            re Reihenendhaus
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'g geschlossene Bauweise'"
-                                            value="g geschlossene Bauweise"
-                                        >
-                                            g geschlossene Bauweise
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'a abweichende Bauweise (Gartenhofhaus)'"
-                                            value="a abweichende Bauweise (Gartenhofhaus)"
-                                        >
-                                            a abweichende Bauweise (Gartenhofhaus)
+                                            {{ bauweise }}
                                         </option>
                                     </select>
                                 </dd>
-                                <!-- <dd>
-                                    <select
-                                        id="zBauwSelect"
-                                        class="form-control"
-                                    >
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'eh Einzelhäuser' || selectedBrwFeature.get('zBauweise') === 'eh Einzelhaus'"
-                                            value="eh Einzelhaus (freistehend)"
-                                        >
-                                            eh Einzelhaus (freistehend)
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'dh Doppelhaushälften' || selectedBrwFeature.get('zBauweise') === 'dh Doppelhaushälfte'"
-                                            value="dh Doppelhaushälfte"
-                                        >
-                                            dh Doppelhaushälfte
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'dd Doppelhaus (ganzes Doppelhaus)'"
-                                            value="dd Doppelhaus (ganzes Doppelhaus)"
-                                        >
-                                            dd Doppelhaus (ganzes Doppelhaus)
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'rm Reihenmittelhäuser' || selectedBrwFeature.get('zBauweise') === 'rm Reihenmittelhaus'"
-                                            value="rm Reihenmittelhaus"
-                                        >
-                                            rm Reihenmittelhaus
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 're Reihenendhaus'"
-                                            value="re Reihenendhaus"
-                                        >
-                                            re Reihenendhaus
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'g geschlossene Bauweise'"
-                                            value="g geschlossene Bauweise"
-                                        >
-                                            g geschlossene Bauweise
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zBauweise') === 'a abweichende Bauweise (Gartenhofhaus)'"
-                                            value="a abweichende Bauweise (Gartenhofhaus)"
-                                        >
-                                            a abweichende Bauweise (Gartenhofhaus)
-                                        </option>
-                                    </select>
-                                </dd> -->
-                            <!-- <dd class="help">
-                                Wählen Sie die Bauweise Ihres Gebäudes aus der Liste aus: <strong>Einzelhäuser </strong> sind freistehende Häuser, die nicht an die Grundstücksgrenze, Nutzungsgrenze oder andere Häuser angebaut sind. Lediglich zu einer Seite darf der Raum zwischen Haus und Grundstücksgrenze mit Nebengebäuden, z. B. Garagen zugebaut sein. <strong> Ein Doppelhaus </strong>ist eine Kombination zweier Häuser, die beide einseitig auf eine gemeinsame seitliche Grundstücksgrenze oder Nutzungsgrenze (bei Wohnungs-/Teileigentum) gebaut sind. Zur Vermeidung von Missverständnissen werden die einzelnen Häuser als <strong>halbe Doppelhäuser oder Doppelhaushälften</strong> bezeichnet. <strong>Ein Endreihenhaus</strong> ist einseitig bzw. ein <strong>Mittelreihenhaus</strong> ist beidseitig auf die seitlichen Grundstücks- bzw. Nutzungsgrenzen gebaut, so dass sich Zeilen von mindestens drei Häusern und bis zu 50 Meter Länge ergeben. <strong>Die geschlossenen Bauweise</strong> kennzeichnet Gebäude, die zu allen Seiten keinen Grenzabstand aufweisen und vollständig umbaut sind. <strong>Die abweichende Bauweise</strong> bezeichnet alle sonstigen Gebäudestellungen, die nicht in den zuvor genannten Kategorien aufgehen. Beispielsweise gehören hierzu Gartenhofhäuser, die zusammen mit Nachbarhäusern, Nebengebäuden und geschosshohen Mauern einen Garten in einem Gartenhof umschließen.
-                            </dd> -->
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zStrassenLage')"
@@ -473,30 +400,14 @@ export default {
                                     <select
                                         id="zStrassenLageSelect"
                                         class="form-control"
+                                        @change="strassenlageSelectionChanged($event)"
                                     >
                                         <option
-                                            v-if="selectedBrwFeature.get('zStrassenLage') === 'F Frontlage'"
-                                            value="F"
+                                            v-for="(lage, i) in strassenlageArray"
+                                            :key="i"
+                                            :value="lage"
                                         >
-                                            Frontlage
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zStrassenLage') === 'E Ecklage'"
-                                            value="E"
-                                        >
-                                            Ecklage
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zStrassenLage') === 'P Pfeifenstielgrundstück'"
-                                            value="P"
-                                        >
-                                            Pfeifenstielgrundstück
-                                        </option>
-                                        <option
-                                            v-if="selectedBrwFeature.get('zStrassenLage') === 'H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)'"
-                                            value="H"
-                                        >
-                                            Hinterlage
+                                            {{ lage }}
                                         </option>
                                     </select>
                                 </dd>

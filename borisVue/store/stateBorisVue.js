@@ -25,7 +25,11 @@ const state = {
     selectedBrwFeature: {},
     processFromParametricUrl: false,
     paramUrlParams: {},
-    buttonValue: "info"
+    buttonValue: "info",
+    bauweiseArray: ["eh Einzelhaus (freistehend)", "dh Doppelhaushälfte", " dd Doppelhaus (ganzes Doppelhaus)", "rm Reihenmittelhaus", "rm Reihenmittelhäuser", "re Reihenendhaus", "g geschlossene Bauweise", "a abweichende Bauweise (Gartenhofhaus)"],
+    selectedBauweise: "",
+    selectedStrassenlage: "",
+    strassenlageArray: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"]
 };
 
 export default state;

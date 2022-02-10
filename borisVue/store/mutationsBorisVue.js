@@ -41,6 +41,12 @@ const mutations = {
     },
     unsetSelectedBrwFeature (state) {
         state.selectedBrwFeature = {};
+    },
+    setSelectedBauweise (state, value) {
+        state.selectedBauweise = value;
+    },
+    setSelectedStrassenlage (state, value) {
+        state.selectedStrassenlage = value;
     }
 };
 
