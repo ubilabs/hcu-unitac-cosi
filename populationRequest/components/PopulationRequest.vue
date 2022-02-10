@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersPopulationRequest";
 import mutations from "../store/mutationsPopulationRequest";
@@ -12,7 +12,7 @@ import LoaderOverlay from "../../../src/utils/loaderOverlay";
 export default {
     name: "PopulationRequest",
     components: {
-        Tool,
+        ToolTemplate,
         GraphicalSelect,
         ToggleCheckbox
     },
@@ -431,7 +431,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="translate(name)"
         :icon="glyphicon"
         :active="active"
@@ -606,10 +606,10 @@ export default {
                 </div>
             </div>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .PopulationRequest {
         max-width:500px;
     }
@@ -640,12 +640,12 @@ export default {
     }
 </style>
 
-<style lang="less">
-    @import "~/css/mixins.less";
+<style lang="scss">
+    @import "~/css/mixins.scss";
 
     #tooltip-overlay {
         position: relative;
-        background: @accent_active;
+        background: $accent_active;
         color: #fff;
         max-width: 200px;
         padding: 4px 8px;
@@ -654,7 +654,7 @@ export default {
     #circle-overlay {
         position: relative;
         top: -20px;
-        background: @accent_active;
+        background: $accent_active;
         color: #fff;
         max-width: 70px;
         padding: 4px 8px;

@@ -43,4 +43,3 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry) {
 }
 
 export default setBBoxToGeom;
-

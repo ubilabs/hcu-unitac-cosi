@@ -140,5 +140,6 @@
   "Dipas": {
     "path": "cosi/Dipas",
     "type": "tool"
-  }
+  },
+  "addLayerRemotely": "addLayerRemotely.js"
 }

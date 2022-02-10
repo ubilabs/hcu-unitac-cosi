@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";

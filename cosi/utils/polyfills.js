@@ -26,6 +26,7 @@ export function addPolyfills () {
     }
     if (!Array.prototype.flat) {
         // todo - add depth argument
+        // eslint-disable-next-line no-extend-native
         Object.defineProperty(Array.prototype, "flat", {
             value: function () {
                 if (this.length === 0) {

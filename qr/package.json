@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "A tool to generate QR-Codes pinned to a location on the map",
   "dependencies": {
-    "qrcode": "^1.4.4"
+    "qrcode": "^1.5.0"
   }
 }

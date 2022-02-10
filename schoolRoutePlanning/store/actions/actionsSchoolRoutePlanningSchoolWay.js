@@ -42,7 +42,7 @@ export default {
      * @returns {void}
      */
     prepareWayToSchoolRequest ({state, commit, dispatch}, payload) {
-        const wpsPayload = {
+        let wpsPayload = {
             "Schul-ID": {
                 "dataType": "string",
                 "value": payload.selectedSchoolId
@@ -62,12 +62,12 @@ export default {
             "RouteAusgeben": {
                 "dataType": "boolean",
                 "value": 1
-            },
-            "tm_ttl": {
-                "dataType": "integer",
-                "value": 50
             }
         };
+
+        if (state.wpsTimeout && Object.keys(state.wpsTimeout).length > 0) {
+            wpsPayload = Object.assign(wpsPayload, state.wpsTimeout);
+        }
 
         commit("setSelectedAddress", state.inputAddress);
         dispatch("requestWayToSchool", wpsPayload);

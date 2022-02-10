@@ -14,7 +14,7 @@ import
 import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
-import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import features_bev from "./features_bev.json";
 import features_stadtteile from "./features_stadtteile.json";
 import facilitiesMapping from "./facilitiesMapping.json";

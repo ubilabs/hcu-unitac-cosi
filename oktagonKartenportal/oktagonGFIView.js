@@ -1,6 +1,6 @@
 import OktagonGetFeatureInformationModel from "./oktagonGFIModel";
 import Template from "text-loader!./template.html";
-import "./style.less";
+import "./style.scss";
 
 const OktagonGetFeatureInformationView = Backbone.View.extend(/** @lends OktagonGetFeatureInformationView.prototype */{
     events: {

@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersResidentialSimulation";
@@ -15,7 +15,7 @@ import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpa
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
-import Modal from "../../../../src/share-components/modals/components/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/ModalItem.vue";
 import processStats from "../utils/processStats";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 import ToolInfo from "../../components/ToolInfo.vue";

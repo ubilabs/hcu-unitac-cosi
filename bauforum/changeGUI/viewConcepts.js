@@ -1,5 +1,5 @@
 import Template from "text-loader!./templateConcepts.html";
-import "./style.less";
+import "./style.scss";
 
 const ViewConcepts = Backbone.View.extend({
     events: {

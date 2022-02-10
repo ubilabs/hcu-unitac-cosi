@@ -198,7 +198,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     div.table {
         margin-top: 5px;
         margin-bottom: 10px;

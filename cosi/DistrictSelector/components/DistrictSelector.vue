@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";

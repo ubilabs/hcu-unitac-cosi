@@ -1,6 +1,6 @@
 <script>
 import {mapGetters} from "vuex";
-import Modal from "../../../../src/share-components/modals/components/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/ModalItem.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 

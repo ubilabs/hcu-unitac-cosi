@@ -1,11 +1,23 @@
 import {expect} from "chai";
 import QRModel from "@addons/qr/model.js";
 import Overlay from "ol/Overlay";
+import sinon from "sinon";
+import mapCollection from "../../../src/core/dataStorage/mapCollection";
 
 describe("ADDON: QR-Code-Tool QRModel", function () {
     let model;
 
     before(function () {
+        mapCollection.clear();
+        mapCollection.addMap({
+            id: "ol",
+            mode: "2D",
+            addInteraction: sinon.spy(),
+            addOverlay: sinon.spy(),
+            removeInteraction: sinon.spy(),
+            removeOverlay: sinon.spy()
+        }, "ol", "2D");
+
         model = new QRModel({
             urlSchema: "http://geoinfo.de?lat={{LAT}}&lon={{LON}}",
             projection: "EPSG:4326"

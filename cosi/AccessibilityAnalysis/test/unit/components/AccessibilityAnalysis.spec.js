@@ -16,7 +16,7 @@ import {
 } from "./util.js";
 import Vuetify from "vuetify";
 import Vue from "vue";
-import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import {Worker} from "../../../service/isochronesWorker";
 import {readFeatures} from "../../../components/util";
 

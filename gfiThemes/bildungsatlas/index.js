@@ -1,4 +1,4 @@
-import component from "./components/Bildungsatlas.vue";
+import component from "./components/BildungsatlasTheme.vue";
 import deLocale from "./locales/de/additional.json";
 import enLocale from "./locales/en/additional.json";
 

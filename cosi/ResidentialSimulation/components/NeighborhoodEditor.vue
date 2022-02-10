@@ -1,7 +1,7 @@
 <script>
 import {mapGetters} from "vuex";
 import StatisticsTable from "./StatisticsTable.vue";
-import Modal from "../../../../src/share-components/modals/components/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/ModalItem.vue";
 
 export default {
     name: "NeighborhoodEditor",
