@@ -119,16 +119,20 @@ export default {
         getTitle (item) {
             let title = "";
             const originalGeometryType = item.feature.getProperties().originalGeometryType,
-                dipasRelevant = originalGeometryType !== undefined && originalGeometryType !== "Point";
+                wrongGeometryType = ![undefined, "Point"].includes(originalGeometryType),
+                noGeometryGiven = item.feature.getProperties().noGeometryGiven;
 
-            if (item.isSimulation || dipasRelevant) {
+            if (item.isSimulation || wrongGeometryType || noGeometryGiven) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warning");
             }
             if (item.isSimulation) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n";
             }
-            if (dipasRelevant) {
-                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType;
+            if (wrongGeometryType) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warningWrongGeometry") + originalGeometryType + "\n";
+            }
+            if (noGeometryGiven) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warningNoGeometry") + "\n";
             }
 
             return title;
@@ -188,7 +192,7 @@ export default {
             ⇄
         </span>
         <span
-            v-if="item.feature.getProperties().originalGeometryType !== undefined && item.feature.getProperties().originalGeometryType !== 'Point'"
+            v-if="![undefined, 'Point'].includes(item.feature.getProperties().originalGeometryType) || item.feature.getProperties().noGeometryGiven"
             class="dipas-geometry-overlay"
         >
             *
