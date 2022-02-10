@@ -11,7 +11,7 @@ import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
 import NeighborhoodEditor from "./NeighborhoodEditor.vue";
 import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
-import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
+import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize, updateLivingSpaceRatio} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
@@ -46,6 +46,7 @@ export default {
                 gfz: 1.0,
                 populationDensity: 5000,
                 livingSpace: 30,
+                livingSpaceRatio: 0.8,
                 stats: null,
                 year: new Date().toISOString().substring(0, 7)
             },
@@ -55,8 +56,11 @@ export default {
                 housingUnits: 0,
                 gfz: 1.0,
                 populationDensity: 5000,
-                livingSpace: 30
+                livingSpace: 30,
+                livingSpaceRatio: 0.8
             },
+            lowerBounds: {householdSize: 1.0, populationDensity: 0, gfz: 0, livingSpace: 10, livingSpaceRatio: 0},
+            upperBounds: {householdSize: 6.0, populationDensity: 50000, gfz: 4.0, livingSpace: 100, livingSpaceRatio: 1.0},
             baseStats: {
                 reference: {},
                 absolute: [],
@@ -93,7 +97,9 @@ export default {
                     }
                 }
             },
-            isCreated: false
+            isCreated: false,
+            invalidValues: [],
+            errorMsg: false
         };
     },
     computed: {
@@ -187,6 +193,13 @@ export default {
             handler () {
                 this.isCreated = false;
             }
+        },
+
+        invalidValues (invValues) {
+            console.log(this.invalidValues);
+            if (invValues.length > 0) {
+                this.errorMsg = true;
+            }
         }
     },
     created () {
@@ -249,32 +262,35 @@ export default {
             updateArea(newArea, this.neighborhood, this.fallbacks);
         },
         updateUnits (newUnits) {
-            updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateResidents (newResidents) {
-            updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateDensity (newDensity) {
-            updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-density"]);
         },
         updateLivingSpace (newLivingSpace) {
-            updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-livingspace"]);
         },
         updateGfz (newGfz) {
-            updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-gfz"]);
         },
         updateBgf (newBgf) {
-            updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-bgf"]);
         },
         updateHousholdSize (newHouseholdSize) {
-            updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-householdsize"]);
+        },
+        updateLivingSpaceRatio (newLivingSpaceRatio) {
+            this.invalidValues = updateLivingSpaceRatio(newLivingSpaceRatio, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -512,19 +528,19 @@ export default {
                                 </v-col>
                             </v-row>
                             <v-row
-                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpGfa')"
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpBgf')"
                                 dense
                             >
                                 <v-col cols="3">
                                     <v-subheader>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.gfa') }}
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.bgf') }}
                                     </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
                                         ref="slider-bgf"
                                         v-model="neighborhood.bgf"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.gfa')"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.bgf')"
                                         min="0"
                                         :max="(polygonArea * 4) || 1"
                                         :disabled="!geometry"
@@ -633,9 +649,14 @@ export default {
                                     </v-slider>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpace')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Wohnfläche pro Person</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpace') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
@@ -659,6 +680,27 @@ export default {
                                             />
                                         </template>
                                     </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpaceRatio')"
+                                dense
+                            >
+                                <v-col cols="3">
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpaceRatio') }}
+                                    </v-subheader>
+                                </v-col>
+                                <v-col cols="3">
+                                    <v-text-field
+                                        v-model="neighborhood.livingSpaceRatio"
+                                        class="mt-0 pt-0 slider-val"
+                                        hide-details
+                                        single-line
+                                        type="number"
+                                        :disabled="!geometry"
+                                        @change="updateLivingSpaceRatio"
+                                    />
                                 </v-col>
                             </v-row>
                             <v-divider />
@@ -783,6 +825,32 @@ export default {
                             </v-container>
                         </Modal>
                     </v-main>
+                    <v-snackbar
+                        v-model="errorMsg"
+                        :timeout="5000"
+                        color="error"
+                        multi-line
+                    >
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.valueError') }}<br>
+                        <div
+                            v-for="el in invalidValues"
+                            :key="el.id"
+                        >
+                            <small>
+                                <span><i>{{ $t(`additional:modules.tools.cosi.residentialSimulation.${el.id}`) }}</i>: {{ el.val }} </span>
+                                <span>- {{ $t('additional:modules.tools.cosi.residentialSimulation.bounds') }}: {{ lowerBounds[el.id] }} - {{ upperBounds[el.id] }}</span>
+                            </small>
+                        </div>
+                        <template #action="{ attrs }">
+                            <v-btn
+                                text
+                                v-bind="attrs"
+                                @click="errorMsg = false"
+                            >
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </template>
+                    </v-snackbar>
                 </v-app>
             </template>
         </Tool>
@@ -796,6 +864,9 @@ export default {
 <style lang="scss">
     .slider-val {
         width: 60px;
+        input {
+            text-align: right;
+        }
     }
     .stats-table-modal {
         height: 65vh;

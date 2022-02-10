@@ -141,7 +141,7 @@ export default {
 
         if (newFeatures.length === 0) {
             if (this.mode !== "region") {
-                setBBoxToGeom(this.boundingGeometry);
+                setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
             }
             return;
         }

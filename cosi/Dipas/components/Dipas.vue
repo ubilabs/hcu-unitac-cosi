@@ -745,6 +745,7 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
+                    <v-divider />
                     <div
                         id="download"
                     >

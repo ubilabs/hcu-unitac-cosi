@@ -13,13 +13,15 @@
 const state = {
     active: false,
     id: "areaSelector",
-    name: "Manuelle Flächenauswahl",
+    name: "Manuelle Flächenauswahl für Fachdaten",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: false,
     drawingLayer: null,
+    geometry: null,
+    feature: null,
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.en.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.de.md"
