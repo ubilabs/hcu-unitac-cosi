@@ -118,15 +118,16 @@ export default {
         },
         getTitle (item) {
             let title = "";
-            const originalGeometryType = item.feature.getProperties().originalGeometryType;
+            const originalGeometryType = item.feature.getProperties().originalGeometryType,
+                dipasRelevant = originalGeometryType !== undefined && originalGeometryType !== "Point";
 
-            if (item.isSimulation || originalGeometryType !== "Point") {
+            if (item.isSimulation || dipasRelevant) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warning");
             }
             if (item.isSimulation) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n";
             }
-            if (originalGeometryType !== "Point") {
+            if (dipasRelevant) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType;
             }
 
@@ -187,7 +188,7 @@ export default {
             ⇄
         </span>
         <span
-            v-if="item.feature.getProperties().originalGeometryType !== 'Point'"
+            v-if="item.feature.getProperties().originalGeometryType !== undefined && item.feature.getProperties().originalGeometryType !== 'Point'"
             class="dipas-geometry-overlay"
         >
             *
