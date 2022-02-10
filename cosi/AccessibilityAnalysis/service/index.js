@@ -146,6 +146,11 @@ const id = "AccessibilityAnalysisService",
             try {
                 ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl}, (p) => commit("setProgress", p));
             }
+            catch {
+                const baseUrl = Radio.request("RestReader", "getServiceById", "csl_ors").get("url") + "/v2/";
+
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: baseUrl}, (p) => commit("setProgress", p));
+            }
             finally {
                 commit("setProgress", 0);
             }
@@ -191,7 +196,7 @@ const id = "AccessibilityAnalysisService",
             filterPoly: null,
             filterUrl: "https://geodienste.hamburg.de/HH_WFS_Verwaltungsgrenzen",
             filterFeatureType: "landesgrenze",
-            baseUrl: "https://csl-lig.hcu-hamburg.de/ors/v2/"
+            serviceId: "bkg_ors"
         },
         getters: {
             progress: s => {
@@ -208,6 +213,9 @@ const id = "AccessibilityAnalysisService",
             },
             filterPoly: s => {
                 return s.filterPoly;
+            },
+            baseUrl: s => {
+                return Radio.request("RestReader", "getServiceById", s.serviceId).get("url") + "/v2/";
             }
         },
         mutations: {
