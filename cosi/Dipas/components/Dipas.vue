@@ -15,6 +15,7 @@ import {scaleSequential} from "d3-scale";
 import {interpolateRdYlGn} from "d3-scale-chromatic";
 import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
+import {exportAsGeoJson} from "../utils/exportResults";
 
 export default {
     name: "Dipas",
@@ -205,6 +206,22 @@ export default {
             const fetch = await this.fetchContributions(id),
                 features = new GeoJSON().readFeatures(fetch);
 
+
+            for (const feature of features) {
+                if (feature.getGeometry().intersectsCoordinate([0, 0])) {
+                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
+                        extent = model.get("features")[0].getGeometry().getExtent(),
+                        center = getCenter(extent);
+
+                    feature.setGeometry(new Point(center));
+                    feature.set("noGeometryGiven", true);
+                    // TODO: Skip these features for transform so there's no need to transform back and forth?
+                    let referenceSystem = feature.getProperties().referenceSystem;
+
+                    referenceSystem = referenceSystem === undefined ? "4326" : referenceSystem;
+                    feature.getGeometry().transform(this.projectionCode, "EPSG:" + referenceSystem);
+                }
+            }
             return this.transformFeatures(features);
         },
         /**
@@ -247,13 +264,8 @@ export default {
                                 center = getCenter(extent);
 
                             feature.setGeometry(new Point(center));
-                            // needs to be set after resetting the geometry
-                            // eslint-disable-next-line one-var
-                            const props = feature.getProperties();
-
-                            props.originalGeometryType = geometryType;
-                            feature.setProperties(props);
                         }
+                        feature.set("originalGeometryType", geometryType);
                     }
                     this.contributions[id].features = contributions;
                     contribution.loading = false;
@@ -308,13 +320,19 @@ export default {
                     styles.push(null);
                     break;
             }
-            if (typeof feature.getProperties().originalGeometryType !== "undefined") {
-                const secondary_style = new Style();
+            if (feature.getProperties().originalGeometryType !== "Point") {
+                const secondaryStyle = new Style();
 
                 if (resolution < 1.5) {
-                    secondary_style.setText(this.getContributionGeometryLabel());
+                    secondaryStyle.setText(this.getContributionGeometryLabel());
                 }
-                styles.push(secondary_style);
+                styles.push(secondaryStyle);
+            }
+            if (feature.getProperties().noGeometryGiven) {
+                const tertiaryStyle = new Style();
+
+                tertiaryStyle.setText(this.getContributionErrorLabel());
+                styles.push(tertiaryStyle);
             }
             return styles;
         },
@@ -491,6 +509,23 @@ export default {
             });
         },
 
+        getContributionErrorLabel () {
+            return new Text({
+                font: "16px Calibri,sans-serif",
+                fill: new Fill({
+                    color: [255, 0, 0]
+                }),
+                stroke: new Stroke({
+                    color: [0, 0, 0],
+                    width: 2
+                }),
+                text: "?",
+                textAlign: "left",
+                offsetY: -12,
+                offsetX: -2.5
+            });
+        },
+
         handleColor (id, category) {
             let color;
 
@@ -521,6 +556,26 @@ export default {
                 endDate = new Date(feature.getProperties().dateEnd).toLocaleDateString(this.currentLocale);
 
             return startDate + " - " + endDate;
+        },
+        exportDipas () {
+            const layers = [],
+                layersOnMap = [];
+
+            for (const project in this.projectsActive) {
+                if (this.projectsActive[project].layer) {
+                    layers.push(project);
+                }
+                if (this.projectsActive[project].contributions) {
+                    layers.push(project + "-contributions");
+                }
+                if (this.projectsActive[project].heatmap) {
+                    layers.push(project + "-heatmap");
+                }
+            }
+            for (const layerId of layers) {
+                layersOnMap.push(getLayerById(this.map.getLayers().getArray(), layerId));
+            }
+            exportAsGeoJson(layersOnMap);
         }
     }
 };
@@ -691,17 +746,38 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
+                    <div
+                        id="download"
+                    >
+                        <v-btn
+                            id="download-geojson"
+                            dense
+                            small
+                            tile
+                            color="green lighten-1"
+                            :title="$t('additional:modules.tools.cosi.dipas.download.title')"
+                            :disabled="!Object.values(projectsActive).map(project => project.layer || project.contributions || project.heatmap).reduce((t, value) => t || value, false)"
+                            @click="exportDipas()"
+                        >
+                            <v-icon
+                                left
+                            >
+                                mdi-floppy
+                            </v-icon>
+                            Download GeoJSON
+                        </v-btn>
+                    </div>
                 </v-app>
             </template>
         </Tool>
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 #dipas {
   width: auto;
   min-height: 100px;
-  max-height: 46vh;
+  max-height: 45vh;
   overflow-y: auto;
 }
 

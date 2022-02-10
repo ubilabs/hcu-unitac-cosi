@@ -97,7 +97,7 @@ export default {
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
         ...mapGetters("Map", {map: "ol2DMap", projectionCode: "projectionCode"}),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
-        ...mapGetters("Tools/DistrictSelector", ["extent", "boundingGeometry"]),
+        ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
@@ -654,7 +654,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="scss">
 #accessibilityanalysis {
   width: 400px;
   min-height: 100px;

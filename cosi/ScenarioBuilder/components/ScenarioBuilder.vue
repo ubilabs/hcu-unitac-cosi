@@ -17,10 +17,10 @@ import hash from "object-hash";
 import ReferencePicker from "./ReferencePicker.vue";
 import MoveFeatures from "./MoveFeatures.vue";
 import FeatureEditor from "./FeatureEditor.vue";
-import GeometryPicker from "./GeometryPicker.vue";
+import GeometryPicker from "../../components/GeometryPicker.vue";
 import ScenarioManager from "./ScenarioManager.vue";
 import ScenarioFeature from "../classes/ScenarioFeature";
-import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../utils/geomPickerHandler";
+import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon, geomPickerSetGeometry} from "../../utils/geomPickerHandler";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
 import {getAddress} from "../../utils/geocode";
@@ -317,17 +317,15 @@ export default {
         },
 
         async getAddress (geom) {
-            console.log(this.geometry);
-            console.log(this.workingLayer);
-            console.log(this);
-
             const address = await getAddress(geom, this.projectionCode);
 
             if (address) {
                 for (const prop of this.workingLayer.addressField) {
                     this.featureProperties[prop] = "";
                 }
-                this.featureProperties[this.workingLayer.addressField[0]] = address;
+
+                this.$set(this.featureProperties, this.workingLayer.addressField[0], address);
+                this.$forceUpdate();
             }
         },
 
@@ -655,8 +653,8 @@ export default {
     </div>
 </template>
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
 
     #scenario-builder {
         form {

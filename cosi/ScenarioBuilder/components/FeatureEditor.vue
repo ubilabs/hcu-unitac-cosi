@@ -20,6 +20,7 @@ export default {
         },
         noScenarioWarning: false,
         confirmDialog: false,
+        lock: true,
         confirmText: "",
         confirmAction: {
             function: () => null,
@@ -95,6 +96,7 @@ export default {
             this.editDialog = false;
             this.editModal = false;
             this.confirmDialog = false;
+            this.lock = true;
         },
 
         updateSelectedFeature () {
@@ -234,6 +236,20 @@ export default {
                     </v-card-title>
                     <v-card-subtitle>
                         {{ selectedFeature.layerMap.id }} | {{ selectedFeature.layerMap.group }}
+                        <v-btn
+                            v-if="!isSimulation"
+                            :title="lock ? $t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedTooltip') : $t('additional:modules.tools.cosi.moveFeatures.toggleOnlySimulatedOffTooltip')"
+                            dense
+                            small
+                            tile
+                            class="float-right"
+                            :color="lock ? 'grey lighten-1' : 'warning'"
+                            @click="lock = !lock"
+                        >
+                            <span>
+                                <v-icon>{{ lock ? 'mdi-lock' : 'mdi-lock-open' }}</v-icon>
+                            </span>
+                        </v-btn>
                     </v-card-subtitle>
                     <div class="stats-table-modal">
                         <v-row
@@ -253,6 +269,7 @@ export default {
                                         :value="val"
                                         dense
                                         :hide-details="true"
+                                        :disabled="!isSimulation && lock"
                                         @change="editProp($event, key)"
                                     />
                                     <v-text-field
@@ -261,6 +278,7 @@ export default {
                                         :name="key"
                                         :title="val"
                                         dense
+                                        :disabled="!isSimulation && lock"
                                         @change="editProp($event, key)"
                                     />
                                 </v-col>
@@ -315,7 +333,7 @@ export default {
     </v-app>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .flex {
         display: flex;
         .flex-item {

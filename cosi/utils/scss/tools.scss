@@ -8,7 +8,7 @@
         color:#444;
 
         &.warning {
-            border:1px solid @masterportal_red;
+            border:1px solid $masterportal_red;
             padding:10px;
             box-sizing: border-box;
             margin:5px auto;
@@ -49,7 +49,7 @@
 
             button.confirm {
                 color:whitesmoke;
-                background:@masterportal_blue;
+                background: $masterportal_blue;
                 opacity:0.75;
                 padding:0px 20px;
                 
@@ -60,7 +60,7 @@
 
             button.cancel {
                 color:whitesmoke;
-                background:@masterportal_red;
+                background: $masterportal_red;
                 opacity:0.75;
                 padding:0px 20px;
 

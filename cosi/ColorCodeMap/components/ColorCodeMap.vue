@@ -699,8 +699,8 @@ export default {
     </div>
 </template>
 
-<style lang="less">
-@import "../../utils/variables.less";
+<style lang="scss">
+@import "../../utils/variables.scss";
 
     .addon_container {
         position:fixed;
@@ -722,7 +722,7 @@ export default {
             opacity:0;
             pointer-events:none;
             z-index:-1;
-            .drop_shadow();
+            @include drop_shadow();
 
             .btn_grp {
                 .ccm_info_button {
@@ -767,7 +767,7 @@ export default {
 
                         &.highlight {
                             color:white;
-                            background:@brightblue;
+                            background: $brightblue;
                         }
                     }
 
@@ -795,8 +795,8 @@ export default {
         }
 
         &:after {
-            .fullsize_bg_pseudo(white, 0.95);
-            .drop_shadow();
+            @include fullsize_bg_pseudo(white, 0.95);
+            @include drop_shadow();
         }
 
         .addon_wrapper {
@@ -825,7 +825,7 @@ export default {
                         border-radius:0px;
                         border:1px solid #aaa;
                         margin-right:3px;
-                        background-color:@buttongrey;
+                        background-color: $buttongrey;
 
                         &.switch {
                             flex-basis:40px;
@@ -835,7 +835,7 @@ export default {
                             &.highlight {
                                 color:white;
                                 border:none;
-                                background-color:@brightblue;
+                                background-color: $brightblue;
                             }
                         }
                     }
@@ -912,7 +912,7 @@ export default {
                 //height:calc(100% + 2px);
                 height:10px;
                 z-index:10;
-                .drop_shadow();
+                @include drop_shadow();
 
                 &:after {
                     content:'';
@@ -935,7 +935,7 @@ export default {
                     border-right: 5px solid transparent;
                     border-top: 5px solid black;
                     z-index:15;
-                    .drop_shadow();
+                    @include drop_shadow();
 
                     &:after {
                         content: '';
@@ -962,8 +962,8 @@ export default {
                     pointer-events:none;
                     box-sizing: border-box;
                     z-index:10;
-                    .paper_bg();
-                    .drop_shadow();
+                    @include paper_bg();
+                    @include drop_shadow();
 
                     p {
                         display:inline;

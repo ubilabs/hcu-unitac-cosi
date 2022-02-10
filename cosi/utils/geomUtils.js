@@ -1,4 +1,4 @@
-import {union as turfUnion, intersect as turfIntersect} from "@turf/turf";
+import {union as turfUnion, intersect as turfIntersect, circle as turfCircle} from "@turf/turf";
 import {GeoJSON} from "ol/format";
 
 /**
@@ -188,6 +188,27 @@ export function featuresToGeoJsonCollection (features, asString = false, sourceC
         _features = Array.isArray(features) ? features : [features];
 
     return asString ? parser.writeFeatures(_features) : parser.writeFeaturesObject(_features);
+}
+
+/**
+ * Converts a circle, defined by center and radius to a apporx. polygon
+ * @param {module:ol/geom/Circle} circle - the original geometry
+ * @param {String} [steps=64] - the number of edge points
+ * @param {String} [crs="EPSG:25832"] - the CRS of the input
+ * @returns {module:ol/geom/Polygon} the OL Polygon result
+ */
+export function circleToPolygon (circle, steps = 64, crs = "EPSG:25832") {
+    const
+        parser = new GeoJSON({
+            dataProjection: "EPSG:4326",
+            featureProjection: crs
+        }),
+        _circle = circle.clone().transform(crs, "EPSG:4326"),
+        center = _circle.getCenter(),
+        radius = circle.getRadius() / 1000, // m => km
+        polygon = turfCircle(center, radius, {steps});
+
+    return parser.readFeature(polygon).getGeometry();
 }
 
 export default {

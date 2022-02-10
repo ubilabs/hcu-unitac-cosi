@@ -16,7 +16,10 @@
                         "byVoting": "nach Bewertungen"
                     },
                     "contributions": "Beiträge",
-                    "zoomToProject": "Auf Projektgebiet zoomen"
+                    "zoomToProject": "Auf Projektgebiet zoomen",
+                    "download": {
+                        "title": "Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                    }
                 }
             }
         }

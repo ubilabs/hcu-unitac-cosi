@@ -35,7 +35,7 @@ export default {
             if (this.style?.getImage()?.constructor === Icon) {
                 const src = this.style.getImage().getSrc();
 
-                if (src.substr(src.length - 4) === ".svg") {
+                if (src.substring(src.length - 4) === ".svg") {
                     return src;
                 }
             }
@@ -115,6 +115,23 @@ export default {
                     displayClass: "info"
                 });
             }
+        },
+        getTitle (item) {
+            let title = "";
+            const originalGeometryType = item.feature.getProperties().originalGeometryType,
+                dipasRelevant = originalGeometryType !== undefined && originalGeometryType !== "Point";
+
+            if (item.isSimulation || dipasRelevant) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.warning");
+            }
+            if (item.isSimulation) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n";
+            }
+            if (dipasRelevant) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType;
+            }
+
+            return title;
         }
     }
 };
@@ -124,7 +141,7 @@ export default {
     <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
     <div
         class="feature-icon"
-        :title="item.isSimulation ? $t('additional:modules.tools.cosi.featuresList.warningIsSimulated') : ''"
+        :title="getTitle(item)"
         @click="zoomToFeature"
     >
         <InlineSvg
@@ -170,10 +187,16 @@ export default {
         >
             ⇄
         </span>
+        <span
+            v-if="item.feature.getProperties().originalGeometryType !== undefined && item.feature.getProperties().originalGeometryType !== 'Point'"
+            class="dipas-geometry-overlay"
+        >
+            *
+        </span>
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .feature-icon {
         margin-top: 8px;
         position: relative;
@@ -196,5 +219,14 @@ export default {
         color: #FC176B;
         font-size: 32px;
         line-height: 24px;
+    }
+    span.dipas-geometry-overlay {
+        position: absolute;
+        font-family: 'Material Design Icons';
+        right: 24px;
+        top: -8px;
+        color: #ff0000;
+        font-size: 20px;
+        line-height: 20px;
     }
 </style>

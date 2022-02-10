@@ -177,7 +177,7 @@ export default {
     </div>
 </template>
 
-<style lang="less">
+<style lang="scss">
     .calc_ratio_results.data_table {
         overflow:visible;
         th {

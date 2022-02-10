@@ -46,6 +46,18 @@ export default {
             if (this.datasets.length === 0) {
                 this.setActive(false);
             }
+        },
+        async active (state) {
+            if (state) {
+                await this.$nextTick();
+
+                if (this.$refs.chart) {
+                    for (const chart of this.$refs.chart) {
+                        chart.$el.style.height = "400px";
+                        chart.$el.style.width = "400px";
+                    }
+                }
+            }
         }
 
     },
@@ -220,6 +232,24 @@ export default {
             this.setDatasets([]);
             this.setChartConfigs([]);
             this.setActive(false);
+        },
+
+        /**
+         * updates the chart on window resize
+         * @param {Event} evt - the dom event
+         * @returns {void}
+         */
+        onEndResizing (evt) {
+            const
+                width = evt.targetElement.clientWidth - 40, // padding of tool-content ...
+                height = evt.targetElement.clientHeight - 275; // hard coded from the DOM ...
+
+            if (this.$refs.chart) {
+                for (const chart of this.$refs.chart) {
+                    chart.$el.style.width = width + "px";
+                    chart.$el.style.height = height + "px";
+                }
+            }
         }
     }
 };
@@ -227,12 +257,15 @@ export default {
 
 <template lang="html">
     <Tool
+        id="chart-generator-win"
         :title="$t(name)"
         :icon="glyphicon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
+        :initial-width="440"
+        @endResizing="onEndResizing"
     >
         <template #toolBody>
             <div
@@ -302,6 +335,7 @@ export default {
                                                     :is="type"
                                                     v-if="type!=='PieChart'"
                                                     :id="`graph-${index}-${i}`"
+                                                    ref="chart"
                                                     :datasets="chartConfigs[index][i]"
                                                     :options="graph.options"
                                                     :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
@@ -313,6 +347,7 @@ export default {
                                                         v-for="(pieData, j) in chartConfigs[index][i]"
                                                         :id="`graph-${index}-${i}-${j}`"
                                                         :key="`graph-${index}-${i}-${j}`"
+                                                        ref="chart"
                                                         :datasets="pieData"
                                                         :options="graph.options"
                                                         :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
@@ -360,6 +395,7 @@ export default {
                                                 :is="graph.type"
                                                 v-if="graph.type!=='PieChart'"
                                                 :id="`graph-${index}`"
+                                                ref="chart"
                                                 :datasets="chartConfigs[index]"
                                                 :options="graph.options"
                                                 :class="{current_graph: activeGraph === index}"
@@ -371,6 +407,7 @@ export default {
                                                     v-for="(pieData, j) in chartConfigs[index]"
                                                     :id="`graph-${index}-${j}`"
                                                     :key="`graph-${index}-${j}`"
+                                                    ref="chart"
                                                     :datasets="pieData"
                                                     :options="graph.options"
                                                     :class="{current_graph: activeGraph === index}"
@@ -480,14 +517,17 @@ export default {
     </Tool>
 </template>
 
-<style lang="less">
-    @import "../../utils/variables.less";
+<style lang="scss">
+    @import "../../utils/variables.scss";
+    #chart-generator-win {
+        height: 675px;
+    }
     #chart_generator {
-        width:400px;
+        // width:400px;
 
         canvas {
             width:400px;
-            height:400px !important;
+            height:400px;
         }
 
         #chart_panel {
@@ -560,8 +600,8 @@ export default {
 
                             .rmv_btn {
                                 margin:2px 0px 2px 2px;
-                                background:@error_red;
-                                border:1px solid @error_red;
+                                background: $error_red;
+                                border:1px solid $error_red;
                                 color:white;
                                 width:26px;
                                 height:26px;
@@ -601,7 +641,7 @@ export default {
                             }
 
                             .selected {
-                                background-color: @brightblue;
+                                background-color: $brightblue;
                                 color: white;
                             }
                         }
@@ -653,13 +693,13 @@ export default {
                                 }
 
                                 &.dl {
-                                    background:@green;
-                                    border:1px solid @green;
+                                    background: $green;
+                                    border:1px solid $green;
                                 }
 
                                 &.rm {
-                                    background:@error_red;
-                                    border:1px solid @error_red;
+                                    background: $error_red;
+                                    border:1px solid $error_red;
                                 }
                             }
                         }

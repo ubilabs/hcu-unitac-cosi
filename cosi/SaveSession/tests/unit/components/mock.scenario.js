@@ -66,7 +66,7 @@ const simFeature = new ScenarioFeature(
             populationDensity: 5000,
             livingSpace: 30,
             stats: [],
-            year: new Date().toISOString().substr(0, 7)
+            year: new Date().toISOString().substring(0, 7)
         }),
         [district],
         new Layer({
