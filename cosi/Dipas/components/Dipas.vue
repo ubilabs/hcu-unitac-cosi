@@ -206,7 +206,6 @@ export default {
             const fetch = await this.fetchContributions(id),
                 features = new GeoJSON().readFeatures(fetch);
 
-
             for (const feature of features) {
                 if (feature.getGeometry().intersectsCoordinate([0, 0])) {
                     const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
@@ -746,6 +745,7 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
+                    <v-divider />
                     <div
                         id="download"
                     >

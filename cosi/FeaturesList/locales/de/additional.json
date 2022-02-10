@@ -36,7 +36,8 @@
                     "count": "Anzahl",
                     "createCharts": "Diagramme erstellen",
                     "dipas": {
-                        "warning": "Ursprünglich keine Punktgeometrie: ",
+                        "warningWrongGeometry": "Ursprünglich keine Punktgeometrie: ",
+                        "warningNoGeometry": "Enthielt keine Geometrie. Wurde auf den Mittelpunkt des Projektes gesetzt.",
                         "createCharts": "DIPAS Diagramme erstellen",
                         "comments": "Kommentare",
                         "commentsPerCategory": " Kommentare pro Kategorie",
