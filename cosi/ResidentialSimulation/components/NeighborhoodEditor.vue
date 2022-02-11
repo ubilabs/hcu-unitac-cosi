@@ -22,6 +22,11 @@ export default {
         selectedNeighborhood: {
             scenarioFeature: null,
             editFeature: null
+        },
+        confirmText: "",
+        confirmAction: {
+            function: () => null,
+            text: ""
         }
     }),
     computed: {
@@ -96,6 +101,20 @@ export default {
         visualizeDemographics () {
             this.$emit("visualizeDemographics", this.baseStats);
             this.editModal = false;
+        },
+
+        onDelete () {
+            this.confirmDialog = true;
+            this.confirmText = this.$t("additional:modules.tools.cosi.featureEditor.confirmDelete");
+            this.confirmAction.function = this.deleteSelectedFeature;
+            this.confirmAction.text = this.$t("common:button.delete");
+        },
+
+        onReset () {
+            this.confirmDialog = true;
+            this.confirmText = this.$t("additional:modules.tools.cosi.featureEditor.confirmReset");
+            this.confirmAction.function = this.resetSelectedFeature;
+            this.confirmAction.text = this.$t("common:button.reset");
         }
     }
 };
@@ -103,6 +122,32 @@ export default {
 
 <template>
     <v-app>
+        <v-snackbar
+            v-model="confirmDialog"
+            :timeout="-1"
+            color="white"
+            light
+            centered
+        >
+            {{ confirmText }}
+
+            <template #action="{ attrs }">
+                <v-btn
+                    v-bind="attrs"
+                    text
+                    @click="confirmAction.function"
+                >
+                    {{ confirmAction.text }}
+                </v-btn>
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="confirmDialog = false"
+                >
+                    {{ $t('common:button.cancel') }}
+                </v-btn>
+            </template>
+        </v-snackbar>
         <v-snackbar
             v-model="editDialog"
             :timeout="-1"

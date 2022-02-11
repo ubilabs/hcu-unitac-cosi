@@ -196,6 +196,7 @@ export default class Scenario {
             return null;
         }
 
+        scenarioNeighborhood.scenario = this;
         this.neighborhoods.push(scenarioNeighborhood);
 
         if (renderNeighborhood) {
