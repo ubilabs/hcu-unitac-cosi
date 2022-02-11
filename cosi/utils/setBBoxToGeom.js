@@ -29,10 +29,20 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry) {
 
         // layer already exists in the model list
         if (model) {
-            model.set("bboxGeometry", bboxGeometry);
-            // updates layers that have already been loaded
-            if (model.has("layer")) {
-                model.updateSource();
+            const url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=EPSG:25832&bbox=${bboxGeometry.getExtent().toString()}`;
+
+            model.layer.getSource().setUrl(url);
+
+            if (Object.prototype.hasOwnProperty.call(model, "layer")) {
+                model.layer.getSource().clear();
+                model.layer.getSource().refresh();
+                model.layer.getSource().on("featuresloadend", function (evt) {
+                    evt.target.forEachFeature(feature => {
+                        if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
+                            evt.target.removeFeature(feature);
+                        }
+                    });
+                });
             }
         }
         // for layers that are not yet in the model list
