@@ -62,20 +62,7 @@ export default {
         },
         pollingEnabled (state) {
             if (state) {
-                this.poll = setInterval(() => {
-                    for (const id in this.contributions) {
-                        const model = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
-
-                        this.updateContributionFeatures(id, true);
-                        if (model) {
-                            const source = model.get("layerSource");
-
-                            model.set("features", this.contributions[id].features);
-                            source.clear();
-                            source.addFeatures(this.contributions[id].features);
-                        }
-                    }
-                }, this.pollingInteval);
+                this.poll = this.setPolling();
             }
             else {
                 clearInterval(this.poll);
@@ -160,7 +147,7 @@ export default {
          * @returns {Object} the FeatureCollection of all projects in json format
          */
         async fetchProjects () {
-            const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
+            const url = this.baseUrl,
                 ret = await axios(url, {
                     method: "GET",
                     headers: {
@@ -181,7 +168,7 @@ export default {
          * @returns {Object} the FeatureCollection of all contributions for the given project id in json format
          */
         async fetchContributions (id) {
-            const url = "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects/" + id + "/contributions",
+            const url = this.baseUrl + "/" + id + "/contributions",
                 ret = await axios(url, {
                     method: "GET",
                     headers: {
@@ -607,6 +594,27 @@ export default {
                 layersOnMap.push(getLayerById(this.map.getLayers().getArray(), layerId));
             }
             exportAsGeoJson(layersOnMap);
+        },
+        /**
+         * Sets an automatic polling for new contributions
+         * pollingInteval length from store in ms
+         * @returns {Number} the interval ID
+         */
+        setPolling () {
+            return setInterval(() => {
+                for (const id in this.contributions) {
+                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+
+                    this.updateContributionFeatures(id, true);
+                    if (model) {
+                        const source = model.get("layerSource");
+
+                        model.set("features", this.contributions[id].features);
+                        source.clear();
+                        source.addFeatures(this.contributions[id].features);
+                    }
+                }
+            }, this.pollingInteval);
         }
     }
 };

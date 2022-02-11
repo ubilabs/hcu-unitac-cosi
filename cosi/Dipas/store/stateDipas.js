@@ -10,7 +10,7 @@
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
  * @property {boolean} deactivateGFI flag if tool should deactivate gfi (config-param)
  */
- const state = {
+const state = {
     active: false,
     id: "Dipas",
     name: "DIPAS",
@@ -19,6 +19,9 @@
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: false,
+    // DIPAS properties
+    pollingInteval: 120000,
+    baseUrl: "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.en.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.de.md"
