@@ -30,7 +30,10 @@ export default {
             projectsActive: {},
             contributions: {},
             selectedStyling: null,
-            categoryRainbow: false
+            categoryRainbow: false,
+            pollingEnabled: false,
+            poll: null,
+            pollingInteval: 120000
         };
     },
     computed: {
@@ -56,6 +59,27 @@ export default {
             }
 
             this.$root.$emit("updateFeaturesList");
+        },
+        pollingEnabled (state) {
+            if (state) {
+                this.poll = setInterval(() => {
+                    for (const id in this.contributions) {
+                        const model = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+
+                        this.updateContributionFeatures(id, true);
+                        if (model) {
+                            const source = model.get("layerSource");
+
+                            model.set("features", this.contributions[id].features);
+                            source.clear();
+                            source.addFeatures(this.contributions[id].features);
+                        }
+                    }
+                }, this.pollingInteval);
+            }
+            else {
+                clearInterval(this.poll);
+            }
         }
     },
     /**
@@ -77,7 +101,7 @@ export default {
         this.projectsFeatureCollection = this.transformFeatures(features);
         this.projectsColors = generateColorScale(undefined, "interpolateTurbo", this.projectsFeatureCollection.length).legend.colors;
         for (const [index, feature] of this.projectsFeatureCollection.entries()) {
-            const id = feature.getProperties().id,
+            const id = feature.get("id"),
                 layer = {
                     id: id,
                     name: id,
@@ -88,7 +112,7 @@ export default {
                     fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
                     stroke: new Stroke({color: this.projectsColors[index], width: 4})
                 }),
-                len = Object.values(feature.getProperties().standardCategories).length,
+                len = Object.values(feature.get("standardCategories")).length,
                 colorScale = generateColorScaleByColor(this.projectsColors[index], len),
                 rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale,
                 model = await this.addLayer(layer),
@@ -101,7 +125,7 @@ export default {
 
             this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
             this.$set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
-            for (const [catIndex, category] of Object.values(feature.getProperties().standardCategories).entries()) {
+            for (const [catIndex, category] of Object.values(feature.get("standardCategories")).entries()) {
                 this.contributions[id].colors[category] = colorScale(catIndex);
                 this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
             }
@@ -189,7 +213,7 @@ export default {
          */
         transformFeature (feature) {
             const geometry = feature.getGeometry();
-            let referenceSystem = feature.getProperties().referenceSystem;
+            let referenceSystem = feature.get("referenceSystem");
 
             referenceSystem = referenceSystem === undefined ? "4326" : referenceSystem;
             if (geometry) {
@@ -207,15 +231,15 @@ export default {
                 features = new GeoJSON().readFeatures(fetch);
 
             for (const feature of features) {
-                if (feature.getGeometry().intersectsCoordinate([0, 0])) {
+                if (!feature.get("dipasLocated")) {
                     const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
                         extent = model.get("features")[0].getGeometry().getExtent(),
                         center = getCenter(extent);
 
                     feature.setGeometry(new Point(center));
-                    feature.set("noGeometryGiven", true);
+
                     // TODO: Skip these features for transform so there's no need to transform back and forth?
-                    let referenceSystem = feature.getProperties().referenceSystem;
+                    let referenceSystem = feature.get("referenceSystem");
 
                     referenceSystem = referenceSystem === undefined ? "4326" : referenceSystem;
                     feature.getGeometry().transform(this.projectionCode, "EPSG:" + referenceSystem);
@@ -235,6 +259,43 @@ export default {
             model.set("isSelected", value);
         },
         /**
+         * @param {Object} id - the project ID
+         * @param {Boolean} refresh - if set, contributions will be refreshed in any case
+         * @return {Object} the contributions object
+         */
+        async updateContributionFeatures (id, refresh = false) {
+            const projectContributions = this.contributions[id];
+
+            if (refresh || projectContributions.features.length === 0) {
+                projectContributions.loading = true;
+                const contributions = await this.getContributionFeatures(id);
+
+                for (const feature of contributions) {
+                    const
+                        properties = feature.getProperties(),
+                        geometryType = feature.getGeometry().getType();
+
+                    if (geometryType !== "Point") {
+                        const extent = feature.getGeometry().getExtent(),
+                            center = getCenter(extent);
+
+                        feature.setGeometry(new Point(center));
+                    }
+                    feature.set("originalGeometryType", geometryType);
+
+                    for (const property of ["votingPro", "votingContra", "commentsNumber"]) {
+                        properties[property] = String(properties[property]);
+                    }
+                    feature.setProperties(properties);
+                    feature.setId(feature.get("id"));
+                }
+                projectContributions.features = contributions;
+                projectContributions.loading = false;
+            }
+
+            return projectContributions;
+        },
+        /**
          * changes the visibility of the contributions layer for the given project id
          * @param {String} id the project id
          * @param {Boolean} value wether the contributions layer shall be visible or not
@@ -242,44 +303,17 @@ export default {
          */
         async changeContributionVisibility (id, value) {
             const layer = {
-                    id: id + "-contributions",
-                    name: id + " contributions",
-                    features: []
-                },
-                contribution = this.contributions[id];
+                id: id + "-contributions",
+                name: id + " contributions",
+                features: []
+            };
+                // contribution = this.contributions[id];
 
             let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
 
             if (!model) {
-                if (contribution.features.length === 0) {
-                    contribution.loading = true;
-                    const contributions = await this.getContributionFeatures(id);
-
-                    for (const feature of contributions) {
-                        const geometryType = feature.getGeometry().getType();
-
-                        if (geometryType !== "Point") {
-                            const extent = feature.getGeometry().getExtent(),
-                                center = getCenter(extent);
-
-                            feature.setGeometry(new Point(center));
-                        }
-                        feature.set("originalGeometryType", geometryType);
-                    }
-                    this.contributions[id].features = contributions;
-                    contribution.loading = false;
-                }
-                for (const feature of contribution.features) {
-                    const properties = feature.getProperties();
-
-                    feature.setId(feature.get("id"));
-
-                    for (const property of ["votingPro", "votingContra", "commentsNumber"]) {
-                        properties[property] = String(properties[property]);
-                    }
-                    feature.setProperties(properties);
-                }
-                layer.features = contribution.features;
+                await this.updateContributionFeatures(id);
+                layer.features = this.contributions[id].features;
                 model = await this.addLayer(layer);
 
                 const
@@ -319,7 +353,7 @@ export default {
                     styles.push(null);
                     break;
             }
-            if (feature.getProperties().originalGeometryType !== "Point") {
+            if (feature.get("originalGeometryType") !== "Point") {
                 const secondaryStyle = new Style();
 
                 if (resolution < 1.5) {
@@ -327,7 +361,7 @@ export default {
                 }
                 styles.push(secondaryStyle);
             }
-            if (feature.getProperties().noGeometryGiven) {
+            if (!feature.get("dipasLocated")) {
                 const tertiaryStyle = new Style();
 
                 tertiaryStyle.setText(this.getContributionErrorLabel());
@@ -342,7 +376,7 @@ export default {
          * @returns {void}
          */
         getContributionColorByProject (feature, resolution) {
-            const id = feature.getProperties().belongToProject,
+            const id = feature.get("belongToProject"),
                 index = this.contributions[id].index,
                 color = this.projectsColors[index],
                 text = this.getContributionLabel(feature),
@@ -366,8 +400,8 @@ export default {
          * @returns {void}
          */
         getContributionColorByCategory (feature, resolution) {
-            const id = feature.getProperties().belongToProject,
-                category = feature.getProperties().category;
+            const id = feature.get("belongToProject"),
+                category = feature.get("category");
             let colors;
 
             if (this.categoryRainbow) {
@@ -456,8 +490,8 @@ export default {
                     blur: 20,
                     id: layerId,
                     weight: function (feature) {
-                        const votingPro = parseInt(feature.getProperties().votingPro, 10),
-                            votingContra = parseInt(feature.getProperties().votingContra, 10),
+                        const votingPro = parseInt(feature.get("votingPro"), 10),
+                            votingContra = parseInt(feature.get("votingContra"), 10),
                             weight = (votingPro + votingContra) / maxVotes;
                             // weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
 
@@ -551,8 +585,8 @@ export default {
         },
 
         getDateString (feature) {
-            const startDate = new Date(feature.getProperties().dateStart).toLocaleDateString(this.currentLocale),
-                endDate = new Date(feature.getProperties().dateEnd).toLocaleDateString(this.currentLocale);
+            const startDate = new Date(feature.get("dateStart")).toLocaleDateString(this.currentLocale),
+                endDate = new Date(feature.get("dateEnd")).toLocaleDateString(this.currentLocale);
 
             return startDate + " - " + endDate;
         },
@@ -607,13 +641,13 @@ export default {
                             <v-list>
                                 <v-list-group
                                     v-for="[index, feature] in projectsFeatureCollection.entries()"
-                                    :key="feature.getProperties().id"
+                                    :key="feature.get('id')"
                                 >
                                     <template #activator>
                                         <v-list-item-content>
                                             <v-list-item-title
                                                 class="text-wrap"
-                                                v-text="feature.getProperties().nameFull"
+                                                v-text="feature.get('nameFull')"
                                             />
                                             <v-list-item-subtitle
                                                 class="text-wrap"
@@ -627,7 +661,7 @@ export default {
                                                 dark
                                             >
                                                 <v-icon
-                                                    v-if="isProjectActive(feature.getProperties().id)"
+                                                    v-if="isProjectActive(feature.get('id'))"
                                                     dark
                                                 >
                                                     mdi-checkbox-marked-circle
@@ -643,13 +677,13 @@ export default {
                                     </template>
                                     <p
                                         class="description"
-                                        v-html="feature.getProperties().description"
+                                        v-html="feature.get('description')"
                                     />
                                     <v-chip
-                                        v-for="category in feature.getProperties().standardCategories"
-                                        :key="feature.getProperties().id + category"
+                                        v-for="category in feature.get('standardCategories')"
+                                        :key="feature.get('id') + category"
                                         class="ma-1 category"
-                                        :color="handleColor(feature.getProperties().id, category)"
+                                        :color="handleColor(feature.get('id'), category)"
                                         small
                                     >
                                         {{ category }}
@@ -657,14 +691,14 @@ export default {
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
-                                                v-model="projectsActive[feature.getProperties().id]['layer']"
-                                                @change="changeProjectVisibility(feature.getProperties().id, $event)"
+                                                v-model="projectsActive[feature.get('id')]['layer']"
+                                                @change="changeProjectVisibility(feature.get('id'), $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
                                             <v-list-item-title>{{ $t('additional:modules.tools.cosi.dipas.showProject') }}</v-list-item-title>
                                         </v-list-item-content>
-                                        <v-list-item-icon v-if="projectsActive[feature.getProperties().id]['layer']">
+                                        <v-list-item-icon v-if="projectsActive[feature.get('id')]['layer']">
                                             <v-icon
                                                 :title="$t('additional:modules.tools.cosi.dipas.showProject')"
                                                 @click="zoomToProject(feature)"
@@ -676,15 +710,15 @@ export default {
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
-                                                v-model="projectsActive[feature.getProperties().id]['contributions']"
-                                                @change="changeContributionVisibility(feature.getProperties().id, $event)"
+                                                v-model="projectsActive[feature.get('id')]['contributions']"
+                                                @change="changeContributionVisibility(feature.get('id'), $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
                                             <v-list-item-title>
                                                 {{ $t('additional:modules.tools.cosi.dipas.showContributions') }}
                                                 <v-btn
-                                                    v-if="contributions[feature.getProperties().id].loading"
+                                                    v-if="contributions[feature.get('id')].loading"
                                                     plain
                                                     loading
                                                     small
@@ -692,14 +726,14 @@ export default {
                                             </v-list-item-title>
                                         </v-list-item-content>
                                         <v-list-item-icon>
-                                            {{ feature.getProperties().hasParticipatoryText.length }} {{ $t('additional:modules.tools.cosi.dipas.contributions') }}
+                                            {{ feature.get('hasParticipatoryText').length }} {{ $t('additional:modules.tools.cosi.dipas.contributions') }}
                                         </v-list-item-icon>
                                     </v-list-item>
                                     <v-list-item>
                                         <v-list-item-action>
                                             <v-switch
-                                                v-model="projectsActive[feature.getProperties().id]['heatmap']"
-                                                @change="changeHeatmapVisibility(feature.getProperties().id, $event)"
+                                                v-model="projectsActive[feature.get('id')]['heatmap']"
+                                                @change="changeHeatmapVisibility(feature.get('id'), $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
@@ -745,9 +779,15 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
+                    <v-switch
+                        v-model="pollingEnabled"
+                        small
+                        :title="$t('additional:modules.tools.cosi.dipas.polling.help')"
+                        :label="$t('additional:modules.tools.cosi.dipas.polling.label')"
+                    />
                     <v-divider />
                     <div
-                        id="download"
+                        id="actions"
                     >
                         <v-btn
                             id="download-geojson"
@@ -766,6 +806,16 @@ export default {
                             </v-icon>
                             Download GeoJSON
                         </v-btn>
+                        <v-checkbox
+                            v-model="pollingEnabled"
+                            small
+                            :title="$t('additional:modules.tools.cosi.dipas.polling.help')"
+                            :label="$t('additional:modules.tools.cosi.dipas.polling.label')"
+                            dense
+                            hide-details
+                            class="form-check-input float-right"
+                            type="checkbox"
+                        />
                     </div>
                 </v-app>
             </template>

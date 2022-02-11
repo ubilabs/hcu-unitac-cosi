@@ -19,6 +19,10 @@
                     "zoomToProject": "Zoom to project area",
                     "download": {
                         "title": "Download results as geodata (GeoJSON)"
+                    },
+                    "polling": {
+                        "label": "Automatic Update",
+                        "help": "Load new contributions automatically."
                     }
                 }
             }

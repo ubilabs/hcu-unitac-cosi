@@ -53,7 +53,7 @@ function addLayerToTree (newLayer) {
     setLayerAttributes(model, newLayer);
     if (!newLayer.project) {
         const filterModel = {
-                attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType", "originalGeometryType"],
+                attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType", "originalGeometryType", "dipasLocated"],
                 isActive: false,
                 isSelected: false,
                 layerId: newLayer.id,
@@ -102,7 +102,7 @@ function contributionsGfiAttributes () {
         votingContra: "Neg. Bewertung",
         belongToProject: "Verfahren",
         originalGeometryType: "Urspr. Geometrietyp",
-        noGeometryGiven: "Keine Geometrie vorhanden"
+        dipasLocated: "Ist verortet?"
     };
 }
 
