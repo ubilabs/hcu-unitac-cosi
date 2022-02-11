@@ -21,6 +21,7 @@
                     "exportDetails": "include details",
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
+                    "distanceScoreChartYLabel": "distance / m",
                     "abort": "abort",
                     "warning": "WARNING: ",
                     "warningIsModified": "Was modified in CoSI",

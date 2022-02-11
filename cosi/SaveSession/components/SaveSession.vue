@@ -27,6 +27,10 @@ export default {
                     "zoomLevel"
                 ],
                 Tools: {
+                    ChartGenerator: [
+                        "datasets",
+                        "chartConfigs"
+                    ],
                     CalculateRatio: [
                         "resultHeaders",
                         "results",

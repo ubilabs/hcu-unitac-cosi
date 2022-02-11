@@ -667,6 +667,7 @@ export default {
                     type,
                     color: "rainbow",
                     source: "Standortanalyse",
+                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), this.selectedDistrictLevel.label],
                     data
                 });
 
@@ -693,6 +694,7 @@ export default {
                     type,
                     color: "rainbow",
                     source: "Standortanalyse",
+                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), this.selectedDistrictLevel.label],
                     data
                 });
 

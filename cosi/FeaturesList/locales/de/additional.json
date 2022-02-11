@@ -25,6 +25,7 @@
                     "distanceScoreHistogramTooltip": "Verteilung der Standortbewertungen visualisieren",
                     "distanceScore": "Anbindung (Ø in m)",
                     "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung",
+                    "distanceScoreChartYLabel": "Anbindung in m",
                     "abort": "Abbrechen",
                     "warning": "ACHTUNG: ",
                     "warningIsModified": "Wurde in CoSI modifiziert",

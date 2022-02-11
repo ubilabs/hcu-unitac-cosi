@@ -20,7 +20,7 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: false,
     // DIPAS properties
-    pollingInteval: 120000,
+    pollingInterval: 120000,
     baseUrl: "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.en.md",

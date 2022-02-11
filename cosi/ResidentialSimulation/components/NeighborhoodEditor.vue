@@ -23,6 +23,7 @@ export default {
             scenarioFeature: null,
             editFeature: null
         },
+        confirmDialog: false,
         confirmText: "",
         confirmAction: {
             function: () => null,

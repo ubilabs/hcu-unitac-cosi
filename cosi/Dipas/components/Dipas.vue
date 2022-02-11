@@ -32,8 +32,7 @@ export default {
             selectedStyling: null,
             categoryRainbow: false,
             pollingEnabled: false,
-            poll: null,
-            pollingInteval: 120000
+            poll: null
         };
     },
     computed: {
@@ -597,7 +596,7 @@ export default {
         },
         /**
          * Sets an automatic polling for new contributions
-         * pollingInteval length from store in ms
+         * pollingInterval length from store in ms
          * @returns {Number} the interval ID
          */
         setPolling () {
@@ -614,7 +613,7 @@ export default {
                         source.addFeatures(this.contributions[id].features);
                     }
                 }
-            }, this.pollingInteval);
+            }, this.pollingInterval);
         }
     }
 };
