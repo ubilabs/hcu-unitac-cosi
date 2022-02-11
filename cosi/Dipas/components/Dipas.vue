@@ -307,7 +307,6 @@ export default {
                 name: id + " contributions",
                 features: []
             };
-                // contribution = this.contributions[id];
 
             let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
 
@@ -493,7 +492,6 @@ export default {
                         const votingPro = parseInt(feature.get("votingPro"), 10),
                             votingContra = parseInt(feature.get("votingContra"), 10),
                             weight = (votingPro + votingContra) / maxVotes;
-                            // weight = (votingPro + 1) / ((votingPro + 1) + (votingContra + 1));
 
                         return weight;
                     }
