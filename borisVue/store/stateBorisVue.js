@@ -29,7 +29,10 @@ const state = {
     bauweiseArray: ["eh Einzelhaus (freistehend)", "dh Doppelhaushälfte", " dd Doppelhaus (ganzes Doppelhaus)", "rm Reihenmittelhaus", "rm Reihenmittelhäuser", "re Reihenendhaus", "g geschlossene Bauweise", "a abweichende Bauweise (Gartenhofhaus)"],
     selectedBauweise: "",
     selectedStrassenlage: "",
-    strassenlageArray: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"]
+    strassenlageArray: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"],
+    // wps
+    wpsId: 1001,
+    fmwProcess: "BRWConvert.fmw"
 };
 
 export default state;
