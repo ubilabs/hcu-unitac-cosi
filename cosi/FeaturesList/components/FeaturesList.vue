@@ -18,8 +18,7 @@ import arrayIsEqual from "../../utils/arrayIsEqual";
 import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
-import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
-import {createHistogram} from "../utils/charts";
+import chartMethods from "../utils/charts";
 
 import
 {
@@ -113,10 +112,6 @@ export default {
                 }
             ],
             actionColumns: [
-                // {
-                //     text: this.$t("additional:modules.tools.cosi.featuresList.colActions"),
-                //     value: "actions"
-                // },
                 {
                     text: this.$t("additional:modules.tools.cosi.featuresList.colToggleEnabled"),
                     value: "enabled"
@@ -125,7 +120,8 @@ export default {
             numericalColumns: [],
             distScoreLayer: null,
             exportDetails: false,
-            dipasInFeaturesList: true
+            dipasInFeaturesList: true,
+            sumUpLayers: false
         };
     },
     computed: {
@@ -310,6 +306,7 @@ export default {
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
         ...mapActions("Map", ["removeHighlightFeature", "createLayer"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
+        ...chartMethods,
 
         getVectorlayerMapping,
         getNumericalColumns () {
@@ -495,6 +492,10 @@ export default {
             });
         },
 
+        getActiveLayersWithNumValue (id) {
+            return this.getActiveLayers().filter(layerMap => layerMap.numericalValues.map(numVal => numVal.id).includes(id));
+        },
+
         /**
          * Export the table as XLSX
          * Either the simple view or incl. details
@@ -571,6 +572,20 @@ export default {
             }
             return "red";
         },
+        getNumericalValueStyle (item, key) {
+            const val = parseFloat(item[key]),
+                maxVal = Math.max(
+                    ...this.items
+                        .map(_item => parseFloat(_item[key]))
+                        .filter(_item => !isNaN(_item))
+                );
+
+            return {
+                padding: 0,
+                height: "10px",
+                width: Math.round(100 * val / maxVal) + "%"
+            };
+        },
         getLayerList () {
             const groups = this.mapping,
                 allLayers = [];
@@ -589,6 +604,31 @@ export default {
             }
 
             return allLayers;
+        },
+        getDistrictsAndTypes (items) {
+            const
+                districts = {},
+                types = {};
+
+            for (const layerMap of this.flatActiveLayerMapping) {
+                districts[layerMap.layerId] = [];
+                types[layerMap.layerId] = [];
+
+                for (const item of items.filter(el => el.layerId === layerMap.layerId)) {
+                    if (!districts[layerMap.layerId].includes(item.district)) {
+                        districts[layerMap.layerId].push(item.district);
+
+                    }
+                    if (!types[layerMap.layerId].includes(item.type)) {
+                        types[layerMap.layerId].push(item.type);
+                    }
+                }
+
+                districts[layerMap.layerId].sort();
+                types[layerMap.layerId].sort();
+            }
+
+            return {districts, types};
         },
         async updateSelectedDistanceScoreLayers (layerIds) {
             this.selectedDistanceScoreLayers = layerIds;
@@ -629,350 +669,7 @@ export default {
                 this.items = items;
             }
         },
-        updateWeights (weights) {
-            this.layerWeights = {...weights};
-        },
-        getNumericalValueStyle (item, key) {
-            const val = parseFloat(item[key]),
-                maxVal = Math.max(
-                    ...this.items
-                        .map(_item => parseFloat(_item[key]))
-                        .filter(_item => !isNaN(_item))
-                );
 
-            return {
-                padding: 0,
-                height: "10px",
-                width: Math.round(100 * val / maxVal) + "%"
-            };
-        },
-        /**
-         * @todo Refactor to utils
-         * @param {Object} item - the table item
-         * @returns {void}
-         */
-        showDistanceScoreForItem (item) {
-            const
-                type = this.selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
-                data = {
-                    labels: this.selectedFeatureLayers.map(l => l.id),
-                    datasets: [{
-                        label: item.name,
-                        data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value?.toFixed(3))
-                    }]
-                },
-                chartDataset = new ChartDataset({
-                    id: "sb-" + item.key,
-                    name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)}`,
-                    type,
-                    color: "rainbow",
-                    source: "Standortanalyse",
-                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), this.selectedDistrictLevel.label],
-                    data
-                });
-
-            this.channelGraphData(chartDataset);
-        },
-        /**
-         * @todo Refactor to utils
-         * @returns {void}
-         */
-        showDistanceScoresForSelected () {
-            const
-                type = this.selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
-                data = {
-                    labels: this.selectedFeatureLayers.map(l => l.id),
-                    datasets: this.getActiveItems().map(item => ({
-                        label: item.name,
-                        data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
-                        tooltip: `Gewichteter Durchschnitt: ${item.weightedDistanceScores.score}`
-                    }))
-                },
-                chartDataset = new ChartDataset({
-                    id: "sb-" + this.getActiveItems().map(item => item.key).join(","),
-                    name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")}`,
-                    type,
-                    color: "rainbow",
-                    source: "Standortanalyse",
-                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), this.selectedDistrictLevel.label],
-                    data
-                });
-
-            this.channelGraphData(chartDataset);
-        },
-        /**
-         * @todo Refactor to utils
-         * @returns {void}
-         */
-        showDistanceScoreHistogram () {
-            const
-                histogram = createHistogram(this.getActiveItems()),
-                chartData = {
-                    labels: histogram.quantiles.map(v => Math.round(v)),
-                    datasets: [{
-                        data: histogram.data,
-                        label: this.selectedFeatureLayers.map(l => l.id).join(", "),
-                        barPercentage: 1,
-                        categoryPercentage: 1
-                    }]
-                },
-                chartOptions = {
-                    scales: {
-                        xAxes: [{
-                            ticks: {
-                                labelOffset: -20
-                            },
-                            scaleLabel: {
-                                display: true,
-                                labelString: ""
-                            }
-                        }],
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: ""
-                            }
-                        }]
-                    },
-                    tooltips: {
-                        callbacks: {
-                            title: (item, data) => {
-                                return "> " + data.labels[item[0].index] + "m";
-                            }
-                        }
-                    }
-                },
-                chartDataset = new ChartDataset({
-                    id: "sb-histogram",
-                    name: this.$t("additional:modules.tools.cosi.featuresList.scoresDialogHistogramTitle"),
-                    type: "BarChart",
-                    color: "rainbow",
-                    source: "Standortanalyse",
-                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.count"), this.$t("additional:modules.tools.cosi.featuresList.distanceScore")],
-                    data: chartData,
-                    options: chartOptions,
-                    beginAtZero: true
-                });
-
-            this.channelGraphData(chartDataset);
-        },
-        /**
-         * @todo Refactor to utils
-         * @returns {void}
-         */
-        createCharts () {
-            const
-                activeItems = this.getActiveItems(),
-                {districts, types} = this.getDistrictsAndTypes(activeItems),
-                activeLayerMapping = this.getActiveLayers(),
-                layerCharts = activeLayerMapping.reduce((res, layerMap) => {
-                    const
-                        numVals = this.selectedFeatureLayers.length > 0 ?
-                            [...layerMap.numericalValues, {id: "distanceScore", name: "Anbindng"}, {id: "count", name: "Anzahl"}] :
-                            [...layerMap.numericalValues, {id: "count", name: "Anzahl"}],
-                        charts = numVals.map(numVal => {
-                            const
-                                layerItems = activeItems.filter(item => item.layerId === layerMap.layerId),
-                                chartData = {
-                                    labels: districts[layerMap.layerId],
-                                    datasets: types[layerMap.layerId].map(type => ({
-                                        label: type,
-                                        data: districts[layerMap.layerId].map(district => {
-                                            return layerItems.reduce((sum, item) => {
-                                                if (numVal.id !== "count") {
-                                                    return item.district === district && item.type === type ? sum + parseFloat(item[numVal.id]) : sum;
-                                                }
-                                                return item.district === district && item.type === type ? sum + 1 : sum;
-                                            }, 0);
-                                        })
-                                    }))
-                                };
-
-                            return new ChartDataset({
-                                id: this.id + "-" + layerMap.layerId + "-" + numVal.id,
-                                name: layerMap.id,
-                                type: "BarChart",
-                                color: "rainbow",
-                                source: this.$t("additional:modules.tools.cosi.featuresList.title"),
-                                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.colDistrict"), numVal.name],
-                                data: chartData,
-                                beginAtZero: true
-                            });
-                        });
-
-                    return [...res, ...charts];
-                }, []);
-
-            this.channelGraphData(layerCharts);
-        },
-        /**
-         * @todo Refactor to utils
-         * @returns {void}
-         */
-        createDipasCharts () {
-            const graphData = [];
-
-            this.createDipasCommentsNumberGraphs(graphData);
-            this.createDipasTimeGraphs(graphData);
-            this.createDipasScatterGraphs(graphData);
-            this.channelGraphData(graphData);
-        },
-        createDipasCommentsNumberGraphs (graphData) {
-            const activeItems = this.getActiveDipasItems(),
-                types = this.getDistrictsAndTypes(activeItems).types,
-                activeLayerMapping = this.getActiveDipasLayers(),
-                layerCharts = activeLayerMapping.map(layer => {
-                    const chartData = {
-                        labels: types[layer.layerId],
-                        datasets: [{
-                            label: this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"),
-                            data: types[layer.layerId].map(type => {
-                                return activeItems.reduce((sum, item) => {
-                                    return item.layerId === layer.layerId && item.type === type ? sum + parseInt(item.commentsNumber, 10) : sum;
-                                }, 0);
-                            })
-                        }]
-                    };
-
-                    return new ChartDataset({
-                        id: this.id + "-" + layer.layerId + "-commentsNumberChart",
-                        name: layer.id.replace(" contributions", "") + this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsPerCategory"),
-                        type: "BarChart",
-                        color: "rainbow",
-                        source: this.$t("additional:modules.tools.cosi.dipas.title"),
-                        scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"), this.$t("additional:modules.tools.cosi.featuresList.dipas.category")],
-                        data: chartData,
-                        beginAtZero: true
-                    });
-                });
-
-            graphData.push(...layerCharts);
-        },
-        createDipasTimeGraphs (graphData) {
-            const activeItems = this.getActiveDipasItems(),
-                activeLayerMapping = this.getActiveDipasLayers(),
-                layerCharts = activeLayerMapping.map(layer => {
-                    const dates = activeItems.filter(item => {
-                            if (item.layerId === layer.layerId) {
-                                return true;
-                            }
-                            return false;
-                        }).map(item => {
-                            return item.feature.values_.dateCreated;
-                        }).sort(),
-                        chartData = {
-                            labels: dates,
-                            datasets: [{
-                                label: this.$t("additional:modules.tools.cosi.featuresList.dipas.contributions"),
-                                data: dates.map((date, index) => {
-                                    return {t: date, y: index + 1};
-                                })
-                            }]
-                        },
-                        currentLocale = this.currentLocale;
-
-                    return new ChartDataset({
-                        id: this.id + "-" + layer.layerId + "-timeChart",
-                        name: layer.id.replace(" contributions", "") + this.$t("additional:modules.tools.cosi.featuresList.dipas.contributionsOverTime"),
-                        type: "LineChart",
-                        color: "rainbow",
-                        source: this.$t("additional:modules.tools.cosi.dipas.title"),
-                        scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.dipas.contributions"), this.$t("additional:modules.tools.cosi.featuresList.dipas.contributions")],
-                        options: {
-                            scales: {
-                                xAxes: [{
-                                    type: "time"
-                                }]
-                            },
-                            tooltips: {
-                                callbacks: {
-                                    title: function (tooltipItem) {
-                                        return new Date(tooltipItem[0].label).toLocaleString(currentLocale);
-                                    }
-                                }
-                            }
-                        },
-                        data: chartData,
-                        beginAtZero: true
-                    });
-                });
-
-            graphData.push(...layerCharts);
-        },
-
-        createDipasScatterGraphs (graphData) {
-            const activeItems = this.getActiveDipasItems(),
-                activeLayerMapping = this.getActiveDipasLayers(),
-                layerCharts = activeLayerMapping.map(layer => {
-                    const chartData = {
-                        datasets: [{
-                            label: this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsVoting"),
-                            data: activeItems.filter(item => {
-                                if (item.layerId === layer.layerId) {
-                                    return true;
-                                }
-                                return false;
-                            }).map(item => {
-                                return {x: parseInt(item.votingPro, 10) - parseInt(item.votingContra, 10), y: parseInt(item.commentsNumber, 10), name: item.name};
-                            })
-                        }]
-                    };
-
-                    return new ChartDataset({
-                        id: this.id + "-" + layer.layerId + "-scatterChart",
-                        name: layer.id.replace(" contributions", "") + this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsVotingText"),
-                        type: "ScatterChart",
-                        color: "rainbow",
-                        source: this.$t("additional:modules.tools.cosi.dipas.title"),
-                        scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"), this.$t("additional:modules.tools.cosi.featuresList.dipas.voting")],
-                        options: {
-                            tooltips: {
-                                callbacks: {
-                                    label: function (tooltipItem, data) {
-                                        const index = tooltipItem.index,
-                                            name = data.datasets[0].data[index].name;
-
-                                        return name;
-                                    },
-                                    title: function (tooltipItem, data) {
-                                        return data.datasets[0].label + " (" + tooltipItem[0].yLabel + "/" + tooltipItem[0].xLabel + ")";
-                                    },
-                                    footer: () => {
-                                        return null;
-                                    }
-                                }
-                            }
-                        },
-                        data: chartData,
-                        beginAtZero: true
-                    });
-                });
-
-            graphData.push(...layerCharts);
-        },
-
-        getDistrictsAndTypes (items) {
-            const
-                districts = {},
-                types = {};
-
-            for (const layerMap of this.flatActiveLayerMapping) {
-                districts[layerMap.layerId] = [];
-                types[layerMap.layerId] = [];
-
-                for (const item of items.filter(el => el.layerId === layerMap.layerId)) {
-                    if (!districts[layerMap.layerId].includes(item.district)) {
-                        districts[layerMap.layerId].push(item.district);
-
-                    }
-                    if (!types[layerMap.layerId].includes(item.type)) {
-                        types[layerMap.layerId].push(item.type);
-                    }
-                }
-            }
-
-            return {districts, types};
-        },
         showDistanceScoreFeatures () {
             if (this.distScoreLayer === null) {
                 return;
@@ -1015,6 +712,9 @@ export default {
                     }
                 }
             });
+        },
+        updateWeights (weights) {
+            this.layerWeights = {...weights};
         }
     }
 };
@@ -1049,6 +749,7 @@ export default {
                             outlined
                             small-chips
                             deletable-chips
+                            hide-details
                             :menu-props="{ closeOnContentClick: true }"
                             :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
                         />
@@ -1059,6 +760,7 @@ export default {
                             :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
                             dense
                             outlined
+                            hide-details
                         />
                     </div>
                     <v-btn
@@ -1086,6 +788,15 @@ export default {
                     >
                         <v-icon>mdi-thumbs-up-down</v-icon>
                     </v-btn>
+                    <v-checkbox
+                        id="export-details"
+                        v-model="sumUpLayers"
+                        class="form-check-input"
+                        dense
+                        hide-details
+                        :label="$t('additional:modules.tools.cosi.featuresList.sumUpLayers')"
+                        :title="$t('additional:modules.tools.cosi.featuresList.sumUpLayersTooltip')"
+                    />
                     <v-btn
                         id="export-table"
                         dense
@@ -1319,11 +1030,18 @@ export default {
     #features-list-wrapper {
         height: 100%;
         position: relative;
-        // overflow: hidden;
 
         .selection {
             display: inline-block;
-            width: 25%;
+            width: 20%;
+        }
+        .v-text-field {
+            input {
+                font-size: 12px;
+            }
+            label {
+               font-size: 12px;
+            }
         }
     }
     #features-list {

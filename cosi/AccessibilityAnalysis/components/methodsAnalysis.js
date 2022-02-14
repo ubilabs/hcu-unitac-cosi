@@ -166,7 +166,6 @@ export default {
 
         this.setCoordinate(coordinates);
         this.setClickCoordinate(evt.coordinate);
-        // this.placingPointMarker(evt.coordinate);
         this.setSetBySearch(false);
     },
 

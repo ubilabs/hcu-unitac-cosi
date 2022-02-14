@@ -36,6 +36,8 @@
                     "itemsPerPageAll": "Alle",
                     "count": "Anzahl",
                     "createCharts": "Diagramme erstellen",
+                    "sumUpLayers": "Layer zusammenziehen",
+                    "sumUpLayersTooltip": "Layer mit gleichen Attributen (z.B. Fläche in m²) in einem gemeinsamen Diagramm betrachten",
                     "dipas": {
                         "warningWrongGeometry": "Ursprünglich keine Punktgeometrie: ",
                         "warningNoGeometry": "Enthielt keine Geometrie. Wurde auf den Mittelpunkt des Projektes gesetzt.",

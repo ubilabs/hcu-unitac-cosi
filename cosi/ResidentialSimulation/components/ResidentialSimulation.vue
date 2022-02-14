@@ -688,7 +688,7 @@ export default {
                             >
                                 <v-col cols="3">
                                     <v-subheader>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpaceRatio') }}
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.livingSpaceRatio') }}
                                     </v-subheader>
                                 </v-col>
                                 <v-col cols="3">

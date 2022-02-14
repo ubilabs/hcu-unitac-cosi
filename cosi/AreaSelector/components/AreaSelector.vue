@@ -32,6 +32,7 @@ export default {
     computed: {
         ...mapGetters("Tools/AreaSelector", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
+        ...mapGetters("Map", ["projectionCode"]),
         ...mapGetters("Language", ["currentLocale"]),
         geomField () {
             return {
@@ -108,10 +109,10 @@ export default {
         * @returns {void}
         */
         requestInhabitants: function () {
-            const geoJson = featureToGeoJson(this.feature);
+            const geoJson = featureToGeoJson(this.feature, false, this.projectionCode, this.projectionCode);
 
             this.close();
-            this.$root.$emit("populationRequest", geoJson);
+            this.$root.$emit("populationRequest", geoJson.geometry);
         },
 
         /**

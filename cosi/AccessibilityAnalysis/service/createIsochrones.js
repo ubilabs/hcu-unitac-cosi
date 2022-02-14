@@ -222,20 +222,3 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
     return features;
 }
 
-// /**
-//      * Transforms features between CRS
-//      * @param   {feature[]} features Array of ol.features
-//      * @param   {string}    crs      EPSG-Code of feature
-//      * @param   {string}    mapCrs   EPSG-Code of ol.map
-//      * @returns {void}
-//      */
-// function transformFeatures (features, crs, mapCrs) {
-//     features.forEach(function (feature) {
-//         const geometry = feature.getGeometry();
-
-//         if (geometry) {
-//             geometry.transform(crs, mapCrs);
-//         }
-//     });
-//     return features;
-// }
