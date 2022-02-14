@@ -505,4 +505,44 @@ const actions = {
     }
 };
 
+/**
+ * Extrahiert und speichert den umgerechneten BRW
+ * @param  {string} response - the response xml of the wps
+ * @param  {number} status - the HTTPStatusCode
+ * @returns {void}
+ */
+function handleConvertResponse (response, status) {
+    console.log("response", response)
+    let complexData,
+        executeResponse;
+
+    if (status === 200) {
+        executeResponse = response.ExecuteResponse;
+
+        if (executeResponse.ProcessOutputs) {
+            complexData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData;
+            if (complexData.serviceResponse) {
+                console.error("FME-Server statusInfo: " + complexData.serviceResponse.statusInfo.message);
+            }
+            else if (complexData.Bodenrichtwert) {
+                if (complexData.Bodenrichtwerd.Ergebnis.ErrorOccured !== "No") {
+                    console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
+                }
+                else {
+                    // hier am MONTAG weiterachen!!!!!
+                    store.dispatch("updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
+                }
+            }
+        }
+        else if (executeResponse.Status) {
+            console.error("FME-Server ExecuteResponse: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
+        }
+    }
+    else {
+        console.error("WPS-Abfrage mit Status " + status + " abgebrochen.");
+    }
+}
+
 export default actions;
+
+
