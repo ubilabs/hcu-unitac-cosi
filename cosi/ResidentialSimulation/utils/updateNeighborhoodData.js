@@ -376,38 +376,6 @@ export function updateHousholdSize (newHouseholdSize, neighborhood, fallbacks, p
     return [];
 }
 
-// /**
-//  * validates the calculation results
-//  * @param {Number} householdSize - avg. household size
-//  * @param {Number} populationDensity - population density (per km²)
-//  * @param {Number} gfz - building footprint / ground area
-//  * @param {Number} bgf - gross floor area
-//  * @param {Number} livingSpace - living space per person
-//  * @param {Number} area - ground area of the polygon
-//  * @param {Object} lowerBounds - lower bounds
-//  * @param {Object} upperBounds - upper bounds
-//  * @returns {Boolean} valid?
-//  */
-// function validateValues (householdSize, populationDensity, gfz, bgf, livingSpace, area,
-//     lowerBounds = {householdSize: 1.0, populationDensity: 0, gfz: 0, livingSpace: 10},
-//     upperBounds = {householdSize: 6.0, populationDensity: 50000, gfz: 4.0, livingSpace: 100}
-// ) {
-//     const validHouseholdSize = householdSize >= lowerBounds.householdSize && householdSize <= upperBounds.householdSize,
-//         validPopulationDensity = populationDensity >= lowerBounds.populationDensity && populationDensity <= upperBounds.populationDensity,
-//         validGfz = gfz >= lowerBounds.gfz && gfz <= upperBounds.gfz,
-//         validBgf = bgf >= lowerBounds.gfz * area && bgf <= upperBounds.gfz * area,
-//         validLivingSpace = livingSpace >= lowerBounds.livingSpace && livingSpace <= upperBounds.livingSpace;
-
-//     return (
-//         validHouseholdSize &&
-//         validPopulationDensity &&
-//         validGfz &&
-//         validBgf &&
-//         validLivingSpace
-//     );
-
-// }
-
 /**
  * finds the invalid values and returns them
  * @param {Number} householdSize - avg. household size
