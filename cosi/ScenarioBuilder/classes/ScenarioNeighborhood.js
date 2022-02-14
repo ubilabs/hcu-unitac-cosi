@@ -21,6 +21,7 @@ export default class ScenarioNeighborhood {
         this.layer = layer;
         this.active = false;
         this.activeDistrictLevels = districtLevels;
+        this.scenario = null;
 
         this.setDefaultProperties();
         this.computeContainingDistricts(districtLevels);
@@ -62,9 +63,9 @@ export default class ScenarioNeighborhood {
         if (!this.active) {
             return;
         }
+        this.active = false;
         this.resetDistrictStats();
         this.layer.getSource().removeFeature(this.feature);
-        this.active = false;
     }
 
     /**
@@ -154,12 +155,20 @@ export default class ScenarioNeighborhood {
     }
 
     /**
-     * Resets the surrounding districts' statistics to their original
+     * Resets the surrounding districts' statistics
+     * and keeps only the modificatin by active neighborhoods alive
      * @returns {void}
      */
     resetDistrictStats () {
-        for (const item of this.districts) {
+        const allModifiedDistricts = new Set(this.scenario.neighborhoods.map(neighborhood => neighborhood.districts).flat());
+
+        for (const item of allModifiedDistricts) {
             item.district.statFeatures = item.district.originalStatFeatures.map(feature => feature.clone());
+        }
+        for (const neighborhood of this.scenario.neighborhoods) {
+            if (neighborhood.active) {
+                neighborhood.modifyDistrictStats();
+            }
         }
 
         store.dispatch("Tools/DistrictSelector/updateDistricts");

@@ -17,6 +17,11 @@ export default {
             required: false,
             default: "jahr_"
         },
+        basePopulationProp: {
+            type: String,
+            required: false,
+            default: "Bevölkerung insgesamt"
+        },
         hasReference: {
             type: Boolean,
             default: false
@@ -162,7 +167,7 @@ export default {
                     feature.get(this.workingDistrictLevel.keyOfAttrName),
                     this.workingDistrictLevel.label,
                     stats,
-                    "Bevölkerung insgesamt",
+                    this.basePopulationProp,
                     this.timelinePrefix,
                     this.groupsList
                 );

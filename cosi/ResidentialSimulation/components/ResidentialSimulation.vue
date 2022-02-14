@@ -196,7 +196,6 @@ export default {
         },
 
         invalidValues (invValues) {
-            console.log(this.invalidValues);
             if (invValues.length > 0) {
                 this.errorMsg = true;
             }
@@ -443,6 +442,7 @@ export default {
                                 :timeline-prefix="timelinePrefix"
                                 :has-reference="hasReference"
                                 :selected-name="baseStats.reference.districtName"
+                                :base-population-prop="basePopulationProp"
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                                 @resetReference="resetBaseStats"

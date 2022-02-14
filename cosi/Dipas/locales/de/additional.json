@@ -19,6 +19,10 @@
                     "zoomToProject": "Auf Projektgebiet zoomen",
                     "download": {
                         "title": "Ergebnisse als Geodaten (GeoJSON) herunterladen"
+                    },
+                    "polling": {
+                        "label": "Automatisches Update",
+                        "help": "Neue Beiträge automatisch nachladen."
                     }
                 }
             }
