@@ -511,7 +511,6 @@ const actions = {
  * @returns {void}
  */
 function handleConvertResponse (response, status) {
-    console.log("response", response)
     let complexData,
         executeResponse;
 
@@ -524,12 +523,11 @@ function handleConvertResponse (response, status) {
                 console.error("FME-Server statusInfo: " + complexData.serviceResponse.statusInfo.message);
             }
             else if (complexData.Bodenrichtwert) {
-                if (complexData.Bodenrichtwerd.Ergebnis.ErrorOccured !== "No") {
+                if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
                     console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                 }
                 else {
-                    // hier am MONTAG weiterachen!!!!!
-                    store.dispatch("updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
+                    store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                 }
             }
         }
