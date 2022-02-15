@@ -488,8 +488,50 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
-    getSelectedBrwFeatureValue (context, payload) {
-        // console.log("getSelectedBrwFeatureValue", payload);
+    // getSelectedBrwFeatureValue (context, payload) {
+    //     // console.log("getSelectedBrwFeatureValue", payload);
+    // },
+    updateSelectedBrwFeature ({commit}, {converted, brw}) {
+        const feature = state.selectedBrwFeature,
+            isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+
+        if (converted === "convertedBrw") {
+            const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
+
+            feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
+            feature.setProperties({"convertedBrwDM": valueDm});
+        }
+        else if (converted === "zBauweise") {
+            feature.setProperties({
+                "zBauweise": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        else if (converted === "zGeschossfl_zahl") {
+            feature.setProperties({
+                "zGeschossfl_zahl": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        else if (converted === "zGrdstk_flaeche") {
+            feature.setProperties({
+                "zGrdstk_flaeche": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        else if (converted === "zStrassenLage") {
+            feature.setProperties({
+                "zStrassenlage": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        commit("unsetSelectedBrwFeature", {silent: true});
+        commit("setSelectedBrwFeature", feature);
+
     }
 };
 
@@ -500,7 +542,6 @@ const actions = {
  * @returns {void}
  */
 function handleConvertResponse (response, status) {
-    console.log("response", response)
     let complexData,
         executeResponse;
 
@@ -513,12 +554,11 @@ function handleConvertResponse (response, status) {
                 console.error("FME-Server statusInfo: " + complexData.serviceResponse.statusInfo.message);
             }
             else if (complexData.Bodenrichtwert) {
-                if (complexData.Bodenrichtwerd.Ergebnis.ErrorOccured !== "No") {
+                if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
                     console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                 }
                 else {
-                    // hier am MONTAG weiterachen!!!!!
-                    store.dispatch("updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
+                    store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                 }
             }
         }
