@@ -218,11 +218,11 @@ export default {
     }
     @media (min-width: 768px) {
         width: 80vw;
-        height: 50vh;
+        height: 60vh;
     }
     @media (min-width: 1024px) {
         width: 50vw;
-        height: 50vh;
+        height: 60vh;
     }
     .header{
         text-align: center;
