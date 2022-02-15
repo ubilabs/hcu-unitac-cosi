@@ -136,10 +136,14 @@
     "path": "cosi/ResidentialSimulation",
     "type": "tool"
   },
-  "qr": "view.js",
   "Dipas": {
     "path": "cosi/Dipas",
     "type": "tool"
   },
-  "addLayerRemotely": "addLayerRemotely.js"
+  "AreaSelector": {
+    "path": "cosi/AreaSelector",
+    "type": "tool"
+  },
+  "addLayerRemotely": "addLayerRemotely.js",
+  "qr": "view.js"
 }

@@ -40,3 +40,15 @@ export function geomPickerClearDrawPolygon (geomPicker) {
 export function geomPickerSetGeometry (geomPicker, geom) {
     geomPicker.setGeometry(geom);
 }
+
+/**
+ * Returns the currently set geometry feature from the geomPicker
+ * @param {Vue} geomPicker - the geomPicker component
+ * @param {Boolean} clone - clone the feature or return original?
+ * @returns {module:ol/Feature} the current feature or undefined
+ */
+export function geomPickerGetFeature (geomPicker, clone = true) {
+    const feature = geomPicker?.drawLayer?.getSource().getFeatures()[0];
+
+    return clone ? feature?.clone() : feature;
+}

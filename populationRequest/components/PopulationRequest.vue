@@ -127,6 +127,10 @@ export default {
         this.$on("onDrawEnd", function (geoJson) {
             this.makeRequest(geoJson);
         });
+        this.$root.$on("populationRequest", function (geoJson) {
+            this.setActive(true);
+            this.makeRequest(geoJson);
+        }.bind(this));
 
         const service = Radio.request("RestReader", "getServiceById", this.populationReqServiceId);
 

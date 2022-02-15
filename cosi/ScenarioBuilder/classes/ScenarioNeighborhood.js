@@ -21,6 +21,7 @@ export default class ScenarioNeighborhood {
         this.layer = layer;
         this.active = false;
         this.activeDistrictLevels = districtLevels;
+        this.scenario = null;
 
         this.setDefaultProperties();
         this.computeContainingDistricts(districtLevels);
@@ -62,14 +63,15 @@ export default class ScenarioNeighborhood {
         if (!this.active) {
             return;
         }
+        this.active = false;
         this.resetDistrictStats();
         this.layer.getSource().removeFeature(this.feature);
-        this.active = false;
     }
 
     /**
      * Checks which district contains a given feature
      * and calculates how much of the neighborhood lies within each district
+     * @private
      * @param {Object[]} districtLevels - the districtlevels to check
      * @returns {void}
      */
@@ -105,46 +107,68 @@ export default class ScenarioNeighborhood {
                 continue;
             }
 
-            const years = getAvailableYears(item.district.statFeatures),
-                completion = new Date(this.feature.get("year")).getFullYear();
-            let year, originalVal;
-
-            for (const datum of this.feature.get("stats") || []) {
-                /**
-                 * @todo IT'S JUST A PROTOTYPE
-                 */
-                if (datum.valueType === "absolute") {
-                    const districtDatum = item.district.statFeatures.find(d => d.get("kategorie") === datum.category);
-
-                    // if a feature is missing, go on
-                    if (!districtDatum) {
-                        continue;
-                    }
-
-                    for (year of years.filter(y => y >= completion)) {
-                        originalVal = parseFloat(districtDatum.get("jahr_" + year)) || 0;
-                        districtDatum.set("jahr_" + year, originalVal + Math.round(datum.value * item.coverage));
-                    }
-
-                    // store modification date on the statsfeature
-                    districtDatum.set("isModified", completion);
-                }
-                else if (datum.relation) {
-                    /** @todo auto generate relative values */
-                }
-            }
+            this.updateStats(item);
         }
 
         store.dispatch("Tools/DistrictSelector/updateDistricts");
     }
 
     /**
-     * Resets the surrounding districts' statistics to their original
+     * Updates a single stats feature by district
+     * @private
+     * @param {Object} districtItem - the district object from DistrictSelector
+     * @returns {void}
+     */
+    updateStats (districtItem) {
+        const
+            years = getAvailableYears(districtItem.district.statFeatures),
+            completion = new Date(this.feature.get("year")).getFullYear();
+        let year, originalVal;
+
+        for (const datum of this.feature.get("stats") || []) {
+            /**
+             * @todo IT'S JUST A PROTOTYPE
+             */
+            if (datum.valueType === "absolute") {
+                const districtDatum = districtItem.district.statFeatures.find(d => d.get("kategorie") === datum.category);
+
+                // if a feature is missing, go on
+                if (!districtDatum) {
+                    continue;
+                }
+
+                for (year of years.filter(y => y >= completion)) {
+                    originalVal = parseFloat(districtDatum.get("jahr_" + year));
+
+                    if (originalVal) {
+                        districtDatum.set("jahr_" + year, originalVal + Math.round(datum.value * districtItem.coverage));
+                    }
+                }
+
+                // store modification date on the statsfeature
+                districtDatum.set("isModified", completion);
+            }
+            else if (datum.relation) {
+                /** @todo auto generate relative values */
+            }
+        }
+    }
+
+    /**
+     * Resets the surrounding districts' statistics
+     * and keeps only the modificatin by active neighborhoods alive
      * @returns {void}
      */
     resetDistrictStats () {
-        for (const item of this.districts) {
+        const allModifiedDistricts = new Set(this.scenario.neighborhoods.map(neighborhood => neighborhood.districts).flat());
+
+        for (const item of allModifiedDistricts) {
             item.district.statFeatures = item.district.originalStatFeatures.map(feature => feature.clone());
+        }
+        for (const neighborhood of this.scenario.neighborhoods) {
+            if (neighborhood.active) {
+                neighborhood.modifyDistrictStats();
+            }
         }
 
         store.dispatch("Tools/DistrictSelector/updateDistricts");

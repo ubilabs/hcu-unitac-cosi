@@ -35,7 +35,7 @@ export default {
             if (this.style?.getImage()?.constructor === Icon) {
                 const src = this.style.getImage().getSrc();
 
-                if (src.substr(src.length - 4) === ".svg") {
+                if (src.substring(src.length - 4) === ".svg") {
                     return src;
                 }
             }
@@ -118,16 +118,21 @@ export default {
         },
         getTitle (item) {
             let title = "";
-            const originalGeometryType = item.feature.getProperties().originalGeometryType;
+            const originalGeometryType = item.feature.get("originalGeometryType"),
+                wrongGeometryType = ![undefined, "Point"].includes(originalGeometryType),
+                noGeometryGiven = !(item.feature.get("dipasLocated") || item.feature.get("dipasLocated") === undefined);
 
-            if (item.isSimulation || originalGeometryType !== "Point") {
+            if (item.isSimulation || wrongGeometryType || noGeometryGiven) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warning");
             }
             if (item.isSimulation) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warningIsSimulated") + "\n";
             }
-            if (originalGeometryType !== "Point") {
-                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warning") + originalGeometryType;
+            if (wrongGeometryType) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warningWrongGeometry") + originalGeometryType + "\n";
+            }
+            if (noGeometryGiven) {
+                title += this.$t("additional:modules.tools.cosi.featuresList.dipas.warningNoGeometry") + "\n";
             }
 
             return title;
@@ -187,10 +192,16 @@ export default {
             ⇄
         </span>
         <span
-            v-if="item.feature.getProperties().originalGeometryType !== 'Point'"
+            v-if="![undefined, 'Point'].includes(item.feature.get('originalGeometryType'))"
             class="dipas-geometry-overlay"
         >
             *
+        </span>
+        <span
+            v-if="!(item.feature.get('dipasLocated') || item.feature.get('dipasLocated') === undefined)"
+            class="dipas-geometry-overlay"
+        >
+            ?
         </span>
     </div>
 </template>

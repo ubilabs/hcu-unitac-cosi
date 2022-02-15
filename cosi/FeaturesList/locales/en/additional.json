@@ -21,6 +21,7 @@
                     "exportDetails": "include details",
                     "weighting": "Gewichtung",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
+                    "distanceScoreChartYLabel": "distance / m",
                     "abort": "abort",
                     "warning": "WARNING: ",
                     "warningIsModified": "Was modified in CoSI",
@@ -32,7 +33,8 @@
                     "count": "count",
                     "createCharts": "create charts",
                     "dipas": {
-                        "warning": "Initially no point geometry: ",
+                        "warningWrongGeometry": "Initially no point geometry: ",
+                        "warningNoGeometry": "Didn't have a geometry. Was centered in the projects extent.",
                         "createCharts": "create DIPAS charts",
                         "comments": "comments",
                         "commentsPerCategory": " comments per category",

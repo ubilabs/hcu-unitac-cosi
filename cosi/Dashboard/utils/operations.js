@@ -16,6 +16,22 @@ const operationSymbols = {
     };
 
 /**
+ * removes the timestamp values from the object before refilling it
+ * @param {Object} properties - the properties to clean
+ * @param {String} timestampPrefix - the string to look for
+ * @return {Object} the clean object
+ */
+function pruneProps (properties, timestampPrefix) {
+    for (const key in properties) {
+        if (key.includes(timestampPrefix)) {
+            delete properties[key];
+        }
+    }
+
+    return properties;
+}
+
+/**
  * Calculates a new statsFeature for the selected districts and their reference districts
  * @param {"add" | "subtract" | "multiply" | "divide"} operation - the mathmatical operation to execute
  * @returns {void}
@@ -39,9 +55,11 @@ export function calculateStats (operation) {
             group: mappingObject.group
         };
 
+        pruneProps(properties, this.timestampPrefix);
+
         for (const timestamp of timestamps) {
-            val_A = parseFloat(this.fields.A[col.value][this.timestampPrefix + timestamp]);
-            val_B = parseFloat(this.fields.B[col.value][this.timestampPrefix + timestamp]);
+            val_A = parseFloat(this.fields.A[col.value]?.[this.timestampPrefix + timestamp]);
+            val_B = parseFloat(this.fields.B[col.value]?.[this.timestampPrefix + timestamp]);
             res = mathutils[operation](val_A, val_B);
 
             properties[this.timestampPrefix + timestamp] = res;
@@ -72,11 +90,18 @@ export function sumUpSelected () {
     this.addCategoryToMapping(mappingObject);
 
     for (const col of this.districtColumns) {
+        // skip columns for which not all properties are available
+        if (this.selectedItems.find(item => !item[col.value])) {
+            continue;
+        }
+
         properties = {
             ...this.selectedItems[0][col.value],
             kategorie: mappingObject.category,
             group: mappingObject.group
         };
+
+        pruneProps(properties, this.timestampPrefix);
 
         for (const timestamp of timestamps) {
             vals = this.selectedItems.map(item => parseFloat(item[col.value][this.timestampPrefix + timestamp])); // parseFloat(this.fields.A[col.value][this.timestampPrefix + timestamp])
@@ -208,4 +233,15 @@ export function getTotal (item, districtNames, timestamp, timestampPrefix) {
     }
 
     return result;
+}
+
+/**
+ * Removes a stats category from the table
+ * @param {String} category - the category to delete
+ * @param {String} group - the group the category belongs to (to avoid duplicates)
+ * @returns {void}
+ */
+export function deleteStats (category, group) {
+    this.removeCategoryFromMapping({category, group});
+    this.updateDistricts();
 }

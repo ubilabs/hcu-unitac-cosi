@@ -21,12 +21,17 @@ export default {
         return {
             localStorage,
             storePaths: {
+                // The order matters for loading
                 Map: [
                     "layerIds",
                     "center",
                     "zoomLevel"
                 ],
                 Tools: {
+                    ChartGenerator: [
+                        "datasets",
+                        "chartConfigs"
+                    ],
                     CalculateRatio: [
                         "resultHeaders",
                         "results",
@@ -57,6 +62,9 @@ export default {
                     ],
                     Dashboard: [
                         "statsFeatureFilter"
+                    ],
+                    AreaSelector: [
+                        "geometry"
                     ]
                 }
             },
@@ -80,8 +88,7 @@ export default {
             autoSaveDialog: false,
             confirmDialog: false,
             settingsChanged: false,
-            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon},
-            warningDialog: false
+            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon}
         };
     },
     computed: {
@@ -99,10 +106,7 @@ export default {
          * @returns {void}
          */
         active (state) {
-            if (state) {
-                this.warningDialog = true;
-            }
-            else {
+            if (!state) {
                 const model = getComponent(this.id);
 
                 if (model) {
@@ -390,6 +394,25 @@ export default {
                                 </v-btn>
                             </v-col>
                         </v-row>
+                        <v-row
+                            class="flex"
+                            dense
+                        >
+                            <v-col
+                                cols="6"
+                                class="flex"
+                            >
+                                <v-checkbox
+                                    id="auto-save"
+                                    v-model="autoSave"
+                                    class="form-check-input"
+                                    dense
+                                    hide-details
+                                    :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"
+                                    :title="$t('additional:modules.tools.cosi.saveSession.autoSaveCheck')"
+                                />
+                            </v-col>
+                        </v-row>
                         <v-divider />
                         <v-card-title secondary-title>
                             Lokales Speichern
@@ -458,7 +481,7 @@ export default {
                             class="flex"
                             dense
                         >
-                            <v-col
+                            <!-- <v-col
                                 cols="6"
                                 class="flex"
                             >
@@ -471,7 +494,10 @@ export default {
                                     :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"
                                     :title="$t('additional:modules.tools.cosi.saveSession.autoSaveCheck')"
                                 />
-                            </v-col>
+                            </v-col> -->
+                            <small>
+                                Bitte beachten Sie, dass nicht alle Daten und Aktionen gespeichert werden können. Grundsätzlich bezieht sich das Speichern auf die Gebiets- und Themenauswahl, Analyse- und Simulationsergebnisse. Welche Daten gespeichert werden können entnehmen Sie bitte der Anleitung.
+                            </small>
                         </v-row>
                     </v-container>
                 </v-app>
@@ -579,22 +605,6 @@ export default {
                         v-bind="attrs"
                         text
                         @click="confirmDialog = false"
-                    >
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                </template>
-            </v-snackbar>
-            <v-snackbar
-                v-model="warningDialog"
-                :timeout="4000"
-                color="secondary"
-            >
-                Bitte beachten Sie, dass sich das Tool noch in Entwicklung befindet und noch nicht alle Arbeitsstände sauber abgelegt werden. Nur zum Testen geeignet!
-                <template #action="{ attrs }">
-                    <v-btn
-                        v-bind="attrs"
-                        text
-                        @click="warningDialog = false"
                     >
                         <v-icon>mdi-close</v-icon>
                     </v-btn>

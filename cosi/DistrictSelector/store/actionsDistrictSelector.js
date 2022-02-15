@@ -56,7 +56,7 @@ const actions = {
                         // add statFeatures to district
                         districts[i].statFeatures.push(...features);
                         // store original data on the district as a copy
-                        districts[i].originalStatFeatures.push(...olFeatures.map(f => f.clone()));
+                        districts[i].originalStatFeatures.push(...features.map(f => f.clone()));
                     }
                     else {
                         dispatch("Alerting/addSingleAlert", {

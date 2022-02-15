@@ -141,7 +141,7 @@ export default {
 
         if (newFeatures.length === 0) {
             if (this.mode !== "region") {
-                setBBoxToGeom(this.boundingGeometry);
+                setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
             }
             return;
         }
@@ -166,7 +166,6 @@ export default {
 
         this.setCoordinate(coordinates);
         this.setClickCoordinate(evt.coordinate);
-        // this.placingPointMarker(evt.coordinate);
         this.setSetBySearch(false);
     },
 

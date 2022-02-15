@@ -12,19 +12,19 @@
  */
 const state = {
     active: false,
-    id: "Dipas",
-    name: "DIPAS",
+    id: "areaSelector",
+    name: "Manuelle Flächenauswahl für Fachdaten",
     glyphicon: "glyphicon-screenshot",
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: false,
-    // DIPAS properties
-    pollingInterval: 120000,
-    baseUrl: "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
+    drawingLayer: null,
+    geometry: null,
+    feature: null,
     readmeUrl: {
-        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.en.md",
-        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.de.md"
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.en.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.de.md"
     }
 };
 

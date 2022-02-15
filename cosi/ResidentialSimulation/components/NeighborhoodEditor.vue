@@ -22,7 +22,8 @@ export default {
         selectedNeighborhood: {
             scenarioFeature: null,
             editFeature: null
-        }
+        },
+        confirmDialog: false
     }),
     computed: {
         ...mapGetters("Map", {map: "ol2DMap"}),
@@ -38,9 +39,10 @@ export default {
         },
         baseStats () {
             return this.selectedNeighborhood.editFeature?.get("baseStats");
+        },
+        confirmText () {
+            return this.$t("additional:modules.tools.cosi.neighborhoodEditor.confirmDelete");
         }
-    },
-    watch: {
     },
     mounted () {
         this.map.addEventListener("click", this.openEditDialog.bind(this));
@@ -104,6 +106,32 @@ export default {
 <template>
     <v-app>
         <v-snackbar
+            v-model="confirmDialog"
+            :timeout="-1"
+            color="white"
+            light
+            centered
+        >
+            {{ confirmText }}
+
+            <template #action="{ attrs }">
+                <v-btn
+                    v-bind="attrs"
+                    text
+                    @click="deleteNeighborhood"
+                >
+                    {{ $t('common:button.delete') }}
+                </v-btn>
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    @click="confirmDialog = false"
+                >
+                    {{ $t('common:button.cancel') }}
+                </v-btn>
+            </template>
+        </v-snackbar>
+        <v-snackbar
             v-model="editDialog"
             :timeout="-1"
             color="grey"
@@ -114,7 +142,7 @@ export default {
                 <v-btn
                     v-bind="attrs"
                     text
-                    @click="deleteNeighborhood"
+                    @click="confirmDialog = true"
                 >
                     {{ $t("common:button.delete") }}
                 </v-btn>
@@ -147,7 +175,7 @@ export default {
                         {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }} : {{ neighborhoodName }}
                     </v-card-title>
                     <v-card-subtitle>
-                        {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
+                        {{ $t("additional:modules.tools.cosi.residentialSimulation.referencePicker.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
                     </v-card-subtitle>
                     <v-card-text>
                         <v-row dense>

@@ -9,7 +9,7 @@ import {getTimestamps} from "../../utils/timeline";
 import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
-import {calculateStats, calculateCorrelation, getTotal, getAverage, sumUpSelected, divideSelected} from "../utils/operations";
+import {calculateStats, calculateCorrelation, getTotal, getAverage, sumUpSelected, divideSelected, deleteStats} from "../utils/operations";
 import {generateChartForDistricts, generateChartForCorrelation, generateChartsForItems} from "../utils/chart";
 import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/export";
 import composeFilename from "../../utils/composeFilename";
@@ -32,10 +32,6 @@ export default {
             dashboardOpen: false,
             rows: [],
             baseColumns: [
-                // {
-                //     value: "group",
-                //     text: this.$t("additional:modules.tools.cosi.dashboard.groupCol")
-                // },
                 {
                     value: "category",
                     text: this.$t("additional:modules.tools.cosi.dashboard.categoryCol"),
@@ -435,6 +431,7 @@ export default {
         groupMapping,
         sumUpSelected,
         divideSelected,
+        deleteStats,
 
         /**
          * @param {String} value -
@@ -607,6 +604,7 @@ export default {
                                         @visualizationChanged="onVisualizationChanged"
                                         @renderCharts="renderCharts"
                                         @renderGroupedChart="renderGroupedCharts"
+                                        @delete="deleteStats"
                                     />
                                 </template>
 

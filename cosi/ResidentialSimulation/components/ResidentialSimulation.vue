@@ -5,13 +5,13 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersResidentialSimulation";
 import mutations from "../store/mutationsResidentialSimulation";
 import ScenarioManager from "../../ScenarioBuilder/components/ScenarioManager.vue";
-import GeometryPicker from "../../ScenarioBuilder/components/GeometryPicker.vue";
-import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../ScenarioBuilder/utils/geomPickerHandler";
+import GeometryPicker from "../../components/GeometryPicker.vue";
+import {geomPickerUnlisten, geomPickerClearDrawPolygon, geomPickerResetLocation, geomPickerSetGeometry} from "../../utils/geomPickerHandler";
 import ReferenceDistrictPicker from "./ReferenceDistrictPicker.vue";
 import StatisticsTable from "./StatisticsTable.vue";
 import NeighborhoodEditor from "./NeighborhoodEditor.vue";
 import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
-import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize} from "../utils/updateNeighborhoodData";
+import {updateArea, updateUnits, updateResidents, updateDensity, updateLivingSpace, updateGfz, updateBgf, updateHousholdSize, updateLivingSpaceRatio} from "../utils/updateNeighborhoodData";
 import residentialLayerStyle from "../utils/residentialLayerStyle";
 import Feature from "ol/Feature";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
@@ -46,8 +46,9 @@ export default {
                 gfz: 1.0,
                 populationDensity: 5000,
                 livingSpace: 30,
+                livingSpaceRatio: 0.8,
                 stats: null,
-                year: new Date().toISOString().substr(0, 7)
+                year: new Date().toISOString().substring(0, 7)
             },
             fallbacks: {
                 residents: 0,
@@ -55,8 +56,11 @@ export default {
                 housingUnits: 0,
                 gfz: 1.0,
                 populationDensity: 5000,
-                livingSpace: 30
+                livingSpace: 30,
+                livingSpaceRatio: 0.8
             },
+            lowerBounds: {householdSize: 1.0, populationDensity: 0, gfz: 0, livingSpace: 10, livingSpaceRatio: 0},
+            upperBounds: {householdSize: 6.0, populationDensity: 50000, gfz: 4.0, livingSpace: 100, livingSpaceRatio: 1.0},
             baseStats: {
                 reference: {},
                 absolute: [],
@@ -93,7 +97,9 @@ export default {
                     }
                 }
             },
-            isCreated: false
+            isCreated: false,
+            invalidValues: [],
+            errorMsg: false
         };
     },
     computed: {
@@ -143,9 +149,6 @@ export default {
         async active (newActive) {
             if (newActive) {
                 if (this.geometry) {
-                    // wait for 2 ticks for the drawing layer to initialize
-                    await this.$nextTick();
-                    this.$refs["geometry-picker"].geometry.value = this.geometry;
                     await this.$nextTick();
                     geomPickerSetGeometry(this.$refs["geometry-picker"], this.geometry);
                 }
@@ -189,6 +192,12 @@ export default {
             deep: true,
             handler () {
                 this.isCreated = false;
+            }
+        },
+
+        invalidValues (invValues) {
+            if (invValues.length > 0) {
+                this.errorMsg = true;
             }
         }
     },
@@ -252,32 +261,35 @@ export default {
             updateArea(newArea, this.neighborhood, this.fallbacks);
         },
         updateUnits (newUnits) {
-            updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateResidents (newResidents) {
-            updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateResidents(newResidents, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
         },
         updateDensity (newDensity) {
-            updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-density"]);
         },
         updateLivingSpace (newLivingSpace) {
-            updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-livingspace"]);
         },
         updateGfz (newGfz) {
-            updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-gfz"]);
         },
         updateBgf (newBgf) {
-            updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-bgf"]);
         },
         updateHousholdSize (newHouseholdSize) {
-            updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea);
+            this.invalidValues = updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
             this.unfocusInput(new Event("endaction"), this.$refs["slider-householdsize"]);
+        },
+        updateLivingSpaceRatio (newLivingSpaceRatio) {
+            this.invalidValues = updateLivingSpaceRatio(newLivingSpaceRatio, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -355,7 +367,7 @@ export default {
             this.neighborhood.gfz = this.defaults.gfz;
             this.neighborhood.populationDensity = this.defaults.populationDensity;
             this.neighborhood.livingSpace = this.defaults.livingSpace;
-            this.neighborhood.year = new Date().toISOString().substr(0, 7);
+            this.neighborhood.year = new Date().toISOString().substring(0, 7);
 
             // reset fallback data to defaults
             this.fallbacks.avgHouseholdSize = this.defaults.avgHouseholdSize;
@@ -384,7 +396,7 @@ export default {
 
         unfocusInput (evt, ref) {
             // weird hack to force vuetify to unfocus the slider
-            if (ref.isActive) {
+            if (ref?.isActive) {
                 ref.isActive = false;
                 ref.onSliderMouseUp(evt);
 
@@ -430,6 +442,7 @@ export default {
                                 :timeline-prefix="timelinePrefix"
                                 :has-reference="hasReference"
                                 :selected-name="baseStats.reference.districtName"
+                                :base-population-prop="basePopulationProp"
                                 @referencePickerActive="onReferencePickerActive"
                                 @pickReference="onPickReference"
                                 @resetReference="resetBaseStats"
@@ -478,7 +491,7 @@ export default {
                                         v-model="neighborhood.residents"
                                         label="Einwohner gesamt"
                                         suffix="EW"
-                                        @change="updateResidents"
+                                        @input="updateResidents"
                                     />
                                 </v-col>
                             </v-row>
@@ -499,7 +512,7 @@ export default {
                                         min="0"
                                         :max="(polygonArea / 5) || 1"
                                         :disabled="!geometry"
-                                        @change="updateUnits"
+                                        @input="updateUnits"
                                     >
                                         <template #append>
                                             <v-text-field
@@ -508,30 +521,30 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @change="updateUnits"
+                                                @input="updateUnits"
                                             />
                                         </template>
                                     </v-slider>
                                 </v-col>
                             </v-row>
                             <v-row
-                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpGfa')"
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpBgf')"
                                 dense
                             >
                                 <v-col cols="3">
                                     <v-subheader>
-                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.gfa') }}
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.bgf') }}
                                     </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
                                         ref="slider-bgf"
                                         v-model="neighborhood.bgf"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.gfa')"
+                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.bgf')"
                                         min="0"
                                         :max="(polygonArea * 4) || 1"
                                         :disabled="!geometry"
-                                        @change="updateBgf"
+                                        @input="updateBgf"
                                     >
                                         <template #append>
                                             <v-text-field
@@ -540,7 +553,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @change="updateBgf"
+                                                @input="updateBgf"
                                             />
                                         </template>
                                     </v-slider>
@@ -564,7 +577,7 @@ export default {
                                         max="5"
                                         step="0.2"
                                         :disabled="!geometry"
-                                        @change="updateHousholdSize"
+                                        @input="updateHousholdSize"
                                     >
                                         <template #append>
                                             <v-text-field
@@ -573,7 +586,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @change="updateHousholdSize"
+                                                @input="updateHousholdSize"
                                             />
                                         </template>
                                     </v-slider>
@@ -592,7 +605,7 @@ export default {
                                         max="4"
                                         step="0.1"
                                         :disabled="!geometry"
-                                        @change="updateGfz"
+                                        @input="updateGfz"
                                     >
                                         <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -602,7 +615,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @change="updateGfz"
+                                                @input="updateGfz"
                                             />
                                         </template>
                                     </v-slider>
@@ -620,7 +633,7 @@ export default {
                                         min="0"
                                         max="50000"
                                         :disabled="!geometry"
-                                        @change="updateDensity"
+                                        @input="updateDensity"
                                     >
                                         <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -630,15 +643,20 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @change="updateDensity"
+                                                @input="updateDensity"
                                             />
                                         </template>
                                     </v-slider>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpace')"
+                                dense
+                            >
                                 <v-col cols="3">
-                                    <v-subheader>Wohnfläche pro Person</v-subheader>
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpace') }}
+                                    </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-slider
@@ -648,7 +666,7 @@ export default {
                                         min="0"
                                         max="100"
                                         :disabled="!geometry"
-                                        @change="updateLivingSpace"
+                                        @input="updateLivingSpace"
                                     >
                                         <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -658,10 +676,31 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @change="updateLivingSpace"
+                                                @input="updateLivingSpace"
                                             />
                                         </template>
                                     </v-slider>
+                                </v-col>
+                            </v-row>
+                            <v-row
+                                :title="!geometry ? $t('additional:modules.tools.cosi.residentialSimulation.noGeomWarning') : $t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpaceRatio')"
+                                dense
+                            >
+                                <v-col cols="3">
+                                    <v-subheader>
+                                        {{ $t('additional:modules.tools.cosi.residentialSimulation.livingSpaceRatio') }}
+                                    </v-subheader>
+                                </v-col>
+                                <v-col cols="3">
+                                    <v-text-field
+                                        v-model="neighborhood.livingSpaceRatio"
+                                        class="mt-0 pt-0 slider-val"
+                                        hide-details
+                                        single-line
+                                        type="number"
+                                        :disabled="!geometry"
+                                        @input="updateLivingSpaceRatio"
+                                    />
                                 </v-col>
                             </v-row>
                             <v-divider />
@@ -775,7 +814,7 @@ export default {
                                     {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }} : {{ neighborhood.name }}
                                 </v-card-title>
                                 <v-subheader>
-                                    {{ $t("additional:modules.tools.cosi.statisticsTable.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
+                                    {{ $t("additional:modules.tools.cosi.statisticsTable.referencePicker.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
                                 </v-subheader>
                                 <div class="stats-table-modal">
                                     <StatisticsTable
@@ -786,6 +825,32 @@ export default {
                             </v-container>
                         </Modal>
                     </v-main>
+                    <v-snackbar
+                        v-model="errorMsg"
+                        :timeout="5000"
+                        color="error"
+                        multi-line
+                    >
+                        {{ $t('additional:modules.tools.cosi.residentialSimulation.valueError') }}<br>
+                        <div
+                            v-for="el in invalidValues"
+                            :key="el.id"
+                        >
+                            <small>
+                                <span><i>{{ $t(`additional:modules.tools.cosi.residentialSimulation.${el.id}`) }}</i>: {{ el.val.toLocaleString(currentLocale) }} </span>
+                                <span>- {{ $t('additional:modules.tools.cosi.residentialSimulation.bounds') }}: {{ lowerBounds[el.id] }} - {{ upperBounds[el.id] }}</span>
+                            </small>
+                        </div>
+                        <template #action="{ attrs }">
+                            <v-btn
+                                text
+                                v-bind="attrs"
+                                @click="errorMsg = false"
+                            >
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </template>
+                    </v-snackbar>
                 </v-app>
             </template>
         </Tool>
@@ -799,6 +864,9 @@ export default {
 <style lang="scss">
     .slider-val {
         width: 60px;
+        input {
+            text-align: right;
+        }
     }
     .stats-table-modal {
         height: 65vh;
