@@ -60,6 +60,10 @@
     "path":"gfiThemes/solaratlas",
     "type": "gfiTheme"
   },
+  "sturmflut": {
+    "path":"gfiThemes/sturmflut",
+    "type": "gfiTheme"
+  },
   "trafficCount": {
     "path":"gfiThemes/trafficCount",
     "type": "gfiTheme"
