@@ -784,12 +784,6 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
-                    <v-switch
-                        v-model="pollingEnabled"
-                        small
-                        :title="$t('additional:modules.tools.cosi.dipas.polling.help')"
-                        :label="$t('additional:modules.tools.cosi.dipas.polling.label')"
-                    />
                     <v-divider />
                     <div
                         id="actions"
