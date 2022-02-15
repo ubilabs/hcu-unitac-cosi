@@ -101,6 +101,7 @@ const actions = {
         commit("setSelectedLayer", layerModel);
     },
     // soll das in mutations?
+    // inka: das soll in die methods
     toggleInfoText () {
         if (state.infoText.length === 0) {
             state.infoText = "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.";
@@ -112,7 +113,7 @@ const actions = {
     // was passiert hier?
     // sends a get feature info request to the currently selected layer
     clickCallback ({dispatch}, {event, processFromParametricUrl, center}) {
-
+// inka: besser andersrum abfragen: if (state.active){...}
         if (!state.active) {
             return;
         }
@@ -301,6 +302,7 @@ const actions = {
             WPS.wpsRequest(state.wpsId, state.fmwProcess, data, handleConvertResponse);
         });
     },
+    // inka_ das würde ich in z.B. api/ oder utils/ auslagern, funktion könnte heissen convert(brw). Dort ohne dispatch, einfach die Werte auslesen und das Rückgabe-Objekt daraus zusammenbauen
     getConvertObject ({dispatch}, {brw}) {
         let requestObj = {},
             richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", ".");
@@ -440,8 +442,9 @@ const actions = {
     extendFeatureAttributes ({dispatch, commit}, {feature, stichtag}) {
 
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+        // inka: schichtwert holen in eigene Funktion auslagern getSW(){...} - kann auch in api oder utils
         let sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
-
+        // inka: als 1. if(sw) {...} danach braucht das dann nicht mehr abgefragt werden
         if (sw && typeof sw === "string") {
             sw = JSON.parse(sw);
         }
@@ -558,6 +561,7 @@ function handleConvertResponse (response, status) {
                     console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                 }
                 else {
+                    // hier am MONTAG weiterachen!!!!!
                     store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                 }
             }

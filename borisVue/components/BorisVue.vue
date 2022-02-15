@@ -3,12 +3,14 @@ import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersBorisVue";
 import mutations from "../store/mutationsBorisVue";
+import Detail from "./Detail.vue";
 
 
 export default {
     name: "BorisVue",
     components: {
-        Tool
+        Tool, 
+        Detail
     },
     computed: {
         ...mapGetters("Tools/BorisVue", Object.keys(getters)),
@@ -234,6 +236,11 @@ export default {
                     <div v-if="buttonValue === 'info'">
                         <h4>Detailinformationen</h4>
                         <dl>
+                        <Detail 
+                            :feature="selectedBrwFeature"
+                            :keys="['entwicklungszustand']"
+                            :label="'Entwicklungszustand'"
+                            />
                             <div
                                 v-if="selectedBrwFeature.get('entwicklungszustand')"
                             >

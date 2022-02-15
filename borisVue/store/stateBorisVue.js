@@ -26,6 +26,7 @@ const state = {
     processFromParametricUrl: false,
     paramUrlParams: {},
     buttonValue: "info",
+    // inka: man bennent Variablen nie nach dem Typ, hier Array. Besser bauweisen ohne Array
     bauweiseArray: ["eh Einzelhaus (freistehend)", "dh Doppelhaushälfte", " dd Doppelhaus (ganzes Doppelhaus)", "rm Reihenmittelhaus", "rm Reihenmittelhäuser", "re Reihenendhaus", "g geschlossene Bauweise", "a abweichende Bauweise (Gartenhofhaus)"],
     selectedBauweise: "",
     selectedStrassenlage: "",

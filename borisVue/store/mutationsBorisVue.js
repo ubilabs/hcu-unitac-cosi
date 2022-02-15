@@ -11,6 +11,7 @@ const mutations = {
     ...generateSimpleMutations(stateBoris),
 
     // NOTE overwrite (or create additional) mutations here if you need special behavior in them
+    //inka: diese Funktionen sind überflüssig, sie werden schon generiert
     setAreaLayerSelected (state, value) {
         // console.log("setAreaLayerSelected", value)
         state.areaLayerSelected = value;
