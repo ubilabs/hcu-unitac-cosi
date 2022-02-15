@@ -90,6 +90,11 @@ export function sumUpSelected () {
     this.addCategoryToMapping(mappingObject);
 
     for (const col of this.districtColumns) {
+        // skip columns for which not all properties are available
+        if (this.selectedItems.find(item => !item[col.value])) {
+            continue;
+        }
+
         properties = {
             ...this.selectedItems[0][col.value],
             kategorie: mappingObject.category,

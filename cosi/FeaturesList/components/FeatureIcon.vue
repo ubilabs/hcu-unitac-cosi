@@ -118,9 +118,9 @@ export default {
         },
         getTitle (item) {
             let title = "";
-            const originalGeometryType = item.feature.getProperties().originalGeometryType,
+            const originalGeometryType = item.feature.get("originalGeometryType"),
                 wrongGeometryType = ![undefined, "Point"].includes(originalGeometryType),
-                noGeometryGiven = item.feature.getProperties().noGeometryGiven;
+                noGeometryGiven = !(item.feature.get("dipasLocated") || item.feature.get("dipasLocated") === undefined);
 
             if (item.isSimulation || wrongGeometryType || noGeometryGiven) {
                 title += this.$t("additional:modules.tools.cosi.featuresList.warning");
@@ -192,10 +192,16 @@ export default {
             ⇄
         </span>
         <span
-            v-if="![undefined, 'Point'].includes(item.feature.getProperties().originalGeometryType) || item.feature.getProperties().noGeometryGiven"
+            v-if="![undefined, 'Point'].includes(item.feature.get('originalGeometryType'))"
             class="dipas-geometry-overlay"
         >
             *
+        </span>
+        <span
+            v-if="!(item.feature.get('dipasLocated') || item.feature.get('dipasLocated') === undefined)"
+            class="dipas-geometry-overlay"
+        >
+            ?
         </span>
     </div>
 </template>

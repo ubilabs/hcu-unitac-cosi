@@ -257,9 +257,7 @@ export default {
                 const contributions = await this.getContributionFeatures(id);
 
                 for (const feature of contributions) {
-                    const
-                        properties = feature.getProperties(),
-                        geometryType = feature.getGeometry().getType();
+                    const geometryType = feature.getGeometry().getType();
 
                     if (geometryType !== "Point") {
                         const extent = feature.getGeometry().getExtent(),
@@ -267,12 +265,12 @@ export default {
 
                         feature.setGeometry(new Point(center));
                     }
-                    feature.set("originalGeometryType", geometryType);
-
-                    for (const property of ["votingPro", "votingContra", "commentsNumber"]) {
-                        properties[property] = String(properties[property]);
-                    }
-                    feature.setProperties(properties);
+                    feature.setProperties({
+                        originalGeometryType: geometryType,
+                        votingPro: String(feature.get("votingPro")),
+                        votingContra: String(feature.get("votingContra")),
+                        commentsNumber: String(feature.get("commentsNumber"))
+                    });
                     feature.setId(feature.get("id"));
                 }
                 projectContributions.features = contributions;

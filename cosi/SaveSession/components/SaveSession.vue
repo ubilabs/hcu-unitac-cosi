@@ -21,6 +21,7 @@ export default {
         return {
             localStorage,
             storePaths: {
+                // The order matters for loading
                 Map: [
                     "layerIds",
                     "center",
@@ -61,6 +62,9 @@ export default {
                     ],
                     Dashboard: [
                         "statsFeatureFilter"
+                    ],
+                    AreaSelector: [
+                        "geometry"
                     ]
                 }
             },

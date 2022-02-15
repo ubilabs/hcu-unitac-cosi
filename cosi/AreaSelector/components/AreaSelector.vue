@@ -10,6 +10,7 @@ import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import GeometryPicker from "../../components/GeometryPicker.vue";
 import {Stroke, Style} from "ol/style.js";
 import {featureToGeoJson} from "../../utils/geomUtils";
+import Feature from "ol/Feature";
 
 export default {
     name: "AreaSelector",
@@ -60,7 +61,9 @@ export default {
         },
 
         geometry (geom) {
-            this.setFeature(geomPickerGetFeature(this.$refs["geometry-picker"]));
+            const feature = geomPickerGetFeature(this.$refs["geometry-picker"]) || new Feature({geometry: geom});
+
+            this.setFeature(feature);
             this.drawingLayer.getSource().clear();
             if (this.feature) {
                 this.drawingLayer.getSource().addFeature(this.feature);

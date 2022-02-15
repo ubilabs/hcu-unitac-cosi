@@ -48,7 +48,7 @@ export function geomPickerSetGeometry (geomPicker, geom) {
  * @returns {module:ol/Feature} the current feature or undefined
  */
 export function geomPickerGetFeature (geomPicker, clone = true) {
-    const feature = geomPicker.drawLayer.getSource().getFeatures()[0];
+    const feature = geomPicker?.drawLayer?.getSource().getFeatures()[0];
 
     return clone ? feature?.clone() : feature;
 }

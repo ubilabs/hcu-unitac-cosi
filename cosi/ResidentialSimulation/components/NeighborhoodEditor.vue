@@ -23,12 +23,7 @@ export default {
             scenarioFeature: null,
             editFeature: null
         },
-        confirmDialog: false,
-        confirmText: "",
-        confirmAction: {
-            function: () => null,
-            text: ""
-        }
+        confirmDialog: false
     }),
     computed: {
         ...mapGetters("Map", {map: "ol2DMap"}),
@@ -44,9 +39,10 @@ export default {
         },
         baseStats () {
             return this.selectedNeighborhood.editFeature?.get("baseStats");
+        },
+        confirmText () {
+            return this.$t("additional:modules.tools.cosi.neighborhoodEditor.confirmDelete");
         }
-    },
-    watch: {
     },
     mounted () {
         this.map.addEventListener("click", this.openEditDialog.bind(this));
@@ -102,20 +98,6 @@ export default {
         visualizeDemographics () {
             this.$emit("visualizeDemographics", this.baseStats);
             this.editModal = false;
-        },
-
-        onDelete () {
-            this.confirmDialog = true;
-            this.confirmText = this.$t("additional:modules.tools.cosi.featureEditor.confirmDelete");
-            this.confirmAction.function = this.deleteSelectedFeature;
-            this.confirmAction.text = this.$t("common:button.delete");
-        },
-
-        onReset () {
-            this.confirmDialog = true;
-            this.confirmText = this.$t("additional:modules.tools.cosi.featureEditor.confirmReset");
-            this.confirmAction.function = this.resetSelectedFeature;
-            this.confirmAction.text = this.$t("common:button.reset");
         }
     }
 };
@@ -136,9 +118,9 @@ export default {
                 <v-btn
                     v-bind="attrs"
                     text
-                    @click="confirmAction.function"
+                    @click="deleteNeighborhood"
                 >
-                    {{ confirmAction.text }}
+                    {{ $t('common:button.delete') }}
                 </v-btn>
                 <v-btn
                     text
@@ -160,7 +142,7 @@ export default {
                 <v-btn
                     v-bind="attrs"
                     text
-                    @click="deleteNeighborhood"
+                    @click="confirmDialog = true"
                 >
                     {{ $t("common:button.delete") }}
                 </v-btn>
@@ -193,7 +175,7 @@ export default {
                         {{ $t("additional:modules.tools.cosi.statisticsTable.editStatsTable") }} : {{ neighborhoodName }}
                     </v-card-title>
                     <v-card-subtitle>
-                        {{ $t("additional:modules.tools.cosi.residentialSimulation.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
+                        {{ $t("additional:modules.tools.cosi.residentialSimulation.referencePicker.reference") }} ({{ baseStats.reference.districtLevel }}): {{ baseStats.reference.districtName }}
                     </v-card-subtitle>
                     <v-card-text>
                         <v-row dense>

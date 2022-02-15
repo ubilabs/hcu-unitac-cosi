@@ -1,5 +1,6 @@
 import {GeoJSON} from "ol/format";
 import Feature from "ol/Feature";
+import {Point, Polygon, MultiPoint, MultiPolygon} from "ol/geom";
 
 export default {
     serializeState () {
@@ -42,6 +43,10 @@ export default {
                 res = parser.writeFeatureObject(val);
 
                 res.properties.isOlFeature = true;
+            }
+            else if ([Point, MultiPoint, Polygon, MultiPolygon].includes(val?.constructor)) {
+                res = parser.writeGeometryObject(val);
+                res.isOlGeometry = val.getType();
             }
             else {
                 res = val;
@@ -155,9 +160,7 @@ export default {
     },
 
     serializeFilters () {
-        const model = Radio.request("ModelList", "getModelByAttributes", {id: "filter"});
-
-        console.log(model);
+        // const model = Radio.request("ModelList", "getModelByAttributes", {id: "filter"});
     },
 
     serializeGeometry (geom) {

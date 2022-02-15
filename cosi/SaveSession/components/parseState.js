@@ -84,6 +84,9 @@ export default {
             if (val?.constructor === Object && val?.properties?.isOlFeature) {
                 return parser.readFeature(val);
             }
+            if (val?.constructor === Object && val?.isOlGeometry) {
+                return parser.readGeometry(val);
+            }
             return val;
         }
 
