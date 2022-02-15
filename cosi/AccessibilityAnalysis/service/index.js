@@ -2,7 +2,6 @@ import Worker from "worker-loader!./isochronesWorker.js";
 import {readFeatures} from "../components/util";
 import axios from "axios";
 import {WFS} from "ol/format.js";
-import appStore from "../../../../src/app-store";
 
 let worker,
     // eslint-disable-next-line func-style, require-jsdoc
@@ -27,14 +26,14 @@ export function setWorker (newWorker) {
 }
 
 // eslint-disable-next-line require-jsdoc
-async function getFeatures (url, featureType, version = "1.1.0") {
+async function getFeatures (url, featureType, projectionCode, version = "1.1.0") {
     const ret = await axios.get(url, {
             params: {
                 service: "WFS",
                 request: "GetFeature",
                 version: version,
                 typeName: featureType,
-                srsName: appStore.getters["Map/projectionCode"]
+                srsName: projectionCode
             }
         }),
         json = ret.data;
@@ -51,10 +50,11 @@ async function getFeatures (url, featureType, version = "1.1.0") {
  * @export
  * @param {*} url url
  * @param {*} featureType featureType
+ * @param {*} projectionCode projectionCode
  * @return {void}
  */
-export async function loadFilterPoly (url, featureType) {
-    const ret = await getFeatures(url, featureType),
+export async function loadFilterPoly (url, featureType, projectionCode) {
+    const ret = await getFeatures(url, featureType, projectionCode),
         wfsReader = new WFS({}),
         feature = wfsReader.readFeatures(ret)[0];
 
@@ -125,7 +125,7 @@ async function init (params) {
 
 const id = "AccessibilityAnalysisService",
     actions = {
-        async getIsochrones ({getters, commit}, params) {
+        async getIsochrones ({rootGetters, getters, commit}, params) {
             let ret;
 
             if (worker === undefined) {
@@ -138,17 +138,17 @@ const id = "AccessibilityAnalysisService",
                     await init({coords: [getters.filterPoly]});
                 }
                 else if (getters.filterUrl && getters.filterFeatureType) {
-                    const coords = await loadFilterPoly(getters.filterUrl, getters.filterFeatureType);
+                    const coords = await loadFilterPoly(getters.filterUrl, getters.filterFeatureType, rootGetters["Map/projectionCode"]);
 
                     await init({coords});
                 }
             }
 
             try {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(getters.serviceId), projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(getters.serviceId), projectionCode: rootGetters["Map/projectionCode"]}, (p) => commit("setProgress", p));
             }
             catch {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(), projectionCode: appStore.getters["Map/projectionCode"]}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(), projectionCode: rootGetters["Map/projectionCode"]}, (p) => commit("setProgress", p));
             }
             finally {
                 commit("setProgress", 0);
