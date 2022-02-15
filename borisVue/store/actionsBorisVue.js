@@ -430,11 +430,7 @@ const actions = {
                 "convertedBrwDM": ""
             });
         }
-<<<<<<< HEAD
         commit("setSelectedBrwFeature", {silent: true});
-=======
-        commit("unsetSelectedBrwFeature", {silent: true});
->>>>>>> d13c80a9 (feature converting proceeded, 'updateSelectedbrwFeature' action completed)
         commit("setSelectedBrwFeature", feature);
 
     }
@@ -463,6 +459,7 @@ function handleConvertResponse (response, status) {
                     console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                 }
                 else {
+                    // hier am MONTAG weiterachen!!!!!
                     store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                 }
             }
