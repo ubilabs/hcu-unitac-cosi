@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapMutations, mapActions} from "vuex";
