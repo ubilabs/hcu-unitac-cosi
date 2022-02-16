@@ -417,6 +417,7 @@ const actions = {
                 requestObj = response;
             });
         }
+        console.log("return:", requestObj);
         return requestObj;
 
     },
@@ -491,7 +492,7 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
-    // getSelectedBrwFeatureValue (context, payload) {
+   // getSelectedBrwFeatureValue (context, payload) {
     //     // console.log("getSelectedBrwFeatureValue", payload);
     // },
     updateSelectedBrwFeature ({commit}, {converted, brw}) {
