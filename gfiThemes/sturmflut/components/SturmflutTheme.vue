@@ -34,13 +34,13 @@ export default {
                 <td v-if="attributes.bild_link">
                     <a
                         id="sturmflut-theme-table-image"
-                        :href="'https://www.daten-hamburg.de/umwelt_klima/sturmflut/bilder/' + attributes.bild_link"
+                        :href="attributes.bild_link"
                         target="_blank"
                     >
                         <img
                             :id="attributes.bildformat === 'quer' ? 'sturmflut-theme-table-image-landscape' : 'sturmflut-theme-table-image-portrait'"
                             :alt="$t('modules.tools.gfi.themes.default.imgAlt')"
-                            :src="'https://www.daten-hamburg.de/umwelt_klima/sturmflut/bilder/' + attributes.bild_link"
+                            :src="attributes.bild_link"
                         >
                     </a>
                     <p
@@ -62,7 +62,7 @@ export default {
                     <a
                         v-if="attributes.audio_link"
                         id="sturmflut-theme-table-audio"
-                        :href="'https://www.daten-hamburg.de/umwelt_klima/sturmflut/audio/' + attributes.audio_link"
+                        :href="attributes.audio_link"
                         target="_blank"
                     >
                         Audiobeitrag anhören

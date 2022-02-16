@@ -41,10 +41,10 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
 
         expect(wrapper.find("h1").text()).equals("Example Title");
         expect(wrapper.find("#sturmflut-theme-table-street").text()).equals("Example Street");
-        expect(wrapper.find("#sturmflut-theme-table-image").attributes().href).equals("https://www.daten-hamburg.de/umwelt_klima/sturmflut/bilder/example.image");
+        expect(wrapper.find("#sturmflut-theme-table-image").attributes().href).equals("example.image");
         expect(wrapper.find("#sturmflut-theme-table-image-copyright").text()).equals("Bild: Example Copyright");
         expect(wrapper.find("#sturmflut-theme-table-description").text()).equals("Example Description");
-        expect(wrapper.find("#sturmflut-theme-table-audio").attributes().href).equals("https://www.daten-hamburg.de/umwelt_klima/sturmflut/audio/example.audio");
+        expect(wrapper.find("#sturmflut-theme-table-audio").attributes().href).equals("example.audio");
     });
 
     it("should render only description, no image and audio", () => {
@@ -115,7 +115,7 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
 
         expect(wrapper.find("h1").text()).equals("Example Title");
         expect(wrapper.find("#sturmflut-theme-table-street").text()).equals("Example Street");
-        expect(wrapper.find("#sturmflut-theme-table-image").attributes().href).equals("https://www.daten-hamburg.de/umwelt_klima/sturmflut/bilder/example.image");
+        expect(wrapper.find("#sturmflut-theme-table-image").attributes().href).equals("example.image");
         expect(wrapper.find("#sturmflut-theme-table-image-copyright").text()).equals("Bild: Example Copyright");
         expect(wrapper.find("#sturmflut-theme-table-description").text()).equals("Example Description");
     });
