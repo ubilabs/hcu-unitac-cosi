@@ -2,17 +2,10 @@ import store from "../../../src/app-store";
 
 const helpers = {
     /**
-<<<<<<< HEAD
     * Creates data for POST-request.
     * Considers mandatory and optional parameters
     * @param   {object}    brw         Bodenrichtwertinformationen
     * @returns {string}                Object for POST-request
-=======
-    * Erstellt data für POST-Request.
-    * Berücksichtigung von obligatorischen und optionalen Parametern
-    * @param   {object}    brw         Bodenrichtwertinformationen
-    * @returns {string}                Object für POST-Request
->>>>>>> 09a1b972 (BG-1869 comments from inka included)
     */
     convert: function ({brw}) {
 
