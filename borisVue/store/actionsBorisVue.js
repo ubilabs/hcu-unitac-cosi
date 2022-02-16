@@ -386,7 +386,7 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
-    // getSelectedBrwFeatureValue (context, payload) {
+   // getSelectedBrwFeatureValue (context, payload) {
     //     // console.log("getSelectedBrwFeatureValue", payload);
     // },
     updateSelectedBrwFeature ({commit}, {converted, brw}) {
