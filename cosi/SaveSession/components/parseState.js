@@ -5,7 +5,7 @@ import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
 
 export default {
-    parseState (map, state, path = []) {
+    parseState (map, state, path = [], districtsSet = false) {
         for (const key in map) {
             if (
                 Array.isArray(map[key]) &&
@@ -46,13 +46,20 @@ export default {
                         case "Map/zoomLevel":
                             this.$store.dispatch(mutation, state[key][attr]);
                             break;
+                        case "AreaSelector/geometry":
+                            // hacky, wait for the districts to be selected
+                            this.$nextTick(async () => {
+                                await this.$nextTick();
+                                this.commitState(mutation, attr, state[key][attr]);
+                            });
+                            break;
                         default:
                             this.commitState(mutation, attr, state[key][attr]);
                     }
                 }
             }
             else if (map[key].constructor === Object) {
-                state[key] = this.parseState(map[key], state[key], [...path, key]);
+                state[key] = this.parseState(map[key], state[key], [...path, key], districtsSet);
             }
         }
 

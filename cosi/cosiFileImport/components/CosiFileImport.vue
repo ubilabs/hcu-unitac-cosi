@@ -14,8 +14,6 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        // ImportManager,
-        // EditLayer,
         InlineSvg
     },
     data () {
@@ -85,7 +83,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
-        ...mapGetters("Map", {layerIds: "layerIds", layerIds: "layers", layerIds: "ol2DMap", projectionCode: "projectionCode"}),
+        ...mapGetters("Map", {layerIds: "layerIds", layers: "layers", map: "ol2DMap", projectionCode: "projectionCode"}),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -263,11 +261,11 @@ export default {
         createFeatureIDs (features) {
             this.newLayer.featureIds = [];
             features.forEach((feature, index) => {
-                const id = this.newLayer.id + "_" + index;
+                const id = feature.get("id") || this.newLayer.id + "_" + index;
 
                 feature.setId(id);
-                feature.setProperties({"id": id});
-                this.newLayer.featureIds.push(feature.id);
+                feature.set("id", id);
+                this.newLayer.featureIds.push(id);
             });
         },
         /**
@@ -584,8 +582,6 @@ export default {
                                                         label="Regenbogenfarbspektrum"
                                                         type="checkbox"
                                                     />
-                                                    // eslint-disable-next-line vuejs-accessibility/click-events-have-key-events
-                                                    // eslint-disable-next-line vuejs-accessibility/click-events-have-key-events
                                                     <div
                                                         class="info_icon"
                                                         @click="showInfo($t('additional:modules.tools.cosiFileImport.rainbowTooltip'))"

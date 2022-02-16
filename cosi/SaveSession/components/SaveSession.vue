@@ -253,7 +253,8 @@ export default {
         },
 
         load (session) {
-            const state = session.state || session; // fallback for old saves
+            const
+                state = session.state || session; // fallback for old saves
 
             this.session.meta.title = session.meta?.title || this.session.meta.title;
             this.setActive(false);

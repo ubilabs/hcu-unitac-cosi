@@ -1,3 +1,5 @@
+import getClusterSource from "./getClusterSource";
+
 /**
  * quick fix for VectorLayer BBox
  * @todo refactor to vuex store action
@@ -8,7 +10,7 @@ export function setBBoxToGeom (bboxGeometry) {
     // const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
     const layerlist = [
         ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
-        ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}),
+        ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})
         // ...Radio.request("Parser", "getItemsByAttributes", {typ: "SensorThings", isBaseLayer: false})
     ];
 
@@ -29,20 +31,31 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry) {
 
         // layer already exists in the model list
         if (model) {
-            const url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=EPSG:25832&bbox=${bboxGeometry.getExtent().toString()}`;
+            const source = getClusterSource(model.layer);
+            let url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=EPSG:25832`;
 
-            model.layer.getSource().setUrl(url);
+            url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()}` : "";
 
-            if (Object.prototype.hasOwnProperty.call(model, "layer")) {
-                model.layer.getSource().clear();
-                model.layer.getSource().refresh();
-                model.layer.getSource().on("featuresloadend", function (evt) {
-                    evt.target.forEachFeature(feature => {
-                        if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
-                            evt.target.removeFeature(feature);
-                        }
+            if (source) {
+                source.setUrl(url);
+
+                // remove old listener -> necessary since the listener is an anonymous function
+                if (source.getListeners("featuresloadend")) {
+                    delete source.listeners_.featuresloadend;
+                }
+
+                source.clear();
+                source.refresh();
+
+                if (bboxGeometry) {
+                    source.on("featuresloadend", function (evt) {
+                        evt.target.forEachFeature(feature => {
+                            if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
+                                evt.target.removeFeature(feature);
+                            }
+                        });
                     });
-                });
+                }
             }
         }
         // for layers that are not yet in the model list

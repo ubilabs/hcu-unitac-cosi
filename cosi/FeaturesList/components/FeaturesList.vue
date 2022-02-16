@@ -212,9 +212,14 @@ export default {
          * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
          * @returns {void}
          */
-        scenarioUpdated () {
-            this.updateFeaturesList();
-        },
+        scenarioUpdated: "updateFeaturesList",
+
+        /**
+         * Updates the list on added/removed scenario features
+         * @listens #change:Tools/ScenarioBuilder/activeSimulatedFeatures
+         * @returns {void}
+         */
+        selectedDistrictLevel: "updateFeaturesList",
 
         /**
          * Listens to the layers change on the map to refresh the table
@@ -258,13 +263,8 @@ export default {
             this.showDistanceScoreFeatures();
         },
 
-        layerWeights () {
-            this.updateDistanceScores();
-        },
-
-        extent () {
-            this.updateDistanceScores();
-        },
+        layerWeights: "updateDistanceScores",
+        extent: "updateDistanceScores",
 
         layerFilter () {
             this.numericalColumns = this.getNumericalColumns();

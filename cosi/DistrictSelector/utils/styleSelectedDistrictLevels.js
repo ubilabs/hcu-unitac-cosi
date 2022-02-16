@@ -4,6 +4,22 @@ import {asArray} from "ol/color";
 const defaultsStyleValues = {fill: {color: [255, 255, 255, 0]}, stroke: {color: "#3399CC", width: 3}};
 
 /**
+ * Gets the style for the first feature of a uniformly styled layer
+ * @param {Function} styleFunction - the vectorLayer style function
+ * @param {Object} level - the districtLevel
+ * @returns {module:ol/Style} the OL style
+ */
+function getBaseStyle (styleFunction, level) {
+    const _styles = styleFunction(level.layer.getSource().getFeatures()[0]); // apply to first feature of layer
+
+    if (_styles) {
+        return Array.isArray(_styles) ? _styles[0] : _styles;
+    }
+
+    return undefined;
+}
+
+/**
  * @description Styles the features of the selected layer with transparent overlay for better readability
  * @param {Object[]} districtLevels - the districtlevels object from the district selector module
  * @param {string|undefined} selectedLevelId - the ID of the selected level
@@ -22,9 +38,9 @@ export default function styleSelectedDistrictLevels (districtLevels, selectedLev
     }
 
     districtLevels.forEach(level => {
-        if (level.layerId === selectedLevelId) {
+        if (level.layerId === selectedLevelId && level.layer.getSource().getFeatures().length > 0) {
             const vectorLayerStyle = level.layer.getStyleFunction(), // read styling function from layer
-                baseStyle = vectorLayerStyle(level.layer.getSource().getFeatures()[0])?.[0], // apply to first feature of layer
+                baseStyle = getBaseStyle(vectorLayerStyle, level),
                 baseFillColor = asArray(baseStyle?.getFill()?.getColor() || defaults.fill?.color || defaultsStyleValues.fill.color), // read base fill color of style
                 selectedStyle = new Style({
                     fill: new Fill({
