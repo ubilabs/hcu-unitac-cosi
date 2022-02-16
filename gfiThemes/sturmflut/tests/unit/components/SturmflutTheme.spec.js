@@ -17,7 +17,7 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
                             beschreibung: "Example Description",
                             bildformat: "quer",
                             bild_copyright: "Example Copyright",
-                            bild_link: "abc",
+                            bild_link: "example.image",
                             strasse: "Example Street",
                             titel: "Example Title"
                         };
@@ -32,6 +32,7 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
 
         expect(wrapper.find("h1").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-street").exists()).to.be.true;
+        expect(wrapper.find("#sturmflut-theme-table-image").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-image-landscape").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-image-zoom").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-image-copyright").exists()).to.be.true;
@@ -40,9 +41,10 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
 
         expect(wrapper.find("h1").text()).equals("Example Title");
         expect(wrapper.find("#sturmflut-theme-table-street").text()).equals("Example Street");
+        expect(wrapper.find("#sturmflut-theme-table-image").attributes().href).equals("https://www.daten-hamburg.de/umwelt_klima/sturmflut/bilder/example.image");
         expect(wrapper.find("#sturmflut-theme-table-image-copyright").text()).equals("Bild: Example Copyright");
         expect(wrapper.find("#sturmflut-theme-table-description").text()).equals("Example Description");
-        expect(wrapper.find("#sturmflut-theme-table-audio").attributes().href).equals("https://www.geoportal-hamburg.de/sturmflut/daten/audio/example.audio");
+        expect(wrapper.find("#sturmflut-theme-table-audio").attributes().href).equals("https://www.daten-hamburg.de/umwelt_klima/sturmflut/audio/example.audio");
     });
 
     it("should render only description, no image and audio", () => {
@@ -68,6 +70,13 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
         expect(wrapper.find("#sturmflut-theme-table-street").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-description").exists()).to.be.true;
 
+        expect(wrapper.find("#sturmflut-theme-table-image").exists()).to.be.false;
+        expect(wrapper.find("#sturmflut-theme-table-image-landscape").exists()).to.be.false;
+        expect(wrapper.find("#sturmflut-theme-table-image-portrait").exists()).to.be.false;
+        expect(wrapper.find("#sturmflut-theme-table-image-zoom").exists()).to.be.false;
+        expect(wrapper.find("#sturmflut-theme-table-image-copyright").exists()).to.be.false;
+        expect(wrapper.find("#sturmflut-theme-table-audio").exists()).to.be.false;
+
         expect(wrapper.find("h1").text()).equals("Example Title");
         expect(wrapper.find("#sturmflut-theme-table-street").text()).equals("Example Street");
     });
@@ -79,9 +88,9 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
                     getMappedProperties: function () {
                         return {
                             beschreibung: "Example Description",
-                            bildformat: "quer",
+                            bildformat: "hoch",
                             bild_copyright: "Example Copyright",
-                            bild_link: "abc",
+                            bild_link: "example.image",
                             strasse: "Example Street",
                             titel: "Example Title"
                         };
@@ -96,13 +105,17 @@ describe("addons/sturmflut/components/SturmflutTheme.vue", () => {
 
         expect(wrapper.find("h1").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-street").exists()).to.be.true;
-        expect(wrapper.find("#sturmflut-theme-table-image-landscape").exists()).to.be.true;
+        expect(wrapper.find("#sturmflut-theme-table-image").exists()).to.be.true;
+        expect(wrapper.find("#sturmflut-theme-table-image-portrait").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-image-zoom").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-image-copyright").exists()).to.be.true;
         expect(wrapper.find("#sturmflut-theme-table-description").exists()).to.be.true;
 
+        expect(wrapper.find("#sturmflut-theme-table-audio").exists()).to.be.false;
+
         expect(wrapper.find("h1").text()).equals("Example Title");
         expect(wrapper.find("#sturmflut-theme-table-street").text()).equals("Example Street");
+        expect(wrapper.find("#sturmflut-theme-table-image").attributes().href).equals("https://www.daten-hamburg.de/umwelt_klima/sturmflut/bilder/example.image");
         expect(wrapper.find("#sturmflut-theme-table-image-copyright").text()).equals("Bild: Example Copyright");
         expect(wrapper.find("#sturmflut-theme-table-description").text()).equals("Example Description");
     });
