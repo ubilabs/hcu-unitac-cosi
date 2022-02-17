@@ -9,7 +9,7 @@ import Detail from "./Detail.vue";
 export default {
     name: "BorisVue",
     components: {
-        Tool, 
+        Tool,
         Detail
     },
     computed: {
@@ -39,7 +39,7 @@ export default {
     methods: {
         ...mapActions("Tools/BorisVue", [
             "initialize",
-            "switchLayer",
+            "handleSelectBRWYear",
             "toggleStripesLayer",
             "toggleInfoText",
             "requestParametricUrl",
@@ -69,6 +69,14 @@ export default {
                 zBauweise = "dh Doppelhaushälfte";
             }
             return bauweise === zBauweise;
+        },
+        toggleInfoText () {
+            if (this.infoText.length === 0) {
+                this.setInfoText("Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.");
+            }
+            else {
+                this.setInfoText("");
+            }
         },
         /**
          * Close this tool window by setting active to false
@@ -112,7 +120,7 @@ export default {
                 <div class="form-group col-xs-12">
                     <select
                         class="form-control"
-                        @change="switchLayer($event.target.value)"
+                        @change="handleSelectBRWYear($event.target.value)"
                     >
                         <option
                             v-for="(model, index) in getFilterListWithoutStripes"
@@ -236,59 +244,52 @@ export default {
                     <div v-if="buttonValue === 'info'">
                         <h4>Detailinformationen</h4>
                         <dl>
-                        <Detail 
-                            :feature="selectedBrwFeature"
-                            :keys="['entwicklungszustand']"
-                            :label="'Entwicklungszustand'"
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['entwicklungszustand']"
+                                :label="'Entwicklungszustand'"
                             />
-                            <div
-                                v-if="selectedBrwFeature.get('entwicklungszustand')"
-                            >
-                                <dt>Entwicklungszustand</dt>
-                                <dd>{{ selectedBrwFeature.get('entwicklungszustand') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('beitragszustand')"
-                            >
-                                <dt>Beitrags- u. abgabenrechtl. Zustand:</dt>
-                                <dd>{{ selectedBrwFeature.get('beitragszustand') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('sanierungszusatz')"
-                            >
-                                <dt>Sanierungs- oder Entwicklungszusatz:</dt>
-                                <dd>{{ selectedBrwFeature.get('sanierungszusatz') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('nutzung_kombiniert')"
-                            >
-                                <dt>Art der Nutzung:</dt>
-                                <dd>{{ selectedBrwFeature.get('nutzung_kombiniert') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('anbauart')"
-                            >
-                                <dt>Anbauart:</dt>
-                                <dd>{{ selectedBrwFeature.get('anbauart') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('geschossfl_zahl')"
-                            >
-                                <dt>Wertrelevante Geschossflächenzahl (WGFZ):</dt>
-                                <dd>{{ selectedBrwFeature.get('geschossfl_zahl') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('grdstk_flaeche')"
-                            >
-                                <dt>Grundstücksfläche:</dt>
-                                <dd>{{ selectedBrwFeature.get('grdstk_flaeche') }}</dd>
-                            </div>
-                            <div
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['beitragszustand']"
+                                :label="'Beitrags- u. abgabenrechtl. Zustand'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['sanierungszusatz']"
+                                :label="'Sanierungs- oder Entwicklungszusatz'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['nutzung_kombiniert']"
+                                :label="'Art der Nutzung'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['anbauart']"
+                                :label="'Anbauart'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['geschossfl_zahl']"
+                                :label="'Wertrelevante Geschossflächenzahl (WGFZ):'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['grdstk_flaeche']"
+                                :label="'Grundstücksfläche'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['bemerkung']"
+                                :label="'weitere Merkmale:'"
+                            />
+                            <!-- <div
                                 v-if="selectedBrwFeature.get('bemerkung')"
                             >
                                 <dt>weitere Merkmale:</dt>
                                 <dd>{{ selectedBrwFeature.get('bemerkung') }}</dd>
-                            </div>
+                            </div> -->
                             <div
                                 v-if="parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002"
                             >
@@ -309,63 +310,46 @@ export default {
                     <div v-if="buttonValue === 'lage'">
                         <h4>Lagebeschreibung</h4>
                         <dl>
-                            <div
-                                v-if="selectedBrwFeature.get('postleitzahl')"
-                            >
-                                <dt>PLZ, Gemeinde:</dt>
-                                <dd>{{ selectedBrwFeature.get('postleitzahl') + ' ' + selectedBrwFeature.get('gemeinde') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('bezirk')"
-                            >
-                                <dt>Bezirk:</dt>
-                                <dd>{{ selectedBrwFeature.get('bezirk') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('stadtteil')"
-                            >
-                                <dt>Stadtteil:</dt>
-                                <dd>{{ selectedBrwFeature.get('stadtteil') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('statistisches_gebiet')"
-                            >
-                                <dt>SGE (Stat. Gebietseinheit):</dt>
-                                <dd>{{ selectedBrwFeature.get('statistisches_gebiet') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('baublock')"
-                            >
-                                <dt>Baublock:</dt>
-                                <dd>{{ selectedBrwFeature.get('baublock') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('strassenname')"
-                            >
-                                <dt>Adresse:</dt>
-                                <div
-                                    v-if="selectedBrwFeature.get('hausnummerzusatz')"
-                                >
-                                    <dd>{{ selectedBrwFeature.get('strassenname') + ' ' + selectedBrwFeature.get('hausnummer') + ' ' + selectedBrwFeature.get('hausnummerzusatz') }}</dd>
-                                </div>
-                                <div
-                                    v-else
-                                >
-                                    <dd>{{ selectedBrwFeature.get('strassenname') + ' ' + selectedBrwFeature.get('hausnummer') }}</dd>
-                                </div>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('lagebezeichnung')"
-                            >
-                                <dt>Weitere Lagebezeichnung:</dt>
-                                <dd>{{ selectedBrwFeature.get('lagebezeichnung') }}</dd>
-                            </div>
-                            <div
-                                v-if="selectedBrwFeature.get('bezeichnung_sanierungsgebiet')"
-                            >
-                                <dt>Sanierungsgebiet:</dt>
-                                <dd>{{ selectedBrwFeature.get('bezeichnung_sanierungsgebiet') }}</dd>
-                            </div>
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['postleitzahl', 'gemeinde']"
+                                :label="'PLZ, Gemeinde'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['bezirk']"
+                                :label="'Bezirk'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['stadtteil']"
+                                :label="'Stadtteil'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['statistisches_gebiet']"
+                                :label="'SGE (Stat. Gebietseinheit)'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['baublock']"
+                                :label="'Baublock'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['strassenname', 'hausnummer', 'hausnummerzusatz']"
+                                :label="'Adresse'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['lagebezeichnung']"
+                                :label="'Weitere Lagebezeichnung'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['bezeichnung_sanierungsgebiet']"
+                                :label="'Sanierungsgebiet'"
+                            />
                         </dl>
                     </div>
                     <!-- Umrechnung auf individuelles Grundstück    Umrechnung auf individuelles Grundstück     Umrechnung auf individuelles Grundstück     Umrechnung auf individuelles Grundstück -->
@@ -386,7 +370,7 @@ export default {
                                         @change="bauweiseSelectionChanged($event)"
                                     >
                                         <option
-                                            v-for="(bauweise, i) in bauweiseArray"
+                                            v-for="(bauweise, i) in bauweisen"
                                             :key="i"
                                             :value="bauweise"
                                             :SELECTED="checkForBauweiseMatch(bauweise)"
@@ -410,7 +394,7 @@ export default {
                                         @change="strassenlageSelectionChanged($event)"
                                     >
                                         <option
-                                            v-for="(lage, i) in strassenlageArray"
+                                            v-for="(lage, i) in strassenlagen"
                                             :key="i"
                                             :value="lage"
                                         >

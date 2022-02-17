@@ -26,12 +26,14 @@ export default {
         }
     },
     methods: {
-        getValue(){
+        getValue () {
             let value = "";
 
             this.keys.forEach(key => {
-               value += this.feature.get(key);
-               value += " ";
+                if (this.feature.get(key) !== undefined) {
+                    value += this.feature.get(key);
+                    value += " ";
+                }
             });
             return value.substring(0, value.length -1);
         }
@@ -40,10 +42,10 @@ export default {
 </script>
 
 <template>
-     <div
+    <div
         v-if="Object.keys(feature).length > 0 && feature.get(keys[0])"
     >
-        <dt>{{label}}:</dt>
+        <dt>{{ label }}:</dt>
         <dd>{{ getValue() }}</dd>
     </div>
 </template>
