@@ -463,13 +463,16 @@ const actions = {
     */
     updateSelectedBrwFeature ({commit, state}, {converted, brw}) {
         const feature = state.selectedBrwFeature,
+            // isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
             isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+            // console.log("converted, isDMTime", converted, isDMTime)
 
         if (converted === "convertedBrw") {
             const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
 
             feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
             feature.setProperties({"convertedBrwDM": valueDm});
+            // console.log("updateSelectedBrwFeature valueDm", valueDm)
         }
         else if (converted === "zBauweise") {
             feature.setProperties({
@@ -504,43 +507,4 @@ const actions = {
     }
 };
 
-/**
- * Extrahiert und speichert den umgerechneten BRW
- * @param  {string} response - the response xml of the wps
- * @param  {number} status - the HTTPStatusCode
- * @returns {void}
- */
-function handleConvertResponse (response, status) {
-    let complexData,
-        executeResponse;
-
-    if (status === 200) {
-        executeResponse = response.ExecuteResponse;
-
-        if (executeResponse.ProcessOutputs) {
-            complexData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData;
-            if (complexData.serviceResponse) {
-                console.error("FME-Server statusInfo: " + complexData.serviceResponse.statusInfo.message);
-            }
-            else if (complexData.Bodenrichtwert) {
-                if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
-                    console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
-                }
-                else {
-                    // hier am MONTAG weiterachen!!!!!
-                    store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
-                }
-            }
-        }
-        else if (executeResponse.Status) {
-            console.error("FME-Server ExecuteResponse: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
-        }
-    }
-    else {
-        console.error("WPS-Abfrage mit Status " + status + " abgebrochen.");
-    }
-}
-
 export default actions;
-
-

@@ -164,6 +164,14 @@ export default {
             }
             return bauweise === zBauweise;
         },
+        toggleInfoText () {
+            if (this.infoText.length === 0) {
+                this.setInfoText("Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.");
+            }
+            else {
+                this.setInfoText("");
+            }
+        },
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
@@ -384,10 +392,14 @@ export default {
                                     >
                                         <option
 <<<<<<< HEAD
+<<<<<<< HEAD
                                             v-for="(bauweise, i) in bauweisen"
 =======
                                             v-for="(bauweise, i) in bauweiseArray"
 >>>>>>> 13f4ebc8 (implemented selections 'anbauart' and 'lager zur strasse')
+=======
+                                            v-for="(bauweise, i) in bauweisen"
+>>>>>>> 57efcb32 (BG-1869 comments from inka included)
                                             :key="i"
                                             :value="bauweise"
                                             :SELECTED="checkForBauweiseMatch(bauweise)"
@@ -430,10 +442,14 @@ export default {
                                     >
                                         <option
 <<<<<<< HEAD
+<<<<<<< HEAD
                                             v-for="(lage, i) in strassenlagen"
 =======
                                             v-for="(lage, i) in strassenlageArray"
 >>>>>>> 13f4ebc8 (implemented selections 'anbauart' and 'lager zur strasse')
+=======
+                                            v-for="(lage, i) in strassenlagen"
+>>>>>>> 57efcb32 (BG-1869 comments from inka included)
                                             :key="i"
                                             :value="lage"
                                         >
