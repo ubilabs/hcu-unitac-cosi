@@ -3,19 +3,28 @@ import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersBorisVue";
 import mutations from "../store/mutationsBorisVue";
+<<<<<<< HEAD
 import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
 import FloorComponent from "./FloorComponent.vue";
 import {preparePrint} from "../utils/preparePrint.js";
 import axios from "axios";
+=======
+import Detail from "./Detail.vue";
+
+>>>>>>> 36c53192 (BG-1869 comments from inka included)
 
 export default {
     name: "BorisVue",
     components: {
         Tool,
+<<<<<<< HEAD
         InformationComponent,
         CalculationComponent,
         FloorComponent
+=======
+        Detail
+>>>>>>> 36c53192 (BG-1869 comments from inka included)
     },
     computed: {
         ...mapGetters("Tools/BorisVue", Object.keys(getters)),
@@ -116,6 +125,33 @@ export default {
             if (event.type === "change" || (event.key === "Enter")) {
                 this.updateSelectedBrwFeature({converted: converted, brw: parseFloat(event.currentTarget.value.replace(",", "."))});
                 this.sendWpsConvertRequest();
+            }
+        },
+        bauweiseSelectionChanged (event) {
+            this.setSelectedBauweise(event.target.value);
+        },
+        strassenlageSelectionChanged (event) {
+            const eventValue = event.target.value;
+
+            this.setSelectedStrassenlage(eventValue[0]);
+        },
+        checkForBauweiseMatch (bauweise) {
+            let zBauweise = this.selectedBrwFeature.get("zBauweise");
+
+            if (this.selectedBrwFeature.get("zBauweise") === "eh Einzelhäuser") {
+                zBauweise = "eh Einzelhaus (freistehend)";
+            }
+            else if (this.selectedBrwFeature.get("zBauweise") === "dh Doppelhaushälften") {
+                zBauweise = "dh Doppelhaushälfte";
+            }
+            return bauweise === zBauweise;
+        },
+        toggleInfoText () {
+            if (this.infoText.length === 0) {
+                this.setInfoText("Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.");
+            }
+            else {
+                this.setInfoText("");
             }
         },
         /**
@@ -293,6 +329,7 @@ export default {
                         </div>
                     </div>
                     <div v-if="buttonValue === 'info'">
+<<<<<<< HEAD
                         <InformationComponent
                             :title="'Detailinformationen'"
                             :selected-brw-feature="selectedBrwFeature"
@@ -305,6 +342,117 @@ export default {
                             :selected-brw-feature="selectedBrwFeature"
                             :button-value="buttonValue"
                         />
+=======
+                        <h4>Detailinformationen</h4>
+                        <dl>
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['entwicklungszustand']"
+                                :label="'Entwicklungszustand'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['beitragszustand']"
+                                :label="'Beitrags- u. abgabenrechtl. Zustand'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['sanierungszusatz']"
+                                :label="'Sanierungs- oder Entwicklungszusatz'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['nutzung_kombiniert']"
+                                :label="'Art der Nutzung'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['anbauart']"
+                                :label="'Anbauart'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['geschossfl_zahl']"
+                                :label="'Wertrelevante Geschossflächenzahl (WGFZ):'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['grdstk_flaeche']"
+                                :label="'Grundstücksfläche'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['bemerkung']"
+                                :label="'weitere Merkmale:'"
+                            />
+                            <!-- <div
+                                v-if="selectedBrwFeature.get('bemerkung')"
+                            >
+                                <dt>weitere Merkmale:</dt>
+                                <dd>{{ selectedBrwFeature.get('bemerkung') }}</dd>
+                            </div> -->
+                            <div
+                                v-if="parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002"
+                            >
+                                <dt>Bodenrichtwert:</dt>
+                                <dd>{{ selectedBrwFeature.get('richtwert_euro') }} €/m²</dd>
+                            </div>
+                            <div
+                                v-else
+                            >
+                                <dt>Bodenrichtwert:</dt>
+                                <dd>
+                                    <span>{{ selectedBrwFeature.get('richtwert_euro') }} €/m²</span>
+                                    <span class="pull-right">{{ selectedBrwFeature.get('richtwert_dm') }} DM/m²</span>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div v-if="buttonValue === 'lage'">
+                        <h4>Lagebeschreibung</h4>
+                        <dl>
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['postleitzahl', 'gemeinde']"
+                                :label="'PLZ, Gemeinde'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['bezirk']"
+                                :label="'Bezirk'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['stadtteil']"
+                                :label="'Stadtteil'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['statistisches_gebiet']"
+                                :label="'SGE (Stat. Gebietseinheit)'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['baublock']"
+                                :label="'Baublock'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['strassenname', 'hausnummer', 'hausnummerzusatz']"
+                                :label="'Adresse'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['lagebezeichnung']"
+                                :label="'Weitere Lagebezeichnung'"
+                            />
+                            <Detail
+                                :feature="selectedBrwFeature"
+                                :keys="['bezeichnung_sanierungsgebiet']"
+                                :label="'Sanierungsgebiet'"
+                            />
+                        </dl>
+>>>>>>> 36c53192 (BG-1869 comments from inka included)
                     </div>
                     <div v-if="buttonValue === 'euro'">
                         <h4>Umrechnung auf individuelles Grundstück</h4>
@@ -312,6 +460,7 @@ export default {
                             <div
                                 v-if="selectedBrwFeature.get('zBauweise')"
                             >
+<<<<<<< HEAD
                                 <CalculationComponent
                                     :title="'Anbauart:'"
                                     :options="buildingDesigns"
@@ -324,10 +473,33 @@ export default {
                                     :subject="'zBauweise'"
                                     :type="'select'"
                                 />
+=======
+                                <dt>
+                                    <span>Anbauart: </span>
+                                    <span class="glyphicon glyphicon-question-sign" />
+                                </dt>
+                                <dd>
+                                    <select
+                                        id="zBauwSelect"
+                                        class="form-control"
+                                        @change="bauweiseSelectionChanged($event)"
+                                    >
+                                        <option
+                                            v-for="(bauweise, i) in bauweisen"
+                                            :key="i"
+                                            :value="bauweise"
+                                            :SELECTED="checkForBauweiseMatch(bauweise)"
+                                        >
+                                            {{ bauweise }}
+                                        </option>
+                                    </select>
+                                </dd>
+>>>>>>> 36c53192 (BG-1869 comments from inka included)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zStrassenLage')"
                             >
+<<<<<<< HEAD
                                 <CalculationComponent
                                     :title="'Lage zur Straße:'"
                                     :options="roadPositions"
@@ -340,6 +512,30 @@ export default {
                                     :subject="'zStrassenLage'"
                                     :type="'select'"
                                 />
+=======
+                                <dt>
+                                    <span>Lage zur Straße:</span>
+                                    <span class="glyphicon glyphicon-question-sign" />
+                                </dt>
+                                <dd>
+                                    <select
+                                        id="zStrassenLageSelect"
+                                        class="form-control"
+                                        @change="strassenlageSelectionChanged($event)"
+                                    >
+                                        <option
+                                            v-for="(lage, i) in strassenlagen"
+                                            :key="i"
+                                            :value="lage"
+                                        >
+                                            {{ lage }}
+                                        </option>
+                                    </select>
+                                </dd>
+                                <!-- <dd class="help">
+                                    Wählen Sie die Stellung und damit auch die Zuwegung Ihres Grundstücks zur Straße aus der Liste aus: Während bei <strong>Frontlage</strong> das Grundstück unmittelbar an genau eine Straße heranreicht, ist bei einer <strong>Ecklage</strong> eine unmittelbare Anbindung an mindestens zwei Straßen gegeben. Ein <strong>Pfeifenstielgrundstück</strong> ist eine schmale, pfeifenstielartige Zuwegung zu einem Grundstück, das nicht direkt an der Straße gelegen ist. Der Pfeifenstiel steht normalerweise im Alleineigentum des Pfeifenkopf-Grundstücks. Es ist jedoch auch möglich, dass ein Pfeifenstiel bis zu vier rückwärtige Grundstücke erschließt. <strong>Die Hinterlage</strong> bezeichnet ein rückwärtiges Grundstück, welches sich nicht im Eigentum des Grundstücks befindet, sondern über ein grundbuchliches Wegerecht oder als Baulast gesichert ist.
+                                </dd> -->
+>>>>>>> 36c53192 (BG-1869 comments from inka included)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zGeschossfl_zahl')"

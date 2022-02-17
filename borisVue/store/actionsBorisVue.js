@@ -73,15 +73,10 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextId", []);
 
-        // if switching between polygon and point layer: unset selectedBrwFeature and remove marker
-        if (selectedLayerYear <= 2008 && previousYear > 2008) {
-            commit("unsetSelectedBrwFeature");
-            dispatch("MapMarker/removePolygonMarker", null, {root: true});
-        }
-        else if (selectedLayerYear > 2008 && previousYear <= 2008) {
-            commit("unsetSelectedBrwFeature");
-            dispatch("MapMarker/removePointMarker", null, {root: true});
-        }
+        // commit("unsetSelectedBrwFeature");
+        commit("setSelectedBrwFeature", {});
+        dispatch("MapMarker/removePolygonMarker", null, {root: true});
+        dispatch("MapMarker/removePointMarker", null, {root: true});
 
         // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
@@ -226,7 +221,7 @@ const actions = {
                 }
                 // point
                 else {
-                    commit("setBrwFeatures", feature);
+                    commit("setBrwFeature", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
                     dispatch("Map/setCenter", coordinate, {root: true});
                     dispatch("handleNewFeature", feature);
@@ -352,7 +347,7 @@ const actions = {
         if (status === 200) {
             const features = new WFS().readFeatures(response);
 
-            commit("setBrwFeatures", features);
+            commit("setBrwFeature", features);
             dispatch("findBrwFeatureByYear", {features, year}).then((result) => {
                 const feature = result;
 
