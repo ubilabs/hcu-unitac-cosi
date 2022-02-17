@@ -1,4 +1,5 @@
 import axios from "axios";
+import helpers from "../utils/helpers";
 import state from "./stateBorisVue";
 import store from "../../../src/app-store";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
@@ -48,29 +49,20 @@ const actions = {
     },
     switchLayer ({dispatch, commit}, selectedLayerName) {
 
-        const selectedLayerYear = selectedLayerName.split(".").pop(),
-            arrayLength = state.selectedLayerArray.length,
-            previousYear = state.selectedLayerArray[arrayLength - 1],
-            layerModels = state.filteredModelList.filter(function (model) {
-                return model.get("isSelected") === true;
-            });
+        const layerModels = state.filteredModelList.filter(function (model) {
+            return model.get("isSelected") === true;
+        });
 
         layerModels.forEach(layer => {
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
         });
         dispatch("selectLayerModelByName", selectedLayerName);
-        commit("updateSelectedLayerArray", selectedLayerYear);
 
-        // if switching between polygon and point layer: unset selectedBrwFeature and remove marker
-        if (selectedLayerYear <= 2008 && previousYear > 2008) {
-            commit("unsetSelectedBrwFeature");
-            dispatch("MapMarker/removePolygonMarker", null, {root: true});
-        }
-        else if (selectedLayerYear > 2008 && previousYear <= 2008) {
-            commit("unsetSelectedBrwFeature");
-            dispatch("MapMarker/removePointMarker", null, {root: true});
-        }
+        // commit("unsetSelectedBrwFeature");
+        commit("setSelectedBrwFeature", {});
+        dispatch("MapMarker/removePolygonMarker", null, {root: true});
+        dispatch("MapMarker/removePointMarker", null, {root: true});
 
         // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
@@ -81,13 +73,43 @@ const actions = {
             dispatch("toggleStripesLayer", false);
         }
     },
+    handleSelectBRWYear ({dispatch}, value) {
+        const selectedLayername = value;
+
+        dispatch("switchLayer", selectedLayername);
+        dispatch("checkBrwFeature", {brwFeature: state.brwFeature, year: selectedLayername.split(".")[2]});
+        // this.model.checkBrwFeature(this.model.get("brwFeatures"), selectedLayername.split(".")[2]);
+        // Radio.trigger("Alert", "alert:remove");
+        // this.render(this.model, this.model.get("isActive"));
+    },
+    checkBrwFeature ({dispatch, commit}, {brwFeature, year}) {
+
+        if (brwFeature !== undefined) {
+            dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year}).then((response) => {
+                const brwFeatureByYear = response;
+
+                if (brwFeatureByYear === undefined) {
+                    commit("setGfiFeature", null);
+                    commit("setBrwFeature", []);
+                    commit("setSelectedBrwFeature", {});
+                    dispatch("MapMarker/removePointMarker", null, {root: true});
+                }
+                else {
+                    dispatch("handleNewFeature", brwFeatureByYear);
+                }
+            });
+        }
+        else {
+            commit("setGfiFeature", null);
+        }
+    },
     toggleStripesLayer ({dispatch, commit}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             selectedModel = modelList.find(model => model.get("isSelected") === true),
             selectedModelName = selectedModel.attributes.name,
             modelName = selectedModelName + "-stripes";
 
-        commit("setShowStripesLayer", value);
+        commit("setStripesLayer", value);
 
         if (value) {
             dispatch("selectLayerModelByName", modelName);
@@ -110,54 +132,43 @@ const actions = {
 
         commit("setSelectedLayer", layerModel);
     },
-    // soll das in mutations?
-    toggleInfoText () {
-        if (state.infoText.length === 0) {
-            state.infoText = "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.";
-        }
-        else {
-            state.infoText = "";
-        }
-    },
-    // was passiert hier?
     // sends a get feature info request to the currently selected layer
     clickCallback ({dispatch}, {event, processFromParametricUrl, center}) {
+        if (state.active) {
+            const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
+                layerSource = selectedModel.get("layer").getSource();
 
-        if (!state.active) {
-            return;
+            let map,
+                mapView,
+                url;
+
+            if (processFromParametricUrl) {
+                map = Radio.request("Map", "getMap");
+                mapView = map.getView();
+                url = layerSource.getFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
+            }
+            else {
+                map = event.map;
+                mapView = map.getView();
+                url = layerSource.getFeatureInfoUrl(event.coordinate, mapView.getResolution(), mapView.getProjection());
+                // this.setBackdrop(true);
+            }
+
+            axios.get(url)
+                .then((response) => {
+                    if (processFromParametricUrl) {
+                        dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: center});
+                    }
+                    else {
+                        dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: event.coordinate});
+                    }
+                })
+                .catch((error) => {
+                    console.error(error.response);
+                });
         }
 
-        const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
-            layerSource = selectedModel.get("layer").getSource();
 
-        let map,
-            mapView,
-            url;
-
-        if (processFromParametricUrl) {
-            map = Radio.request("Map", "getMap");
-            mapView = map.getView();
-            url = layerSource.getFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
-        }
-        else {
-            map = event.map;
-            mapView = map.getView();
-            url = layerSource.getFeatureInfoUrl(event.coordinate, mapView.getResolution(), mapView.getProjection());
-            // this.setBackdrop(true);
-        }
-
-        axios.get(url)
-            .then((response) => {
-                if (processFromParametricUrl) {
-                    dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: center});
-                }
-                else {
-                    dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: event.coordinate});
-                }
-            })
-            .catch((error) => {
-                console.error(error.response);
-            });
     },
     handleGfiResponse ({commit, dispatch}, {response, status, coordinate}) {
         if (status === 200) {
@@ -174,7 +185,7 @@ const actions = {
                 }
                 // point
                 else {
-                    commit("setBrwFeatures", feature);
+                    commit("setBrwFeature", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
                     dispatch("Map/setCenter", coordinate, {root: true});
                     dispatch("handleNewFeature", feature);
@@ -281,7 +292,7 @@ const actions = {
         if (status === 200) {
             const features = new WFS().readFeatures(response);
 
-            commit("setBrwFeatures", features);
+            commit("setBrwFeature", features);
             dispatch("findBrwFeatureByYear", {features, year}).then((result) => {
                 const feature = result;
 
@@ -292,153 +303,26 @@ const actions = {
             Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + status);
         }
     },
-    findBrwFeatureByYear (context, payload) {
-        return payload.features.find((feature) => {
+    findBrwFeatureByYear (context, {payload}) {
+        const features = Object.values(payload.features);
+
+        return features.find((feature) => {
             return feature.get("jahrgang") === payload.year;
         });
     },
-    handleNewFeature ({commit, dispatch}, feature) {
+    handleNewFeature ({dispatch}, feature) {
         dispatch("getActiveLayerNameAsStichtag").then((response) => {
             const stichtag = response;
 
             dispatch("extendFeatureAttributes", {feature, stichtag});
         });
-        commit("setSelectedBrwFeature", feature);
-        dispatch("sendWpsConvertRequest");
     },
-    // hier weiter
-    sendWpsConvertRequest ({dispatch}) {
-        const data = dispatch("getConvertObject", {brw: state.selectedBrwFeature});
+    sendWpsConvertRequest () {
 
-        // WPS.wpsRequest(this.get("wpsId"), this.get("fmwProcess"), data, this.handleConvertResponse.bind(this));
-    },
-    getConvertObject ({dispatch}, {brw}) {
-        let requestObj = {},
-            richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", ".");
+        const data = helpers.convert({brw: state.selectedBrwFeature});
 
-        if (richtwert.match(/,/) && richtwert.match(/\./)) {
-            richtwert = richtwert.replace(".", "").replace(",", ".");
-        }
+        WPS.wpsRequest(state.wpsId, state.fmwProcess, data, helpers.handleConvertResponse);
 
-
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "BRW", value: richtwert, dataType: "float"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "STAG", value: brw.get("stichtag"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "ENTW", value: brw.get("entwicklungszustand"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "ZENTW", value: brw.get("zEntwicklungszustand"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "BEIT", value: brw.get("beitragszustand"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "ZBEIT", value: brw.get("zBeitragszustand"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "NUTA", value: brw.get("nutzung_kombiniert"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        dispatch("setObjectAttribute", {object: requestObj, attrName: "ZNUTA", value: brw.get("zNutzung"), dataType: "string"}).then((response) => {
-            requestObj = response;
-        });
-        if (brw.get("bauweise")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "BAUW", value: brw.get("bauweise"), dataType: "string"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        if (brw.get("grdstk_flaeche")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "FLAE", value: brw.get("grdstk_flaeche"), dataType: "float"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        if (brw.get("geschossfl_zahl")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "WGFZ", value: brw.get("geschossfl_zahl"), dataType: "float"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        if (brw.get("schichtwert")) {
-            if (brw.get("schichtwert").normschichtwert_wohnen) {
-                dispatch("setObjectAttribute", {object: requestObj, attrName: "NWohnW", value: brw.get("schichtwert").normschichtwert_wohnen.replace(".", "").replace(",", "."), dataType: "float"}).then((response) => {
-                    requestObj = response;
-                });
-            }
-            if (brw.get("schichtwert").normschichtwert_buero) {
-                dispatch("setObjectAttribute", {object: requestObj, attrName: "NBueroW", value: brw.get("schichtwert").normschichtwert_buero.replace(".", "").replace(",", "."), dataType: "float"}).then((response) => {
-                    requestObj = response;
-                });
-            }
-            if (brw.get("schichtwert").normschichtwert_laden) {
-                dispatch("setObjectAttribute", {object: requestObj, attrName: "NLadenW", value: brw.get("schichtwert").normschichtwert_laden.replace(".", "").replace(",", "."), dataType: "float"}).then((response) => {
-                    requestObj = response;
-                });
-            }
-            if (brw.get("schichtwert").schichtwerte) {
-                for (const schichtwert of brw.get("schichtwert").schichtwerte) {
-                    if (schichtwert.geschoss === "3. Obergeschoss oder höher") {
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "OGNutzung", value: schichtwert.nutzung, dataType: "string"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "OGGFZAnt", value: schichtwert.wgfz, dataType: "float"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "OGW", value: schichtwert.schichtwert.replace(".", "").replace(",", "."), dataType: "float"});
-                    }
-                    if (schichtwert.geschoss === "2. Obergeschoss") {
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "ZGNutzung", value: schichtwert.nutzung, dataType: "string"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "ZGGFZAnt", value: schichtwert.wgfz, dataType: "float"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "ZGW", value: schichtwert.schichtwert.replace(".", "").replace(",", "."), dataType: "float"});
-                    }
-                    if (schichtwert.geschoss === "1. Obergeschoss") {
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "IGNutzung", value: schichtwert.nutzung, dataType: "string"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "IGGFZAnt", value: schichtwert.wgfz, dataType: "float"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "IGW", value: schichtwert.schichtwert.replace(".", "").replace(",", "."), dataType: "float"});
-                    }
-                    if (schichtwert.geschoss === "Erdgeschoss") {
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "EGNutzung", value: schichtwert.nutzung, dataType: "string"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "EGGFZAnt", value: schichtwert.wgfz, dataType: "float"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "EGW", value: schichtwert.schichtwert.replace(".", "").replace(",", "."), dataType: "float"});
-                    }
-                    if (schichtwert.geschoss === "Untergeschoss") {
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "UGNutzung", value: schichtwert.nutzung, dataType: "string"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "UGGFZAnt", value: schichtwert.wgfz, dataType: "float"});
-                        requestObj = dispatch("setObjectAttribute", {object: requestObj, attrName: "UGW", value: schichtwert.schichtwert.replace(".", "").replace(",", "."), dataType: "float"});
-                    }
-                }
-            }
-        }
-        if (brw.get("zBauweise")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "ZBAUW", value: brw.get("zBauweise"), dataType: "string"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        if (brw.get("zGeschossfl_zahl")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "ZWGFZ", value: brw.get("zGeschossfl_zahl"), dataType: "float"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        if (brw.get("zGrdstk_flaeche")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "ZFLAE", value: brw.get("zGrdstk_flaeche"), dataType: "float"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        if (brw.get("zStrassenLage")) {
-            dispatch("setObjectAttribute", {object: requestObj, attrName: "ZStrLage", value: brw.get("zStrassenLage"), dataType: "string"}).then((response) => {
-                requestObj = response;
-            });
-        }
-        return requestObj;
-
-    },
-    setObjectAttribute (context, {object, attrName, value, dataType}) {
-
-        const dataObj = {
-            dataType: dataType,
-            value: value
-        };
-
-        object[attrName] = dataObj;
-
-        return object;
     },
     getActiveLayerNameAsStichtag () {
         let stichtag = "";
@@ -449,18 +333,19 @@ const actions = {
         }
         return stichtag;
     },
-    extendFeatureAttributes (context, {feature, stichtag}) {
+    extendFeatureAttributes ({dispatch, commit}, {feature, stichtag}) {
 
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
-        let sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
+        let sw = helpers.getSW(feature);
 
-        if (sw && typeof sw === "string") {
-            sw = JSON.parse(sw);
-        }
-        else if (sw && typeof sw === "object" && sw.normschichtwert_wohnen) {
-            sw.normschichtwert_wohnen = sw.normschichtwert_wohnen.replace(".", "").replace(",", ".");
-        }
         if (sw) {
+
+            if (typeof sw === "string") {
+                sw = JSON.parse(sw);
+            }
+            else if (typeof sw === "object" && sw.normschichtwert_wohnen) {
+                sw.normschichtwert_wohnen = sw.normschichtwert_wohnen.replace(".", "").replace(",", ".");
+            }
             if (sw.normschichtwert_wohnen) {
                 sw.normschichtwert_wohnenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_wohnen, 10) * 1.95583).toFixed(1)) : "";
                 sw.normschichtwert_wohnen = thousandsSeparator(sw.normschichtwert_wohnen);
@@ -480,6 +365,7 @@ const actions = {
                 });
             }
         }
+
         feature.setProperties({
             "richtwert_dm": isDMTime ? thousandsSeparator(parseFloat(feature.get("richtwert_dm"), 10).toFixed(1)) : "",
             "richtwert_euro": thousandsSeparator(feature.get("richtwert_euro")),
@@ -496,10 +382,57 @@ const actions = {
             "zStrassenLage": feature.get("nutzung_kombiniert") === "EFH Ein- und Zweifamilienhäuser" ? "F Frontlage" : null
         });
 
+        commit("setSelectedBrwFeature", feature);
+        dispatch("sendWpsConvertRequest");
         return feature;
     },
-    getSelectedBrwFeatureValue (context, payload) {
-        // console.log("getSelectedBrwFeatureValue", payload);
+    // getSelectedBrwFeatureValue (context, payload) {
+    //     // console.log("getSelectedBrwFeatureValue", payload);
+    // },
+    updateSelectedBrwFeature ({commit}, {converted, brw}) {
+        const feature = state.selectedBrwFeature,
+            // isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+            isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+            // console.log("converted, isDMTime", converted, isDMTime)
+
+        if (converted === "convertedBrw") {
+            const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
+
+            feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
+            feature.setProperties({"convertedBrwDM": valueDm});
+            // console.log("updateSelectedBrwFeature valueDm", valueDm)
+        }
+        else if (converted === "zBauweise") {
+            feature.setProperties({
+                "zBauweise": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        else if (converted === "zGeschossfl_zahl") {
+            feature.setProperties({
+                "zGeschossfl_zahl": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        else if (converted === "zGrdstk_flaeche") {
+            feature.setProperties({
+                "zGrdstk_flaeche": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        else if (converted === "zStrassenLage") {
+            feature.setProperties({
+                "zStrassenlage": brw,
+                "convertedBrw": "",
+                "convertedBrwDM": ""
+            });
+        }
+        commit("setSelectedBrwFeature", {silent: true});
+        commit("setSelectedBrwFeature", feature);
+
     }
 };
 
