@@ -46,7 +46,7 @@ export default {
                     <p
                         id="sturmflut-theme-table-image-zoom"
                     >
-                        Zum vergrößern auf das Bild klicken
+                        Zum Vergrößern auf das Bild klicken
                     </p>
                     <p
                         id="sturmflut-theme-table-image-copyright"
