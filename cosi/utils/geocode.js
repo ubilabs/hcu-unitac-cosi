@@ -18,11 +18,10 @@ export function reverseGeocode (coords, portalCrs, type = "NOMINATIM") {
  * returns the address name for a geometry
  * @param {module:ol/Geometry} geom - the geometry
  * @param {String} portalCrs - the portal's CRS
- * @param {"NOMINATIM" | "BKG"} [type="NOMINATIM"] - which geocoder to use
+ * @param {"NOMINATIM" | "BKG"} [type] - which geocoder to use
  * @return {String} the address
  */
 export async function getAddress (geom, portalCrs, type) {
-    console.log(type);
     const
         coordinates = geom.getType() === "Polygon" || geom.getType() === "MultiPolygon" ?
             geom.getExtent().getCenter() :
