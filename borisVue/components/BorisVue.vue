@@ -118,6 +118,33 @@ export default {
                 this.sendWpsConvertRequest();
             }
         },
+        bauweiseSelectionChanged (event) {
+            this.setSelectedBauweise(event.target.value);
+        },
+        strassenlageSelectionChanged (event) {
+            const eventValue = event.target.value;
+
+            this.setSelectedStrassenlage(eventValue[0]);
+        },
+        checkForBauweiseMatch (bauweise) {
+            let zBauweise = this.selectedBrwFeature.get("zBauweise");
+
+            if (this.selectedBrwFeature.get("zBauweise") === "eh Einzelhäuser") {
+                zBauweise = "eh Einzelhaus (freistehend)";
+            }
+            else if (this.selectedBrwFeature.get("zBauweise") === "dh Doppelhaushälften") {
+                zBauweise = "dh Doppelhaushälfte";
+            }
+            return bauweise === zBauweise;
+        },
+        toggleInfoText () {
+            if (this.infoText.length === 0) {
+                this.setInfoText("Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.");
+            }
+            else {
+                this.setInfoText("");
+            }
+        },
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
