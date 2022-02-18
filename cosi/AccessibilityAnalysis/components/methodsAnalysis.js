@@ -88,7 +88,8 @@ export default {
                 scaleUnit: this.scaleUnit,
                 distance,
                 maxDistance,
-                minDistance
+                minDistance,
+                baseUrl: this.baseUrl
             });
 
             // TODO: get locale from store
@@ -123,7 +124,8 @@ export default {
                 scaleUnit: this.scaleUnit,
                 distance,
                 maxDistance,
-                minDistance
+                minDistance,
+                baseUrl: this.baseUrl
             });
 
             this.setSteps(steps);

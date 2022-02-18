@@ -3,6 +3,7 @@ import {readFeatures, transformFeatures} from "../components/util.js";
 import * as turf from "@turf/turf";
 import axios from "axios";
 import * as Proj from "ol/proj.js";
+import GeoJSON from "ol/format/GeoJSON";
 
 let abortController,
     filterPoly;
@@ -77,12 +78,10 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
         ),
 
         // reverse JSON object sequence to render the isochrones in the correct order
-        reversedFeatures = [...json.features].reverse(),
+        reversedFeatures = json.reverse(),
         featureType = "Erreichbarkeit ab einem Referenzpunkt";
 
-    json.features = reversedFeatures;
-
-    let newFeatures = readFeatures(JSON.stringify(json));
+    let newFeatures = reversedFeatures;
 
     newFeatures = transformFeatures(
         newFeatures,
@@ -155,7 +154,7 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
                 ),
                 // reverse JSON object sequence to render the isochrones in the correct order
                 // this reversion is intended for centrifugal isochrones (when range.length is larger than 1)
-                reversedFeatures = [...json.features].reverse(),
+                reversedFeatures = json.reverse(),
                 groupedFeatures = [];
 
             for (let i = 0; i < steps; i++) {
@@ -171,7 +170,6 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
                     groupedFeatures[(i + 3) % steps].push(reversedFeatures[i + 3]);
                 }
             }
-            json.features = reversedFeatures;
             groupedFeaturesList.push(groupedFeatures);
         }
         catch (e) {
@@ -184,22 +182,27 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
     }
 
     if (groupedFeaturesList.length) {
+        const format = new GeoJSON();
+
         for (let i = 0; i < steps; i++) {
             let layeredList = groupedFeaturesList.map(groupedFeatures => groupedFeatures[i]),
                 layerUnion,
                 layerUnionFeatures;
 
             layeredList = [].concat(...layeredList);
-            layerUnion = layeredList[0];
+            // convert to a turf.js feature
+            layerUnion = format.writeFeatureObject(layeredList[0]);
 
             for (let j = 0; j < layeredList.length; j++) {
                 try {
-                    layerUnion = turf.union(layerUnion, layeredList[j]);
+                    layerUnion = turf.union(layerUnion, format.writeFeatureObject(layeredList[j]));
                 }
                 catch (e) {
                     console.error(e); // turf chokes one some resulting geometries
                 }
             }
+
+            // readGeometries
             layerUnionFeatures = readFeatures(JSON.stringify(layerUnion));
 
             // TODO: get projections via arguments and/or store
@@ -210,7 +213,7 @@ async function createIsochronesPoints (transportType, coordinates, scaleUnit, di
             // TODO: add props to layers, like type of facility, unit of measured distance
             layerUnionFeatures.forEach(feature => {
                 feature.set("featureType", featureType);
-                feature.set("value", layeredList[0].properties.value);
+                feature.set("value", layeredList[0].get("value"));
                 feature.set("mode", transportType);
                 feature.set("unit", scaleUnit);
                 feature.set("topic", selectedFacilityName);
