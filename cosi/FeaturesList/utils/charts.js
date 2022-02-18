@@ -60,7 +60,7 @@ export default {
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
-                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), this.selectedDistrictLevel.label],
+                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel")],
                 data
             });
 
@@ -88,7 +88,7 @@ export default {
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
-                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), this.selectedDistrictLevel.label],
+                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel")],
                 data
             });
 
@@ -195,7 +195,7 @@ export default {
                     type: "BarChart",
                     color: "rainbow",
                     source: this.$t("additional:modules.tools.cosi.featuresList.title"),
-                    scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.colDistrict"), col.text],
+                    scaleLabels: [col.text, this.$t("additional:modules.tools.cosi.featuresList.colDistrict")],
                     data: chartData,
                     beginAtZero: true
                 });
@@ -242,7 +242,7 @@ export default {
                             type: "BarChart",
                             color: "rainbow",
                             source: this.$t("additional:modules.tools.cosi.featuresList.title"),
-                            scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.colDistrict"), numVal.name],
+                            scaleLabels: [numVal.name, this.$t("additional:modules.tools.cosi.featuresList.colDistrict")],
                             data: chartData,
                             beginAtZero: true
                         });
