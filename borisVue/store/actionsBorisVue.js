@@ -463,16 +463,13 @@ const actions = {
     */
     updateSelectedBrwFeature ({commit, state}, {converted, brw}) {
         const feature = state.selectedBrwFeature,
-            // isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
             isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
-            // console.log("converted, isDMTime", converted, isDMTime)
 
         if (converted === "convertedBrw") {
             const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
 
             feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
             feature.setProperties({"convertedBrwDM": valueDm});
-            // console.log("updateSelectedBrwFeature valueDm", valueDm)
         }
         else if (converted === "zBauweise") {
             feature.setProperties({
