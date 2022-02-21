@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersGeoAnalyze";
 import mutations from "../store/mutationsGeoAnalyze";
@@ -18,7 +18,7 @@ import GeoAnalyzeResultGeometry from "./GeoAnalyzeResultGeometry.vue";
 export default {
     name: "GeoAnalyze",
     components: {
-        Tool,
+        ToolTemplate,
         Dropdown,
         GeoAnalyzeResultBuilding,
         GeoAnalyzeResultGeometry
@@ -302,7 +302,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="$t(name)"
         :icon="glyphicon"
         :active="active"
@@ -343,10 +343,10 @@ export default {
                 </form>
             </template>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     hr {
         margin-top: 10px;
         margin-bottom: 10px;

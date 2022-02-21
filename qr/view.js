@@ -3,7 +3,7 @@ import Overlay from "ol/Overlay";
 import QRToolTemplate from "text-loader!./template.html";
 import QRPopupTemplate from "text-loader!./popupTemplate.html";
 import QRModel from "./model";
-import "./style.less";
+import "./style.scss";
 
 
 const QRView = Backbone.View.extend(/** @lends QRView.prototype */{

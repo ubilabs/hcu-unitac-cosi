@@ -52,7 +52,7 @@ describe("SdpDownload.vue", () => {
 
     it("should find Tool component", () => {
         const wrapper = shallowMount(SDPComponent, {store, localVue}),
-            toolWrapper = wrapper.findComponent({name: "Tool"});
+            toolWrapper = wrapper.findComponent({name: "ToolTemplate"});
 
         expect(toolWrapper.exists()).to.be.true;
 

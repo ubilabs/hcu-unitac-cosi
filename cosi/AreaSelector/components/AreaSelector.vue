@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapMutations, mapActions} from "vuex";
@@ -10,6 +10,7 @@ import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import GeometryPicker from "../../components/GeometryPicker.vue";
 import {Stroke, Style} from "ol/style.js";
 import {featureToGeoJson} from "../../utils/geomUtils";
+import Feature from "ol/Feature";
 
 export default {
     name: "AreaSelector",
@@ -32,6 +33,7 @@ export default {
     computed: {
         ...mapGetters("Tools/AreaSelector", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
+        ...mapGetters("Map", ["projectionCode"]),
         ...mapGetters("Language", ["currentLocale"]),
         geomField () {
             return {
@@ -59,7 +61,9 @@ export default {
         },
 
         geometry (geom) {
-            this.setFeature(geomPickerGetFeature(this.$refs["geometry-picker"]));
+            const feature = geomPickerGetFeature(this.$refs["geometry-picker"]) || new Feature({geometry: geom});
+
+            this.setFeature(feature);
             this.drawingLayer.getSource().clear();
             if (this.feature) {
                 this.drawingLayer.getSource().addFeature(this.feature);
@@ -108,10 +112,10 @@ export default {
         * @returns {void}
         */
         requestInhabitants: function () {
-            const geoJson = featureToGeoJson(this.feature);
+            const geoJson = featureToGeoJson(this.feature, false, this.projectionCode, this.projectionCode);
 
             this.close();
-            this.$root.$emit("populationRequest", geoJson);
+            this.$root.$emit("populationRequest", geoJson.geometry);
         },
 
         /**

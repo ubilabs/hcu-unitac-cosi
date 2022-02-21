@@ -122,6 +122,8 @@ const CookieModel = Backbone.Model.extend(/** @lends CookieModel.prototype */{
      * @returns {*} - todo.
      */
     keys: function () {
+        // This module is currently not used, therefore the linter is switched off here.
+        // eslint-disable-next-line no-useless-backreference
         const aKeys = document.cookie.replace(/((?:^|\s*;)[^=]+)(?=;|$)|^\s*|\s*(?:=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:=[^;]*)?;\s*/);
         let nLen,
             nIdx;

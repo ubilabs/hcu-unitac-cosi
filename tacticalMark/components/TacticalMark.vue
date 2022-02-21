@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../src/modules/tools/Tool.vue";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersTacticalMark";
 import mutations from "../store/mutationsTacticalMark";
@@ -15,7 +15,7 @@ import {fromCircle} from "ol/geom/Polygon.js";
 export default {
     name: "TacticalMark",
     components: {
-        Tool
+        ToolTemplate
     },
     data () {
         return {
@@ -565,7 +565,7 @@ export default {
 </script>
 
 <template lang="html">
-    <Tool
+    <ToolTemplate
         :title="$t(name)"
         :icon="glyphicon"
         :active="active"
@@ -2718,10 +2718,10 @@ export default {
                 </div>
             </div>
         </template>
-    </Tool>
+    </ToolTemplate>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     input[type="checkbox"] {
         margin-top: 0;
     }

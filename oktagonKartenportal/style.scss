@@ -1,0 +1,32 @@
+@import "~/css/mixins.scss";
+
+$font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
+
+.oktagon {
+    .close, #oktagonCloseButton, #oktagonSubmitButton:not([disabled])  {
+        opacity: 1;
+        &:focus {
+            @include primary_action_focus;
+        }
+        &:hover {
+            @include primary_action_hover;
+        }
+    }
+    .header {
+        width: 100%;
+        border-bottom: 1px solid rgb(229,229,229);
+        padding: 10px;
+    }
+    .tool-name {
+        padding-left: 15px;
+        font-family: $font_family_1;
+        font-size: 16px;
+    }
+}
+@media (min-width: 768px) {
+    .oktagon {
+        .header {
+            padding: 10px;
+        }
+    }
+}

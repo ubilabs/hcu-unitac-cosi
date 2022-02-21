@@ -126,10 +126,109 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningSch
                     "RouteAusgeben": {
                         "dataType": "boolean",
                         "value": 1
+                    }
+                }, dispatch: true}
+            ], {}, done);
+        });
+
+        it("prepareWayToSchoolRequest adds the wpsTimeout attribute by default", done => {
+            const state = {
+                    inputAddress: "abc 10a",
+                    streetNames: ["abc", "def"],
+                    wpsTimeout: {
+                        "tm_ttl": {
+                            "dataType": "integer",
+                            "value": 50
+                        }
+                    }
+                },
+                payload = {
+                    selectedSchoolId: "5810-0",
+                    selectedHouseNumber: {
+                        properties: {
+                            hausnummer: {
+                                _: "10"
+                            },
+                            hausnummernzusatz: {
+                                _: "a"
+                            }
+                        }
+                    }
+                };
+
+            testAction(prepareWayToSchoolRequest, payload, state, {}, [
+                {type: "setSelectedAddress", payload: "abc 10a"},
+                {type: "requestWayToSchool", payload: {
+                    "Schul-ID": {
+                        "dataType": "string",
+                        "value": "5810-0"
+                    },
+                    "SchuelerStrasse": {
+                        "dataType": "string",
+                        "value": "abc"
+                    },
+                    "SchuelerHausnr": {
+                        "dataType": "integer",
+                        "value": 10
+                    },
+                    "SchuelerZusatz": {
+                        "dataType": "string",
+                        "value": "a"
+                    },
+                    "RouteAusgeben": {
+                        "dataType": "boolean",
+                        "value": 1
                     },
                     "tm_ttl": {
                         "dataType": "integer",
                         "value": 50
+                    }
+                }, dispatch: true}
+            ], {}, done);
+        });
+
+        it("prepareWayToSchoolRequest don't adds the wpsTimeout attribute if wpsTimeout is an empty object", done => {
+            const state = {
+                    inputAddress: "abc 10a",
+                    streetNames: ["abc", "def"],
+                    wpsTimeout: {}
+                },
+                payload = {
+                    selectedSchoolId: "5810-0",
+                    selectedHouseNumber: {
+                        properties: {
+                            hausnummer: {
+                                _: "10"
+                            },
+                            hausnummernzusatz: {
+                                _: "a"
+                            }
+                        }
+                    }
+                };
+
+            testAction(prepareWayToSchoolRequest, payload, state, {}, [
+                {type: "setSelectedAddress", payload: "abc 10a"},
+                {type: "requestWayToSchool", payload: {
+                    "Schul-ID": {
+                        "dataType": "string",
+                        "value": "5810-0"
+                    },
+                    "SchuelerStrasse": {
+                        "dataType": "string",
+                        "value": "abc"
+                    },
+                    "SchuelerHausnr": {
+                        "dataType": "integer",
+                        "value": 10
+                    },
+                    "SchuelerZusatz": {
+                        "dataType": "string",
+                        "value": "a"
+                    },
+                    "RouteAusgeben": {
+                        "dataType": "boolean",
+                        "value": 1
                     }
                 }, dispatch: true}
             ], {}, done);

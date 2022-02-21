@@ -324,7 +324,7 @@ export default {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 #weekDateInputButton{
     padding: 6px 12px 5px 12px
 }

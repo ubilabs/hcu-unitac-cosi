@@ -1,7 +1,7 @@
 <script>
 import {Select} from "ol/interaction";
 import {mapGetters} from "vuex";
-import Modal from "../../../../src/share-components/modals/components/Modal.vue";
+import Modal from "../../../../src/share-components/modals/components/ModalItem.vue";
 
 export default {
     name: "ReferencePicker",

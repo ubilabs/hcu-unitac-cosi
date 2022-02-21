@@ -131,7 +131,7 @@ export default {
     </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
     .schools-container {
         .form-group {
             margin-bottom: 25px;

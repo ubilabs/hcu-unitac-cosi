@@ -38,7 +38,18 @@ function pruneProps (properties, timestampPrefix) {
  */
 export function calculateStats (operation) {
     let properties, feature, val_A, val_B, res;
-    const mappingObject = {
+    const
+        // field_A = {
+        //     ...this.fields.A,
+        //     total: this.getTotalForAllTimestamps(this.fields.A),
+        //     average: this.getAverageForAllTimestamps(this.fields.A)
+        // },
+        // field_B = {
+        //     ...this.fields.A,
+        //     total: this.getTotalForAllTimestamps(this.fields.B),
+        //     average: this.getAverageForAllTimestamps(this.fields.B)
+        // },
+        mappingObject = {
             category: this.fields.A.category + ` ${operationSymbols[operation]} ` + this.fields.B.category,
             group: "Berechnungen",
             valueType: valueTypes[operation],
@@ -48,6 +59,7 @@ export function calculateStats (operation) {
 
     this.addCategoryToMapping(mappingObject);
 
+    // for (const col of [...this.districtColumns, ...this.aggregateColumns]) {
     for (const col of this.districtColumns) {
         properties = {
             ...this.fields.A[col.value],
@@ -90,6 +102,11 @@ export function sumUpSelected () {
     this.addCategoryToMapping(mappingObject);
 
     for (const col of this.districtColumns) {
+        // skip columns for which not all properties are available
+        if (this.selectedItems.find(item => !item[col.value])) {
+            continue;
+        }
+
         properties = {
             ...this.selectedItems[0][col.value],
             kategorie: mappingObject.category,

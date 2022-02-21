@@ -102,7 +102,7 @@ export default {
 
             for (const dataset of this.chartData.data.datasets) {
                 if (dataset.type === "line") {
-                    dataset.backgroundColor.opacity = 0;
+                    dataset.backgroundColor = rgb(0, 0, 0, 0);
                 }
             }
 

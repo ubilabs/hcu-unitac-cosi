@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersDipas";
 import mutations from "../store/mutationsDipas";
@@ -32,8 +32,7 @@ export default {
             selectedStyling: null,
             categoryRainbow: false,
             pollingEnabled: false,
-            poll: null,
-            pollingInteval: 120000
+            poll: null
         };
     },
     computed: {
@@ -258,9 +257,7 @@ export default {
                 const contributions = await this.getContributionFeatures(id);
 
                 for (const feature of contributions) {
-                    const
-                        properties = feature.getProperties(),
-                        geometryType = feature.getGeometry().getType();
+                    const geometryType = feature.getGeometry().getType();
 
                     if (geometryType !== "Point") {
                         const extent = feature.getGeometry().getExtent(),
@@ -268,12 +265,12 @@ export default {
 
                         feature.setGeometry(new Point(center));
                     }
-                    feature.set("originalGeometryType", geometryType);
-
-                    for (const property of ["votingPro", "votingContra", "commentsNumber"]) {
-                        properties[property] = String(properties[property]);
-                    }
-                    feature.setProperties(properties);
+                    feature.setProperties({
+                        originalGeometryType: geometryType,
+                        votingPro: String(feature.get("votingPro")),
+                        votingContra: String(feature.get("votingContra")),
+                        commentsNumber: String(feature.get("commentsNumber"))
+                    });
                     feature.setId(feature.get("id"));
                 }
                 projectContributions.features = contributions;
@@ -597,7 +594,7 @@ export default {
         },
         /**
          * Sets an automatic polling for new contributions
-         * pollingInteval length from store in ms
+         * pollingInterval length from store in ms
          * @returns {Number} the interval ID
          */
         setPolling () {
@@ -614,7 +611,7 @@ export default {
                         source.addFeatures(this.contributions[id].features);
                     }
                 }
-            }, this.pollingInteval);
+            }, this.pollingInterval);
         }
     }
 };
@@ -785,12 +782,6 @@ export default {
                             > {{ $t('additional:modules.tools.cosi.dipas.styling.byVoting') }}
                         </label>
                     </div>
-                    <v-switch
-                        v-model="pollingEnabled"
-                        small
-                        :title="$t('additional:modules.tools.cosi.dipas.polling.help')"
-                        :label="$t('additional:modules.tools.cosi.dipas.polling.label')"
-                    />
                     <v-divider />
                     <div
                         id="actions"

@@ -406,8 +406,8 @@ export default {
 
         async setGeometry (geom) {
             const
-                type = geom.getType(),
-                geometry = geom.clone();
+                type = geom?.getType(),
+                geometry = geom?.clone();
 
             await this.$nextTick();
             this.$set(this.geometry, "value", geometry);

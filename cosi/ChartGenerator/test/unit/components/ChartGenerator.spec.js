@@ -17,7 +17,7 @@ import
 import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
-import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import chartdata01 from "./chartdata01.json";
 
 Vue.use(Vuetify);

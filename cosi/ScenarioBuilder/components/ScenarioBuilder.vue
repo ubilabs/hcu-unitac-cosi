@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersScenarioBuilder";
@@ -61,6 +61,7 @@ export default {
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Tools/Routing", ["geosearchReverse"]),
 
         /**
          * Getter and Setter for the manuel coordinates Input for the geometry
@@ -317,7 +318,7 @@ export default {
         },
 
         async getAddress (geom) {
-            const address = await getAddress(geom, this.projectionCode);
+            const address = await getAddress(geom, this.projectionCode, this.geosearchReverse.type);
 
             if (address) {
                 for (const prop of this.workingLayer.addressField) {

@@ -23,13 +23,14 @@ export default {
         /**
          * Sets the schulwegrouting tool active,
          * takes over the school for the routing and close the gfi.
+         * @param {Event} event The click or keydown event.
          * @returns {void}
          */
-        takeRoute: function () {
+        takeRoute: function (event) {
             Radio.trigger("ModelList", "setModelAttributesById", this.id, {isActive: true});
             this.setToolActive({id: this.id, active: true});
             this.selectInitializeSchoolNumber(this.feature.getProperties().schul_id);
-            this.$parent.$parent.close();
+            this.$parent.$parent.close(event);
         }
     }
 };
@@ -44,7 +45,3 @@ export default {
         @keydown.enter="takeRoute"
     />
 </template>
-
-<style lang="less" scoped>
-
-</style>

@@ -228,7 +228,7 @@ function addLayerToTree (newLayer) {
         filterQuery = Radio.request("Filter", "getFilters");
 
     setLayerAttributes(model, newLayer);
-    adjustLayerStyling(newLayer);
+    adjustLayerStyling(model, newLayer);
     filterQuery.push(filterModel);
     Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
 
@@ -261,12 +261,17 @@ function setLayerAttributes (model, attrs) {
 
 /**
  * Styles the new layer
+ * @param {VectorBaseLayer} model - the layer model from the MP core
  * @param {{name: String, id: String, features: module:ol/Feature[]}} newLayer - the layer from the imported file
  * @returns {void}
  */
-function adjustLayerStyling (newLayer) {
+function adjustLayerStyling (model, newLayer) {
+    const
+        layer = model.layer,
+        path = "./assets/svg/" + newLayer.svg;
 
-    let pointColor = "",
+    let
+        pointColor = "",
         pointOpac = "";
 
     pointColor = d3Color(newLayer.style.svg);
@@ -276,9 +281,7 @@ function adjustLayerStyling (newLayer) {
 
     if (!newLayer.autoStyle) {
 
-        const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
-            layer = layerNode.attributes.layer,
-            path = "./assets/svg/" + newLayer.svg,
+        const
             svgStyle = new Style({
                 image: new Icon({
                     src: path,
@@ -328,10 +331,7 @@ function adjustLayerStyling (newLayer) {
         layer.setZIndex(100);
     }
     else {
-        const layerNode = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id}),
-            layer = layerNode.attributes.layer,
-            features = layerNode.attributes.features,
-            path = "./assets/svg/" + newLayer.svg;
+        const features = model.get("features");
 
         if (!isNaN(parseFloat(features[0].get(newLayer.autoStyleValue)))) {
             const sortingArray = features.map(feature => feature.get(newLayer.autoStyleValue)),

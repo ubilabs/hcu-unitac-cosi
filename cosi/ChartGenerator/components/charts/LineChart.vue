@@ -1,7 +1,7 @@
 
 <script>
 import {Line} from "vue-chartjs";
-import {color} from "d3-color";
+import {rgb} from "d3-color";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
 
@@ -78,10 +78,13 @@ export default {
             }
 
             this.chartData.data.datasets.forEach(dataset => {
-                const newColor = color(dataset.backgroundColor);
+                // const newColor = color(dataset.backgroundColor);
 
-                newColor.opacity = 0;
-                dataset.backgroundColor = newColor;
+                // if (newColor) {
+                //     newColor.opacity = 0;
+                //     dataset.backgroundColor = newColor;
+                // }
+                dataset.backgroundColor = rgb(0, 0, 0, 0);
             });
 
             this._options.scales.yAxes[0].stacked = this.chartData.stacked || false;

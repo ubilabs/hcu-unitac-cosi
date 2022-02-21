@@ -16,7 +16,7 @@ import
 import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
-import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import features_bibs from "./features_bibs.json";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";

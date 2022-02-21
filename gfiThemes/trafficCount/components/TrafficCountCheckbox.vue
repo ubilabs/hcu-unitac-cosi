@@ -81,6 +81,3 @@ export default {
         >{{ checkboxLabel }}</label>
     </div>
 </template>
-
-<style lang="less" scoped>
-</style>

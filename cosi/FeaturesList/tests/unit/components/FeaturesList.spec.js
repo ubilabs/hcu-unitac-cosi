@@ -11,7 +11,7 @@ import {expect} from "chai";
 import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
-import Tool from "../../../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import Scenario from "../../../../ScenarioBuilder/classes/Scenario";
 import Layer from "ol/layer/Vector.js";
 import Source from "ol/source/Vector.js";

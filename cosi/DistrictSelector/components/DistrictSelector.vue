@@ -1,5 +1,5 @@
 <script>
-import Tool from "../../../../src/modules/tools/Tool.vue";
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
@@ -38,6 +38,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
         ...mapGetters("Map", ["layerList", "visibleLayerList"]),
         ...mapState(["easyReadMode"]),
+        ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
 
         /**
          * Gets the names of the districts of the selected district level.
@@ -357,7 +358,7 @@ export default {
          */
         updateExtent (zoomToExtent = true) {
             const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
-                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal),
+                bboxGeom = this.areaSelectorGeom || getBoundingGeometry(this.selectedFeatures, this.bufferVal),
                 selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             if (extent) {

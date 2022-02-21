@@ -144,5 +144,6 @@
     "path": "cosi/AreaSelector",
     "type": "tool"
   },
+  "addLayerRemotely": "addLayerRemotely.js",
   "qr": "view.js"
 }

@@ -1,6 +1,6 @@
 
 import {expect} from "chai";
-import {createHistogram} from "../../../components/Histogram.vue";
+import {createHistogram} from "../../../utils/charts";
 
 describe("createHistogram", () => {
     it("should create histogram", () => {
