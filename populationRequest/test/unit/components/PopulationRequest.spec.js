@@ -81,7 +81,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
 
     it("should find Tool component", async () => {
         const wrapper = shallowMount(Component, {store, localVue}),
-            toolWrapper = wrapper.findComponent({name: "Tool"});
+            toolWrapper = wrapper.findComponent({name: "ToolTemplate"});
 
         expect(toolWrapper.exists()).to.be.true;
     });

@@ -1,4 +1,5 @@
-import {fetch as fetchPolyfill} from "whatwg-fetch";
+
+import axios from "axios";
 import thousandsSeparator from "../../src/utils/thousandsSeparator";
 import {extractEventCoordinates} from "../../src/utils/extractEventCoordinates";
 import store from "../../src/app-store";
@@ -65,20 +66,20 @@ const OktagonGetFeatureInformationModel = Backbone.Model.extend(/** @lends Oktag
             projection = Radio.request("MapView", "getProjection"),
             url = layerModel.get("layerSource").getFeatureInfoUrl(coordinate, resolution, projection, {INFO_FORMAT: "text/xml", STYLES: ""});
 
-        fetchPolyfill(url)
-            .then(response => response.text())
-            .then(responseAsString => new window.DOMParser().parseFromString(responseAsString, "text/xml"))
-            .then(responseXML => {
-                this.parseXML(responseXML);
-            })
-            .catch(error => {
-                console.warn("The fetch of the data failed with the following error message: " + error);
-                Radio.trigger("Alert", "alert", {
-                    text: "<strong>" + i18next.t("common:modules.vectorStyle.styleModel.getGeometryTypeFromWFSFetchfailed") + "</strong> <br>"
-                        + "<small>" + i18next.t("common:modules.vectorStyle.styleModel.getGeometryTypeFromWFSFetchfailedMessage") + "</small>",
-                    kategorie: "alert-warning"
-                });
+        axios({
+            method: "get",
+            url: url,
+            responseType: "document"
+        }).then(response => {
+            this.parseXML(response.data);
+        }).catch(error => {
+            console.warn("The fetch of the data failed with the following error message: " + error);
+            Radio.trigger("Alert", "alert", {
+                text: "<strong>" + i18next.t("common:modules.vectorStyle.styleModel.getGeometryTypeFromWFSFetchfailed") + "</strong> <br>"
+                    + "<small>" + i18next.t("common:modules.vectorStyle.styleModel.getGeometryTypeFromWFSFetchfailedMessage") + "</small>",
+                kategorie: "alert-warning"
             });
+        });
     },
     /**
      * Parses the xml response

@@ -1,4 +1,4 @@
-import component from "./components/Dipas.vue";
+import component from "./components/DipasTheme.vue";
 import deLocale from "./locales/de/additional.json";
 import enLocale from "./locales/en/additional.json";
 

@@ -1,6 +1,6 @@
 {
   "name": "addons",
-  "version": "2.16.2",
+  "version": "2.18.0",
   "description": "Addons to the Masterportal of Landesbetrieb Geoinformation und Vermessung Freie und Hansestadt Hamburg",
   "license": "MIT",
   "repository": {
@@ -18,5 +18,9 @@
   "dependencies": {},
   "devDependencies": {
     "husky": "^7.0.4"
+  },
+  "engines": {
+    "node": "^16.13.2",
+    "npm": "^8.1.2"
   }
 }
