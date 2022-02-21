@@ -2,10 +2,10 @@ import store from "../../../src/app-store";
 
 const helpers = {
     /**
-    * Erstellt data für POST-Request.
-    * Berücksichtigung von obligatorischen und optionalen Parametern
+    * Creates data for POST-request.
+    * Considers mandatory and optional parameters
     * @param   {object}    brw         Bodenrichtwertinformationen
-    * @returns {string}                Object für POST-Request
+    * @returns {string}                Object for POST-request
     */
     convert: function ({brw}) {
 
@@ -172,8 +172,8 @@ const helpers = {
                 value: brw.get("zGeschossfl_zahl")
             };
         }
-        if (brw.get("ZFLAE")) {
-            requestObj.ZWGFZ = {
+        if (brw.get("zGrdstk_flaeche")) {
+            requestObj.ZFLAE = {
                 dataType: "float",
                 value: brw.get("zGrdstk_flaeche")
             };
@@ -190,7 +190,7 @@ const helpers = {
     },
 
     /**
-     * Extrahiert und speichert den umgerechneten BRW
+     * Extracts and stores the converted BRW
      * @param  {string} response - the response xml of the wps
      * @param  {number} status - the HTTPStatusCode
      * @returns {void}
@@ -213,6 +213,7 @@ const helpers = {
                         console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                     }
                     else {
+                        // console.log("helpers handleConvertResponse dispatch", complexData.Bodenrichtwert.Ergebnis.BRW)
                         store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                     }
                 }
