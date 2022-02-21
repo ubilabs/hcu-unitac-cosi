@@ -1,6 +1,5 @@
 <script>
 import {mapGetters} from "vuex";
-import utils from "../../utils";
 
 export default {
     name: "ColorCodeLegend",
@@ -72,14 +71,10 @@ export default {
          */
         generateDynamicLegend (results, colorScale) {
             if (results.length > 1 && !this.dashboardOpen) {
-                this.matchResults = this.results.filter(x => {
-                    return this.selectedFeatures.some(y => {
-                        return utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(y.getProperties()[this.keyOfAttrName]);
-                    });
-                });
+                this.matchResults = results.filter(x => x.getProperties()[this.yearSelector + this.selectedYear] !== undefined);
 
                 colorScale.legend.values.forEach((value, index) => {
-                    if (value === "Keine Daten") {
+                    if (value === this.$t("additional:modules.tools.colorCodeMap.noData")) {
                         colorScale.legend.colors.splice(index, 1);
                         colorScale.legend.values.splice(index, 1);
                     }

@@ -205,7 +205,16 @@ export default {
         renderVisualization () {
             if (this.visualizationState) {
                 const results = this.selectedStatFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
-                    resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]);
+                    resultValues = results.map(x => {
+                        const yearValue = x.getProperties()[this.yearSelector + this.selectedYear];
+
+                        if (yearValue !== undefined) {
+                            return yearValue;
+                        }
+
+                        return this.$t("additional:modules.tools.colorCodeMap.noData");
+
+                    });
 
                 this.legendValues = results;
                 this.colorScale = this.getColorsByValues(resultValues);
@@ -222,7 +231,7 @@ export default {
 
                         const styleArray = [];
 
-                        getStyling.fill = new Fill({color: utils.getRgbArray(this.colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
+                        getStyling.fill = matchResults.getProperties()[this.yearSelector + this.selectedYear] !== undefined ? new Fill({color: utils.getRgbArray(this.colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)}) : new Fill({color: "rgba(0, 0, 0, 0.75)"});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
                             font: "16px Calibri,sans-serif",
@@ -233,7 +242,7 @@ export default {
                                 color: [0, 0, 0],
                                 width: 3
                             }),
-                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
+                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear] !== undefined
                                 ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
                                 : this.$t("additional:modules.tools.colorCodeMap.noData"),
                             overflow: true
@@ -284,6 +293,8 @@ export default {
                         }
 
                         district.setStyle(styleArray);
+                    } else {
+
                     }
                 });
             }
