@@ -471,7 +471,6 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
-
     /**
     * updater for selectedBrwFeature forces refresh
     * @param {string} converted Name des Attributes am feature

@@ -172,13 +172,16 @@ const helpers = {
                 value: brw.get("zGeschossfl_zahl")
             };
         }
-<<<<<<< HEAD
+
+
         if (brw.get("zGrdstk_flaeche")) {
             requestObj.ZFLAE = {
-=======
+            }
         if (brw.get("ZFLAE")) {
             requestObj.ZWGFZ = {
->>>>>>> 09a1b972 (BG-1869 comments from inka included)
+            }
+        if (brw.get("zGrdstk_flaeche")) {
+            requestObj.ZFLAE = {
                 dataType: "float",
                 value: brw.get("zGrdstk_flaeche")
             };
@@ -194,12 +197,7 @@ const helpers = {
 
     },
 
-    /**
-<<<<<<< HEAD
-     * Extracts and stores the converted BRW
-=======
-     * Extrahiert und speichert den umgerechneten BRW
->>>>>>> 09a1b972 (BG-1869 comments from inka included)
+    /*
      * @param  {string} response - the response xml of the wps
      * @param  {number} status - the HTTPStatusCode
      * @returns {void}
@@ -222,10 +220,11 @@ const helpers = {
                         console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                     }
                     else {
-<<<<<<< HEAD
+
                         // console.log("helpers handleConvertResponse dispatch", complexData.Bodenrichtwert.Ergebnis.BRW)
-=======
->>>>>>> 09a1b972 (BG-1869 comments from inka included)
+
+                        // console.log("helpers handleConvertResponse dispatch", complexData.Bodenrichtwert.Ergebnis.BRW)
+
                         store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                     }
                 }
