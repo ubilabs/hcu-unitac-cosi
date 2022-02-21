@@ -28,6 +28,11 @@ const actions = {
 
         Radio.request("Map", "registerListener", "click", (event) => dispatch("clickCallback", {event}));
     },
+    /**
+    * Requests parametic url and checks if all neccessary information is available to simulate gfi click and landuse select
+    * @returns {void}
+    * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
+    */
     requestParametricUrl ({commit, dispatch}) {
         const brwId = store.state.urlParams?.brwId,
             brwLayerName = store.state.urlParams?.brwLayerName,
@@ -47,6 +52,11 @@ const actions = {
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
+    /**
+     * Aktionen zum Wechseln eines Layers.
+     * @param   {string} selectedLayerName Name des zu aktivierenden Layers
+     * @returns {void}
+     */
     switchLayer ({dispatch, commit}, selectedLayerName) {
 
         const layerModels = state.filteredModelList.filter(function (model) {
@@ -82,6 +92,12 @@ const actions = {
         // Radio.trigger("Alert", "alert:remove");
         // this.render(this.model, this.model.get("isActive"));
     },
+    /**
+    * checks if a brw Feature already is available
+    * @param {ol.Feature[]} brwFeatures - list of all available brw features
+    * @param {string} year - the selected brw year
+    * @returns {void}
+    */
     checkBrwFeature ({dispatch, commit}, {brwFeature, year}) {
 
         if (brwFeature !== undefined) {
@@ -103,6 +119,11 @@ const actions = {
             commit("setGfiFeature", null);
         }
     },
+    /**
+     * Shows or hides the old view of brw = stripes.
+     * @param {boolean} value show or hide
+     * @returns {void}
+     */
     toggleStripesLayer ({dispatch, commit}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             selectedModel = modelList.find(model => model.get("isSelected") === true),
@@ -123,16 +144,26 @@ const actions = {
             }
         }
     },
+    /**
+     * selects a layer model by name
+     * @param {string} value - layer name
+     * @returns {void}
+     */
     selectLayerModelByName ({commit}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             layerModel = modelList.find(model => model.get("name") === value);
 
         layerModel.set("isVisibleInMap", true);
         layerModel.set("isSelected", true);
-
         commit("setSelectedLayer", layerModel);
     },
-    // sends a get feature info request to the currently selected layer
+    /**
+     * sends a get feature info request to the currently selected layer
+     * @param {MapBrowserPointerEvent} event - map browser event
+     * @param {Boolean} [processFromParametricUrl] Flag if process is started from parametric url. Then  the gfi request has to be faked, and the landuse has to be automatically selected, so that all the brw features can be displayed
+     * @param {Number[]} [center] Center coordinate of faked gfi
+     * @returns {void}
+     */
     clickCallback ({dispatch}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
@@ -170,6 +201,13 @@ const actions = {
 
 
     },
+    /**
+     * handles get feature info response
+     * @param {string} response - XML to be sent as String
+     * @param {number} status - request status
+     * @param {ol.coordinate} coordinate - click coordinate
+     * @returns {void}
+     */
     handleGfiResponse ({commit, dispatch}, {response, status, coordinate}) {
         if (status === 200) {
             const feature = new WMSGetFeatureInfo().readFeature(response);
@@ -209,7 +247,12 @@ const actions = {
         // FEHLT NOCH:
         // this.setBackdrop(false);
     },
-    // getWFS for polygon by id and year and place polygon marker
+    /**
+     * sends a wfs get feature request filtered by id
+     * @param {string} featureId -
+     * @param {string} year - the selected brw year
+     * @return {void}
+     */
     sendGetFeatureRequestById ({dispatch}, {featureId, featureYear}) {
         const yearInt = parseInt(featureYear, 10),
             index = Config.layerConf.lastIndexOf("/"),
@@ -246,8 +289,13 @@ const actions = {
             });
 
     },
-    // checks if there is a brw for the selected landuse
-    // if so, the function sendGetFeatureRequest is called
+    /**
+     * checks if there is a brw for the selected landuse
+     * if so, the function sendGetFeatureRequest is called
+     * @param {ol.Feature} feature - gfi feature
+     * @param {string} selectedLanduse - current selected landuse
+     * @returns {void}
+     */
     checkGfiFeatureByLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
         const landuse = feature.get("nutzungsart").find((nutzung) => {
             return nutzung.nutzungsart === selectedLanduse;
@@ -261,6 +309,12 @@ const actions = {
             commit("setSelectedBrwFeature", {});
         }
     },
+    /**
+     * sends a wfs get feature request filtered by Bodenrichtwertnummer
+     * @param {string} richtwertNummer - Bodenrichtwertenummer
+     * @param {string} year - the selected brw year
+     * @return {void}
+     */
     sendGetFeatureRequest ({dispatch}, {richtwertNummer, featureYear}) {
         const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
             index = Config.layerConf.lastIndexOf("/"),
@@ -287,6 +341,13 @@ const actions = {
             dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
         });
     },
+    /**
+     * handles the response from a wfs get feature request
+     * @param {string} response - XML to be sent as String
+     * @param {integer} status - request status
+     * @param {number} year - the selected brw year
+     * @returns {void}
+     */
     handleGetFeatureResponse ({commit, dispatch}, {response, status, year}) {
 
         if (status === 200) {
@@ -303,11 +364,18 @@ const actions = {
             Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + status);
         }
     },
-    findBrwFeatureByYear (context, {payload}) {
-        const features = Object.values(payload.features);
+    /**
+     * find out if there is a brw feature for the given year and retruns it
+     * if not returns undefined
+     * @param {ol.Feature[]} features - list of all available brw features
+     * @param {string} year - the selected year
+     * @return {ol.Feature|undefined} brw feature
+     */
+    findBrwFeatureByYear ({commit}, {features, year}) {
+        const brwFeatures = Object.values(features);
 
-        return features.find((feature) => {
-            return feature.get("jahrgang") === payload.year;
+        return brwFeatures.find((feature) => {
+            return feature.get("jahrgang") === year;
         });
     },
     handleNewFeature ({dispatch}, feature) {
@@ -317,13 +385,21 @@ const actions = {
             dispatch("extendFeatureAttributes", {feature, stichtag});
         });
     },
+    /**
+     * Sends a request to convert the BRW
+     * @returns {void}
+     */
     sendWpsConvertRequest () {
-
         const data = helpers.convert({brw: state.selectedBrwFeature});
 
         WPS.wpsRequest(state.wpsId, state.fmwProcess, data, helpers.handleConvertResponse);
 
     },
+    /**
+     * Sets the name of the active layer as stichtag name
+     * @param  {Backbone.Model[]} modelList List of all WMS Models
+     * @return {String} layername which is uses as stichtag
+     */
     getActiveLayerNameAsStichtag () {
         let stichtag = "";
         const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true);
@@ -389,18 +465,21 @@ const actions = {
     // getSelectedBrwFeatureValue (context, payload) {
     //     // console.log("getSelectedBrwFeatureValue", payload);
     // },
+    /**
+    * updater for selectedBrwFeature forces refresh
+    * @param {string} converted Name des Attributes am feature
+    * @param {string} brw Wert des Attributes
+    * @returns {void}
+    */
     updateSelectedBrwFeature ({commit}, {converted, brw}) {
         const feature = state.selectedBrwFeature,
-            // isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
             isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
-            // console.log("converted, isDMTime", converted, isDMTime)
 
         if (converted === "convertedBrw") {
             const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
 
             feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
             feature.setProperties({"convertedBrwDM": valueDm});
-            // console.log("updateSelectedBrwFeature valueDm", valueDm)
         }
         else if (converted === "zBauweise") {
             feature.setProperties({
@@ -425,7 +504,7 @@ const actions = {
         }
         else if (converted === "zStrassenLage") {
             feature.setProperties({
-                "zStrassenlage": brw,
+                "zStrassenLage": brw,
                 "convertedBrw": "",
                 "convertedBrwDM": ""
             });
