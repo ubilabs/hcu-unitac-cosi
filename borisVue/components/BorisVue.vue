@@ -118,14 +118,6 @@ export default {
                 this.sendWpsConvertRequest();
             }
         },
-        bauweiseSelectionChanged (event) {
-            this.setSelectedBauweise(event.target.value);
-        },
-        strassenlageSelectionChanged (event) {
-            const eventValue = event.target.value;
-
-            this.setSelectedStrassenlage(eventValue[0]);
-        },
         checkForBauweiseMatch (bauweise) {
             let zBauweise = this.selectedBrwFeature.get("zBauweise");
 
@@ -143,6 +135,29 @@ export default {
             }
             else {
                 this.setInfoText("");
+            }
+        },
+        handleBauwChange (event) {
+            this.setSelectedBauweise(event.target.value);
+            this.updateSelectedBrwFeature({converted: "zBauweise", brw: event.target.value});
+            this.sendWpsConvertRequest();
+        },
+        handleStrassenLageChange (event) {
+            const eventValue = event.target.value;
+            this.setSelectedStrassenLage(eventValue);
+            this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
+            this.sendWpsConvertRequest();
+        },
+        handleGeschossfl_zahlChange: function (event) {
+            if (event.type === "change" || (event.key === "Enter")) {
+                this.updateSelectedBrwFeature({converted: "zGeschossfl_zahl", brw: parseFloat(event.currentTarget.value.replace(",", "."))});
+                this.sendWpsConvertRequest();
+            }
+        },
+        handleGrdstk_flaecheChange: function (event) {
+            if (event.type === "change" || (event.key === "Enter")) {
+                this.updateSelectedBrwFeature({converted: "zGrdstk_flaeche", brw: parseFloat(event.currentTarget.value.replace(",", "."))});
+                this.sendWpsConvertRequest();
             }
         },
         /**
