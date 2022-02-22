@@ -26,8 +26,9 @@ describe("distanceScoreService", () => {
         const features = await getAllFeatures("20569"),
             commitStub = sinon.stub(),
             getters = defaultGetters(),
+            rootGetters = {"Map/projectionCode": "EPSG:25832"}
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: features[0],
                     layerIds: ["19862"],
@@ -45,8 +46,9 @@ describe("distanceScoreService", () => {
         const features = await getAllFeatures("20569"),
             commitStub = sinon.stub(),
             getters = defaultGetters(),
+            rootGetters = {"Map/projectionCode": "EPSG:25832"}
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: features[0],
                     layerIds: ["5246"],
@@ -59,8 +61,9 @@ describe("distanceScoreService", () => {
         const p = [9.818415798420284, 53.26231927558228],
             commitStub = sinon.stub(),
             getters = defaultGetters(),
+            rootGetters = {"Map/projectionCode": "EPSG:25832"},
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p, getExtent: ()=>[p[0], p[1], p[0], p[1]]})},
                     layerIds: ["19862"],
@@ -75,8 +78,9 @@ describe("distanceScoreService", () => {
             getters = {...defaultGetters(), useUserExtent: true},
             extent = [566074.67, 5933911.077, 567996.251, 5935623.892], // St. Georg
             p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
+            rootGetters = {"Map/projectionCode": "EPSG:25832"}
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1, getExtent: ()=>[p1[0], p1[1], p1[0], p1[1]]})},
                     layerIds: ["20569"], // one feature insdie St. Georg
@@ -93,8 +97,9 @@ describe("distanceScoreService", () => {
         const features = await getAllFeatures("20569"),
             commitStub = sinon.stub(),
             getters = defaultGetters(),
+            rootGetters = {"Map/projectionCode": "EPSG:25832"}
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: features[0],
                     layerIds: ["19862"],
@@ -111,8 +116,9 @@ describe("distanceScoreService", () => {
             getters = {...defaultGetters(), useUserExtent: true},
             extent = [563262.057, 5941046.992, 568546.555, 5944993.724], // Fuhlsbuettel
             p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
+            rootGetters = {"Map/projectionCode": "EPSG:25832"},
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: {getId: ()=>"id", getGeometry: ()=> ({flatCoordinates: p1, getExtent: ()=>[p1[0], p1[1], p1[0], p1[1]]})},
                     layerIds: ["20569"], // one feature insdie St. Georg
@@ -145,6 +151,7 @@ describe("distanceScoreService", () => {
                 }
             ]},
             p1 = [567120.1618948006, 5934379.965736715], // inside St. Georg
+            rootGetters = {"Map/projectionCode": "EPSG:25832"},
 
             score = await service.store.actions.getFeatureValues({getters, commit: commitStub},
                 {
@@ -218,8 +225,9 @@ describe("distanceScoreService", () => {
         const features = await getAllFeatures("19951"),
             commitStub = sinon.stub(),
             getters = defaultGetters(),
+            rootGetters = {"Map/projectionCode": "EPSG:25832"},
 
-            score = await service.store.actions.getDistanceScore({getters, commit: commitStub},
+            score = await service.store.actions.getDistanceScore({getters, commit: commitStub, rootGetters},
                 {
                     feature: features[0],
                     layerIds: ["16601"],

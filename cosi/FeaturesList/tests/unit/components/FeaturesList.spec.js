@@ -268,6 +268,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             expect(wrapper.vm.isFeatureDisabled(feat.feature)).to.be.true;
             expect(wrapper.vm.isFeatureActive(feat.feature)).to.be.false;
+            await wrapper.vm.removeDisabledFeatureItem(feat);
         });
 
         it("should toggle active feacture", async () => {
@@ -408,6 +409,8 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(spyChannelGraphData.calledOnce).to.be.true;
         });
 
+        sinon.stub(FeaturesList.methods, "highlightVectorFeature");
+
         it("should show distance score features", async () => {
             // arrange
             const wrapper = await mountComponent(true, [createLayer()]);
@@ -420,6 +423,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             // act
             await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+
             // assert
             // call counts affected by other test runs, why?
             expect(clearStub.callCount).to.be.greaterThan(0);
@@ -491,6 +495,8 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(tableWrapper.findAll("tr")).to.have.lengthOf(2);
         });
 
+        sinon.stub(DetailView.methods, "gfiOrBeautifyKey");
+
         it("table row should be expanded to detail view", async () => {
             const wrapper = await mountComponent(true, [createLayer()]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
@@ -515,7 +521,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             // event should be emitted once
             expect(wrapper.findComponent(DetailView).emitted("filterProps").length).to.equal(1);
             // event should emit the layerId and prop selected
-            expect(wrapper.findComponent(DetailView).emitted("filterProps")[0]).deep.to.equal([{"1234": ["schulname"]}]);
+            expect(wrapper.findComponent(DetailView).emitted("filterProps")[0]).deep.to.equal([{"1234": ["id"]}]);
             // updateFilterProps called
             expect(spyUpdateFilterProps.calledOnce).to.be.true;
         });
@@ -527,15 +533,8 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             await wrapper.vm.$nextTick();
             await wrapper.find("#export-table").trigger("click");
 
-            // exportTable should have been called once with arg[0] === false
+            // exportTable should have been called
             expect(spyExportTable.callCount).to.equal(1);
-            expect(spyExportTable.calledOnceWith(false)).to.be.true;
-
-            await wrapper.find("#export-detail").trigger("click");
-
-            // exportTable should have been called twice, the 2nd time with arg[0] === true
-            expect(spyExportTable.callCount).to.equal(2);
-            expect(spyExportTable.calledWith(true)).to.be.true;
         });
 
         it("expect feature to be removed from map/layer, when toggled off", async () => {
@@ -544,18 +543,17 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 wrapper = await mountComponent(true, [layer1]);
 
 
-            // // toggle feature off
-            await wrapper.find("#featureToggle").trigger("click");
-            await wrapper.vm.$nextTick();
+            // toggle feature off
+            await wrapper.find(".featureToggle").trigger("click");
             await wrapper.vm.$nextTick();
 
             expect(spyToggleFeature.calledOnceWith(wrapper.vm.items[0])).to.be.true;
             expect(wrapper.vm.disabledFeatureItems).to.have.lengthOf(1);
             expect(wrapper.vm.items[0].enabled).to.be.false;
-            expect(layer1.getSource().getFeatures()).to.have.lengthOf(0);
+            expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
 
             // toggle feature back on again
-            await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
+            await wrapper.find(".featureToggle").trigger("click");
             await wrapper.vm.$nextTick();
 
             expect(wrapper.vm.items[0].enabled).to.be.true;
