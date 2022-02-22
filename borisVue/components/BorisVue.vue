@@ -25,6 +25,34 @@ export default {
                 }
             }
             return filteredListWithoutStripes;
+        },
+        // unter gewählte Nutzung wwerden mit v-model die selektierten values der optionen übergeben
+        brwLanduseComputed: {
+            get () {
+                return this.brwLanduse;
+            },
+            set (value) {
+                this.setBrwLanduse(value);
+            }
+        }
+    },
+    watch: {
+        gfiFeature: {
+            handler (newVal) {
+                if (newVal) {
+                    if (this.processFromParametricUrl) {
+                        this.simulateLanduseSelect(this.paramUrlParams);
+                    }
+                }
+            }
+        },
+        // wenn sich brwLanduse verändert (bzw. ganz am Anfang über paramUrl vorhanden ist), dann wird checkGfiFeatureByLanduse ausgeführt
+        brwLanduse: {
+            handler (landuse) {
+                if (landuse) {
+                    this.checkGfiFeatureByLanduse({feature: this.gfiFeature, selectedLanduse: landuse});
+                }
+            }
         }
     },
     created () {
@@ -46,13 +74,10 @@ export default {
             "checkGfiFeatureByLanduse",
             "getSelectedBauweise",
             "updateSelectedBrwFeature",
-            "sendWpsConvertRequest"
+            "sendWpsConvertRequest",
+            "simulateLanduseSelect"
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
-        setSelectedLanduse (value) {
-            this.checkGfiFeatureByLanduse({feature: this.gfiFeature, selectedLanduse: value});
-            this.setBrwLanduse(value);
-        },
         checkForBauweiseMatch (bauweise) {
             let zBauweise = this.selectedBrwFeature.get("zBauweise");
 
@@ -79,6 +104,7 @@ export default {
         },
         handleStrassenLageChange (event) {
             const eventValue = event.target.value;
+
             this.setSelectedStrassenLage(eventValue);
             this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
             this.sendWpsConvertRequest();
@@ -133,6 +159,7 @@ export default {
             <div class="content">
                 <div class="form-group col-xs-12 first">
                     <span>Die Bodenrichtwertabfrage erfolgt für das Jahr:</span>
+                    <span>{{ brwLanduse === '' }}</span>
                 </div>
                 <div class="form-group col-xs-12">
                     <select
@@ -188,10 +215,11 @@ export default {
                 >
                     <span>Gewählte Nutzung:</span>
                     <select
+                        v-model="brwLanduseComputed"
                         class="form-control"
-                        @change="setSelectedLanduse($event.target.value)"
                     >
                         <option
+                            value=""
                             disabled
                             selected
                         >
