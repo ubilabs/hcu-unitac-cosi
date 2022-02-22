@@ -14,15 +14,6 @@ const actions = {
             return model.get("gfiAttributes") !== "ignore";
         });
 
-        // wenn gfi feature sich verändert, soll processFromParametricUrl gecheckt werden und dann simulateLanduseSelect(paramUrl)
-        // this.listenTo(this, {
-        //     "change:gfiFeature": function () {
-        //         if (this.get("processFromParametricUrl")) {
-        //             this.simulateLanduseSelect(this.get("paramUrlParams"));
-        //         }
-        //     }
-        // });
-
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
 
@@ -51,6 +42,25 @@ const actions = {
             dispatch("clickCallback", {undefined, processFromParametricUrl, center});
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
+    },
+    simulateLanduseSelect ({commit, dispatch}, paramUrlParams) {
+        const gfiFeature = state.gfiFeature,
+            landuseList = gfiFeature.get("nutzungsart");
+
+        dispatch("findLanduseByBrwId", {landuseList, brwId: paramUrlParams.brwId}).then((response)=>{
+            const landuseByBrwId = response;
+
+            commit("setBrwLanduse", landuseByBrwId);
+            commit("setProcessFromParametricUrl", false);
+        });
+    },
+    findLanduseByBrwId ({commit}, {landuseList, brwId}) {
+
+        const foundLanduse = landuseList.find(function (landuse) {
+            return landuse.richtwertnummer === brwId;
+        });
+
+        return foundLanduse.nutzungsart;
     },
     /**
      * Aktionen zum Wechseln eines Layers.
