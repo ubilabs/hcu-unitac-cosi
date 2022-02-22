@@ -7,7 +7,6 @@ import getClusterSource from "./getClusterSource";
  * @returns {void}
  */
 export function setBBoxToGeom (bboxGeometry) {
-    // const layerlist = Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}).concat(Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}));
     const layerlist = [
         ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
         ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})

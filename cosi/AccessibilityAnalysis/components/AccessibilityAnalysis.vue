@@ -258,6 +258,8 @@ export default {
         this.select = new Select({
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });
+
+        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url");
     },
 
     /**
@@ -305,7 +307,7 @@ export default {
         },
 
         resetMarkerAndZoom: function () {
-            const icoord = Proj.transform(this.coordinate[0], "EPSG:4326", "EPSG:25832");
+            const icoord = Proj.transform(this.coordinate[0], "EPSG:4326", this.projectionCode);
 
             this.placingPointMarker(icoord);
             this.setCenter(icoord);

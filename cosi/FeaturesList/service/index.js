@@ -143,13 +143,12 @@ function aggregate (values, type) {
  * @param {*} weights weights
  * @return {*} score
  */
-async function featureValues ({getters}, {feature, layerId}) {
-
+async function featureValues ({getters, rootGetters}, {feature, layerId}) {
     const layer = getLayerWhere({id: layerId}),
         coord = feature.getGeometry().flatCoordinates.slice(0, 2),
         wmsAttrs = getters.wmsLayers.find(l => l.id === layerId),
         converter = getConverter(wmsAttrs.converter),
-        infos = await getFeatureInfos(layer.url, layer.layers, coord, "EPSG:25832", wmsAttrs.resolution, wmsAttrs.featureCount);
+        infos = await getFeatureInfos(layer.url, layer.layers, coord, rootGetters["Map/projectionCode"], wmsAttrs.resolution, wmsAttrs.featureCount);
 
     if (infos.length > 0) {
         return aggregate(infos.map(info => converter.convert(info.getProperties()[wmsAttrs.attribute])),

@@ -49,6 +49,7 @@ export default {
     }),
     computed: {
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Tools/Routing", ["geosearchReverse"]),
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object
@@ -208,7 +209,7 @@ export default {
                 originalFeature.setGeometry(targetGeometry);
 
                 const
-                    address = await getAddress(targetGeometry, this.projectionCode),
+                    address = await getAddress(targetGeometry, this.projectionCode, this.geosearchReverse.type),
                     addressData = {};
 
                 if (address) {
