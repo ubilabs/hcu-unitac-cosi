@@ -20,7 +20,7 @@ const mutations = {
      * @param {String} [isTemp=true] - whether created on runtime
      * @returns {void}
      */
-    addCategoryToMapping (state, {category, group, valueType = "relative", isTemp = true}) {
+    addCategoryToMapping (state, {category, group, valueType = "relative", isTemp = true, calculation = undefined}) {
         const mappingObject = state.mapping.find(el => el.value === category && el.group === group);
 
         if (!mappingObject) {
@@ -32,7 +32,8 @@ const mutations = {
                 stadtteil: true,
                 bezirk: true,
                 valueType: valueType,
-                isTemp: isTemp
+                isTemp: isTemp,
+                calculation: calculation
             });
         }
     },

@@ -53,6 +53,7 @@ export default {
         <v-menu
             left
             nudge-top="280"
+            nudge-left="40"
             :close-on-content-click="false"
             @input="selectedMenuItem = null"
         >
@@ -197,6 +198,7 @@ export default {
 
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('add')"
                                         >
                                             <v-list-item-icon>
@@ -208,6 +210,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('subtract')"
                                         >
                                             <v-list-item-icon>
@@ -219,6 +222,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('multiply')"
                                         >
                                             <v-list-item-icon>
@@ -230,6 +234,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('divide')"
                                         >
                                             <v-list-item-icon>
@@ -253,7 +258,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
-                                            :disabled="selectedItems.length === 0"
+                                            :disabled="selectedItems.length === 0 || !fields.B"
                                             @click="$emit('divideSelected')"
                                         >
                                             <v-list-item-icon>

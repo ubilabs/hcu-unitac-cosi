@@ -358,14 +358,14 @@ export default {
          */
         updateExtent (zoomToExtent = true) {
             const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
-                bboxGeom = this.areaSelectorGeom || getBoundingGeometry(this.selectedFeatures, this.bufferVal),
+                bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal),
                 selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             if (extent) {
                 this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
                 this.setBoundingGeometry(bboxGeom);
-                setBBoxToGeom(bboxGeom);
+                setBBoxToGeom(this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
                     this.zoomTo({geometryOrExtent: extent, options: {}});
@@ -381,7 +381,7 @@ export default {
                 this.setExtent([]);
                 this.resetView();
                 this.setBoundingGeometry(undefined);
-                setBBoxToGeom(undefined);
+                setBBoxToGeom(this.areaSelectorGeom || undefined);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
         },
