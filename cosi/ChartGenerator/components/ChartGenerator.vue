@@ -197,7 +197,7 @@ export default {
          */
         downloadAll () {
             const chartBox = document.getElementById("chart_panel").querySelectorAll("canvas");
-            console.log(chartBox);
+
             chartBox.forEach(canvas => {
                 const canvasPNG = canvas.toDataURL("image/png");
 
@@ -210,7 +210,6 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         downloadFile (img) {
-            console.log("fired");
             const vLink = document.createElement("a");
 
             vLink.href = img;
