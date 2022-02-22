@@ -171,6 +171,7 @@ export default {
         },
         handleStrassenLageChange (event) {
             const eventValue = event.target.value;
+
             this.setSelectedStrassenLage(eventValue);
             this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
             this.sendWpsConvertRequest();
@@ -235,6 +236,7 @@ export default {
             <div class="content">
                 <div class="form-group col-xs-12 first">
                     <span>Die Bodenrichtwertabfrage erfolgt für das Jahr:</span>
+                    <span>{{ brwLanduse === '' }}</span>
                 </div>
                 <div class="form-group col-xs-12">
                     <select

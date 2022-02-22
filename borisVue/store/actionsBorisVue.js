@@ -13,9 +13,14 @@ const actions = {
             return layer.get("gfiAttributes") !== "ignore";
         });
 
+<<<<<<< HEAD
         layerList = layerList.reverse();
 
         commit("setFilteredLayerList", layerList);
+=======
+        modelList = modelList.reverse();
+        commit("setFilteredModelList", modelList);
+>>>>>>> 5d4abb42 (BG-1869 landuse selections included for parametric url procedure)
 
         Radio.request("Map", "registerListener", "click", (event) => dispatch("requestGFI", {event}));
     },
@@ -43,6 +48,7 @@ const actions = {
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
+<<<<<<< HEAD
     // simulated landuse selection when parametric Url is being used
     simulateLanduseSelect ({commit, getters}) {
         const landuseByBrwId = getters.findLanduseByBrwId;
@@ -51,6 +57,27 @@ const actions = {
         commit("setIsProcessFromParametricUrl", false);
     },
 
+=======
+    simulateLanduseSelect ({commit, dispatch}, paramUrlParams) {
+        const gfiFeature = state.gfiFeature,
+            landuseList = gfiFeature.get("nutzungsart");
+
+        dispatch("findLanduseByBrwId", {landuseList, brwId: paramUrlParams.brwId}).then((response)=>{
+            const landuseByBrwId = response;
+
+            commit("setBrwLanduse", landuseByBrwId);
+            commit("setProcessFromParametricUrl", false);
+        });
+    },
+    findLanduseByBrwId ({commit}, {landuseList, brwId}) {
+
+        const foundLanduse = landuseList.find(function (landuse) {
+            return landuse.richtwertnummer === brwId;
+        });
+
+        return foundLanduse.nutzungsart;
+    },
+>>>>>>> 5d4abb42 (BG-1869 landuse selections included for parametric url procedure)
     /**
      * Aktionen zum Wechseln eines Layers.
      * @param   {string} selectedLayerName Name des zu aktivierenden Layers
