@@ -207,6 +207,7 @@ export default {
         },
         handleStrassenLageChange (event) {
             const eventValue = event.target.value;
+
             this.setSelectedStrassenLage(eventValue);
             this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
             this.sendWpsConvertRequest();
@@ -276,9 +277,13 @@ export default {
                 <div class="form-group col-xs-12 first">
                     <span>Die Bodenrichtwertabfrage erfolgt für das Jahr:</span>
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <span>{{ brwLanduse === '' }}</span>
 =======
 >>>>>>> afd967cb (added switchLayer to select data by year)
+=======
+                    <span>{{ brwLanduse === '' }}</span>
+>>>>>>> 425a0483 (BG-1869 landuse selections included for parametric url procedure)
                 </div>
                 <div class="form-group col-xs-12">
                     <select
@@ -348,6 +353,7 @@ export default {
                 >
                     <span>Gewählte Nutzung:</span>
                     <select
+<<<<<<< HEAD
                         v-model="selectedLanduseComputed"
                         class="form-control"
                     >
@@ -850,10 +856,13 @@ export default {
                 >
                     <span>Gewählte Nutzung:</span>
                     <select
+=======
+                        v-model="brwLanduseComputed"
+>>>>>>> 425a0483 (BG-1869 landuse selections included for parametric url procedure)
                         class="form-control"
-                        @change="setSelectedLanduse($event.target.value)"
                     >
                         <option
+                            value=""
                             disabled
                             selected
                         >
