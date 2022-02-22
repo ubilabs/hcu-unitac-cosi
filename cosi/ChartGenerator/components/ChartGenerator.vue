@@ -11,10 +11,12 @@ import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import RadarChart from "./charts/RadarChart.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 
 export default {
     name: "ChartGenerator",
     components: {
+        AnalysisPagination,
         Tool,
         ToolInfo,
         LineChart,
@@ -195,7 +197,7 @@ export default {
          */
         downloadAll () {
             const chartBox = document.getElementById("chart_panel").querySelectorAll("canvas");
-
+            console.log(chartBox);
             chartBox.forEach(canvas => {
                 const canvasPNG = canvas.toDataURL("image/png");
 
@@ -208,6 +210,7 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         downloadFile (img) {
+            console.log("fired");
             const vLink = document.createElement("a");
 
             vLink.href = img;
@@ -221,6 +224,10 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         removeGraph (index) {
+            if (this.activeGraph === this.datasets.length - 1) {
+                this.activeGraph -= 1;
+            }
+
             this.chartConfigs.splice(index, 1);
             this.datasets.splice(index, 1);
         },
@@ -305,17 +312,6 @@ export default {
                                             @click="changeGraph(graph, i)"
                                         />
                                     </template>
-                                    <button
-                                        class="rmv_btn"
-                                        :title="$t('additional:modules.tools.cosi.chartGenerator.removeChart')"
-                                        @click="removeGraph(index)"
-                                    >
-                                        <v-icon
-                                            dense
-                                        >
-                                            mdi-close
-                                        </v-icon>
-                                    </button>
                                 </div>
                             </div>
                             <div class="graph_body">
@@ -370,18 +366,6 @@ export default {
                                                     >
                                                         {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
                                                     </button>
-                                                    <button
-                                                        class="dl right"
-                                                        :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                                        @click="downloadGraph()"
-                                                    >
-                                                        PNG
-                                                        <v-icon
-                                                            dense
-                                                        >
-                                                            mdi-download
-                                                        </v-icon>
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -430,7 +414,7 @@ export default {
                                                 >
                                                     {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
                                                 </button>
-                                                <button
+                                                <!--<button
                                                     class="dl right"
                                                     :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
                                                     @click="downloadGraph()"
@@ -441,7 +425,7 @@ export default {
                                                     >
                                                         mdi-download
                                                     </v-icon>
-                                                </button>
+                                                </button>-->
                                             </div>
                                         </div>
                                     </template>
@@ -449,64 +433,16 @@ export default {
                             </div>
                             <div class="graph_footer">
                                 <template v-if="datasets.length > 1">
-                                    <div class="btn_grp">
-                                        <button
-                                            v-for="(b, i) in datasets"
-                                            :key="b.cgid"
-                                            class="select_button"
-                                            :class="{highlight: activeGraph === i}"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.selectChartIndex')"
-                                            @click="selectGraph(i)"
-                                        >
-                                            <span>{{ i + 1 }}</span>
-                                        </button>
-                                    </div>
-                                    <div class="btn_grp main">
-                                        <button
-                                            class="nxt"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.prevChart')"
-                                            @click="graphPrevNext(-1)"
-                                        >
-                                            <v-icon
-                                                dense
-                                            >
-                                                mdi-chevron-left
-                                            </v-icon>
-                                        </button>
-                                        <button
-                                            class="nxt"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.nextChart')"
-                                            @click="graphPrevNext(+1)"
-                                        >
-                                            <v-icon
-                                                dense
-                                            >
-                                                mdi-chevron-right
-                                            </v-icon>
-                                        </button>
-                                        <button
-                                            class="dl"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.downloadAll')"
-                                            @click="downloadAll()"
-                                        >
-                                            <v-icon
-                                                dense
-                                            >
-                                                mdi-download
-                                            </v-icon>
-                                        </button>
-                                        <button
-                                            class="rm"
-                                            :title="$t('additional:modules.tools.cosi.chartGenerator.deleteAll')"
-                                            @click="removeAll()"
-                                        >
-                                            <v-icon
-                                                dense
-                                            >
-                                                mdi-close
-                                            </v-icon>
-                                        </button>
-                                    </div>
+                                    <AnalysisPagination
+                                        :sets="datasets"
+                                        :active-set="activeGraph"
+                                        @setActiveSet="(n) => selectGraph(n)"
+                                        @setPrevNext="(n) => graphPrevNext(n)"
+                                        @removeSingle="(n) => removeGraph(n)"
+                                        @removeAll="() => removeAll()"
+                                        @downloadSingle="(n) => downloadGraph()"
+                                        @downloadAll="() => downloadAll()"
+                                    />
                                 </template>
                             </div>
                         </div>
@@ -620,6 +556,10 @@ export default {
                             &.active {
                                 display:block;
                             }
+
+                            .current_graph {
+                                height:400px;
+                            }
                         }
 
                         .graph_functions {
@@ -653,56 +593,6 @@ export default {
                         justify-content:flex-end;
                         margin:5px auto;
                         padding-top: 10px;
-                        border-top: 1px solid #ccc;
-
-                        .btn_grp {
-                            &.main {
-                                margin-left: 5px;
-                                border-left: 1px solid #ccc;
-                                padding-left: 5px;
-                            }
-
-                            button {
-                                height:26px;
-                                width:26px;
-                                color:#222;
-                                font-weight:700;
-                                background: #eee;
-                                border:1px solid #eee;
-                                margin: 0px 1px;
-
-                                &.highlight {
-                                    background:white;
-                                    border:1px solid #888;
-                                }
-
-                                &.nxt {
-                                    height:36px;
-                                    width:36px;
-                                    border:1px solid #888;
-                                    background:white;
-                                    margin:0px;
-                                }
-
-                                &.dl, &.rm {
-                                    height:36px;
-                                    width:36px;
-                                    color:whitesmoke;
-                                    opacity:0.85;
-                                    margin:0px;
-                                }
-
-                                &.dl {
-                                    background: $green;
-                                    border:1px solid $green;
-                                }
-
-                                &.rm {
-                                    background: $error_red;
-                                    border:1px solid $error_red;
-                                }
-                            }
-                        }
                     }
                 }
 
