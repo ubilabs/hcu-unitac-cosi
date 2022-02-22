@@ -144,6 +144,7 @@ export default {
         },
         handleStrassenLageChange (event) {
             const eventValue = event.target.value;
+
             this.setSelectedStrassenLage(eventValue);
             this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
             this.sendWpsConvertRequest();
