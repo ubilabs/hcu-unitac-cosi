@@ -68,7 +68,7 @@ export function calculateAll () {
 
 /**
  * Adds a new calc to the calculation list
- * @param {"add" | "subtract" | "multiply" | "divide"} operation - the mathmatical operation to execute
+ * @param {"add" | "subtract" | "multiply" | "divide" | "sumUpSelected" | "divideSelected"} operation - the mathmatical operation to execute
  * @returns {void}
  */
 export function addCalculation (operation) {
@@ -330,7 +330,7 @@ export function getCulmulativeTotal (item, districtNames, timestamp, timestampPr
         return "-";
     }
 
-    return mathutils[item.calculation.operation](total_A, total_B);
+    return mathutils[item.calculation.operation](total_A, total_B) * (item.calculation.modifier || 1);
 }
 
 /**

@@ -80,16 +80,6 @@ export default {
                     groupable: false,
                     selected: false,
                     isAggregation: true
-                    // district: {
-                    //     adminFeature: null,
-                    //     statFeatures: [],
-                    //     originalStatFeatures: [],
-                    //     isSelected: false,
-                    //     getId: () => "total",
-                    //     getName: () => "total",
-                    //     getLabel: () => this.$t("additional:modules.tools.cosi.dashboard.totalCol"),
-                    //     getReferencDistrictName: () => null
-                    // }
                 },
                 {
                     text: this.$t("additional:modules.tools.cosi.dashboard.avgCol"),
@@ -99,16 +89,6 @@ export default {
                     groupable: false,
                     selected: false,
                     isAggregation: true
-                    // district: {
-                    //     adminFeature: null,
-                    //     statFeatures: [],
-                    //     originalStatFeatures: [],
-                    //     isSelected: false,
-                    //     getId: () => "average",
-                    //     getName: () => "average",
-                    //     getLabel: () => this.$t("additional:modules.tools.cosi.dashboard.avgCol"),
-                    //     getReferencDistrictName: () => null
-                    // }
                 }
             ],
             districtColumns: [],
