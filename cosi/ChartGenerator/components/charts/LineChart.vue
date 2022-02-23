@@ -4,6 +4,7 @@ import {Line} from "vue-chartjs";
 import {rgb} from "d3-color";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
+import fixColor from "../../utils/fixColor";
 
 export default {
     name: "LineChart",
@@ -57,7 +58,7 @@ export default {
                 return null;
             }
 
-            return {...this.datasets};
+            return {...fixColor(this.datasets)};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
@@ -78,12 +79,6 @@ export default {
             }
 
             this.chartData.data.datasets.forEach(dataset => {
-                // const newColor = color(dataset.backgroundColor);
-
-                // if (newColor) {
-                //     newColor.opacity = 0;
-                //     dataset.backgroundColor = newColor;
-                // }
                 dataset.backgroundColor = rgb(0, 0, 0, 0);
             });
 

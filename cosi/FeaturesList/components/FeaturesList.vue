@@ -635,7 +635,6 @@ export default {
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
-
                 const items = [];
 
                 this.distanceScoreQueue = this.items.map(item=>{
@@ -667,6 +666,9 @@ export default {
                 }
 
                 this.items = items;
+
+                // set the selected items on the updated list
+                this.selected = this.selected.map(sel => this.items.find(item => item.key === sel.key));
             }
         },
 
