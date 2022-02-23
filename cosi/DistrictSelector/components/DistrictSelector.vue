@@ -365,7 +365,7 @@ export default {
                 this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
                 this.setBoundingGeometry(bboxGeom);
-                setBBoxToGeom(bboxGeom);
+                setBBoxToGeom(bboxGeom, this.layerList);
 
                 if (zoomToExtent) {
                     this.zoomTo({geometryOrExtent: extent, options: {}});
