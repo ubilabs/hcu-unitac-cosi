@@ -104,6 +104,7 @@ const actions = {
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
+        commit("setTextId", []);
 
         // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
