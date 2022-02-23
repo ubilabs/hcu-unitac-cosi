@@ -42,7 +42,7 @@ describe("addons/geoAnalyze/components/GeoAnalyze.vue", () => {
 
     it("should find Tool component", () => {
         const wrapper = factory.getShallowMount(),
-            toolWrapper = wrapper.findComponent({name: "Tool"});
+            toolWrapper = wrapper.findComponent({name: "ToolTemplate"});
 
         expect(toolWrapper.exists()).to.be.true;
     });
