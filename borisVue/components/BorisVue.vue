@@ -69,7 +69,6 @@ export default {
             "initialize",
             "handleSelectBRWYear",
             "toggleStripesLayer",
-            "toggleInfoText",
             "requestParametricUrl",
             "checkGfiFeatureByLanduse",
             "getSelectedBauweise",
@@ -89,12 +88,16 @@ export default {
             }
             return bauweise === zBauweise;
         },
-        toggleInfoText () {
-            if (this.infoText.length === 0) {
-                this.setInfoText("Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.");
+        toggleInfoText (id) {
+            if (!Object.values(this.textId).includes(id)) {
+                this.textId.push(id);
             }
             else {
-                this.setInfoText("");
+                for (let i = 0; i < Object.values(this.textId).length; i++) {
+                    if (this.textId[i] === id) {
+                        this.textId.splice(i, 1);
+                    }
+                }
             }
         },
         handleBauwChange (event) {
@@ -194,11 +197,11 @@ export default {
                     </label>
                     <span
                         class="glyphicon glyphicon-info-sign"
-                        @click="toggleInfoText()"
+                        @click="toggleInfoText(1)"
                     />
-                    <div>
+                    <div v-if="Object.values(textId).includes(1)">
                         <div class="col-xs-12 info-text">
-                            <span>{{ infoText }} </span>
+                            <span>{{ 'Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.' }} </span>
                             <br>
                         </div>
                     </div>
@@ -406,7 +409,10 @@ export default {
                             >
                                 <dt>
                                     <span>Anbauart: </span>
-                                    <span class="glyphicon glyphicon-question-sign" />
+                                    <span 
+                                        class="glyphicon glyphicon-question-sign" 
+                                        @click="toggleInfoText(2)"
+                                    />
                                 </dt>
                                 <dd>
                                     <select
@@ -423,6 +429,13 @@ export default {
                                             {{ bauweise }}
                                         </option>
                                     </select>
+                                    <div
+                                        v-if="Object.values(textId).includes(2)"
+                                        class="help"
+                                    >
+                                        <span>Wählen Sie die Bauweise Ihres Gebäudes aus der Liste aus: <strong>Einzelhäuser </strong> sind freistehende Häuser, die nicht an die Grundstücksgrenze, Nutzungsgrenze oder andere Häuser angebaut sind. Lediglich zu einer Seite darf der Raum zwischen Haus und Grundstücksgrenze mit Nebengebäuden, z. B. Garagen zugebaut sein. <strong> Ein Doppelhaus </strong>ist eine Kombination zweier Häuser, die beide einseitig auf eine gemeinsame seitliche Grundstücksgrenze oder Nutzungsgrenze (bei Wohnungs-/Teileigentum) gebaut sind. Zur Vermeidung von Missverständnissen werden die einzelnen Häuser als <strong>halbe Doppelhäuser oder Doppelhaushälften</strong> bezeichnet. <strong>Ein Endreihenhaus</strong> ist einseitig bzw. ein <strong>Mittelreihenhaus</strong> ist beidseitig auf die seitlichen Grundstücks- bzw. Nutzungsgrenzen gebaut, so dass sich Zeilen von mindestens drei Häusern und bis zu 50 Meter Länge ergeben. <strong>Die geschlossenen Bauweise</strong> kennzeichnet Gebäude, die zu allen Seiten keinen Grenzabstand aufweisen und vollständig umbaut sind. <strong>Die abweichende Bauweise</strong> bezeichnet alle sonstigen Gebäudestellungen, die nicht in den zuvor genannten Kategorien aufgehen. Beispielsweise gehören hierzu Gartenhofhäuser, die zusammen mit Nachbarhäusern, Nebengebäuden und geschosshohen Mauern einen Garten in einem Gartenhof umschließen.</span>
+                                        <br>
+                                    </div>
                                 </dd>
                             </div>
                             <div
@@ -430,7 +443,10 @@ export default {
                             >
                                 <dt>
                                     <span>Lage zur Straße:</span>
-                                    <span class="glyphicon glyphicon-question-sign" />
+                                    <span 
+                                        class="glyphicon glyphicon-question-sign" 
+                                        @click="toggleInfoText(3)"
+                                    />
                                 </dt>
                                 <dd>
                                     <select
@@ -446,17 +462,24 @@ export default {
                                             {{ lage }}
                                         </option>
                                     </select>
+                                    <div
+                                        v-if="Object.values(textId).includes(3)"
+                                        class="help"
+                                    >
+                                        <span>Wählen Sie die Stellung und damit auch die Zuwegung Ihres Grundstücks zur Straße aus der Liste aus: Während bei <strong>Frontlage</strong> das Grundstück unmittelbar an genau eine Straße heranreicht, ist bei einer <strong>Ecklage</strong> eine unmittelbare Anbindung an mindestens zwei Straßen gegeben. Ein <strong>Pfeifenstielgrundstück</strong> ist eine schmale, pfeifenstielartige Zuwegung zu einem Grundstück, das nicht direkt an der Straße gelegen ist. Der Pfeifenstiel steht normalerweise im Alleineigentum des Pfeifenkopf-Grundstücks. Es ist jedoch auch möglich, dass ein Pfeifenstiel bis zu vier rückwärtige Grundstücke erschließt. <strong>Die Hinterlage</strong> bezeichnet ein rückwärtiges Grundstück, welches sich nicht im Eigentum des Grundstücks befindet, sondern über ein grundbuchliches Wegerecht oder als Baulast gesichert ist.</span>
+                                        <br>
+                                    </div>
                                 </dd>
-                                <!-- <dd class="help">
-                                    Wählen Sie die Stellung und damit auch die Zuwegung Ihres Grundstücks zur Straße aus der Liste aus: Während bei <strong>Frontlage</strong> das Grundstück unmittelbar an genau eine Straße heranreicht, ist bei einer <strong>Ecklage</strong> eine unmittelbare Anbindung an mindestens zwei Straßen gegeben. Ein <strong>Pfeifenstielgrundstück</strong> ist eine schmale, pfeifenstielartige Zuwegung zu einem Grundstück, das nicht direkt an der Straße gelegen ist. Der Pfeifenstiel steht normalerweise im Alleineigentum des Pfeifenkopf-Grundstücks. Es ist jedoch auch möglich, dass ein Pfeifenstiel bis zu vier rückwärtige Grundstücke erschließt. <strong>Die Hinterlage</strong> bezeichnet ein rückwärtiges Grundstück, welches sich nicht im Eigentum des Grundstücks befindet, sondern über ein grundbuchliches Wegerecht oder als Baulast gesichert ist.
-                                </dd> -->
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zGeschossfl_zahl')"
                             >
                                 <dt>
                                     <span>Wertrelevante Geschossflächenzahl (WGFZ):</span>
-                                    <span class="glyphicon glyphicon-question-sign" />
+                                    <span 
+                                        class="glyphicon glyphicon-question-sign"
+                                        @click="toggleInfoText(4)"
+                                    />
                                 </dt>
                                 <dd>
                                     <label>
@@ -468,7 +491,15 @@ export default {
                                             @change="handleGeschossfl_zahlChange($event)"
                                         >
                                     </label>
+                                    <div
+                                        v-if="Object.values(textId).includes(4)"
+                                        class="help"
+                                    >
+                                        <span>Die <strong>wertrelevante Geschossflächenzahl (WGFZ)</strong> wird über das Verhältnis der Geschossflächen zur Grundstücksfläche definiert. Geben Sie hier die WGFZ Ihres Grundstücks ein.</span>
+                                        <br>
+                                    </div>
                                 </dd>
+
                                 <!-- <dd class="help">
                                     Die <strong>wertrelevante Geschossflächenzahl (WGFZ)</strong> wird über das Verhältnis der Geschossflächen zur Grundstücksfläche definiert. Geben Sie hier die WGFZ Ihres Grundstücks ein.
                                 </dd> -->
@@ -478,7 +509,10 @@ export default {
                             >
                                 <dt>
                                     <span>Grundstücksfläche in m²:</span>
-                                    <span class="glyphicon glyphicon-question-sign" />
+                                    <span 
+                                        class="glyphicon glyphicon-question-sign" 
+                                        @click="toggleInfoText(5)"
+                                    />
                                 </dt>
                                 <dd>
                                     <label>
@@ -490,29 +524,44 @@ export default {
                                             @change="handleGrdstk_flaecheChange($event)"
                                         >
                                     </label>
+                                    <div
+                                        v-if="Object.values(textId).includes(5)"
+                                        class="help"
+                                    >
+                                        <span>Geben Sie für die <strong>Grundstücksfläche</strong> die Grundfläche Ihres Grundstücks laut Angabe im Liegenschaftskataster ein.</span>
+                                    </div>
                                 </dd>
-                                <!-- <dd class="help">
-                                    Geben Sie für die <strong>Grundstücksfläche</strong> die Grundfläche Ihres Grundstücks laut Angabe im Liegenschaftskataster ein.
-                                </dd> -->
                             </div>
                             <dt>
                                 <span>Ihr umgerechneter Bodenrichtwert:</span>
-                                <span class="glyphicon glyphicon-question-sign" />
+                                <span 
+                                        class="glyphicon glyphicon-question-sign" 
+                                        @click="toggleInfoText(6)"
+                                />
                             </dt>
                             <dd
                                 v-if="selectedBrwFeature.get('convertedBrwDM') === ''"
                             >
                                 {{ selectedBrwFeature.get("convertedBrw") }} €/m²
+                                <div
+                                    v-if="Object.values(textId).includes(6)"
+                                    class="help"
+                                >
+                                    <span>Der <strong>umgerechnete Bodenrichtwert</strong> ist der durchschnittlicher Bodenwert pro m² Grundstücksfläche im selektierten Gebiet bezogen auf Ihre individuellen und wertbeeinflussenden Angaben.</span>
+                                </div>
                             </dd>
                             <dd
                                 v-else
                             >
                                 <span>{{ selectedBrwFeature.get("convertedBrw") }} €/m²</span>
                                 <span class="pull-right">{{ selectedBrwFeature.get("convertedBrwDM") }} DM/m²</span>
+                                <div
+                                    v-if="Object.values(textId).includes(6)"
+                                    class="help"
+                                >
+                                    <span>Der <strong>umgerechnete Bodenrichtwert</strong> ist der durchschnittlicher Bodenwert pro m² Grundstücksfläche im selektierten Gebiet bezogen auf Ihre individuellen und wertbeeinflussenden Angaben.</span>
+                                </div>
                             </dd>
-                            <!-- <dd class="help">
-                                Der <strong>umgerechnete Bodenrichtwert</strong> ist der durchschnittlicher Bodenwert pro m² Grundstücksfläche im selektierten Gebiet bezogen auf Ihre individuellen und wertbeeinflussenden Angaben.
-                            </dd> -->
                         </dl>
                     </div>
                     <div v-if="buttonValue === 'liste'">
