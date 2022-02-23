@@ -8,7 +8,13 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateDashboard)
+    ...generateSimpleMutations(stateDashboard),
+    setCalculation (state, payload) {
+        state.calculations = [...state.calculations, payload];
+    },
+    removeCalculation (state, category) {
+        state.calculations = state.calculations.filter(calc => calc.category !== category);
+    }
 };
 
 export default mutations;

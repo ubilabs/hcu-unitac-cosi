@@ -90,7 +90,6 @@ const actions = {
         }
 
         else {
-            // commit("setLoadend", true);
             dispatch("updateDistricts");
             dispatch("Alerting/cleanup", null, {root: true});
             LoaderOverlay.hide();
