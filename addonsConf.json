@@ -32,6 +32,9 @@
   "schoolRoutePlanning": {
     "type": "tool"
   },
+  "streetsmart": {
+    "type": "tool"
+  },
   "activeCityMaps": {
     "path":"gfiThemes/activeCityMaps",
     "type": "gfiTheme"
