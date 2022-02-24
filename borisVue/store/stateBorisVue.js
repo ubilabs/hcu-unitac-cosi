@@ -16,7 +16,7 @@ const state = {
     selectedLayer: null,
     selectedLayerName: null,
     selectedLayerArray: ["2020"],
-    textId: [],
+    textIds: [],
     // Daten unter "Gewählte Nutzung"
     gfiFeature: null,
     brwLanduse: "",
