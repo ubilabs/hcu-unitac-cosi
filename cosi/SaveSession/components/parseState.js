@@ -176,7 +176,7 @@ export default {
 
     parseDrawFeatures (state, mutation, key, attr) {
         this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", "import_draw_layer"));
-        this.$store.dispatch("Draw/clearLayer");
+        this.$store.dispatch("Tools/Draw/clearLayer");
         const source = this.$store.state.Tools.Draw.layer.getSource();
 
         for (const feature of this.parseFeatures(state[key][attr])) {
