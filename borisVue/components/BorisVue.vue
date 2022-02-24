@@ -130,38 +130,27 @@ export default {
             return bauweise === zBauweise;
         },
         toggleInfoText (id) {
-            if (!Object.values(this.textId).includes(id)) {
-                this.textId.push(id);
+            if (!Object.values(this.textIds).includes(id)) {
+                this.textIds.push(id);
             }
             else {
-                for (let i = 0; i < Object.values(this.textId).length; i++) {
-                    if (this.textId[i] === id) {
-                        this.textId.splice(i, 1);
+                for (let i = 0; i < Object.values(this.textIds).length; i++) {
+                    if (this.textIds[i] === id) {
+                        this.textIds.splice(i, 1);
                     }
                 }
             }
         },
-        handleBauwChange (event) {
-            this.setSelectedBauweise(event.target.value);
-            this.updateSelectedBrwFeature({converted: "zBauweise", brw: event.target.value});
-            this.sendWpsConvertRequest();
-        },
-        handleStrassenLageChange (event) {
+        handleOptionChange (event, converted) {
             const eventValue = event.target.value;
 
-            this.setSelectedStrassenLage(eventValue);
-            this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
+            this.setSelectedBauweise(eventValue);
+            this.updateSelectedBrwFeature({converted: converted, brw: eventValue});
             this.sendWpsConvertRequest();
         },
-        handleGeschossfl_zahlChange: function (event) {
+        handleInputChange (event, converted) {
             if (event.type === "change" || (event.key === "Enter")) {
-                this.updateSelectedBrwFeature({converted: "zGeschossfl_zahl", brw: parseFloat(event.currentTarget.value.replace(",", "."))});
-                this.sendWpsConvertRequest();
-            }
-        },
-        handleGrdstk_flaecheChange: function (event) {
-            if (event.type === "change" || (event.key === "Enter")) {
-                this.updateSelectedBrwFeature({converted: "zGrdstk_flaeche", brw: parseFloat(event.currentTarget.value.replace(",", "."))});
+                this.updateSelectedBrwFeature({converted: converted, brw: parseFloat(event.currentTarget.value.replace(",", "."))});
                 this.sendWpsConvertRequest();
             }
         },
@@ -477,6 +466,7 @@ export default {
                             </div>
                         </div>
                     </div>
+                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
                 </div>
             </div>
         </template>
