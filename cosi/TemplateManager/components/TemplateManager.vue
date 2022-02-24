@@ -8,6 +8,13 @@ import actions from "../store/actionsTemplateManager";
 import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 
+const operationSymbols = {
+    add: "+",
+    subtract: "-",
+    multiply: "*",
+    divide: "/"
+};
+
 export default {
     name: "TemplateManager",
     components: {
@@ -16,7 +23,8 @@ export default {
     },
     data () {
         return {
-            templates: []
+            templates: [],
+            filters: []
         };
     },
     computed: {
@@ -40,7 +48,8 @@ export default {
                     model.set("isActive", false);
                 }
             }
-        }
+        },
+        templates: "createFilterObjects"
     },
     created () {
         /**
@@ -68,7 +77,9 @@ export default {
 
                 try {
                     res = await axios(path);
-                    templates.push(await res.data);
+                    res = await res.data;
+                    res = this.breakUpCalculations(res);
+                    templates.push(res);
                 }
                 catch (e) {
                     console.warn(`Template at ${path} could not be loaded. Please check that it is a valid JSON file.`);
@@ -76,6 +87,47 @@ export default {
             }
 
             this.templates = templates;
+        },
+
+        breakUpCalculations (template) {
+            const calculations = template.state.Tools?.Dashboard?.calculations;
+
+            if (calculations) {
+                template.state.Tools.Dashboard.calculations = calculations.reduce((res, calc) => {
+                    if (calc.operation === "divideSelected") {
+                        return [
+                            ...res,
+                            ...calc.selectedCategories.map(cat => {
+                                const _calc = {
+                                    operation: "divide",
+                                    category_A: cat,
+                                    category_B: calc.category_B
+                                };
+
+                                _calc.id = this.getCalculationCategory(_calc);
+
+                                return _calc;
+                            })
+                        ];
+                    }
+
+                    calc.id = this.getCalculationCategory(calc);
+                    return [...res, calc];
+                }, []);
+            }
+
+            return template;
+        },
+
+        createFilterObjects () {
+            this.filters = this.templates.map(template => ({
+                activeLayerList: Object.fromEntries(this.getActiveLayerList(template).map(el => [el, true])),
+                selectedDistricts: Object.fromEntries(this.getSelectedDistricts(template).map(el => [el, true])),
+                statsCategories: Object.fromEntries(this.getStatsCategories(template).map(el => [el, true])),
+                calculations: Object.fromEntries(this.getCalculations(template).map(el => [el.id, true]))
+            }));
+
+            console.log(this.filters);
         },
 
         loadFromTemplate (template) {
@@ -115,6 +167,16 @@ export default {
 
         getStatsCategories (template) {
             return template.state.Tools?.Dashboard?.statsFeatureFilter || [];
+        },
+
+        getCalculations (template) {
+            return template.state.Tools?.Dashboard?.calculations || [];
+        },
+
+        getCalculationCategory (calculation) {
+            return calculation.operation === "sumUpSelected" ?
+                calculation.selectedCategories.join(" + ") :
+                calculation.category_A + ` ${operationSymbols[calculation.operation]} ` + calculation.category_B;
         }
     }
 };
@@ -189,6 +251,10 @@ export default {
                                                                 small
                                                             >
                                                                 {{ layerId }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].activeLayerList[layerId]"
+                                                                    small
+                                                                />
                                                             </v-chip>
                                                         </td>
                                                     </tr>
@@ -212,6 +278,10 @@ export default {
                                                                 small
                                                             >
                                                                 {{ districtName }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].selectedDistricts[districtName]"
+                                                                    small
+                                                                />
                                                             </v-chip>
                                                         </td>
                                                     </tr>
@@ -225,6 +295,27 @@ export default {
                                                                 small
                                                             >
                                                                 {{ category }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].statsCategories[category]"
+                                                                    small
+                                                                />
+                                                            </v-chip>
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="getCalculations(template).length > 0">
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.calculations')" />
+                                                        <td>
+                                                            <v-chip
+                                                                v-for="(calculation, j) in getCalculations(template)"
+                                                                :key="template.meta.title + 'calculation' + j"
+                                                                class="ma-1"
+                                                                small
+                                                            >
+                                                                {{ calculation.id }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].calculations[calculation.id]"
+                                                                    small
+                                                                />
                                                             </v-chip>
                                                         </td>
                                                     </tr>
