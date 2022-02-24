@@ -157,38 +157,27 @@ export default {
             return bauweise === zBauweise;
         },
         toggleInfoText (id) {
-            if (!Object.values(this.textId).includes(id)) {
-                this.textId.push(id);
+            if (!Object.values(this.textIds).includes(id)) {
+                this.textIds.push(id);
             }
             else {
-                for (let i = 0; i < Object.values(this.textId).length; i++) {
-                    if (this.textId[i] === id) {
-                        this.textId.splice(i, 1);
+                for (let i = 0; i < Object.values(this.textIds).length; i++) {
+                    if (this.textIds[i] === id) {
+                        this.textIds.splice(i, 1);
                     }
                 }
             }
         },
-        handleBauwChange (event) {
-            this.setSelectedBauweise(event.target.value);
-            this.updateSelectedBrwFeature({converted: "zBauweise", brw: event.target.value});
-            this.sendWpsConvertRequest();
-        },
-        handleStrassenLageChange (event) {
+        handleOptionChange (event, converted) {
             const eventValue = event.target.value;
 
-            this.setSelectedStrassenLage(eventValue);
-            this.updateSelectedBrwFeature({converted: "zStrassenLage", brw: eventValue});
+            this.setSelectedBauweise(eventValue);
+            this.updateSelectedBrwFeature({converted: converted, brw: eventValue});
             this.sendWpsConvertRequest();
         },
-        handleGeschossfl_zahlChange: function (event) {
+        handleInputChange (event, converted) {
             if (event.type === "change" || (event.key === "Enter")) {
-                this.updateSelectedBrwFeature({converted: "zGeschossfl_zahl", brw: parseFloat(event.currentTarget.value.replace(",", "."))});
-                this.sendWpsConvertRequest();
-            }
-        },
-        handleGrdstk_flaecheChange: function (event) {
-            if (event.type === "change" || (event.key === "Enter")) {
-                this.updateSelectedBrwFeature({converted: "zGrdstk_flaeche", brw: parseFloat(event.currentTarget.value.replace(",", "."))});
+                this.updateSelectedBrwFeature({converted: converted, brw: parseFloat(event.currentTarget.value.replace(",", "."))});
                 this.sendWpsConvertRequest();
             }
         },
@@ -388,6 +377,7 @@ export default {
                                 v-if="selectedBrwFeature.get('zBauweise')"
                             >
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 <CalculationComponent
                                     :title="'Anbauart:'"
                                     :options="buildingDesigns"
@@ -443,10 +433,23 @@ export default {
 >>>>>>> 36c53192 (BG-1869 comments from inka included)
 =======
 >>>>>>> 13f4ebc8 (implemented selections 'anbauart' and 'lager zur strasse')
+=======
+                                <CalculationSelect
+                                    :title="'Anbauart:'"
+                                    :options="bauweisen"
+                                    :selected-brw-feature="selectedBrwFeature"
+                                    :text-ids="textIds"
+                                    :text="'Wählen Sie die Bauweise Ihres Gebäudes aus der Liste aus: <strong>Einzelhäuser </strong> sind freistehende Häuser, die nicht an die Grundstücksgrenze, Nutzungsgrenze oder andere Häuser angebaut sind. Lediglich zu einer Seite darf der Raum zwischen Haus und Grundstücksgrenze mit Nebengebäuden, z. B. Garagen zugebaut sein. <strong> Ein Doppelhaus </strong>ist eine Kombination zweier Häuser, die beide einseitig auf eine gemeinsame seitliche Grundstücksgrenze oder Nutzungsgrenze (bei Wohnungs-/Teileigentum) gebaut sind. Zur Vermeidung von Missverständnissen werden die einzelnen Häuser als <strong>halbe Doppelhäuser oder Doppelhaushälften</strong> bezeichnet. <strong>Ein Endreihenhaus</strong> ist einseitig bzw. ein <strong>Mittelreihenhaus</strong> ist beidseitig auf die seitlichen Grundstücks- bzw. Nutzungsgrenzen gebaut, so dass sich Zeilen von mindestens drei Häusern und bis zu 50 Meter Länge ergeben. <strong>Die geschlossenen Bauweise</strong> kennzeichnet Gebäude, die zu allen Seiten keinen Grenzabstand aufweisen und vollständig umbaut sind. <strong>Die abweichende Bauweise</strong> bezeichnet alle sonstigen Gebäudestellungen, die nicht in den zuvor genannten Kategorien aufgehen. Beispielsweise gehören hierzu Gartenhofhäuser, die zusammen mit Nachbarhäusern, Nebengebäuden und geschosshohen Mauern einen Garten in einem Gartenhof umschließen.'"
+                                    :toggle-info-text="toggleInfoText"
+                                    :selection-type="'zBauweise'"
+                                    :handle-option-change="handleOptionChange"
+                                />
+>>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zStrassenLage')"
                             >
+<<<<<<< HEAD
 <<<<<<< HEAD
                                 <CalculationComponent
                                     :title="'Lage zur Straße:'"
@@ -505,6 +508,18 @@ export default {
 >>>>>>> 36c53192 (BG-1869 comments from inka included)
 =======
 >>>>>>> c0cf747c (toggleInfoText method included)
+=======
+                                <CalculationSelect
+                                    :title="'Lage zur Straße:'"
+                                    :options="strassenlagen"
+                                    :selected-brw-feature="selectedBrwFeature"
+                                    :text-ids="textIds"
+                                    :text="'Wählen Sie die Stellung und damit auch die Zuwegung Ihres Grundstücks zur Straße aus der Liste aus: Während bei <strong>Frontlage</strong> das Grundstück unmittelbar an genau eine Straße heranreicht, ist bei einer <strong>Ecklage</strong> eine unmittelbare Anbindung an mindestens zwei Straßen gegeben. Ein <strong>Pfeifenstielgrundstück</strong> ist eine schmale, pfeifenstielartige Zuwegung zu einem Grundstück, das nicht direkt an der Straße gelegen ist. Der Pfeifenstiel steht normalerweise im Alleineigentum des Pfeifenkopf-Grundstücks. Es ist jedoch auch möglich, dass ein Pfeifenstiel bis zu vier rückwärtige Grundstücke erschließt. <strong>Die Hinterlage</strong> bezeichnet ein rückwärtiges Grundstück, welches sich nicht im Eigentum des Grundstücks befindet, sondern über ein grundbuchliches Wegerecht oder als Baulast gesichert ist.'"
+                                    :toggle-info-text="toggleInfoText"
+                                    :selection-type="'zStrassenLage'"
+                                    :handle-option-change="handleOptionChange"
+                                />
+>>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zGeschossfl_zahl')"
@@ -537,22 +552,25 @@ export default {
                                             type="text"
                                             class="form-control"
                                             :value="selectedBrwFeature.get('zGeschossfl_zahl').toString().replace('.', ',')"
-                                            @change="handleGeschossfl_zahlChange($event)"
+                                            @change="handleInputChange($event, 'zGeschossfl_zahl')"
                                         >
                                     </label>
                                     <div
-                                        v-if="Object.values(textId).includes(4)"
+                                        v-if="Object.values(textIds).includes(4)"
                                         class="help"
                                     >
                                         <span>Die <strong>wertrelevante Geschossflächenzahl (WGFZ)</strong> wird über das Verhältnis der Geschossflächen zur Grundstücksfläche definiert. Geben Sie hier die WGFZ Ihres Grundstücks ein.</span>
                                         <br>
                                     </div>
                                 </dd>
+<<<<<<< HEAD
 
                                 <!-- <dd class="help">
                                     Die <strong>wertrelevante Geschossflächenzahl (WGFZ)</strong> wird über das Verhältnis der Geschossflächen zur Grundstücksfläche definiert. Geben Sie hier die WGFZ Ihres Grundstücks ein.
                                 </dd> -->
 >>>>>>> 5d3aad6e (BG-1869 handle change methods to calculate Bodenrichtwert included)
+=======
+>>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zGrdstk_flaeche')"
@@ -585,11 +603,11 @@ export default {
                                             type="text"
                                             class="form-control"
                                             :value="selectedBrwFeature.get('zGrdstk_flaeche').toString().replace('.', ',')"
-                                            @change="handleGrdstk_flaecheChange($event)"
+                                            @change="handleInputChange($event, 'zGrdstk_flaeche')"
                                         >
                                     </label>
                                     <div
-                                        v-if="Object.values(textId).includes(5)"
+                                        v-if="Object.values(textIds).includes(5)"
                                         class="help"
                                     >
                                         <span>Geben Sie für die <strong>Grundstücksfläche</strong> die Grundfläche Ihres Grundstücks laut Angabe im Liegenschaftskataster ein.</span>
@@ -620,8 +638,12 @@ export default {
 =======
                                 {{ selectedBrwFeature.get("convertedBrw") }} €/m²
                                 <div
+<<<<<<< HEAD
                                     v-if="Object.values(textId).includes(6)"
 >>>>>>> c0cf747c (toggleInfoText method included)
+=======
+                                    v-if="Object.values(textIds).includes(6)"
+>>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                                     class="help"
                                 >
                                     <span>Der <strong>umgerechnete Bodenrichtwert</strong> ist der durchschnittlicher Bodenwert pro m² Grundstücksfläche im selektierten Gebiet bezogen auf Ihre individuellen und wertbeeinflussenden Angaben.</span>
@@ -634,10 +656,14 @@ export default {
                                 <span class="pull-right">{{ selectedBrwFeature.get("convertedBrwDM") }} DM/m²</span>
                                 <div
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     v-if="Object.values(textIds).includes(6)"
 =======
                                     v-if="Object.values(textId).includes(6)"
 >>>>>>> c0cf747c (toggleInfoText method included)
+=======
+                                    v-if="Object.values(textIds).includes(6)"
+>>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                                     class="help"
                                 >
                                     <span>Der <strong>umgerechnete Bodenrichtwert</strong> ist der durchschnittlicher Bodenwert pro m² Grundstücksfläche im selektierten Gebiet bezogen auf Ihre individuellen und wertbeeinflussenden Angaben.</span>
@@ -645,6 +671,7 @@ export default {
                             </dd>
                         </dl>
                     </div>
+<<<<<<< HEAD
                     <div v-if="buttonValue === 'liste' && selectedBrwFeature.get('schichtwert')">
                         <FloorComponent
                             :title="'Schichtwerte'"
@@ -664,6 +691,13 @@ export default {
                         class="form-group col-md-12 col-xs-12 pt-20"
                     >
                         <div class="progress">
+=======
+                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
+                    <div v-if="buttonValue === 'liste'">
+                        <h4>Schichtwerte</h4>
+                        <span>Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:</span>
+                        <dl>
+>>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                             <div
                                 class="progress-bar"
                                 role="progressbar"
@@ -673,6 +707,7 @@ export default {
                             </div>
                         </div>
                     </div>
+                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
                 </div>
             </div>
         </template>
