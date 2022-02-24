@@ -8,6 +8,7 @@ export default {
 
         this.serializeScenarios(state);
         this.serializeBackboneModules(state);
+        this.serializeDrawFeatures(state);
         this.state = state;
     },
 
@@ -30,7 +31,7 @@ export default {
                 state[key] = this.deepCopyState(map[key], store[key]);
             }
         }
-
+        
         return state;
     },
 
@@ -171,5 +172,9 @@ export default {
         return {
             type, coordinates
         };
+    },
+
+    serializeDrawFeatures (state) {
+        state.Tools.Draw.layer = this.serializeFeatures(state.Tools.Draw.layer.getSource().getFeatures());
     }
 };
