@@ -1,0 +1,16 @@
+{
+    "menu": {
+        "tools":{
+            "streetsmart": "Streetsmart"
+        }
+    },
+    "modules": {
+        "tools": {
+            "vueAddon": {
+                "title": "Streetsmart",
+                "noData": "No panorama data available for this position. Marker is set back to last position.",
+                "createViewFailed": "Failed to create streetsmart view."
+            }
+        }
+    }
+}

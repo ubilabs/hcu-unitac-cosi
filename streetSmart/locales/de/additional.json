@@ -1,0 +1,16 @@
+{
+    "menu": {
+        "tools":{
+            "streetsmart": "Streetsmart"
+        }
+    },
+    "modules": {
+        "tools": {
+            "streetsmart": {
+                "title": "Streetsmart",
+                "noData": "Für diese Position sind keine Panoramadaten verfügbar. Die Markierung wird auf die letzte Position zurückgesetzt.",
+                "createViewFailed": "Die Erstellung der Streetmart-Ansicht ist fehlgeschlagen."
+            }
+        }
+    }
+}
