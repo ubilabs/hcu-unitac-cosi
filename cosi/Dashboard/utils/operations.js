@@ -32,37 +32,93 @@ function pruneProps (properties, timestampPrefix) {
 }
 
 /**
- * Calculates a new statsFeature for the selected districts and their reference districts
+ * adds or replaces a statsFeature by category
+ * @param {Object} district - the district object from districtSelector
+ * @param {module:ol/Feature} feature - the statsFeature
+ * @returns {void}
+ */
+function addOrReplaceStatsFeature (district, feature) {
+    const i = district.statFeatures.findIndex(feat => feat.get("kategorie") === feature.get("kategorie"));
+
+    if (i > -1) {
+        district.statFeatures.splice(i, 1);
+    }
+
+    district.statFeatures.push(feature);
+}
+
+/**
+ * Performs all calculations from the calculations list
+ * @returns {void}
+ */
+export function calculateAll () {
+    for (const calculation of this.calculations) {
+        if (calculation.operation === "sumUpSelected") {
+            // this.selectedItems = this.items.filter(item => calculation.selectedCategories.includes(item.category));
+            this.sumUpSelected(calculation);
+        }
+        else if (calculation.operation === "divideSelected") {
+            this.divideSelected(calculation);
+        }
+        else {
+            this.calculateStats(calculation);
+        }
+    }
+}
+
+/**
+ * Adds a new calc to the calculation list
  * @param {"add" | "subtract" | "multiply" | "divide"} operation - the mathmatical operation to execute
  * @returns {void}
  */
-export function calculateStats (operation) {
-    let properties, feature, val_A, val_B, res;
+export function addCalculation (operation) {
+    const calculation = {operation};
+
+    if (operation === "sumUpSelected") {
+        calculation.selectedCategories = this.selectedItems.map(item => item.category);
+    }
+    else if (operation === "divideSelected") {
+        calculation.selectedCategories = this.selectedItems.map(item => item.category);
+        calculation.category_B = this.fields.B.category;
+    }
+    else {
+        calculation.category_A = this.fields.A.category;
+        calculation.category_B = this.fields.B.category;
+    }
+
+    this.setCalculation(calculation);
+}
+
+/**
+ * Calculates a new statsFeature for the selected districts and their reference districts
+ * @param {{category_A: String, category_B: String, operation: String}} calculation - the calculation options
+ * @returns {void}
+ */
+export function calculateStats (calculation) {
+    let
+        properties, feature, val_A, val_B, res,
+        timestamps = null;
     const
-        // field_A = {
-        //     ...this.fields.A,
-        //     total: this.getTotalForAllTimestamps(this.fields.A),
-        //     average: this.getAverageForAllTimestamps(this.fields.A)
-        // },
-        // field_B = {
-        //     ...this.fields.A,
-        //     total: this.getTotalForAllTimestamps(this.fields.B),
-        //     average: this.getAverageForAllTimestamps(this.fields.B)
-        // },
+        field_A = this.items.find(item => item.category === calculation.category_A),
+        field_B = this.items.find(item => item.category === calculation.category_B),
         mappingObject = {
-            category: this.fields.A.category + ` ${operationSymbols[operation]} ` + this.fields.B.category,
+            category: calculation.category_A + ` ${operationSymbols[calculation.operation]} ` + calculation.category_B,
             group: "Berechnungen",
-            valueType: valueTypes[operation],
-            isTemp: true
-        },
-        timestamps = arrayIntersect(this.fields.A.years, this.fields.B.years);
+            valueType: valueTypes[calculation.operation],
+            isTemp: true,
+            calculation
+        };
+
+    if (!(field_A && field_B)) {
+        return;
+    }
 
     this.addCategoryToMapping(mappingObject);
+    timestamps = arrayIntersect(field_A.years, field_B.years);
 
-    // for (const col of [...this.districtColumns, ...this.aggregateColumns]) {
     for (const col of this.districtColumns) {
         properties = {
-            ...this.fields.A[col.value],
+            ...field_A[col.value],
             kategorie: mappingObject.category,
             group: mappingObject.group
         };
@@ -70,15 +126,15 @@ export function calculateStats (operation) {
         pruneProps(properties, this.timestampPrefix);
 
         for (const timestamp of timestamps) {
-            val_A = parseFloat(this.fields.A[col.value]?.[this.timestampPrefix + timestamp]);
-            val_B = parseFloat(this.fields.B[col.value]?.[this.timestampPrefix + timestamp]);
-            res = mathutils[operation](val_A, val_B);
+            val_A = parseFloat(field_A[col.value]?.[this.timestampPrefix + timestamp]);
+            val_B = parseFloat(field_B[col.value]?.[this.timestampPrefix + timestamp]);
+            res = mathutils[calculation.operation](val_A, val_B);
 
             properties[this.timestampPrefix + timestamp] = res;
         }
 
         feature = new Feature(properties);
-        col.district.statFeatures.push(feature);
+        addOrReplaceStatsFeature(col.district, feature);
     }
 
     this.updateDistricts();
@@ -86,29 +142,32 @@ export function calculateStats (operation) {
 
 /**
  * Sums up the values for all selected rows
+ * @param {{category_A: String, category_B: String, operation: String}} calculation - the calculation options
  * @returns {void}
  */
-export function sumUpSelected () {
-    let properties, feature, vals, res;
+export function sumUpSelected (calculation) {
+    let properties, feature, vals, res,
+        timestamps = null;
     const
+        selectedItems = this.items.filter(item => calculation.selectedCategories.includes(item.category)),
         mappingObject = {
-            category: this.selectedItems.map(item => item.category).join(", "),
+            category: selectedItems.map(item => item.category).join(", "),
             group: "Berechnungen",
             valueType: "absolute",
             isTemp: true
-        },
-        timestamps = this.selectedItems.reduce((years, item) => arrayIntersect(years, item.years), [...this.selectedItems[0].years]);
+        };
 
     this.addCategoryToMapping(mappingObject);
+    timestamps = selectedItems.reduce((years, item) => arrayIntersect(years, item.years), [...selectedItems[0].years]);
 
     for (const col of this.districtColumns) {
         // skip columns for which not all properties are available
-        if (this.selectedItems.find(item => !item[col.value])) {
+        if (selectedItems.find(item => !item[col.value])) {
             continue;
         }
 
         properties = {
-            ...this.selectedItems[0][col.value],
+            ...selectedItems[0][col.value],
             kategorie: mappingObject.category,
             group: mappingObject.group
         };
@@ -116,7 +175,7 @@ export function sumUpSelected () {
         pruneProps(properties, this.timestampPrefix);
 
         for (const timestamp of timestamps) {
-            vals = this.selectedItems.map(item => parseFloat(item[col.value][this.timestampPrefix + timestamp])); // parseFloat(this.fields.A[col.value][this.timestampPrefix + timestamp])
+            vals = selectedItems.map(item => parseFloat(item[col.value][this.timestampPrefix + timestamp])); // parseFloat(this.fields.A[col.value][this.timestampPrefix + timestamp])
             res = mathutils.sum(vals);
 
             properties[this.timestampPrefix + timestamp] = res;
@@ -131,17 +190,17 @@ export function sumUpSelected () {
 
 /**
  * Divides all selected rows by field B
+ * @param {{category_A: String, category_B: String, operation: String}} calculation - the calculation options
  * @returns {void}
  */
-export function divideSelected () {
-    const currA = this.fields.A;
-
-    for (const item of this.selectedItems) {
-        this.fields.A = item;
-        this.calculateStats("divide");
+export function divideSelected (calculation) {
+    for (const category of calculation.selectedCategories) {
+        this.calculateStats({
+            operation: "divide",
+            category_A: category,
+            category_B: calculation.category_B
+        });
     }
-
-    this.fields.A = currA;
 }
 
 /**
@@ -214,10 +273,10 @@ export function calculateCorrelation () {
  * @returns {Number} the average
  */
 export function getAverage (item, districtNames, timestamp, timestampPrefix) {
-    if (item.valueType !== "absolute") {
+    if (!(item.valueType === "absolute" || item.calculation)) {
         return "-";
     }
-    let result = getTotal(item, districtNames, timestamp, timestampPrefix);
+    let result = this.getTotal(item, districtNames, timestamp, timestampPrefix, true);
 
     result /= districtNames.filter(dist => item[dist]).length;
 
@@ -230,12 +289,17 @@ export function getAverage (item, districtNames, timestamp, timestampPrefix) {
  * @param {String[]} districtNames - the districts objects to generate the chart data for
  * @param {Number} timestamp - the current timestamp
  * @param {String} timestampPrefix - the prefix for timestamp attributes
+ * @param {Boolean} [simple=false] - get culmulative total if available
  * @returns {Number} the total
  */
-export function getTotal (item, districtNames, timestamp, timestampPrefix) {
-    if (item.valueType !== "absolute") {
+export function getTotal (item, districtNames, timestamp, timestampPrefix, simple = false) {
+    if (!simple && item.calculation && item.valueType === "relative") {
+        return this.getCulmulativeTotal(item, districtNames, timestamp, timestampPrefix);
+    }
+    if (!simple && item.valueType !== "absolute") {
         return "-";
     }
+
     let result = 0;
 
     for (const district of districtNames) {
@@ -248,6 +312,28 @@ export function getTotal (item, districtNames, timestamp, timestampPrefix) {
 }
 
 /**
+ * Calculates the total of a relative dataset
+ * @param {Object} item - the data for that category
+ * @param {String[]} districtNames - the districts objects to generate the chart data for
+ * @param {Number} timestamp - the current timestamp
+ * @param {String} timestampPrefix - the prefix for timestamp attributes
+ * @returns {Number} the total
+ */
+export function getCulmulativeTotal (item, districtNames, timestamp, timestampPrefix) {
+    const
+        field_A = this.items.find(_item => _item.category === item.calculation.category_A),
+        field_B = this.items.find(_item => _item.category === item.calculation.category_B),
+        total_A = field_A ? this.getTotal(field_A, districtNames, timestamp, timestampPrefix) : undefined,
+        total_B = field_B ? this.getTotal(field_B, districtNames, timestamp, timestampPrefix) : undefined;
+
+    if (!(total_A && total_B)) {
+        return "-";
+    }
+
+    return mathutils[item.calculation.operation](total_A, total_B);
+}
+
+/**
  * Removes a stats category from the table
  * @param {String} category - the category to delete
  * @param {String} group - the group the category belongs to (to avoid duplicates)
@@ -255,5 +341,7 @@ export function getTotal (item, districtNames, timestamp, timestampPrefix) {
  */
 export function deleteStats (category, group) {
     this.removeCategoryFromMapping({category, group});
+    this.removeCalculation(category);
     this.updateDistricts();
 }
+
