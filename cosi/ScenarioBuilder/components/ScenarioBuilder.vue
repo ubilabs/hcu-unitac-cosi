@@ -24,6 +24,7 @@ import {geomPickerUnlisten, geomPickerResetLocation, geomPickerClearDrawPolygon,
 import ToolInfo from "../../components/ToolInfo.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
 import {getAddress} from "../../utils/geocode";
+import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 
 export default {
     name: "ScenarioBuilder",
@@ -84,7 +85,7 @@ export default {
          * @returns {void}
          */
         workingLayer (layerMap) {
-            Radio.trigger("Util", "showLoader");
+            LoaderOverlay.show();
             this.resetFeature();
 
             describeFeatureTypeByLayerId(layerMap.layerId)
@@ -289,7 +290,7 @@ export default {
                     });
             }
 
-            Radio.trigger("Util", "hideLoader");
+            LoaderOverlay.hide();
         },
 
         /**

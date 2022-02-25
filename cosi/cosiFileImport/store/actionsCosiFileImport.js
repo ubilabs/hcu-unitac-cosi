@@ -483,9 +483,6 @@ function generateColorScale (color, length) {
 }
 
 export default {
-    cosiLayerHandling ({commit}, newLayer) {
-        commit("setNewLayerInformation", newLayer);
-    },
     passLayer ({commit, dispatch}, newLayer) {
         dispatch("addImportedFilename", newLayer.filename);
         const model = addLayerToTree(newLayer);
@@ -509,7 +506,7 @@ export default {
     setSelectedFiletype: ({commit}, newFiletype) => {
         commit("setSelectedFiletype", newFiletype);
     },
-    importKML: ({state, rootGetters, dispatch}, datasrc) => {
+    importKML: ({state, rootGetters, dispatch, commit}, datasrc) => {
         const
             checkSameLayer = datasrc.checkSameLayer,
             layerName = datasrc.layerName,
@@ -635,10 +632,7 @@ export default {
         }
 
         dispatch("Alerting/addSingleAlert", alertingMessage, {root: true});
-        // dispatch("addImportedFilename", datasrc.filename);
-        // addLayerToTree(layerName, layerId, features);
-
-        dispatch("cosiLayerHandling", {
+        commit("setNewLayerInformation", {
             name: layerName,
             id: layerId,
             filename: datasrc.filename,
