@@ -68,6 +68,11 @@ export default {
         ...mapActions("Tools/TemplateManager", Object.keys(actions)),
         ...mapActions("Tools/SaveSession", ["loadSessionData"]),
 
+        /**
+         * Load templates from paths defined in config.json
+         * @async
+         * @returns {void}
+         */
         async loadTemplates () {
             let path, res;
             const templates = [];
@@ -89,6 +94,11 @@ export default {
             this.templates = templates;
         },
 
+        /**
+         * Breaks up "divideSelected" calculations into individual "divide" calculations for simple selection
+         * @param {Object} template - the template
+         * @returns {Object} the modified template
+         */
         breakUpCalculations (template) {
             const calculations = template.state.Tools?.Dashboard?.calculations;
 
@@ -121,18 +131,43 @@ export default {
 
         createFilterObjects () {
             this.filters = this.templates.map(template => ({
-                activeLayerList: Object.fromEntries(this.getActiveLayerList(template).map(el => [el, true])),
-                selectedDistricts: Object.fromEntries(this.getSelectedDistricts(template).map(el => [el, true])),
+                activeLayerList: Object.fromEntries(this.getActiveLayerList(template).map(el => [el.layerId, true])),
+                selectedDistrictNames: Object.fromEntries(this.getSelectedDistricts(template).map(el => [el, true])),
                 statsCategories: Object.fromEntries(this.getStatsCategories(template).map(el => [el, true])),
                 calculations: Object.fromEntries(this.getCalculations(template).map(el => [el.id, true]))
             }));
-
-            console.log(this.filters);
         },
 
-        loadFromTemplate (template) {
+        applyFilters (template, index) {
+            const
+                _template = JSON.parse(JSON.stringify(template)),
+                filter = this.filters[index],
+                activeLayerList = Object.keys(filter.activeLayerList).filter(key => filter.activeLayerList[key]),
+                selectedDistrictNames = Object.keys(filter.selectedDistrictNames).filter(key => filter.selectedDistrictNames[key]),
+                statsCategories = Object.keys(filter.statsCategories).filter(key => filter.statsCategories[key]),
+                calculations = this.getCalculations(template).filter(calc => filter.calculations[calc.id]);
+
+            if (_template.state.Map?.layerIds) {
+                _template.state.Map.layerIds = activeLayerList;
+            }
+            if (_template.state.Tools.DistrictSelector?.selectedDistrictNames) {
+                _template.state.Tools.DistrictSelector.selectedDistrictNames = selectedDistrictNames;
+            }
+            if (_template.state.Tools.Dashboard?.statsFeatureFilter) {
+                _template.state.Tools.Dashboard.statsFeatureFilter = statsCategories;
+            }
+            if (_template.state.Tools.Dashboard?.calculations) {
+                _template.state.Tools.Dashboard.calculations = calculations;
+            }
+
+            return _template;
+        },
+
+        loadFromTemplate (template, index) {
+            const _template = this.applyFilters(template, index);
+
+            this.loadSessionData(_template);
             this.setActive(false);
-            this.loadSessionData(template);
         },
 
         showTemplateInfo (template) {
@@ -145,8 +180,7 @@ export default {
 
         getActiveLayerList (template) {
             return this.flatLayerMapping
-                .filter(layer => (template.state?.Map?.layerIds || []).includes(layer.layerId))
-                .map(layerMap => layerMap.id);
+                .filter(layer => (template.state?.Map?.layerIds || []).includes(layer.layerId));
         },
 
         getActiveTool (template) {
@@ -245,14 +279,14 @@ export default {
                                                         <th v-text="$t('additional:modules.tools.cosi.templateManager.layers')" />
                                                         <td>
                                                             <v-chip
-                                                                v-for="layerId in getActiveLayerList(template)"
-                                                                :key="template.meta.title + layerId"
+                                                                v-for="layerMap in getActiveLayerList(template)"
+                                                                :key="template.meta.title + layerMap.id"
                                                                 class="ma-1"
                                                                 small
                                                             >
-                                                                {{ layerId }}
+                                                                {{ layerMap.id }}
                                                                 <v-checkbox
-                                                                    v-model="filters[i].activeLayerList[layerId]"
+                                                                    v-model="filters[i].activeLayerList[layerMap.layerId]"
                                                                     small
                                                                 />
                                                             </v-chip>
@@ -279,7 +313,7 @@ export default {
                                                             >
                                                                 {{ districtName }}
                                                                 <v-checkbox
-                                                                    v-model="filters[i].selectedDistricts[districtName]"
+                                                                    v-model="filters[i].selectedDistrictNames[districtName]"
                                                                     small
                                                                 />
                                                             </v-chip>
@@ -341,7 +375,7 @@ export default {
                                                 tile
                                                 color="grey lighten-1"
                                                 :title="$t('additional:modules.tools.cosi.saveSession.infoLoadFromTemplates')"
-                                                @click="loadFromTemplate(template)"
+                                                @click="loadFromTemplate(template, i)"
                                             >
                                                 <v-icon left>
                                                     mdi-open-in-app
@@ -370,7 +404,7 @@ export default {
         margin-right: 20px;
     }
     .info-table {
-        max-width: 550px;
+        max-width: 640px;
     }
     .no-flex {
         display: block;
