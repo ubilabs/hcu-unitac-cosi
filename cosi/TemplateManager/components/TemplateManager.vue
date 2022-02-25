@@ -8,13 +8,6 @@ import actions from "../store/actionsTemplateManager";
 import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 
-const operationSymbols = {
-    add: "+",
-    subtract: "-",
-    multiply: "*",
-    divide: "/"
-};
-
 export default {
     name: "TemplateManager",
     components: {
@@ -83,7 +76,6 @@ export default {
                 try {
                     res = await axios(path);
                     res = await res.data;
-                    res = this.breakUpCalculations(res);
                     templates.push(res);
                 }
                 catch (e) {
@@ -92,41 +84,6 @@ export default {
             }
 
             this.templates = templates;
-        },
-
-        /**
-         * Breaks up "divideSelected" calculations into individual "divide" calculations for simple selection
-         * @param {Object} template - the template
-         * @returns {Object} the modified template
-         */
-        breakUpCalculations (template) {
-            const calculations = template.state.Tools?.Dashboard?.calculations;
-
-            if (calculations) {
-                template.state.Tools.Dashboard.calculations = calculations.reduce((res, calc) => {
-                    if (calc.operation === "divideSelected") {
-                        return [
-                            ...res,
-                            ...calc.selectedCategories.map(cat => {
-                                const _calc = {
-                                    operation: "divide",
-                                    category_A: cat,
-                                    category_B: calc.category_B
-                                };
-
-                                _calc.id = this.getCalculationCategory(_calc);
-
-                                return _calc;
-                            })
-                        ];
-                    }
-
-                    calc.id = this.getCalculationCategory(calc);
-                    return [...res, calc];
-                }, []);
-            }
-
-            return template;
         },
 
         createFilterObjects () {
@@ -205,12 +162,6 @@ export default {
 
         getCalculations (template) {
             return template.state.Tools?.Dashboard?.calculations || [];
-        },
-
-        getCalculationCategory (calculation) {
-            return calculation.operation === "sumUpSelected" ?
-                calculation.selectedCategories.join(" + ") :
-                calculation.category_A + ` ${operationSymbols[calculation.operation]} ` + calculation.category_B;
         }
     }
 };

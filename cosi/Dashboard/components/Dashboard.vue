@@ -10,8 +10,9 @@ import beautifyKey from "../../../../src/utils/beautifyKey";
 import groupMapping from "../../utils/groupMapping";
 import TableRowMenu from "./TableRowMenu.vue";
 import {
-    calculateAll,
     addCalculation,
+    addDivideSelectedCalculations,
+    calculateAll,
     calculateStats,
     calculateCorrelation,
     getTotal,
@@ -428,8 +429,9 @@ export default {
             exportXlsx(data, filename, {exclude: [...this.excludedPropsForExport, ...this.unselectedColumnLabels]});
         },
 
-        calculateAll,
         addCalculation,
+        addDivideSelectedCalculations,
+        calculateAll,
         calculateStats,
         calculateCorrelation,
         groupMapping,
@@ -615,12 +617,12 @@ export default {
                                         :selected-items="selectedItems"
                                         @setField="setField"
                                         @resetFields="resetFields"
-                                        @add="addCalculation('add')"
-                                        @subtract="addCalculation('subtract')"
-                                        @multiply="addCalculation('multiply')"
-                                        @divide="addCalculation('divide')"
-                                        @sum="addCalculation('sumUpSelected')"
-                                        @divideSelected="addCalculation('divideSelected')"
+                                        @add="addCalculation('add', {field_A: fields.A, field_B: fields.B})"
+                                        @subtract="addCalculation('subtract', {field_A: fields.A, field_B: fields.B})"
+                                        @multiply="addCalculation('multiply', {field_A: fields.A, field_B: fields.B})"
+                                        @divide="addCalculation('divide', {field_A: fields.A, field_B: fields.B})"
+                                        @sum="addCalculation('sumUpSelected', {selectedItems})"
+                                        @divideSelected="addDivideSelectedCalculations"
                                         @correlate="renderScatterplot"
                                         @visualizationChanged="onVisualizationChanged"
                                         @renderCharts="renderCharts"

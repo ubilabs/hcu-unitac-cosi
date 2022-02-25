@@ -48,13 +48,23 @@ function addOrReplaceStatsFeature (district, feature) {
 }
 
 /**
+ * Generates the id name for a given calculation
+ * @param {{category_A: String, category_B: String, operation: String}} calculation - the calculation options
+ * @returns {String} the id
+ */
+function getCalculationId (calculation) {
+    return calculation.operation === "sumUpSelected" ?
+        calculation.selectedCategories.join(" + ") :
+        calculation.category_A + ` ${operationSymbols[calculation.operation]} ` + calculation.category_B;
+}
+
+/**
  * Performs all calculations from the calculations list
  * @returns {void}
  */
 export function calculateAll () {
     for (const calculation of this.calculations) {
         if (calculation.operation === "sumUpSelected") {
-            // this.selectedItems = this.items.filter(item => calculation.selectedCategories.includes(item.category));
             this.sumUpSelected(calculation);
         }
         else if (calculation.operation === "divideSelected") {
@@ -67,25 +77,38 @@ export function calculateAll () {
 }
 
 /**
- * Adds a new calc to the calculation list
- * @param {"add" | "subtract" | "multiply" | "divide" | "sumUpSelected" | "divideSelected"} operation - the mathmatical operation to execute
+ * Adds multiple divisions for selectedItems
+ * Breaks up "divideSelected" calculations into individual "divide" calculations for simple selection
  * @returns {void}
  */
-export function addCalculation (operation) {
-    const calculation = {operation};
+export function addDivideSelectedCalculations () {
+    for (const field_A of this.selectedItems) {
+        this.addCalculation("divide", {field_A, field_B: this.fields.B});
+    }
+}
+
+/**
+ * Adds a new calc to the calculation list
+ * @param {"add" | "subtract" | "multiply" | "divide" | "sumUpSelected"} operation - the mathmatical operation to execute
+ * @param {{field_A: Object, field_B: Object, selectedItems: Object[] }} [options={}] - fields and selected items list
+ * @returns {void}
+ */
+export function addCalculation (operation, options = {}) {
+    const
+        calculation = {operation},
+        field_A = options.field_A || this.fields.A,
+        field_B = options.field_B || this.fields.B,
+        selectedItems = options.selectedItems || this.selectedItems;
 
     if (operation === "sumUpSelected") {
-        calculation.selectedCategories = this.selectedItems.map(item => item.category);
-    }
-    else if (operation === "divideSelected") {
-        calculation.selectedCategories = this.selectedItems.map(item => item.category);
-        calculation.category_B = this.fields.B.category;
+        calculation.selectedCategories = selectedItems.map(item => item.category);
     }
     else {
-        calculation.category_A = this.fields.A.category;
-        calculation.category_B = this.fields.B.category;
+        calculation.category_A = field_A.category;
+        calculation.category_B = field_B.category;
     }
 
+    calculation.id = getCalculationId(calculation);
     this.setCalculation(calculation);
 }
 
@@ -102,7 +125,7 @@ export function calculateStats (calculation) {
         field_A = this.items.find(item => item.category === calculation.category_A),
         field_B = this.items.find(item => item.category === calculation.category_B),
         mappingObject = {
-            category: calculation.category_A + ` ${operationSymbols[calculation.operation]} ` + calculation.category_B,
+            category: calculation.id,
             group: "Berechnungen",
             valueType: valueTypes[calculation.operation],
             isTemp: true,
@@ -151,11 +174,15 @@ export function sumUpSelected (calculation) {
     const
         selectedItems = this.items.filter(item => calculation.selectedCategories.includes(item.category)),
         mappingObject = {
-            category: selectedItems.map(item => item.category).join(", "),
+            category: calculation.id,
             group: "Berechnungen",
             valueType: "absolute",
             isTemp: true
         };
+
+    if (selectedItems.some(item => !item) || selectedItems.length === 0) {
+        return;
+    }
 
     this.addCategoryToMapping(mappingObject);
     timestamps = selectedItems.reduce((years, item) => arrayIntersect(years, item.years), [...selectedItems[0].years]);
