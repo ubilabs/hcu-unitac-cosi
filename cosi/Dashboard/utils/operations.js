@@ -202,7 +202,7 @@ export function sumUpSelected (calculation) {
         pruneProps(properties, this.timestampPrefix);
 
         for (const timestamp of timestamps) {
-            vals = selectedItems.map(item => parseFloat(item[col.value][this.timestampPrefix + timestamp])); // parseFloat(this.fields.A[col.value][this.timestampPrefix + timestamp])
+            vals = selectedItems.map(item => parseFloat(item[col.value][this.timestampPrefix + timestamp]));
             res = mathutils.sum(vals);
 
             properties[this.timestampPrefix + timestamp] = res;
