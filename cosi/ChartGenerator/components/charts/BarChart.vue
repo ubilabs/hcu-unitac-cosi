@@ -2,6 +2,7 @@
 import {Bar} from "vue-chartjs";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
+import fixColor from "../../utils/fixColor";
 
 export default {
     name: "BarChart",
@@ -64,7 +65,7 @@ export default {
                 return null;
             }
 
-            return {...this.datasets};
+            return {...fixColor(this.datasets)};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
@@ -80,10 +81,6 @@ export default {
     },
     methods: {
         prepareRendering () {
-            if (!this.chartData) {
-                return;
-            }
-
             this._options.scales.yAxes[0].stacked = this.chartData.stacked || false;
             this._options.scales.xAxes[0].stacked = this.chartData.stacked || false;
             this._options.scales.yAxes[0].ticks.beginAtZero = this.chartData.beginAtZero || false;

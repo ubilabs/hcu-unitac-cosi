@@ -11,7 +11,13 @@ import * as Proj from "ol/proj.js";
 export function reverseGeocode (coords, portalCrs, type = "NOMINATIM") {
     const _coords = Proj.transform(coords, portalCrs, "EPSG:4326");
 
-    return type === "BKG" ? fetchRoutingBkgGeosearchReverse(_coords) : fetchRoutingNominatimGeosearchReverse(_coords);
+    try {
+        return type === "BKG" ? fetchRoutingBkgGeosearchReverse(_coords) : fetchRoutingNominatimGeosearchReverse(_coords);
+    }
+    catch (e) {
+        console.warn("Could not fetch address, please check config of routing/reverseGeocode", e);
+        return null;
+    }
 }
 
 /**

@@ -3,6 +3,7 @@
 import {Pie} from "vue-chartjs";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
+import fixColor from "../../utils/fixColor";
 
 export default {
     name: "PieChart",
@@ -34,6 +35,8 @@ export default {
             if (!this.datasets) {
                 return null;
             }
+
+            fixColor(this.datasets);
 
             return {
                 labels: this.datasets.label,

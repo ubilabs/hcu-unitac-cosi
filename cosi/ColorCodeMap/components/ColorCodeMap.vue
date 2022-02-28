@@ -3,6 +3,7 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersColorCodeMap";
 import mutations from "../store/mutationsColorCodeMap";
 import utils from "../../utils";
+import ColorCodeLegend from "./ColorCodeLegend.vue";
 import {Fill, Stroke, Style, Text} from "ol/style.js";
 import {generateColorScale} from "../../utils/colorScale.js";
 import groupMapping from "../../utils/groupMapping";
@@ -11,19 +12,22 @@ import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 
 export default {
     name: "ColorCodeMap",
+    components: {
+        ColorCodeLegend
+    },
     data () {
         return {
             // List of available features for selected Districts
             featuresList: [],
             // Array of all available years
             availableYears: [],
-            // Results for generating the CCM legend including colorscale values
-            legendResults: [],
-            // Values displayed in CCM legend
+            // colorScale results for ColorCodeLegend
+            colorScale: [],
+            // values to pass to ColorCodeLegend for visualization
             legendValues: [],
             // Saves the last year when user changes year manually.
             lastYear: null,
-            // Saves riginal Map Styling before ColorCodeMap changes styling
+            // Saves riginal Map Styling before ColorCodeMap changes stylingmodule namespace not found in mapGetters()
             originalStyling: null,
             // Highest Value of selected feature among all selected districts
             hiVal: null,
@@ -34,7 +38,7 @@ export default {
             // Playback speed of the animation
             playSpeed: 1,
             // Helper Variable to force Legend Markers to rerender
-            updateLegendList: 1,
+            updateLegendList: 0,
             // Helper to pass data to the graph generator
             graphData: [],
             // Helper to store type of feature dataset
@@ -73,7 +77,6 @@ export default {
     },
     watch: {
         selectedFeatures () {
-            this.updateLegendList += 1;
             if (this.visualizationState) {
                 this.$nextTick(() => {
                     this.updateSelectedDistricts();
@@ -202,10 +205,21 @@ export default {
         renderVisualization () {
             if (this.visualizationState) {
                 const results = this.selectedStatFeatures.filter(x => x.getProperties().kategorie === this.selectedFeature),
-                    resultValues = results.map(x => x.getProperties()[this.yearSelector + this.selectedYear]),
-                    colorScale = this.getColorsByValues(resultValues);
+                    resultValues = results.map(x => {
+                        const yearValue = x.getProperties()[this.yearSelector + this.selectedYear];
 
-                this.generateDynamicLegend(results, colorScale);
+                        if (yearValue !== undefined) {
+                            return yearValue;
+                        }
+
+                        return this.$t("additional:modules.tools.colorCodeMap.noData");
+
+                    });
+
+                this.legendValues = results;
+                this.colorScale = this.getColorsByValues(resultValues);
+
+                this.updateLegendList += 1;
                 this.selectedFeatures.forEach(district => {
                     const getStyling = district.getStyle(),
                         matchResults = results.find(x => utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(district.getProperties()[this.keyOfAttrName]));
@@ -217,8 +231,7 @@ export default {
 
                         const styleArray = [];
 
-                        // this.prepareGraphData(matchResults);
-                        getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)});
+                        getStyling.fill = matchResults.getProperties()[this.yearSelector + this.selectedYear] !== undefined ? new Fill({color: utils.getRgbArray(this.colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)}) : new Fill({color: "rgba(0, 0, 0, 0.75)"});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
                             font: "16px Calibri,sans-serif",
@@ -229,7 +242,7 @@ export default {
                                 color: [0, 0, 0],
                                 width: 3
                             }),
-                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear]
+                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear] !== undefined
                                 ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
                                 : this.$t("additional:modules.tools.colorCodeMap.noData"),
                             overflow: true
@@ -305,9 +318,10 @@ export default {
             }
 
             const resultValues = this.colorCodeMapDataset.map(x => {
-                    return x.data;
-                }),
-                colorScale = this.getColorsByValues(resultValues);
+                return x.data;
+            });
+
+            this.colorScale = this.getColorsByValues(resultValues);
 
             // todo generate Legend for CC Data
             this.selectedFeatures.forEach(district => {
@@ -318,7 +332,7 @@ export default {
                     if (this.originalStyling === null) {
                         this.originalStyling = getStyling;
                     }
-                    getStyling.fill = new Fill({color: utils.getRgbArray(colorScale.scale(matchResults.data), 0.75)});
+                    getStyling.fill = new Fill({color: utils.getRgbArray(this.colorScale.scale(matchResults.data), 0.75)});
                     getStyling.zIndex = 1;
                     getStyling.text = new Text({
                         font: "16px Calibri,sans-serif",
@@ -337,61 +351,6 @@ export default {
                 }
 
             });
-        },
-        /**
-         * @todo todo
-         * @description Generates dynamic Legend in CCM based on selected feature values.
-         * @param {*} results Values calculated in renderVisualization() function.
-         * @param {*} colorScale color range for values from getColorsByValues() function.
-         * @returns {void}
-         */
-        generateDynamicLegend (results, colorScale) {
-            if (results.length > 1 && !this.dashboardOpen) {
-                const legendDiv = document.getElementById("colorCodeMapLegend"),
-                    legendMarks = document.querySelector("#legend_wrapper").children,
-                    legendMarksArray = Array.from(legendMarks),
-                    matchResults = results.filter(x => {
-                        return this.selectedFeatures.some(y => {
-                            return utils.unifyString(x.getProperties()[this.keyOfAttrNameStats]) === utils.unifyString(y.getProperties()[this.keyOfAttrName]);
-                        });
-                    });
-
-                colorScale.legend.values.forEach((value, index) => {
-                    if (value === "Keine Daten") {
-                        colorScale.legend.colors.splice(index, 1);
-                        colorScale.legend.values.splice(index, 1);
-                    }
-                });
-
-                this.legendValues = [colorScale.scale(colorScale.legend.values[0]), colorScale.scale((colorScale.legend.values[colorScale.legend.values.length - 1] + colorScale.legend.values[0]) / 2), colorScale.scale(colorScale.legend.values[colorScale.legend.values.length - 1])];
-
-                legendDiv.setAttribute("style", "background:linear-gradient(90deg," + this.legendValues[0] + "," + this.legendValues[1] + "," + this.legendValues[2] + ")");
-
-
-                legendMarksArray.forEach((mark, index) => {
-                    if (index > matchResults.length) {
-                        mark.remove();
-                    }
-                    else {
-                        const value = matchResults[index].getProperties()[this.yearSelector + this.selectedYear],
-                            relativeValue = ((value - colorScale.legend.values[0]) * 100) / (colorScale.legend.values[colorScale.legend.values.length - 1] - colorScale.legend.values[0]),
-                            pDistrict = mark.querySelector(".district"),
-                            pValue = mark.querySelector(".value");
-
-                        if (Math.round(relativeValue) === 100) {
-                            mark.setAttribute("style", "left: calc(" + Math.round(relativeValue) + "% - 8px);");
-                        }
-                        else {
-                            mark.setAttribute("style", "left: " + Math.round(relativeValue) + "%;");
-                        }
-                        pDistrict.innerHTML = matchResults[index].getProperties()[this.keyOfAttrNameStats] + ": ";
-                        pValue.innerHTML = value;
-                    }
-
-                    this.loVal = colorScale.legend.values[0].toLocaleString(this.currentLocale);
-                    this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString(this.currentLocale);
-                });
-            }
         },
         /**
          * @description Calculate dynamic colors for Array based on its values.
@@ -598,33 +557,19 @@ export default {
                 />
             </div>
             <div
-                v-if="visualizationState && legendValues && selectedFeatures.length > 1"
+                v-if="visualizationState && selectedFeatures.length > 1"
                 id="colorCodeMapLegend"
                 class="legend"
-                :class="{ active: visualizationState && legendValues && selectedFeatures.length > 1 }"
+                :class="{ active: visualizationState && selectedFeatures.length > 1 }"
             >
-                <div
-                    id="legend_wrapper"
-                    :key="updateLegendList"
-                >
-                    <div
-                        v-for="feature in selectedFeatures"
-                        :key="feature.id"
-                        class="legend_mark"
-                    >
-                        <div class="mark_tip" />
-                        <div class="hoverbox">
-                            <p class="district" />
-                            <p class="value" />
-                        </div>
-                    </div>
-                </div>
-                <div class="top val">
-                    {{ hiVal }}
-                </div>
-                <div class="low val">
-                    {{ loVal }}
-                </div>
+                <ColorCodeLegend
+                    :results="legendValues"
+                    :color-scale="colorScale"
+                    :update-legend-list="updateLegendList"
+                    :dashboard-open="dashboardOpen"
+                    :selected-year="selectedYear"
+                    :year-selector="yearSelector"
+                />
             </div>
         </div>
         <div class="hovermenu">
@@ -864,131 +809,6 @@ export default {
                 }
             }
         }
-
-        #colorCodeMapLegend {
-            position:relative;
-            width:70%;
-            height:0px;
-            opacity:0;
-            pointer-events:none;
-            margin:10px auto;
-            overflow:hidden;
-
-            &.active {
-                height:30px;
-                opacity:1;
-                pointer-events:all;
-                overflow:visible;
-            }
-
-            .val {
-                position:absolute;
-                top:0;
-                height:30px;
-                line-height:30px;
-                padding:0px 5px;
-                font-size:80%;
-                font-weight:700;
-                border:1.5px solid #222;
-
-                &.top {
-                    right: -50px;
-                }
-
-                &.low {
-                    left: -50px;
-                }
-            }
-
-            .legend_mark {
-                position:absolute;
-                width:10px;
-                background:transparent;
-                border-radius:1px;
-                border:1px solid black !important;
-                top:-5px;
-                left:0;
-                background:whitesmoke;
-                //height:calc(100% + 2px);
-                height:10px;
-                z-index:10;
-                @include drop_shadow();
-
-                &:after {
-                    content:'';
-                    position:absolute;
-                    width:1px;
-                    height: 12px;
-                    top: 15px;
-                    left:50%;
-                    transform: translateX(-50%);
-                    background:rgba(255,255,255,0.8);
-                }
-
-                .mark_tip {
-                    position:absolute;
-                    top:100%;
-                    left:-1px;
-                    width:0;
-                    height:0;
-                    border-left: 5px solid transparent;
-                    border-right: 5px solid transparent;
-                    border-top: 5px solid black;
-                    z-index:15;
-                    @include drop_shadow();
-
-                    &:after {
-                        content: '';
-                        width: 0;
-                        height: 0;
-                        border-left: 5px solid transparent;
-                        border-right: 5px solid transparent;
-                        border-top: 5px solid whitesmoke;
-                        position: absolute;
-                        z-index:18;
-                        top: -6px;
-                        left: -5px;
-                    }
-                }
-
-                .hoverbox {
-                    position:absolute;
-                    left:50%;
-                    bottom:calc(100% + 3px);
-                    width:max-content;
-                    height:30px;
-                    padding:10px 20px;
-                    opacity:0;
-                    pointer-events:none;
-                    box-sizing: border-box;
-                    z-index:10;
-                    @include paper_bg();
-                    @include drop_shadow();
-
-                    p {
-                        display:inline;
-                        color:#444;
-                        font-size:120%;
-                        font-weight:300;
-
-                        &:first-child {
-                            color:#222;
-                            font-weight:500;
-                        }
-                    }
-                }
-
-                &:hover {
-                    cursor:pointer;
-                    .hoverbox {
-                        opacity:1;
-                        pointer-events:all;
-                        transition:0.3s;
-                    }
-                }
-            }
-        }
-
         &.minimized {
             .hovermenu {
                 width:152px;

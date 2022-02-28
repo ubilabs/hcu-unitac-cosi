@@ -53,6 +53,7 @@ export default {
         <v-menu
             left
             nudge-top="280"
+            nudge-left="40"
             :close-on-content-click="false"
             @input="selectedMenuItem = null"
         >
@@ -197,6 +198,7 @@ export default {
 
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('add')"
                                         >
                                             <v-list-item-icon>
@@ -208,6 +210,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('subtract')"
                                         >
                                             <v-list-item-icon>
@@ -219,6 +222,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('multiply')"
                                         >
                                             <v-list-item-icon>
@@ -230,6 +234,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('divide')"
                                         >
                                             <v-list-item-icon>
@@ -253,7 +258,7 @@ export default {
                                         </v-list-item>
                                         <v-list-item
                                             dense
-                                            :disabled="selectedItems.length === 0"
+                                            :disabled="selectedItems.length === 0 || !fields.B"
                                             @click="$emit('divideSelected')"
                                         >
                                             <v-list-item-icon>
@@ -264,19 +269,6 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
-                                    <template v-if="_item.isTemp">
-                                        <v-list-item
-                                            dense
-                                            @click="$emit('delete', _item.category, _item.group)"
-                                        >
-                                            <v-list-item-icon>
-                                                <v-icon>mdi-delete</v-icon>
-                                            </v-list-item-icon>
-                                            <v-list-item-content>
-                                                {{ $t('common:button.delete') }}
-                                            </v-list-item-content>
-                                        </v-list-item>
-                                    </template>
                                     <v-list-group
                                         prepend-icon="mdi-file-chart"
                                         no-action
@@ -322,6 +314,19 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
+                                    <template v-if="_item.isTemp">
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('delete', _item.category, _item.group)"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-delete</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                {{ $t('common:button.delete') }}
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </template>
                                 </div>
                             </template>
                             <FieldsTooltip :fields="fields" />

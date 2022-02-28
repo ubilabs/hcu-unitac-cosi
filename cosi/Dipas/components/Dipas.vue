@@ -16,6 +16,8 @@ import {interpolateRdYlGn} from "d3-scale-chromatic";
 import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 import {exportAsGeoJson} from "../utils/exportResults";
+import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
+
 
 export default {
     name: "Dipas",
@@ -456,9 +458,9 @@ export default {
                 let maxVotes = 0;
 
                 if (!this.contributions[id].features) {
-                    Radio.trigger("Util", "showLoader");
+                    LoaderOverlay.show();
                     this.contributions[id].features = await this.getContributionFeatures(id);
-                    Radio.trigger("Util", "hideLoader");
+                    LoaderOverlay.hide();
                 }
                 for (const feature of this.contributions[id].features) {
                     vector.addFeature(feature);

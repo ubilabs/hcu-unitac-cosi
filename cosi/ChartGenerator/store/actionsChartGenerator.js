@@ -1,4 +1,4 @@
-import generateGraphData from "../generateGraphData";
+import generateGraphData from "../utils/generateGraphData";
 
 /**
  *

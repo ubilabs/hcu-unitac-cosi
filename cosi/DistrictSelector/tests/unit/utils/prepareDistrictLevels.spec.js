@@ -18,8 +18,6 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(getAllDistrictsWithoutLayer([])).to.be.empty;
         });
 
-
-
         it("should return an array with length three", () => {
             const testArray = [{}, {}, {}],
                 testArrayTwo = [{layer: {}}, {layer: {}}, {}, {}, {}];
