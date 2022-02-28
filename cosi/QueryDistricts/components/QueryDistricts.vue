@@ -91,8 +91,8 @@ export default {
          * @listens #change:FeaturesList/activeVectorLayerList
          * @returns {void}
          */
-        async activeVectorLayerList () {
-            await this.$nextTick(() => {
+        activeVectorLayerList () {
+            this.$nextTick().then(() => {
                 this.setFacilityNames();
             });
         }

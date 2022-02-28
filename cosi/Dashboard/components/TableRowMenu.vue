@@ -269,19 +269,6 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
-                                    <template v-if="_item.isTemp">
-                                        <v-list-item
-                                            dense
-                                            @click="$emit('delete', _item.category, _item.group)"
-                                        >
-                                            <v-list-item-icon>
-                                                <v-icon>mdi-delete</v-icon>
-                                            </v-list-item-icon>
-                                            <v-list-item-content>
-                                                {{ $t('common:button.delete') }}
-                                            </v-list-item-content>
-                                        </v-list-item>
-                                    </template>
                                     <v-list-group
                                         prepend-icon="mdi-file-chart"
                                         no-action
@@ -327,6 +314,19 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
+                                    <template v-if="_item.isTemp">
+                                        <v-list-item
+                                            dense
+                                            @click="$emit('delete', _item.category, _item.group)"
+                                        >
+                                            <v-list-item-icon>
+                                                <v-icon>mdi-delete</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                {{ $t('common:button.delete') }}
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </template>
                                 </div>
                             </template>
                             <FieldsTooltip :fields="fields" />

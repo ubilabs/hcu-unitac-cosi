@@ -183,7 +183,6 @@ export default {
         ...serializeState,
 
         save () {
-            // console.log(this.$store.state);
             this.saveDialog = false;
             this.serializeState();
 

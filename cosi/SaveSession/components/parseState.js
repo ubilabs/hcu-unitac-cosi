@@ -66,8 +66,6 @@ export default {
                 state[key] = this.parseState(map[key], state[key], [...path, key], districtsSet);
             }
         }
-
-        console.log(this.$store);
     },
 
     commitState (mutation, attr, state) {

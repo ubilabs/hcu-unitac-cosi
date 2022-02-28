@@ -16,7 +16,8 @@ export default {
     },
     data () {
         return {
-            templates: []
+            templates: [],
+            filters: []
         };
     },
     computed: {
@@ -40,7 +41,8 @@ export default {
                     model.set("isActive", false);
                 }
             }
-        }
+        },
+        templates: "createFilterObjects"
     },
     created () {
         /**
@@ -59,6 +61,11 @@ export default {
         ...mapActions("Tools/TemplateManager", Object.keys(actions)),
         ...mapActions("Tools/SaveSession", ["loadSessionData"]),
 
+        /**
+         * Load templates from paths defined in config.json
+         * @async
+         * @returns {void}
+         */
         async loadTemplates () {
             let path, res;
             const templates = [];
@@ -68,7 +75,8 @@ export default {
 
                 try {
                     res = await axios(path);
-                    templates.push(await res.data);
+                    res = await res.data;
+                    templates.push(res);
                 }
                 catch (e) {
                     console.warn(`Template at ${path} could not be loaded. Please check that it is a valid JSON file.`);
@@ -78,9 +86,45 @@ export default {
             this.templates = templates;
         },
 
-        loadFromTemplate (template) {
+        createFilterObjects () {
+            this.filters = this.templates.map(template => ({
+                activeLayerList: Object.fromEntries(this.getActiveLayerList(template).map(el => [el.layerId, true])),
+                selectedDistrictNames: Object.fromEntries(this.getSelectedDistricts(template).map(el => [el, true])),
+                statsCategories: Object.fromEntries(this.getStatsCategories(template).map(el => [el, true])),
+                calculations: Object.fromEntries(this.getCalculations(template).map(el => [el.id, true]))
+            }));
+        },
+
+        applyFilters (template, index) {
+            const
+                _template = JSON.parse(JSON.stringify(template)),
+                filter = this.filters[index],
+                activeLayerList = Object.keys(filter.activeLayerList).filter(key => filter.activeLayerList[key]),
+                selectedDistrictNames = Object.keys(filter.selectedDistrictNames).filter(key => filter.selectedDistrictNames[key]),
+                statsCategories = Object.keys(filter.statsCategories).filter(key => filter.statsCategories[key]),
+                calculations = this.getCalculations(template).filter(calc => filter.calculations[calc.id]);
+
+            if (_template.state.Map?.layerIds) {
+                _template.state.Map.layerIds = activeLayerList;
+            }
+            if (_template.state.Tools.DistrictSelector?.selectedDistrictNames) {
+                _template.state.Tools.DistrictSelector.selectedDistrictNames = selectedDistrictNames;
+            }
+            if (_template.state.Tools.Dashboard?.statsFeatureFilter) {
+                _template.state.Tools.Dashboard.statsFeatureFilter = statsCategories;
+            }
+            if (_template.state.Tools.Dashboard?.calculations) {
+                _template.state.Tools.Dashboard.calculations = calculations;
+            }
+
+            return _template;
+        },
+
+        loadFromTemplate (template, index) {
+            const _template = this.applyFilters(template, index);
+
+            this.loadSessionData(_template);
             this.setActive(false);
-            this.loadSessionData(template);
         },
 
         showTemplateInfo (template) {
@@ -93,8 +137,7 @@ export default {
 
         getActiveLayerList (template) {
             return this.flatLayerMapping
-                .filter(layer => (template.state?.Map?.layerIds || []).includes(layer.layerId))
-                .map(layerMap => layerMap.id);
+                .filter(layer => (template.state?.Map?.layerIds || []).includes(layer.layerId));
         },
 
         getActiveTool (template) {
@@ -115,6 +158,10 @@ export default {
 
         getStatsCategories (template) {
             return template.state.Tools?.Dashboard?.statsFeatureFilter || [];
+        },
+
+        getCalculations (template) {
+            return template.state.Tools?.Dashboard?.calculations || [];
         }
     }
 };
@@ -183,12 +230,16 @@ export default {
                                                         <th v-text="$t('additional:modules.tools.cosi.templateManager.layers')" />
                                                         <td>
                                                             <v-chip
-                                                                v-for="layerId in getActiveLayerList(template)"
-                                                                :key="template.meta.title + layerId"
+                                                                v-for="layerMap in getActiveLayerList(template)"
+                                                                :key="template.meta.title + layerMap.id"
                                                                 class="ma-1"
                                                                 small
                                                             >
-                                                                {{ layerId }}
+                                                                {{ layerMap.id }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].activeLayerList[layerMap.layerId]"
+                                                                    small
+                                                                />
                                                             </v-chip>
                                                         </td>
                                                     </tr>
@@ -212,6 +263,10 @@ export default {
                                                                 small
                                                             >
                                                                 {{ districtName }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].selectedDistrictNames[districtName]"
+                                                                    small
+                                                                />
                                                             </v-chip>
                                                         </td>
                                                     </tr>
@@ -225,6 +280,27 @@ export default {
                                                                 small
                                                             >
                                                                 {{ category }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].statsCategories[category]"
+                                                                    small
+                                                                />
+                                                            </v-chip>
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="getCalculations(template).length > 0">
+                                                        <th v-text="$t('additional:modules.tools.cosi.templateManager.calculations')" />
+                                                        <td>
+                                                            <v-chip
+                                                                v-for="(calculation, j) in getCalculations(template)"
+                                                                :key="template.meta.title + 'calculation' + j"
+                                                                class="ma-1"
+                                                                small
+                                                            >
+                                                                {{ calculation.id }}
+                                                                <v-checkbox
+                                                                    v-model="filters[i].calculations[calculation.id]"
+                                                                    small
+                                                                />
                                                             </v-chip>
                                                         </td>
                                                     </tr>
@@ -250,7 +326,7 @@ export default {
                                                 tile
                                                 color="grey lighten-1"
                                                 :title="$t('additional:modules.tools.cosi.saveSession.infoLoadFromTemplates')"
-                                                @click="loadFromTemplate(template)"
+                                                @click="loadFromTemplate(template, i)"
                                             >
                                                 <v-icon left>
                                                     mdi-open-in-app
@@ -279,7 +355,7 @@ export default {
         margin-right: 20px;
     }
     .info-table {
-        max-width: 550px;
+        max-width: 640px;
     }
     .no-flex {
         display: block;

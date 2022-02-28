@@ -293,8 +293,6 @@ export default {
                         }
 
                         district.setStyle(styleArray);
-                    } else {
-
                     }
                 });
             }

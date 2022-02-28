@@ -13,7 +13,8 @@
                     "districtLevel": "Bezugsrahmen",
                     "selectedDistricts": "Ausgewählte Gebiete",
                     "activeTool": "Aktive Werkzeuge",
-                    "categories": "Statistische Daten"
+                    "categories": "Statistische Daten",
+                    "calculations": "Berechnungen"
                 }
             }
         }
