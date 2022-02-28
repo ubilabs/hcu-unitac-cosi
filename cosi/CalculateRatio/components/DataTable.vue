@@ -133,14 +133,14 @@ export default {
                 </thead>
             </template>
             <template
-                #item.scope="{item}"
+                #[`item.scope`]="{ item }"
             >
                 <td class="text-start name-cell">
                     {{ item.scope }}
                 </td>
             </template>
             <template
-                #item.paramA_val="{ item }"
+                #[`item.paramA_val`]="{ item }"
             >
                 <div
                     class="table_cell"
@@ -158,7 +158,7 @@ export default {
                     </div>
                 </div>
             </template>
-            <template #item.paramB_val="{ item }">
+            <template #[`item.paramB_val`]="{ item }">
                 <!-- eslint-disable-next-line vue/no-multiple-template-root -->
                 <div class="table_cell">
                     {{ item.paramB_val }}

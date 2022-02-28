@@ -8,7 +8,7 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateImportedFeatureHandler),
+    ...generateSimpleMutations(stateImportedFeatureHandler)
 };
 
 export default mutations;

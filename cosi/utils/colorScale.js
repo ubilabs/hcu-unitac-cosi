@@ -72,27 +72,27 @@ export function generateColorScale (values = [0, 1], colorspace = "interpolateBl
 * @returns {Array} ColorScale Array.
 */
 export function generateColorScaleByColor (color, length) {
-   const hslColor = hsl(color),
-       colorC = String(hslColor);
-   let colorA = "",
-       colorB = "",
-       range = "";
+    const hslColor = hsl(color),
+        colorC = String(hslColor);
+    let colorA = "",
+        colorB = "",
+        range = "";
 
-   hslColor.h += 10;
-   hslColor.s = 100;
-   hslColor.l = 80;
-   hslColor.opacity = 1;
+    hslColor.h += 10;
+    hslColor.s = 100;
+    hslColor.l = 80;
+    hslColor.opacity = 1;
 
-   colorA = String(hslColor);
+    colorA = String(hslColor);
 
-   hslColor.h -= 10;
-   hslColor.s = 0;
-   hslColor.l -= 10;
-   hslColor.opacity = 0.75;
+    hslColor.h -= 10;
+    hslColor.s = 0;
+    hslColor.l -= 10;
+    hslColor.opacity = 0.75;
 
-   colorB = String(hslColor);
-   range = [colorB, colorC, colorA];
-   return scaleLinear().domain([0, length]).range(range);
+    colorB = String(hslColor);
+    range = [colorB, colorC, colorA];
+    return scaleLinear().domain([0, length]).range(range);
 }
 
 /**
