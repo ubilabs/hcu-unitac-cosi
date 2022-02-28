@@ -9,6 +9,7 @@ import DataTable from "./DataTable.vue";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 import ToolInfo from "../../components/ToolInfo.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {getCenter} from "ol/extent";
 import getClusterSource from "../../utils/getClusterSource";
 
@@ -17,7 +18,8 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        DataTable
+        DataTable,
+        AnalysisPagination
     },
     data () {
         return {
@@ -78,7 +80,11 @@ export default {
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
-            columnSelector: {name: "Verhältnis", key: "relation"}
+            columnSelector: {name: "Verhältnis", key: "relation"},
+            // Index of the active dataset to display
+            activeSet: 0,
+            // Array to store all results and input values
+            dataSets: []
         };
     },
     computed: {
@@ -449,6 +455,11 @@ export default {
         prepareCoverage () {
             this.setResults([]);
             const allData = [],
+                calculationSet = {
+                    inputs: {},
+                    resultHeaders: {},
+                    results: {}
+                },
 
                 dataArray_A = this.coverageFunction("A"),
                 dataArray_B = this.coverageFunction("B");
@@ -467,6 +478,28 @@ export default {
                 fActive: this.fActive_A || this.fActive_B,
                 faktorF: `${this.faktorf_B} / ${this.faktorf_A}`
             });
+
+            calculationSet.results = this.results;
+            calculationSet.resultHeaders = this.resultHeaders;
+            calculationSet.inputs = {
+                selectedFieldA: this.selectedFieldA,
+                selectedFieldB: this.selectedFieldB,
+                paramFieldA: this.paramFieldA,
+                paramFieldB: this.paramFieldB,
+                fActive_A: this.fActive_A,
+                fActive_B: this.fActive_B,
+                faktorf_A: this.faktorf_A,
+                faktorf_B: this.faktorf_B,
+                ASwitch: this.ASwitch,
+                BSwitch: this.BSwitch,
+                perCalc_A: this.perCalc_A,
+                perCalc_B: this.perCalc_B,
+                facilityPropertyList_A: this.facilityPropertyList_A,
+                facilityPropertyList_B: this.facilityPropertyList_B
+            };
+
+            this.dataSets.push(calculationSet);
+
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -1118,13 +1151,31 @@ export default {
                             </div>
                         </div>
                         <DataTable
-                            :dataset="results"
-                            :type-a="resultHeaders.typeA"
-                            :type-b="resultHeaders.typeB"
-                            :f-active="resultHeaders.fActive"
-                            :faktor-f="resultHeaders.faktorF"
+                            v-for="(set, i) in dataSets"
+                            :key="i"
+                            :dataset="set.results"
+                            :type-a="set.resultHeaders.typeA"
+                            :type-b="set.resultHeaders.typeB"
+                            :f-active="set.resultHeaders.fActive"
+                            :faktor-f="set.resultHeaders.faktorF"
+                            :class="{ active: activeSet === i }"
                         />
                     </div>
+                </div>
+                <div
+                    v-if="dataSets.length > 0"
+                    class="tool_footer"
+                >
+                    <AnalysisPagination
+                        :sets="dataSets"
+                        :active-set="activeSet"
+                        @setActiveSet="(n) => activeSet = n"
+                        @setPrevNext="(n) => setPrevNext(n)"
+                        @removeSingle="(n) => removeSet(n)"
+                        @removeAll="() => removeAll()"
+                        @downloadSingle="(n) => downloadSet()"
+                        @downloadAll="() => downloadAll()"
+                    />
                 </div>
             </div>
         </template>
@@ -1363,7 +1414,20 @@ export default {
                     .forged_table {
                         overflow:hidden;
                     }
+
+                    .calc_ratio_results {
+                        display:none;
+
+                        &.active {
+                            display:block;
+                        }
+                    }
                 }
+            }
+
+            .tool_footer {
+                padding:5px;
+                background:white;
             }
         }
     }

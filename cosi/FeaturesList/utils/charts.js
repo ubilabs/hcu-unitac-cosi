@@ -79,7 +79,7 @@ export default {
                 datasets: this.getActiveItems().map(item => ({
                     label: item.name,
                     data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
-                    tooltip: `Gewichteter Durchschnitt: ${item.weightedDistanceScores.score}`
+                    tooltip: `Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString("de-DE")}`
                 }))
             },
             chartDataset = new ChartDataset({

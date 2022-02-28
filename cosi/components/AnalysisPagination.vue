@@ -40,7 +40,10 @@ export default {
 
 <template>
     <div class="pagination">
-        <div class="paginate btn_grp">
+        <div
+            v-if="sets.length > 1"
+            class="paginate btn_grp"
+        >
             <button
                 v-for="(set, index) in sets"
                 :key="index"
@@ -52,6 +55,7 @@ export default {
         </div>
         <div class="main btn_grp">
             <button
+                v-if="sets.length > 1"
                 class="nxt"
                 :title="$t('additional:modules.tools.cosi.chartGenerator.prevChart')"
                 @click="$emit('setPrevNext',-1)"
@@ -63,6 +67,7 @@ export default {
                 </v-icon>
             </button>
             <button
+                v-if="sets.length > 1"
                 class="nxt"
                 :title="$t('additional:modules.tools.cosi.chartGenerator.nextChart')"
                 @click="$emit('setPrevNext', +1)"
@@ -85,7 +90,8 @@ export default {
                 </v-icon>
             </button>
             <button
-                class="dl"
+                v-if="sets.length > 1"
+                class="dl dark"
                 :title="$t('additional:modules.tools.cosi.chartGenerator.downloadAll')"
                 @click="$emit('downloadAll')"
             >
@@ -107,7 +113,8 @@ export default {
                 </v-icon>
             </button>
             <button
-                class="rm"
+                v-if="sets.length > 1"
+                class="rm dark"
                 :title="$t('additional:modules.tools.cosi.chartGenerator.deleteAll')"
                 @click="$emit('removeAll')"
             >
@@ -169,7 +176,11 @@ export default {
                     height:36px;
                     width:36px;
                     color:whitesmoke;
-                    opacity:0.85;
+                    opacity:0.75;
+
+                    &.dark {
+                        opacity:1
+                    }
                 }
 
                 &.dl {

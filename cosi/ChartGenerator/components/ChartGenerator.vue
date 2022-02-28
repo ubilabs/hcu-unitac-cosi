@@ -197,7 +197,7 @@ export default {
          */
         downloadAll () {
             const chartBox = document.getElementById("chart_panel").querySelectorAll("canvas");
-
+            console.log(this.$refs.chart);
             chartBox.forEach(canvas => {
                 const canvasPNG = canvas.toDataURL("image/png");
 
@@ -431,7 +431,7 @@ export default {
                                 </div>
                             </div>
                             <div class="graph_footer">
-                                <template v-if="datasets.length > 1">
+                                <template v-if="datasets.length > 0">
                                     <AnalysisPagination
                                         :sets="datasets"
                                         :active-set="activeGraph"
