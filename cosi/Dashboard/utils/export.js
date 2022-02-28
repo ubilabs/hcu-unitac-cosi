@@ -1,5 +1,4 @@
 import {renameKeys, replaceValues} from "../../utils/modifyObject.js";
-import {getTotal, getAverage} from "../utils/operations";
 
 const
     keyMap = {
@@ -43,8 +42,8 @@ export function prepareTableExport (data, districtNames, timestamp, timestampPre
         /**
          * @todo localize
          */
-        _item[keyMap.total] = getTotal(item, districtNames, timestamp, timestampPrefix);
-        _item[keyMap.average] = getAverage(item, districtNames, timestamp, timestampPrefix);
+        _item[keyMap.total] = this.getTotal(item, districtNames, timestamp, timestampPrefix);
+        _item[keyMap.average] = this.getAverage(item, districtNames, timestamp, timestampPrefix);
         _item[keyMap.timestamp] = timestamp;
 
         return _item;
@@ -84,8 +83,8 @@ export function prepareTableExportWithTimeline (data, districtNames, timestamps,
                     /**
                      * @todo localize
                      */
-                    el[keyMap.total] = getTotal(item, districtNames, timestamp, timestampPrefix);
-                    el[keyMap.average] = getAverage(item, districtNames, timestamp, timestampPrefix);
+                    el[keyMap.total] = this.getTotal(item, districtNames, timestamp, timestampPrefix);
+                    el[keyMap.average] = this.getAverage(item, districtNames, timestamp, timestampPrefix);
                     el[keyMap.timestamp] = timestamp;
 
                     return el;

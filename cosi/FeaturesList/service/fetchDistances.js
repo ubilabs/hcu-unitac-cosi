@@ -14,8 +14,24 @@ async function fetchMatrix (sources, destinations, profile) {
     if (destinations.length === 0) {
         return sources.map(() => null);
     }
+    axios.interceptors.response.use(function (response) {
+        return response;
+    }, function (error) {
+        const originalRequest = error.config,
+            bkg_url = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url");
 
-    const baseUrl = "https://csl-lig.hcu-hamburg.de/ors/v2/",
+        if (originalRequest.url.indexOf(bkg_url) === 0 && error.response.status !== 200 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const uri = originalRequest.url.replace(bkg_url, Radio.request("RestReader", "getServiceById", "csl_ors").get("url"));
+
+            return axios.post(uri, originalRequest.data,
+                {
+                    headers: originalRequest.headers
+                });
+        }
+        return Promise.reject(error);
+    });
+    const baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/",
         service = "matrix",
         uri = baseUrl + service + "/" + (profile || "foot-walking"),
         opts = {

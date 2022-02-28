@@ -61,7 +61,8 @@ export default {
                         "active"
                     ],
                     Dashboard: [
-                        "statsFeatureFilter"
+                        "statsFeatureFilter",
+                        "calculations"
                     ],
                     AreaSelector: [
                         "geometry"
