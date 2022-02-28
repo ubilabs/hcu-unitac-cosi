@@ -488,7 +488,7 @@ export default {
 
                 if (this[letter + "Switch"]) {
                     const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
-                        layerFeatures = findLayer.getSource().getFeatures();
+                        layerFeatures = getClusterSource(findLayer).getFeatures();
 
                     this.checkFilters(findLayer.get("id"), layerFeatures);
                     this.calcHelper["type_" + letter] = "facility";

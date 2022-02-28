@@ -1,3 +1,39 @@
+<script>
+export default {
+    name: "LayerWeights",
+    props: {
+        value: Boolean,
+        weights: {type: Object, default: null},
+        layers: {type: Array, default: null}
+    },
+    data () {
+        return {
+            layerWeights: {}
+        };
+    },
+    computed: {
+        show: {
+            get () {
+                return this.value;
+            },
+            set (value) {
+                this.$emit("input", value);
+            }
+        }
+    },
+    watch: {
+        show (newValue) {
+            if (!newValue) {
+                this.$emit("update", this.layerWeights);
+            }
+            else {
+                this.layerWeights = {...this.weights};
+            }
+        }
+    }
+};
+</script>
+
 <template>
     <div class="text-center">
         <v-dialog
@@ -6,7 +42,7 @@
         >
             <v-card>
                 <v-card-title class="text-h5 white lighten-2">
-                    Gewichtung
+                    {{ $t('additional:modules.tools.cosi.featuresList.weighting') }}
                 </v-card-title>
 
                 <div
@@ -57,42 +93,6 @@
         </v-dialog>
     </div>
 </template>
-
-<script>
-export default {
-    name: "LayerWeights",
-    props: {
-        value: Boolean,
-        weights: {type: Object, default: null},
-        layers: {type: Array, default: null}
-    },
-    data () {
-        return {
-            layerWeights: {}
-        };
-    },
-    computed: {
-        show: {
-            get () {
-                return this.value;
-            },
-            set (value) {
-                this.$emit("input", value);
-            }
-        }
-    },
-    watch: {
-        show (newValue) {
-            if (!newValue) {
-                this.$emit("update", this.layerWeights);
-            }
-            else {
-                this.layerWeights = {...this.weights};
-            }
-        }
-    }
-};
-</script>
 
 <style lang="scss" scoped>
     .slider-text {

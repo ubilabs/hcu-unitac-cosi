@@ -60,7 +60,7 @@ export default {
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
-                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel")],
+                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), ""],
                 data
             });
 
@@ -88,7 +88,7 @@ export default {
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
-                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel")],
+                scaleLabels: [this.$t("additional:modules.tools.cosi.featuresList.distanceScoreChartYLabel"), ""],
                 data
             });
 
