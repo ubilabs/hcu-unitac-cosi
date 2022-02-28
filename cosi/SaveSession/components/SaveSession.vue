@@ -19,7 +19,7 @@ export default {
     },
     data () {
         return {
-            localStorage,
+            localStorage: null,
             storePaths: {
                 // The order matters for loading
                 Map: [
