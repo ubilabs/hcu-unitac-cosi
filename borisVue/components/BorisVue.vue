@@ -378,6 +378,7 @@ export default {
                             >
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 <CalculationComponent
                                     :title="'Anbauart:'"
                                     :options="buildingDesigns"
@@ -435,20 +436,25 @@ export default {
 >>>>>>> 13f4ebc8 (implemented selections 'anbauart' and 'lager zur strasse')
 =======
                                 <CalculationSelect
+=======
+                                <CalculationComponent
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                                     :title="'Anbauart:'"
                                     :options="bauweisen"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
                                     :text="'Wählen Sie die Bauweise Ihres Gebäudes aus der Liste aus: <strong>Einzelhäuser </strong> sind freistehende Häuser, die nicht an die Grundstücksgrenze, Nutzungsgrenze oder andere Häuser angebaut sind. Lediglich zu einer Seite darf der Raum zwischen Haus und Grundstücksgrenze mit Nebengebäuden, z. B. Garagen zugebaut sein. <strong> Ein Doppelhaus </strong>ist eine Kombination zweier Häuser, die beide einseitig auf eine gemeinsame seitliche Grundstücksgrenze oder Nutzungsgrenze (bei Wohnungs-/Teileigentum) gebaut sind. Zur Vermeidung von Missverständnissen werden die einzelnen Häuser als <strong>halbe Doppelhäuser oder Doppelhaushälften</strong> bezeichnet. <strong>Ein Endreihenhaus</strong> ist einseitig bzw. ein <strong>Mittelreihenhaus</strong> ist beidseitig auf die seitlichen Grundstücks- bzw. Nutzungsgrenzen gebaut, so dass sich Zeilen von mindestens drei Häusern und bis zu 50 Meter Länge ergeben. <strong>Die geschlossenen Bauweise</strong> kennzeichnet Gebäude, die zu allen Seiten keinen Grenzabstand aufweisen und vollständig umbaut sind. <strong>Die abweichende Bauweise</strong> bezeichnet alle sonstigen Gebäudestellungen, die nicht in den zuvor genannten Kategorien aufgehen. Beispielsweise gehören hierzu Gartenhofhäuser, die zusammen mit Nachbarhäusern, Nebengebäuden und geschosshohen Mauern einen Garten in einem Gartenhof umschließen.'"
                                     :toggle-info-text="toggleInfoText"
-                                    :selection-type="'zBauweise'"
-                                    :handle-option-change="handleOptionChange"
+                                    :handle-change="handleOptionChange"
+                                    :subject="'zBauweise'"
+                                    :type="'select'"
                                 />
 >>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zStrassenLage')"
                             >
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                                 <CalculationComponent
@@ -510,14 +516,18 @@ export default {
 >>>>>>> c0cf747c (toggleInfoText method included)
 =======
                                 <CalculationSelect
+=======
+                                <CalculationComponent
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                                     :title="'Lage zur Straße:'"
                                     :options="strassenlagen"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
                                     :text="'Wählen Sie die Stellung und damit auch die Zuwegung Ihres Grundstücks zur Straße aus der Liste aus: Während bei <strong>Frontlage</strong> das Grundstück unmittelbar an genau eine Straße heranreicht, ist bei einer <strong>Ecklage</strong> eine unmittelbare Anbindung an mindestens zwei Straßen gegeben. Ein <strong>Pfeifenstielgrundstück</strong> ist eine schmale, pfeifenstielartige Zuwegung zu einem Grundstück, das nicht direkt an der Straße gelegen ist. Der Pfeifenstiel steht normalerweise im Alleineigentum des Pfeifenkopf-Grundstücks. Es ist jedoch auch möglich, dass ein Pfeifenstiel bis zu vier rückwärtige Grundstücke erschließt. <strong>Die Hinterlage</strong> bezeichnet ein rückwärtiges Grundstück, welches sich nicht im Eigentum des Grundstücks befindet, sondern über ein grundbuchliches Wegerecht oder als Baulast gesichert ist.'"
                                     :toggle-info-text="toggleInfoText"
-                                    :selection-type="'zStrassenLage'"
-                                    :handle-option-change="handleOptionChange"
+                                    :handle-change="handleOptionChange"
+                                    :subject="'zStrassenLage'"
+                                    :type="'select'"
                                 />
 >>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
                             </div>
@@ -525,18 +535,25 @@ export default {
                                 v-if="selectedBrwFeature.get('zGeschossfl_zahl')"
                             >
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                                 <CalculationComponent
                                     :title="'Wertrelevante Geschossflächenzahl (WGFZ):'"
                                     :options="[]"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
+<<<<<<< HEAD
                                     :text-id="4"
+=======
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                                     :text="'Die <strong>wertrelevante Geschossflächenzahl (WGFZ)</strong> wird über das Verhältnis der Geschossflächen zur Grundstücksfläche definiert. Geben Sie hier die WGFZ Ihres Grundstücks ein.'"
                                     :toggle-info-text="toggleInfoText"
                                     :handle-change="handleInputChange"
                                     :subject="'zGeschossfl_zahl'"
                                     :type="'input'"
                                 />
+<<<<<<< HEAD
 =======
                                 <dt>
                                     <span>Wertrelevante Geschossflächenzahl (WGFZ):</span>
@@ -571,23 +588,32 @@ export default {
 >>>>>>> 5d3aad6e (BG-1869 handle change methods to calculate Bodenrichtwert included)
 =======
 >>>>>>> 11415434 (BG-1869 CalculationSelect Component implemented)
+=======
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                             </div>
                             <div
                                 v-if="selectedBrwFeature.get('zGrdstk_flaeche')"
                             >
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                                 <CalculationComponent
                                     :title="'Grundstücksfläche in m²:'"
                                     :options="[]"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
+<<<<<<< HEAD
                                     :text-id="5"
+=======
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                                     :text="'Geben Sie für die <strong>Grundstücksfläche</strong> die Grundfläche Ihres Grundstücks laut Angabe im Liegenschaftskataster ein.'"
                                     :toggle-info-text="toggleInfoText"
                                     :handle-change="handleInputChange"
                                     :subject="'zGrdstk_flaeche'"
                                     :type="'input'"
                                 />
+<<<<<<< HEAD
 =======
                                 <dt>
                                     <span>Grundstücksfläche in m²:</span>
@@ -620,7 +646,10 @@ export default {
 >>>>>>> 5d3aad6e (BG-1869 handle change methods to calculate Bodenrichtwert included)
 =======
 >>>>>>> c0cf747c (toggleInfoText method included)
+=======
+>>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                             </div>
+                            <!-- CalculationComponent Ende -->
                             <dt>
                                 <span>Ihr umgerechneter Bodenrichtwert:</span>
                                 <span 
