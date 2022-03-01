@@ -27,8 +27,6 @@ export default {
             layerIdList: [],
             // List of all available "facilites" (theme layers)
             facilityList: [],
-            // filter IDs for facility list
-            filters: {},
             // Sorted an grouped list of availabke features
             featuresList: [],
             // Holds all statistical data from selectedFeatures (DistrictSelector)
@@ -85,7 +83,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
-        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer"}),
+        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer", isFeatureActive: "isFeatureActive"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         // Transforming results data for excel export
@@ -144,10 +142,6 @@ export default {
             this.updateFacilities();
         },
         loadend (newValue) {
-            /* if (newValue && this.selectedStatFeatures.length > 0) {
-                this.updateFeaturesList();
-            }*/
-
             const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
@@ -174,9 +168,6 @@ export default {
         },
         facilitiesMapping () {
             this.updateFacilities();
-        },
-        filters () {
-            this.prepareCoverage();
         },
 
         /**
@@ -209,9 +200,9 @@ export default {
     mounted () {
         this.applyTranslationKey(this.name);
 
-        Radio.on("Filter", "filteredIdsChanged", (layerId, featureIds) => {
-            this.filters[layerId] = featureIds;
-        });
+        // Radio.on("Filter", "filteredIdsChanged", (layerId, featureIds) => {
+        //     this.filters[layerId] = featureIds;
+        // });
 
         if (this.facilityList.length === 0) {
             this.ASwitch = false;
@@ -363,13 +354,12 @@ export default {
             if (this[letter + "Switch"]) {
                 this["facilityPropertyList_" + letter] = [];
                 const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
-                    layerId = findLayer.get("id"),
                     layerFeatures = getClusterSource(findLayer).getFeatures(),
+                    filteredFeatures = layerFeatures.filter(feature => this.isFeatureActive(feature)),
                     countData = {
                         name: "Anzahl",
-                        // count: layerFeatures.length,
-                        count: layerId in this.filters ? this.filters[layerId][0].ids.length : layerFeatures.length,
-                        filter: layerId in this.filters ? this.filters[layerId][0].ids : ""
+                        count: filteredFeatures.length,
+                        filter: filteredFeatures.map(feature => feature.getId())
                     };
 
                 this["facilityPropertyList_" + letter].push(countData);
@@ -490,11 +480,10 @@ export default {
                     const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = getClusterSource(findLayer).getFeatures();
 
-                    this.checkFilters(findLayer.get("id"), layerFeatures);
                     this.calcHelper["type_" + letter] = "facility";
                     this.featureVals = [];
                     layerFeatures.forEach(feature => {
-                        if (this.filters[findLayer.get("id")][0].ids.includes(feature.getId())) {
+                        if (this.isFeatureActive(feature)) {
                             const layerGeometry = getCenter(feature.getGeometry().getExtent());
 
                             if (geometry.intersectsCoordinate(layerGeometry)) {
@@ -585,18 +574,18 @@ export default {
 
             return dataArray;
         },
-        /**
-         * @description Checks if filter is set and whitelists all features if not
-         * @param {String} layerId Id of the layer.
-         * @param {Array} features Features of the layer.
-         * @returns {void}
-         */
-        checkFilters (layerId, features) {
-            if (!(layerId in this.filters)) {
-                this.filters[layerId] = [{ids: []}];
-                this.filters[layerId][0].ids = features.map(feature => feature.getId());
-            }
-        },
+        // /**
+        //  * @description Checks if filter is set and whitelists all features if not
+        //  * @param {String} layerId Id of the layer.
+        //  * @param {Array} features Features of the layer.
+        //  * @returns {void}
+        //  */
+        // checkFilters (layerId, features) {
+        //     if (!(layerId in this.filters)) {
+        //         this.filters[layerId] = [{ids: []}];
+        //         this.filters[layerId][0].ids = features.map(feature => feature.getId());
+        //     }
+        // },
         /**
          * @description Gets Data for the selected statistical data (features)
          * @param {String} districtName name of the district.
