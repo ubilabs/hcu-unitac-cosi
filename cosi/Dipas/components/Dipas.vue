@@ -39,6 +39,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureActive"]),
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"]),
         isProjectActive () {
@@ -449,7 +450,8 @@ export default {
         async changeHeatmapVisibility (id, value) {
             const
                 layerId = id + "-heatmap",
-                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"}),
+                isFeatureActive = this.isFeatureActive;
             let
                 layer = getLayerById(this.map.getLayers().getArray(), layerId);
 
@@ -475,6 +477,9 @@ export default {
                     blur: 20,
                     id: layerId,
                     weight: function (feature) {
+                        if (!isFeatureActive(feature)) {
+                            return 0;
+                        }
                         const votingPro = parseInt(feature.get("votingPro"), 10),
                             votingContra = parseInt(feature.get("votingContra"), 10),
                             weight = (votingPro + votingContra) / maxVotes;
