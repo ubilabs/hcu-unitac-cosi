@@ -406,7 +406,6 @@ export default {
                                     :type="'input'"
                                 />
                             </div>
-                            <!-- CalculationComponent Ende -->
                             <dt>
                                 <span>Ihr umgerechneter Bodenrichtwert:</span>
                                 <span 
@@ -467,7 +466,6 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
                 </div>
             </div>
         </template>
