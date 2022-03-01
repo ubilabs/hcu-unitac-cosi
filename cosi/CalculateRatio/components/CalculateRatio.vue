@@ -200,10 +200,6 @@ export default {
     mounted () {
         this.applyTranslationKey(this.name);
 
-        // Radio.on("Filter", "filteredIdsChanged", (layerId, featureIds) => {
-        //     this.filters[layerId] = featureIds;
-        // });
-
         if (this.facilityList.length === 0) {
             this.ASwitch = false;
             this.BSwitch = false;
@@ -352,22 +348,14 @@ export default {
          */
         getFacilityData (letter) {
             if (this[letter + "Switch"]) {
-                this["facilityPropertyList_" + letter] = [];
-                const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
-                    layerFeatures = getClusterSource(findLayer).getFeatures(),
-                    filteredFeatures = layerFeatures.filter(feature => this.isFeatureActive(feature)),
-                    countData = {
-                        name: "Anzahl",
-                        count: filteredFeatures.length,
-                        filter: filteredFeatures.map(feature => feature.getId())
-                    };
-
-                this["facilityPropertyList_" + letter].push(countData);
+                this["facilityPropertyList_" + letter] = [{
+                    name: "Anzahl",
+                    id: "count"
+                }];
                 this["selectedField" + letter].numericalValues.forEach(value => {
                     const data = {
                         name: value.name,
-                        id: value.id,
-                        count: layerFeatures.reduce((total, layer) => total + parseFloat(layer.getProperties()[value.id] ? layer.getProperties()[value.id] : 0), 0)
+                        id: value.id
                     };
 
                     this["facilityPropertyList_" + letter].push(data);
