@@ -1015,7 +1015,6 @@ export default {
                                     :type="'input'"
                                 />
                             </div>
-                            <!-- CalculationComponent Ende -->
                             <dt>
                                 <span>Ihr umgerechneter Bodenrichtwert:</span>
                                 <span 
@@ -1048,183 +1047,13 @@ export default {
                             </dd>
                         </dl>
                     </div>
-                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
-                    <div v-if="buttonValue === 'liste'">
-                        <h4>Schichtwerte</h4>
-                        <span>Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:</span>
-                        <dl>
-                            <div
-                                v-if="(selectedBrwFeature.get('schichtwert').normschichtwert_wohnen)"
-                            >
-                                <dt>normierter Bodenrichtwert für Mehrfamilienhäuser:</dt>
-                                <div
-                                    v-if="(parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                >
-                                    <dd>{{ selectedBrwFeature.get("schichtwert").normschichtwert_wohnen }} €/m²</dd>
-                                </div>
-                                <div
-                                    v-else
-                                >
-                                    <dd><span>{{ selectedBrwFeature.get("schichtwert").normschichtwert_wohnen }} €/m²</span><span class="pull-right">{{ selectedBrwFeature.get('schichtwert').normschichtwert_wohnenD }} DM/m²</span></dd>
-                                </div>
-                            </div>
-                            <div
-                                v-if="(selectedBrwFeature.get('schichtwert').normschichtwert_buero)"
-                            >
-                                <dt>normierter Bodenrichtwert für Bürohäuser:</dt>
-                                <div
-                                    v-if="(parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                >
-                                    <dd>{{ selectedBrwFeature.get("schichtwert").normschichtwert_buero }} €/m²</dd>
-                                </div>
-                                <div
-                                    v-else
-                                >
-                                    <dd><span>{{ selectedBrwFeature.get("schichtwert").normschichtwert_buero }} €/m²</span><span class="pull-right">{{ selectedBrwFeature.get('schichtwert').normschichtwert_bueroDM }} DM/m²</span></dd>
-                                </div>
-                            </div>
-                            <div
-                                v-if="(selectedBrwFeature.get('schichtwert').normschichtwert_laden)"
-                            >
-                                <dt>normierter Bodenrichtwert für Geschäftshäuser (Erdgesch.-anteil):</dt>
-                                <div
-                                    v-if="(parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                >
-                                    <dd>{{ selectedBrwFeature.get("schichtwert").normschichtwert_laden }} €/m²</dd>
-                                </div>
-                                <div
-                                    v-else
-                                >
-                                    <dd><span>{{ selectedBrwFeature.get("schichtwert").normschichtwert_laden }} €/m²</span><span class="pull-right">{{ selectedBrwFeature.get('schichtwert').normschichtwert_ladenDM }} DM/m²</span></dd>
-                                </div>
-                            </div>
-                        </dl>
-                        <div
-                            v-if="(selectedBrwFeature.get('schichtwert').schichtwerte)"
-                        >
-                            <div
-                                v-for="(schichtwert, index) in selectedBrwFeature.get('schichtwert').schichtwerte"
-                                :key="index"
-                            >
-                                <div
-                                    v-if="schichtwert.geschoss === '3. Obergeschoss oder höher'"
-                                >
-                                    <br>
-                                    <h4>{{ schichtwert.geschoss }}</h4>
-                                    <dl>
-                                        <dt>Anteilige WGFZ:</dt>
-                                        <dd>{{ schichtwert.wgfz }} </dd>
-                                        <dt>Nutzung:</dt>
-                                        <dd>{{ schichtwert.nutzung }} </dd>
-                                        <dt>Schichtwert:</dt>
-                                        <dd
-                                            v-if=" (parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                        >
-                                            {{ schichtwert.schichtwert }} €/m² WGF
-                                        </dd>
-                                        <dd
-                                            v-else
-                                        >
-                                            <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="pull-right"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div
-                                    v-if="schichtwert.geschoss === '2. Obergeschoss'"
-                                >
-                                    <br>
-                                    <h4> {{ schichtwert.geschoss }}</h4>
-                                    <dl>
-                                        <dt>Anteilige WGFZ:</dt>
-                                        <dd>{{ schichtwert.wgfz }} </dd>
-                                        <dt>Nutzung:</dt>
-                                        <dd>{{ schichtwert.nutzung }} </dd>
-                                        <dt>Schichtwert:</dt>
-                                        <dd
-                                            v-if=" (parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                        >
-                                            {{ schichtwert.schichtwert }} €/m² WGF
-                                        </dd>
-                                        <dd
-                                            v-else
-                                        >
-                                            <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="pull-right"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div
-                                    v-if="schichtwert.geschoss === '1. Obergeschoss'"
-                                >
-                                    <br>
-                                    <h4> {{ schichtwert.geschoss }}</h4>
-                                    <dl>
-                                        <dt>Anteilige WGFZ:</dt>
-                                        <dd>{{ schichtwert.wgfz }} </dd>
-                                        <dt>Nutzung:</dt>
-                                        <dd>{{ schichtwert.nutzung }} </dd>
-                                        <dt>Schichtwert:</dt>
-                                        <dd
-                                            v-if=" (parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                        >
-                                            {{ schichtwert.schichtwert }} €/m² WGF
-                                        </dd>
-                                        <dd
-                                            v-else
-                                        >
-                                            <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="pull-right"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div
-                                    v-if="schichtwert.geschoss === 'Erdgeschoss'"
-                                >
-                                    <br>
-                                    <h4> {{ schichtwert.geschoss }}</h4>
-                                    <dl>
-                                        <dt>Anteilige WGFZ:</dt>
-                                        <dd>{{ schichtwert.wgfz }} </dd>
-                                        <dt>Nutzung:</dt>
-                                        <dd>{{ schichtwert.nutzung }} </dd>
-                                        <dt>Schichtwert:</dt>
-                                        <dd
-                                            v-if=" (parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                        >
-                                            {{ schichtwert.schichtwert }} €/m² WGF
-                                        </dd>
-                                        <dd
-                                            v-else
-                                        >
-                                            <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="pull-right"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div
-                                    v-if="schichtwert.geschoss === 'Untergeschoss'"
-                                >
-                                    <br>
-                                    <h4> {{ schichtwert.geschoss }}</h4>
-                                    <dl>
-                                        <dt>Anteilige WGFZ:</dt>
-                                        <dd>{{ schichtwert.wgfz }} </dd>
-                                        <dt>Nutzung:</dt>
-                                        <dd>{{ schichtwert.nutzung }} </dd>
-                                        <dt>Schichtwert:</dt>
-                                        <dd
-                                            v-if=" (parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002)"
-                                        >
-                                            {{ schichtwert.schichtwert }} €/m² WGF
-                                        </dd>
-                                        <dd
-                                            v-else
-                                        >
-                                            <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="pull-right"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
-                                        </dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
+                    <div v-if="buttonValue === 'liste' && selectedBrwFeature.get('schichtwert')">
+                        <FloorComponent
+                            :title="'Schichtwerte'"
+                            :feature="selectedBrwFeature.get('schichtwert')"
+                            :label="'Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:'"
+                        />
                     </div>
-                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
                 </div>
 >>>>>>> 7e4243ea (progress in dealing with selected features)
             </div>
