@@ -31,7 +31,7 @@ const state = {
     selectedStrassenLage: "",
     strassenlagen: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"],
     // wps
-    wpsId: 1001,
+    wpsId: "1001",
     fmwProcess: "BRWConvert.fmw"
 };
 
