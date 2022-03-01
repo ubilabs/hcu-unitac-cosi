@@ -939,14 +939,14 @@ export default {
                         </div>
                     </div>
                     <div v-if="buttonValue === 'info'">
-                        <DetailInformation
+                        <InformationComponent
                             :title="'Detailinformationen'"
                             :selected-brw-feature="selectedBrwFeature"
                             :button-value="buttonValue"
                         />
                     </div>
                     <div v-if="buttonValue === 'lage'">
-                        <DetailInformation
+                        <InformationComponent
                             :title="'Lagebeschreibung'"
                             :selected-brw-feature="selectedBrwFeature"
                             :button-value="buttonValue"
