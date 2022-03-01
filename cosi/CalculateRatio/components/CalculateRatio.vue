@@ -562,18 +562,6 @@ export default {
 
             return dataArray;
         },
-        // /**
-        //  * @description Checks if filter is set and whitelists all features if not
-        //  * @param {String} layerId Id of the layer.
-        //  * @param {Array} features Features of the layer.
-        //  * @returns {void}
-        //  */
-        // checkFilters (layerId, features) {
-        //     if (!(layerId in this.filters)) {
-        //         this.filters[layerId] = [{ids: []}];
-        //         this.filters[layerId][0].ids = features.map(feature => feature.getId());
-        //     }
-        // },
         /**
          * @description Gets Data for the selected statistical data (features)
          * @param {String} districtName name of the district.
