@@ -69,4 +69,17 @@ export default {
 h5 {
     font-weight: bolder;
 };
+<<<<<<< HEAD
+=======
+dt {
+    background-color: rgba(227, 227, 227, 0.5);
+    font-family: "UniversNextW04-620CondB", "Arial Narrow", Arial, sans-serif;
+    padding: 8px;
+};
+dd{
+    padding: 8px;
+    word-wrap: break-word;
+};
+
+>>>>>>> ddfabab3 (BG-1869 FloorComponent implemented and wpsId set to string)
 </style>

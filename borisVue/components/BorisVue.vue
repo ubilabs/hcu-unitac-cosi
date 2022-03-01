@@ -649,7 +649,6 @@ export default {
 =======
 >>>>>>> 29ccff54 (BG-1869 CalculationComponent implemented)
                             </div>
-                            <!-- CalculationComponent Ende -->
                             <dt>
                                 <span>Ihr umgerechneter Bodenrichtwert:</span>
                                 <span 
@@ -701,12 +700,16 @@ export default {
                         </dl>
                     </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ddfabab3 (BG-1869 FloorComponent implemented and wpsId set to string)
                     <div v-if="buttonValue === 'liste' && selectedBrwFeature.get('schichtwert')">
                         <FloorComponent
                             :title="'Schichtwerte'"
                             :feature="selectedBrwFeature.get('schichtwert')"
                             :label="'Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:'"
                         />
+<<<<<<< HEAD
                     </div>
                     <button
                         class="btn btn-primary btn-infos"
@@ -735,8 +738,9 @@ export default {
                                 <span class="sr-only">30% Complete</span>
                             </div>
                         </div>
+=======
+>>>>>>> ddfabab3 (BG-1869 FloorComponent implemented and wpsId set to string)
                     </div>
-                    <!-- SCHICHTWERTE   SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE    SCHICHTWERTE -->
                 </div>
             </div>
         </template>
