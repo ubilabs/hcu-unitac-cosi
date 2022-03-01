@@ -2,7 +2,7 @@
 import Detail from "./Detail.vue";
 
 export default {
-    name: "DetailInformation",
+    name: "InformationComponent",
     components: {
         Detail
     },

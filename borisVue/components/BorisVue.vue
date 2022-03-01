@@ -3,14 +3,14 @@ import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersBorisVue";
 import mutations from "../store/mutationsBorisVue";
-import DetailInformation from "./DetailInformation.vue";
+import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
 
 export default {
     name: "BorisVue",
     components: {
         Tool,
-        DetailInformation,
+        InformationComponent,
         CalculationComponent
     },
     computed: {
@@ -269,14 +269,14 @@ export default {
                         </div>
                     </div>
                     <div v-if="buttonValue === 'info'">
-                        <DetailInformation
+                        <InformationComponent
                             :title="'Detailinformationen'"
                             :selected-brw-feature="selectedBrwFeature"
                             :button-value="buttonValue"
                         />
                     </div>
                     <div v-if="buttonValue === 'lage'">
-                        <DetailInformation
+                        <InformationComponent
                             :title="'Lagebeschreibung'"
                             :selected-brw-feature="selectedBrwFeature"
                             :button-value="buttonValue"
