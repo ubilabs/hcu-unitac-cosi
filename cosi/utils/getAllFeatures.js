@@ -6,14 +6,14 @@ import axios from "axios";
  * Handles the WFS GetFeature request.
  * @param {String} url - The url of the WFS.
  * @param {String | String[]} featureType - The layer name, resp. the layer names if WFS version is >2.0.0.
- * @param {String} [version="1.1.0"] - The version of the WFS.
  * @param {String} [propertyName] - A list of properties to restrict the request.
  * @param {String} [bbox] - A extent to restrict the request.
  * @param {String} [srsName] - srsName
+ * @param {String} [version="1.1.0"] - The version of the WFS.
  * @param {String} [filter] - An XML encoded filter function.
  * @returns {Promise<Object|undefined>} Promise object represents the DescribeFeatureType request.
  */
-export async function getFeature (url, featureType, version = "1.1.0", propertyName, bbox, srsName) {
+export async function getFeature (url, featureType, propertyName, bbox, srsName, version = "1.1.0") {
     const ret = await axios.get(url, {
         // the params "service", "request", "version" are required
         params: {
@@ -60,7 +60,7 @@ export async function getAllFeatures (layerId, bbox, srsName) {
         wfsReader = new WFS({
             featureNS: layer.featureNS
         }),
-        features = await getFeature(layer?.url, layer?.featureType, "1.1.0", undefined, formatBbox(bbox, srsName), srsName);
+        features = await getFeature(layer?.url, layer?.featureType, undefined, formatBbox(bbox, srsName), srsName, "1.1.0");
 
     return wfsReader.readFeatures(features);
 }

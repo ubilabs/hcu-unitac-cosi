@@ -259,7 +259,7 @@ export default {
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });
 
-        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url");
+        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
     },
 
     /**

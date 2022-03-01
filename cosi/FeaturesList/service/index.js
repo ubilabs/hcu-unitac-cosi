@@ -123,7 +123,6 @@ function aggregate (values, type) {
             }
             return m;
         }
-        default:
         case "mean":
         {
             let m = 0;
@@ -132,6 +131,9 @@ function aggregate (values, type) {
                 m += v;
             }
             return m / values.length;
+        }
+        default: {
+            return null;
         }
     }
 }

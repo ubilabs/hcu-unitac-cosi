@@ -441,10 +441,13 @@ export default {
                 <div v-if="importedFileNames.length > 0">
                     <div class="h-seperator" />
                     <p class="cta">
-                        <label class="successfullyImportedLabel">
+                        <label
+                            for="list"
+                            class="successfullyImportedLabel"
+                        >
                             {{ $t("additional:modules.tools.cosiFileImport.successfullyImportedLabel") }}
                         </label>
-                        <ul>
+                        <ul id="list">
                             <li
                                 v-for="(filename, index) in importedFileNames"
                                 :key="index"
@@ -487,7 +490,7 @@ export default {
                         <div class="body">
                             <div class="wrapper">
                                 <div class="features">
-                                    <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
+                                    <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
                                     <div
                                         class="feat_wrapper active style"
                                         @click="e => e.target.classList.toggle('active')"
@@ -537,6 +540,7 @@ export default {
                                                         <div
                                                             class="info_icon"
                                                             @click="showInfo($t('additional:modules.tools.cosiFileImport.autoStyleTooltip'))"
+                                                            @keyup="showInfo($t('additional:modules.tools.cosiFileImport.autoStyleTooltip'))"
                                                         >
                                                             i
                                                         </div>
@@ -585,6 +589,7 @@ export default {
                                                     <div
                                                         class="info_icon"
                                                         @click="showInfo($t('additional:modules.tools.cosiFileImport.rainbowTooltip'))"
+                                                        @keyup="showInfo($t('additional:modules.tools.cosiFileImport.rainbowTooltip'))"
                                                     >
                                                         i
                                                     </div>
@@ -639,6 +644,7 @@ export default {
                                     <div
                                         class="feat_wrapper facility"
                                         @click="e => e.target.classList.toggle('active')"
+                                        @keyup="e => e.target.classList.toggle('active')"
                                     >
                                         <h3>{{ $t("additional:modules.tools.cosiFileImport.facility") }}</h3>
                                         <p class="featuresInfo">
@@ -668,6 +674,7 @@ export default {
                                                 <div
                                                     class="info_icon"
                                                     @click="showInfo($t('additional:modules.tools.cosiFileImport.namensfeldTooltip'))"
+                                                    @keyup="showInfo($t('additional:modules.tools.cosiFileImport.namensfeldTooltip'))"
                                                 >
                                                     i
                                                 </div>
@@ -697,6 +704,7 @@ export default {
                                                 <div
                                                     class="info_icon"
                                                     @click="showInfo($t('additional:modules.tools.cosiFileImport.typenfeldTooltip'))"
+                                                    @keyup="showInfo($t('additional:modules.tools.cosiFileImport.typenfeldTooltip'))"
                                                 >
                                                     i
                                                 </div>
@@ -706,6 +714,7 @@ export default {
                                             v-if="noAddress"
                                             class="address"
                                             @click="e => e.target.classList.toggle('active')"
+                                            @keyup="e => e.target.classList.toggle('active')"
                                         >
                                             <h4>{{ $t("additional:modules.tools.cosiFileImport.address") }}</h4>
                                             <p>
@@ -727,8 +736,9 @@ export default {
                                                         :key="i"
                                                         class="vis"
                                                     >
-                                                        <label><strong>{{ data }}</strong></label>
+                                                        <label for="checkboxInput"><strong>{{ data }}</strong></label>
                                                         <input
+                                                            id="checkboxInput"
                                                             v-model="addressSetup"
                                                             type="checkbox"
                                                             :value="data"
@@ -743,8 +753,9 @@ export default {
                                                         :key="i"
                                                         :class="{ vis: dataKey !== 'geometry' && dataKey !== 'address' }"
                                                     >
-                                                        <label><strong>{{ dataKey }}</strong></label>
+                                                        <label for="checkboxInput"><strong>{{ dataKey }}</strong></label>
                                                         <input
+                                                            id="checkboxInput"
                                                             v-model="addressSetup"
                                                             type="checkbox"
                                                             :value="dataKey"
@@ -766,6 +777,7 @@ export default {
                                     <div
                                         class="feat_wrapper filterdata filter"
                                         @click="e => e.target.classList.toggle('active')"
+                                        @keyup="e => e.target.classList.toggle('active')"
                                     >
                                         <h3>{{ $t("additional:modules.tools.cosiFileImport.filter") }}</h3>
                                         <p class="featuresInfo">
@@ -812,6 +824,7 @@ export default {
                                     <div
                                         class="feat_wrapper prenum"
                                         @click="e => e.target.classList.toggle('active')"
+                                        @keyup="e => e.target.classList.toggle('active')"
                                     >
                                         <h3>{{ $t("additional:modules.tools.cosiFileImport.preNum") }}</h3>
                                         <p class="featuresInfo">
@@ -827,8 +840,9 @@ export default {
                                                     class="preNumName"
                                                     label="Name der Eigenschaft"
                                                 />
-                                                <label><strong>{{ data.id }}</strong> ({{ data.value }})</label>
+                                                <label for="checkboxInput"><strong>{{ data.id }}</strong> ({{ data.value }})</label>
                                                 <input
+                                                    id="checkboxInput"
                                                     v-model="numericalValues"
                                                     type="checkbox"
                                                     :value="data"
