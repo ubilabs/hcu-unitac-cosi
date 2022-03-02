@@ -94,24 +94,6 @@ export default {
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
-        // Transforming results data for excel export
-        resultData () {
-            const json = [];
-
-            this.results.forEach(result => {
-                const resultObj = {};
-
-                resultObj[this.selectedFieldA.id] = result.paramA_val;
-                resultObj[this.selectedFieldB.id] = result.paramB_val;
-                resultObj[this.selectedFieldA.id + " / " + this.selectedFieldB.id] = result.relation;
-                resultObj.Kapazitaet = result.capacity;
-                resultObj.Bedarf = result.need;
-                resultObj.Bedarfsdeckung = result.coverage;
-                json.push(resultObj);
-            });
-
-            return json;
-        },
         availableColumns () {
             const options = [
                 {name: "Verhältnis", key: "relation"},
@@ -150,10 +132,6 @@ export default {
             this.updateFacilities();
         },
         loadend (newValue) {
-            /* if (newValue && this.selectedStatFeatures.length > 0) {
-                this.updateFeaturesList();
-            }*/
-
             const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
@@ -183,6 +161,26 @@ export default {
         },
         filters () {
             this.prepareCoverage();
+        },
+        activeSet (newValue) {
+            /*Object.entries(this.dataSets[newValue].inputs).forEach(entry => {
+                const [key, value] = entry;
+
+                this[key] = value;
+            });*/
+
+            for (const key in this.dataSets[newValue].inputs) {
+                this[key] = this.dataSets[newValue].inputs[key];
+            }
+
+            this.setResults(this.dataSets[newValue].results);
+            this.loadToColorCodeMap();
+        },
+        dataSets (newValue) {
+            if (newValue.length === 0) {
+                this.setResults([]);
+                this.activeSet = 0;
+            }
         },
 
         /**
@@ -408,6 +406,7 @@ export default {
             this.sumUpSwitchA = false;
             this.sumUpSwitchB = false;
             this.setResults([]);
+            this.dataSets = [];
         },
         /**
          * @description Switches all parameters between FieldA and FieldB.
@@ -482,24 +481,26 @@ export default {
             calculationSet.results = this.results;
             calculationSet.resultHeaders = this.resultHeaders;
             calculationSet.inputs = {
-                selectedFieldA: this.selectedFieldA,
-                selectedFieldB: this.selectedFieldB,
-                paramFieldA: this.paramFieldA,
-                paramFieldB: this.paramFieldB,
-                fActive_A: this.fActive_A,
-                fActive_B: this.fActive_B,
-                faktorf_A: this.faktorf_A,
-                faktorf_B: this.faktorf_B,
-                ASwitch: this.ASwitch,
-                BSwitch: this.BSwitch,
-                perCalc_A: this.perCalc_A,
-                perCalc_B: this.perCalc_B,
-                facilityPropertyList_A: this.facilityPropertyList_A,
-                facilityPropertyList_B: this.facilityPropertyList_B
+                selectedFieldA: JSON.parse(JSON.stringify(this.selectedFieldA)),
+                selectedFieldB: JSON.parse(JSON.stringify(this.selectedFieldB)),
+                paramFieldA: JSON.parse(JSON.stringify(this.paramFieldA)),
+                paramFieldB: JSON.parse(JSON.stringify(this.paramFieldB)),
+                fActive_A: JSON.parse(JSON.stringify(this.fActive_A)),
+                fActive_B: JSON.parse(JSON.stringify(this.fActive_B)),
+                faktorf_A: JSON.parse(JSON.stringify(this.faktorf_A)),
+                faktorf_B: JSON.parse(JSON.stringify(this.faktorf_B)),
+                ASwitch: JSON.parse(JSON.stringify(this.ASwitch)),
+                BSwitch: JSON.parse(JSON.stringify(this.BSwitch)),
+                perCalc_A: JSON.parse(JSON.stringify(this.perCalc_A)),
+                perCalc_B: JSON.parse(JSON.stringify(this.perCalc_B)),
+                sumUpSwitchA: JSON.parse(JSON.stringify(this.sumUpSwitchA)),
+                sumUpSwitchB: JSON.parse(JSON.stringify(this.sumUpSwitchB)),
+                facilityPropertyList_A: JSON.parse(JSON.stringify(this.facilityPropertyList_A)),
+                facilityPropertyList_B: JSON.parse(JSON.stringify(this.facilityPropertyList_B))
             };
 
             this.dataSets.push(calculationSet);
-
+            this.activeSet = this.dataSets.length - 1;
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -669,8 +670,30 @@ export default {
 
             this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
         },
-        exportAsXlsx () {
-            exportXlsx(this.resultData, this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
+        /**
+         * @description Transforming results data for excel export
+         * @param {Integer} index Index of the set to be prepared for download in the dataSets Array.
+         * @returns {Void} Function returns nothing.
+         */
+        resultData (index) {
+            const json = [];
+
+            this.dataSets[index].results.forEach(result => {
+                const resultObj = {};
+
+                resultObj[this.dataSets[index].inputs.selectedFieldA.id] = result.paramA_val;
+                resultObj[this.dataSets[index].inputs.selectedFieldB.id] = result.paramB_val;
+                resultObj[this.dataSets[index].inputs.selectedFieldA.id + " / " + this.dataSets[index].inputs.selectedFieldB.id] = result.relation;
+                resultObj.Kapazitaet = result.capacity;
+                resultObj.Bedarf = result.need;
+                resultObj.Bedarfsdeckung = result.coverage;
+                json.push(resultObj);
+            });
+
+            return json;
+        },
+        exportAsXlsx (index) {
+            exportXlsx(this.resultData(index), this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -698,7 +721,7 @@ export default {
         getDataForColorCodeMap () {
             const prepareData = [];
 
-            this.results.forEach(result => {
+            this.dataSets[this.activeSet].results.forEach(result => {
                 if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                     const data = {
                         name: result.scope,
@@ -762,6 +785,39 @@ export default {
             });
 
             this.channelGraphData(graphObj);
+        },
+
+        /**
+         * @description Selects the next or the previous supply analysis in the Tool Window.
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
+         */
+        setPrevNext (value) {
+            const l = this.dataSets.length;
+
+            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+        },
+        /**
+         * @description Deletes a set from the Tool Window.
+         * @param {Integer} index Index of the set to be deleted in the dataSets Array.
+         * @returns {Void} Function returns nothing.
+         */
+        removeSet (index) {
+            if (this.activeSet === this.dataSets.length - 1) {
+                this.activeSet -= 1;
+            }
+
+            this.dataSets.splice(index, 1);
+        },
+        /**
+         * @description Downloads xls and geojson of each dataset.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadAll () {
+            this.dataSets.forEach((set, i) => {
+                this.exportAsXlsx(i);
+                this.exportAsGeoJson(i);
+            });
         },
 
         // the export function from utils
@@ -1068,37 +1124,32 @@ export default {
                             </button>
                         </div>
                     </div>
-
+                    <AnalysisPagination
+                        v-if="dataSets.length > 0"
+                        :sets="dataSets"
+                        :active-set="activeSet"
+                        :downloads="['XLS', 'GEOJSON']"
+                        :titles="{
+                            downloads: [$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip'), $t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')],
+                            downloadAll: $t('additional:modules.tools.cosi.calculateRatio.paginationDownloadAll'),
+                            remove: $t('additional:modules.tools.cosi.calculateRatio.paginationRemove'),
+                            removeAll: $t('additional:modules.tools.cosi.calculateRatio.paginationRemoveAll'),
+                            next: $t('additional:modules.tools.cosi.calculateRatio.paginationNext'),
+                            prev: $t('additional:modules.tools.cosi.calculateRatio.paginationPrev'),
+                        }"
+                        @setActiveSet="(n) => activeSet = n"
+                        @setPrevNext="(n) => setPrevNext(n)"
+                        @removeSingle="(n) => removeSet(n)"
+                        @removeAll="clearAllValues"
+                        @downloadXLS="(n) => exportAsXlsx(n)"
+                        @downloadGEOJSON="(n) => exportAsGeoJson(n)"
+                        @downloadAll="downloadAll"
+                    />
                     <div
                         v-if="results.length > 0"
                         class="data_table"
                     >
                         <div class="head_wrapper">
-                            <button
-                                :title="$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip')"
-                                class="btn btn-default xl_btn"
-                                @click="exportAsXlsx"
-                            >
-                                <v-icon
-                                    left
-                                >
-                                    mdi-download
-                                </v-icon>
-                                {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
-                            </button>
-                            <button
-                                class="btn btn-default xl_btn"
-                                :title="$t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')"
-                                @click="exportAsGeoJson()"
-                            >
-                                <v-icon
-                                    left
-                                >
-                                    mdi-floppy
-                                </v-icon>
-                                {{ $t('additional:modules.tools.cosi.calculateRatio.downloadGeoJson') }}
-                            </button>
-
                             <button
                                 class="cg"
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.visualizeChart')"
@@ -1108,16 +1159,6 @@ export default {
                                     mdi-poll
                                 </v-icon>
                             </button>
-                            <v-select
-                                v-model="columnSelector"
-                                dense
-                                outlined
-                                class="column_selection selection"
-                                :items="availableColumns"
-                                item-text="name"
-                                item-value="key"
-                                return-object
-                            />
                             <button
                                 class="ccm"
                                 :class="{ highlight: !dataToColorCodeMap}"
@@ -1135,6 +1176,16 @@ export default {
                                     mdi-eye-off
                                 </v-icon>
                             </button>
+                            <v-select
+                                v-model="columnSelector"
+                                dense
+                                outlined
+                                class="column_selection selection"
+                                :items="availableColumns"
+                                item-text="name"
+                                item-value="key"
+                                return-object
+                            />
                             <div
                                 v-if="!ASwitch || !BSwitch"
                                 class="year_selector"
@@ -1161,21 +1212,6 @@ export default {
                             :class="{ active: activeSet === i }"
                         />
                     </div>
-                </div>
-                <div
-                    v-if="dataSets.length > 0"
-                    class="tool_footer"
-                >
-                    <AnalysisPagination
-                        :sets="dataSets"
-                        :active-set="activeSet"
-                        @setActiveSet="(n) => activeSet = n"
-                        @setPrevNext="(n) => setPrevNext(n)"
-                        @removeSingle="(n) => removeSet(n)"
-                        @removeAll="() => removeAll()"
-                        @downloadSingle="(n) => downloadSet()"
-                        @downloadAll="() => downloadAll()"
-                    />
                 </div>
             </div>
         </template>
@@ -1341,17 +1377,24 @@ export default {
 
                 .section {
                     flex:1 0 45%;
-                    margin:5px;
+                    margin:5px 0px;
 
                     &.grouped {
                         margin-top:30px;
                     }
                 }
 
+                .pagination {
+                    padding:5px;
+                    box-sizing:border-box;
+                    border:1px solid #ccc;
+                    background:#fafafa;
+                }
+
                 .data_table {
                     flex-basis:100%;
                     height:auto;
-                    margin:20px 5px;
+                    margin:5px 0px;
 
                     .head_wrapper {
                         display:flex;
@@ -1381,7 +1424,7 @@ export default {
                         button.ccm, button.cg {
                             height:40px;
                             width:40px;
-                            margin:5px;
+                            margin:5px 3px;
                             background:#eee;
                             border:1px solid #eee;
 
@@ -1396,13 +1439,9 @@ export default {
                             }
                         }
 
-                        button.cg {
-                            margin:5px auto 5px 5px;
-                        }
-
                         .column_selection {
                             flex:0 0 160px;
-                            margin:5px 0px
+                            margin:5px 3px
                         }
 
                         .year_selector {
@@ -1423,11 +1462,6 @@ export default {
                         }
                     }
                 }
-            }
-
-            .tool_footer {
-                padding:5px;
-                background:white;
             }
         }
     }

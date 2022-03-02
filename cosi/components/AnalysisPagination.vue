@@ -11,6 +11,26 @@ export default {
         activeSet: {
             type: Number,
             default: 0
+        },
+        downloads: {
+            type: Array,
+            default: () => ["Export"]
+        },
+        titles: {
+            type: Object,
+            default: () => ({})
+        },
+        addFunction: {
+            type: Boolean,
+            default: false
+        },
+        downloadCondition: {
+            type: Boolean,
+            default: true
+        },
+        removeCondition: {
+            type: Boolean,
+            default: true
         }
     },
     methods: {
@@ -57,7 +77,7 @@ export default {
             <button
                 v-if="sets.length > 1"
                 class="nxt"
-                :title="$t('additional:modules.tools.cosi.chartGenerator.prevChart')"
+                :title="titles.prev"
                 @click="$emit('setPrevNext',-1)"
             >
                 <v-icon
@@ -69,7 +89,7 @@ export default {
             <button
                 v-if="sets.length > 1"
                 class="nxt"
-                :title="$t('additional:modules.tools.cosi.chartGenerator.nextChart')"
+                :title="titles.next"
                 @click="$emit('setPrevNext', +1)"
             >
                 <v-icon
@@ -79,20 +99,37 @@ export default {
                 </v-icon>
             </button>
             <button
-                class="dl"
-                :title="$t('additional:modules.tools.cosi.chartGenerator.downloadAll')"
-                @click="$emit('downloadSingle', activeSet)"
+                v-if="addFunction"
+                class="pls"
+                :title="titles.add"
+                @click="$emit('addSet')"
             >
                 <v-icon
                     dense
                 >
-                    mdi-download
+                    mdi-plus-box-outline
                 </v-icon>
             </button>
+            <template v-if="downloadCondition">
+                <button
+                    v-for="(type, i) in downloads"
+                    :key="type"
+                    class="dl type"
+                    :title="titles.downloads[i]"
+                    @click="$emit('download' + type, activeSet)"
+                >
+                    {{ type }}
+                    <v-icon
+                        dense
+                    >
+                        mdi-download
+                    </v-icon>
+                </button>
+            </template>
             <button
                 v-if="sets.length > 1"
                 class="dl dark"
-                :title="$t('additional:modules.tools.cosi.chartGenerator.downloadAll')"
+                :title="titles.downloadAll"
                 @click="$emit('downloadAll')"
             >
                 <v-icon
@@ -102,8 +139,9 @@ export default {
                 </v-icon>
             </button>
             <button
+                v-if="removeCondition"
                 class="rm"
-                :title="$t('additional:modules.tools.cosi.chartGenerator.deleteAll')"
+                :title="titles.remove"
                 @click="$emit('removeSingle', activeSet)"
             >
                 <v-icon
@@ -115,7 +153,7 @@ export default {
             <button
                 v-if="sets.length > 1"
                 class="rm dark"
-                :title="$t('additional:modules.tools.cosi.chartGenerator.deleteAll')"
+                :title="titles.removeAll"
                 @click="$emit('removeAll')"
             >
                 <v-icon
@@ -172,6 +210,15 @@ export default {
                     background:white;
                 }
 
+                &.pls {
+                    height:36px;
+                    width:36px;
+                    border:1px solid #888;
+                    background:#ccc;
+                    color:#222;
+                    opacity:0.75
+                }
+
                 &.dl, &.rm {
                     height:36px;
                     width:36px;
@@ -180,6 +227,13 @@ export default {
 
                     &.dark {
                         opacity:1
+                    }
+
+                    &.type {
+                        width: auto;
+                        padding: 0px 8px;
+                        line-height: 36px;
+                        color: whitesmoke;
                     }
                 }
 

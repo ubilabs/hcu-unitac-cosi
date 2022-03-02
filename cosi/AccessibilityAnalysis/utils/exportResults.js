@@ -13,7 +13,7 @@ function getPortalCrs () {
 }
 
 /**
- * Exports the results of the supply analysis as geojson
+ * Prepares the export of the results of the supply analysis as geojson
  * @param {*} mapLayer - the components mapLayer
  * @returns {void}
  */
@@ -60,6 +60,16 @@ export function exportAsGeoJson (mapLayer) {
             featureCollection.features.push(featureGeoJson);
         }
     }
+
+    return featureCollection;
+}
+
+/**
+ * Downloads the results of the supply analysis as geojson
+ * @param {*} featureCollection - the prepared geojson
+ * @returns {void}
+ */
+export function downloadGeoJson (featureCollection) {
     downloadJsonToFile(featureCollection, "Erreichbarkeitsanalyse_CoSI.geojson");
     downloadJsonToFile(require("../assets/Erreichbarkeitsanalyse_style.json"), "Erreichbarkeitsanalyse_CoSI_styles.json");
 }

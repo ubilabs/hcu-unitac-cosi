@@ -323,6 +323,13 @@ export default {
         setBBoxToGeom(geometryCollection);
     },
     /**
+    * resets facility layers' bbox
+    * @returns {void}
+    */
+    resetIsochroneBBox () {
+        setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
+    },
+    /**
      * clears the component
      * @returns {void}
      */

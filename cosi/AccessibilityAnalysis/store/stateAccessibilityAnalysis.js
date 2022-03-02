@@ -59,6 +59,7 @@ const state = {
     distance: "",
     time: 9,
     steps: [0, 0, 0],
+    saveSession: [],
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/accessibilityanalysis.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/erreichbarkeitsanalyse.md"

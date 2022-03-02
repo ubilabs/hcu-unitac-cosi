@@ -1,6 +1,7 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
@@ -22,7 +23,8 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        LayerFilter
+        LayerFilter,
+        AnalysisPagination
     },
     data () {
         return {
@@ -39,7 +41,13 @@ export default {
             dashboard: null,
             facilityNames: [],
             propertiesMap: {},
-            resultTableHeaders: null
+            resultTableHeaders: null,
+            dataSets: [{
+                selectedDistrict: "",
+                layerFilterModels: [],
+                selectedLayer: ""
+            }],
+            activeSet: 0
         };
     },
     computed: {
@@ -57,11 +65,12 @@ export default {
         ...mapGetters("Map", ["layerById", "projectionCode"])
     },
     watch: {
-        async layerFilterModels () {
+        async layerFilterModels (newValue) {
+            this.dataSets[this.activeSet].layerFilterModels = newValue;
             this.computeResults();
         },
 
-        async selectedDistrict () {
+        async selectedDistrict (newValue) {
             const newModels = [];
 
             for (const m of this.layerFilterModels) {
@@ -71,6 +80,7 @@ export default {
                 this.setLayerFilterModelValue(newModel);
             }
             this.layerFilterModels = newModels;
+            this.dataSets[this.activeSet].selectedDistrict = newValue;
         },
 
         facilityNames () {
@@ -95,6 +105,46 @@ export default {
             await this.$nextTick(() => {
                 this.setFacilityNames();
             });
+        },
+        activeSet (newValue) {
+            this.layerFilterModels = this.dataSets[newValue].layerFilterModels;
+            this.selectedDistrict = this.dataSets[newValue].selectedDistrict;
+            const newModels = [];
+
+            for (const m of this.layerFilterModels) {
+                const newModel = {...m};
+
+                newModels.push(newModel);
+                this.setLayerFilterModelValue(newModel);
+            }
+            this.layerFilterModels = newModels;
+            this.updateAvailableLayerOptions();
+        },
+        dataSets (newValue) {
+            if (newValue.length === 0) {
+                const createSet = {
+                        selectedDistrict: "",
+                        selectedLayer: "",
+                        layerFilterModels: []
+                    },
+                    newModels = [];
+
+                this.layerFilterModels = [];
+                this.selectedDistrict = "";
+                this.selectedLayer = "";
+
+
+                for (const m of this.layerFilterModels) {
+                    const newModel = {...m};
+
+                    newModels.push(newModel);
+                    this.setLayerFilterModelValue(newModel);
+                }
+                this.layerFilterModels = newModels;
+                this.updateAvailableLayerOptions();
+                this.dataSets.push(createSet);
+                this.activeSet = 0;
+            }
         }
     },
 
@@ -661,6 +711,58 @@ export default {
                 ]);
 
             exportXlsx([headers, [], ...filters, ...data], filename, {exclude: this.excludedPropsForExport}, "aoa_to_sheet");
+        },
+        // pagination functions
+        /**
+         * @description Selects the next or the previous supply analysis in the Tool Window.
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
+         */
+        setPrevNext (value) {
+            const l = this.dataSets.length;
+
+            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+        },
+        downloadAll () {},
+        removeSet (index) {
+            if (this.activeSet === this.dataSets.length - 1) {
+                this.activeSet -= 1;
+            }
+
+            this.dataSets.splice(index, 1);
+        },
+        removeAll () {
+            this.dataSets = [{
+                selectedDistrict: "",
+                selectedLayer: "",
+                layerFilterModels: []
+            }];
+
+            this.layerFilterModels = [];
+            this.selectedDistrict = "";
+            this.selectedLayer = "";
+
+            const newModels = [];
+
+            for (const m of this.layerFilterModels) {
+                const newModel = {...m};
+
+                newModels.push(newModel);
+                this.setLayerFilterModelValue(newModel);
+            }
+            this.layerFilterModels = newModels;
+            this.updateAvailableLayerOptions();
+            this.activeSet = 0;
+        },
+        addSet () {
+            const createSet = {
+                selectedLayer: "",
+                selectedDistrict: "",
+                layerFilterModels: []
+            };
+
+            this.dataSets.push(createSet);
+            this.activeSet = this.dataSets.length - 1;
         }
     }
 };
@@ -737,8 +839,39 @@ export default {
                     >
                         {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
                     </v-btn>
+                    <AnalysisPagination
+                        v-if="dataSets.length > 0 || layerFilterModels.length > 0"
+                        :sets="dataSets"
+                        :active-set="activeSet"
+                        :add-function="true"
+                        :downloads="['XLS']"
+                        :download-condition="layerFilterModels.length ? true : false"
+                        :remove-condition="dataSets.length > 1 ? true : false"
+                        :titles="{
+                            add: [$t('additional:modules.tools.cosi.queryDistricts.paginationAdd')],
+                            downloads: [$t('additional:modules.tools.cosi.queryDistricts.exportTable')],
+                            downloadAll: $t('additional:modules.tools.cosi.queryDistricts.paginationDownloadAll'),
+                            remove: $t('additional:modules.tools.cosi.queryDistricts.paginationRemove'),
+                            removeAll: $t('additional:modules.tools.cosi.queryDistricts.paginationRemoveAll'),
+                            next: $t('additional:modules.tools.cosi.queryDistricts.paginationNext'),
+                            prev: $t('additional:modules.tools.cosi.queryDistricts.paginationPrev'),
+                        }"
+                        @setActiveSet="(n) => activeSet = n"
+                        @setPrevNext="(n) => setPrevNext(n)"
+                        @removeSingle="(n) => removeSet(n)"
+                        @addSet="addSet"
+                        @removeAll="removeAll"
+                        @downloadXLS="exportTable"
+                        @downloadAll="downloadAll"
+                    />
                     <v-divider v-if="layerFilterModels.length > 0" />
-                    <div id="results">
+                    <div
+                        v-for="(set, i) in dataSets"
+                        id="results"
+                        :key="i"
+                        class="result"
+                        :class="[activeSet === i ? 'active' : '', 'result_' + i]"
+                    >
                         <div
                             v-if="layerFilterModels.length > 0"
                             class="d-flex overline"
@@ -864,6 +997,14 @@ export default {
     border: 1px solid rgba(0,0,0,.12);
     padding: 10px;
     background-color: rgba(0,0,0,0.01);
+}
+
+.result {
+    display:none;
+
+    &.active {
+        display:block;
+    }
 }
 
 #compare-results {

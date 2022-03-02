@@ -23,11 +23,12 @@ function getKeyOfAttrName () {
 
 /**
  * Exports the results of the supply analysis as geojson
+ * @param {Integer} index Index of the set to be deleted in the dataSets Array.
  * @returns {void}
  */
-export function exportAsGeoJson () {
+export function exportAsGeoJson (index) {
     const projectionCode = getPortalCrs(),
-        total = this.results.find(res => res.scope === "Gesamt"),
+        total = this.dataSets[index].results.find(res => res.scope === "Gesamt"),
         average = this.results.find(res => res.scope === "Durchschnitt"),
         featureCollection = featuresToGeoJsonCollection(this.selectedFeatures, false, projectionCode),
         values = this.results.map(x => {
@@ -37,7 +38,7 @@ export function exportAsGeoJson () {
 
     // match the result and add it to the resp. geoJSON
     for (const feature of featureCollection.features) {
-        const result = this.results.find(res => res.scope === feature.properties[getKeyOfAttrName()]),
+        const result = this.dataSets[index].results.find(res => res.scope === feature.properties[getKeyOfAttrName()]),
             style = new Style({
                 fill: new Fill({color: utils.getRgbArray(colorScale.scale(result.coverage), 0.75)}),
                 zIndex: 1,
@@ -60,13 +61,15 @@ export function exportAsGeoJson () {
     }
 
     for (const field of [this.selectedFieldA, this.selectedFieldB]) {
-        const layerFeatures = this.layerList.find(layer => layer.get("name") === field.id).getSource().getFeatures();
+        if ("layerId" in field) {
+            const layerFeatures = this.layerList.find(layer => layer.get("name") === field.id).getSource().getFeatures();
 
-        for (const feature of layerFeatures) {
-            const featureGeoJson = featureToGeoJson(feature);
+            for (const feature of layerFeatures) {
+                const featureGeoJson = featureToGeoJson(feature);
 
-            featureGeoJson.properties = {};
-            featureCollection.features.push(featureGeoJson);
+                featureGeoJson.properties = {};
+                featureCollection.features.push(featureGeoJson);
+            }
         }
     }
 

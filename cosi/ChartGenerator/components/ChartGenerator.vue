@@ -12,6 +12,8 @@ import ScatterChart from "./charts/ScatterChart.vue";
 import RadarChart from "./charts/RadarChart.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import AnalysisPagination from "../../components/AnalysisPagination.vue";
+import JSZip from "jszip";
+import {saveAs} from "file-saver";
 
 export default {
     name: "ChartGenerator",
@@ -196,13 +198,20 @@ export default {
          * @returns {Void} Function returns nothing.
          */
         downloadAll () {
-            const chartBox = document.getElementById("chart_panel").querySelectorAll("canvas");
-            console.log(this.$refs.chart);
-            chartBox.forEach(canvas => {
-                const canvasPNG = canvas.toDataURL("image/png");
+            const chartBox = this.$refs.chart,
+                zip = new JSZip();
 
-                this.downloadFile(canvasPNG);
+            chartBox.forEach((canvas, i) => {
+                const canvasPNG = canvas.$refs.canvas.toDataURL("image/png");
+
+                zip.file("cosi_chart_" + i + ".png", canvasPNG);
+                // this.downloadFile(canvasPNG);
             });
+
+            zip.generateAsync({type: "blob"})
+                .then(function (content) {
+                    saveAs(content, "cosi_graphen.zip");
+                });
         },
         /**
          * @description Downloads File.
@@ -333,6 +342,7 @@ export default {
                                                     ref="chart"
                                                     :datasets="chartConfigs[index][i]"
                                                     :options="graph.options"
+                                                    class="graph_sub"
                                                     :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                 />
                                                 <template
@@ -345,6 +355,7 @@ export default {
                                                         ref="chart"
                                                         :datasets="pieData"
                                                         :options="graph.options"
+                                                        class="graph_sub"
                                                         :class="{current_graph: graph.sub_graph === i && activeGraph === index}"
                                                     />
                                                 </template>
@@ -381,6 +392,7 @@ export default {
                                                 ref="chart"
                                                 :datasets="chartConfigs[index]"
                                                 :options="graph.options"
+                                                class="graph_sub"
                                                 :class="{current_graph: activeGraph === index}"
                                             />
                                             <template
@@ -393,6 +405,7 @@ export default {
                                                     ref="chart"
                                                     :datasets="pieData"
                                                     :options="graph.options"
+                                                    class="graph_sub"
                                                     :class="{current_graph: activeGraph === index}"
                                                 />
                                             </template>
@@ -435,11 +448,20 @@ export default {
                                     <AnalysisPagination
                                         :sets="datasets"
                                         :active-set="activeGraph"
+                                        :downloads="['PNG']"
+                                        :titles="{
+                                            downloads: [$t('additional:modules.tools.cosi.chartGenerator.downloadChart')],
+                                            downloadAll: $t('additional:modules.tools.cosi.chartGenerator.downloadAll'),
+                                            remove: $t('additional:modules.tools.cosi.chartGenerator.removeChart'),
+                                            removeAll: $t('additional:modules.tools.cosi.chartGenerator.deleteAll'),
+                                            next: $t('additional:modules.tools.cosi.chartGenerator.nextChart'),
+                                            prev: $t('additional:modules.tools.cosi.chartGenerator.prevChart'),
+                                        }"
                                         @setActiveSet="(n) => selectGraph(n)"
                                         @setPrevNext="(n) => graphPrevNext(n)"
                                         @removeSingle="(n) => removeGraph(n)"
                                         @removeAll="() => removeAll()"
-                                        @downloadSingle="(n) => downloadGraph()"
+                                        @downloadPNG="(n) => downloadGraph()"
                                         @downloadAll="() => downloadAll()"
                                     />
                                 </template>
@@ -549,15 +571,36 @@ export default {
                         }
                     }
                     .graph_box {
+                        position:relative;
+
                         .multi_graph {
-                            display:none;
+                            display:block;
+                            position:absolute;
+                            top:0;
+                            left:0;
+                            width:100%;
+                            height:100%;
+                            z-index:-1;
 
                             &.active {
-                                display:block;
+                                position:relative;
+                                z-index:2;
+
+                                .graph_sub {
+                                    position:relative;
+                                }
                             }
 
                             .current_graph {
-                                height:400px;
+                                //min-height:400px;
+                            }
+
+                            .graph_sub {
+                                position:absolute;
+                                top:0;
+                                left:0;
+                                width:100%;
+                                height:100%;
                             }
                         }
 

@@ -18,7 +18,7 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
         chunks = splitIntoChunks(coordinates, 5);
 
     for (let i = 0; i < chunks.length; i++) {
-        const _baseUrl = baseUrl + "/v2/isochrones/",
+        const _baseUrl = baseUrl + "isochrones/",
             opts = {"locations": chunks[i], "range_type": rangeType, "range": rangeArray},
             url = _baseUrl + pathType.trim();
 
