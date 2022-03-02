@@ -741,6 +741,13 @@ export default {
 =======
 >>>>>>> ddfabab3 (BG-1869 FloorComponent implemented and wpsId set to string)
                     </div>
+                    <button
+                        class="btn btn-primary btn-infos"
+                        :title="'exportAsPdf'"
+                        @click="startPrint"
+                    >
+                        Als PDF exportieren
+                    </button>
                 </div>
             </div>
         </template>
