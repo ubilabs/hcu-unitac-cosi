@@ -6,6 +6,8 @@ import mutations from "../store/mutationsBorisVue";
 import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
 import FloorComponent from "./FloorComponent.vue";
+import {preparePrint} from "../utils/preparePrint.js";
+import axios from "axios";
 
 export default {
     name: "BorisVue",
@@ -80,6 +82,7 @@ export default {
             "simulateLanduseSelect"
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
+        preparePrint,
         toggleInfoText (id) {
             if (!Object.values(this.textIds).includes(id)) {
                 this.textIds.push(id);
@@ -120,6 +123,16 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
+        },
+        /**
+         * start print process
+         * @param {Event} event the click event
+         * @returns {void}
+         */
+        startPrint () {
+            preparePrint(async (url, payload) => {
+                return axios.post(url, payload);
+            });
         }
     }
 };
@@ -386,6 +399,13 @@ export default {
                             :label="'Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:'"
                         />
                     </div>
+                    <button
+                        class="btn btn-primary btn-infos"
+                        :title="'exportAsPdf'"
+                        @click="startPrint"
+                    >
+                        Als PDF exportieren
+                    </button>
                 </div>
             </div>
         </template>
@@ -410,12 +430,12 @@ export default {
             padding-bottom: 15px;
         }
     };
-dt {
+::v-deep dt {
     background-color: rgba(227, 227, 227, 0.5);
     font-family: "UniversNextW04-620CondB", "Arial Narrow", Arial, sans-serif;
     padding: 8px;
 };
-dd{
+::v-deep dd{
     padding: 8px;
     word-wrap: break-word;
 }
