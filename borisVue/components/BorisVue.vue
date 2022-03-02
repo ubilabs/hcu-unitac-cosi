@@ -1054,6 +1054,13 @@ export default {
                             :label="'Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:'"
                         />
                     </div>
+                    <button
+                        class="btn btn-primary btn-infos"
+                        :title="'exportAsPdf'"
+                        @click="startPrint"
+                    >
+                        Als PDF exportieren
+                    </button>
                 </div>
 >>>>>>> 7e4243ea (progress in dealing with selected features)
             </div>
@@ -1081,12 +1088,12 @@ export default {
             padding-bottom: 15px;
         }
     };
-dt {
+::v-deep dt {
     background-color: rgba(227, 227, 227, 0.5);
     font-family: "UniversNextW04-620CondB", "Arial Narrow", Arial, sans-serif;
     padding: 8px;
 };
-dd{
+::v-deep dd{
     padding: 8px;
     word-wrap: break-word;
 }
