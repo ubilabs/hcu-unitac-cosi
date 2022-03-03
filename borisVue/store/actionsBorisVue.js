@@ -1,7 +1,7 @@
 import axios from "axios";
 import helpers from "../utils/helpers";
-import state from "./stateBorisVue";
-import store from "../../../src/app-store";
+// import state from "./stateBorisVue";
+// import store from "../../../src/app-store";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import WPS from "../../../src/api/wps";
@@ -25,10 +25,10 @@ const actions = {
     * @returns {void}
     * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
     */
-    handleUrlParameters ({commit, dispatch}) {
-        const brwId = store.state.urlParams?.brwId,
-            brwLayerName = store.state.urlParams?.brwLayerName,
-            center = store.state.urlParams && store.state.urlParams["Map/center"],
+    handleUrlParameters ({commit, dispatch, rootState}) {
+        const brwId = rootState.urlParams?.brwId,
+            brwLayerName = rootState.urlParams?.brwLayerName,
+            center = rootState.urlParams && rootState.urlParams["Map/center"],
             processFromParametricUrl = true;
 
         if (brwId && brwLayerName && center) {
@@ -44,7 +44,7 @@ const actions = {
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
-    simulateLanduseSelect ({commit, dispatch}, paramUrlParams) {
+    simulateLanduseSelect ({commit, dispatch, state}, paramUrlParams) {
         const gfiFeature = state.gfiFeature,
             landuseList = gfiFeature.get("nutzungsart");
 
@@ -69,7 +69,7 @@ const actions = {
      * @param   {string} selectedLayerName Name des zu aktivierenden Layers
      * @returns {void}
      */
-    switchLayer ({dispatch, commit}, selectedLayerName) {
+    switchLayer ({commit, dispatch, state}, selectedLayerName) {
 
         const layerModels = state.filteredModelList.filter(function (model) {
             return model.get("isSelected") === true;
@@ -106,7 +106,7 @@ const actions = {
     * @param {string} year - the selected brw year
     * @returns {void}
     */
-    checkBrwFeature ({dispatch, commit}, {brwFeature, year}) {
+    checkBrwFeature ({commit, dispatch, state}, {brwFeature, year}) {
 
         if (brwFeature !== undefined) {
             dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year}).then((response) => {
@@ -132,7 +132,7 @@ const actions = {
      * @param {boolean} value show or hide
      * @returns {void}
      */
-    toggleStripesLayer ({dispatch, commit}, value) {
+    toggleStripesLayer ({commit, dispatch, state}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             selectedModel = modelList.find(model => model.get("isSelected") === true),
             selectedModelName = selectedModel.attributes.name,
@@ -157,7 +157,7 @@ const actions = {
      * @param {string} value - layer name
      * @returns {void}
      */
-    selectLayerModelByName ({commit}, value) {
+    selectLayerModelByName ({commit, state}, value) {
         const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
             layerModel = modelList.find(model => model.get("name") === value);
 
@@ -172,7 +172,7 @@ const actions = {
      * @param {Number[]} [center] Center coordinate of faked gfi
      * @returns {void}
      */
-    requestGFI ({dispatch}, {event, processFromParametricUrl, center}) {
+    requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
                 layerSource = selectedModel.get("layer").getSource();
@@ -214,7 +214,7 @@ const actions = {
      * @param {ol.coordinate} coordinate - click coordinate
      * @returns {void}
      */
-    handleGfiResponse ({commit, dispatch}, {response, status, coordinate}) {
+    handleGfiResponse ({commit, dispatch, state}, {response, status, coordinate}) {
         if (status === 200) {
             const feature = new WMSGetFeatureInfo().readFeature(response);
 
@@ -390,7 +390,7 @@ const actions = {
      * Sends a request to convert the BRW
      * @returns {void}
      */
-    sendWpsConvertRequest () {
+    sendWpsConvertRequest ({state}) {
         const data = helpers.convert({brw: state.selectedBrwFeature});
 
         WPS.wpsRequest(state.wpsId, state.fmwProcess, data, helpers.handleConvertResponse);
@@ -401,7 +401,7 @@ const actions = {
      * @param  {Backbone.Model[]} modelList List of all WMS Models
      * @return {String} layername which is uses as stichtag
      */
-    getActiveLayerNameAsStichtag () {
+    getActiveLayerNameAsStichtag ({state}) {
         let stichtag = "";
         const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true);
 
@@ -469,7 +469,7 @@ const actions = {
     * @param {string} brw Wert des Attributes
     * @returns {void}
     */
-    updateSelectedBrwFeature ({commit}, {converted, brw}) {
+    updateSelectedBrwFeature ({commit, state}, {converted, brw}) {
         const feature = state.selectedBrwFeature,
             isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
@@ -508,7 +508,7 @@ const actions = {
             });
         }
         commit("setSelectedBrwFeature", feature);
-
+        commit("setConvertedBrw", state.selectedBrwFeature.get("convertedBrw"));
     }
 };
 
