@@ -1,5 +1,4 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
-import state from "./stateBorisVue";
 import stateBoris from "./stateBorisVue";
 
 const mutations = {

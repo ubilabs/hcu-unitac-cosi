@@ -380,7 +380,7 @@ export default {
                             <dd
                                 v-if="selectedBrwFeature.get('convertedBrwDM') === ''"
                             >
-                                {{ selectedBrwFeature.get("convertedBrw") }} €/m²
+                                {{ convertedBrw }} €/m²
                                 <div
                                     v-if="Object.values(textIds).includes(6)"
                                     class="help"
@@ -391,7 +391,7 @@ export default {
                             <dd
                                 v-else
                             >
-                                <span>{{ selectedBrwFeature.get("convertedBrw") }} €/m²</span>
+                                <span>{{ convertedBrw }} €/m²</span>
                                 <span class="pull-right">{{ selectedBrwFeature.get("convertedBrwDM") }} DM/m²</span>
                                 <div
                                     v-if="Object.values(textIds).includes(6)"
