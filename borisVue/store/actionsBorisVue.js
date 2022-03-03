@@ -5,6 +5,7 @@ import store from "../../../src/app-store";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import WPS from "../../../src/api/wps";
+import mapCollection from "../../../src/core/dataStorage/mapCollection";
 
 const actions = {
     initialize ({commit, dispatch}) {
@@ -17,14 +18,14 @@ const actions = {
         modelList = modelList.reverse();
         commit("setFilteredModelList", modelList);
 
-        Radio.request("Map", "registerListener", "click", (event) => dispatch("clickCallback", {event}));
+        Radio.request("Map", "registerListener", "click", (event) => dispatch("requestGFI", {event}));
     },
     /**
     * Requests parametic url and checks if all neccessary information is available to simulate gfi click and landuse select
     * @returns {void}
     * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
     */
-    requestParametricUrl ({commit, dispatch}) {
+    handleUrlParameters ({commit, dispatch}) {
         const brwId = store.state.urlParams?.brwId,
             brwLayerName = store.state.urlParams?.brwLayerName,
             center = store.state.urlParams && store.state.urlParams["Map/center"],
@@ -39,7 +40,7 @@ const actions = {
 
             dispatch("switchLayer", brwLayerName);
             dispatch("Map/setCenter", center, {root: true});
-            dispatch("clickCallback", {undefined, processFromParametricUrl, center});
+            dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
@@ -54,6 +55,7 @@ const actions = {
             commit("setProcessFromParametricUrl", false);
         });
     },
+    // Getter?
     findLanduseByBrwId ({commit}, {landuseList, brwId}) {
 
         const foundLanduse = landuseList.find(function (landuse) {
@@ -79,7 +81,6 @@ const actions = {
         });
         dispatch("selectLayerModelByName", selectedLayerName);
 
-        // commit("unsetSelectedBrwFeature");
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
@@ -94,14 +95,10 @@ const actions = {
             dispatch("toggleStripesLayer", false);
         }
     },
-    handleSelectBRWYear ({dispatch}, value) {
-        const selectedLayername = value;
-
+    // aus dem select nach Jahren in BorisVue.vue
+    handleSelectBRWYear ({dispatch}, selectedLayername) {
         dispatch("switchLayer", selectedLayername);
         dispatch("checkBrwFeature", {brwFeature: state.brwFeature, year: selectedLayername.split(".")[2]});
-        // this.model.checkBrwFeature(this.model.get("brwFeatures"), selectedLayername.split(".")[2]);
-        // Radio.trigger("Alert", "alert:remove");
-        // this.render(this.model, this.model.get("isActive"));
     },
     /**
     * checks if a brw Feature already is available
@@ -175,17 +172,16 @@ const actions = {
      * @param {Number[]} [center] Center coordinate of faked gfi
      * @returns {void}
      */
-    clickCallback ({dispatch}, {event, processFromParametricUrl, center}) {
+    requestGFI ({dispatch}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
                 layerSource = selectedModel.get("layer").getSource();
-
             let map,
                 mapView,
                 url;
 
             if (processFromParametricUrl) {
-                map = Radio.request("Map", "getMap");
+                map = mapCollection.getMap("ol", "2D");
                 mapView = map.getView();
                 url = layerSource.getFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
             }
@@ -193,7 +189,6 @@ const actions = {
                 map = event.map;
                 mapView = map.getView();
                 url = layerSource.getFeatureInfoUrl(event.coordinate, mapView.getResolution(), mapView.getProjection());
-                // this.setBackdrop(true);
             }
 
             axios.get(url)
@@ -228,7 +223,7 @@ const actions = {
                 if (parseInt(feature.get("jahrgang"), 10) > 2008) {
                     feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
                     // getWFS for polygon by id and year and place polygon marker
-                    dispatch("sendGetFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
+                    dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
                     commit("setGfiFeature", feature);
                     dispatch("checkGfiFeatureByLanduse", {feature, selectedLanduse: state.brwLanduse});
                 }
@@ -242,18 +237,12 @@ const actions = {
                 }
             }
             else {
-                Radio.trigger("Alert", "alert", {
-                    text: "An dieser Stelle ist kein BRW vorhanden.",
-                    kategorie: "alert-warning"
-                });
+                dispatch("Alerting/addSingleAlert", {content: "An dieser Stelle ist kein BRW vorhanden."}, {root: true});
             }
         }
         else {
             console.error("Datenabfrage fehlgeschlagen:" + status);
-            Radio.trigger("Alert", "alert", {
-                text: "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut.",
-                kategorie: "alert-danger"
-            });
+            dispatch("Alerting/addSingleAlert", {content: "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut."}, {root: true});
         }
         // FEHLT NOCH:
         // this.setBackdrop(false);
@@ -264,7 +253,7 @@ const actions = {
      * @param {string} year - the selected brw year
      * @return {void}
      */
-    sendGetFeatureRequestById ({dispatch}, {featureId, featureYear}) {
+    getFeatureRequestById ({dispatch}, {featureId, featureYear}) {
         const yearInt = parseInt(featureYear, 10),
             index = Config.layerConf.lastIndexOf("/"),
             url = Config.layerConf.substring(0, index);
@@ -296,7 +285,8 @@ const actions = {
                 dispatch("MapMarker/placingPolygonMarker", feature, {root: true});
             })
             .catch((error) => {
-                Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + error.message);
+                console.error(error.message);
+                dispatch("Alerting/addSingleAlert", {content: "Datenabfrage fehlgeschlagen. (Technische Details: " + error.message}, {root: true});
             });
 
     },
@@ -313,7 +303,7 @@ const actions = {
         });
 
         if (landuse) {
-            dispatch("sendGetFeatureRequest", {richtwertNummer: landuse.richtwertnummer, featureYear: feature.get("jahrgang")});
+            dispatch("postFeatureRequestByBrwNumber", {richtwertNummer: landuse.richtwertnummer, featureYear: feature.get("jahrgang")});
         }
         else {
             commit("setBrwLanduse", "");
@@ -322,11 +312,11 @@ const actions = {
     },
     /**
      * sends a wfs get feature request filtered by Bodenrichtwertnummer
-     * @param {string} richtwertNummer - Bodenrichtwertenummer
+     * @param {string} richtwertNummer - Bodenrichtwertenummer - brwNumber
      * @param {string} year - the selected brw year
      * @return {void}
      */
-    sendGetFeatureRequest ({dispatch}, {richtwertNummer, featureYear}) {
+    postFeatureRequestByBrwNumber ({dispatch}, {richtwertNummer, featureYear}) {
         const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
             index = Config.layerConf.lastIndexOf("/"),
             url = Config.layerConf.substring(0, index),
@@ -348,8 +338,8 @@ const actions = {
             headers: {"Content-Type": "text/xml"}
         }).then((response) => {
             dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
-        }).catch((response) => {
-            dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
+        }).catch((error) => {
+            console.error(error.response);
         });
     },
     /**
@@ -372,7 +362,7 @@ const actions = {
             });
         }
         else {
-            Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + status);
+            dispatch("Alerting/addSingleAlert", {content: "text"}, {root: true});
         }
     },
     /**
@@ -421,7 +411,6 @@ const actions = {
         return stichtag;
     },
     extendFeatureAttributes ({dispatch, commit}, {feature, stichtag}) {
-
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
         let sw = helpers.getSW(feature);
 
@@ -473,9 +462,7 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
-    // getSelectedBrwFeatureValue (context, payload) {
-    //     // console.log("getSelectedBrwFeatureValue", payload);
-    // },
+
     /**
     * updater for selectedBrwFeature forces refresh
     * @param {string} converted Name des Attributes am feature
@@ -520,7 +507,6 @@ const actions = {
                 "convertedBrwDM": ""
             });
         }
-        commit("setSelectedBrwFeature", {silent: true});
         commit("setSelectedBrwFeature", feature);
 
     }
