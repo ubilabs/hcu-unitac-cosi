@@ -179,15 +179,18 @@ export default {
 
         for (const feature of this.parseFeatures(state[key][attr])) {
             const drawState = feature.get("drawState"),
-                styleSettings = { color: drawState.color,
+                styleSettings = {
+                    color: drawState.color,
                     colorContour: drawState.colorContour,
                     font: drawState.font,
                     fontSize: drawState.fontSize,
                     strokeWidth: drawState.strokeWidth,
-                    text: drawState.text };
-            feature.setStyle(function (feature) {
-                if (feature.get("isVisible")) {
-                    return createStyle(feature.get("drawState"), styleSettings);
+                    text: drawState.text
+                };
+
+            feature.setStyle(function (_feature) {
+                if (_feature.get("isVisible")) {
+                    return createStyle(_feature.get("drawState"), styleSettings);
                 }
                 return undefined;
             });
