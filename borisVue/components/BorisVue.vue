@@ -748,6 +748,20 @@ export default {
                     >
                         Als PDF exportieren
                     </button>
+                    <div
+                        v-if="printStarted"
+                        class="form-group col-md-12 col-xs-12 pt-20"
+                    >
+                        <div class="progress">
+                            <div
+                                class="progress-bar"
+                                role="progressbar"
+                                :style="progressWidth"
+                            >
+                                <span class="sr-only">30% Complete</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>

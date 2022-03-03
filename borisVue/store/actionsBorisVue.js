@@ -15,8 +15,11 @@ const actions = {
 
         layerList = layerList.reverse();
 
+<<<<<<< HEAD
         commit("setFilteredLayerList", layerList);
 
+=======
+>>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
         Radio.request("Map", "registerListener", "click", (event) => dispatch("requestGFI", {event}));
     },
     /**
@@ -24,10 +27,17 @@ const actions = {
     * @returns {void}
     * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
     */
+<<<<<<< HEAD
     handleUrlParameters ({commit, dispatch, rootState}) {
         const brwId = rootState.urlParams?.brwId,
             brwLayerName = rootState.urlParams?.brwLayerName,
             center = rootState.urlParams && rootState.urlParams["Map/center"],
+=======
+    handleUrlParameters ({commit, dispatch}) {
+        const brwId = store.state.urlParams?.brwId,
+            brwLayerName = store.state.urlParams?.brwLayerName,
+            center = store.state.urlParams && store.state.urlParams["Map/center"],
+>>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
             processFromParametricUrl = true;
 
         if (brwId && brwLayerName && center) {
@@ -50,6 +60,11 @@ const actions = {
         commit("setSelectedLanduse", landuseByBrwId);
         commit("setIsProcessFromParametricUrl", false);
     },
+<<<<<<< HEAD
+=======
+    // Getter?
+    findLanduseByBrwId ({commit}, {landuseList, brwId}) {
+>>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
 
     /**
      * Aktionen zum Wechseln eines Layers.
@@ -164,10 +179,17 @@ const actions = {
      * @param {Number[]} [center] Center coordinate of faked gfi
      * @returns {void}
      */
+<<<<<<< HEAD
     requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource();
+=======
+    requestGFI ({dispatch}, {event, processFromParametricUrl, center}) {
+        if (state.active) {
+            const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
+                layerSource = selectedModel.get("layer").getSource();
+>>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
             let map,
                 mapView,
                 url;
@@ -216,8 +238,13 @@ const actions = {
                     feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
                     // getWFS for polygon by id and year and place polygon marker
                     dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
+<<<<<<< HEAD
                     commit("setSelectedPolygon", feature);
                     dispatch("checkPolygonFeatureByLanduse", {feature, selectedLanduse: state.selectedLanduse});
+=======
+                    commit("setGfiFeature", feature);
+                    dispatch("checkGfiFeatureByLanduse", {feature, selectedLanduse: state.brwLanduse});
+>>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
                 }
                 // point
                 else {
@@ -455,6 +482,10 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
     /**
     * updater for selectedBrwFeature forces refresh
     * @param {string} converted Name des Attributes am feature
