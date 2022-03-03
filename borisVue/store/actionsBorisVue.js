@@ -73,7 +73,6 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextId", []);
 
-        // commit("unsetSelectedBrwFeature");
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
