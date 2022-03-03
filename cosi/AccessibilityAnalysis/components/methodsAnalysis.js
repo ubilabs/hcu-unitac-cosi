@@ -341,6 +341,29 @@ export default {
         this.setIsochroneFeatures([]);
     },
 
+
+    /**
+     * Hides the current result without destroying it
+     * @param {Boolean} v - the current val of "hide"
+     * @returns {void}
+     */
+    hideResults (v) {
+        if (v) {
+            this.renderIsochrones([]);
+            if (this.mode === "point") {
+                this.removePointMarker();
+            }
+        }
+        else {
+            this.renderIsochrones(this._isochroneFeatures);
+            if (this.mode === "point") {
+                this.placingPointMarker(
+                    Proj.transform(this.coordinate[0], "EPSG:4326", this.projectionCode)
+                );
+            }
+        }
+    },
+
     /**
      * gets the distance weighted by travel time index
      * @returns {{distance: Number, maxDistance: Number, minDistance: Number, steps: String[]}} distance with penalty and legend

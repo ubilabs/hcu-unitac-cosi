@@ -92,7 +92,8 @@ export default {
             currentCoordinates: null,
             select: null,
             dataSets: [],
-            activeSet: 0
+            activeSet: 0,
+            hide: false
         };
     },
     computed: {
@@ -289,7 +290,8 @@ export default {
             if (this.mode === "path" && this.isochroneFeatures.length > 0) {
                 this.askUpdate = true;
             }
-        }
+        },
+        hide: "hideResults"
     },
     /**
     * @returns {void}
@@ -651,8 +653,8 @@ export default {
                                         dense
                                         small
                                         tile
-                                        color="grey lighten-1"
-                                        @click.native="clear()"
+                                        :color="hide ? 'warning' : 'grey lighten-1'"
+                                        @click.native="hide = !hide"
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>
