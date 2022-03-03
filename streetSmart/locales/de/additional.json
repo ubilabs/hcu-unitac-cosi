@@ -1,15 +1,15 @@
 {
     "menu": {
         "tools":{
-            "streetsmart": "Streetsmart"
+            "streetsmart": "360° Panorama"
         }
     },
     "modules": {
         "tools": {
             "streetsmart": {
-                "title": "Streetsmart",
+                "title": "360° Panorama",
                 "noData": "Für diese Position sind keine Panoramadaten verfügbar. Die Markierung wird auf die letzte Position zurückgesetzt.",
-                "createViewFailed": "Die Erstellung der Streetmart-Ansicht ist fehlgeschlagen."
+                "createViewFailed": "Die Erstellung der Panorama-Ansicht ist fehlgeschlagen."
             }
         }
     }

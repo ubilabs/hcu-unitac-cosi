@@ -72,9 +72,8 @@ export default {
     </ToolTemplate>
 </template>
 
-<style lang="scss">
-    @import "~/css/mixins.scss";
-	#streetsmart{
-		height: 84vh;
-	}
+<style lang="scss" scoped>
+#streetsmart{
+    height: 84vh;
+}
 </style>
