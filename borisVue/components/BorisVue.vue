@@ -660,6 +660,9 @@ export default {
                                 v-if="selectedBrwFeature.get('convertedBrwDM') === ''"
                             >
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
                                 {{ convertedBrw }} €/m²
                                 <div
                                     v-if="Object.values(textIds).includes(6)"

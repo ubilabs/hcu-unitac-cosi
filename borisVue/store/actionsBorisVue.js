@@ -15,11 +15,8 @@ const actions = {
 
         layerList = layerList.reverse();
 
-<<<<<<< HEAD
         commit("setFilteredLayerList", layerList);
 
-=======
->>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
         Radio.request("Map", "registerListener", "click", (event) => dispatch("requestGFI", {event}));
     },
     /**
@@ -28,16 +25,22 @@ const actions = {
     * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
     */
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
     handleUrlParameters ({commit, dispatch, rootState}) {
         const brwId = rootState.urlParams?.brwId,
             brwLayerName = rootState.urlParams?.brwLayerName,
             center = rootState.urlParams && rootState.urlParams["Map/center"],
+<<<<<<< HEAD
 =======
     handleUrlParameters ({commit, dispatch}) {
         const brwId = store.state.urlParams?.brwId,
             brwLayerName = store.state.urlParams?.brwLayerName,
             center = store.state.urlParams && store.state.urlParams["Map/center"],
 >>>>>>> 8379aa7b (BG-1869 print module implemented and adjustments made in actionsBorisVue)
+=======
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
             processFromParametricUrl = true;
 
         if (brwId && brwLayerName && center) {
@@ -53,9 +56,15 @@ const actions = {
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
+<<<<<<< HEAD
     // simulated landuse selection when parametric Url is being used
     simulateLanduseSelect ({commit, getters}) {
         const landuseByBrwId = getters.findLanduseByBrwId;
+=======
+    simulateLanduseSelect ({commit, dispatch, state}, paramUrlParams) {
+        const gfiFeature = state.gfiFeature,
+            landuseList = gfiFeature.get("nutzungsart");
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
 
         commit("setSelectedLanduse", landuseByBrwId);
         commit("setIsProcessFromParametricUrl", false);
@@ -113,7 +122,11 @@ const actions = {
     * @param {string} year - the selected brw year
     * @returns {void}
     */
+<<<<<<< HEAD
     checkBrwFeature ({commit, dispatch, state}, {brwFeatures, year}) {
+=======
+    checkBrwFeature ({commit, dispatch, state}, {brwFeature, year}) {
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
 
         if (brwFeatures !== undefined) {
             dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year}).then((response) => {
@@ -140,10 +153,17 @@ const actions = {
      * @returns {void}
      */
     toggleStripesLayer ({commit, dispatch, state}, value) {
+<<<<<<< HEAD
         const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
             selectedLayer = layerList.find(layer=> layer.get("isSelected") === true),
             selectedLayerName = selectedLayer.attributes.name,
             layerName = selectedLayerName + "-stripes";
+=======
+        const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
+            selectedModel = modelList.find(model => model.get("isSelected") === true),
+            selectedModelName = selectedModel.attributes.name,
+            modelName = selectedModelName + "-stripes";
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
 
         commit("setIsStripesLayer", value);
 
@@ -164,9 +184,15 @@ const actions = {
      * @param {string} value - layer name
      * @returns {void}
      */
+<<<<<<< HEAD
     selectLayerByName ({commit, state}, value) {
         const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
             selectedLayer = layerList.find(layer => layer.get("name") === value);
+=======
+    selectLayerModelByName ({commit, state}, value) {
+        const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
+            layerModel = modelList.find(model => model.get("name") === value);
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
 
         selectedLayer.set("isVisibleInMap", true);
         selectedLayer.set("isSelected", true);
@@ -180,12 +206,16 @@ const actions = {
      * @returns {void}
      */
 <<<<<<< HEAD
+<<<<<<< HEAD
     requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource();
 =======
     requestGFI ({dispatch}, {event, processFromParametricUrl, center}) {
+=======
+    requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
+>>>>>>> 6c9a67a4 (BG-1869 added convertedBrw state to update calculated property values)
         if (state.active) {
             const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
                 layerSource = selectedModel.get("layer").getSource();
