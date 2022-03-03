@@ -3,6 +3,7 @@ import {GeoJSON} from "ol/format";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";
 import Scenario from "../../ScenarioBuilder/classes/Scenario";
+import {createStyle} from "../../../../src/modules/tools/draw/utils/style/createStyle";
 
 export default {
     parseState (map, state, path = [], districtsSet = false) {
@@ -52,6 +53,9 @@ export default {
                                 await this.$nextTick();
                                 this.commitState(mutation, attr, state[key][attr]);
                             });
+                            break;
+                        case "Draw/layer":
+                            this.parseDrawFeatures(state, mutation, key, attr);
                             break;
                         default:
                             this.commitState(mutation, attr, state[key][attr]);
@@ -166,5 +170,28 @@ export default {
         }
 
         return new this.geomConstructors[type](coordinates);
+    },
+
+    parseDrawFeatures (state, mutation, key, attr) {
+        this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", "import_draw_layer"));
+        this.$store.dispatch("Tools/Draw/clearLayer");
+        const source = this.$store.state.Tools.Draw.layer.getSource();
+
+        for (const feature of this.parseFeatures(state[key][attr])) {
+            const drawState = feature.get("drawState"),
+                styleSettings = { color: drawState.color,
+                    colorContour: drawState.colorContour,
+                    font: drawState.font,
+                    fontSize: drawState.fontSize,
+                    strokeWidth: drawState.strokeWidth,
+                    text: drawState.text };
+            feature.setStyle(function (feature) {
+                if (feature.get("isVisible")) {
+                    return createStyle(feature.get("drawState"), styleSettings);
+                }
+                return undefined;
+            });
+            source.addFeature(feature);
+        }
     }
 };
