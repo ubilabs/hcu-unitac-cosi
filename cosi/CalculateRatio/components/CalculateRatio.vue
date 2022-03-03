@@ -163,12 +163,6 @@ export default {
             this.prepareCoverage();
         },
         activeSet (newValue) {
-            /*Object.entries(this.dataSets[newValue].inputs).forEach(entry => {
-                const [key, value] = entry;
-
-                this[key] = value;
-            });*/
-
             for (const key in this.dataSets[newValue].inputs) {
                 this[key] = this.dataSets[newValue].inputs[key];
             }
