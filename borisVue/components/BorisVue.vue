@@ -19,6 +19,8 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/BorisVue", Object.keys(getters)),
+        ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
+        ...mapGetters(["mobile"]),
         getFilterListWithoutStripes () {
             const filteredListWithoutStripes = [];
 
@@ -58,6 +60,14 @@ export default {
                     this.checkGfiFeatureByLanduse({feature: this.gfiFeature, selectedLanduse: landuse});
                 }
             }
+        },
+        printFileReady: function () {
+            if (this.active && this.printFileReady && this.fileDownloadUrl) {
+                const link = document.createElement("a");
+
+                link.href = this.fileDownloadUrl;
+                link.click();
+            }
         }
     },
     created () {
@@ -66,7 +76,7 @@ export default {
     },
     mounted () {
         this.$nextTick(() => {
-            this.requestParametricUrl();
+            this.handleUrlParameters();
         });
     },
     methods: {
@@ -74,7 +84,7 @@ export default {
             "initialize",
             "handleSelectBRWYear",
             "toggleStripesLayer",
-            "requestParametricUrl",
+            "handleUrlParameters",
             "checkGfiFeatureByLanduse",
             "getSelectedBauweise",
             "updateSelectedBrwFeature",
@@ -406,6 +416,20 @@ export default {
                     >
                         Als PDF exportieren
                     </button>
+                    <div
+                        v-if="printStarted"
+                        class="form-group col-md-12 col-xs-12 pt-20"
+                    >
+                        <div class="progress">
+                            <div
+                                class="progress-bar"
+                                role="progressbar"
+                                :style="progressWidth"
+                            >
+                                <span class="sr-only">30% Complete</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
