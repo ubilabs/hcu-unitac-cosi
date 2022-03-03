@@ -23,6 +23,7 @@ const state = {
     brwFeature: [],
     // param URL
     selectedBrwFeature: {},
+    convertedBrw: "",
     processFromParametricUrl: false,
     paramUrlParams: {},
     buttonValue: "info",
