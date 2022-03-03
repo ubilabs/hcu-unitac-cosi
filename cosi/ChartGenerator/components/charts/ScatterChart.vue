@@ -4,6 +4,7 @@ import {Scatter} from "vue-chartjs";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 import {color as d3Color, rgb} from "d3-color";
 import deepAssign from "../../../../../src/utils/deepAssign";
+import fixColor from "../../utils/fixColor";
 
 export default {
     name: "ScatterChart",
@@ -80,7 +81,7 @@ export default {
                 return null;
             }
 
-            return {...this.datasets};
+            return {...fixColor(this.datasets)};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);

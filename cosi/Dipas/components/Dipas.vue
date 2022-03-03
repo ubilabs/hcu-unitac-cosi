@@ -16,6 +16,8 @@ import {interpolateRdYlGn} from "d3-scale-chromatic";
 import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 import {exportAsGeoJson} from "../utils/exportResults";
+import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
+
 
 export default {
     name: "Dipas",
@@ -37,6 +39,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureActive"]),
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"]),
         isProjectActive () {
@@ -447,7 +450,8 @@ export default {
         async changeHeatmapVisibility (id, value) {
             const
                 layerId = id + "-heatmap",
-                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"}),
+                isFeatureActive = this.isFeatureActive;
             let
                 layer = getLayerById(this.map.getLayers().getArray(), layerId);
 
@@ -456,9 +460,9 @@ export default {
                 let maxVotes = 0;
 
                 if (!this.contributions[id].features) {
-                    Radio.trigger("Util", "showLoader");
+                    LoaderOverlay.show();
                     this.contributions[id].features = await this.getContributionFeatures(id);
-                    Radio.trigger("Util", "hideLoader");
+                    LoaderOverlay.hide();
                 }
                 for (const feature of this.contributions[id].features) {
                     vector.addFeature(feature);
@@ -473,6 +477,9 @@ export default {
                     blur: 20,
                     id: layerId,
                     weight: function (feature) {
+                        if (!isFeatureActive(feature)) {
+                            return 0;
+                        }
                         const votingPro = parseInt(feature.get("votingPro"), 10),
                             votingContra = parseInt(feature.get("votingContra"), 10),
                             weight = (votingPro + votingContra) / maxVotes;

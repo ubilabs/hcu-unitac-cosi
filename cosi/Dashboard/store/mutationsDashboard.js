@@ -12,8 +12,8 @@ const mutations = {
     setCalculation (state, payload) {
         state.calculations = [...state.calculations, payload];
     },
-    removeCalculation (state, category) {
-        state.calculations = state.calculations.filter(calc => calc.category !== category);
+    removeCalculation (state, id) {
+        state.calculations = state.calculations.filter(calc => calc.id !== id);
     }
 };
 

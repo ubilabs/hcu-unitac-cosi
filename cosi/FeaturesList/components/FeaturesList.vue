@@ -199,11 +199,9 @@ export default {
          */
         selected (newValue) {
             this.removeHighlightFeature();
-
             newValue.forEach(item => {
-                highlightVectorFeature(item.feature, item.layerId);
+                this.highlightVectorFeature(item.feature, item.layerId);
             });
-
             this.showDistanceScoreFeatures();
         },
 
@@ -415,7 +413,7 @@ export default {
         handleClickRow (item) {
             if (item.enabled) {
                 this.removeHighlightFeature();
-                highlightVectorFeature(item.feature, item.layerId);
+                this.highlightVectorFeature(item.feature, item.layerId);
             }
         },
 
@@ -635,7 +633,6 @@ export default {
         },
         async updateDistanceScores () {
             if (this.items && this.items.length) {
-
                 const items = [];
 
                 this.distanceScoreQueue = this.items.map(item=>{
@@ -667,6 +664,9 @@ export default {
                 }
 
                 this.items = items;
+
+                // set the selected items on the updated list
+                this.selected = this.selected.map(sel => this.items.find(item => item.key === sel.key));
             }
         },
 
@@ -677,7 +677,6 @@ export default {
 
             const colorMap = this.selectedDistanceScoreLayers.reduce((acc, layer, index) => (
                 {...acc, [layer.layerId]: getColorFromNumber(index, this.selectedDistanceScoreLayers.length)}), {});
-
 
             this.distScoreLayer.getSource().clear();
             this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
@@ -715,7 +714,8 @@ export default {
         },
         updateWeights (weights) {
             this.layerWeights = {...weights};
-        }
+        },
+        highlightVectorFeature
     }
 };
 </script>
@@ -872,30 +872,11 @@ export default {
                                 <template #[`item.style`]="{ item }">
                                     <FeatureIcon :item="item" />
                                 </template>
-                                <template #[`item.actions`]="{ item }">
-                                    <v-icon
-                                        small
-                                        disabled
-                                        class="mr-2 not-implemented"
-                                        title="Noch nicht implementiert"
-                                        @click="editFeature(item)"
-                                    >
-                                        mdi-pencil
-                                    </v-icon>
-                                    <v-icon
-                                        small
-                                        disabled
-                                        class="mr-2 not-implemented"
-                                        title="Noch nicht implementiert"
-                                        @click="deleteFeature(item)"
-                                    >
-                                        mdi-delete
-                                    </v-icon>
-                                </template>
                                 <template #[`item.enabled`]="{ item }">
                                     <div class="text-center">
                                         <v-icon
                                             right
+                                            class="featureToggle"
                                             @click="toggleFeature(item)"
                                         >
                                             {{ item.enabled ? 'mdi-eye' : 'mdi-eye-off' }}

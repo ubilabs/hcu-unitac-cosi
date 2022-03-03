@@ -84,6 +84,7 @@ export default {
 
         deleteNeighborhood () {
             this.activeScenario.removeNeighborhood(this.selectedNeighborhood.scenarioFeature.feature);
+            this.confirmDialog = false;
             this.editDialog = false;
             this.selectedNeighborhood.editFeature = null;
             this.selectedNeighborhood.scenarioFeature = null;

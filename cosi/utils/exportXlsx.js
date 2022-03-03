@@ -49,31 +49,11 @@ function convertObject (data) {
     return objArr;
 }
 
-// /**
-//  * 
-//  * @param {*} aoa 
-//  * @param {*} options 
-//  */
-// export function parseAoaToXlsx (aoa, options) {
-//     const sheetname = options.sheetname.substring(0, 31) || "Neues Arbeitsblatt", // no names longer than 31 chars allowed
-
-//         header = Object.keys(json[0]),
-//         colOptions = options.colOptions || generateColOptions(header, options.multiplyColWidth),
-//         rowOptions = options.rowOptions,
-//         workbook = XLSX.utils.book_new(),
-//         sheet = XLSX.utils.aoa_to_sheet(aoa);
-
-//     sheet["!cols"] = colOptions;
-//     sheet["!rows"] = rowOptions;
-//     XLSX.utils.book_append_sheet(workbook, sheet, sheetname);
-
-//     return workbook;
-// }
-
 /**
  * @description Converts a json array of objects to an styled and exportable XLSX format.
  * @param {Object[]} json - the array of objects to export
  * @param {Object} [options={}] - (optional) sheetname: name of the worksheet, tablename: name of the table, creator: editor of the document, theme: the styletheme of the table
+ * @param {String} conversionType[json_to_sheet] -
  * @returns {module:exceljs/workbook} returns the XLSX workbook
  */
 export function parseJsonToXlsx (json, options, conversionType = "json_to_sheet") {
@@ -97,6 +77,7 @@ export function parseJsonToXlsx (json, options, conversionType = "json_to_sheet"
  * @param {Object[]} json - the array of objects to export
  * @param {String} filename - the filename of the exported XLSX
  * @param {Object} [options={}] - (optional) exlcude: keys to exclude from columns, sheetname: name of the worksheet, rowOptions: height etc., colOptions: width etc.
+ * @param {String} conversionType[json_to_sheet] -
  * @returns {void}
  */
 export default async function exportXlsx (json, filename, options = {}, conversionType = "json_to_sheet") {

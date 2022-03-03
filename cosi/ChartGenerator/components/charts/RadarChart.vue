@@ -2,6 +2,7 @@
 import {Radar} from "vue-chartjs";
 import beautifyKey from "../../../../../src/utils/beautifyKey";
 import deepAssign from "../../../../../src/utils/deepAssign";
+import fixColor from "../../utils/fixColor";
 
 export default {
     name: "RadarChart",
@@ -55,7 +56,7 @@ export default {
                 return null;
             }
 
-            return {...this.datasets};
+            return {...fixColor(this.datasets)};
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);

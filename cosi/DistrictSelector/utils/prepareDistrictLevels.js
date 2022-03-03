@@ -25,7 +25,13 @@ export async function prepareDistrictLevels (districtLevels, layerList) {
             // the names of all avaible districts
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
             // property names for the WFS GetFeature request for the stats features, without geometry
-            districtLevel.propertyNameList = await getPropertyNameList(districtLevel.stats.baseUrl);
+            if (!districtLevel.propertyNameList) {
+                const propertyNameList = await getPropertyNameList(districtLevel.stats.baseUrl);
+
+                if (!districtLevel.propertyNameList) {
+                    districtLevel.propertyNameList = propertyNameList;
+                }
+            }
             // all featureTypes for the WFS GetFeature request for the stats features
             districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl);
             // all districts at this level

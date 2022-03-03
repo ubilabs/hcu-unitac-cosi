@@ -1,6 +1,4 @@
 import Scenario from "../../../../ScenarioBuilder/classes/Scenario";
-import ScenarioFeature from "../../../../ScenarioBuilder/classes/Scenario";
-import ScenarioNeighborhood from "../../../../ScenarioBuilder/classes/Scenario";
 import Layer from "ol/layer/Vector.js";
 import Source from "ol/source/Vector.js";
 import Feature from "ol/Feature";
@@ -9,7 +7,7 @@ import Polygon from "ol/geom/Polygon";
 import district from "./mock.district";
 
 
-const simFeature = new ScenarioFeature(
+const simFeature = new Scenario(
         new Feature({
             schulname: "feature 1",
             anzahl_schueler: 42,
@@ -26,7 +24,7 @@ const simFeature = new ScenarioFeature(
             source: new Source()
         })
     ),
-    simNeighborhood = new ScenarioNeighborhood(
+    simNeighborhood = new Scenario(
         new Feature({
             geometry: new Polygon([
                 [
