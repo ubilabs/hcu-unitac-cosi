@@ -246,8 +246,6 @@ export default {
                     this.map.removeLayer(this.directionsLayer);
                 }
 
-
-
                 this._isochroneFeatures = this.dataSets[newValue].results;
                 this.renderIsochrones(this._isochroneFeatures);
             }
@@ -427,7 +425,7 @@ export default {
                 _time: JSON.parse(JSON.stringify(this._time)),
                 _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this._steps)),
+                _steps: JSON.parse(JSON.stringify(this._steps))
             };
 
             this.dataSets.push(analysisSet);
