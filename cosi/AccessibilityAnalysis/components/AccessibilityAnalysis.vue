@@ -91,8 +91,6 @@ export default {
             abortController: null,
             currentCoordinates: null,
             select: null,
-            dataSets: [],
-            activeSet: 0,
             hide: false
         };
     },
@@ -224,11 +222,13 @@ export default {
             }
         },
         activeSet (newValue) {
-            Object.entries(this.dataSets[newValue].inputs).forEach(entry => {
-                const [key, value] = entry;
+            if (!this.dataSets[newValue]) {
+                return;
+            }
 
-                this[key] = value;
-            });
+            for (const key in this.dataSets[newValue].inputs) {
+                this[key] = this.dataSets[newValue].inputs[key];
+            }
 
             if (this.dataSets[newValue].inputs._mode === "point") {
                 const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
@@ -418,7 +418,7 @@ export default {
             };
 
             this.dataSets.push(analysisSet);
-            this.activeSet = this.dataSets.length - 1;
+            this.setActiveSet(this.dataSets.length - 1);
 
             if (this.dataSets.length === 1) {
                 this.renderIsochrones(this._isochroneFeatures);
@@ -430,7 +430,7 @@ export default {
         // pagination features
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
-                this.activeSet -= 1;
+                this.setActiveSet(this.activeSet - 1);
             }
 
             this.dataSets.splice(index, 1);
@@ -441,7 +441,7 @@ export default {
 
         },
         removeAll () {
-            this.dataSets = [];
+            this.setDataSets([]);
             this.clear();
             this.mapLayer.getSource().clear();
             this.resetIsochroneBBox();
@@ -463,7 +463,7 @@ export default {
         setPrevNext (value) {
             const l = this.dataSets.length;
 
-            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
         }
     }
 };
@@ -745,7 +745,7 @@ export default {
                                         next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
                                         prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
                                     }"
-                                    @setActiveSet="(n) => activeSet = n"
+                                    @setActiveSet="(n) => setActiveSet(n)"
                                     @setPrevNext="(n) => setPrevNext(n)"
                                     @removeSingle="(n) => removeSet(n)"
                                     @removeAll="removeAll"

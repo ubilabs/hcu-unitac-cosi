@@ -78,11 +78,9 @@ export default {
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
-            columnSelector: {name: "Verhältnis", key: "relation"},
-            // Index of the active dataset to display
-            activeSet: 0,
-            // Array to store all results and input values
-            dataSets: []
+            columnSelector: {name: "Verhältnis", key: "relation"}
+            // // Index of the active dataset to display
+            // activeSet: 0
         };
     },
     computed: {
@@ -161,6 +159,9 @@ export default {
             this.prepareCoverage();
         },
         activeSet (newValue) {
+            if (!this.dataSets[newValue]) {
+                return;
+            }
             for (const key in this.dataSets[newValue].inputs) {
                 this[key] = this.dataSets[newValue].inputs[key];
             }
@@ -171,7 +172,6 @@ export default {
         dataSets (newValue) {
             if (newValue.length === 0) {
                 this.setResults([]);
-                this.activeSet = 0;
             }
         },
 
@@ -385,7 +385,7 @@ export default {
             this.sumUpSwitchA = false;
             this.sumUpSwitchB = false;
             this.setResults([]);
-            this.dataSets = [];
+            this.setDataSets([]);
         },
         /**
          * @description Switches all parameters between FieldA and FieldB.
@@ -479,7 +479,7 @@ export default {
             };
 
             this.dataSets.push(calculationSet);
-            this.activeSet = this.dataSets.length - 1;
+            this.setActiveSet(this.dataSets.length - 1);
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -761,7 +761,7 @@ export default {
         setPrevNext (value) {
             const l = this.dataSets.length;
 
-            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
         },
         /**
          * @description Deletes a set from the Tool Window.
@@ -770,7 +770,7 @@ export default {
          */
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
-                this.activeSet -= 1;
+                this.setActiveSet(this.activeSet - 1);
             }
 
             this.dataSets.splice(index, 1);
@@ -1103,7 +1103,7 @@ export default {
                             next: $t('additional:modules.tools.cosi.calculateRatio.paginationNext'),
                             prev: $t('additional:modules.tools.cosi.calculateRatio.paginationPrev'),
                         }"
-                        @setActiveSet="(n) => activeSet = n"
+                        @setActiveSet="(n) => setActiveSet(n)"
                         @setPrevNext="(n) => setPrevNext(n)"
                         @removeSingle="(n) => removeSet(n)"
                         @removeAll="clearAllValues"

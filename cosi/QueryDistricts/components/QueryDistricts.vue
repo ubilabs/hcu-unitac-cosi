@@ -28,12 +28,12 @@ export default {
     },
     data () {
         return {
-            selectedDistrict: null,
+            // selectedDistrict: null,
             allLayerOptions: [],
             layerOptions: [],
-            selectedLayer: null,
+            // selectedLayer: null,
             districtNames: [],
-            layerFilterModels: [],
+            // layerFilterModels: [],
             selectorField: "verwaltungseinheit",
             resultNames: null,
             results: null,
@@ -41,13 +41,13 @@ export default {
             dashboard: null,
             facilityNames: [],
             propertiesMap: {},
-            resultTableHeaders: null,
-            dataSets: [{
-                selectedDistrict: "",
-                layerFilterModels: [],
-                selectedLayer: ""
-            }],
-            activeSet: 0
+            resultTableHeaders: null
+            // dataSets: [{
+            //     selectedDistrict: "",
+            //     layerFilterModels: [],
+            //     selectedLayer: ""
+            // }],
+            // activeSet: 0
         };
     },
     computed: {
@@ -62,7 +62,23 @@ export default {
             "mapping"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["layerById", "projectionCode"])
+        ...mapGetters("Map", ["layerById", "projectionCode"]),
+        _selectedDistrict: {
+            get () {
+                return this.selectedDistrict;
+            },
+            set (v) {
+                this.setSelectedDistrict(v);
+            }
+        },
+        _selectedLayer: {
+            get () {
+                return this.selectedLayer;
+            },
+            set (v) {
+                this.setSelectedLayer(v);
+            }
+        }
     },
     watch: {
         async layerFilterModels (newValue) {
@@ -79,7 +95,7 @@ export default {
                 newModels.push(newModel);
                 this.setLayerFilterModelValue(newModel);
             }
-            this.layerFilterModels = newModels;
+            this.setLayerFilterModels(newModels);
             this.dataSets[this.activeSet].selectedDistrict = newValue;
         },
 
@@ -107,8 +123,12 @@ export default {
             });
         },
         activeSet (newValue) {
-            this.layerFilterModels = this.dataSets[newValue].layerFilterModels;
-            this.selectedDistrict = this.dataSets[newValue].selectedDistrict;
+            if (!this.dataSets[newValue]) {
+                return;
+            }
+
+            this.setLayerFilterModels(this.dataSets[newValue].layerFilterModels);
+            this.setSelectedDistrict(this.dataSets[newValue].selectedDistrict);
             const newModels = [];
 
             for (const m of this.layerFilterModels) {
@@ -117,7 +137,7 @@ export default {
                 newModels.push(newModel);
                 this.setLayerFilterModelValue(newModel);
             }
-            this.layerFilterModels = newModels;
+            this.setLayerFilterModels(newModels);
             this.updateAvailableLayerOptions();
         },
         dataSets (newValue) {
@@ -129,9 +149,9 @@ export default {
                     },
                     newModels = [];
 
-                this.layerFilterModels = [];
-                this.selectedDistrict = "";
-                this.selectedLayer = "";
+                this.setLayerFilterModels([]);
+                this.setSelectedDistrict("");
+                this.setSelectedLayer("");
 
 
                 for (const m of this.layerFilterModels) {
@@ -140,10 +160,9 @@ export default {
                     newModels.push(newModel);
                     this.setLayerFilterModelValue(newModel);
                 }
-                this.layerFilterModels = newModels;
+                this.setLayerFilterModels(newModels);
                 this.updateAvailableLayerOptions();
                 this.dataSets.push(createSet);
-                this.activeSet = 0;
             }
         }
     },
@@ -258,7 +277,7 @@ export default {
         addLayerFilter: async function () {
             this.layerOptions = this.layerOptions.filter(layer => layer.id !== this.selectedLayer.id);
             this.layerFilterModels.push(await this.createLayerFilterModel(this.selectedLayer));
-            this.selectedLayer = null;
+            this.setSelectedLayer(null);
             this.updateAvailableLayerOptions();
         },
 
@@ -504,9 +523,9 @@ export default {
         },
 
         resetDistrictSelection: function () {
-            this.layerFilterModels = [];
+            this.setLayerFilterModels([]);
             this.updateAvailableLayerOptions();
-            this.selectedDistrict = null;
+            this.setSelectedDistrict(null);
         },
 
         async updateFilter (value) {
@@ -538,7 +557,7 @@ export default {
                     break;
                 }
             }
-            this.layerFilterModels = filters;
+            this.setLayerFilterModels(filters);
         },
 
         async computeQuotientLayer (value) {
@@ -571,7 +590,7 @@ export default {
         },
 
         closeFilter (value) {
-            this.layerFilterModels = this.layerFilterModels.filter(elem => elem.layerId !== value.layerId);
+            this.setLayerFilterModels(this.layerFilterModels.filter(elem => elem.layerId !== value.layerId));
             this.updateAvailableLayerOptions();
         },
 
@@ -614,7 +633,6 @@ export default {
             this.mapLayer.getSource().clear();
 
             if (this.selectedDistrict) {
-
                 this.refDistrict = this.layer.getSource().getFeatures()
                     .find(feature => feature.getProperties()[this.keyOfAttrName] === this.selectedDistrict);
 
@@ -721,26 +739,25 @@ export default {
         setPrevNext (value) {
             const l = this.dataSets.length;
 
-            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
         },
-        downloadAll () {},
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
-                this.activeSet -= 1;
+                this.setActiveSet(this.activeSet - 1);
             }
 
             this.dataSets.splice(index, 1);
         },
         removeAll () {
-            this.dataSets = [{
+            this.setDataSets([{
                 selectedDistrict: "",
                 selectedLayer: "",
                 layerFilterModels: []
-            }];
+            }]);
 
-            this.layerFilterModels = [];
-            this.selectedDistrict = "";
-            this.selectedLayer = "";
+            this.setLayerFilterModels([]);
+            this.setSelectedDistrict("");
+            this.setSelectedLayer("");
 
             const newModels = [];
 
@@ -750,9 +767,8 @@ export default {
                 newModels.push(newModel);
                 this.setLayerFilterModelValue(newModel);
             }
-            this.layerFilterModels = newModels;
+            this.setLayerFilterModels(newModels);
             this.updateAvailableLayerOptions();
-            this.activeSet = 0;
         },
         addSet () {
             const createSet = {
@@ -762,7 +778,11 @@ export default {
             };
 
             this.dataSets.push(createSet);
-            this.activeSet = this.dataSets.length - 1;
+            this.setActiveSet(this.dataSets.length - 1);
+        },
+
+        downloadAll () {
+            // not implemented yet
         }
     }
 };
@@ -792,7 +812,7 @@ export default {
                     </div>
                     <v-autocomplete
                         id="layerfilter-selector-container"
-                        v-model="selectedLayer"
+                        v-model="_selectedLayer"
                         :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
                         :title="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabeltooltip')"
                         item-text="name"
@@ -806,7 +826,7 @@ export default {
                     />
                     <v-autocomplete
                         id="district-selector-container"
-                        v-model="selectedDistrict"
+                        v-model="_selectedDistrict"
                         :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
                         :items="districtNames"
                         :clearable="true"
@@ -856,7 +876,7 @@ export default {
                             next: $t('additional:modules.tools.cosi.queryDistricts.paginationNext'),
                             prev: $t('additional:modules.tools.cosi.queryDistricts.paginationPrev'),
                         }"
-                        @setActiveSet="(n) => activeSet = n"
+                        @setActiveSet="(n) => setActiveSet(n)"
                         @setPrevNext="(n) => setPrevNext(n)"
                         @removeSingle="(n) => removeSet(n)"
                         @addSet="addSet"

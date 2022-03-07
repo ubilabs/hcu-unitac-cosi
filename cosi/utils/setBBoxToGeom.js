@@ -9,8 +9,8 @@ import getClusterSource from "./getClusterSource";
 export function setBBoxToGeom (bboxGeometry) {
     const layerlist = [
         ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
-        ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false})
-        // ...Radio.request("Parser", "getItemsByAttributes", {typ: "SensorThings", isBaseLayer: false})
+        ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}),
+        ...Radio.request("Parser", "getItemsByAttributes", {typ: "VectorBase", isBaseLayer: false})
     ];
 
     setBboxGeometryToLayer(layerlist, bboxGeometry);

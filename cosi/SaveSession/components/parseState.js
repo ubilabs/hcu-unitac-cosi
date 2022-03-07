@@ -82,7 +82,11 @@ export default {
             }
         }
         else {
-            this.$store.commit(mutation, this.parseFeatures(state));
+            const _state = this.isDatasetObject(mutation, attr) ?
+                this.parseToolDatasets(state) :
+                this.parseFeatures(state);
+
+            this.$store.commit(mutation, _state);
         }
     },
 
@@ -196,5 +200,22 @@ export default {
             });
             source.addFeature(feature);
         }
+    },
+
+    parseToolDatasets (state) {
+        return state.map(item => this.deepParse(item));
+    },
+
+    deepParse (obj) {
+        for (const key in obj) {
+            if (obj[key]?.constructor === Object) {
+                this.deepParse({...obj[key]});
+            }
+            else {
+                obj[key] = this.parseFeatures(obj[key]);
+            }
+        }
+
+        return obj;
     }
 };

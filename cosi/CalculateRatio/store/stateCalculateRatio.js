@@ -35,6 +35,9 @@ const state = {
     colorCodeMapDataset: [],
     results: [],
     resultHeaders: {},
+    // Array to store all results and input values
+    dataSets: [],
+    activeSet: 0,
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/calculateratio.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/versorgungsanalyse.md"

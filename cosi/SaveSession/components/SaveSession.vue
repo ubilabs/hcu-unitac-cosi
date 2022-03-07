@@ -33,6 +33,7 @@ export default {
                         "chartConfigs"
                     ],
                     CalculateRatio: [
+                        "dataSets",
                         "resultHeaders",
                         "results",
                         "active"
@@ -47,6 +48,7 @@ export default {
                         "active"
                     ],
                     AccessibilityAnalysis: [
+                        "dataSets",
                         "isochroneFeatures",
                         "rawGeoJson",
                         "mode",
@@ -69,6 +71,12 @@ export default {
                     ],
                     Draw: [
                         "layer"
+                    ],
+                    QueryDistrict: [
+                        "dataSets",
+                        "selectedDistrict",
+                        "layerFilterModels",
+                        "selectedLayer"
                     ]
                 }
             },
@@ -92,7 +100,8 @@ export default {
             autoSaveDialog: false,
             confirmDialog: false,
             settingsChanged: false,
-            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon}
+            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon},
+            toolsWithDatasets: ["AccessibilityAnalysis", "CalculateRatio", "QueryDistricts"]
         };
     },
     computed: {
@@ -316,6 +325,10 @@ export default {
 
         disableAutoSave () {
             clearInterval(this.autoSaveInterval);
+        },
+
+        isDatasetObject (key, attr) {
+            return attr === "dataSets" && this.toolsWithDatasets.find(id => key.includes(id));
         }
     }
 };
@@ -543,13 +556,11 @@ export default {
                 color="primary"
             >
                 {{ $t('additional:modules.tools.cosi.saveSession.filenamePrompt') }}
-                <template v-if="latestDate">
-                    <v-text-field
-                        id="title-field"
-                        v-model="session.meta.title"
-                        name="session-title"
-                    />
-                </template>
+                <v-text-field
+                    id="title-field"
+                    v-model="session.meta.title"
+                    name="session-title"
+                />
 
                 <template #action="{ attrs }">
                     <v-btn
