@@ -43,9 +43,12 @@ export default {
             propertiesMap: {},
             resultTableHeaders: null,
             dataSets: [{
-                selectedDistrict: "",
-                layerFilterModels: [],
-                selectedLayer: ""
+                inputs: {
+                    selectedDistrict: "",
+                    layerFilterModels: [],
+                    selectedLayer: ""
+                },
+                results: []
             }],
             activeSet: 0
         };
@@ -66,8 +69,10 @@ export default {
     },
     watch: {
         async layerFilterModels (newValue) {
-            this.dataSets[this.activeSet].layerFilterModels = newValue;
-            this.computeResults();
+            this.dataSets[this.activeSet].inputs.layerFilterModels = newValue;
+            await this.computeResults();
+            this.dataSets[this.activeSet].inputs.resultTableHeaders = this.resultTableHeaders;
+            this.dataSets[this.activeSet].results = this.results;
         },
 
         async selectedDistrict (newValue) {
@@ -80,7 +85,7 @@ export default {
                 this.setLayerFilterModelValue(newModel);
             }
             this.layerFilterModels = newModels;
-            this.dataSets[this.activeSet].selectedDistrict = newValue;
+            this.dataSets[this.activeSet].inputs.selectedDistrict = newValue;
         },
 
         facilityNames () {
@@ -107,8 +112,9 @@ export default {
             });
         },
         activeSet (newValue) {
-            this.layerFilterModels = this.dataSets[newValue].layerFilterModels;
-            this.selectedDistrict = this.dataSets[newValue].selectedDistrict;
+            this.layerFilterModels = this.dataSets[newValue].inputs.layerFilterModels;
+            this.selectedDistrict = this.dataSets[newValue].inputs.selectedDistrict;
+            this.resultTableHeaders = this.dataSets[newValue].inputs.resultTableHeaders;
             const newModels = [];
 
             for (const m of this.layerFilterModels) {
@@ -123,13 +129,18 @@ export default {
         dataSets (newValue) {
             if (newValue.length === 0) {
                 const createSet = {
-                        selectedDistrict: "",
-                        selectedLayer: "",
-                        layerFilterModels: []
+                        inputs: {
+                            selectedDistrict: "",
+                            selectedLayer: "",
+                            layerFilterModels: [],
+                            resultTableHeaders: []
+                        },
+                        results: []
                     },
                     newModels = [];
 
                 this.layerFilterModels = [];
+                this.resultTableHeaders = [];
                 this.selectedDistrict = "";
                 this.selectedLayer = "";
 
@@ -682,21 +693,25 @@ export default {
             return [0, 0];
         },
 
-        exportTable: function () {
+        exportTable: function (index) {
             const
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("additional:modules.tools.cosi.queryDistricts.exportFilename")}_${date}`,
                 data = [
-                    this.resultTableHeaders.map(header => header.text),
-                    ...this.results.map(row => {
+                    // this.resultTableHeaders.map(header => header.text),
+                    this.dataSets[index].inputs.resultTableHeaders.map(header => header.text),
+                    // ...this.results.map(row => {
+                    ...this.dataSets[index].results.map(row => {
                         const _row = Object.values(row);
 
                         return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)];
                     })
                 ],
                 headers = ["Referenzgebiet", "Filter-Nr.", "Name", "Attribut", "Quotient", "Feld", "Min.", "Max.", "Ref.-Wert", "- Toleranz", "+ Toleranz"],
-                filters = this.layerFilterModels.map((filter, i) => [
-                    this.selectedDistrict,
+                // filters = this.layerFilterModels.map((filter, i) => [
+                filters = this.dataSets[index].inputs.layerFilterModels.map((filter, i) => [
+                    // this.selectedDistrict,
+                    this.dataSets[index].inputs.selectedDistrict,
                     i + 1,
                     filter.name,
                     filter.property || "-",
@@ -723,7 +738,11 @@ export default {
 
             this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
         },
-        downloadAll () {},
+        downloadAll () {
+            this.dataSets.forEach((set, index) => {
+                this.exportTable(index);
+            });
+        },
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
                 this.activeSet -= 1;
@@ -733,9 +752,12 @@ export default {
         },
         removeAll () {
             this.dataSets = [{
-                selectedDistrict: "",
-                selectedLayer: "",
-                layerFilterModels: []
+                inputs: {
+                    selectedDistrict: "",
+                    selectedLayer: "",
+                    layerFilterModels: []
+                },
+                results: []
             }];
 
             this.layerFilterModels = [];
@@ -756,9 +778,13 @@ export default {
         },
         addSet () {
             const createSet = {
-                selectedLayer: "",
-                selectedDistrict: "",
-                layerFilterModels: []
+                inputs: {
+                    selectedLayer: "",
+                    selectedDistrict: "",
+                    layerFilterModels: [],
+                    resultTablesHeaders: []
+                },
+                results: []
             };
 
             this.dataSets.push(createSet);
@@ -861,7 +887,7 @@ export default {
                         @removeSingle="(n) => removeSet(n)"
                         @addSet="addSet"
                         @removeAll="removeAll"
-                        @downloadXLS="exportTable"
+                        @downloadXLS="(n) => exportTable(n)"
                         @downloadAll="downloadAll"
                     />
                     <v-divider v-if="layerFilterModels.length > 0" />

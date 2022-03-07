@@ -229,9 +229,10 @@ export default {
                             this.originalStyling = getStyling;
                         }
 
-                        const styleArray = [];
+                        const styleArray = [],
+                            match_props = matchResults.getProperties()[this.yearSelector + this.selectedYear];
 
-                        getStyling.fill = matchResults.getProperties()[this.yearSelector + this.selectedYear] !== undefined ? new Fill({color: utils.getRgbArray(this.colorScale.scale(matchResults.getProperties()[this.yearSelector + this.selectedYear]), 0.75)}) : new Fill({color: "rgba(0, 0, 0, 0.75)"});
+                        getStyling.fill = match_props !== undefined ? new Fill({color: utils.getRgbArray(this.colorScale.scale(match_props), 0.75)}) : new Fill({color: "rgba(0, 0, 0, 0.75)"});
                         getStyling.zIndex = 1;
                         getStyling.text = new Text({
                             font: "16px Calibri,sans-serif",
@@ -242,8 +243,8 @@ export default {
                                 color: [0, 0, 0],
                                 width: 3
                             }),
-                            text: matchResults.getProperties()[this.yearSelector + this.selectedYear] !== undefined
-                                ? parseFloat(matchResults.getProperties()[this.yearSelector + this.selectedYear]).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
+                            text: match_props !== undefined
+                                ? parseFloat(match_props).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
                                 : this.$t("additional:modules.tools.colorCodeMap.noData"),
                             overflow: true
                         });
@@ -260,8 +261,8 @@ export default {
                                         color: [240, 240, 240],
                                         width: 2
                                     }),
-                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear]
-                                        ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / matchResults.getProperties()[this.yearSelector + this.selectedYear]) * 100)) + "%)"
+                                    text: matchResults.getProperties()[this.yearSelector + this.lastYear] !== undefined
+                                        ? this.lastYear + ": " + parseFloat(matchResults.getProperties()[this.yearSelector + this.lastYear]).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.getProperties()[this.yearSelector + this.lastYear] / match_props) * 100)) + "%)"
                                         : this.$t("additional:modules.tools.colorCodeMap.noData"),
                                     offsetY: 25,
                                     overflow: true
@@ -343,7 +344,7 @@ export default {
                             color: [0, 0, 0],
                             width: 3
                         }),
-                        text: matchResults.data ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData"),
+                        text: matchResults.data !== undefined ? parseFloat(matchResults.data).toLocaleString(this.currentLocale) : this.$t("additional:modules.tools.colorCodeMap.noData"),
                         overflow: true
                     });
 

@@ -48,9 +48,9 @@ export default {
             // Var that controls if user calculates with statistical data (feature) oder facility for Field B
             BSwitch: true,
             // Var that controls if user chose summable statistical data set for Field A
-            sumUpSwitchA: false,
+            aSumUpSwitchA: false,
             // Var that controls if user chose summable statistical data set for Field B
-            sumUpSwitchB: false,
+            aSumUpSwitchB: false,
             // Selected value for Field A (it's an object because it can carry more information like values or properties, depending on the data set)
             selectedFieldA: {id: ""},
             // Selected value for Field B (it's an object because it can carry more information like values or properties, depending on the data set)
@@ -115,12 +115,12 @@ export default {
         }
     },
     watch: {
-        sumUpSwitchA (value) {
+        aSumUpSwitchA (value) {
             if (value) {
                 this.selectedFieldA.id = [this.selectedFieldA.id];
             }
         },
-        sumUpSwitchB (value) {
+        aSumUpSwitchB (value) {
             if (value) {
                 this.selectedFieldB.id = [this.selectedFieldB.id];
             }
@@ -160,13 +160,24 @@ export default {
         filters () {
             this.prepareCoverage();
         },
-        activeSet (newValue) {
-            for (const key in this.dataSets[newValue].inputs) {
-                this[key] = this.dataSets[newValue].inputs[key];
+        async activeSet (newValue) {
+            if (!this.dataSets[newValue]) {
+                return;
             }
 
+            for (const key in this.dataSets[newValue].inputs) {
+                this[key] = JSON.parse(JSON.stringify(this.dataSets[newValue].inputs[key]));
+            }
+
+            await this.$nextTick();
+            this.selectedFieldA.id = Array.isArray(this.selectedFieldA.id) ? this.selectedFieldA.id.flat() : this.selectedFieldA.id;
+            this.selectedFieldB.id = Array.isArray(this.selectedFieldB.id) ? this.selectedFieldB.id.flat() : this.selectedFieldB.id;
+
             this.setResults(this.dataSets[newValue].results);
-            this.loadToColorCodeMap();
+            this.setResultHeaders(this.dataSets[newValue].resultHeaders);
+            const data = this.getDataForColorCodeMap();
+
+            this.setColorCodeMapDataset(data);
         },
         dataSets (newValue) {
             if (newValue.length === 0) {
@@ -336,13 +347,13 @@ export default {
             if (!this[letter + "Switch"]) {
                 const checkSumUp = mapping.find(x => x.value === this["selectedField" + letter].id);
 
-                if (!this["sumUpSwitch" + letter]) {
+                if (!this["aSumUpSwitch" + letter]) {
                     if (checkSumUp.summable) {
-                        this["sumUpSwitch" + letter] = true;
+                        this["aSumUpSwitch" + letter] = true;
                     }
                 }
                 else if (this["selectedField" + letter].id === "" || this["selectedField" + letter].id.length === 0) {
-                    this["sumUpSwitch" + letter] = false;
+                    this["aSumUpSwitch" + letter] = false;
                 }
             }
         },
@@ -382,10 +393,11 @@ export default {
             this.fActive_B = false;
             this.faktorf_A = 1;
             this.faktorf_B = 1;
-            this.sumUpSwitchA = false;
-            this.sumUpSwitchB = false;
+            this.aSumUpSwitchA = false;
+            this.aSumUpSwitchB = false;
             this.setResults([]);
             this.dataSets = [];
+            this.setDataToColorCodeMap(false);
         },
         /**
          * @description Switches all parameters between FieldA and FieldB.
@@ -472,8 +484,8 @@ export default {
                 BSwitch: JSON.parse(JSON.stringify(this.BSwitch)),
                 perCalc_A: JSON.parse(JSON.stringify(this.perCalc_A)),
                 perCalc_B: JSON.parse(JSON.stringify(this.perCalc_B)),
-                sumUpSwitchA: JSON.parse(JSON.stringify(this.sumUpSwitchA)),
-                sumUpSwitchB: JSON.parse(JSON.stringify(this.sumUpSwitchB)),
+                aSumUpSwitchA: JSON.parse(JSON.stringify(this.aSumUpSwitchA)),
+                aSumUpSwitchB: JSON.parse(JSON.stringify(this.aSumUpSwitchB)),
                 facilityPropertyList_A: JSON.parse(JSON.stringify(this.facilityPropertyList_A)),
                 facilityPropertyList_B: JSON.parse(JSON.stringify(this.facilityPropertyList_B))
             };
@@ -859,12 +871,12 @@ export default {
                                 id="feature_selector_A"
                                 v-model="selectedFieldA.id"
                                 class="feature_selection selection"
-                                :items="sumUpSwitchA ? subFeaturesList : featuresList"
+                                :items="aSumUpSwitchA ? subFeaturesList : featuresList"
                                 dense
                                 outlined
-                                :multiple="sumUpSwitchA ? true : false"
-                                :small-chips="sumUpSwitchA ? true : false"
-                                :deletable-chips="sumUpSwitchA ? true : false"
+                                :multiple="aSumUpSwitchA ? true : false"
+                                :small-chips="aSumUpSwitchA ? true : false"
+                                :deletable-chips="aSumUpSwitchA ? true : false"
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
                                 :menu-props="{ closeOnContentClick: true }"
                                 @input="checkSumUp('A')"
@@ -974,12 +986,12 @@ export default {
                                 id="feature_selector_B"
                                 v-model="selectedFieldB.id"
                                 class="feature_selection selection"
-                                :items="sumUpSwitchB ? subFeaturesList : featuresList"
+                                :items="aSumUpSwitchB ? subFeaturesList : featuresList"
                                 dense
                                 outlined
-                                :multiple="sumUpSwitchB ? true : false"
-                                :small-chips="sumUpSwitchB ? true : false"
-                                :deletable-chips="sumUpSwitchB ? true : false"
+                                :multiple="aSumUpSwitchB ? true : false"
+                                :small-chips="aSumUpSwitchB ? true : false"
+                                :deletable-chips="aSumUpSwitchB ? true : false"
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
                                 :menu-props="{ closeOnContentClick: true }"
                                 @input="checkSumUp('B')"

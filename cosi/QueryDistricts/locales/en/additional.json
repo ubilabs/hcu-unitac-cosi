@@ -30,7 +30,13 @@
                     "rowsPerPageAll": "All",
                     "exportTable": "export table",
                     "exportFilename": "CoSI_query_districts",
-                    "invalidFeaturesWarning": "There are districts without valid results for this filter."
+                    "invalidFeaturesWarning": "There are districts without valid results for this filter.",
+                    "paginationAdd": "Add an analysis set",
+                    "paginationDownloadAll": "Download the results of all available analysises",
+                    "paginationRemove": "Remove this analysis set",
+                    "paginationRemoveAll": "Remove all analysis sets",
+                    "paginationPrev": "Select the previous analysis set",
+                    "paginationNext": "Select the next analysis set"
                 }
             }
         }

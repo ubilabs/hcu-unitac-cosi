@@ -58,6 +58,10 @@ export default {
                 return null;
             }
 
+            this.datasets.data.datasets.forEach(dataset => {
+                dataset.backgroundColor = rgb(0, 0, 0, 0);
+            });
+
             return {...fixColor(this.datasets)};
         },
         _options () {
@@ -77,10 +81,6 @@ export default {
             if (!this.chartData) {
                 return;
             }
-
-            this.chartData.data.datasets.forEach(dataset => {
-                dataset.backgroundColor = rgb(0, 0, 0, 0);
-            });
 
             this._options.scales.yAxes[0].stacked = this.chartData.stacked || false;
             this._options.scales.yAxes[0].ticks.beginAtZero = this.chartData.beginAtZero || false;

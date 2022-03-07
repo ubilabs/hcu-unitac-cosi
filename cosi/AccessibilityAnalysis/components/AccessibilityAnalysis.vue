@@ -223,23 +223,34 @@ export default {
             }
         },
         activeSet (newValue) {
-            Object.entries(this.dataSets[newValue].inputs).forEach(entry => {
-                const [key, value] = entry;
+            if (this.dataSets.length > 0) {
+                Object.entries(this.dataSets[newValue].inputs).forEach(entry => {
+                    const [key, value] = entry;
 
-                this[key] = value;
-            });
+                    this[key] = value;
+                });
 
-            if (this.dataSets[newValue].inputs._mode === "point") {
-                const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
+                if (this.dataSets[newValue].inputs._mode === "point") {
+                    const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
 
-                this.placingPointMarker(icoord);
+                    this.placingPointMarker(icoord);
+                }
+                else {
+                    this.removePointMarker();
+                }
+
+                if (this.dataSets[newValue].inputs._mode === "path") {
+                    this.map.addLayer(this.directionsLayer);
+                }
+                else {
+                    this.map.removeLayer(this.directionsLayer);
+                }
+
+
+
+                this._isochroneFeatures = this.dataSets[newValue].results;
+                this.renderIsochrones(this._isochroneFeatures);
             }
-            else {
-                this.removePointMarker();
-            }
-
-            this._isochroneFeatures = this.dataSets[newValue].results;
-            this.renderIsochrones(this._isochroneFeatures);
         },
         async scenarioUpdated () {
             await this.$nextTick();
@@ -254,12 +265,13 @@ export default {
                 this.map.addLayer(this.directionsLayer);
             }
 
-            if (this.mode !== "point") {
+            if (this.mode === "region") {
                 this.resetIsochroneBBox();
             }
 
             else {
                 this.map.removeLayer(this.directionsLayer);
+
                 if (!this.setByFeature) {
                     this.map.removeInteraction(this.select);
                     this.select.un("select", this.pickDirections.bind(this));
@@ -399,6 +411,9 @@ export default {
             };
 
             await this.createIsochrones();
+            if (this._mode === "path") {
+                this.map.addLayer(this.directionsLayer);
+            }
 
             analysisSet.results = this._isochroneFeatures;
             analysisSet.inputs = {
@@ -412,7 +427,7 @@ export default {
                 _time: JSON.parse(JSON.stringify(this._time)),
                 _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this._steps))
+                _steps: JSON.parse(JSON.stringify(this._steps)),
             };
 
             this.dataSets.push(analysisSet);
@@ -444,6 +459,8 @@ export default {
             this.mapLayer.getSource().clear();
             this.resetIsochroneBBox();
             this.removePointMarker();
+            this.map.removeLayer(this.directionsLayer);
+            this.activeSet = 0;
         },
         downloadSet (index) {
             downloadGeoJson(this.dataSets[index].geojson);
