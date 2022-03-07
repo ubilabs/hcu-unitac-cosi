@@ -66,6 +66,9 @@ export default {
                     ],
                     AreaSelector: [
                         "geometry"
+                    ],
+                    Draw: [
+                        "layer"
                     ]
                 }
             },
