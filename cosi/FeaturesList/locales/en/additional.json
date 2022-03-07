@@ -43,7 +43,8 @@
                         "contributionsOverTime": " contributions over time",
                         "commentsVoting": "comments/voting",
                         "commentsVotingText": " number of comments by voting",
-                        "voting": "voting"
+                        "voting": "voting",
+                        "allProjects": "All projects"
                     }
                 }
             }

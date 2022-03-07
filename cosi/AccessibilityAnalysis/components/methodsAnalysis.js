@@ -143,7 +143,7 @@ export default {
 
         if (newFeatures.length === 0) {
             if (this.mode !== "region") {
-                setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
+                setBBoxToGeom.call(this, this.areaSelectorGeom || this.boundingGeometry);
             }
             return;
         }
@@ -320,14 +320,14 @@ export default {
         const polygonGeometry = this.isochroneFeatures[this.isochroneFeatures.length === 4 ? 1 : 0].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
-        setBBoxToGeom(geometryCollection);
+        setBBoxToGeom.call(this, geometryCollection);
     },
     /**
     * resets facility layers' bbox
     * @returns {void}
     */
     resetIsochroneBBox () {
-        setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
+        setBBoxToGeom.call(this, this.areaSelectorGeom || this.boundingGeometry);
     },
     /**
      * clears the component

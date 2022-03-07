@@ -1,4 +1,65 @@
 import getClusterSource from "./getClusterSource";
+import Vue from "vue";
+
+/**
+ * filters all features by a given geometry
+ * @param {module:ol/source/Vector} source - the source
+ * @param {module:ol/geom/GeometryCollection} bboxGeometry - the bounding geometry
+ * @returns {void}
+ */
+function filterLayerSourceByBbox (source, bboxGeometry) {
+    source.forEachFeature(feature => {
+        if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
+            source.removeFeature(feature);
+        }
+    });
+}
+
+/**
+ * reloads the source and filters it by BBOX
+ * @param {module:ol/source/Vector} source - the source
+ * @param {module:ol/geom/GeometryCollection} bboxGeometry - the bounding geometry
+ * @param {String} url - the url of the WFS
+ * @param {Object} item - the raw layer item
+ * @param {Vue} [app] - the calling component
+ * @returns {void}
+ */
+function updateSource (source, bboxGeometry, url, item, app) {
+    source.clear();
+
+    // remove old listener -> necessary since the listener is an anonymous function
+    if (source.getListeners("featuresloadend")) {
+        delete source.listeners_.featuresloadend;
+    }
+
+    // set new BBOX-filtered URL to WFS layers
+    if (item.typ === "WFS") {
+        source.setUrl(url);
+    }
+
+    // refresh source if remote data
+    if (item.typ !== "VectorBase") {
+        source.refresh();
+        if (bboxGeometry) {
+            source.on("featuresloadend", function (evt) {
+                filterLayerSourceByBbox(evt.target, bboxGeometry);
+                if (app) {
+                    app.$root.$emit("updateFeaturesList");
+                }
+            });
+        }
+    }
+    // add layers as loaded or added programatically
+    else {
+        source.addFeatures(item.features);
+        if (bboxGeometry) {
+            filterLayerSourceByBbox(source, bboxGeometry);
+            if (app) {
+                app.$root.$emit("updateFeaturesList");
+            }
+        }
+    }
+}
 
 /**
  * quick fix for VectorLayer BBox
@@ -7,22 +68,25 @@ import getClusterSource from "./getClusterSource";
  * @returns {void}
  */
 export function setBBoxToGeom (bboxGeometry) {
-    const layerlist = [
-        ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
-        ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}),
-        ...Radio.request("Parser", "getItemsByAttributes", {typ: "VectorBase", isBaseLayer: false})
-    ];
+    const
+        app = this instanceof Vue ? this : undefined,
+        layerlist = [
+            ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
+            ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}),
+            ...Radio.request("Parser", "getItemsByAttributes", {typ: "VectorBase", isBaseLayer: false})
+        ];
 
-    setBboxGeometryToLayer(layerlist, bboxGeometry);
+    setBboxGeometryToLayer(layerlist, bboxGeometry, app);
 }
 
 /**
  * sets the bbox geometry for targeted raw layers or exisiting vector layers
  * @param {Array} itemList - list of target raw layers
  * @param {GeometryCollection} bboxGeometry - target geometry to be set as bbox
+ * @param {Vue} [app] - the calling component
  * @returns {void}
  */
-export function setBboxGeometryToLayer (itemList, bboxGeometry) {
+export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
     const modelList = Radio.request("ModelList", "getCollection");
 
     itemList.forEach(function (item) {
@@ -36,25 +100,7 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry) {
             url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()}` : "";
 
             if (source) {
-                source.setUrl(url);
-
-                // remove old listener -> necessary since the listener is an anonymous function
-                if (source.getListeners("featuresloadend")) {
-                    delete source.listeners_.featuresloadend;
-                }
-
-                source.clear();
-                source.refresh();
-
-                if (bboxGeometry) {
-                    source.on("featuresloadend", function (evt) {
-                        evt.target.forEachFeature(feature => {
-                            if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
-                                evt.target.removeFeature(feature);
-                            }
-                        });
-                    });
-                }
+                updateSource(source, bboxGeometry, url, item, app);
             }
         }
         // for layers that are not yet in the model list

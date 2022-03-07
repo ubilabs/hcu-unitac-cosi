@@ -482,12 +482,14 @@ export default {
         },
 
         getActiveDipasLayers () {
-            return this.getActiveLayers().filter(layer => {
-                if (layer.group === "DIPAS") {
-                    return true;
-                }
-                return false;
-            });
+            return this.sumUpLayers ?
+                [
+                    {
+                        id: this.$t("additional:modules.tools.cosi.featuresList.dipas.allProjects"),
+                        layerId: this.$t("additional:modules.tools.cosi.featuresList.dipas.allProjects")
+                    }
+                ] :
+                this.getActiveLayers().filter(layer => layer.group === "DIPAS");
         },
 
         getActiveLayersWithNumValue (id) {

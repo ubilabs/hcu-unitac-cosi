@@ -365,7 +365,7 @@ export default {
                 this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
                 this.setBoundingGeometry(bboxGeom);
-                setBBoxToGeom(this.areaSelectorGeom || bboxGeom);
+                setBBoxToGeom.call(this, this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
                     this.zoomTo({geometryOrExtent: extent, options: {}});
@@ -381,7 +381,7 @@ export default {
                 this.setExtent([]);
                 this.resetView();
                 this.setBoundingGeometry(undefined);
-                setBBoxToGeom(this.areaSelectorGeom || undefined);
+                setBBoxToGeom.call(this, this.areaSelectorGeom || undefined);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
         },
