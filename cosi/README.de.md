@@ -289,7 +289,7 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
   
 
 
-![Abbildung 5: Erreichbarkeit ab einem Referenzpunkt](https://user-images.githubusercontent.com/43250699/142921422-5f9a0e75-5867-4fa9-bf63-fff42c02cb0d.jpg)
+![Abbildung 5: Erreichbarkeit ab einem Referenzpunkt](https://user-images.githubusercontent.com/43250699/157067677-5f5db4a7-498a-45b2-8c06-6f2ea5ed6cbf.png)
 
 *Abbildung 5: Erreichbarkeit ab einem Referenzpunkt*
   
@@ -298,28 +298,27 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
 2. **Referenzpunkt setzen**
    > Durch Klicken auf der Karte wird der Punkt gesetzt, von dem aus berechnet wird.
 3. **Verkehrsmittel festlegen** 
-   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Rad (elektrisch), Gehen, Rollstuhl.
+   > Das Verkehrsmittel wird ausgewÃ¤hlt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Rad (elektrisch), Gehen, Rollstuhl.
 4. **Maßeinheit der Entfernung festlegen**
    > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird
 5. **Entfernung**
    > Entfernung in zuvor festgelegter Maßeinheit (Minuten oder Metern) angeben
 6. **Berechnen**
-7. **Info** 
-   > Der Info Button enthält weitere Informationen über das Modul. 
-8. **Ergebnis Löschen**
-   > Durch Klick auf diesen Button wird die Berechnung gelöscht und die Polygone aus der Karte entfernt.
-9. **Einwohnerabfrage**
+7. **Ergebnis ausblenden**
+   > Die Ergebnisdarstellung auf der Karte wird ausgeblenden.
+8. **Einwohnerabfrage**
    > (s. Einwohnerabfrage)
-10. **Legende & Polygone**
+9. **Legende & Polygone**
    > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt.
    Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern als Heatmap.
-11. **Download als GeoJSON**
+10. **Pagination**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Pagination](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
 
 
 #### Erreichbarkeit im Gebiet
-Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungsart (z.B. Kindergärten) in dem festgelegten Einzugsbereich (Planungsgebiet). Der Einzugsbereich ist die Entfernung von der jeweiligen Einrichtung und kann angegeben werden in Zeit oder in Metern. Die Erreichbarkeit ist abhängig von dem festgelegten Verkehrsmittel.
+Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungsart (z.B. Kindergärten) in dem festgelegten Einzugsbereich (Planungsgebiet). Der Einzugsbereich ist die Entfernung von der jeweiligen Einrichtung und kann angegeben werden in Zeit oder in Metern. Die Erreichbarkeit ist abhÃ¤ngig von dem festgelegten Verkehrsmittel.
 
-![Abbildung 6: Erreichbarkeit ausgewählter Einrichtungen im Gebiet](https://user-images.githubusercontent.com/43250699/142923253-c745b0d3-f698-4f6e-b744-cecf30981ff8.jpg)
+![Abbildung 6: Erreichbarkeit ausgewÃ¤hlter Einrichtungen im Gebiet](https://user-images.githubusercontent.com/43250699/157067851-a2c165c4-894c-4b3f-80a9-4bc626516771.png)
 
 *Abbildung 6: Erreichbarkeit ausgewählter Einrichtungen im Gebiet*
 
@@ -333,14 +332,19 @@ Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungs
    > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird.
 5. **Entfernung**
    > Entfernung in zuvor festgelegter Maßeinheit (Minuten oder Metern) angeben.
-6. **Berechnen**
-7. **Info**
-   > Der Info Button enthält weitere Informationen über das Modul. 
-8. **Ergebnis Löschen**
-   > Durch Klick auf diesen Button wird die Berechnung gelöscht und die Polygone aus der Karte entfernt.
+6. **Tageszeit**
+   > Wenn Sie als Verkehrsmittel "Auto" ausgewählt haben, können Sie hier die Tageszeit auswählen, zu der Sie die Erreichbarkeit planen wollen.
+7. **Verkehrsfluss berücksichtigen**
+   > Wählen Sie aus, ob Sie den Verkehrsfluss berücksichtigen wollen oder nicht. 
+8. **Von Flächenaußengrenzen ermitteln**
+   > Wenn Sie einen Datensatz ausgewählt haben, wie bspw. "Grünflächen" oder ähnliches, dann wird die Erreichbarkeitsanalyse von der Außengrenze dieser Fläche durchgeführt.
 9. **Legende und Probleme**
-   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern als Heatmap.
-10. **Download als GeoJSON**  
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+10. **Ergebnis ausblenden** 
+11. **Legende und Probleme**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+12. **Pagination**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Pagination](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
   
 
 
@@ -348,7 +352,7 @@ Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungs
 Das Werkzeug erlaubt die Ermittlung aller Gebiete (Stadtteile oder statistische Gebiete), in denen die ausgewählten Parameter vorherrschen, bzw. solcher, die dem gewählten Referenzgebiet in diesen Parametern ähneln.
 Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ein Referenzgebiet (optional).  
 
-![Abbildung 7: Vergleichbare Gebiete ermitteln](https://user-images.githubusercontent.com/43250699/142924529-006f7d31-d1d3-4075-87bf-acd25e2e360d.jpg)   
+![Abbildung 7: Vergleichbare Gebiete ermitteln](https://user-images.githubusercontent.com/43250699/157012950-d631691b-0f40-4ab5-85f4-9e6b9c250d7e.png)   
  
 *Abbildung 7: Vergleichbare Gebiete ermitteln*  
 
@@ -356,22 +360,59 @@ Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ei
    > Gewünschten Parameter für den Vergleich auswählen. Es können beliebig viele Parameter hinzugefügt werden. Alle StaNord-Datensätze sind hierfür verfügbar. Anteilige Werte eignen sich jedoch besser für die Vergleichbarkeit. Gegenwärtig können eigene Berechnungen aus dem Dashboard nicht herangezogen werden.
 2. **Referenzgebiet**
    > Optional kann eins der ausgewählten Gebiete als Referenzgebiet angegeben werden.
-3. **Parametereinstellungen**
+3. **Filter hinzufügen**
    > Die Parametereinstellungen zeigen den aktuellen Datensatz (Jahr Min.- und Max.-Wert aller Hamburger Gebiete, den Referenzwert (frei wählbar oder des Referenzgebiets) sowie die Toleranz nach oben und unten. Das Toleranzintervall ist entweder in absoluten Zahlen oder in Prozent für anteilige Werte angegeben.
-4. **Ergebnisse** 
-   > Die zutreffenden Gebiete werden in der Karte markiert.  
+4. **Alle Filter zurücksetzen** 
+   > Setzen Sie Ihre Eingaben zurück.  
+5. **Pagination** 
+   > Der "Datensatz hinzufügen" Button aus der [Pagination](./pagination.md).  
 
-![Abbildung 8: Vergleichbare Gebiete ermitteln, Ergebnisse](https://user-images.githubusercontent.com/43250699/142925184-b63f11b9-c209-472e-892e-552de7610705.jpg)  
+![Abbildung 8: Vergleichbare Gebiete ermitteln, Ergebnisse](https://user-images.githubusercontent.com/43250699/157013004-f8b83b5e-92b3-4900-a0c0-60a1518a187f.png)  
 *Abbildung 8: Vergleichbare Gebiete ermitteln, Ergebnisse*  
 
-1. **Ergebnisse**
+1. **Pagination**
+   > Die [Pagination](./pagination.md) verwaltet die unterschiedlichen Datensätze. Sie erscheint, sobald Sie einen zweiten Datensatz erstellt haben.
+2. **Parametereinstellungen (Jahr)**
+   > Wählen Sie die Grundlage für das entsprechende Jahr aus.  
+3. **Parametereinstellungen (Attribute)**
+   > Sofern es sich um einen Themenlayer handelt, können Sie hier ggf. Attribute der Einrichtung auswählen, anhand deren Sie nach vergleichbaren Gebieten suchen.  
+4. **Parametereinstellungen (Toleranz)**
+   > Stellen Sie die Toleranz ein, innerhalb derer weitere vergleichbare Gebiete gefunden werden sollen. Das Toleranzintervall ist entweder in absoluten Zahlen oder in Prozent für anteilige Werte angegeben.  
+5. **Ergebnisse**
    > Eine Liste aller Gebiete, auf die die gewählten Kriterien zutreffen, wird im Fenster angezeigt. Ein Klick auf ein Gebiet legt den Kartenausschnitt auf dieses fest.
-2. **Als Gebietsauswahl setzen**
+6. **Als Gebietsauswahl setzen**
    > Über *Ergebnis als Gebietsauswahl* setzen kann die aktuelle Gebietsauswahl für weitere Analysen auf die Ergebnis-Gebiete gesetzt werden.
-3. **Im Dashboard anzeigen**
-   > Die Ergebnisliste kann ins Dashboard übertragen werden, ohne die Gebietsauswahl zu verändern.  
   
+  
+![Abbildung 2: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/157009202-4cfeb5ff-e519-4305-ba4f-4ecde4f60bd0.png)
 
+*Abbildung 2: Versorgungsanalyse, Ergebnisse*
+
+1. **Pagination**
+   > Die [Pagination](./pagination.md) verwaltet alle von Ihnen erstellen Datensätze und bietet bestimmte standardisierte Funktionen wie Downloads und ähnliches an. Sie finden mehr Informationen dazu [hier](./pagination.md).
+2. **Daten als Chart visualisieren**
+   > Die Daten werden zum [Chartgenerator](./chartgenerator.md) geladen und dort als Graphen visualisiert.
+3. **Auf der Karte visualisieren**  
+   > Die Daten werden mit Hilfe der [Kartenvisualisierung](./kartenvisualisierung.md) auf der Karte visualisiert und je nach Wert in unterschiedlichen Farben dargestellt.
+4. **Tabellenspalte für erweiterte Funktionen auswählen**
+   > Hier können Sie Tabellenspalte auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
+   
+5. **Jahr auswählen**
+   > Hier können Sie das Jahr auswählen, für das die entsprechenden Daten geladen worden sind.
+6. **Ergebnistabelle**  
+      - **Gebiet:** Die ausgewählten Gebiete, für die die Ergebnisse berechnet wurden. Hier finden sich auch die Indikatoren für die Zeilen "Gesamt" und "Durchschnitt".
+      - **Auswahlfeld (1):**  
+         Der Wert für den in Auswahlfeld (1) gewählten Datensatz.
+      - **Auswahlfeld (2):**  
+         Der Wert für den in Auswahlfeld (2) gewählten Datensatz.
+      **Verhältnis:**  
+         Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
+      - **Bedarfsdeckung:**  
+         Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
+      - **6.1 Pagination der Ergebnistabelle**
+      
+         Wenn in Ihrer Ergebnistabelle mehr als 10 Ergebnisse angezeigt werden, können Sie hier entsprechend die Daten durchschalten.
+V
 ### Filter
 Die aktiven, ausgewählten Themen können durch Klick auf den Reiter "Filter" nach den Kategorien ihrer Datensätze durchsucht und gefiltert werden. Die Karte zoomt automatisch auf die Filterergebnisse. Es werden nur Ergebnisse in den ausgewählten Gebieten einbezogen. Der Filter ist für alle Fachdatensätze verfügbar, welche sinnvolle filterbare Attribute (wie Fläche, Nutzung, Träger, etc.) aufweisen.  
 
@@ -414,19 +455,22 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
 8. **Die gesamte Auswahl zurücksetzen**
 9. **Berechnen**
 
-![Abbildung 11: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/142927798-bbd05b05-8a7c-46cc-8790-20a263f04f59.jpg)
+![Abbildung 11: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/157009202-4cfeb5ff-e519-4305-ba4f-4ecde4f60bd0.png)
 
 *Abbildung 11: Versorgungsanalyse, Ergebnisse*
 
-1. **Als Excel Datei downloaden**
-2. **Als GeoJSON downloaden**
-3. **Daten als Chart visualisieren**
-   > Die Daten werden zum [Chartgenerator](#markdown-header-chartgenerator) geladen und dort als Graphen visualisiert.
-4. **Auf der Karte visualisieren**  
-      - Die Daten werden auf der Karte visualisiert in unterschiedlichen Farben visualisiert.
-      - **4.1** Wählen Sie die Tabellenspalte aus, die auf der Karte visualisiert werden soll.
-      - **4.2** Wählen Sie das Jahr aus, für das die regionalstatistischen Daten zur Berechnung herangezogen werden sollen. Wählen Sie hier ein anderes Jahr aus, aktualisieren sich auch die berechneten Ergebnisse in der Tabelle entsprechend.
-5. **Ergebnistabelle**  
+1. **Pagination**
+   > Die [Pagination](./pagination.md) verwaltet alle von Ihnen erstellen Datensätze und bietet bestimmte standardisierte Funktionen wie Downloads und ähnliches an. Sie finden mehr Informationen dazu [hier](./pagination.md).
+2. **Daten als Chart visualisieren**
+   > Die Daten werden zum [Chartgenerator](./chartgenerator.md) geladen und dort als Graphen visualisiert.
+3. **Auf der Karte visualisieren**  
+   > Die Daten werden mit Hilfe der [Kartenvisualisierung](./kartenvisualisierung.md) auf der Karte visualisiert und je nach Wert in unterschiedlichen Farben dargestellt.
+4. **Tabellenspalte für erweiterte Funktionen auswählen**
+   > Hier können Sie Tabellenspalte auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
+   
+5. **Jahr auswählen**
+   > Hier können Sie das Jahr auswählen, für das die entsprechenden Daten geladen worden sind.
+6. **Ergebnistabelle**  
       - **Gebiet:** Die ausgewählten Gebiete, für die die Ergebnisse berechnet wurden. Hier finden sich auch die Indikatoren für die Zeilen "Gesamt" und "Durchschnitt".
       - **Auswahlfeld (1):**  
          Der Wert für den in Auswahlfeld (1) gewählten Datensatz.
@@ -436,6 +480,10 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
          Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
       - **Bedarfsdeckung:**  
          Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
+      - **6.1 Pagination der Ergebnistabelle**
+      
+         Wenn in Ihrer Ergebnistabelle mehr als 10 Ergebnisse angezeigt werden, können Sie hier entsprechend die Daten durchschalten.
+
 
 ### DIPAS
 Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden. D.h. alle Beiträge können in der [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht) angezeigt, für [Versorgungsanalyse](#markdown-header-versorgungsanalyse), [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Vergleichbare Gebiete Ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln) verwendet und mit dem [Filter](#markdown-header-filter) gefiltert werden.
@@ -924,28 +972,41 @@ Das Werkzeug kann die ausgewählten Datensätze auf der Karte visualisieren und 
 ___
 Das Werkzeug "Chartgenerator" erstellt Graphen aus Datensätzen und verwaltet diese. Darüberhinaus ermöglicht es Ihnen den Export dieser Graphen als PNG.
 
-![Abbildung 32: Chartgenerator](https://user-images.githubusercontent.com/43250699/143032270-d9521038-a4b8-4669-bcd8-452a701fc962.jpg)  
-*Abbildung 32: Chartgenerator*
+![Abbildung 1: Chartgenerator](https://user-images.githubusercontent.com/43250699/157070471-84b8aca7-44f9-47cb-9de2-2284a43062f4.png)  
+*Abbildung 1: Chartgenerator*
 
-1. **Info**
-   > Über diesen Button öffnen Sie diese Anleitung.
-2. **Liniendiagramm**
-   > Standardgemäß werden für jeden Datensatz bis zu drei Graphen erzeugt, nämlich ein Liniendiagramm, ein Balkendiagramm und mehrere Tortendiagramme. Mit diesem Button wechseln Sie zur Ansicht des Liniendiagramms.
-3. **Balkendiagramm**
-   > Mit diesem Button wechseln Sie zur Ansicht des Balkendiagramms.
-4. **Tortendiagramme**
-   > Mit diesem Button wechseln Sie zur Ansicht der Tortendiagramme.
-5. **Graphen löschen**
-   > Mit diesem Button löschen Sie alle Graphen des aktuell aktiven Datensatzes. (s. 6.).
-6. **Graph**
-   > Der erzeugte Graph. Sie finden hier den Titel des ausgewählten Datensatzes, die Legende und den erzeugten Graphen.
-7. **Y-Achse auf 0**
+1. **Diagrammtyp auswählen**
+   > Häufig werden gleich unterschiedliche Graphen erstellt. Hier können Sie zwischen den verfügbaren Diagrammen für den ausgewählten Datensatz umschalten.
+2. **Graph & Legende**
+   > Das augewählte Diagramm. Sie finden hier den Titel des ausgewählten Datensatzes, die Legende und den erzeugten Graphen.
+3. **Y-Achse skalieren**
    > Hier wählen Sie aus, ob die Y-Achse des Graphen von 0 an beginnt oder relativ zum kleinsten verfügbaren Wert.  
    *Diese Funktion ist nur beim Liniendiagramm verfügbar.*
-8. **Export als PNG**
-9. **Navigation**
-   > Mit diesen Buttons schalten Sie zwischen allen in dieser Session erzeugten Graphen hin- und her.
-10. **Export aller Graphen als PNG**
-   > Für alle erzeugten Graphen wird die Aktion 9. durchgeführt. Sie werden mehrere PNG-Dateien herunterladen. Eventuell wird Ihr Browser Sie dazu auffordern, dem Download mehrerer Dateien noch einmal gesondert zu zustimmen.
-11. **Alle Graphen löschen**
-   > Löscht alle in dieser Session erzeugten Graphen und setzt den Chartgenerator zurück.
+4. **Y-Achse stapeln**
+    > Die Werte der Datensätze werden aufsummiert und farblich abgetrennt dargestellt.
+5. **Pagination**
+   > Die [Pagination](./pagination.md) verwaltet die unterschiedlichen erstellten Graphen und bietet einige standardisierte Funktionen, zu denen Sie [hier](./pagination.md) mehr erfahren können.
+
+### Pagination
+Die Pagination unterstützt in einigen Werkzeugen die Verwaltung mehrerer Datensätze, die ihr zugrunde liegenden Funktionen sind aber standardisiert und werden im Folgenden näher erläutert. 
+  
+
+
+![Pagination des Werkzeugs "Vergleichbare Gebiete ermitteln"](https://user-images.githubusercontent.com/43250699/157007454-80d78c08-e141-4384-85ea-435a93ca3356.png)
+
+*Abbildung 1: Pagination des Werkzeugs "Vergleichbare Gebiete ermitteln"*
+  
+1. **Direktanwahl eines Datensatzes**
+   > Wählen Sie direkt den Datensatz mit dem jeweiligen Index an. Sie können hier auch ablesen, wieviele Datensätze sie aktuell in dem jeweiligen Werkzeug haben.
+2. **Vor/ Zurück**
+   > Durch Klicken auf einen der Pfeile wird der nächste/ vorherige Datensatz ausgewählt.
+3. **Neuen Datensatz hinzufügen** 
+   > Je nach Werkzeug wird diese Funktion nicht immer genutzt, sollte der Button aber vorhanden sein, können Sie mit seiner Hilfe einen neuen Datensatz anlegen..
+4. **Export**
+   > Mit diesem Button können Sie die Ergebnisse des jeweiligen Datensatzes exportieren und speichern. Es können mehrere dieser Buttons existieren, wenn mehrere Formate zum Export angegeben werden.
+5. **Alle exportieren**
+   > Sie führen die Exportfunktion für alle Datensätze durch. Sollten mehrere Dateitypen angeboten werden, werden alle heruntergeladen. Eventuell müssen Sie in ihrem Browser den Download für mehrere Dateien genehmigen.
+6. **Datensatz entfernen**
+   > Mit diesem Button löschen Sie einen Datensatz und alle dazugehörigen Ergebnisse.
+7. **Alle entfernen**
+   > Mit diesem Button entfernen Sie alle Datensätze und setzen das Werkzeug zurück.
