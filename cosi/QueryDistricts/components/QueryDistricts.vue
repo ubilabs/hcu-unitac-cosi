@@ -38,16 +38,9 @@ export default {
             resultNames: null,
             results: null,
             refDistrict: null,
-            dashboard: null,
             facilityNames: [],
-            propertiesMap: {},
+            // propertiesMap: {},
             resultTableHeaders: null
-            // dataSets: [{
-            //     selectedDistrict: "",
-            //     layerFilterModels: [],
-            //     selectedLayer: ""
-            // }],
-            // activeSet: 0
         };
     },
     computed: {
@@ -169,7 +162,6 @@ export default {
 
     created () {
         this.$on("close", this.close);
-        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -306,11 +298,9 @@ export default {
                     if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
-                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
                     else if (feature.getGeometry().getType() === "Polygon") {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
-                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
 
                     if (
@@ -429,7 +419,7 @@ export default {
             return model;
         },
 
-        setLayerFilterModelValue (model) {
+        async setLayerFilterModelValue (model) {
             const features = this.propertiesMap[model.currentLayerId];
 
             if (this.selectedDistrict) {
@@ -749,15 +739,11 @@ export default {
             this.dataSets.splice(index, 1);
         },
         removeAll () {
-            this.setDataSets([{
-                selectedDistrict: "",
-                selectedLayer: "",
-                layerFilterModels: []
-            }]);
+            this.setDataSets([]);
 
-            this.setLayerFilterModels([]);
-            this.setSelectedDistrict("");
-            this.setSelectedLayer("");
+            // this.setLayerFilterModels([]);
+            // this.setSelectedDistrict("");
+            // this.setSelectedLayer("");
 
             const newModels = [];
 
@@ -770,16 +756,16 @@ export default {
             this.setLayerFilterModels(newModels);
             this.updateAvailableLayerOptions();
         },
-        addSet () {
-            const createSet = {
-                selectedLayer: "",
-                selectedDistrict: "",
-                layerFilterModels: []
-            };
+        // addSet () {
+        //     const createSet = {
+        //         selectedLayer: "",
+        //         selectedDistrict: "",
+        //         layerFilterModels: []
+        //     };
 
-            this.dataSets.push(createSet);
-            this.setActiveSet(this.dataSets.length - 1);
-        },
+        //     this.dataSets.push(createSet);
+        //     this.setActiveSet(this.dataSets.length - 1);
+        // },
 
         downloadAll () {
             // not implemented yet

@@ -72,11 +72,9 @@ export default {
                     Draw: [
                         "layer"
                     ],
-                    QueryDistrict: [
+                    QueryDistricts: [
                         "dataSets",
-                        "selectedDistrict",
-                        "layerFilterModels",
-                        "selectedLayer"
+                        "propertiesMap"
                     ]
                 }
             },

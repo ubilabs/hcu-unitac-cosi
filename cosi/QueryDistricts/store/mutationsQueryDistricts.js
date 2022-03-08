@@ -1,6 +1,22 @@
 import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
 import stateVueAddon from "./stateQueryDistricts";
 
+/**
+ * Adds a new empty dataset
+ * @param {*} state of this component
+ * @returns {void}
+ */
+function _addSet (state) {
+    const createSet = {
+        selectedLayer: "",
+        selectedDistrict: "",
+        layerFilterModels: []
+    };
+
+    state.dataSets.push(createSet);
+    state.activeSet = state.dataSets.length - 1;
+}
+
 const mutations = {
     /**
      * Creates from every state-key a setter.
@@ -9,6 +25,26 @@ const mutations = {
      * will be returned.
      */
     ...generateSimpleMutations(stateVueAddon),
+
+    /**
+     * Sets the dataSets object and resets the active index to 0
+     * @param {Object} state of this component
+     * @param {Object[]} payload the dataSets object
+     * @returns {void}
+     */
+    setDataSets (state, payload) {
+        state.dataSets = payload;
+        _addSet(state);
+    },
+
+    /**
+     * Adds a new empty dataset
+     * @param {*} state of this component
+     * @returns {void}
+     */
+    addSet (state) {
+        _addSet(state);
+    },
 
     /**
      * If name from config.json starts with "translate#", the corrected key is set to name here.

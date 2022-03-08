@@ -34,6 +34,7 @@ const state = {
     selectedDistrict: null,
     layerFilterModels: [],
     selectedLayer: null,
+    propertiesMap: {},
     dataSets: [{
         selectedDistrict: "",
         layerFilterModels: [],
