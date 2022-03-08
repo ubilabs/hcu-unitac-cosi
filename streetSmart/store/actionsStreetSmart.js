@@ -1,5 +1,4 @@
 import rotateMarker from "../utils/rotateMarker";
-let StreetSmartApi;// kann man das so lösen? linter?
 
 const actions = {
 
@@ -51,7 +50,7 @@ const actions = {
                 );
             }
             catch (e) {
-                console.error(e);
+                console.error("Create streetSmart view failed: ", e);
                 dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailed"), {root: true});
             }
         }
@@ -79,17 +78,27 @@ const actions = {
                 locale: locale ? locale : service.params.locale
             };
 
-            StreetSmartApi.init(options)
-                .then(
-                    function () {
-                        dispatch("onInitSuccess");
-                    }
-                ).catch(
-                    function (reason) {
-                        console.warn("Failed to create component(s) through API: " + reason);
-                        dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailed"), {root: true});
-                    }
-                );
+            if (typeof StreetSmartApi === "undefined") {
+                console.warn("Cannot start Streetsmart-View. StreetSmartApi is not available.");
+                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailedMoreInfo"), {root: true});
+            }
+            else {
+                StreetSmartApi.init(options)
+                    .then(
+                        function () {
+                            dispatch("onInitSuccess");
+                        }
+                    ).catch(
+                        function (reason) {
+                            console.warn("Failed to create component(s) through API: " + reason);
+                            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailedMoreInfo"), {root: true});
+                        }
+                    );
+            }
+        }
+        else {
+            console.warn("Cannot start Streetsmart-View. No service in rest-services found for serviceId ", state.serviceId);
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailedMoreInfo"), {root: true});
         }
     },
     /**
@@ -112,10 +121,9 @@ const actions = {
      * @param {Object} evt to get coordinates and rotation from
      * @returns {void}
      */
-    moveAndRotateMarker ({dispatch, rootGetters, getters}, evt) {
-        dispatch("MapMarker/placingPointMarker", evt.detail.recording.xyz, {root: true}).then(()=>{
-            rotateMarker(rootGetters["MapMarker/markerPoint"], evt.detail.recording.relativeYaw + getters.lastYaw);
-        });
+    async moveAndRotateMarker ({dispatch, rootGetters, getters}, evt) {
+        await dispatch("MapMarker/placingPointMarker", evt.detail.recording.xyz, {root: true});
+        rotateMarker(rootGetters["MapMarker/markerPoint"], evt.detail.recording.relativeYaw + getters.lastYaw);
     },
     /**
      * Rotates the mapMarker and remembers the last yaw.

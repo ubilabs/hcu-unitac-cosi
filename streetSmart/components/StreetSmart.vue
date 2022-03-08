@@ -67,7 +67,10 @@ export default {
         :initial-width="initialWidth"
     >
         <template #toolBody>
-            <div id="streetsmart" />
+            <div
+                v-if="active"
+                id="streetsmart"
+            />
         </template>
     </ToolTemplate>
 </template>
