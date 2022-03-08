@@ -65,6 +65,7 @@ export default {
         spec.setAttributes(attributes);
 
         spec.buildLayers(visibleLayerList);
+        debugger;
         printJob = {
             payload: encodeURIComponent(JSON.stringify(spec.defaults)),
             printAppId: "schulwegrouting",

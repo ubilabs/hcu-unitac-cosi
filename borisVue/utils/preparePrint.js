@@ -73,15 +73,9 @@ export async function preparePrint (getResponse) {
 
     let printJob = {};
 
-
-
     store.dispatch("Tools/Print/activatePrintStarted", true, {root: true});
     spec.setAttributes(attributes);
     spec.buildLayers(visibleLayerList);
-
-    const visibleLayerListReverse = visibleLayerList.reverse();
-
-    console.log("visibleLayerListReverse", visibleLayerListReverse)
 
     printJob = {
         payload: encodeURIComponent(JSON.stringify(spec.defaults)),
