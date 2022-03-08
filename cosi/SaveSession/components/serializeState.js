@@ -175,6 +175,12 @@ export default {
     },
 
     serializeDrawFeatures (state) {
-        state.Tools.Draw.layer = this.serializeFeatures(state.Tools.Draw.layer.getSource().getFeatures());
+        const layer = state.Tools.Draw.layer;
+
+        if (layer) {
+            state.Tools.Draw.layer = this.serializeFeatures(layer.getSource().getFeatures());
+        } else {
+            state.Tools.Draw.layer = [];
+        }
     }
 };
