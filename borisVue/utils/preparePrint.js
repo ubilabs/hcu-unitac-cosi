@@ -70,6 +70,8 @@ export async function preparePrint (getResponse) {
         spec = SpecModel;
     let printJob = {};
 
+
+
     store.dispatch("Tools/Print/activatePrintStarted", true, {root: true});
 
     spec.setAttributes(attributes);
