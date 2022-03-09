@@ -25,6 +25,17 @@ export default function calculateRatio (dataArray, year) {
 * @returns {Object} calculated single dataset.
 */
 function calculateSingle (calcObj, dataset) {
+    if (isNaN(calcObj.paramA_val) || isNaN(calcObj.paramB_val)) {
+        calcObj.relation = 0;
+        calcObj.capacity = 0;
+        calcObj.need = 0;
+        calcObj.coverage = 0;
+        calcObj.weightedRelation = 0;
+        calcObj.data = dataset;
+
+        return calcObj;
+    }
+
     const relation = calcObj.paramA_val / calcObj.paramB_val,
         capacity = calcObj.paramA_val * (dataset.faktorf_B / dataset.faktorf_A),
         need = calcObj.paramB_val * (dataset.faktorf_A / dataset.faktorf_B),

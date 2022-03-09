@@ -30,7 +30,15 @@
                     "rowsPerPageAll": "Alle",
                     "exportTable": "Tabelle exportieren",
                     "exportFilename": "CoSI_Vergleichbare_Gebiete",
-                    "invalidFeaturesWarning": "Für diesen Filter gibt es Gebiete für die keine gültigen Werte Vorliegen."
+                    "invalidFeaturesWarning": "Für diesen Filter gibt es Gebiete für die keine gültigen Werte Vorliegen.",
+                    "paginationAdd": "Eine weitere Analyse hinzufügen",
+                    "paginationDownloadAll": "Die Ergebnisse aller Analysen herunterladen",
+                    "paginationRemove": "Diese Analysedaten entfernen",
+                    "paginationRemoveAll": "Alle Analysedaten entfernen",
+                    "paginationPrev": "Den vorherigen Analysedatensatz auswählen",
+                    "paginationNext": "Den nächsten Analysedatensatz auswählen"
+
+
                 }
             }
         }

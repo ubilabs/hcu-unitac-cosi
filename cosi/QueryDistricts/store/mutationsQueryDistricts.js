@@ -8,9 +8,13 @@ import stateVueAddon from "./stateQueryDistricts";
  */
 function _addSet (state) {
     const createSet = {
-        selectedLayer: "",
-        selectedDistrict: "",
-        layerFilterModels: []
+        inputs: {
+            selectedDistrict: "",
+            layerFilterModels: [],
+            selectedLayer: "",
+            resultTableHeaders: []
+        },
+        results: []
     };
 
     state.dataSets.push(createSet);

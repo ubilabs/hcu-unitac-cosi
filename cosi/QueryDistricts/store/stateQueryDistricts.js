@@ -31,14 +31,18 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: true,
     referenceLayers: [{"id": "15563"}, {"id": "15990"}, {"id": "19041"}, {"id": "19034"}, {"id": "18977"}, {"id": "18970"}],
-    selectedDistrict: null,
-    layerFilterModels: [],
-    selectedLayer: null,
+    // selectedDistrict: null,
+    // layerFilterModels: [],
+    // selectedLayer: null,
     propertiesMap: {},
     dataSets: [{
-        selectedDistrict: "",
-        layerFilterModels: [],
-        selectedLayer: ""
+        inputs: {
+            selectedDistrict: "",
+            layerFilterModels: [],
+            selectedLayer: "",
+            resultTableHeaders: []
+        },
+        results: []
     }],
     activeSet: 0,
     readmeUrl: {

@@ -82,7 +82,7 @@ export default {
             }
         }
         else {
-            const _state = this.isDatasetObject(mutation, attr) ?
+            const _state = this.hasDeepFeatures(mutation, attr) ?
                 this.parseToolDatasets(state) :
                 this.parseFeatures(state);
 

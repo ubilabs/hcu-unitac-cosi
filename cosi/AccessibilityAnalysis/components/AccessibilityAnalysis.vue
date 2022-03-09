@@ -239,6 +239,13 @@ export default {
                 this.removePointMarker();
             }
 
+            if (this.dataSets[newValue].inputs._mode === "path") {
+                this.map.addLayer(this.directionsLayer);
+            }
+            else {
+                this.map.removeLayer(this.directionsLayer);
+            }
+
             this._isochroneFeatures = this.dataSets[newValue].results;
             this.renderIsochrones(this._isochroneFeatures);
         },
@@ -255,12 +262,13 @@ export default {
                 this.map.addLayer(this.directionsLayer);
             }
 
-            if (this.mode !== "point") {
+            if (this.mode === "region") {
                 this.resetIsochroneBBox();
             }
 
             else {
                 this.map.removeLayer(this.directionsLayer);
+
                 if (!this.setByFeature) {
                     this.map.removeInteraction(this.select);
                     this.select.un("select", this.pickDirections.bind(this));
@@ -401,6 +409,9 @@ export default {
             };
 
             await this.createIsochrones();
+            if (this._mode === "path") {
+                this.map.addLayer(this.directionsLayer);
+            }
 
             analysisSet.results = this._isochroneFeatures;
             analysisSet.inputs = {
@@ -446,6 +457,8 @@ export default {
             this.mapLayer.getSource().clear();
             this.resetIsochroneBBox();
             this.removePointMarker();
+            this.map.removeLayer(this.directionsLayer);
+            this.activeSet = 0;
         },
         downloadSet (index) {
             downloadGeoJson(this.dataSets[index].geojson);

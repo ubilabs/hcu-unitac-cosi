@@ -341,6 +341,13 @@ export default {
          */
         transferFeatures (featureCollection) {
             if (featureCollection.get("fromExternal")) {
+                // if no districts have been selected
+                // and the tool is closed
+                // shade all not selected districts
+                // before applying the new selection
+                if (this.selectedNames.length === 0 && !this.active) {
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedDistrictLevel.layerId, 0.6, this.selectedDistrictLevel.activeStyle);
+                }
                 this.select.getFeatures().clear();
                 featureCollection.forEach(feature => {
                     this.select.getFeatures().push(feature);

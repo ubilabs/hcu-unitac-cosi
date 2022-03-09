@@ -22,7 +22,7 @@ export default {
             ) {
                 state[key] = {};
                 for (const attr of map[key]) {
-                    const val = this.isDatasetObject(key, attr) ?
+                    const val = this.hasDeepFeatures(key, attr) ?
                         this.serializeToolDatasets(store[key][attr]) :
                         this.serializeFeatures(store[key][attr]);
 

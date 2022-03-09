@@ -99,7 +99,11 @@ export default {
             confirmDialog: false,
             settingsChanged: false,
             geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon},
-            toolsWithDatasets: ["AccessibilityAnalysis", "CalculateRatio", "QueryDistricts"]
+            // toolsWithDatasets: ["AccessibilityAnalysis", "CalculateRatio", "QueryDistricts"]
+            deepFeatures: {
+                AccessibilityAnalysis: ["dataSets"],
+                QueryDistricts: ["dataSets", "propertiesMap"]
+            }
         };
     },
     computed: {
@@ -325,9 +329,15 @@ export default {
             clearInterval(this.autoSaveInterval);
         },
 
-        isDatasetObject (key, attr) {
-            return attr === "dataSets" && this.toolsWithDatasets.find(id => key.includes(id));
+        hasDeepFeatures (key, attr) {
+            const tool = Object.keys(this.deepFeatures).find(id => key.includes(id));
+
+            return this.deepFeatures[tool]?.includes(attr);
         }
+
+        // isDatasetObject (key, attr) {
+        //     return attr === "dataSets" && this.toolsWithDatasets.find(id => key.includes(id));
+        // }
     }
 };
 </script>

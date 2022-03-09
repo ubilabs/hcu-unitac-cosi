@@ -182,6 +182,10 @@ export default {
             display:flex;
             justify-content: flex-end;
 
+            &.paginate {
+                margin:3px;
+            }
+
             &.main {
                 margin-left: 5px;
                 border-left: 1px solid #ccc;
