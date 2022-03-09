@@ -220,7 +220,7 @@ export default {
          * @returns {void}
          */
         async createDrawingLayer () {
-            const newLayer = await this.createLayer(this.id);
+            const newLayer = await this.createLayer(this.id + "_layer");
 
             newLayer.setVisible(true);
             newLayer.setStyle(residentialLayerStyle);
