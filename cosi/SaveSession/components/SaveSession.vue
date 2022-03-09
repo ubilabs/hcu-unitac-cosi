@@ -334,10 +334,6 @@ export default {
 
             return this.deepFeatures[tool]?.includes(attr);
         }
-
-        // isDatasetObject (key, attr) {
-        //     return attr === "dataSets" && this.toolsWithDatasets.find(id => key.includes(id));
-        // }
     }
 };
 </script>
