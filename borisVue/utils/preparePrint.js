@@ -8,7 +8,10 @@ import SpecModel from "../../../src/modules/tools/print/utils/buildSpec";
  * @returns {void}
  */
 export async function preparePrint (getResponse) {
-    const feature = state.selectedBrwFeature,
+    const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
+            return layer.getVisible() === true;
+        }),
+        feature = state.selectedBrwFeature,
         defaultString = "",
         attributes = {
             "layout": "A4 Hochformat",
@@ -72,6 +75,7 @@ export async function preparePrint (getResponse) {
 
     store.dispatch("Tools/Print/activatePrintStarted", true, {root: true});
     spec.setAttributes(attributes);
+    spec.buildLayers(visibleLayerList);
 
     printJob = {
         payload: encodeURIComponent(JSON.stringify(spec.defaults)),
@@ -79,8 +83,6 @@ export async function preparePrint (getResponse) {
         currentFormat: "pdf",
         getResponse: getResponse
     };
-
-    console.log("printJob", printJob)
 
     store.dispatch("Tools/Print/createPrintJob", printJob, {root: true});
 
