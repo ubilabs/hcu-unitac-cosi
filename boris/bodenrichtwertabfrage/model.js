@@ -12,7 +12,7 @@ import LoaderOverlay from "../../../src/utils/loaderOverlay";
 function initializeBrwAbfrageModel () {
     const BRWModel = Radio.request("ModelList", "getModelByAttributes", {id: "brw"}),
         defaults = {
-            "wpsId": 1001,
+            "wpsId": "1001",
             "fmwProcess": "BRWConvert.fmw",
             // Flag, auf mobile Darstellung
             "isViewMobile": false,

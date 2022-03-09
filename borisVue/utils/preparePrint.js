@@ -73,7 +73,6 @@ export async function preparePrint (getResponse) {
     store.dispatch("Tools/Print/activatePrintStarted", true, {root: true});
     spec.setAttributes(attributes);
 
-
     printJob = {
         payload: encodeURIComponent(JSON.stringify(spec.defaults)),
         printAppId: "boris",
