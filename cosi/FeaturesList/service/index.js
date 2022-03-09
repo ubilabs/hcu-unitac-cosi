@@ -25,14 +25,16 @@ function transformedCoordinates (features, sourceCrs) {
  * @param {Number} initialBuffer initial buffer
  * @param {Number} bufferIncrement buffer increment
  * @param {String} portalCrs current CRS
+ * @param {String} serviceId routing service
+ * @param {String} fallbackId alternative routing service
  * @return {Number} score
  */
-async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement, portalCrs) {
+async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement, portalCrs, serviceId, fallbackId) {
     const featureCoords = transformedCoordinates([feature], portalCrs),
         features = Array.isArray(extent) && extent.length > 0 ? await getAllFeatures(layerId, extent, portalCrs)
             : await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement),
         coords = transformedCoordinates(features, portalCrs),
-        dists = (await fetchDistances(featureCoords, coords))[0];
+        dists = (await fetchDistances(featureCoords, coords, undefined, serviceId, fallbackId))[0];
 
     if (dists === null) {
         return null;
@@ -75,7 +77,7 @@ async function distanceScore ({getters, commit, rootGetters}, {feature, weights,
         let mindist = getters.mindists[id];
 
         if (!mindist) {
-            mindist = await layerScore(feature, layerIds[j], extent, getters.initialBuffer, getters.bufferIncrement, rootGetters["Map/projectionCode"]);
+            mindist = await layerScore(feature, layerIds[j], extent, getters.initialBuffer, getters.bufferIncrement, rootGetters["Map/projectionCode"], getters.serviceId, getters.fallbackServiceId);
             commit("setMindists", {...getters.mindists, [id]: mindist});
         }
 
@@ -187,7 +189,9 @@ const id = "DistanceScoreService",
                     converter: "DbRangeConverter",
                     aggregation: "max"
                 }
-            ]
+            ],
+            serviceId: "bkg_ors",
+            fallbackServiceId: "csl_ors"
         },
         getters: {
             mindists: s => {
@@ -207,6 +211,12 @@ const id = "DistanceScoreService",
             },
             wmsLayersInfo: s => {
                 return s.wmsLayers; // .map(l => ({id: l.id, name: getLayerWhere({id: l.id}).name}));
+            },
+            serviceId: s => {
+                return s.serviceId;
+            },
+            fallbackServiceId: s => {
+                return s.fallbackServiceId;
             }
         },
         mutations: {

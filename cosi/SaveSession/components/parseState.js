@@ -203,19 +203,20 @@ export default {
     },
 
     parseToolDatasets (state) {
-        return state.map(item => this.deepParse(item));
+        return this.deepParse(state);
     },
 
-    deepParse (obj) {
-        for (const key in obj) {
-            if (obj[key]?.constructor === Object) {
-                this.deepParse({...obj[key]});
+    deepParse (state) {
+        if (
+            (state?.constructor === Object || Array.isArray(state)) &&
+            !(state.properties?.isOlFeature || state.isOlGeometry)
+        ) {
+            for (const key in state) {
+                state[key] = this.deepParse(state[key]);
             }
-            else {
-                obj[key] = this.parseFeatures(obj[key]);
-            }
-        }
 
-        return obj;
+            return state;
+        }
+        return this.parseFeatures(state);
     }
 };

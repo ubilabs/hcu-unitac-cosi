@@ -79,8 +79,6 @@ export default {
             resultsClone: [],
             // Selected column to render in CCM
             columnSelector: {name: "Verhältnis", key: "relation"}
-            // // Index of the active dataset to display
-            // activeSet: 0
         };
     },
     computed: {

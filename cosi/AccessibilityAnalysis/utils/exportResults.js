@@ -27,6 +27,10 @@ export function exportAsGeoJson (mapLayer) {
         colors = this.featureColors,
         startIndex = featureCollection.features.length === 3 ? 0 : 1;
 
+    if (!featureCollection.features.length) {
+        return featureCollection;
+    }
+
     for (let i = startIndex; i < featureCollection.features.length; i++) {
         const style = {
             fill: {

@@ -1,5 +1,6 @@
 import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
 import stateCalculateRatio from "./stateCalculateRatio";
+import Vue from "vue";
 
 const mutations = {
     /**
@@ -16,7 +17,9 @@ const mutations = {
      * @param {Object[]} payload the dataSets object
      * @returns {void}
      */
-    setDataSets (state, payload) {
+    async setDataSets (state, payload) {
+        state.activeSet = -1;
+        await Vue.nextTick();
         state.dataSets = payload;
         state.activeSet = 0;
     },

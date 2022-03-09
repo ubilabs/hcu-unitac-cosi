@@ -123,32 +123,6 @@ export default {
         dataSets (newValue) {
             if (newValue.length === 0) {
                 this.addSet();
-                // const createSet = {
-                //         inputs: {
-                //             selectedDistrict: "",
-                //             selectedLayer: "",
-                //             layerFilterModels: [],
-                //             resultTableHeaders: []
-                //         },
-                //         results: []
-                //     },
-                //     newModels = [];
-
-                // this.resultTableHeaders = [];
-                // this.layerFilterModels = [];
-                // this.selectedDistrict = "";
-                // this.selectedLayer = "";
-
-
-                // for (const m of this.layerFilterModels) {
-                //     const newModel = {...m};
-
-                //     newModels.push(newModel);
-                //     this.setLayerFilterModelValue(newModel);
-                // }
-                // this.layerFilterModels = newModels;
-                // this.updateAvailableLayerOptions();
-                // this.dataSets.push(createSet);
             }
         }
     },

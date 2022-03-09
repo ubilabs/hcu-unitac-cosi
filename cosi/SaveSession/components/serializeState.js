@@ -37,17 +37,45 @@ export default {
         return state;
     },
 
-    deepSerialize (obj) {
-        for (const key in obj) {
-            if (obj[key]?.constructor === Object) {
-                this.deepSerialize({...obj[key]});
+    deepSerialize (state) {
+        let _state;
+
+        if (state?.constructor === Object) {
+            _state = {...state};
+
+            for (const key in _state) {
+                _state[key] = this.deepSerialize(_state[key]);
             }
-            else {
-                obj[key] = this.serializeFeatures(obj[key]);
+
+            return _state;
+        }
+        else if (Array.isArray(state)) {
+            _state = [...state];
+
+            for (const i in state) {
+                _state[i] = this.deepSerialize(_state[i]);
             }
+
+            return _state;
         }
 
-        return obj;
+        return this.serializeFeatures(state);
+
+        // for (const key in state) {
+        //     if (state[key]?.constructor === Object) {
+        //         this.deepSerialize({...state[key]});
+        //     }
+        //     else if (Array.isArray(state[key])) {
+        //         for (const item of state[key]) {
+        //             state[key] = this.deepSerialize(item);
+        //         }
+        //     }
+        //     else {
+        //         state[key] = this.serializeFeatures(state[key]);
+        //     }
+        // }
+
+        // return state;
     },
 
     serializeFeatures (val) {
@@ -194,12 +222,19 @@ export default {
     },
 
     serializeToolDatasets (state) {
-        const _state = [...state];
+        return this.deepSerialize(state);
+        // if (Array.isArray(state)) {
+        //     const _state = [...state];
 
-        for (let i = 0; i < _state.length; i++) {
-            _state[i] = this.deepSerialize({..._state[i]});
-        }
+        //     for (let i = 0; i < _state.length; i++) {
+        //         _state[i] = this.deepSerialize({..._state[i]});
+        //     }
 
-        return _state;
+        //     return _state;
+        // }
+        // else if (state instanceof Object) {
+        //     return this.deepSerialize({...state});
+        // }
+        // return this.serializeFeatures(state);
     }
 };

@@ -458,7 +458,6 @@ export default {
             this.resetIsochroneBBox();
             this.removePointMarker();
             this.map.removeLayer(this.directionsLayer);
-            this.activeSet = 0;
         },
         downloadSet (index) {
             downloadGeoJson(this.dataSets[index].geojson);

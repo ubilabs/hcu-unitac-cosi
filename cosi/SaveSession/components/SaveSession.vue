@@ -102,7 +102,7 @@ export default {
             // toolsWithDatasets: ["AccessibilityAnalysis", "CalculateRatio", "QueryDistricts"]
             deepFeatures: {
                 AccessibilityAnalysis: ["dataSets"],
-                QueryDistricts: ["dataSets", "propertiesMap"]
+                QueryDistricts: ["propertiesMap"]
             }
         };
     },
