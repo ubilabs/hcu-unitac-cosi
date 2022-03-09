@@ -776,7 +776,7 @@ function initializeBrwAbfrageModel () {
          * @param {Function} getResponse the url post function
          * @return {void}
          */
-        preparePrint: function (getResponse) {
+        preparePrint: async function (getResponse) {
             const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                     return layer.getVisible() === true;
                 }),
@@ -840,7 +840,7 @@ function initializeBrwAbfrageModel () {
             let printJob = {};
 
             spec.setAttributes(attr);
-            spec.buildLayers(visibleLayerList);
+            await spec.buildLayers(visibleLayerList);
 
             printJob = {
                 payload: encodeURIComponent(JSON.stringify(spec.defaults)),
