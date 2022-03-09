@@ -36,7 +36,12 @@
                     "showErrorInvalidInput": "The request could not be executed correctly: One parameter has wrong format or is invalid.",
                     "download": {
                         "title": "Download results as geodata (GeoJSON)"
-                    }
+                    },
+                    "paginationRemove": "Remove this result",
+                    "paginationRemoveAll": "Remove all results in this tool",
+                    "paginationDownloadAll": "Download all results as GeoJSON",
+                    "paginationPrev": "Select previous result",
+                    "paginationNext": "Select next result"
                 }
             }
         }

@@ -11,6 +11,17 @@ const mutations = {
     ...generateSimpleMutations(stateVueAddon),
 
     /**
+     * Sets the dataSets object and resets the active index to 0
+     * @param {Object} state of this component
+     * @param {Object[]} payload the dataSets object
+     * @returns {void}
+     */
+    setDataSets (state, payload) {
+        state.dataSets = payload;
+        state.activeSet = 0;
+    },
+
+    /**
      * If name from config.json starts with "translate#", the corrected key is set to name here.
      * @param {object} state of this component
      * @param {string} payload name of this component

@@ -28,7 +28,7 @@
                     "distance": "Entfernung",
                     "time": "Tageszeit",
                     "calculate": "Berechnen",
-                    "clear": "Ergebnis Löschen",
+                    "clear": "Ergebnis Ausblenden",
                     "help": "Hilfe",
                     "legend": "Legende:",
                     "requestInhabitants": "Einwohnerabfrage",
@@ -45,7 +45,12 @@
                         "tooltip": "Reisezeitindex ggü. freiem Verkehrsfluss, gem. INRIX, 2020, FRC234",
                         "help": "<h4>Reisezeitindex</h4><p>Der Reisezeitindex beschreibt die Veränderung der Reisezeiten zu verschiedenen Tageszeiten gegenüber einem normierten freien Verkehrsfluss (d.h. ein Reisezeitindex von 1,3 entspricht einer Verlängerung der Reisezeiten bzw. einer Verkürzung der zurückgelegten Strecke um 30%). Die Daten wurden von der Firma INRIX erhoben und beziehen sich, aggregiert für das gesamte Stadtgebiet für die Straßenklassen 2, 3 und 4 (Bundesstraßen, Kreisstraßen, Gemeindestraßen), auf das Jahr 2020.</p><p><i>Der Reisezeitindex bezieht sich ausschließlich auf den Kfz-Verkehr.</i></p>",
                         "warning": "ACHTUNG: Die Erreichbarkeit wurde unter Berücksichtigung des Reisezeitindizes für die ausgewählte Uhrzeit ermittelt. Das Ergebnis erhebt keinen Anspruch auf Genauigkeit und stellt keinen rechtlich verbindlichen Wert dar."
-                    }
+                    },
+                    "paginationRemove": "Dieses Ergebnis löschen",
+                    "paginationRemoveAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse löschen",
+                    "paginationDownloadAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse als Geodaten (GeoJSON) herunterladen",
+                    "paginationPrev": "Das vorherige Ergebnis anzeigen",
+                    "paginationNext": "Das nächste Ergebnis anzeigen"
                 }
             }
         }

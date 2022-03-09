@@ -69,7 +69,7 @@ export default {
                 this.drawingLayer.getSource().addFeature(this.feature);
             }
 
-            setBBoxToGeom(geom || this.boundingGeometry);
+            setBBoxToGeom.call(this, geom || this.boundingGeometry);
         }
     },
     /**

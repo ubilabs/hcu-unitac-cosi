@@ -95,7 +95,8 @@ export default {
                     id: id,
                     name: id,
                     project: true,
-                    features: [feature]
+                    features: [feature],
+                    isBaseLayer: true
                 },
                 style = new Style({
                     fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),

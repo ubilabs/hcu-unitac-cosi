@@ -33,6 +33,7 @@ export default {
                         "chartConfigs"
                     ],
                     CalculateRatio: [
+                        "dataSets",
                         "resultHeaders",
                         "results",
                         "active"
@@ -47,6 +48,7 @@ export default {
                         "active"
                     ],
                     AccessibilityAnalysis: [
+                        "dataSets",
                         "isochroneFeatures",
                         "rawGeoJson",
                         "mode",
@@ -69,6 +71,10 @@ export default {
                     ],
                     Draw: [
                         "layer"
+                    ],
+                    QueryDistricts: [
+                        "dataSets",
+                        "propertiesMap"
                     ]
                 }
             },
@@ -92,7 +98,12 @@ export default {
             autoSaveDialog: false,
             confirmDialog: false,
             settingsChanged: false,
-            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon}
+            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon},
+            // toolsWithDatasets: ["AccessibilityAnalysis", "CalculateRatio", "QueryDistricts"]
+            deepFeatures: {
+                AccessibilityAnalysis: ["dataSets"],
+                QueryDistricts: ["dataSets", "propertiesMap"]
+            }
         };
     },
     computed: {
@@ -316,7 +327,17 @@ export default {
 
         disableAutoSave () {
             clearInterval(this.autoSaveInterval);
+        },
+
+        hasDeepFeatures (key, attr) {
+            const tool = Object.keys(this.deepFeatures).find(id => key.includes(id));
+
+            return this.deepFeatures[tool]?.includes(attr);
         }
+
+        // isDatasetObject (key, attr) {
+        //     return attr === "dataSets" && this.toolsWithDatasets.find(id => key.includes(id));
+        // }
     }
 };
 </script>
@@ -543,13 +564,11 @@ export default {
                 color="primary"
             >
                 {{ $t('additional:modules.tools.cosi.saveSession.filenamePrompt') }}
-                <template v-if="latestDate">
-                    <v-text-field
-                        id="title-field"
-                        v-model="session.meta.title"
-                        name="session-title"
-                    />
-                </template>
+                <v-text-field
+                    id="title-field"
+                    v-model="session.meta.title"
+                    name="session-title"
+                />
 
                 <template #action="{ attrs }">
                     <v-btn

@@ -67,11 +67,13 @@ export default {
                 this.selectedFeature.feature = this.featureSelectionList[0].feature;
                 this.selectedFeature.properties = this.featureSelectionList[0].properties;
             }
-            if (this.activeScenario) {
-                this.editDialog = true;
-            }
-            else {
-                this.noScenarioWarning = true;
+            if (this.featureSelectionList.length > 0) {
+                if (this.activeScenario) {
+                    this.editDialog = true;
+                }
+                else {
+                    this.noScenarioWarning = true;
+                }
             }
         },
 

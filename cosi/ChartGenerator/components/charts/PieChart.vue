@@ -39,6 +39,7 @@ export default {
             fixColor(this.datasets);
 
             return {
+                name: this.datasets.name,
                 labels: this.datasets.label,
                 datasets: [this.datasets.datasets]
             };
@@ -62,7 +63,6 @@ export default {
             }
 
             this._options.title.text = beautifyKey(this.chartData.name);
-
             this.renderChart(this.chartData, this._options);
         }
     }

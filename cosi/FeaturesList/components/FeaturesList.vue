@@ -482,12 +482,14 @@ export default {
         },
 
         getActiveDipasLayers () {
-            return this.getActiveLayers().filter(layer => {
-                if (layer.group === "DIPAS") {
-                    return true;
-                }
-                return false;
-            });
+            return this.sumUpLayers ?
+                [
+                    {
+                        id: this.$t("additional:modules.tools.cosi.featuresList.dipas.allProjects"),
+                        layerId: this.$t("additional:modules.tools.cosi.featuresList.dipas.allProjects")
+                    }
+                ] :
+                this.getActiveLayers().filter(layer => layer.group === "DIPAS");
         },
 
         getActiveLayersWithNumValue (id) {
@@ -783,7 +785,7 @@ export default {
                         tile
                         color="grey lighten-1"
                         class="mb-2 ml-2"
-                        :title="$t('additional:modules.tools.cosi.featuresList.createDipasCharts')"
+                        :title="$t('additional:modules.tools.cosi.featuresList.dipas.createCharts')"
                         @click="createDipasCharts"
                     >
                         <v-icon>mdi-thumbs-up-down</v-icon>
@@ -862,12 +864,12 @@ export default {
                                     >
                                         mdi-alert
                                     </v-icon>
-                                    <!-- <v-icon
+                                    <v-icon
                                         v-if="item.isSimulation"
                                         :title="$t('additional:modules.tools.cosi.featuresList.warningIsSimulated')"
                                     >
                                         mdi-sprout
-                                    </v-icon> -->
+                                    </v-icon>
                                 </template>
                                 <template #[`item.style`]="{ item }">
                                     <FeatureIcon :item="item" />
