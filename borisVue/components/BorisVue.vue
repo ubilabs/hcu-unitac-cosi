@@ -271,12 +271,15 @@ export default {
                     <span>Die Bodenrichtwertabfrage erfolgt für das Jahr:</span>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <span>{{ brwLanduse === '' }}</span>
 =======
 >>>>>>> afd967cb (added switchLayer to select data by year)
 =======
                     <span>{{ brwLanduse === '' }}</span>
 >>>>>>> 425a0483 (BG-1869 landuse selections included for parametric url procedure)
+=======
+>>>>>>> fce39ed4 (BG-1869 several state properties renamed)
                 </div>
                 <div class="form-group col-xs-12">
                     <select
@@ -359,6 +362,7 @@ export default {
                 >
                     <span>Gewählte Nutzung:</span>
                     <select
+<<<<<<< HEAD
 <<<<<<< HEAD
                         v-model="selectedLanduseComputed"
                         class="form-control"
@@ -865,6 +869,9 @@ export default {
 =======
                         v-model="brwLanduseComputed"
 >>>>>>> 425a0483 (BG-1869 landuse selections included for parametric url procedure)
+=======
+                        v-model="selectedLanduseComputed"
+>>>>>>> fce39ed4 (BG-1869 several state properties renamed)
                         class="form-control"
                     >
                         <option
@@ -875,7 +882,7 @@ export default {
                             Bitte wählen
                         </option>
                         <option
-                            v-for="(landuse, index) in gfiFeature.get('nutzungsart')"
+                            v-for="(landuse, index) in selectedPolygon.get('nutzungsart')"
                             :key="index"
                             :value="landuse.nutzungsart"
                         >
@@ -960,9 +967,10 @@ export default {
                             >
                                 <CalculationComponent
                                     :title="'Anbauart:'"
-                                    :options="bauweisen"
+                                    :options="buildingDesigns"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
+                                    :text-id="2"
                                     :text="'Wählen Sie die Bauweise Ihres Gebäudes aus der Liste aus: <strong>Einzelhäuser </strong> sind freistehende Häuser, die nicht an die Grundstücksgrenze, Nutzungsgrenze oder andere Häuser angebaut sind. Lediglich zu einer Seite darf der Raum zwischen Haus und Grundstücksgrenze mit Nebengebäuden, z. B. Garagen zugebaut sein. <strong> Ein Doppelhaus </strong>ist eine Kombination zweier Häuser, die beide einseitig auf eine gemeinsame seitliche Grundstücksgrenze oder Nutzungsgrenze (bei Wohnungs-/Teileigentum) gebaut sind. Zur Vermeidung von Missverständnissen werden die einzelnen Häuser als <strong>halbe Doppelhäuser oder Doppelhaushälften</strong> bezeichnet. <strong>Ein Endreihenhaus</strong> ist einseitig bzw. ein <strong>Mittelreihenhaus</strong> ist beidseitig auf die seitlichen Grundstücks- bzw. Nutzungsgrenzen gebaut, so dass sich Zeilen von mindestens drei Häusern und bis zu 50 Meter Länge ergeben. <strong>Die geschlossenen Bauweise</strong> kennzeichnet Gebäude, die zu allen Seiten keinen Grenzabstand aufweisen und vollständig umbaut sind. <strong>Die abweichende Bauweise</strong> bezeichnet alle sonstigen Gebäudestellungen, die nicht in den zuvor genannten Kategorien aufgehen. Beispielsweise gehören hierzu Gartenhofhäuser, die zusammen mit Nachbarhäusern, Nebengebäuden und geschosshohen Mauern einen Garten in einem Gartenhof umschließen.'"
                                     :toggle-info-text="toggleInfoText"
                                     :handle-change="handleOptionChange"
@@ -975,9 +983,10 @@ export default {
                             >
                                 <CalculationComponent
                                     :title="'Lage zur Straße:'"
-                                    :options="strassenlagen"
+                                    :options="roadPositions"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
+                                    :text-id="3"
                                     :text="'Wählen Sie die Stellung und damit auch die Zuwegung Ihres Grundstücks zur Straße aus der Liste aus: Während bei <strong>Frontlage</strong> das Grundstück unmittelbar an genau eine Straße heranreicht, ist bei einer <strong>Ecklage</strong> eine unmittelbare Anbindung an mindestens zwei Straßen gegeben. Ein <strong>Pfeifenstielgrundstück</strong> ist eine schmale, pfeifenstielartige Zuwegung zu einem Grundstück, das nicht direkt an der Straße gelegen ist. Der Pfeifenstiel steht normalerweise im Alleineigentum des Pfeifenkopf-Grundstücks. Es ist jedoch auch möglich, dass ein Pfeifenstiel bis zu vier rückwärtige Grundstücke erschließt. <strong>Die Hinterlage</strong> bezeichnet ein rückwärtiges Grundstück, welches sich nicht im Eigentum des Grundstücks befindet, sondern über ein grundbuchliches Wegerecht oder als Baulast gesichert ist.'"
                                     :toggle-info-text="toggleInfoText"
                                     :handle-change="handleOptionChange"
@@ -993,6 +1002,7 @@ export default {
                                     :options="[]"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
+                                    :text-id="4"
                                     :text="'Die <strong>wertrelevante Geschossflächenzahl (WGFZ)</strong> wird über das Verhältnis der Geschossflächen zur Grundstücksfläche definiert. Geben Sie hier die WGFZ Ihres Grundstücks ein.'"
                                     :toggle-info-text="toggleInfoText"
                                     :handle-change="handleInputChange"
@@ -1008,6 +1018,7 @@ export default {
                                     :options="[]"
                                     :selected-brw-feature="selectedBrwFeature"
                                     :text-ids="textIds"
+                                    :text-id="5"
                                     :text="'Geben Sie für die <strong>Grundstücksfläche</strong> die Grundfläche Ihres Grundstücks laut Angabe im Liegenschaftskataster ein.'"
                                     :toggle-info-text="toggleInfoText"
                                     :handle-change="handleInputChange"

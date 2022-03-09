@@ -78,7 +78,6 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextId", []);
 
-        // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
         }
@@ -165,6 +164,7 @@ const actions = {
      * @returns {void}
      */
     requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
+        console.log("processFromParametricUrl", processFromParametricUrl)
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource();
@@ -222,7 +222,7 @@ const actions = {
                 }
                 // point
                 else {
-                    commit("setBrwFeature", feature);
+                    commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
                     dispatch("Map/setCenter", coordinate, {root: true});
                     dispatch("handleNewFeature", feature);
@@ -348,7 +348,7 @@ const actions = {
         if (status === 200) {
             const features = new WFS().readFeatures(response);
 
-            commit("setBrwFeature", features);
+            commit("setBrwFeatures", features);
             dispatch("findBrwFeatureByYear", {features, year}).then((result) => {
                 const feature = result;
 
