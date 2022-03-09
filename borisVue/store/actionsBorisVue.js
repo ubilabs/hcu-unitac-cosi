@@ -1,7 +1,5 @@
 import axios from "axios";
 import helpers from "../utils/helpers";
-// import state from "./stateBorisVue";
-// import store from "../../../src/app-store";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import WPS from "../../../src/api/wps";
@@ -9,14 +7,15 @@ import mapCollection from "../../../src/core/dataStorage/mapCollection";
 
 const actions = {
     initialize ({commit, dispatch}) {
-        let modelList = Radio.request("ModelList", "getModelsByAttributes", {isNeverVisibleInTree: true});
+        let layerList = Radio.request("ModelList", "getModelsByAttributes", {isNeverVisibleInTree: true});
 
-        modelList = modelList.filter(function (model) {
-            return model.get("gfiAttributes") !== "ignore";
+        layerList = layerList.filter(function (layer) {
+            return layer.get("gfiAttributes") !== "ignore";
         });
 
-        modelList = modelList.reverse();
-        commit("setFilteredModelList", modelList);
+        layerList = layerList.reverse();
+
+        commit("setFilteredLayerList", layerList);
 
         Radio.request("Map", "registerListener", "click", (event) => dispatch("requestGFI", {event}));
     },
@@ -32,7 +31,7 @@ const actions = {
             processFromParametricUrl = true;
 
         if (brwId && brwLayerName && center) {
-            commit("setProcessFromParametricUrl", processFromParametricUrl);
+            commit("setIsProcessFromParametricUrl", processFromParametricUrl);
             commit("setParamUrlParams", {
                 brwId: brwId,
                 brwLayerName: brwLayerName,
@@ -45,14 +44,14 @@ const actions = {
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
     simulateLanduseSelect ({commit, dispatch, state}, paramUrlParams) {
-        const gfiFeature = state.gfiFeature,
-            landuseList = gfiFeature.get("nutzungsart");
+        const polygonFeature = state.selectedPolygon,
+            landuseList = polygonFeature.get("nutzungsart");
 
         dispatch("findLanduseByBrwId", {landuseList, brwId: paramUrlParams.brwId}).then((response)=>{
             const landuseByBrwId = response;
 
-            commit("setBrwLanduse", landuseByBrwId);
-            commit("setProcessFromParametricUrl", false);
+            commit("setSelectedLanduse", landuseByBrwId);
+            commit("setIsProcessFromParametricUrl", false);
         });
     },
     // Getter?
@@ -71,34 +70,33 @@ const actions = {
      */
     switchLayer ({commit, dispatch, state}, selectedLayerName) {
 
-        const layerModels = state.filteredModelList.filter(function (model) {
-            return model.get("isSelected") === true;
+        const selectedLayer = state.filteredLayerList.filter(function (layer) {
+            return layer.get("isSelected") === true;
         });
 
-        layerModels.forEach(layer => {
+        selectedLayer.forEach(layer => {
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
         });
-        dispatch("selectLayerModelByName", selectedLayerName);
+        dispatch("selectLayerByName", selectedLayerName);
 
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextId", []);
 
-        // toggle stripesLayer für Jahre ab 2019
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
-            commit("setAreaLayerSelected", true);
+            commit("setIsAreaLayer", true);
         }
         else {
-            commit("setAreaLayerSelected", false);
+            commit("setIsAreaLayer", false);
             dispatch("toggleStripesLayer", false);
         }
     },
     // aus dem select nach Jahren in BorisVue.vue
-    handleSelectBRWYear ({dispatch}, selectedLayername) {
-        dispatch("switchLayer", selectedLayername);
-        dispatch("checkBrwFeature", {brwFeature: state.brwFeature, year: selectedLayername.split(".")[2]});
+    handleSelectBRWYear ({dispatch, state}, selectedLayerName) {
+        dispatch("switchLayer", selectedLayerName);
+        dispatch("checkBrwFeature", {brwFeatures: state.brwFeatures, year: selectedLayerName.split(".")[2]});
     },
     /**
     * checks if a brw Feature already is available
@@ -106,15 +104,15 @@ const actions = {
     * @param {string} year - the selected brw year
     * @returns {void}
     */
-    checkBrwFeature ({commit, dispatch, state}, {brwFeature, year}) {
+    checkBrwFeature ({commit, dispatch, state}, {brwFeatures, year}) {
 
-        if (brwFeature !== undefined) {
+        if (brwFeatures !== undefined) {
             dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year}).then((response) => {
                 const brwFeatureByYear = response;
 
                 if (brwFeatureByYear === undefined) {
-                    commit("setGfiFeature", null);
-                    commit("setBrwFeature", []);
+                    commit("setSelectedPolygon", null);
+                    commit("setBrwFeatures", []);
                     commit("setSelectedBrwFeature", {});
                     dispatch("MapMarker/removePointMarker", null, {root: true});
                 }
@@ -124,46 +122,46 @@ const actions = {
             });
         }
         else {
-            commit("setGfiFeature", null);
+            commit("setSelectedPolygon", null);
         }
     },
     /**
      * Shows or hides the old view of brw = stripes.
-     * @param {boolean} value show or hide
+     * @param {boolean} value true or false
      * @returns {void}
      */
     toggleStripesLayer ({commit, dispatch, state}, value) {
-        const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
-            selectedModel = modelList.find(model => model.get("isSelected") === true),
-            selectedModelName = selectedModel.attributes.name,
-            modelName = selectedModelName + "-stripes";
+        const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
+            selectedLayer = layerList.find(layer=> layer.get("isSelected") === true),
+            selectedLayerName = selectedLayer.attributes.name,
+            layerName = selectedLayerName + "-stripes";
 
-        commit("setStripesLayer", value);
+        commit("setIsStripesLayer", value);
 
         if (value) {
-            dispatch("selectLayerModelByName", modelName);
+            dispatch("selectLayerByName", layerName);
         }
         else {
-            const model = modelList.find(aModel => aModel.get("name") === modelName);
+            const layer = layerList.find(aLayer => aLayer.get("name") === layerName);
 
-            if (model) {
-                model.set("isVisibleInMap", false);
-                model.set("isSelected", false);
+            if (layer) {
+                layer.set("isVisibleInMap", false);
+                layer.set("isSelected", false);
             }
         }
     },
     /**
-     * selects a layer model by name
+     * selects a layer by name
      * @param {string} value - layer name
      * @returns {void}
      */
-    selectLayerModelByName ({commit, state}, value) {
-        const modelList = state.filteredModelList.filter(model => model.get("isNeverVisibleInTree") === true),
-            layerModel = modelList.find(model => model.get("name") === value);
+    selectLayerByName ({commit, state}, value) {
+        const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
+            selectedLayer = layerList.find(layer => layer.get("name") === value);
 
-        layerModel.set("isVisibleInMap", true);
-        layerModel.set("isSelected", true);
-        commit("setSelectedLayer", layerModel);
+        selectedLayer.set("isVisibleInMap", true);
+        selectedLayer.set("isSelected", true);
+        commit("setSelectedLayer", selectedLayer);
     },
     /**
      * sends a get feature info request to the currently selected layer
@@ -173,9 +171,10 @@ const actions = {
      * @returns {void}
      */
     requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
+        console.log("processFromParametricUrl", processFromParametricUrl)
         if (state.active) {
-            const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true),
-                layerSource = selectedModel.get("layer").getSource();
+            const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
+                layerSource = selectedLayer.get("layer").getSource();
             let map,
                 mapView,
                 url;
@@ -224,16 +223,16 @@ const actions = {
                     feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
                     // getWFS for polygon by id and year and place polygon marker
                     dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
-                    commit("setGfiFeature", feature);
-                    dispatch("checkGfiFeatureByLanduse", {feature, selectedLanduse: state.brwLanduse});
+                    commit("setSelectedPolygon", feature);
+                    dispatch("checkPolygonFeatureByLanduse", {feature, selectedLanduse: state.selectedLanduse});
                 }
                 // point
                 else {
-                    commit("setBrwFeature", feature);
+                    commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
                     dispatch("Map/setCenter", coordinate, {root: true});
                     dispatch("handleNewFeature", feature);
-                    commit("setGfiFeature", null);
+                    commit("setSelectedPolygon", null);
                 }
             }
             else {
@@ -297,7 +296,7 @@ const actions = {
      * @param {string} selectedLanduse - current selected landuse
      * @returns {void}
      */
-    checkGfiFeatureByLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
+    checkPolygonFeatureByLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
         const landuse = feature.get("nutzungsart").find((nutzung) => {
             return nutzung.nutzungsart === selectedLanduse;
         });
@@ -306,7 +305,7 @@ const actions = {
             dispatch("postFeatureRequestByBrwNumber", {richtwertNummer: landuse.richtwertnummer, featureYear: feature.get("jahrgang")});
         }
         else {
-            commit("setBrwLanduse", "");
+            commit("setSelectedLanduse", "");
             commit("setSelectedBrwFeature", {});
         }
     },
@@ -354,7 +353,7 @@ const actions = {
         if (status === 200) {
             const features = new WFS().readFeatures(response);
 
-            commit("setBrwFeature", features);
+            commit("setBrwFeatures", features);
             dispatch("findBrwFeatureByYear", {features, year}).then((result) => {
                 const feature = result;
 
@@ -398,15 +397,15 @@ const actions = {
     },
     /**
      * Sets the name of the active layer as stichtag name
-     * @param  {Backbone.Model[]} modelList List of all WMS Models
+     * @param  {Backbone.Model[]} layerList List of all WMS Layers
      * @return {String} layername which is uses as stichtag
      */
     getActiveLayerNameAsStichtag ({state}) {
         let stichtag = "";
-        const selectedModel = state.filteredModelList.find(model => model.get("isSelected") === true);
+        const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true);
 
-        if (selectedModel) {
-            stichtag = selectedModel.get("name");
+        if (selectedLayer) {
+            stichtag = selectedLayer.get("name");
         }
         return stichtag;
     },

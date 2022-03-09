@@ -22,6 +22,10 @@ export default {
             type: Array,
             required: true
         },
+        textId: {
+            type: Number,
+            required: true
+        },
         text: {
             type: String,
             required: true
@@ -74,7 +78,7 @@ export default {
                 <span>{{ title }}</span>
                 <span
                     class="glyphicon glyphicon-question-sign" 
-                    @click="toggleInfoText(text)"
+                    @click="toggleInfoText(textId)"
                 />
             </dt>
             <dd>
@@ -92,7 +96,7 @@ export default {
                     </option>
                 </select>
                 <div
-                    v-if="Object.values(textIds).includes(text)"
+                    v-if="Object.values(textIds).includes(textId)"
                     class="help"
                 >
                     <span v-html="text" />
@@ -106,7 +110,7 @@ export default {
                 <span>{{ title }}</span>
                 <span
                     class="glyphicon glyphicon-question-sign" 
-                    @click="toggleInfoText(text)"
+                    @click="toggleInfoText(textId)"
                 />
             </dt>
             <dd>
@@ -119,7 +123,7 @@ export default {
                     >
                 </label>
                 <div
-                    v-if="Object.values(textIds).includes(text)"
+                    v-if="Object.values(textIds).includes(textId)"
                     class="help"
                 >
                     <span v-html="text" />
