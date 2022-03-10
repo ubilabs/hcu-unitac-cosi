@@ -1070,7 +1070,7 @@ export default {
                         :title="'exportAsPdf'"
                         @click="startPrint"
                     >
-                        Als PDF exportieren
+                        Drucken
                     </button>
                     <div
                         v-if="printStarted"

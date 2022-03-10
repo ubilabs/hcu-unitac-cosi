@@ -164,7 +164,6 @@ const actions = {
      * @returns {void}
      */
     requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
-        console.log("processFromParametricUrl", processFromParametricUrl)
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource();
