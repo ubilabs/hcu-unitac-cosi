@@ -556,7 +556,12 @@ function initializeBrwAbfrageModel () {
                     }
                 }
                 else if (executeResponse.Status) { // anderer abnormaler Abbruch durch FME-Server
-                    console.error("FME-Server ExecuteResponse: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
+                    store.dispatch("Alerting/addSingleAlert",
+                        `<b>Entschuldigung</b><br>Die Umrechnung des Bodenrichtwerts konnte nicht durchgeführt werden, mit folgender Fehlermeldung:
+                        <br><br><i>${executeResponse?.Status?.ProcessFailed?.ExceptionReport?.Exception?.ExceptionText}</i><br><br>
+                        Bitte versuchen Sie es zu einem späteren Zeitpunkt erneut.
+                        Falls das Problem weiterhin besteht, wenden Sie sich bitte mit dieser Fehlermeldung an den Administrator.`,
+                        {root: true});
                 }
             }
             else {

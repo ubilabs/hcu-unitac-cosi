@@ -15,7 +15,7 @@
                 "from": "from:",
                 "to": "to:",
                 "wpsError": "Unable to route.<br>Please try again later (status: {{status}}).",
-                "responseError":"<b>Sorry</b><br>Routing could not be calculated with the following error message:<br><br><i>{{errorMessage}}</i><br><br>Please contact the administrator with this error message.",
+                "responseError":"<b>Sorry</b><br>Routing could not be calculated with the following error message:<br><br><i>{{errorMessage}}</i><br><br>Please try again at a later time. If the problem persists, please contact the administrator with this error message",
                 "transportNetwork": "HVV transport network"
             }
         }
