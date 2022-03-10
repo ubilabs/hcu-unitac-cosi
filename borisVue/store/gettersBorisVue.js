@@ -11,9 +11,17 @@ const getters = {
      * @param {object} state state to generate getters for
      * @returns {object.<string, function>} object of getters
      */
-    ...generateSimpleGetters(state)
+    ...generateSimpleGetters(state),
 
-    // NOTE overwrite (or create additional) getters here if you need special behavior in them
+    findLanduseByBrwId () {
+        const landuseList = state.selectedPolygon.get("nutzungsart"),
+            brwId = state.paramUrlParams.brwId,
+            foundLanduse = landuseList.find(function (landuse) {
+                return landuse.richtwertnummer === brwId;
+            });
+
+        return foundLanduse.nutzungsart;
+    }
 };
 
 export default getters;
