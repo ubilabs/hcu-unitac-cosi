@@ -43,26 +43,14 @@ const actions = {
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
-    simulateLanduseSelect ({commit, dispatch, state}, paramUrlParams) {
-        const polygonFeature = state.selectedPolygon,
-            landuseList = polygonFeature.get("nutzungsart");
+    // simulated landuse selection when parametric Url is being used
+    simulateLanduseSelect ({commit, getters}) {
+        const landuseByBrwId = getters.findLanduseByBrwId;
 
-        dispatch("findLanduseByBrwId", {landuseList, brwId: paramUrlParams.brwId}).then((response)=>{
-            const landuseByBrwId = response;
-
-            commit("setSelectedLanduse", landuseByBrwId);
-            commit("setIsProcessFromParametricUrl", false);
-        });
+        commit("setSelectedLanduse", landuseByBrwId);
+        commit("setIsProcessFromParametricUrl", false);
     },
-    // Getter?
-    findLanduseByBrwId ({commit}, {landuseList, brwId}) {
 
-        const foundLanduse = landuseList.find(function (landuse) {
-            return landuse.richtwertnummer === brwId;
-        });
-
-        return foundLanduse.nutzungsart;
-    },
     /**
      * Aktionen zum Wechseln eines Layers.
      * @param   {string} selectedLayerName Name des zu aktivierenden Layers
