@@ -1,5 +1,4 @@
 <script>
-
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getComponent from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
@@ -12,6 +11,11 @@ export default {
     components: {
         ToolTemplate
     },
+    data () {
+        return {
+            apiIsLoaded: false
+        };
+    },
     computed: {
         ...mapGetters("Tools/StreetSmart", Object.keys(getters)),
         ...mapGetters("Map", ["clickCoord"])
@@ -20,7 +24,9 @@ export default {
         active (value) {
             if (value) {
                 this.$nextTick(() => {
-                    this.initApi();
+                    if (this.apiIsLoaded) {
+                        this.initApi();
+                    }
                 });
             }
             else {
@@ -33,14 +39,21 @@ export default {
             }
         }
     },
-    created () {
-        loadPackages(this.streetsmartAPIVersion, this.reactVersion);
+    async created () {
+        await loadPackages(this.streetsmartAPIVersion, this.reactVersion, this.apiLoadFinished);
         this.$on("close", this.close);
     },
 
     methods: {
         ...mapMutations("Tools/StreetSmart", Object.keys(mutations)),
         ...mapActions("Tools/StreetSmart", ["initApi", "setPosition", "destroyApi"]),
+
+        apiLoadFinished () {
+            this.apiIsLoaded = true;
+            if (this.active) {
+                this.initApi();
+            }
+        },
 
         close () {
             const model = getComponent("streetsmart");
@@ -68,6 +81,16 @@ export default {
     >
         <template #toolBody>
             <div
+                v-if="!apiIsLoaded"
+                id="sidebarloader"
+                class="centered-box-wrapper loader-is-loading"
+            >
+                <div
+                    id="loader-spinner-itself"
+                    class="default"
+                />
+            </div>
+            <div
                 v-if="active"
                 id="streetsmart"
             />
@@ -78,5 +101,19 @@ export default {
 <style lang="scss" scoped>
 #streetsmart{
     height: 84vh;
+}
+#sidebarloader {
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    background-color:rgba(255,255,255,0.4);
+    display:none;
+    padding-bottom:100px;
+    z-index:1000;
+}
+#sidebarloader.loader-is-loading {
+    display:block;
 }
 </style>

@@ -94,10 +94,21 @@ describe("ADDONS: addons/streetSmart/components/StreetSmart.vue", () => {
         store.state.Tools.StreetSmart.active = false;
         wrapper = shallowMount(StreetSmartComponent, {store, localVue});
 
+        wrapper.vm.apiIsLoaded = true;
         store.commit("Tools/StreetSmart/setActive", true);
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#streetsmart").exists()).to.be.true;
         expect(StreetSmart.actions.initApi.calledOnce).to.be.true;
+    });
+    it("if active is set to true, but api loading has not finished: initApi should not be called", async () => {
+        store.state.Tools.StreetSmart.active = false;
+        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
+
+        wrapper.vm.apiIsLoaded = false;
+        store.commit("Tools/StreetSmart/setActive", true);
+        await wrapper.vm.$nextTick();
+        expect(wrapper.find("#streetsmart").exists()).to.be.true;
+        expect(StreetSmart.actions.initApi.notCalled).to.be.true;
     });
 
     it("test watch on clickCoord should call action setPosition", async () => {

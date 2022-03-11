@@ -1,24 +1,18 @@
 /**
- * Loads the specified JS and calls the given callback after the file has loaded. Modifies the DOM for loading.
- * @param {String} fileName the URL to Load
- * @param {Function} callback the Function to call after loading has completed
- * @returns {undefined}
+ * Loads a JavaScript file and returns a Promise for when it is loaded
+ * @param {String} src the URL to Load
+ * @returns {void}
  */
-function loadPackage (fileName, callback) {
-    const head = document.getElementsByTagName("head")[0],
-        script = document.createElement("script");
+function loadPackage (src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
 
-    script.type = "text/javascript";
-    script.src = fileName;
-
-    script.onload = callback;
-    script.onreadystatechange = function () {
-        if (this.readyState === "complete") {
-            return callback();
-        }
-        return null;
-    };
-    head.appendChild(script);
+        script.type = "text/javascript";
+        script.onload = resolve;
+        script.onerror = reject;
+        script.src = src;
+        document.head.append(script);
+    });
 }
 /**
  * Loads StreetSmartApi and react in the given versions. They are loaded by appending a script tag to head tag and not by package.json.
@@ -26,23 +20,25 @@ function loadPackage (fileName, callback) {
  * StreetSmartApi is loaded this way, because it is not a npm package.
  * @param {String} streetsmartAPIVersion version of the StreetSmartApi
  * @param {String} reactVersion  version of react
+ * @param {Function} callback  called, if all libs are loaded
  * @returns {void}
  */
-export default function loadPackages (streetsmartAPIVersion, reactVersion) {
+export default async function loadPackages (streetsmartAPIVersion, reactVersion, callback) {
     const urlStreetsmartAPI = `https://streetsmart.cyclomedia.com/api/${streetsmartAPIVersion}/StreetSmartApi.js`,
         urlReact = `https://unpkg.com/react@${reactVersion}/umd/react.production.min.js`,
         urlReactDom = `https://unpkg.com/react-dom@${reactVersion}/umd/react-dom.production.min.js`;
 
     try {
-        loadPackage(urlReact,
-            function () {
-                loadPackage(urlReactDom,
-                    function () {
-                        loadPackage(urlStreetsmartAPI);
-                    });
-            });
-
-
+        loadPackage(urlReact)
+            .then(() => loadPackage(urlReactDom))
+            .then(() => loadPackage(urlStreetsmartAPI))
+            .then(() => {
+                if (callback) {
+                    return callback();
+                }
+                return null;
+            })
+            .catch((err) => console.error("loading of package failed:", err));
     }
     catch (err) {
         console.error("loading of package failed:", err);

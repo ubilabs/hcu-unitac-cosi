@@ -150,7 +150,6 @@ const actions = {
                 dispatch("rotateMarker", e);
             });
             viewerEvent.detail.viewer.on(StreetSmartApi.Events.panoramaViewer.TILE_LOAD_ERROR, function (e) {
-                // todo: wann kommt dieser Fehler?
                 console.warn(e);
             });
         });
@@ -161,18 +160,19 @@ const actions = {
      * @returns {void}
      */
     removeListener ({dispatch}) {
-        StreetSmartApi.on(StreetSmartApi.Events.viewer.VIEWER_ADDED, viewerEvent => {
-            viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.RECORDING_CLICK, function (e) {
-                dispatch("moveAndRotateMarker", e);
+        if (typeof StreetSmartApi !== "undefined" && typeof StreetSmartApi.on === "function") {
+            StreetSmartApi.on(StreetSmartApi.Events.viewer.VIEWER_ADDED, viewerEvent => {
+                viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.RECORDING_CLICK, function (e) {
+                    dispatch("moveAndRotateMarker", e);
+                });
+                viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.VIEW_CHANGE, function (e) {
+                    dispatch("rotateMarker", e);
+                });
+                viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.TILE_LOAD_ERROR, function (e) {
+                    console.warn(e);
+                });
             });
-            viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.VIEW_CHANGE, function (e) {
-                dispatch("rotateMarker", e);
-            });
-            viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.TILE_LOAD_ERROR, function (e) {
-                // todo: wann kommt dieser Fehler?
-                console.warn(e);
-            });
-        });
+        }
     },
     /**
      * Is called if initilization of StreetSmartApi was successful.
