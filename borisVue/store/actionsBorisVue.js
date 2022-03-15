@@ -102,7 +102,7 @@ const actions = {
                 dispatch("MapMarker/removePointMarker", null, {root: true});
             }
             else {
-                dispatch("handleNewFeature", brwFeatureByYear);
+                dispatch("combineFeatureWithSelectedDate", brwFeatureByYear);
             }
 
         }
@@ -215,7 +215,7 @@ const actions = {
                     commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
                     dispatch("Map/setCenter", coordinate, {root: true});
-                    dispatch("handleNewFeature", feature);
+                    dispatch("combineFeatureWithSelectedDate", feature);
                     commit("setSelectedPolygon", null);
                 }
             }
@@ -341,7 +341,7 @@ const actions = {
 
             commit("setBrwFeatures", features);
 
-            dispatch("handleNewFeature", featureByYear);
+            dispatch("combineFeatureWithSelectedDate", featureByYear);
         }
         else {
             dispatch("Alerting/addSingleAlert", {content: "text"}, {root: true});
@@ -361,10 +361,16 @@ const actions = {
             return feature.get("jahrgang") === year;
         });
     },
-    async handleNewFeature ({dispatch}, feature) {
-        const stichtag = await dispatch("getActiveLayerNameAsStichtag");
 
-        dispatch("extendFeatureAttributes", {feature, stichtag});
+    /**
+     * get the actually selected date and set date and feature to get extended feature attributes
+     * @param {ol.Feature[]} feature - selected feature
+     * @returns {void}
+     */
+    async combineFeatureWithSelectedDate ({dispatch}, feature) {
+        const date = await dispatch("getDateByActiveLayerName");
+
+        dispatch("extendFeatureAttributes", {feature, date});
     },
     /**
      * Sends a request to convert the BRW
@@ -377,20 +383,20 @@ const actions = {
 
     },
     /**
-     * Sets the name of the active layer as stichtag name
-     * @param  {Backbone.Model[]} layerList List of all WMS Layers
-     * @return {String} layername which is uses as stichtag
+     * Sets the name of the active layer as date
+     * @param  {Backbone.Model[]} filteredLayerList List of all WMS Layers
+     * @return {String} layername which is used as date
      */
-    getActiveLayerNameAsStichtag ({state}) {
-        let stichtag = "";
+    getDateByActiveLayerName ({state}) {
+        let date = "";
         const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true);
 
         if (selectedLayer) {
-            stichtag = selectedLayer.get("name");
+            date = selectedLayer.get("name");
         }
-        return stichtag;
+        return date;
     },
-    extendFeatureAttributes ({dispatch, commit}, {feature, stichtag}) {
+    extendFeatureAttributes ({dispatch, commit}, {feature, date}) {
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
         let sw = helpers.getSW(feature);
 
@@ -426,7 +432,7 @@ const actions = {
             "richtwert_dm": isDMTime ? thousandsSeparator(parseFloat(feature.get("richtwert_dm"), 10).toFixed(1)) : "",
             "richtwert_euro": thousandsSeparator(feature.get("richtwert_euro")),
             "schichtwert": sw,
-            "stichtag": stichtag,
+            "stichtag": date,
             "convertedBrw": "", // umgerechneter Bodenrichtwert
             "convertedBrwDM": "",
             "zEntwicklungszustand": feature.get("entwicklungszustand"), // Pflichtattribut für WPS
