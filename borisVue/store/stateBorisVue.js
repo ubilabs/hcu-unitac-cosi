@@ -46,13 +46,8 @@ const state = {
     selectedLayer: null,
     selectedLayerName: null,
     textIds: [],
-    selectedLayerArray: ["2020"],
-    infoText: "",
-    // Daten unter "Gewählte Nutzung"
-    gfiFeature: null,
-    brwLanduse: "",
-    brwFeature: [],
-    // param URL
+    selectedPolygon: null,
+    selectedLanduse: "",
     selectedBrwFeature: {},
     brwFeatures: [],
     convertedBrw: "",

@@ -172,14 +172,6 @@ const helpers = {
                 value: brw.get("zGeschossfl_zahl")
             };
         }
-
-
-        if (brw.get("zGrdstk_flaeche")) {
-            requestObj.ZFLAE = {
-            }
-        if (brw.get("ZFLAE")) {
-            requestObj.ZWGFZ = {
-            }
         if (brw.get("zGrdstk_flaeche")) {
             requestObj.ZFLAE = {
                 dataType: "float",
@@ -197,7 +189,8 @@ const helpers = {
 
     },
 
-    /*
+    /**
+     * Extracts and stores the converted BRW
      * @param  {string} response - the response xml of the wps
      * @param  {number} status - the HTTPStatusCode
      * @returns {void}
@@ -220,11 +213,7 @@ const helpers = {
                         console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                     }
                     else {
-
                         // console.log("helpers handleConvertResponse dispatch", complexData.Bodenrichtwert.Ergebnis.BRW)
-
-                        // console.log("helpers handleConvertResponse dispatch", complexData.Bodenrichtwert.Ergebnis.BRW)
-
                         store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                     }
                 }

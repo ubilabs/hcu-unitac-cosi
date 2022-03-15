@@ -118,42 +118,6 @@ export default {
                 this.sendWpsConvertRequest();
             }
         },
-        checkForBauweiseMatch (bauweise) {
-            let zBauweise = this.selectedBrwFeature.get("zBauweise");
-
-            if (this.selectedBrwFeature.get("zBauweise") === "eh Einzelhäuser") {
-                zBauweise = "eh Einzelhaus (freistehend)";
-            }
-            else if (this.selectedBrwFeature.get("zBauweise") === "dh Doppelhaushälften") {
-                zBauweise = "dh Doppelhaushälfte";
-            }
-            return bauweise === zBauweise;
-        },
-        toggleInfoText (id) {
-            if (!Object.values(this.textIds).includes(id)) {
-                this.textIds.push(id);
-            }
-            else {
-                for (let i = 0; i < Object.values(this.textIds).length; i++) {
-                    if (this.textIds[i] === id) {
-                        this.textIds.splice(i, 1);
-                    }
-                }
-            }
-        },
-        handleOptionChange (event, converted) {
-            const eventValue = event.target.value;
-
-            this.setSelectedBauweise(eventValue);
-            this.updateSelectedBrwFeature({converted: converted, brw: eventValue});
-            this.sendWpsConvertRequest();
-        },
-        handleInputChange (event, converted) {
-            if (event.type === "change" || (event.key === "Enter")) {
-                this.updateSelectedBrwFeature({converted: converted, brw: parseFloat(event.currentTarget.value.replace(",", "."))});
-                this.sendWpsConvertRequest();
-            }
-        },
         /**
          * Close this tool window by setting active to false
          *  @return  {void}
