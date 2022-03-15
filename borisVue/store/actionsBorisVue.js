@@ -3,10 +3,12 @@ import helpers from "../utils/helpers";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import mapCollection from "../../../src/core/dataStorage/mapCollection";
+import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
+import store from "../../../src/app-store/index";
 
 const actions = {
     initialize ({commit, dispatch}) {
-        let layerList = Radio.request("ModelList", "getModelsByAttributes", {isNeverVisibleInTree: true});
+        let layerList = getLayerModelsByAttributes();
 
         layerList = layerList.filter(function (layer) {
             return layer.get("gfiAttributes") !== "ignore";
@@ -14,9 +16,10 @@ const actions = {
 
         layerList = layerList.reverse();
 
-        commit("setFilteredLayerList", layerList);
+        commit("setFilteredLayerList", layerList););
 
-        Radio.request("Map", "registerListener", "click", (event) => dispatch("requestGFI", {event}));
+        mapClickListener((event) => dispatch("requestGFI", {event}));
+
     },
     /**
     * Requests parametic url and checks if all neccessary information is available to simulate gfi click and landuse select
