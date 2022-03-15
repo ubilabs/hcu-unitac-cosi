@@ -449,10 +449,6 @@ const actions = {
         dispatch("sendWpsConvertRequest");
         return feature;
     },
-<<<<<<< HEAD
-=======
-
->>>>>>> 30202afd (BG-1869 print module implemented and adjustments made in actionsBorisVue)
     /**
     * updater for selectedBrwFeature forces refresh
     * @param {string} converted Name des Attributes am feature
