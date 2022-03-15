@@ -2,7 +2,6 @@ import axios from "axios";
 import helpers from "../utils/helpers";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
-import WPS from "../../../src/api/wps";
 import mapCollection from "../../../src/core/dataStorage/mapCollection";
 
 const actions = {
@@ -70,7 +69,7 @@ const actions = {
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
-        commit("setTextId", []);
+        commit("setTextIds", []);
 
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
@@ -93,7 +92,7 @@ const actions = {
     */
     async checkBrwFeature ({commit, dispatch, state}, {brwFeatures, year}) {
         if (brwFeatures !== undefined) {
-            const brwFeatureByYear = await dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year});
+            const brwFeatureByYear = await helpers.findBrwFeatureByYear({features: state.selectedBrwFeature, year});
 
             if (brwFeatureByYear === undefined) {
                 commit("setSelectedPolygon", null);
@@ -337,7 +336,7 @@ const actions = {
 
         if (status === 200) {
             const features = new WFS().readFeatures(response),
-                featureByYear = await dispatch("findBrwFeatureByYear", {features, year});
+                featureByYear = await helpers.findBrwFeatureByYear({features, year});
 
             commit("setBrwFeatures", features);
 
@@ -348,39 +347,14 @@ const actions = {
         }
     },
     /**
-     * find out if there is a brw feature for the given year and retruns it
-     * if not returns undefined
-     * @param {ol.Feature[]} features - list of all available brw features
-     * @param {string} year - the selected year
-     * @return {ol.Feature|undefined} brw feature
-     */
-    findBrwFeatureByYear ({commit}, {features, year}) {
-        const brwFeatures = Object.values(features);
-
-        return brwFeatures.find((feature) => {
-            return feature.get("jahrgang") === year;
-        });
-    },
-
-    /**
      * get the actually selected date and set date and feature to get extended feature attributes
      * @param {ol.Feature[]} feature - selected feature
      * @returns {void}
      */
-    async combineFeatureWithSelectedDate ({dispatch}, feature) {
-        const date = await dispatch("getDateByActiveLayerName");
+    async combineFeatureWithSelectedDate ({dispatch, getters}, feature) {
+        const date = await getters.getDateBySelectedLayerName;
 
         dispatch("extendFeatureAttributes", {feature, date});
-    },
-    /**
-     * Sends a request to convert the BRW
-     * @returns {void}
-     */
-    sendWpsConvertRequest ({state}) {
-        const data = helpers.convert({brw: state.selectedBrwFeature});
-
-        WPS.wpsRequest(state.wpsId, state.fmwProcess, data, helpers.handleConvertResponse);
-
     },
     /**
      * Sets the name of the active layer as date
@@ -396,37 +370,10 @@ const actions = {
         }
         return date;
     },
-    extendFeatureAttributes ({dispatch, commit}, {feature, date}) {
-        const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
-        let sw = helpers.getSW(feature);
+    extendFeatureAttributes ({commit, state}, {feature, date}) {
+        const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002,
+            sw = helpers.parseSW({feature});
 
-        if (sw) {
-
-            if (typeof sw === "string") {
-                sw = JSON.parse(sw);
-            }
-            else if (typeof sw === "object" && sw.normschichtwert_wohnen) {
-                sw.normschichtwert_wohnen = sw.normschichtwert_wohnen.replace(".", "").replace(",", ".");
-            }
-            if (sw.normschichtwert_wohnen) {
-                sw.normschichtwert_wohnenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_wohnen, 10) * 1.95583).toFixed(1)) : "";
-                sw.normschichtwert_wohnen = thousandsSeparator(sw.normschichtwert_wohnen);
-            }
-            if (sw.normschichtwert_buero) {
-                sw.normschichtwert_bueroDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_buero, 10) * 1.95583).toFixed(1)) : "";
-                sw.normschichtwert_buero = thousandsSeparator(sw.normschichtwert_buero);
-            }
-            if (sw.normschichtwert_laden) {
-                sw.normschichtwert_ladenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_laden, 10) * 1.95583).toFixed(1)) : "";
-                sw.normschichtwert_laden = thousandsSeparator(sw.normschichtwert_laden);
-            }
-            if (sw.schichtwerte) {
-                sw.schichtwerte.forEach(function (gfs) {
-                    gfs.schichtwertDM = isDMTime ? thousandsSeparator((parseFloat(gfs.schichtwert, 10) * 1.95583).toFixed(1)) : "";
-                    gfs.schichtwert = thousandsSeparator(gfs.schichtwert);
-                });
-            }
-        }
 
         feature.setProperties({
             "richtwert_dm": isDMTime ? thousandsSeparator(parseFloat(feature.get("richtwert_dm"), 10).toFixed(1)) : "",
@@ -445,7 +392,7 @@ const actions = {
         });
 
         commit("setSelectedBrwFeature", feature);
-        dispatch("sendWpsConvertRequest");
+        helpers.sendWpsConvertRequest({state});
         return feature;
     },
     /**
@@ -495,6 +442,7 @@ const actions = {
         commit("setSelectedBrwFeature", feature);
         commit("setConvertedBrw", state.selectedBrwFeature.get("convertedBrw"));
     }
+
 };
 
 export default actions;

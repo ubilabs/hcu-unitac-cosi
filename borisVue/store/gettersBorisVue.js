@@ -21,6 +21,20 @@ const getters = {
             });
 
         return foundLanduse.nutzungsart;
+    },
+    /**
+     * Sets the name of the active layer as date
+     * @param  {Backbone.Model[]} filteredLayerList List of all WMS Layers
+     * @return {String} layername which is used as date
+     */
+    getDateBySelectedLayerName () {
+        let date = "";
+        const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true);
+
+        if (selectedLayer) {
+            date = selectedLayer.get("name");
+        }
+        return date;
     }
 };
 

@@ -1,6 +1,22 @@
 import store from "../../../src/app-store";
+import thousandsSeparator from "../../../src/utils/thousandsSeparator";
+import WPS from "../../../src/api/wps";
 
 const helpers = {
+    /**
+     * find out if there is a brw feature for the given year and retruns it
+     * if not returns undefined
+     * @param {ol.Feature[]} features - list of all available brw features
+     * @param {string} year - the selected year
+     * @return {ol.Feature|undefined} brw feature
+     */
+    findBrwFeatureByYear: function ({features, year}) {
+        const brwFeatures = Object.values(features);
+
+        return brwFeatures.find((feature) => {
+            return feature.get("jahrgang") === year;
+        });
+    },
     /**
     * Creates data for POST-request.
     * Considers mandatory and optional parameters
@@ -204,7 +220,6 @@ const helpers = {
 
             if (executeResponse.ProcessOutputs) {
                 complexData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData;
-                // console.log("complexData", complexData)
                 if (complexData.serviceResponse) {
                     console.error("FME-Server statusInfo: " + complexData.serviceResponse.statusInfo.message);
                 }
@@ -213,7 +228,6 @@ const helpers = {
                         console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                     }
                     else {
-                        // console.log("helpers handleConvertResponse dispatch", complexData.Bodenrichtwert.Ergebnis.BRW)
                         store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
                     }
                 }
@@ -231,6 +245,49 @@ const helpers = {
         const sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
 
         return sw;
+    },
+    parseSW: function ({feature}) {
+        const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+        let sw = helpers.getSW(feature);
+
+        if (sw) {
+            if (typeof sw === "string") {
+                sw = JSON.parse(sw);
+            }
+            else if (typeof sw === "object" && sw.normschichtwert_wohnen) {
+                sw.normschichtwert_wohnen = sw.normschichtwert_wohnen.replace(".", "").replace(",", ".");
+            }
+            if (sw.normschichtwert_wohnen) {
+                sw.normschichtwert_wohnenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_wohnen, 10) * 1.95583).toFixed(1)) : "";
+                sw.normschichtwert_wohnen = thousandsSeparator(sw.normschichtwert_wohnen);
+            }
+            if (sw.normschichtwert_buero) {
+                sw.normschichtwert_bueroDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_buero, 10) * 1.95583).toFixed(1)) : "";
+                sw.normschichtwert_buero = thousandsSeparator(sw.normschichtwert_buero);
+            }
+            if (sw.normschichtwert_laden) {
+                sw.normschichtwert_ladenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_laden, 10) * 1.95583).toFixed(1)) : "";
+                sw.normschichtwert_laden = thousandsSeparator(sw.normschichtwert_laden);
+            }
+            if (sw.schichtwerte) {
+                sw.schichtwerte.forEach(function (gfs) {
+                    gfs.schichtwertDM = isDMTime ? thousandsSeparator((parseFloat(gfs.schichtwert, 10) * 1.95583).toFixed(1)) : "";
+                    gfs.schichtwert = thousandsSeparator(gfs.schichtwert);
+                });
+            }
+        }
+        return sw;
+    },
+    /**
+     * Sends a request to convert the BRW
+     * @returns {void}
+     */
+    sendWpsConvertRequest: function ({state}) {
+
+        const data = helpers.convert({brw: state.selectedBrwFeature});
+
+        WPS.wpsRequest(state.wpsId, state.fmwProcess, data, helpers.handleConvertResponse);
+
     }
 };
 
