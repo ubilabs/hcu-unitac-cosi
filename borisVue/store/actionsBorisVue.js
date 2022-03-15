@@ -57,7 +57,6 @@ const actions = {
      * @returns {void}
      */
     switchLayer ({commit, dispatch, state}, selectedLayerName) {
-
         const selectedLayer = state.filteredLayerList.filter(function (layer) {
             return layer.get("isSelected") === true;
         });
@@ -92,22 +91,20 @@ const actions = {
     * @param {string} year - the selected brw year
     * @returns {void}
     */
-    checkBrwFeature ({commit, dispatch, state}, {brwFeatures, year}) {
-
+    async checkBrwFeature ({commit, dispatch, state}, {brwFeatures, year}) {
         if (brwFeatures !== undefined) {
-            dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year}).then((response) => {
-                const brwFeatureByYear = response;
+            const brwFeatureByYear = await dispatch("findBrwFeatureByYear", {features: state.selectedBrwFeature, year});
 
-                if (brwFeatureByYear === undefined) {
-                    commit("setSelectedPolygon", null);
-                    commit("setBrwFeatures", []);
-                    commit("setSelectedBrwFeature", {});
-                    dispatch("MapMarker/removePointMarker", null, {root: true});
-                }
-                else {
-                    dispatch("handleNewFeature", brwFeatureByYear);
-                }
-            });
+            if (brwFeatureByYear === undefined) {
+                commit("setSelectedPolygon", null);
+                commit("setBrwFeatures", []);
+                commit("setSelectedBrwFeature", {});
+                dispatch("MapMarker/removePointMarker", null, {root: true});
+            }
+            else {
+                dispatch("handleNewFeature", brwFeatureByYear);
+            }
+
         }
         else {
             commit("setSelectedPolygon", null);
@@ -336,17 +333,15 @@ const actions = {
      * @param {number} year - the selected brw year
      * @returns {void}
      */
-    handleGetFeatureResponse ({commit, dispatch}, {response, status, year}) {
+    async handleGetFeatureResponse ({commit, dispatch}, {response, status, year}) {
 
         if (status === 200) {
-            const features = new WFS().readFeatures(response);
+            const features = new WFS().readFeatures(response),
+                featureByYear = await dispatch("findBrwFeatureByYear", {features, year});
 
             commit("setBrwFeatures", features);
-            dispatch("findBrwFeatureByYear", {features, year}).then((result) => {
-                const feature = result;
 
-                dispatch("handleNewFeature", feature);
-            });
+            dispatch("handleNewFeature", featureByYear);
         }
         else {
             dispatch("Alerting/addSingleAlert", {content: "text"}, {root: true});
@@ -366,12 +361,10 @@ const actions = {
             return feature.get("jahrgang") === year;
         });
     },
-    handleNewFeature ({dispatch}, feature) {
-        dispatch("getActiveLayerNameAsStichtag").then((response) => {
-            const stichtag = response;
+    async handleNewFeature ({dispatch}, feature) {
+        const stichtag = await dispatch("getActiveLayerNameAsStichtag");
 
-            dispatch("extendFeatureAttributes", {feature, stichtag});
-        });
+        dispatch("extendFeatureAttributes", {feature, stichtag});
     },
     /**
      * Sends a request to convert the BRW
