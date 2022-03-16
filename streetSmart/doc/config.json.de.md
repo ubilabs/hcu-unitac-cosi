@@ -30,6 +30,7 @@ Das Werkzeug umfasst
 |glyphicon|ja|String|glyphicon glyphicon-picture|Das zu verwendende Icon.|false|
 |streetsmartAPIVersion|ja|String|v22.2|Die Version der streetsmartApi.|true|
 |reactVersion|ja|String|16.13.0|Die Version von React, kompatibel zur Version der streetsmartAPI.|true|
+|mapMarkerStyleId|nein|String|"defaultMapMarkerPoint"|StyleId, um den Mapmarker in der Karte zu stylen, wenn streetsmart geöffnet ist.|true|
 
 
 
