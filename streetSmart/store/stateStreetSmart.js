@@ -30,6 +30,8 @@ const state = {
     serviceId: "streetsmart",
     streetsmartAPIVersion: "v22.2",
     reactVersion: "16.12.0",
+    styleId: "defaultMapMarkerPoint",
+    mapMarkerStyleId: "defaultMapMarkerPoint",
     lastCoordinates: [],
     lastYaw: 0
 };

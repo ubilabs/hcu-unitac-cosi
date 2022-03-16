@@ -11,7 +11,7 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
         icon = {
             setRotation: setRotationSpy
         };
-    let commit, dispatch, rootGetters, getters;
+    let commit, dispatch, rootGetters, getters, rootState;
 
     before(() => {
         i18next.init({
@@ -32,6 +32,11 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
         commit = sinon.spy();
         dispatch = sinon.spy();
         getters = sinon.spy();
+        rootState = {
+            MapMarker: {
+                pointStyleId: "pointStyleId"
+            }
+        };
         rootGetters = {
             "Map/ol2DMap": {
                 getView: () => ({
@@ -199,14 +204,17 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
     });
     describe("destroyApi", () => {
         it("destroyApi shall dispatch twice and destroy api", () => {
-            actions.destroyApi({dispatch});
+            actions.destroyApi({state, dispatch, commit});
 
             expect(dispatch.calledTwice).to.be.true;
             expect(dispatch.args[0][0]).to.equal("MapMarker/removePointMarker");
             expect(dispatch.args[0][1]).to.deep.equal(null);
             expect(dispatch.args[1][0]).to.equal("removeListener");
             expect(global.StreetSmartApi.destroy.calledOnce).to.be.true;
-            expect(commit.notCalled).to.be.true;
+            expect(commit.calledOnce).to.be.true;
+            expect(commit.args[0][0]).to.equal("MapMarker/setPointStyleId");
+            expect(commit.args[0][1]).to.equal(state.mapMarkerStyleId);
+            expect(commit.args[0][2]).to.deep.equal({root: true});
         });
     });
     describe("marker rotation", () => {
@@ -248,12 +256,17 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
     });
     describe("onInitSuccess", () => {
         it("onInitSuccess shall dispatch twice", () => {
-            actions.onInitSuccess({dispatch, rootGetters});
+            actions.onInitSuccess({state, dispatch, commit, rootGetters, rootState});
 
             expect(dispatch.calledTwice).to.be.true;
             expect(dispatch.args[0][0]).to.equal("addListener");
             expect(dispatch.args[1][0]).to.equal("setPosition");
-            expect(commit.notCalled).to.be.true;
+            expect(commit.calledTwice).to.be.true;
+            expect(commit.args[0][0]).to.equal("setMapMarkerStyleId");
+            expect(commit.args[0][1]).to.equal(rootState.MapMarker.pointStyleId);
+            expect(commit.args[1][0]).to.equal("MapMarker/setPointStyleId");
+            expect(commit.args[1][1]).to.equal(state.styleId);
+            expect(commit.args[1][2]).to.deep.equal({root: true});
         });
     });
 

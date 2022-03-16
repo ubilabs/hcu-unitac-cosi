@@ -106,8 +106,9 @@ const actions = {
      * @param {Object} param.dispatch the dispatch
      * @returns {void}
      */
-    destroyApi ({dispatch}) {
+    destroyApi ({state, dispatch, commit}) {
         dispatch("MapMarker/removePointMarker", null, {root: true});
+        commit("MapMarker/setPointStyleId", state.mapMarkerStyleId, {root: true});
         dispatch("removeListener");
         StreetSmartApi.destroy({
             targetElement: document.getElementById("streetsmart")
@@ -181,8 +182,10 @@ const actions = {
      * @param {Object} param.rootGetters the rootGetters
      * @returns {void}
      */
-    onInitSuccess ({dispatch, rootGetters}) {
+    onInitSuccess ({state, dispatch, commit, rootGetters, rootState}) {
         dispatch("addListener");
+        commit("setMapMarkerStyleId", rootState.MapMarker.pointStyleId);
+        commit("MapMarker/setPointStyleId", state.styleId, {root: true});
         dispatch("setPosition", rootGetters["Map/ol2DMap"].getView().getCenter());
     }
 };
