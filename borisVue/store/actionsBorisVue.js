@@ -4,7 +4,6 @@ import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import mapCollection from "../../../src/core/dataStorage/mapCollection";
 import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
-import store from "../../../src/app-store/index";
 
 const actions = {
     initialize ({commit, dispatch}) {
@@ -16,7 +15,7 @@ const actions = {
 
         layerList = layerList.reverse();
 
-        commit("setFilteredLayerList", layerList););
+        commit("setFilteredLayerList", layerList);
 
         mapClickListener((event) => dispatch("requestGFI", {event}));
 

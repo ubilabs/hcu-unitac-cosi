@@ -77,8 +77,9 @@ export default {
             <dt>
                 <span>{{ title }}</span>
                 <span
-                    class="glyphicon glyphicon-question-sign" 
+                    class="glyphicon glyphicon-question-sign"
                     @click="toggleInfoText(textId)"
+                    @keydown.enter="toggleInfoText(textId)"
                 />
             </dt>
             <dd>
@@ -99,6 +100,7 @@ export default {
                     v-if="Object.values(textIds).includes(textId)"
                     class="help"
                 >
+                    <br>
                     <span v-html="text" />
                     <br>
                 </div>
@@ -109,8 +111,9 @@ export default {
             <dt>
                 <span>{{ title }}</span>
                 <span
-                    class="glyphicon glyphicon-question-sign" 
+                    class="glyphicon glyphicon-question-sign"
                     @click="toggleInfoText(textId)"
+                    @keydown.enter="toggleInfoText(textId)"
                 />
             </dt>
             <dd>

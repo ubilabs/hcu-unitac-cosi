@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "Detail",
+    name: "DetailComponent",
     props: {
         feature: {
             type: Object,
@@ -19,7 +19,7 @@ export default {
         feature: {
             handler (newVal, oldVal) {
                 if (oldVal) {
-                    console.log("new feature selected:", newVal);
+                    // console.log("new feature selected:", newVal);
                 }
             },
             immediate: true
@@ -35,7 +35,7 @@ export default {
                     value += " ";
                 }
             });
-            return value.substring(0, value.length -1);
+            return value.substring(0, value.length - 1);
         }
     }
 };
