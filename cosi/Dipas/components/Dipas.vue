@@ -285,16 +285,17 @@ export default {
         },
         /**
          * changes the visibility of the contributions layer for the given project id
-         * @param {String} id the project id
+         * @param {Object} feature the project feature
          * @param {Boolean} value wether the contributions layer shall be visible or not
          * @returns {void}
          */
-        async changeContributionVisibility (id, value) {
-            const layer = {
-                id: id + "-contributions",
-                name: id + " contributions",
-                features: []
-            };
+        async changeContributionVisibility (feature, value) {
+            const id = feature.get("id"),
+                layer = {
+                    id: id + "-contributions",
+                    name: feature.get("nameFull") + " Beiträge",
+                    features: []
+                };
 
             let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
 
@@ -722,7 +723,7 @@ export default {
                                         <v-list-item-action>
                                             <v-switch
                                                 v-model="projectsActive[feature.get('id')]['contributions']"
-                                                @change="changeContributionVisibility(feature.get('id'), $event)"
+                                                @change="changeContributionVisibility(feature, $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
@@ -832,7 +833,7 @@ export default {
 #dipas {
   width: auto;
   min-height: 100px;
-  max-height: 45vh;
+  max-height: 43vh;
   overflow-y: auto;
 }
 
