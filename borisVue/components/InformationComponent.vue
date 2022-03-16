@@ -1,10 +1,10 @@
 <script>
-import Detail from "./Detail.vue";
+import DetailComponent from "./DetailComponent.vue";
 
 export default {
     name: "InformationComponent",
     components: {
-        Detail
+        DetailComponent
     },
     props: {
         title: {
@@ -28,56 +28,56 @@ export default {
         <div v-if="buttonValue === 'info'">
             <h4>{{ title }}</h4>
             <dl>
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['entwicklungszustand']"
-                    :label="'Entwicklungszustand'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.state')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['beitragszustand']"
-                    :label="'Beitrags- u. abgabenrechtl. Zustand'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.condition')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['sanierungszusatz']"
-                    :label="'Sanierungs- oder Entwicklungszusatz'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.developmentAddition')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['nutzung_kombiniert']"
-                    :label="'Art der Nutzung'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.typeOfUse')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['anbauart']"
-                    :label="'Anbauart'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.landUse')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['geschossfl_zahl']"
-                    :label="'Wertrelevante Geschossflächenzahl (WGFZ):'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.numberOfFloor')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['grdstk_flaeche']"
-                    :label="'Grundstücksfläche'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.landArea')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['bemerkung']"
-                    :label="'weitere Merkmale:'"
+                    :label="$t('additional:modules.tools.boris.detailInformation.moreFeatures')"
                 />
                 <div
                     v-if="parseInt(selectedBrwFeature.get('jahrgang'), 10) >= 2002"
                 >
-                    <dt>Bodenrichtwert:</dt>
+                    <dt>{{ $t("additional:modules.tools.boris.landValue") }}:</dt>
                     <dd>{{ selectedBrwFeature.get('richtwert_euro') }} €/m²</dd>
                 </div>
                 <div
                     v-else
                 >
-                    <dt>Bodenrichtwert:</dt>
+                    <dt>{{ $t("additional:modules.tools.boris.landValue") }}:</dt>
                     <dd>
                         <span>{{ selectedBrwFeature.get('richtwert_euro') }} €/m²</span>
                         <span class="pull-right">{{ selectedBrwFeature.get('richtwert_dm') }} DM/m²</span>
@@ -88,45 +88,45 @@ export default {
         <div v-if="buttonValue === 'lage'">
             <h4>{{ title }}</h4>
             <dl>
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['postleitzahl', 'gemeinde']"
-                    :label="'PLZ, Gemeinde'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.codeCity')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['bezirk']"
-                    :label="'Bezirk'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.district')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['stadtteil']"
-                    :label="'Stadtteil'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.cityDistrict')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['statistisches_gebiet']"
-                    :label="'SGE (Stat. Gebietseinheit)'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.statisticalArea')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['baublock']"
-                    :label="'Baublock'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.buildingBlock')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['strassenname', 'hausnummer', 'hausnummerzusatz']"
-                    :label="'Adresse'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.address')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['lagebezeichnung']"
-                    :label="'Weitere Lagebezeichnung'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.furtherLocation')"
                 />
-                <Detail
+                <DetailComponent
                     :feature="selectedBrwFeature"
                     :keys="['bezeichnung_sanierungsgebiet']"
-                    :label="'Sanierungsgebiet'"
+                    :label="$t('additional:modules.tools.boris.locationDescription.redevelopmentArea')"
                 />
             </dl>
         </div>
