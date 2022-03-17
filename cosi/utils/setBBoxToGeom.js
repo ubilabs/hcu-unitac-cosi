@@ -97,7 +97,7 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
             const source = getClusterSource(model.layer);
             let url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=EPSG:25832`;
 
-            url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()}` : "";
+            url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()},EPSG:25832` : "";
 
             if (source) {
                 updateSource(source, bboxGeometry, url, item, app);
