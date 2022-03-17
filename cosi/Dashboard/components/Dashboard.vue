@@ -515,6 +515,7 @@ export default {
                                 :items-per-page="-1"
                                 :search="search"
                                 hide-default-footer
+                                fixed-header
                                 dense
                                 show-select
                                 item-key="category"

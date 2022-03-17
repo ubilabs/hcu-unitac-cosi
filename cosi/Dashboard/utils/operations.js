@@ -300,7 +300,7 @@ export function calculateCorrelation () {
  * @returns {Number} the average
  */
 export function getAverage (item, districtNames, timestamp, timestampPrefix) {
-    if (!(item.valueType === "absolute" || item.calculation)) {
+    if (item.valueType !== "absolute") {
         return "-";
     }
     let result = this.getTotal(item, districtNames, timestamp, timestampPrefix, true);
