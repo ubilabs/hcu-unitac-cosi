@@ -834,6 +834,7 @@ export default {
                                 multi-sort
                                 item-key="key"
                                 show-select
+                                fixed-header
                                 show-expand
                                 :items-per-page="10"
                                 :footer-props="{
