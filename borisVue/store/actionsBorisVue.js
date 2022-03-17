@@ -7,7 +7,7 @@ import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge
 
 const actions = {
     initialize ({commit, dispatch}) {
-        let layerList = getLayerModelsByAttributes();
+        let layerList = getLayerModelsByAttributes({isNeverVisibleInTree: true});
 
         layerList = layerList.filter(function (layer) {
             return layer.get("gfiAttributes") !== "ignore";
@@ -72,11 +72,6 @@ const actions = {
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextIds", []);
-
-        commit("setSelectedBrwFeature", {});
-        dispatch("MapMarker/removePolygonMarker", null, {root: true});
-        dispatch("MapMarker/removePointMarker", null, {root: true});
-        commit("setTextId", []);
 
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
@@ -165,7 +160,6 @@ const actions = {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource();
-                
             let map,
                 mapView,
                 url;
@@ -215,7 +209,7 @@ const actions = {
                     // getWFS for polygon by id and year and place polygon marker
                     dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
                     commit("setSelectedPolygon", feature);
-                    dispatch("checkPolygonFeatureByLanduse", {feature, selectedLanduse: state.selectedLanduse});
+                    dispatch("matchPolygonFeatureWithLanduse", {feature, selectedLanduse: state.selectedLanduse});
                 }
                 // point
                 else {
@@ -282,19 +276,20 @@ const actions = {
 
     },
     /**
-     * checks if there is a brw for the selected landuse
-     * if so, the function sendGetFeatureRequest is called
-     * @param {ol.Feature} feature - gfi feature
-     * @param {string} selectedLanduse - current selected landuse
+     * combines the polygonFeature with the selectedLanduse
+     * if so, the function sendGetFeatureRequest is called,
+     * to finally get the brwFeatureInformation for the selectedPolygon with the selectedLanduse
+     * @param {ol.Feature} feature - selectedPolygon feature
+     * @param {string} selectedLanduse - currently selectedLanduse
      * @returns {void}
      */
-    checkPolygonFeatureByLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
-        const landuse = feature.get("nutzungsart").find((nutzung) => {
-            return nutzung.nutzungsart === selectedLanduse;
+    matchPolygonFeatureWithLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
+        const landuseMatch = feature.get("nutzungsart").find((typeOfUse) => {
+            return typeOfUse.nutzungsart === selectedLanduse;
         });
 
-        if (landuse) {
-            dispatch("postFeatureRequestByBrwNumber", {richtwertNummer: landuse.richtwertnummer, featureYear: feature.get("jahrgang")});
+        if (landuseMatch) {
+            dispatch("postFeatureRequestByBrwNumber", {richtwertNummer: landuseMatch.richtwertnummer, featureYear: feature.get("jahrgang")});
         }
         else {
             commit("setSelectedLanduse", "");
@@ -450,7 +445,6 @@ const actions = {
         commit("setSelectedBrwFeature", feature);
         commit("setConvertedBrw", state.selectedBrwFeature.get("convertedBrw"));
     }
-
 };
 
 export default actions;
