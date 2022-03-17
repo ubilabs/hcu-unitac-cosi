@@ -758,7 +758,6 @@ export default {
 .dashboard-table {
     height: 100%;
     .v-data-table__wrapper {
-        padding-top: 10px;
         overflow-x: auto;
         overflow-y: auto;
         height: 100%;
@@ -767,6 +766,7 @@ export default {
     thead {
         .district-header {
             position: relative;
+            margin-top: 10px;
             .move-col {
                 position: absolute;
                 top: -10px;
