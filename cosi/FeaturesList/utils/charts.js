@@ -56,7 +56,7 @@ export default {
             },
             chartDataset = new ChartDataset({
                 id: "sb-" + item.key,
-                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)}`,
+                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)} (Standortanalyse)`,
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
@@ -84,7 +84,7 @@ export default {
             },
             chartDataset = new ChartDataset({
                 id: "sb-" + this.getActiveItems().map(item => item.key).join(","),
-                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")}`,
+                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} (Standortanalyse)`,
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",

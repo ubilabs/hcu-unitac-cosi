@@ -426,7 +426,7 @@ export default {
         loadToChartGenerator () {
             const graphObj = new ChartDataset({
                     id: "ccm",
-                    name: [this.label] + " - " + this.dataCategory,
+                    name: [this.label] + " - " + this.dataCategory + " (" + this.$t("additional:modules.tools.colorCodeMap.title") + ")",
                     type: ["LineChart", "BarChart", "PieChart"],
                     color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
                     beginAtZero: true,
