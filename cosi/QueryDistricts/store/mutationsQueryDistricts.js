@@ -37,8 +37,10 @@ const mutations = {
      * @returns {void}
      */
     setDataSets (state, payload) {
-        state.dataSets = payload;
-        _addSet(state);
+        if (payload.length && payload[payload.length - 1].inputs?.layerFilterModels?.length > 0) {
+            state.dataSets = payload;
+            _addSet(state);
+        }
     },
 
     /**

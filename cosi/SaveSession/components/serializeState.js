@@ -60,22 +60,6 @@ export default {
         }
 
         return this.serializeFeatures(state);
-
-        // for (const key in state) {
-        //     if (state[key]?.constructor === Object) {
-        //         this.deepSerialize({...state[key]});
-        //     }
-        //     else if (Array.isArray(state[key])) {
-        //         for (const item of state[key]) {
-        //             state[key] = this.deepSerialize(item);
-        //         }
-        //     }
-        //     else {
-        //         state[key] = this.serializeFeatures(state[key]);
-        //     }
-        // }
-
-        // return state;
     },
 
     serializeFeatures (val) {
@@ -223,18 +207,5 @@ export default {
 
     serializeToolDatasets (state) {
         return this.deepSerialize(state);
-        // if (Array.isArray(state)) {
-        //     const _state = [...state];
-
-        //     for (let i = 0; i < _state.length; i++) {
-        //         _state[i] = this.deepSerialize({..._state[i]});
-        //     }
-
-        //     return _state;
-        // }
-        // else if (state instanceof Object) {
-        //     return this.deepSerialize({...state});
-        // }
-        // return this.serializeFeatures(state);
     }
 };

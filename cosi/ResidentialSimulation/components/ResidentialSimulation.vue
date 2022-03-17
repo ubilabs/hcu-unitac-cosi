@@ -491,7 +491,7 @@ export default {
                                         v-model="neighborhood.residents"
                                         label="Einwohner gesamt"
                                         suffix="EW"
-                                        @input="updateResidents"
+                                        @change="updateResidents"
                                     />
                                 </v-col>
                             </v-row>
@@ -512,7 +512,7 @@ export default {
                                         min="0"
                                         :max="(polygonArea / 5) || 1"
                                         :disabled="!geometry"
-                                        @input="updateUnits"
+                                        @change="updateUnits"
                                     >
                                         <template #append>
                                             <v-text-field
@@ -521,7 +521,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @input="updateUnits"
+                                                @change="updateUnits"
                                             />
                                         </template>
                                     </v-slider>
@@ -544,7 +544,7 @@ export default {
                                         min="0"
                                         :max="(polygonArea * 4) || 1"
                                         :disabled="!geometry"
-                                        @input="updateBgf"
+                                        @change="updateBgf"
                                     >
                                         <template #append>
                                             <v-text-field
@@ -553,7 +553,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @input="updateBgf"
+                                                @change="updateBgf"
                                             />
                                         </template>
                                     </v-slider>
@@ -577,7 +577,7 @@ export default {
                                         max="5"
                                         step="0.2"
                                         :disabled="!geometry"
-                                        @input="updateHousholdSize"
+                                        @change="updateHousholdSize"
                                     >
                                         <template #append>
                                             <v-text-field
@@ -586,7 +586,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @input="updateHousholdSize"
+                                                @change="updateHousholdSize"
                                             />
                                         </template>
                                     </v-slider>
@@ -605,7 +605,7 @@ export default {
                                         max="4"
                                         step="0.1"
                                         :disabled="!geometry"
-                                        @input="updateGfz"
+                                        @change="updateGfz"
                                     >
                                         <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -615,7 +615,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @input="updateGfz"
+                                                @change="updateGfz"
                                             />
                                         </template>
                                     </v-slider>
@@ -633,7 +633,7 @@ export default {
                                         min="0"
                                         max="50000"
                                         :disabled="!geometry"
-                                        @input="updateDensity"
+                                        @change="updateDensity"
                                     >
                                         <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -643,7 +643,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @input="updateDensity"
+                                                @change="updateDensity"
                                             />
                                         </template>
                                     </v-slider>
@@ -666,7 +666,7 @@ export default {
                                         min="0"
                                         max="100"
                                         :disabled="!geometry"
-                                        @input="updateLivingSpace"
+                                        @change="updateLivingSpace"
                                     >
                                         <template #append>
                                             <!-- eslint-disable-next-line vue/no-multiple-template-root -->
@@ -676,7 +676,7 @@ export default {
                                                 hide-details
                                                 single-line
                                                 type="number"
-                                                @input="updateLivingSpace"
+                                                @change="updateLivingSpace"
                                             />
                                         </template>
                                     </v-slider>
@@ -699,7 +699,7 @@ export default {
                                         single-line
                                         type="number"
                                         :disabled="!geometry"
-                                        @input="updateLivingSpaceRatio"
+                                        @change="updateLivingSpaceRatio"
                                     />
                                 </v-col>
                             </v-row>

@@ -571,7 +571,7 @@ export default {
                                                 class="move-col minimize"
                                                 icon
                                                 x-small
-                                                :title="$t('additional:modules.tools.cosi.dashboard.minimize')"
+                                                :title="$t('additional:modules.tools.cosi.dashboard.minimizeCol')"
                                                 @click="minimizeCol(district)"
                                             >
                                                 <v-icon>{{ district.minimized ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
