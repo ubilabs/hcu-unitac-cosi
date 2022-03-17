@@ -644,6 +644,7 @@ export default {
             });
 
             this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
+            this.dataSets[this.activeSet].results = this.results;
         },
         /**
          * @description Transforming results data for excel export
@@ -717,10 +718,10 @@ export default {
         loadToChartGenerator () {
             const graphObj = {
                     id: "calcratio",
-                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name + " (" + this.$t("additional:modules.tools.cosi.calculateRatio.title") + ")",
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
-                    source: "Versorgungsanalyse",
+                    source: this.$t("additional:modules.tools.cosi.calculateRatio.title"),
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
