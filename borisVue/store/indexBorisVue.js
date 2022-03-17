@@ -4,7 +4,7 @@ import getters from "./gettersBorisVue";
 import state from "./stateBorisVue";
 
 export default {
-    namespaced: true, // mandatory
+    namespaced: true,
     state,
     mutations,
     actions,

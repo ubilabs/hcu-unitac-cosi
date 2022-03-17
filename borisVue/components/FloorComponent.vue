@@ -32,11 +32,11 @@ export default {
             >
                 <h5> {{ schichtwert.geschoss }} </h5>
                 <dl>
-                    <dt>Anteilige WGFZ:</dt>
+                    <dt>{{ $t("additional:modules.tools.boris.floorValues.wgfz") }}</dt>
                     <dd>{{ schichtwert.wgfz }}</dd>
-                    <dt>Nutzung:</dt>
+                    <dt>{{ $t("additional:modules.tools.boris.floorValues.usage") }}</dt>
                     <dd>{{ schichtwert.nutzung }}</dd>
-                    <dt>Schichtwert:</dt>
+                    <dt>{{ $t("additional:modules.tools.boris.floorValues.floorValue") }}</dt>
                     <dd
                         v-if="schichtwert.schichtwertDM === ''"
                     >

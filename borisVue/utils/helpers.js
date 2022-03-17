@@ -4,10 +4,10 @@ import WPS from "../../../src/api/wps";
 
 const helpers = {
     /**
-     * find out if there is a brw feature for the given year and retruns it
+     * Finds the brw feature for the given year and returns it
      * if not returns undefined
-     * @param {ol.Feature[]} features - list of all available brw features
-     * @param {string} year - the selected year
+     * @param {ol.Feature} features - list of all available brw features
+     * @param {String} year - the selected year
      * @return {ol.Feature|undefined} brw feature
      */
     findBrwFeatureByYear: function ({features, year}) {
@@ -18,10 +18,10 @@ const helpers = {
         });
     },
     /**
-    * Creates data for POST-request.
+    * Converts data for POST-request
     * Considers mandatory and optional parameters
-    * @param   {object}    brw         Bodenrichtwertinformationen
-    * @returns {string}                Object for POST-request
+    * @param {Object} brw selectedBrwFeature from the state
+    * @returns {String} Object for POST-request
     */
     convert: function ({brw}) {
 
@@ -204,7 +204,6 @@ const helpers = {
         return requestObj;
 
     },
-
     /**
      * Extracts and stores the converted BRW
      * @param  {string} response - the response xml of the wps
@@ -240,12 +239,22 @@ const helpers = {
             console.error("WPS-Abfrage mit Status " + status + " abgebrochen.");
         }
     },
+    /**
+     * Gets the attribute 'schichtwert' (floorValue) from the selectedBrwFeature
+     * @param  {Object} feature selectedBrwFeature
+     * @returns {Object} 'schichtwert' which means floorValue
+     */
     getSW: function (feature) {
 
         const sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
 
         return sw;
     },
+    /**
+     * Restructures the 'schichtwert' (floorValue) from the selectedBrwFeature
+     * @param  {Object} feature selectedBrwFeature
+     * @returns {Object} 'schichtwert' which means floorValue in a parsed form
+     */
     parseSW: function ({feature}) {
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
         let sw = helpers.getSW(feature);

@@ -85,9 +85,8 @@ export async function preparePrint (getResponse) {
     store.dispatch("Tools/Print/createPrintJob", printJob, {root: true});
 }
 
-// helpers for printing
 /**
- * helpers function for preparePrint that creates an address string based on the ol.feature\"s attributes strassenname, hausnummer and hausnummerzusatz
+ * Helpers function for preparePrint that creates an address string based on the ol.feature\"s attributes strassenname, hausnummer and hausnummerzusatz
  * @param  {ol.feature} feature The ol-Feature
  * @return {String} The result string
  */
@@ -102,10 +101,10 @@ export function createAddressString (feature) {
     return addressString.trim();
 }
 /**
-     * helpers function for preparePrint that creates a string based on the ol.feature\"s attributes postal code and municipality
-     * @param  {ol.feature} feature The ol-Feature
-     * @return {String} The result String
-     */
+ * Helpers function for preparePrint that creates a string based on the ol.feature\"s attributes postal code and municipality
+ * @param  {ol.feature} feature The ol-Feature
+ * @return {String} The result String
+ */
 export function createPostalCodeCityString (feature) {
     let postalCodeCityString = "";
 
@@ -116,10 +115,10 @@ export function createPostalCodeCityString (feature) {
     return postalCodeCityString.trim();
 }
 /**
-     * helpers function for preparePrint that checks if schichtwerte should be printed
-     * @param   {object}    floorvalue Schichtwerte-Object of feature
-     * @returns {boolean}   true when Schichtwerte should be printed
-     */
+ * Helpers function for preparePrint that checks if 'schichtwerte' should be printed
+ * @param   {object}    floorvalue 'schichtwerte'-Object of feature
+ * @returns {boolean}   true when 'schichtwerte' should be printed
+ */
 export function printFloorValues (floorvalue) {
     if (floorvalue && floorvalue.schichtwerte && floorvalue.schichtwerte.length > 0) {
         return true;

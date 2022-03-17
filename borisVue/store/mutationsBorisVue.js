@@ -9,8 +9,6 @@ const mutations = {
      * will be returned.
      */
     ...generateSimpleMutations(stateBoris)
-
-    // NOTE overwrite (or create additional) mutations here if you need special behavior in them
 };
 
 export default mutations;

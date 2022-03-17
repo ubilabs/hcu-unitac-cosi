@@ -9,7 +9,6 @@ export default {
             type: String,
             required: true
         },
-        // only for select, if input oins BorisVue.vue --> :optopns: []
         options: {
             type: Array,
             required: true
@@ -38,12 +37,10 @@ export default {
             type: Function,
             required: true
         },
-        // zGrdstk_flaeche, zGeschossfl_zahl, zStrassenLage, zBauweise
         subject: {
             type: String,
             required: true
         },
-        // select or input
         type: {
             type: String,
             required: true
@@ -52,8 +49,12 @@ export default {
     methods: {
         ...mapActions("Tools/BorisVue", ["updateSelectedBrwFeature", "sendWpsConvertRequest"]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
-        // to check if Einzelhäuser or Doppelhäuser are selected to change the option name to singular
-        checkForBauweiseMatch (option) {
+        /**
+         * Check if 'Einzelhäuser' or 'Doppelhäuser' are selected to change the option name to singular
+         * @param {String} option is one option of the options of buildingDesigns or positionsToStreet
+         * @return {String} zBauweise that changes the term to singular
+         */
+        checkForBuildingMatch (option) {
 
             let zBauweise = this.selectedBrwFeature.get("zBauweise");
 
@@ -72,7 +73,6 @@ export default {
 
 <template>
     <div>
-        <!-- CalculationSelect -->
         <div v-if="type === 'select'">
             <dt>
                 <span>{{ title }}</span>
@@ -91,7 +91,7 @@ export default {
                         v-for="(option, i) in options"
                         :key="i"
                         :value="option"
-                        :SELECTED="checkForBauweiseMatch(option)"
+                        :SELECTED="checkForBuildingMatch(option)"
                     >
                         {{ option }}
                     </option>
@@ -106,7 +106,6 @@ export default {
                 </div>
             </dd>
         </div>
-        <!-- CalculationInput -->
         <div v-else>
             <dt>
                 <span>{{ title }}</span>

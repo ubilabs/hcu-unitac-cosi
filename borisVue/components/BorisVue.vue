@@ -12,7 +12,6 @@ import {getLayerModelsByAttributes} from "../utils/RadioBridge";
 import helpers from "../utils/helpers";
 
 
-
 export default {
     name: "BorisVue",
     components: {
@@ -27,7 +26,7 @@ export default {
         ...mapGetters(["mobile"]),
         /**
          * Gets a list of layers without the stripes-layers
-         *  @return {Array} filteredListWithoutStripes which is used to select by date
+         * @return {Array} filteredListWithoutStripes which is used to select by date
          */
         getFilterListWithoutStripes () {
             const filteredListWithoutStripes = [];
