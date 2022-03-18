@@ -1,5 +1,35 @@
+import loadPackage from "../utils/loadPackage";
 const actions = {
 
+    /**
+     * Loads StreetSmartApi and react in the given versions. They are loaded by appending a script tag to head tag and not by package.json.
+     * React is loaded this way, because only the production version works with StreetSmartApi.
+     * StreetSmartApi is loaded this way, because it is not a npm package.
+     * Versions of them are taken from state.
+     * @param {Function} callback  called, if all libs are loaded
+     * @returns {void}
+     */
+    loadPackages ({state}, callback) {
+        const urlStreetsmartAPI = `https://streetsmart.cyclomedia.com/api/v${state.streetsmartAPIVersion}/StreetSmartApi.js`,
+            urlReact = `https://unpkg.com/react@${state.reactVersion}/umd/react.production.min.js`,
+            urlReactDom = `https://unpkg.com/react-dom@${state.reactVersion}/umd/react-dom.production.min.js`;
+
+        try {
+            loadPackage(urlReact)
+                .then(() => loadPackage(urlReactDom))
+                .then(() => loadPackage(urlStreetsmartAPI))
+                .then(() => {
+                    if (callback) {
+                        return callback();
+                    }
+                    return null;
+                })
+                .catch((err) => console.error("loading of package failed:", err));
+        }
+        catch (err) {
+            console.error("loading of package failed:", err);
+        }
+    },
     /**
      * Sets the coordinates of the event to panorama-viewer and sets mapMarker to map.
      * @param {Object} param.state the state

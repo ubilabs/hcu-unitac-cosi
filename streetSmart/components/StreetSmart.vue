@@ -4,7 +4,6 @@ import getComponent from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import getters from "../store/gettersStreetSmart";
 import mutations from "../store/mutationsStreetSmart";
-import loadPackages from "../utils/loadPackages";
 
 export default {
     name: "StreetSmart",
@@ -52,13 +51,13 @@ export default {
         }
     },
     async created () {
-        await loadPackages(this.streetsmartAPIVersion, this.reactVersion, this.apiLoadFinished);
+        await this.loadPackages(this.apiLoadFinished);
         this.$on("close", this.close);
     },
 
     methods: {
         ...mapMutations("Tools/StreetSmart", Object.keys(mutations)),
-        ...mapActions("Tools/StreetSmart", ["initApi", "setPosition", "destroyApi"]),
+        ...mapActions("Tools/StreetSmart", ["loadPackages", "initApi", "setPosition", "destroyApi"]),
 
         apiLoadFinished () {
             this.apiIsLoaded = true;
