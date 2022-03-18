@@ -1,5 +1,3 @@
-import rotateMarker from "../utils/rotateMarker";
-
 const actions = {
 
     /**
@@ -117,24 +115,23 @@ const actions = {
     /**
      * Moves and rotates the mapMarker.
      * @param {Object} param.dispatch the dispatch
-     * @param {Object} param.rootGetters the rootGetters
      * @param {Object} param.getters the getters
      * @param {Object} evt to get coordinates and rotation from
      * @returns {void}
      */
-    async moveAndRotateMarker ({dispatch, rootGetters, getters}, evt) {
+    async moveAndRotateMarker ({dispatch, getters}, evt) {
         await dispatch("MapMarker/placingPointMarker", evt.detail.recording.xyz, {root: true});
-        rotateMarker(rootGetters["MapMarker/markerPoint"], evt.detail.recording.relativeYaw + getters.lastYaw);
+        dispatch("MapMarker/rotatePointMarker", evt.detail.recording.relativeYaw + getters.lastYaw, {root: true});
     },
     /**
      * Rotates the mapMarker and remembers the last yaw.
      * @param {Object} param.commit the commit
-     * @param {Object} param.rootGetters the rootGetters
+     * @param {Object} param.dispatch the dispatch
      * @param {Object} evt to get rotation from
      * @returns {void}
      */
-    rotateMarker ({commit, rootGetters}, evt) {
-        rotateMarker(rootGetters["MapMarker/markerPoint"], evt.detail.yaw);
+    rotateMarker ({commit, dispatch}, evt) {
+        dispatch("MapMarker/rotatePointMarker", evt.detail.yaw, {root: true});
         commit("setLastYaw", evt.detail.yaw);
     },
     /**

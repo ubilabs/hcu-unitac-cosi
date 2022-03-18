@@ -218,7 +218,7 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
         });
     });
     describe("marker rotation", () => {
-        it("moveAndRotateMarker shall dispatch once and rotate icon", async () => {
+        it("moveAndRotateMarker shall dispatch twice and rotate icon", async () => {
             const evt = {
                 detail: {
                     recording: {
@@ -229,26 +229,25 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
             };
 
             getters.lastYaw = 1;
-            await actions.moveAndRotateMarker({dispatch, rootGetters, getters}, evt);
+            await actions.moveAndRotateMarker({dispatch, getters}, evt);
 
-            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.calledTwice).to.be.true;
             expect(dispatch.args[0][0]).to.equal("MapMarker/placingPointMarker");
             expect(dispatch.args[0][1]).to.deep.equal(evt.detail.recording.xyz);
-            expect(setRotationSpy.calledOnce).to.be.true;
-            expect(clearMarkerPointSpy.calledOnce).to.be.true;
-            expect(addFeaturesSpy.calledOnce).to.be.true;
+            expect(dispatch.args[1][0]).to.equal("MapMarker/rotatePointMarker");
+            expect(dispatch.args[1][1]).to.deep.equal(evt.detail.recording.relativeYaw + getters.lastYaw);
         });
-        it("rotateMarker shall commit once and rotate icon", () => {
+        it("rotateMarker shall commit and dispatch once and rotate icon", () => {
             const evt = {
                 detail: {
                     yaw: 2
                 }
             };
 
-            actions.rotateMarker({commit, rootGetters}, evt);
-            expect(setRotationSpy.calledOnce).to.be.true;
-            expect(clearMarkerPointSpy.calledOnce).to.be.true;
-            expect(addFeaturesSpy.calledOnce).to.be.true;
+            actions.rotateMarker({commit, dispatch}, evt);
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args[0][0]).to.equal("MapMarker/rotatePointMarker");
+            expect(dispatch.args[0][1]).to.deep.equal(evt.detail.yaw);
             expect(commit.calledOnce).to.be.true;
             expect(commit.args[0][0]).to.equal("setLastYaw");
             expect(commit.args[0][1]).to.equal(evt.detail.yaw);
