@@ -28,7 +28,7 @@ Das Werkzeug umfasst
 |----|-------------|---|-------|------------|------|
 |name|ja|String|360° Panorama|Der Titel des Werkzeuges bzw. der Eintrag in der Werkzeugliste|false|
 |glyphicon|ja|String|glyphicon glyphicon-picture|Das zu verwendende Icon.|false|
-|streetsmartAPIVersion|ja|String|v22.2|Die Version der streetsmartApi.|true|
+|streetsmartAPIVersion|ja|String|22.2|Die Version der streetsmartApi.|true|
 |reactVersion|ja|String|16.13.0|Die Version von React, kompatibel zur Version der streetsmartAPI.|true|
 |styleId|nein|String|"defaultMapMarkerPoint"|StyleId, um den Mapmarker in der Karte zu stylen, wenn streetsmart geöffnet ist.|true|
 
@@ -42,7 +42,7 @@ Das Werkzeug umfasst
 "streetSmart": {
     "name": "translate#additional:menu.tools.streetsmart",
     "glyphicon": "glyphicon-picture",
-    "streetsmartAPIVersion": "v22.2",
+    "streetsmartAPIVersion": "22.2",
     "reactVersion": "16.13.0"
     },
 ```

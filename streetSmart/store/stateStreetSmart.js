@@ -28,7 +28,7 @@ const state = {
     deactivateGFI: true,
     initialWidth: 500,
     serviceId: "streetsmart",
-    streetsmartAPIVersion: "v22.2",
+    streetsmartAPIVersion: "22.2",
     reactVersion: "16.12.0",
     styleId: "defaultMapMarkerPoint",
     mapMarkerStyleId: "defaultMapMarkerPoint",

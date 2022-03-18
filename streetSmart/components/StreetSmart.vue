@@ -18,7 +18,8 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/StreetSmart", Object.keys(getters)),
-        ...mapGetters("Map", ["clickCoord"])
+        ...mapGetters("Map", ["clickCoord"]),
+        ...mapGetters("MapMarker", ["markerPoint"])
     },
     watch: {
         active (value) {
@@ -36,6 +37,17 @@ export default {
         clickCoord (newCoord, lastCoord) {
             if (newCoord !== lastCoord) {
                 this.setPosition(newCoord);
+            }
+        },
+        "markerPoint.values_.visible": function (visible) {
+            if (this.active && visible) {
+                const features = this.markerPoint.getSource().getFeatures();
+
+                if (features && features[0]) {
+                    const coordinates = this.markerPoint.getSource().getFeatures()[0].getGeometry().getCoordinates();
+
+                    this.setPosition(coordinates);
+                }
             }
         }
     },

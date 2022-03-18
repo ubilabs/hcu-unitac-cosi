@@ -24,7 +24,7 @@ function loadPackage (src) {
  * @returns {void}
  */
 export default async function loadPackages (streetsmartAPIVersion, reactVersion, callback) {
-    const urlStreetsmartAPI = `https://streetsmart.cyclomedia.com/api/${streetsmartAPIVersion}/StreetSmartApi.js`,
+    const urlStreetsmartAPI = `https://streetsmart.cyclomedia.com/api/v${streetsmartAPIVersion}/StreetSmartApi.js`,
         urlReact = `https://unpkg.com/react@${reactVersion}/umd/react.production.min.js`,
         urlReactDom = `https://unpkg.com/react-dom@${reactVersion}/umd/react-dom.production.min.js`;
 
