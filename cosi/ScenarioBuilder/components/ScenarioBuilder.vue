@@ -194,6 +194,7 @@ export default {
                 }
                 return [featureTagStyle(feature)];
             });
+            newLayer.setZIndex(15);
             this.setGuideLayer(newLayer);
 
             return newLayer;

@@ -59,7 +59,10 @@ export default {
     <div
         :id="id"
     >
-        <label :for="id + '-slider'">
+        <label
+            :for="id + '-slider'"
+            class="slider-label"
+        >
             <input
                 :id="id + '-number'"
                 ref="input-number"
@@ -97,3 +100,9 @@ export default {
         <slot />
     </div>
 </template>
+
+<style lang="scss" scoped>
+    .slider-label {
+        width: 100%;
+    }
+</style>

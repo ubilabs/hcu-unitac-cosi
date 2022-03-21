@@ -230,6 +230,7 @@ export default {
 
             newLayer.setVisible(true);
             newLayer.setStyle(residentialLayerStyle);
+            newLayer.setZIndex(20);
             this.setDrawingLayer(newLayer);
 
             return newLayer;
