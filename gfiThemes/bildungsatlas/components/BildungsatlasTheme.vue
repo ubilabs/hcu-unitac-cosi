@@ -140,14 +140,16 @@ export default {
         <ul
             class="nav nav-pills"
         >
-            <li :class="{ active: isActiveTab('data') }">
+            <li :class="{ active: isActiveTab('data'), 'nav-item': true }">
                 <a
+                    class="nav-link"
                     href="#data"
                     @click.prevent="setActiveTab('data')"
                 >{{ $t("additional:addons.gfiThemes.bildungsatlas.general.tabData") }}</a>
             </li>
-            <li :class="{ active: isActiveTab('info') }">
+            <li :class="{ active: isActiveTab('info'), 'nav-item': true }">
                 <a
+                    class="nav-link"
                     href="#info"
                     @click.prevent="setActiveTab('info')"
                 >{{ $t("additional:addons.gfiThemes.bildungsatlas.general.tabInfo") }}</a>
