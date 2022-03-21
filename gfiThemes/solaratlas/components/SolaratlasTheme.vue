@@ -44,7 +44,7 @@ export default {
 <style lang="scss" scoped>
 .solaratlas {
     padding: 10px;
-    max-width: "600px";
+    max-width: 600px;
 }
 </style>
 
