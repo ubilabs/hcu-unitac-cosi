@@ -397,8 +397,9 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: function () {
+        requestInhabitants: async function () {
             this.close();
+            await this.$nextTick();
             this.$root.$emit("populationRequest", this.rawGeoJson);
         },
         createAnalysisSet: async function () {
@@ -509,16 +510,7 @@ export default {
                                 outlined
                                 dense
                                 @click:append="$refs.mode.blur()"
-                            >
-                                <!-- <template #append>
-                                    <v-switch
-                                        v-model="_setByFeature"
-                                        dense
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        class="inline-switch"
-                                    />
-                                </template> -->
-                            </v-select>
+                            />
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
@@ -718,29 +710,6 @@ export default {
                                     </template>
                                 </div>
                             </v-col>
-                            <!--<v-col cols="6">
-                                <div
-                                    id="download"
-                                >
-                                    <v-btn
-                                        id="download-geojson"
-                                        dense
-                                        small
-                                        tile
-                                        color="green lighten-1"
-                                        :disabled="isochroneFeatures.length === 0"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
-                                        @click="exportAsGeoJson(mapLayer)"
-                                    >
-                                        <v-icon
-                                            left
-                                        >
-                                            mdi-floppy
-                                        </v-icon>
-                                        Download GeoJSON
-                                    </v-btn>
-                                </div>
-                            </v-col>-->
                         </v-row>
                         <v-row>
                             <v-col>

@@ -111,10 +111,11 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: function () {
+        async requestInhabitants () {
             const geoJson = featureToGeoJson(this.feature, false, this.projectionCode, this.projectionCode);
 
             this.close();
+            await this.$nextTick();
             this.$root.$emit("populationRequest", geoJson.geometry);
         },
 

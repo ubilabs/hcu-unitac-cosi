@@ -307,7 +307,7 @@ export default {
                             :key="key"
                             dense
                         >
-                            <template v-if="!isObject(val)">
+                            <template v-if="!isObject(val) && key !== 'isSimulation' && key !== 'isModified'">
                                 <v-col cols="3">
                                     <v-subheader :title="beautifyKey(key)">
                                         {{ beautifyKey(key) }}
