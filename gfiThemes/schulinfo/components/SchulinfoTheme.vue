@@ -276,11 +276,11 @@ $background_color_2: rgba(0,0,0,.5);
     table {
         border-top: 1px solid rgb(229,229,229);
     }
-    .glyphicon {
+    .bootstrap-icon {
         font-size: 28px;
         padding: 0 2px;
     }
-    .glyphicon-star {
+    .star-fill {
         color: $color_2;
     }
 }
