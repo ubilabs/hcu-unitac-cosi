@@ -535,10 +535,10 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.trafficCount-gfi{
-        padding: 10px 5px 0;
+.trafficCount-gfi {
+    padding: 10px 5px 0;
         @media (max-width: 600px) {
-          width: inherit;
+            width: inherit;
             height: inherit;
             padding-left: 10px;
             padding-right: 10px;
