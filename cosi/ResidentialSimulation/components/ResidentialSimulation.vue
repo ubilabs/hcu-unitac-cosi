@@ -19,7 +19,8 @@ import Modal from "../../../../src/share-components/modals/components/ModalItem.
 import processStats from "../utils/processStats";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils";
 import ToolInfo from "../../components/ToolInfo.vue";
-import Slider from "../../../../src/modules/tools/filterGeneral/components/SnippetSlider.vue";
+import SimpleSlider from "./SimpleSlider.vue";
+import Vue from "vue";
 
 export default {
     name: "ResidentialSimulation",
@@ -32,7 +33,7 @@ export default {
         StatisticsTable,
         Modal,
         NeighborhoodEditor,
-        Slider
+        SimpleSlider
     },
     data () {
         return {
@@ -202,6 +203,7 @@ export default {
         invalidValues (invValues) {
             if (invValues.length > 0) {
                 this.errorMsg = true;
+                this.updateSliders();
             }
         }
     },
@@ -253,9 +255,11 @@ export default {
             }
         },
         async updateSliders () {
-            this.isInitializing = true;
-            await this.$nextTick();
-            this.isInitializing = false;
+            for (const key in this.neighborhood) {
+                if (this.$refs[key] instanceof Vue) {
+                    this.$refs[key].$forceUpdate();
+                }
+            }
         },
         /**
          * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature
@@ -268,59 +272,30 @@ export default {
         },
         updateArea (newArea) {
             updateArea(newArea, this.neighborhood, this.fallbacks);
-            this.updateSliders();
         },
         updateResidents (newResidents) {
-            this.invalidValues = updateResidents(newResidents.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-            this.updateSliders();
-            // this.unfocusInput(new Event("endaction"), this.$refs["slider-units"]);
+            this.invalidValues = updateResidents(parseFloat(newResidents), this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateUnits (newUnits) {
-            if (!newUnits.startup) {
-                this.invalidValues = updateUnits(newUnits.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
+            this.invalidValues = updateUnits(newUnits, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateDensity (newDensity) {
-            if (!newDensity.startup) {
-                this.invalidValues = updateDensity(newDensity.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
-            // this.unfocusInput(new Event("endaction"), this.$refs["slider-density"]);
+            this.invalidValues = updateDensity(newDensity, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateLivingSpace (newLivingSpace) {
-            if (!newLivingSpace.startup) {
-                this.invalidValues = updateLivingSpace(newLivingSpace.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
-            // this.unfocusInput(new Event("endaction"), this.$refs["slider-livingspace"]);
+            this.invalidValues = updateLivingSpace(newLivingSpace, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateGfz (newGfz) {
-            if (!newGfz.startup) {
-                this.invalidValues = updateGfz(newGfz.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
-            // this.unfocusInput(new Event("endaction"), this.$refs["slider-gfz"]);
+            this.invalidValues = updateGfz(newGfz, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateBgf (newBgf) {
-            if (!newBgf.startup) {
-                this.invalidValues = updateBgf(newBgf.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
-            // this.unfocusInput(new Event("endaction"), this.$refs["slider-bgf"]);
+            this.invalidValues = updateBgf(newBgf, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateHousholdSize (newHouseholdSize) {
-            if (!newHouseholdSize.startup) {
-                this.invalidValues = updateHousholdSize(newHouseholdSize.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
-            // this.unfocusInput(new Event("endaction"), this.$refs["slider-householdsize"]);
+            this.invalidValues = updateHousholdSize(newHouseholdSize, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         updateLivingSpaceRatio (newLivingSpaceRatio) {
-            if (!newLivingSpaceRatio.startup) {
-                this.invalidValues = updateLivingSpaceRatio(newLivingSpaceRatio.value, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
-                this.updateSliders();
-            }
+            this.invalidValues = updateLivingSpaceRatio(newLivingSpaceRatio, this.neighborhood, this.fallbacks, this.polygonArea, this.lowerBounds, this.upperBounds);
         },
         onReferencePickerActive () {
             geomPickerUnlisten(this.$refs["geometry-picker"]);
@@ -423,15 +398,6 @@ export default {
 
         escapeEditStatsTable () {
             this.editStatsTable = false;
-        },
-
-        unfocusInput (evt, ref) {
-            // weird hack to force vuetify to unfocus the slider
-            if (ref?.isActive) {
-                ref.isActive = false;
-                ref.onSliderMouseUp(evt);
-
-            }
         }
     }
 };
@@ -535,37 +501,24 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.residentialSimulation.units') }}
                                     </v-subheader>
                                 </v-col>
-                                <v-col cols="9">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                <v-col
+                                    cols="9"
+                                    :title="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
+                                >
+                                    <SimpleSlider
+                                        id="housing-units"
                                         ref="housingUnits"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
+                                        :value="neighborhood.housingUnits"
                                         :disabled="Boolean(!geometry)"
-                                        :info="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
-                                        :min-value="0"
-                                        :max-value="Math.ceil(polygonArea / 5) || 1"
-                                        :prechecked="neighborhood.housingUnits"
-                                        @changeRule="updateUnits"
-                                    />
-                                    <!-- <v-slider
-                                        ref="slider-units"
-                                        v-model="neighborhood.housingUnits"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpUnits')"
-                                        min="0"
-                                        :max="(polygonArea / 5) || 1"
-                                        :disabled="!geometry"
+                                        :min="0"
+                                        :max="Math.ceil(polygonArea / 5) || 1"
+                                        :step="1"
+                                        :unit-label="$t('additional:modules.tools.cosi.residentialSimulation.unitUnits')"
+                                        unit-position="right"
+                                        :locale="currentLocale"
                                         @input="updateUnits"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.housingUnits"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @input="updateUnits"
-                                            />
-                                        </template>
-                                    </v-slider> -->
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row
@@ -578,36 +531,20 @@ export default {
                                     </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                    <SimpleSlider
+                                        id="bgf"
                                         ref="bgf"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.bgf')"
+                                        :value="neighborhood.bgf"
                                         :disabled="Boolean(!geometry)"
-                                        :info="$t('additional:modules.tools.cosi.residentialSimulation.bgf')"
-                                        :min-value="0"
-                                        :max-value="Math.ceil(polygonArea * 4) || 1"
-                                        :prechecked="neighborhood.bgf"
-                                        @changeRule="updateBgf"
-                                    />
-                                    <!-- <v-slider
-                                        ref="slider-bgf"
-                                        v-model="neighborhood.bgf"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.bgf')"
-                                        min="0"
-                                        :max="(polygonArea * 4) || 1"
-                                        :disabled="!geometry"
+                                        :min="0"
+                                        :max="Math.ceil(polygonArea * 4) || 1"
+                                        :step="1"
+                                        unit-label="m²"
+                                        unit-position="right"
+                                        :locale="currentLocale"
                                         @input="updateBgf"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.bgf"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @input="updateBgf"
-                                            />
-                                        </template>
-                                    </v-slider> -->
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row
@@ -620,38 +557,20 @@ export default {
                                     </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                    <SimpleSlider
+                                        id="avg-household-size"
                                         ref="avgHouseholdSize"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
+                                        :value="neighborhood.avgHouseholdSize"
                                         :disabled="Boolean(!geometry)"
-                                        :info="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
-                                        :min-value="0"
-                                        :max-value="5"
-                                        :decimal-places="1"
-                                        :prechecked="neighborhood.avgHouseholdSize"
-                                        @changeRule="updateHousholdSize"
-                                    />
-                                    <!-- <v-slider
-                                        ref="slider-householdsize"
-                                        v-model="neighborhood.avgHouseholdSize"
-                                        :hint="$t('additional:modules.tools.cosi.residentialSimulation.helpHouseholdSize')"
-                                        min="0"
-                                        max="5"
-                                        step="0.2"
-                                        :disabled="!geometry"
+                                        :min="1"
+                                        :max="5"
+                                        :step="0.2"
+                                        :unit-label="$t('additional:modules.tools.cosi.residentialSimulation.unitHouseholdSize')"
+                                        unit-position="right"
+                                        :locale="currentLocale"
                                         @input="updateHousholdSize"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.avgHouseholdSize"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @input="updateHousholdSize"
-                                            />
-                                        </template>
-                                    </v-slider> -->
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row dense>
@@ -659,38 +578,20 @@ export default {
                                     <v-subheader>GFZ</v-subheader>
                                 </v-col>
                                 <v-col cols="9">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                    <SimpleSlider
+                                        id="gfz"
                                         ref="gfz"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.helpGfz')"
+                                        :value="neighborhood.gfz"
                                         :disabled="Boolean(!geometry)"
-                                        :info="$t('additional:modules.tools.cosi.residentialSimulation.helpGfz')"
-                                        :min-value="0"
-                                        :max-value="4"
-                                        :decimal-places="1"
-                                        :prechecked="neighborhood.gfz"
-                                        @changeRule="updateGfz"
-                                    />
-                                    <!-- <v-slider
-                                        ref="slider-gfz"
-                                        v-model="neighborhood.gfz"
-                                        hint="GFZ"
-                                        min="0"
-                                        max="4"
-                                        step="0.1"
-                                        :disabled="!geometry"
+                                        :min="0"
+                                        :max="4"
+                                        :step="0.1"
+                                        :unit-label="$t('additional:modules.tools.cosi.residentialSimulation.unitGfz')"
+                                        unit-position="right"
+                                        :locale="currentLocale"
                                         @input="updateGfz"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                v-model="neighborhood.gfz"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @input="updateGfz"
-                                            />
-                                        </template>
-                                    </v-slider> -->
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row dense>
@@ -698,36 +599,20 @@ export default {
                                     <v-subheader>Bevölkerungsdichte</v-subheader>
                                 </v-col>
                                 <v-col cols="9">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                    <SimpleSlider
+                                        id="population-density"
                                         ref="populationDensity"
-                                        :disabled="Boolean(!geometry)"
-                                        label="EW / km²"
-                                        :min-value="0"
-                                        :max-value="50000"
-                                        :prechecked="neighborhood.populationDensity"
-                                        @changeRule="updateDensity"
-                                    />
-                                    <!-- <v-slider
-                                        ref="slider-density"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.helpPopulationDensity')"
                                         :value="neighborhood.populationDensity"
-                                        hint="EW / km²"
-                                        min="0"
-                                        max="50000"
-                                        :disabled="!geometry"
-                                        @end="updateDensity"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                :value="neighborhood.populationDensity"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateDensity"
-                                            />
-                                        </template>
-                                    </v-slider> -->
+                                        :disabled="Boolean(!geometry)"
+                                        :min="0"
+                                        :max="50000"
+                                        :step="1"
+                                        :unit-label="$t('additional:modules.tools.cosi.residentialSimulation.unitPopulationDensity')"
+                                        unit-position="right"
+                                        :locale="currentLocale"
+                                        @input="updateDensity"
+                                    />
                                 </v-col>
                             </v-row>
                             <v-row
@@ -740,36 +625,20 @@ export default {
                                     </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                    <SimpleSlider
+                                        id="living-space"
                                         ref="livingSpace"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpace')"
+                                        :value="neighborhood.livingSpace"
                                         :disabled="Boolean(!geometry)"
-                                        label="m² / EW"
-                                        :min-value="0"
-                                        :max-value="100"
-                                        :prechecked="neighborhood.livingSpace"
-                                        @changeRule="updateLivingSpace"
+                                        :min="10"
+                                        :max="100"
+                                        :step="0.1"
+                                        :unit-label="$t('additional:modules.tools.cosi.residentialSimulation.unitLivingSpace')"
+                                        unit-position="right"
+                                        :locale="currentLocale"
+                                        @input="updateLivingSpace"
                                     />
-                                    <!-- <v-slider
-                                        ref="slider-livingspace"
-                                        v-model="neighborhood.livingSpace"
-                                        hint="m² / EW"
-                                        min="0"
-                                        max="100"
-                                        :disabled="!geometry"
-                                        @end="updateLivingSpace"
-                                    >
-                                        <template #append>
-                                            <v-text-field
-                                                :value="neighborhood.livingSpace"
-                                                class="mt-0 pt-0 slider-val"
-                                                hide-details
-                                                single-line
-                                                type="number"
-                                                @change="updateLivingSpace"
-                                            />
-                                        </template>
-                                    </v-slider> -->
                                 </v-col>
                             </v-row>
                             <v-row
@@ -781,26 +650,21 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.residentialSimulation.livingSpaceRatio') }}
                                     </v-subheader>
                                 </v-col>
-                                <v-col cols="3">
-                                    <Slider
-                                        v-if="!isInitializing"
+                                <v-col cols="9">
+                                    <SimpleSlider
+                                        id="living-space-ratio"
                                         ref="livingSpaceRatio"
+                                        :title="$t('additional:modules.tools.cosi.residentialSimulation.helpLivingSpaceRatio')"
+                                        :value="neighborhood.livingSpaceRatio"
                                         :disabled="Boolean(!geometry)"
-                                        label="m² / EW"
-                                        :min-value="0"
-                                        :max-value="1"
-                                        :decimal-places="2"
-                                        :prechecked="neighborhood.livingSpaceRatio"
-                                        @changeRule="updateLivingSpaceRatio"
+                                        :min="0"
+                                        :max="1"
+                                        :step="0.01"
+                                        :unit-label="$t('additional:modules.tools.cosi.residentialSimulation.unitLivingSpaceRatio')"
+                                        unit-position="right"
+                                        :locale="currentLocale"
+                                        @input="updateLivingSpaceRatio"
                                     />
-                                    <!-- <v-text-field
-                                        v-model="neighborhood.livingSpaceRatio"
-                                        class="mt-0 pt-0 slider-val"
-                                        hide-details
-                                        single-line
-                                        type="number"
-                                        :disabled="!geometry"
-                                    /> -->
                                 </v-col>
                             </v-row>
                             <v-divider />
