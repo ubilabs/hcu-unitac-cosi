@@ -39,9 +39,11 @@ export default {
 <template>
     <span
         v-if="componentExists(id)"
-        class="glyphicon glyphicon-map-marker"
+        class="bootstrap-icon"
         :title="$t('additional:modules.tools.gfi.themes.schulinfo.favoriteicons.adoptedTargetSchool')"
         @click="takeRoute"
         @keydown.enter="takeRoute"
-    />
+    >
+        <i class="geo-alt-fill" />
+    </span>
 </template>
