@@ -451,10 +451,6 @@ export default {
         .gfi-info {
             padding: 0 10px 10px;
         }
-
-        .hidden {
-            display: none;
-        }
     }
 </style>
 
