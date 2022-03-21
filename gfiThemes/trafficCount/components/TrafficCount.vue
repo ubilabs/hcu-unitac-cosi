@@ -450,29 +450,42 @@ export default {
             >
                 <li
                     value="infos"
-                    class="active"
+                    class="active nav-item"
                 >
                     <a
                         data-toggle="tab"
                         href="#infos"
+                        class="nav-link"
                     >{{ infoLabel }}</a>
                 </li>
-                <li value="day">
+                <li
+                    value="day"
+                    class="nav-item"
+                >
                     <a
                         data-toggle="tab"
                         href="#day"
+                        class="nav-link"
                     >{{ dayLabel }}</a>
                 </li>
-                <li value="week">
+                <li
+                    value="week"
+                    class="nav-item"
+                >
                     <a
                         data-toggle="tab"
                         href="#week"
+                        class="nav-link"
                     >{{ weekLabel }}</a>
                 </li>
-                <li value="year">
+                <li
+                    value="year"
+                    class="nav-item"
+                >
                     <a
                         data-toggle="tab"
                         href="#year"
+                        class="nav-link"
                     >{{ yearLabel }}</a>
                 </li>
             </ul>
