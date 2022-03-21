@@ -234,9 +234,6 @@ export default {
             border-top: 1px solid #ddd;
         }
 
-        .hidden {
-            display: none;
-        }
         .footer {
             margin: 0 0 10px 10px;
         }
