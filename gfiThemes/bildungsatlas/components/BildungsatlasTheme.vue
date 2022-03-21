@@ -193,7 +193,7 @@ export default {
                 margin-bottom: 10px;
             }
         }
-        .panel {
+        .card {
             &.graphHeader {
                 padding: 0 8px 8px;
                 border-bottom: 2px solid #ddd;
