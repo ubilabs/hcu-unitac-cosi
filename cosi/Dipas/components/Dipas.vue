@@ -17,6 +17,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 import {exportAsGeoJson} from "../utils/exportResults";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
+import {getCenterOfMass} from "../../utils/geomUtils";
 
 
 export default {
@@ -223,8 +224,7 @@ export default {
             for (const feature of features) {
                 if (!feature.get("dipasLocated")) {
                     const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
-                        extent = model.get("features")[0].getGeometry().getExtent(),
-                        center = getCenter(extent);
+                        center = getCenterOfMass(model.get("features")[0], this.projectionCode, this.projectionCode);
 
                     feature.setGeometry(new Point(center));
 
