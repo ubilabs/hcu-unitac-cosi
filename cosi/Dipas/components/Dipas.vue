@@ -34,7 +34,9 @@ export default {
             selectedStyling: null,
             categoryRainbow: false,
             pollingEnabled: false,
-            poll: null
+            poll: null,
+            isMounted: false,
+            scrollPos: ""
         };
     },
     computed: {
@@ -48,7 +50,7 @@ export default {
 
                 return projectActive.layer || projectActive.contributions || projectActive.heatmap;
             };
-        }
+        },
     },
     watch: {
         selectedStyling: function () {
@@ -82,6 +84,7 @@ export default {
    * @returns {void}
    */
     async mounted () {
+        this.isMounted = true;
         this.applyTranslationKey(this.name);
         const fetch = await this.fetchProjects(),
             features = new GeoJSON().readFeatures(fetch);
@@ -619,6 +622,32 @@ export default {
                     }
                 }
             }, this.pollingInterval);
+        },
+
+        scrollPosition (index) {
+            const target = this.$refs.pdesc[index];
+
+            if (target.scrollTop === 0) {
+                this.scrollPos = "bottom";
+                return;
+            }
+
+            if (target.scrollTop > 0 && target.scrollTop < (target.scrollHeight - target.offsetHeight - 3)) {
+                this.scrollPos = "both";
+                return;
+            }
+
+            if (target.scrollTop >= (target.scrollHeight - target.offsetHeight - 3)) {
+                this.scrollPos = "top";
+                return;
+            }
+
+            this.scrollPos = "";
+
+
+            // console.log(event);
+            // console.log(event.target.scrollTop, event.target.scrollHeight);
+
         }
     }
 };
@@ -652,6 +681,7 @@ export default {
                                 <v-list-group
                                     v-for="[index, feature] in projectsFeatureCollection.entries()"
                                     :key="feature.get('id')"
+                                    @click="scrollPosition(index)"
                                 >
                                     <template #activator>
                                         <v-list-item-content>
@@ -685,10 +715,16 @@ export default {
                                             </v-btn>
                                         </v-list-item-icon>
                                     </template>
-                                    <p
-                                        class="description"
-                                        v-html="feature.get('description')"
-                                    />
+                                    <div
+                                        ref="pdesc"
+                                        class="p_description"
+                                        :class="scrollPos"
+                                        @scroll="scrollPosition(index)"
+                                    >
+                                        <p
+                                            v-html="feature.get('description')"
+                                        />
+                                    </div>
                                     <v-chip
                                         v-for="category in feature.get('standardCategories')"
                                         :key="feature.get('id') + category"
@@ -833,6 +869,7 @@ export default {
   min-height: 100px;
   max-height: 45vh;
   overflow-y: auto;
+  overflow-x:hidden;
 }
 
 #radio {
@@ -849,11 +886,39 @@ export default {
     margin-left: 20px;
 }
 
-p.description {
+.p_description {
+    position:relative;
+    margin:20px auto;
+    width:90%;
+    box-sizing:content-box;
     padding: 20px;
-    max-height: 40vh;
+    padding-bottom:0px;
+    padding-right:60px;
     overflow-y: auto;
-    line-height: 1.5rem;
+    overflow-x:hidden;
+    border-radius:10px;
+    max-height: 240px;
+    background:whitesmoke;
+
+    p {
+        height:auto;
+        width:100%;
+        overflow-x:hidden;
+        line-height: 1.5rem;
+    }
+
+    &.top {
+        border-top:4px solid #ccc;
+    }
+
+    &.bottom {
+        border-bottom:4px solid #ccc;
+    }
+
+    &.both {
+        border-top:4px solid #ccc;
+        border-bottom:4px solid #ccc;
+    }
 }
 
 .v-chip.category {

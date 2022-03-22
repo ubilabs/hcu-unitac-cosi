@@ -1,7 +1,8 @@
 ### Erreichbarkeitsanalyse
 Eine Erreichbarkeitsanalyse kann auf zwei Arten durchgeführt werden:  
 1. [Ab einem Referenzpunkt](#markdown-header-erreichbarkeit-ab-einem-Referenzpunkt)  
-2. [Im Planungsgebiet](#markdown-header-erreichbarkeit-im-gebiet)  
+2. [Im Planungsgebiet](#markdown-header-erreichbarkeit-im-gebiet) 
+3. [Entlang einer Route](#markdown-header-erreichbarkeit-entlang-einer-route)
 
 Der Modus der Analyse kann im Dropdown Menü ausgewÃ¤hlt werden.
 
@@ -42,7 +43,7 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
    > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt.
    Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern als Heatmap.
 10. **Pagination**
-   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Pagination](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
 
 
 #### Erreichbarkeit im Gebiet
@@ -74,4 +75,25 @@ Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungs
 11. **Legende und Probleme**
    > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
 12. **Pagination**
-   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Pagination](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+   ### Erreichbarkeit entlang einer Route
+Wenn Sie im Routing-Tool eine Route erstellt haben, können Sie die Erreichbarkeit in einem bestimmten Umkreis um die Route herum berechnen lassen. 
+  
+Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
+![Abbildung 3: Erreichbarkeit entlang einer Route](https://user-images.githubusercontent.com/43250699/159470252-067117b3-b8a3-481d-b007-113e7a0477c8.png)
+
+*Abbildung 3: Erreichbarkeit entlang einer Route*
+1. **Auswahl des Modus**
+   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt, entlang einer Route oder Erreichbarkeit der gewählten Einrichtungen im Gebiet. Beachten Sie, dass die Erreichbarkeit entlang einer Route nur auswählen können, wenn Sie im Vorfeld im Routing-Tool eine Route angelegt haben.
+2. **Route auswählen**
+   > Die im Routing-Tool aktive Route wird automatisch ausgewählt.
+3. **Vorgegebene Felder**
+   > Sie können bei der Erreichbarkeitsanalyse anhand einer Route kein Verkehrsmittel auswählen und somit auch nicht, ob die Entfernung in Metern oder Minuten berechnet werden soll. Es wird immer die Entfernung in Metern (Luftlinie) zur Berechnung herangezogen.
+4. **Entfernung**
+   > Entfernung in Metern angeben.
+5. **Berechnen**
+6. **Ergebnis ausblenden** 
+7. **Legende und Probleme**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+8. **Ergebnisverzeichnis**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.

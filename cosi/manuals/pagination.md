@@ -1,11 +1,11 @@
-### Pagination
-Die Pagination unterstützt in einigen Werkzeugen die Verwaltung mehrerer Datensätze, die ihr zugrunde liegenden Funktionen sind aber standardisiert und werden im Folgenden näher erläutert. 
+### Ergebnisverzeichnis
+Das Ergebnisverzeichnis unterstützt in einigen Werkzeugen die Verwaltung mehrerer Datensätze, die ihr zugrunde liegenden Funktionen sind aber standardisiert und werden im Folgenden näher erläutert. 
   
 
 
-![Pagination des Werkzeugs "Vergleichbare Gebiete ermitteln"](https://user-images.githubusercontent.com/43250699/157007454-80d78c08-e141-4384-85ea-435a93ca3356.png)
+![Ergebnisverzeichnis des Werkzeugs "Vergleichbare Gebiete ermitteln"](https://user-images.githubusercontent.com/43250699/157007454-80d78c08-e141-4384-85ea-435a93ca3356.png)
 
-*Abbildung 1: Pagination des Werkzeugs "Vergleichbare Gebiete ermitteln"*
+*Abbildung 1: Ergebnisverzeichnis des Werkzeugs "Vergleichbare Gebiete ermitteln"*
   
 1. **Direktanwahl eines Datensatzes**
    > Wählen Sie direkt den Datensatz mit dem jeweiligen Index an. Sie können hier auch ablesen, wieviele Datensätze sie aktuell in dem jeweiligen Werkzeug haben.
