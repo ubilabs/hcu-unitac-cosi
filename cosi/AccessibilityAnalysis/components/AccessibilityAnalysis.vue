@@ -241,6 +241,7 @@ export default {
 
             this._isochroneFeatures = this.dataSets[newValue].results;
             this.renderIsochrones(this._isochroneFeatures);
+            this.hide = false;
         },
         async scenarioUpdated () {
             await this.$nextTick();
@@ -395,6 +396,8 @@ export default {
             this.$root.$emit("populationRequest", this.rawGeoJson);
         },
         createAnalysisSet: async function () {
+            this.hide = false;
+
             const analysisSet = {
                 inputs: {},
                 results: [],
