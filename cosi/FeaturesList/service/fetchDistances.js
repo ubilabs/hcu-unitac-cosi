@@ -2,12 +2,14 @@ import axios from "axios";
 
 /**
  *
- * @param {*} sources sources
- * @param {*} destinations destinations
- * @param {*} profile p
- * @return {*} distances
+ * @param {[Number, Number][]} sources sources
+ * @param {[Number, Number][]} destinations destinations
+ * @param {String} [profile] profile
+ * @param {String} serviceId routing service
+ * @param {String} fallbackId alternative routing service
+ * @return {number[]} distances
  */
-async function fetchMatrix (sources, destinations, profile) {
+async function fetchMatrix (sources, destinations, profile, serviceId, fallbackId) {
     if (sources.length === 0) {
         return [];
     }
@@ -18,11 +20,11 @@ async function fetchMatrix (sources, destinations, profile) {
         return response;
     }, function (error) {
         const originalRequest = error.config,
-            bkg_url = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url");
+            bkg_url = Radio.request("RestReader", "getServiceById", serviceId).get("url");
 
         if (originalRequest.url.indexOf(bkg_url) === 0 && error.response.status !== 200 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const uri = originalRequest.url.replace(bkg_url, Radio.request("RestReader", "getServiceById", "csl_ors").get("url"));
+            const uri = originalRequest.url.replace(bkg_url, Radio.request("RestReader", "getServiceById", fallbackId).get("url"));
 
             return axios.post(uri, originalRequest.data,
                 {
@@ -31,7 +33,7 @@ async function fetchMatrix (sources, destinations, profile) {
         }
         return Promise.reject(error);
     });
-    const baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/",
+    const baseUrl = Radio.request("RestReader", "getServiceById", serviceId).get("url") + "/v2/",
         service = "matrix",
         uri = baseUrl + service + "/" + (profile || "foot-walking"),
         opts = {
@@ -89,20 +91,22 @@ function removeInvalidPoints (sources, destinations, msg) {
 
 /**
  *
- * @param {*} sources sources
- * @param {*} destinations destinations
- * @param {*} profile profile
- * @return {*} score
+ * @param {[Number, Number][]} sources sources
+ * @param {[Number, Number][]} destinations destinations
+ * @param {String} [profile] profile
+ * @param {String} serviceId routing service
+ * @param {String} fallbackId alternative routing service
+ * @return {Object[]} score
  */
-export async function fetchDistances (sources, destinations, profile) {
+export async function fetchDistances (sources, destinations, profile, serviceId, fallbackId) {
     try {
-        return await fetchMatrix(sources, destinations, profile);
+        return await fetchMatrix(sources, destinations, profile, serviceId, fallbackId);
     }
     catch (err) {
         if (err?.response?.data?.error?.code === 6010) {
             const msg = err?.response?.data?.error.message,
                 ret = removeInvalidPoints(sources, destinations, msg),
-                dists = await fetchMatrix(ret[1], ret[2], profile);
+                dists = await fetchMatrix(ret[1], ret[2], profile, serviceId, fallbackId);
 
             for (const i of ret[0]) {
                 dists.splice(i, 0, null);

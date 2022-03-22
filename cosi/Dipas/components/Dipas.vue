@@ -17,6 +17,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 import {exportAsGeoJson} from "../utils/exportResults";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
+import {getCenterOfMass} from "../../utils/geomUtils";
 
 
 export default {
@@ -39,6 +40,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
+        ...mapGetters("Tools/FeaturesList", ["isFeatureActive"]),
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"]),
         isProjectActive () {
@@ -94,7 +96,8 @@ export default {
                     id: id,
                     name: id,
                     project: true,
-                    features: [feature]
+                    features: [feature],
+                    isBaseLayer: true
                 },
                 style = new Style({
                     fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
@@ -221,8 +224,7 @@ export default {
             for (const feature of features) {
                 if (!feature.get("dipasLocated")) {
                     const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
-                        extent = model.get("features")[0].getGeometry().getExtent(),
-                        center = getCenter(extent);
+                        center = getCenterOfMass(model.get("features")[0], this.projectionCode, this.projectionCode);
 
                     feature.setGeometry(new Point(center));
 
@@ -283,16 +285,17 @@ export default {
         },
         /**
          * changes the visibility of the contributions layer for the given project id
-         * @param {String} id the project id
+         * @param {Object} feature the project feature
          * @param {Boolean} value wether the contributions layer shall be visible or not
          * @returns {void}
          */
-        async changeContributionVisibility (id, value) {
-            const layer = {
-                id: id + "-contributions",
-                name: id + " contributions",
-                features: []
-            };
+        async changeContributionVisibility (feature, value) {
+            const id = feature.get("id"),
+                layer = {
+                    id: id + "-contributions",
+                    name: feature.get("nameFull") + " Beiträge",
+                    features: []
+                };
 
             let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
 
@@ -449,7 +452,8 @@ export default {
         async changeHeatmapVisibility (id, value) {
             const
                 layerId = id + "-heatmap",
-                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"}),
+                isFeatureActive = this.isFeatureActive;
             let
                 layer = getLayerById(this.map.getLayers().getArray(), layerId);
 
@@ -475,6 +479,9 @@ export default {
                     blur: 20,
                     id: layerId,
                     weight: function (feature) {
+                        if (!isFeatureActive(feature)) {
+                            return 0;
+                        }
                         const votingPro = parseInt(feature.get("votingPro"), 10),
                             votingContra = parseInt(feature.get("votingContra"), 10),
                             weight = (votingPro + votingContra) / maxVotes;
@@ -716,7 +723,7 @@ export default {
                                         <v-list-item-action>
                                             <v-switch
                                                 v-model="projectsActive[feature.get('id')]['contributions']"
-                                                @change="changeContributionVisibility(feature.get('id'), $event)"
+                                                @change="changeContributionVisibility(feature, $event)"
                                             />
                                         </v-list-item-action>
                                         <v-list-item-content>
@@ -826,7 +833,7 @@ export default {
 #dipas {
   width: auto;
   min-height: 100px;
-  max-height: 45vh;
+  max-height: 43vh;
   overflow-y: auto;
 }
 

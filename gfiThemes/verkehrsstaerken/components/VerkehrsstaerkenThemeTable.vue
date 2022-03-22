@@ -93,7 +93,7 @@ export default {
 
 <style lang="scss" scoped>
 .verkehrsstaerken-table {
-        margin: 6px 15px 0 12px;
+        margin: 6px 15px 10px 12px;
         overflow: auto;
         table {
             margin: 0;

@@ -1,5 +1,6 @@
 import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
 import stateCalculateRatio from "./stateCalculateRatio";
+import Vue from "vue";
 
 const mutations = {
     /**
@@ -9,6 +10,19 @@ const mutations = {
      * will be returned.
      */
     ...generateSimpleMutations(stateCalculateRatio),
+
+    /**
+     * Sets the dataSets object and resets the active index to 0
+     * @param {Object} state of this component
+     * @param {Object[]} payload the dataSets object
+     * @returns {void}
+     */
+    async setDataSets (state, payload) {
+        state.activeSet = -1;
+        await Vue.nextTick();
+        state.dataSets = payload;
+        state.activeSet = 0;
+    },
 
     /**
      * If name from config.json starts with "translate#", the corrected key is set to name here.

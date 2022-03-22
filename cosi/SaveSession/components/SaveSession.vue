@@ -10,6 +10,7 @@ import {Point, Polygon, MultiPoint, MultiPolygon} from "ol/geom";
 import serializeState from "./serializeState";
 import parseState from "./parseState";
 import ToolInfo from "../../components/ToolInfo.vue";
+import openDB from "../utils/indexedDb";
 
 export default {
     name: "SaveSession",
@@ -20,6 +21,7 @@ export default {
     data () {
         return {
             localStorage: null,
+            db: null,
             storePaths: {
                 // The order matters for loading
                 Map: [
@@ -33,6 +35,7 @@ export default {
                         "chartConfigs"
                     ],
                     CalculateRatio: [
+                        "dataSets",
                         "resultHeaders",
                         "results",
                         "active"
@@ -47,6 +50,7 @@ export default {
                         "active"
                     ],
                     AccessibilityAnalysis: [
+                        "dataSets",
                         "isochroneFeatures",
                         "rawGeoJson",
                         "mode",
@@ -69,6 +73,10 @@ export default {
                     ],
                     Draw: [
                         "layer"
+                    ],
+                    QueryDistricts: [
+                        "dataSets",
+                        "propertiesMap"
                     ]
                 }
             },
@@ -90,9 +98,15 @@ export default {
             autoSave: null,
             autoSaveInterval: undefined,
             autoSaveDialog: false,
+            successDialog: false,
+            successText: "",
             confirmDialog: false,
-            settingsChanged: false,
-            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon}
+            geomConstructors: {Point, Polygon, MultiPoint, MultiPolygon},
+            // toolsWithDatasets: ["AccessibilityAnalysis", "CalculateRatio", "QueryDistricts"]
+            deepFeatures: {
+                AccessibilityAnalysis: ["dataSets"],
+                QueryDistricts: ["propertiesMap"]
+            }
         };
     },
     computed: {
@@ -120,8 +134,8 @@ export default {
         },
 
         autoSave () {
-            this.settingsChanged = true;
-            this.confirmDialog = true;
+            this.successText = this.$t("additional:modules.tools.cosi.saveSession.settingsChanged");
+            this.successDialog = true;
 
             if (this.autoSave) {
                 this.localStorage.setItem("cosi-auto-save", true);
@@ -130,12 +144,6 @@ export default {
             else {
                 this.localStorage.setItem("cosi-auto-save", false);
                 this.disableAutoSave();
-            }
-        },
-
-        confirmDialog (state) {
-            if (!state) {
-                this.settingsChanged = false;
             }
         },
 
@@ -152,27 +160,23 @@ export default {
             this.setActive(false);
         });
     },
-    mounted () {
+    async mounted () {
         this.localStorage = window.localStorage;
+        this.db = await openDB("cosi");
 
-        const
-            autoSave = JSON.parse(this.localStorage.getItem("cosi-auto-save")),
-            lastSession = JSON.parse(this.localStorage.getItem("cosi-state"));
+        const autoSave = JSON.parse(this.localStorage.getItem("cosi-auto-save"));
 
         if (autoSave !== null) {
             this.autoSave = autoSave;
             this.$nextTick(() => {
-                this.confirmDialog = false;
+                this.successDialog = false;
             });
         }
         else {
             this.autoSaveDialog = true;
         }
 
-        if (lastSession) {
-            this.loadDialog = true;
-            this.latestDate = lastSession?.meta?.created;
-        }
+        this.checkLastSession();
     },
     methods: {
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
@@ -190,7 +194,6 @@ export default {
             this.session.state = this.state;
             this.session.meta.created = new Date().toLocaleString();
             this.session.meta.date = new Date();
-            this.confirmDialog = true;
         },
         quickSave () {
             this.save();
@@ -202,12 +205,47 @@ export default {
         },
 
         clear () {
+            if (this.db) {
+                const
+                    transaction = this.db.transaction("sessions", "readwrite"),
+                    request = transaction.objectStore("sessions").clear();
+
+                request.onsuccess = () => {
+                    this.latestDate = null;
+                    this.confirmDialog = false;
+                    this.successText = this.$t("additional:modules.tools.cosi.saveSession.cleared");
+                    this.successDialog = true;
+                };
+            }
             this.localStorage.removeItem("cosi-state");
         },
 
         storeToLocalStorage () {
-            // console.log(this.session);
-            this.localStorage.setItem("cosi-state", JSON.stringify(this.session));
+            if (this.db) {
+                const
+                    transaction = this.db.transaction("sessions", "readwrite"),
+                    request = transaction.objectStore("sessions").put(this.session, 0);
+
+                request.onerror = (err) => {
+                    console.error(err);
+                    this.addSingleAlert({
+                        content: "Die Sitzung konnte nicht gespeichert werden. Die Fehlermeldung finden Sie, indem Sie die Taste F12 drücken. Wenden Sie sich bitte damit an Ihren Administrator.",
+                        category: "Error",
+                        displayClass: "error"
+                    });
+                };
+                request.onsuccess = () => {
+                    this.successText = this.$t("additional:modules.tools.cosi.saveSession.success");
+                    this.successDialog = true;
+                    this.latestDate = this.session.meta?.created;
+                };
+            }
+            else {
+                this.localStorage.setItem("cosi-state", JSON.stringify(this.session));
+                this.successText = this.$t("additional:modules.tools.cosi.saveSession.success");
+                this.successDialog = true;
+                this.latestDate = this.session.meta?.created;
+            }
         },
 
         loadLastSession () {
@@ -215,15 +253,56 @@ export default {
             this.loadDialog = false;
         },
 
-        loadFromLocalStorage () {
-            try {
-                const session = JSON.parse(this.localStorage.getItem("cosi-state"));
+        checkLastSession () {
+            let
+                lastSession = this.db ? undefined : JSON.parse(this.localStorage.getItem("cosi-state"));
+            const
+                transaction = this.db?.transaction("sessions", "readwrite"),
+                request = transaction?.objectStore("sessions").get(0);
 
-                this.load(session);
+            if (lastSession) {
+                this.loadDialog = true;
+                this.latestDate = lastSession?.meta?.created;
+            }
+
+            request.onsuccess = () => {
+                lastSession = request.result;
+                if (lastSession) {
+                    this.loadDialog = true;
+                    this.latestDate = lastSession?.meta?.created;
+                }
+            };
+        },
+
+        async loadFromLocalStorage () {
+            try {
+                const session = new Promise((res, rej) => {
+                    if (this.db) {
+                        const
+                            transaction = this.db.transaction("sessions", "readwrite"),
+                            request = transaction.objectStore("sessions").get(0);
+
+                        request.onerror = (err) => {
+                            rej(err);
+                        };
+                        request.onsuccess = () => {
+                            res(request.result);
+                        };
+                    }
+                    else {
+                        res(JSON.parse(this.localStorage.getItem("cosi-state")));
+                    }
+                });
+
+                this.load(await session);
             }
             catch (e) {
                 console.error(e);
-                console.warn("No loadable session has yet been saved");
+                this.addSingleAlert({
+                    content: "Die letzte Sitzung konnte nicht geladen werden. Die Fehlermeldung finden Sie, indem Sie die Taste F12 drücken. Wenden Sie sich bitte damit an Ihren Administrator.",
+                    category: "Error",
+                    displayClass: "error"
+                });
             }
         },
 
@@ -317,6 +396,12 @@ export default {
 
         disableAutoSave () {
             clearInterval(this.autoSaveInterval);
+        },
+
+        hasDeepFeatures (key, attr) {
+            const tool = Object.keys(this.deepFeatures).find(id => key.includes(id));
+
+            return this.deepFeatures[tool]?.includes(attr);
         }
     }
 };
@@ -377,6 +462,7 @@ export default {
                                     small
                                     color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.loadTooltip')"
+                                    :disabled="!latestDate"
                                     @click="loadLastSession"
                                 >
                                     {{ $t('additional:modules.tools.cosi.saveSession.load') }}
@@ -393,7 +479,7 @@ export default {
                                     small
                                     color="grey lighten-1"
                                     :title="$t('additional:modules.tools.cosi.saveSession.clear')"
-                                    @click="clear"
+                                    @click="confirmDialog = true"
                                 >
                                     <v-icon>mdi-delete</v-icon>
                                 </v-btn>
@@ -464,13 +550,6 @@ export default {
                                 cols="6"
                                 class="flex"
                             >
-                                <!-- <v-file-input
-                                    v-model="sessionFile"
-                                    :label="$t('additional:modules.tools.cosi.saveSession.dropFile')"
-                                    tile
-                                    depressed
-                                    accept="text/json;charset=utf-8"
-                                /> -->
                                 <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
                                 <input
                                     id="file-prompt"
@@ -486,20 +565,6 @@ export default {
                             class="flex"
                             dense
                         >
-                            <!-- <v-col
-                                cols="6"
-                                class="flex"
-                            >
-                                <v-checkbox
-                                    id="auto-save"
-                                    v-model="autoSave"
-                                    class="form-check-input"
-                                    dense
-                                    hide-details
-                                    :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"
-                                    :title="$t('additional:modules.tools.cosi.saveSession.autoSaveCheck')"
-                                />
-                            </v-col> -->
                             <small>
                                 Bitte beachten Sie, dass nicht alle Daten und Aktionen gespeichert werden können. Grundsätzlich bezieht sich das Speichern auf die Gebiets- und Themenauswahl, Analyse- und Simulationsergebnisse. Welche Daten gespeichert werden können entnehmen Sie bitte der Anleitung.
                             </small>
@@ -545,13 +610,11 @@ export default {
                 color="primary"
             >
                 {{ $t('additional:modules.tools.cosi.saveSession.filenamePrompt') }}
-                <template>
-                    <v-text-field
-                        id="title-field"
-                        v-model="session.meta.title"
-                        name="session-title"
-                    />
-                </template>
+                <v-text-field
+                    id="title-field"
+                    v-model="session.meta.title"
+                    name="session-title"
+                />
 
                 <template #action="{ attrs }">
                     <v-btn
@@ -598,23 +661,44 @@ export default {
                 </template>
             </v-snackbar>
             <v-snackbar
-                v-model="confirmDialog"
+                v-model="successDialog"
                 :timeout="2000"
                 color="success"
             >
-                <template v-if="settingsChanged">
-                    {{ $t('additional:modules.tools.cosi.saveSession.settingsChanged') }}
-                </template>
-                <template v-else>
-                    {{ $t('additional:modules.tools.cosi.saveSession.success') }}
-                </template>
+                {{ successText }}
                 <template #action="{ attrs }">
                     <v-btn
                         v-bind="attrs"
                         text
-                        @click="confirmDialog = false"
+                        @click="successDialog = false"
                     >
                         <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </template>
+            </v-snackbar>
+            <v-snackbar
+                v-model="confirmDialog"
+                :timeout="-1"
+                color="white"
+                light
+                centered
+            >
+                {{ $t('additional:modules.tools.cosi.saveSession.clearConfirm') }}
+
+                <template #action="{ attrs }">
+                    <v-btn
+                        v-bind="attrs"
+                        text
+                        @click="clear"
+                    >
+                        {{ $t('common:button.delete') }}
+                    </v-btn>
+                    <v-btn
+                        text
+                        v-bind="attrs"
+                        @click="confirmDialog = false"
+                    >
+                        {{ $t('common:button.cancel') }}
                     </v-btn>
                 </template>
             </v-snackbar>

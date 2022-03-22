@@ -1,6 +1,7 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
 import {getLayerList as _getLayerList} from "masterportalAPI/src/rawLayerList";
@@ -22,7 +23,8 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        LayerFilter
+        LayerFilter,
+        AnalysisPagination
     },
     data () {
         return {
@@ -36,10 +38,8 @@ export default {
             resultNames: null,
             results: null,
             refDistrict: null,
-            dashboard: null,
             facilityNames: [],
-            propertiesMap: {},
-            resultTableHeaders: null
+            resultTableHeaders: []
         };
     },
     computed: {
@@ -57,11 +57,14 @@ export default {
         ...mapGetters("Map", ["layerById", "projectionCode"])
     },
     watch: {
-        async layerFilterModels () {
-            this.computeResults();
+        async layerFilterModels (newValue) {
+            this.dataSets[this.activeSet].inputs.layerFilterModels = newValue;
+            await this.computeResults();
+            this.dataSets[this.activeSet].inputs.resultTableHeaders = this.resultTableHeaders;
+            this.dataSets[this.activeSet].results = this.results;
         },
 
-        async selectedDistrict () {
+        async selectedDistrict (newValue) {
             const newModels = [];
 
             for (const m of this.layerFilterModels) {
@@ -71,6 +74,7 @@ export default {
                 this.setLayerFilterModelValue(newModel);
             }
             this.layerFilterModels = newModels;
+            this.dataSets[this.activeSet].inputs.selectedDistrict = newValue;
         },
 
         facilityNames () {
@@ -95,12 +99,36 @@ export default {
             this.$nextTick().then(() => {
                 this.setFacilityNames();
             });
+        },
+        activeSet (newValue) {
+            if (!this.dataSets[newValue]) {
+                return;
+            }
+
+            this.layerFilterModels = this.dataSets[newValue].inputs.layerFilterModels;
+            this.selectedDistrict = this.dataSets[newValue].inputs.selectedDistrict;
+            this.resultTableHeaders = this.dataSets[newValue].inputs.resultTableHeaders;
+            this.selectedLayer = this.dataSets[newValue].inputs.selectedLayer;
+            const newModels = [];
+
+            for (const m of this.layerFilterModels) {
+                const newModel = {...m};
+
+                newModels.push(newModel);
+                this.setLayerFilterModelValue(newModel);
+            }
+            this.layerFilterModels = newModels;
+            this.updateAvailableLayerOptions();
+        },
+        dataSets (newValue) {
+            if (newValue.length === 0) {
+                this.addSet();
+            }
         }
     },
 
     created () {
         this.$on("close", this.close);
-        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -237,11 +265,9 @@ export default {
                     if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
-                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
                     else if (feature.getGeometry().getType() === "Polygon") {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
-                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
 
                     if (
@@ -360,7 +386,7 @@ export default {
             return model;
         },
 
-        setLayerFilterModelValue (model) {
+        async setLayerFilterModelValue (model) {
             const features = this.propertiesMap[model.currentLayerId];
 
             if (this.selectedDistrict) {
@@ -564,7 +590,6 @@ export default {
             this.mapLayer.getSource().clear();
 
             if (this.selectedDistrict) {
-
                 this.refDistrict = this.layer.getSource().getFeatures()
                     .find(feature => feature.getProperties()[this.keyOfAttrName] === this.selectedDistrict);
 
@@ -632,21 +657,25 @@ export default {
             return [0, 0];
         },
 
-        exportTable: function () {
+        exportTable: function (index) {
             const
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("additional:modules.tools.cosi.queryDistricts.exportFilename")}_${date}`,
                 data = [
-                    this.resultTableHeaders.map(header => header.text),
-                    ...this.results.map(row => {
+                    // this.resultTableHeaders.map(header => header.text),
+                    this.dataSets[index].inputs.resultTableHeaders.map(header => header.text),
+                    // ...this.results.map(row => {
+                    ...this.dataSets[index].results.map(row => {
                         const _row = Object.values(row);
 
                         return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)];
                     })
                 ],
                 headers = ["Referenzgebiet", "Filter-Nr.", "Name", "Attribut", "Quotient", "Feld", "Min.", "Max.", "Ref.-Wert", "- Toleranz", "+ Toleranz"],
-                filters = this.layerFilterModels.map((filter, i) => [
-                    this.selectedDistrict,
+                // filters = this.layerFilterModels.map((filter, i) => [
+                filters = this.dataSets[index].inputs.layerFilterModels.map((filter, i) => [
+                    // this.selectedDistrict,
+                    this.dataSets[index].inputs.selectedDistrict,
                     i + 1,
                     filter.name,
                     filter.property || "-",
@@ -661,6 +690,43 @@ export default {
                 ]);
 
             exportXlsx([headers, [], ...filters, ...data], filename, {exclude: this.excludedPropsForExport}, "aoa_to_sheet");
+        },
+        // pagination functions
+        /**
+         * @description Selects the next or the previous supply analysis in the Tool Window.
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
+         */
+        setPrevNext (value) {
+            const l = this.dataSets.length;
+
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
+        },
+        downloadAll () {
+            this.dataSets.forEach((set, index) => {
+                this.exportTable(index);
+            });
+        },
+        removeSet (index) {
+            if (this.activeSet === this.dataSets.length - 1) {
+                this.setActiveSet(this.activeSet - 1);
+            }
+
+            this.dataSets.splice(index, 1);
+        },
+        removeAll () {
+            this.setDataSets([]);
+
+            const newModels = [];
+
+            for (const m of this.layerFilterModels) {
+                const newModel = {...m};
+
+                newModels.push(newModel);
+                this.setLayerFilterModelValue(newModel);
+            }
+            this.layerFilterModels = newModels;
+            this.updateAvailableLayerOptions();
         }
     }
 };
@@ -737,8 +803,39 @@ export default {
                     >
                         {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
                     </v-btn>
+                    <AnalysisPagination
+                        v-if="dataSets.length > 0 || layerFilterModels.length > 0"
+                        :sets="dataSets"
+                        :active-set="activeSet"
+                        :add-function="true"
+                        :downloads="['XLS']"
+                        :download-condition="layerFilterModels.length ? true : false"
+                        :remove-condition="dataSets.length > 1 ? true : false"
+                        :titles="{
+                            add: [$t('additional:modules.tools.cosi.queryDistricts.paginationAdd')],
+                            downloads: [$t('additional:modules.tools.cosi.queryDistricts.exportTable')],
+                            downloadAll: $t('additional:modules.tools.cosi.queryDistricts.paginationDownloadAll'),
+                            remove: $t('additional:modules.tools.cosi.queryDistricts.paginationRemove'),
+                            removeAll: $t('additional:modules.tools.cosi.queryDistricts.paginationRemoveAll'),
+                            next: $t('additional:modules.tools.cosi.queryDistricts.paginationNext'),
+                            prev: $t('additional:modules.tools.cosi.queryDistricts.paginationPrev'),
+                        }"
+                        @setActiveSet="(n) => setActiveSet(n)"
+                        @setPrevNext="(n) => setPrevNext(n)"
+                        @removeSingle="(n) => removeSet(n)"
+                        @addSet="addSet"
+                        @removeAll="removeAll"
+                        @downloadXLS="(n) => exportTable(n)"
+                        @downloadAll="downloadAll"
+                    />
                     <v-divider v-if="layerFilterModels.length > 0" />
-                    <div id="results">
+                    <div
+                        v-for="(set, i) in dataSets"
+                        id="results"
+                        :key="i"
+                        class="result"
+                        :class="[activeSet === i ? 'active' : '', 'result_' + i]"
+                    >
                         <div
                             v-if="layerFilterModels.length > 0"
                             class="d-flex overline"
@@ -864,6 +961,14 @@ export default {
     border: 1px solid rgba(0,0,0,.12);
     padding: 10px;
     background-color: rgba(0,0,0,0.01);
+}
+
+.result {
+    display:none;
+
+    &.active {
+        display:block;
+    }
 }
 
 #compare-results {

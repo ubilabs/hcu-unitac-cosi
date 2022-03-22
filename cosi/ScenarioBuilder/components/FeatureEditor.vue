@@ -12,6 +12,8 @@ export default {
     data: () => ({
         editDialog: false,
         editModal: false,
+        featureSelectionList: [],
+        featureSelectionModal: false,
         panel: [0],
         selectedFeature: {
             layerMap: null,
@@ -48,14 +50,11 @@ export default {
 
             this.map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
                 for (const _feature of unpackCluster(feature)) {
-                    this.selectedFeature.layerMap = this.layerMapById(layer.get("id"));
-                    this.selectedFeature.feature = _feature;
-                    this.selectedFeature.properties = _feature.getProperties();
-
-                    /**
-                     * @todo Add tabs for all clustered features
-                     */
-                    break;
+                    this.featureSelectionList.push({
+                        layerMap: this.layerMapById(layer.get("id")),
+                        feature: _feature,
+                        properties: _feature.getProperties()
+                    });
                 }
             }, {
                 layerFilter: l => {
@@ -63,7 +62,12 @@ export default {
                 }
             });
 
-            if (this.selectedFeature.properties) {
+            if (this.featureSelectionList.length === 1) {
+                this.selectedFeature.layerMap = this.featureSelectionList[0].layerMap;
+                this.selectedFeature.feature = this.featureSelectionList[0].feature;
+                this.selectedFeature.properties = this.featureSelectionList[0].properties;
+            }
+            if (this.featureSelectionList.length > 0) {
                 if (this.activeScenario) {
                     this.editDialog = true;
                 }
@@ -74,7 +78,12 @@ export default {
         },
 
         editFeature () {
-            this.editModal = true;
+            if (this.selectedFeature.properties) {
+                this.editModal = true;
+            }
+            else {
+                this.featureSelectionModal = true;
+            }
             this.editDialog = false;
         },
 
@@ -97,6 +106,8 @@ export default {
             this.editModal = false;
             this.confirmDialog = false;
             this.lock = true;
+            this.featureSelectionList = [];
+            this.featureSelectionModal = false;
         },
 
         updateSelectedFeature () {
@@ -129,7 +140,17 @@ export default {
             this.confirmAction.text = this.$t("common:button.reset");
         },
 
-        beautifyKey
+        beautifyKey,
+
+        setSelectedFeature (featureToEdit) {
+            this.selectedFeature.layerMap = featureToEdit.layerMap;
+            this.selectedFeature.feature = featureToEdit.feature;
+            this.selectedFeature.properties = featureToEdit.properties;
+            this.$nextTick(() => {
+                this.featureSelectionModal = false;
+                this.editModal = true;
+            });
+        }
     }
 };
 </script>
@@ -220,6 +241,35 @@ export default {
             </template>
         </v-snackbar>
         <Modal
+            :show-modal="featureSelectionModal"
+            @clickedOnX="reset"
+            @clickedOutside="reset"
+        >
+            <v-app>
+                <v-simple-table dense>
+                    <template #default>
+                        <thead>
+                            <tr class="header-row">
+                                <th>Einrichtung</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(feature, index) in featureSelectionList"
+                                :key="index"
+                                class="selectable-row"
+                                @click="setSelectedFeature(feature)"
+                            >
+                                <th>{{ feature.layerMap.id }}</th>
+                                <td>{{ feature.feature.get(feature.layerMap.keyOfAttrName) }}</td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-app>
+        </Modal>
+        <Modal
             v-if="selectedFeature.properties"
             :show-modal="editModal"
             @modalHid="reset"
@@ -257,7 +307,7 @@ export default {
                             :key="key"
                             dense
                         >
-                            <template v-if="!isObject(val)">
+                            <template v-if="!isObject(val) && key !== 'isSimulation' && key !== 'isModified'">
                                 <v-col cols="3">
                                     <v-subheader :title="beautifyKey(key)">
                                         {{ beautifyKey(key) }}
@@ -350,4 +400,9 @@ export default {
             font-size: 12px;
         }
     }
+
+    .selectable-row {
+        cursor: pointer;
+    }
+
 </style>

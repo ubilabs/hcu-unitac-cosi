@@ -9,6 +9,7 @@ import DataTable from "./DataTable.vue";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 import ToolInfo from "../../components/ToolInfo.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {getCenter} from "ol/extent";
 import getClusterSource from "../../utils/getClusterSource";
 
@@ -17,7 +18,8 @@ export default {
     components: {
         Tool,
         ToolInfo,
-        DataTable
+        DataTable,
+        AnalysisPagination
     },
     data () {
         return {
@@ -27,8 +29,6 @@ export default {
             layerIdList: [],
             // List of all available "facilites" (theme layers)
             facilityList: [],
-            // filter IDs for facility list
-            filters: {},
             // Sorted an grouped list of availabke features
             featuresList: [],
             // Holds all statistical data from selectedFeatures (DistrictSelector)
@@ -48,9 +48,9 @@ export default {
             // Var that controls if user calculates with statistical data (feature) oder facility for Field B
             BSwitch: true,
             // Var that controls if user chose summable statistical data set for Field A
-            sumUpSwitchA: false,
+            aSumUpSwitchA: false,
             // Var that controls if user chose summable statistical data set for Field B
-            sumUpSwitchB: false,
+            aSumUpSwitchB: false,
             // Selected value for Field A (it's an object because it can carry more information like values or properties, depending on the data set)
             selectedFieldA: {id: ""},
             // Selected value for Field B (it's an object because it can carry more information like values or properties, depending on the data set)
@@ -85,27 +85,9 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
-        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer"}),
+        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer", isFeatureActive: "isFeatureActive"}),
         ...mapGetters("Map", ["layerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
-        // Transforming results data for excel export
-        resultData () {
-            const json = [];
-
-            this.results.forEach(result => {
-                const resultObj = {};
-
-                resultObj[this.selectedFieldA.id] = result.paramA_val;
-                resultObj[this.selectedFieldB.id] = result.paramB_val;
-                resultObj[this.selectedFieldA.id + " / " + this.selectedFieldB.id] = result.relation;
-                resultObj.Kapazitaet = result.capacity;
-                resultObj.Bedarf = result.need;
-                resultObj.Bedarfsdeckung = result.coverage;
-                json.push(resultObj);
-            });
-
-            return json;
-        },
         availableColumns () {
             const options = [
                 {name: "Verhältnis", key: "relation"},
@@ -129,12 +111,12 @@ export default {
         }
     },
     watch: {
-        sumUpSwitchA (value) {
+        aSumUpSwitchA (value) {
             if (value) {
                 this.selectedFieldA.id = [this.selectedFieldA.id];
             }
         },
-        sumUpSwitchB (value) {
+        aSumUpSwitchB (value) {
             if (value) {
                 this.selectedFieldB.id = [this.selectedFieldB.id];
             }
@@ -144,10 +126,6 @@ export default {
             this.updateFacilities();
         },
         loadend (newValue) {
-            /* if (newValue && this.selectedStatFeatures.length > 0) {
-                this.updateFeaturesList();
-            }*/
-
             const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
             this.selectedStatFeatures = selectedDistricts.map(district => district.statFeatures).flat();
@@ -177,6 +155,30 @@ export default {
         },
         filters () {
             this.prepareCoverage();
+        },
+        async activeSet (newValue) {
+            if (!this.dataSets[newValue]) {
+                return;
+            }
+
+            for (const key in this.dataSets[newValue].inputs) {
+                this[key] = JSON.parse(JSON.stringify(this.dataSets[newValue].inputs[key]));
+            }
+
+            await this.$nextTick();
+            this.selectedFieldA.id = Array.isArray(this.selectedFieldA.id) ? this.selectedFieldA.id.flat() : this.selectedFieldA.id;
+            this.selectedFieldB.id = Array.isArray(this.selectedFieldB.id) ? this.selectedFieldB.id.flat() : this.selectedFieldB.id;
+
+            this.setResults(this.dataSets[newValue].results);
+            this.setResultHeaders(this.dataSets[newValue].resultHeaders);
+            const data = this.getDataForColorCodeMap();
+
+            this.setColorCodeMapDataset(data);
+        },
+        dataSets (newValue) {
+            if (newValue.length === 0) {
+                this.setResults([]);
+            }
         },
 
         /**
@@ -208,10 +210,6 @@ export default {
     },
     mounted () {
         this.applyTranslationKey(this.name);
-
-        Radio.on("Filter", "filteredIdsChanged", (layerId, featureIds) => {
-            this.filters[layerId] = featureIds;
-        });
 
         if (this.facilityList.length === 0) {
             this.ASwitch = false;
@@ -344,13 +342,13 @@ export default {
             if (!this[letter + "Switch"]) {
                 const checkSumUp = mapping.find(x => x.value === this["selectedField" + letter].id);
 
-                if (!this["sumUpSwitch" + letter]) {
+                if (!this["aSumUpSwitch" + letter]) {
                     if (checkSumUp.summable) {
-                        this["sumUpSwitch" + letter] = true;
+                        this["aSumUpSwitch" + letter] = true;
                     }
                 }
                 else if (this["selectedField" + letter].id === "" || this["selectedField" + letter].id.length === 0) {
-                    this["sumUpSwitch" + letter] = false;
+                    this["aSumUpSwitch" + letter] = false;
                 }
             }
         },
@@ -361,23 +359,14 @@ export default {
          */
         getFacilityData (letter) {
             if (this[letter + "Switch"]) {
-                this["facilityPropertyList_" + letter] = [];
-                const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
-                    layerId = findLayer.get("id"),
-                    layerFeatures = getClusterSource(findLayer).getFeatures(),
-                    countData = {
-                        name: "Anzahl",
-                        // count: layerFeatures.length,
-                        count: layerId in this.filters ? this.filters[layerId][0].ids.length : layerFeatures.length,
-                        filter: layerId in this.filters ? this.filters[layerId][0].ids : ""
-                    };
-
-                this["facilityPropertyList_" + letter].push(countData);
+                this["facilityPropertyList_" + letter] = [{
+                    name: "Anzahl",
+                    id: "count"
+                }];
                 this["selectedField" + letter].numericalValues.forEach(value => {
                     const data = {
                         name: value.name,
-                        id: value.id,
-                        count: layerFeatures.reduce((total, layer) => total + parseFloat(layer.getProperties()[value.id] ? layer.getProperties()[value.id] : 0), 0)
+                        id: value.id
                     };
 
                     this["facilityPropertyList_" + letter].push(data);
@@ -399,9 +388,11 @@ export default {
             this.fActive_B = false;
             this.faktorf_A = 1;
             this.faktorf_B = 1;
-            this.sumUpSwitchA = false;
-            this.sumUpSwitchB = false;
+            this.aSumUpSwitchA = false;
+            this.aSumUpSwitchB = false;
             this.setResults([]);
+            this.setDataSets([]);
+            this.setDataToColorCodeMap(false);
         },
         /**
          * @description Switches all parameters between FieldA and FieldB.
@@ -449,6 +440,11 @@ export default {
         prepareCoverage () {
             this.setResults([]);
             const allData = [],
+                calculationSet = {
+                    inputs: {},
+                    resultHeaders: {},
+                    results: {}
+                },
 
                 dataArray_A = this.coverageFunction("A"),
                 dataArray_B = this.coverageFunction("B");
@@ -467,6 +463,30 @@ export default {
                 fActive: this.fActive_A || this.fActive_B,
                 faktorF: `${this.faktorf_B} / ${this.faktorf_A}`
             });
+
+            calculationSet.results = this.results;
+            calculationSet.resultHeaders = this.resultHeaders;
+            calculationSet.inputs = {
+                selectedFieldA: JSON.parse(JSON.stringify(this.selectedFieldA)),
+                selectedFieldB: JSON.parse(JSON.stringify(this.selectedFieldB)),
+                paramFieldA: JSON.parse(JSON.stringify(this.paramFieldA)),
+                paramFieldB: JSON.parse(JSON.stringify(this.paramFieldB)),
+                fActive_A: JSON.parse(JSON.stringify(this.fActive_A)),
+                fActive_B: JSON.parse(JSON.stringify(this.fActive_B)),
+                faktorf_A: JSON.parse(JSON.stringify(this.faktorf_A)),
+                faktorf_B: JSON.parse(JSON.stringify(this.faktorf_B)),
+                ASwitch: JSON.parse(JSON.stringify(this.ASwitch)),
+                BSwitch: JSON.parse(JSON.stringify(this.BSwitch)),
+                perCalc_A: JSON.parse(JSON.stringify(this.perCalc_A)),
+                perCalc_B: JSON.parse(JSON.stringify(this.perCalc_B)),
+                aSumUpSwitchA: JSON.parse(JSON.stringify(this.aSumUpSwitchA)),
+                aSumUpSwitchB: JSON.parse(JSON.stringify(this.aSumUpSwitchB)),
+                facilityPropertyList_A: JSON.parse(JSON.stringify(this.facilityPropertyList_A)),
+                facilityPropertyList_B: JSON.parse(JSON.stringify(this.facilityPropertyList_B))
+            };
+
+            this.dataSets.push(calculationSet);
+            this.setActiveSet(this.dataSets.length - 1);
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -490,11 +510,10 @@ export default {
                     const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = getClusterSource(findLayer).getFeatures();
 
-                    this.checkFilters(findLayer.get("id"), layerFeatures);
                     this.calcHelper["type_" + letter] = "facility";
                     this.featureVals = [];
                     layerFeatures.forEach(feature => {
-                        if (this.filters[findLayer.get("id")][0].ids.includes(feature.getId())) {
+                        if (this.isFeatureActive(feature)) {
                             const layerGeometry = getCenter(feature.getGeometry().getExtent());
 
                             if (geometry.intersectsCoordinate(layerGeometry)) {
@@ -586,18 +605,6 @@ export default {
             return dataArray;
         },
         /**
-         * @description Checks if filter is set and whitelists all features if not
-         * @param {String} layerId Id of the layer.
-         * @param {Array} features Features of the layer.
-         * @returns {void}
-         */
-        checkFilters (layerId, features) {
-            if (!(layerId in this.filters)) {
-                this.filters[layerId] = [{ids: []}];
-                this.filters[layerId][0].ids = features.map(feature => feature.getId());
-            }
-        },
-        /**
          * @description Gets Data for the selected statistical data (features)
          * @param {String} districtName name of the district.
          * @param {String} featureName name of the statistical data set (feature).
@@ -635,9 +642,32 @@ export default {
             });
 
             this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
+            this.dataSets[this.activeSet].results = this.results;
         },
-        exportAsXlsx () {
-            exportXlsx(this.resultData, this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
+        /**
+         * @description Transforming results data for excel export
+         * @param {Integer} index Index of the set to be prepared for download in the dataSets Array.
+         * @returns {Void} Function returns nothing.
+         */
+        resultData (index) {
+            const json = [];
+
+            this.dataSets[index].results.forEach(result => {
+                const resultObj = {};
+
+                resultObj[this.dataSets[index].inputs.selectedFieldA.id] = result.paramA_val;
+                resultObj[this.dataSets[index].inputs.selectedFieldB.id] = result.paramB_val;
+                resultObj[this.dataSets[index].inputs.selectedFieldA.id + " / " + this.dataSets[index].inputs.selectedFieldB.id] = result.relation;
+                resultObj.Kapazitaet = result.capacity;
+                resultObj.Bedarf = result.need;
+                resultObj.Bedarfsdeckung = result.coverage;
+                json.push(resultObj);
+            });
+
+            return json;
+        },
+        exportAsXlsx (index) {
+            exportXlsx(this.resultData(index), this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -665,7 +695,7 @@ export default {
         getDataForColorCodeMap () {
             const prepareData = [];
 
-            this.results.forEach(result => {
+            this.dataSets[this.activeSet].results.forEach(result => {
                 if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
                     const data = {
                         name: result.scope,
@@ -686,10 +716,10 @@ export default {
         loadToChartGenerator () {
             const graphObj = {
                     id: "calcratio",
-                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name + " (" + this.$t("additional:modules.tools.cosi.calculateRatio.title") + ")",
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
-                    source: "Versorgungsanalyse",
+                    source: this.$t("additional:modules.tools.cosi.calculateRatio.title"),
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
@@ -729,6 +759,39 @@ export default {
             });
 
             this.channelGraphData(graphObj);
+        },
+
+        /**
+         * @description Selects the next or the previous supply analysis in the Tool Window.
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
+         */
+        setPrevNext (value) {
+            const l = this.dataSets.length;
+
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
+        },
+        /**
+         * @description Deletes a set from the Tool Window.
+         * @param {Integer} index Index of the set to be deleted in the dataSets Array.
+         * @returns {Void} Function returns nothing.
+         */
+        removeSet (index) {
+            if (this.activeSet === this.dataSets.length - 1) {
+                this.setActiveSet(this.activeSet - 1);
+            }
+
+            this.dataSets.splice(index, 1);
+        },
+        /**
+         * @description Downloads xls and geojson of each dataset.
+         * @returns {Void} Function returns nothing.
+         */
+        downloadAll () {
+            this.dataSets.forEach((set, i) => {
+                this.exportAsXlsx(i);
+                this.exportAsGeoJson(i);
+            });
         },
 
         // the export function from utils
@@ -804,12 +867,12 @@ export default {
                                 id="feature_selector_A"
                                 v-model="selectedFieldA.id"
                                 class="feature_selection selection"
-                                :items="sumUpSwitchA ? subFeaturesList : featuresList"
+                                :items="aSumUpSwitchA ? subFeaturesList : featuresList"
                                 dense
                                 outlined
-                                :multiple="sumUpSwitchA ? true : false"
-                                :small-chips="sumUpSwitchA ? true : false"
-                                :deletable-chips="sumUpSwitchA ? true : false"
+                                :multiple="aSumUpSwitchA ? true : false"
+                                :small-chips="aSumUpSwitchA ? true : false"
+                                :deletable-chips="aSumUpSwitchA ? true : false"
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderA')"
                                 :menu-props="{ closeOnContentClick: true }"
                                 @input="checkSumUp('A')"
@@ -919,12 +982,12 @@ export default {
                                 id="feature_selector_B"
                                 v-model="selectedFieldB.id"
                                 class="feature_selection selection"
-                                :items="sumUpSwitchB ? subFeaturesList : featuresList"
+                                :items="aSumUpSwitchB ? subFeaturesList : featuresList"
                                 dense
                                 outlined
-                                :multiple="sumUpSwitchB ? true : false"
-                                :small-chips="sumUpSwitchB ? true : false"
-                                :deletable-chips="sumUpSwitchB ? true : false"
+                                :multiple="aSumUpSwitchB ? true : false"
+                                :small-chips="aSumUpSwitchB ? true : false"
+                                :deletable-chips="aSumUpSwitchB ? true : false"
                                 :placeholder="$t('additional:modules.tools.cosi.calculateRatio.placeholderB')"
                                 :menu-props="{ closeOnContentClick: true }"
                                 @input="checkSumUp('B')"
@@ -1035,37 +1098,32 @@ export default {
                             </button>
                         </div>
                     </div>
-
+                    <AnalysisPagination
+                        v-if="dataSets.length > 0"
+                        :sets="dataSets"
+                        :active-set="activeSet"
+                        :downloads="['XLS', 'GEOJSON']"
+                        :titles="{
+                            downloads: [$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip'), $t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')],
+                            downloadAll: $t('additional:modules.tools.cosi.calculateRatio.paginationDownloadAll'),
+                            remove: $t('additional:modules.tools.cosi.calculateRatio.paginationRemove'),
+                            removeAll: $t('additional:modules.tools.cosi.calculateRatio.paginationRemoveAll'),
+                            next: $t('additional:modules.tools.cosi.calculateRatio.paginationNext'),
+                            prev: $t('additional:modules.tools.cosi.calculateRatio.paginationPrev'),
+                        }"
+                        @setActiveSet="(n) => setActiveSet(n)"
+                        @setPrevNext="(n) => setPrevNext(n)"
+                        @removeSingle="(n) => removeSet(n)"
+                        @removeAll="clearAllValues"
+                        @downloadXLS="(n) => exportAsXlsx(n)"
+                        @downloadGEOJSON="(n) => exportAsGeoJson(n)"
+                        @downloadAll="downloadAll"
+                    />
                     <div
                         v-if="results.length > 0"
                         class="data_table"
                     >
                         <div class="head_wrapper">
-                            <button
-                                :title="$t('additional:modules.tools.cosi.calculateRatio.downloadXlsxTooltip')"
-                                class="btn btn-default xl_btn"
-                                @click="exportAsXlsx"
-                            >
-                                <v-icon
-                                    left
-                                >
-                                    mdi-download
-                                </v-icon>
-                                {{ $t('additional:modules.tools.cosi.calculateRatio.downloadXlsx') }}
-                            </button>
-                            <button
-                                class="btn btn-default xl_btn"
-                                :title="$t('additional:modules.tools.cosi.calculateRatio.downloadGeoJsonTooltip')"
-                                @click="exportAsGeoJson()"
-                            >
-                                <v-icon
-                                    left
-                                >
-                                    mdi-floppy
-                                </v-icon>
-                                {{ $t('additional:modules.tools.cosi.calculateRatio.downloadGeoJson') }}
-                            </button>
-
                             <button
                                 class="cg"
                                 :title="$t('additional:modules.tools.cosi.calculateRatio.visualizeChart')"
@@ -1075,16 +1133,6 @@ export default {
                                     mdi-poll
                                 </v-icon>
                             </button>
-                            <v-select
-                                v-model="columnSelector"
-                                dense
-                                outlined
-                                class="column_selection selection"
-                                :items="availableColumns"
-                                item-text="name"
-                                item-value="key"
-                                return-object
-                            />
                             <button
                                 class="ccm"
                                 :class="{ highlight: !dataToColorCodeMap}"
@@ -1102,6 +1150,16 @@ export default {
                                     mdi-eye-off
                                 </v-icon>
                             </button>
+                            <v-select
+                                v-model="columnSelector"
+                                dense
+                                outlined
+                                class="column_selection selection"
+                                :items="availableColumns"
+                                item-text="name"
+                                item-value="key"
+                                return-object
+                            />
                             <div
                                 v-if="!ASwitch || !BSwitch"
                                 class="year_selector"
@@ -1118,11 +1176,14 @@ export default {
                             </div>
                         </div>
                         <DataTable
-                            :dataset="results"
-                            :type-a="resultHeaders.typeA"
-                            :type-b="resultHeaders.typeB"
-                            :f-active="resultHeaders.fActive"
-                            :faktor-f="resultHeaders.faktorF"
+                            v-for="(set, i) in dataSets"
+                            :key="i"
+                            :dataset="set.results"
+                            :type-a="set.resultHeaders.typeA"
+                            :type-b="set.resultHeaders.typeB"
+                            :f-active="set.resultHeaders.fActive"
+                            :faktor-f="set.resultHeaders.faktorF"
+                            :class="{ active: activeSet === i }"
                         />
                     </div>
                 </div>
@@ -1290,17 +1351,24 @@ export default {
 
                 .section {
                     flex:1 0 45%;
-                    margin:5px;
+                    margin:5px 0px;
 
                     &.grouped {
                         margin-top:30px;
                     }
                 }
 
+                .pagination {
+                    padding:5px;
+                    box-sizing:border-box;
+                    border:1px solid #ccc;
+                    background:#fafafa;
+                }
+
                 .data_table {
                     flex-basis:100%;
                     height:auto;
-                    margin:20px 5px;
+                    margin:5px 0px;
 
                     .head_wrapper {
                         display:flex;
@@ -1330,7 +1398,7 @@ export default {
                         button.ccm, button.cg {
                             height:40px;
                             width:40px;
-                            margin:5px;
+                            margin:5px 3px;
                             background:#eee;
                             border:1px solid #eee;
 
@@ -1345,13 +1413,9 @@ export default {
                             }
                         }
 
-                        button.cg {
-                            margin:5px auto 5px 5px;
-                        }
-
                         .column_selection {
                             flex:0 0 160px;
-                            margin:5px 0px
+                            margin:5px 3px
                         }
 
                         .year_selector {
@@ -1362,6 +1426,14 @@ export default {
 
                     .forged_table {
                         overflow:hidden;
+                    }
+
+                    .calc_ratio_results {
+                        display:none;
+
+                        &.active {
+                            display:block;
+                        }
                     }
                 }
             }

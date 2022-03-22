@@ -515,6 +515,7 @@ export default {
                                 :items-per-page="-1"
                                 :search="search"
                                 hide-default-footer
+                                fixed-header
                                 dense
                                 show-select
                                 item-key="category"
@@ -571,7 +572,7 @@ export default {
                                                 class="move-col minimize"
                                                 icon
                                                 x-small
-                                                :title="$t('additional:modules.tools.cosi.dashboard.minimize')"
+                                                :title="$t('additional:modules.tools.cosi.dashboard.minimizeCol')"
                                                 @click="minimizeCol(district)"
                                             >
                                                 <v-icon>{{ district.minimized ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
@@ -757,7 +758,6 @@ export default {
 .dashboard-table {
     height: 100%;
     .v-data-table__wrapper {
-        padding-top: 10px;
         overflow-x: auto;
         overflow-y: auto;
         height: 100%;
@@ -766,6 +766,7 @@ export default {
     thead {
         .district-header {
             position: relative;
+            margin-top: 10px;
             .move-col {
                 position: absolute;
                 top: -10px;

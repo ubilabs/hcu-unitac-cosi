@@ -202,7 +202,6 @@ async function createIsochronesPoints (args) {
                     console.error(e); // turf chokes one some resulting geometries
                 }
             }
-
             // readGeometries
             layerUnionFeatures = readFeatures(JSON.stringify(layerUnion));
 
@@ -214,7 +213,7 @@ async function createIsochronesPoints (args) {
             // TODO: add props to layers, like type of facility, unit of measured distance
             layerUnionFeatures.forEach(feature => {
                 feature.set("featureType", featureType);
-                feature.set("value", layeredList[0].properties.value);
+                feature.set("value", layeredList[0].get("value"));
                 feature.set("mode", args.transportType);
                 feature.set("unit", args.scaleUnit);
                 feature.set("topic", args.selectedFacilityName);

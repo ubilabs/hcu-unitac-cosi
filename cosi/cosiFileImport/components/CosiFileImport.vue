@@ -125,6 +125,7 @@ export default {
         // set all relevant properties on layer object when new file is imported
         newLayerInformation (newValue, oldValue) {
             if (newValue !== oldValue) {
+                // Reset all Arrays from old upload
                 this.newLayerValues = [];
                 this.preNumericalValues = [];
                 this.numericalValues = [];

@@ -119,7 +119,7 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
 
         it("should find Tool component", () => {
             const wrapper = factory.getMount(),
-                toolWrapper = wrapper.findComponent({name: "Tool"});
+                toolWrapper = wrapper.find(".tool-window-vue");
 
             expect(toolWrapper.exists()).to.be.true;
         });

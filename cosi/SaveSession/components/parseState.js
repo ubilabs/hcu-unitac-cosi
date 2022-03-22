@@ -82,7 +82,11 @@ export default {
             }
         }
         else {
-            this.$store.commit(mutation, this.parseFeatures(state));
+            const _state = this.hasDeepFeatures(mutation, attr) ?
+                this.parseToolDatasets(state) :
+                this.parseFeatures(state);
+
+            this.$store.commit(mutation, _state);
         }
     },
 
@@ -179,19 +183,40 @@ export default {
 
         for (const feature of this.parseFeatures(state[key][attr])) {
             const drawState = feature.get("drawState"),
-                styleSettings = { color: drawState.color,
+                styleSettings = {
+                    color: drawState.color,
                     colorContour: drawState.colorContour,
                     font: drawState.font,
                     fontSize: drawState.fontSize,
                     strokeWidth: drawState.strokeWidth,
-                    text: drawState.text };
-            feature.setStyle(function (feature) {
-                if (feature.get("isVisible")) {
-                    return createStyle(feature.get("drawState"), styleSettings);
+                    text: drawState.text
+                };
+
+            feature.setStyle(function (_feature) {
+                if (_feature.get("isVisible")) {
+                    return createStyle(_feature.get("drawState"), styleSettings);
                 }
                 return undefined;
             });
             source.addFeature(feature);
         }
+    },
+
+    parseToolDatasets (state) {
+        return this.deepParse(state);
+    },
+
+    deepParse (state) {
+        if (
+            (state?.constructor === Object || Array.isArray(state)) &&
+            !(state.properties?.isOlFeature || state.isOlGeometry)
+        ) {
+            for (const key in state) {
+                state[key] = this.deepParse(state[key]);
+            }
+
+            return state;
+        }
+        return this.parseFeatures(state);
     }
 };

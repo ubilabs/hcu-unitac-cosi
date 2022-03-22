@@ -6,7 +6,8 @@ import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
-import {exportAsGeoJson} from "../utils/exportResults";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
+import {exportAsGeoJson, downloadGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2020.json";
@@ -15,7 +16,8 @@ export default {
     name: "AccessibilityAnalysis",
     components: {
         Tool,
-        ToolInfo
+        ToolInfo,
+        AnalysisPagination
     },
     data () {
         return {
@@ -88,7 +90,8 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
-            select: null
+            select: null,
+            hide: false
         };
     },
     computed: {
@@ -182,6 +185,22 @@ export default {
             set (v) {
                 this.setUseTravelTimeIndex(v);
             }
+        },
+        _isochroneFeatures: {
+            get () {
+                return this.isochroneFeatures;
+            },
+            set (v) {
+                this.setIsochroneFeatures(v);
+            }
+        },
+        _steps: {
+            get () {
+                return this.steps;
+            },
+            set (v) {
+                this.setSteps(v);
+            }
         }
     },
     watch: {
@@ -202,8 +221,26 @@ export default {
                 this.map.removeLayer(this.directionsLayer);
             }
         },
-        isochroneFeatures (newFeatures) {
-            this.renderIsochrones(newFeatures);
+        activeSet (newValue) {
+            if (!this.dataSets[newValue]) {
+                return;
+            }
+
+            for (const key in this.dataSets[newValue].inputs) {
+                this[key] = this.dataSets[newValue].inputs[key];
+            }
+
+            if (this.dataSets[newValue].inputs._mode === "point") {
+                const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
+
+                this.placingPointMarker(icoord);
+            }
+            else {
+                this.removePointMarker();
+            }
+
+            this._isochroneFeatures = this.dataSets[newValue].results;
+            this.renderIsochrones(this._isochroneFeatures);
         },
         async scenarioUpdated () {
             await this.$nextTick();
@@ -212,6 +249,10 @@ export default {
         mode () {
             this.setSetByFeature(false);
 
+            if (this.mode === "region") {
+                this.resetIsochroneBBox();
+            }
+
             if (this.mode === "path") {
                 this._scaleUnit = "distance";
                 this._transportType = "foot-walking";
@@ -219,6 +260,7 @@ export default {
             }
             else {
                 this.map.removeLayer(this.directionsLayer);
+
                 if (!this.setByFeature) {
                     this.map.removeInteraction(this.select);
                     this.select.un("select", this.pickDirections.bind(this));
@@ -248,7 +290,8 @@ export default {
             if (this.mode === "path" && this.isochroneFeatures.length > 0) {
                 this.askUpdate = true;
             }
-        }
+        },
+        hide: "hideResults"
     },
     /**
     * @returns {void}
@@ -259,7 +302,7 @@ export default {
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });
 
-        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url");
+        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
     },
 
     /**
@@ -346,11 +389,84 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: function () {
+        requestInhabitants: async function () {
             this.close();
+            await this.$nextTick();
             this.$root.$emit("populationRequest", this.rawGeoJson);
         },
-        exportAsGeoJson
+        createAnalysisSet: async function () {
+            const analysisSet = {
+                inputs: {},
+                results: [],
+                geojson: {}
+            };
+
+            await this.createIsochrones();
+
+            analysisSet.results = this._isochroneFeatures;
+            analysisSet.inputs = {
+                _mode: JSON.parse(JSON.stringify(this._mode)),
+                _coordinate: JSON.parse(JSON.stringify(this._coordinate)),
+                _selectedFacilityName: JSON.parse(JSON.stringify(this._selectedFacilityName)),
+                _selectedDirections: JSON.parse(JSON.stringify(this._selectedDirections)),
+                _transportType: JSON.parse(JSON.stringify(this._transportType)),
+                _scaleUnit: JSON.parse(JSON.stringify(this._scaleUnit)),
+                _distance: JSON.parse(JSON.stringify(this._distance)),
+                _time: JSON.parse(JSON.stringify(this._time)),
+                _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
+                _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
+                _steps: JSON.parse(JSON.stringify(this._steps))
+            };
+
+            this.dataSets.push(analysisSet);
+            this.setActiveSet(this.dataSets.length - 1);
+
+            if (this.dataSets.length === 1) {
+                this.renderIsochrones(this._isochroneFeatures);
+            }
+
+            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
+        },
+        exportAsGeoJson,
+        // pagination features
+        removeSet (index) {
+            if (this.activeSet === this.dataSets.length - 1) {
+                this.setActiveSet(this.activeSet - 1);
+            }
+
+            this.dataSets.splice(index, 1);
+
+            if (this.dataSets.length === 0) {
+                this.removeAll();
+            }
+
+        },
+        removeAll () {
+            this.setDataSets([]);
+            this.clear();
+            this.mapLayer.getSource().clear();
+            this.resetIsochroneBBox();
+            this.removePointMarker();
+            this.map.removeLayer(this.directionsLayer);
+        },
+        downloadSet (index) {
+            downloadGeoJson(this.dataSets[index].geojson);
+        },
+        downloadAll () {
+            this.dataSets.forEach(set => {
+                downloadGeoJson(set.geojson);
+            });
+        },
+        /**
+         * @description Selects the next or the previous supply analysis in the Tool Window.
+         * @param {Integer} value +1 or -1.
+         * @returns {Void} Function returns nothing.
+         */
+        setPrevNext (value) {
+            const l = this.dataSets.length;
+
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
+        }
     }
 };
 </script>
@@ -383,16 +499,7 @@ export default {
                                 outlined
                                 dense
                                 @click:append="$refs.mode.blur()"
-                            >
-                                <!-- <template #append>
-                                    <v-switch
-                                        v-model="_setByFeature"
-                                        dense
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        class="inline-switch"
-                                    />
-                                </template> -->
-                            </v-select>
+                            />
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
@@ -523,7 +630,7 @@ export default {
                                         small
                                         tile
                                         color="grey lighten-1"
-                                        @click.native="createIsochrones()"
+                                        @click.native="createAnalysisSet()"
                                     >
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
@@ -539,8 +646,8 @@ export default {
                                         dense
                                         small
                                         tile
-                                        color="grey lighten-1"
-                                        @click.native="clear()"
+                                        :color="hide ? 'warning' : 'grey lighten-1'"
+                                        @click.native="hide = !hide"
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>
@@ -570,7 +677,7 @@ export default {
                                     <strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong>
                                 </h5>
                                 <div id="legend">
-                                    <template v-for="(j, i) in steps">
+                                    <template v-for="(j, i) in _steps">
                                         <span :key="i">
                                             <svg
                                                 width="15"
@@ -585,35 +692,36 @@ export default {
                                                     }; stroke-width: 0.5; stroke: #e3e3e3;`"
                                                 />
                                             </svg>
-                                            <span :key="i * 2 + steps.length">
+                                            <span :key="i * 2 + _steps.length">
                                                 {{ j }}
                                             </span>
                                         </span>
                                     </template>
                                 </div>
                             </v-col>
-                            <v-col cols="6">
-                                <div
-                                    id="download"
-                                >
-                                    <v-btn
-                                        id="download-geojson"
-                                        dense
-                                        small
-                                        tile
-                                        color="green lighten-1"
-                                        :disabled="isochroneFeatures.length === 0"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
-                                        @click="exportAsGeoJson(mapLayer)"
-                                    >
-                                        <v-icon
-                                            left
-                                        >
-                                            mdi-floppy
-                                        </v-icon>
-                                        Download GeoJSON
-                                    </v-btn>
-                                </div>
+                        </v-row>
+                        <v-row>
+                            <v-col>
+                                <AnalysisPagination
+                                    v-if="dataSets.length > 0"
+                                    :sets="dataSets"
+                                    :active-set="activeSet"
+                                    :downloads="['GEOJSON']"
+                                    :titles="{
+                                        downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
+                                        downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
+                                        remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
+                                        removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll'),
+                                        next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
+                                        prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
+                                    }"
+                                    @setActiveSet="(n) => setActiveSet(n)"
+                                    @setPrevNext="(n) => setPrevNext(n)"
+                                    @removeSingle="(n) => removeSet(n)"
+                                    @removeAll="removeAll"
+                                    @downloadGEOJSON="(n) => downloadSet(n)"
+                                    @downloadAll="downloadAll"
+                                />
                             </v-col>
                         </v-row>
                         <v-progress-linear
