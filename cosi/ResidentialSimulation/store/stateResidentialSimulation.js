@@ -62,8 +62,8 @@ const state = {
         }
     ],
     readmeUrl: {
-        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/residentialsimulation.md",
-        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/wohnquartiereanlegen.md"
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/residentialsimulation.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/wohnquartiereanlegen.md"
     }
 };
 

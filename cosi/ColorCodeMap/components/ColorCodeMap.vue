@@ -76,8 +76,8 @@ export default {
         }
     },
     watch: {
-        selectedFeatures () {
-            if (this.visualizationState) {
+        selectedFeatures (newValue, oldValue) {
+            if (newValue.length < oldValue.length) {
                 this.$nextTick(() => {
                     this.updateSelectedDistricts();
                 });
@@ -425,7 +425,9 @@ export default {
          */
         loadToChartGenerator () {
             const graphObj = new ChartDataset({
-                    id: "ccm",
+                    id: "ccm" + this.selectedFeatures.map(district => {
+                        return district.id_;
+                    }).join("-"),
                     name: [this.label] + " - " + this.dataCategory + " (" + this.$t("additional:modules.tools.colorCodeMap.title") + ")",
                     type: ["LineChart", "BarChart", "PieChart"],
                     color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
@@ -624,6 +626,8 @@ export default {
                     </v-icon>
                 </button>
                 <button
+                    :disabled="!visualizationState"
+                    :class="{disabled: !visualizationState}"
                     class="map_button"
                     :title="$t('additional:modules.tools.colorCodeMap.showDistrictNames')"
                     @click="setShowMapNames(!showMapNames)"
@@ -695,6 +699,10 @@ export default {
                     span {
                         top:0px;
                         line-height:26px;
+                    }
+
+                    &.disabled {
+                        opacity:0.5;
                     }
                 }
 
