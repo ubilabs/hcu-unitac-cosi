@@ -43,9 +43,7 @@ export default {
                 const features = this.markerPoint.getSource().getFeatures();
 
                 if (features && features[0]) {
-                    const coordinates = this.markerPoint.getSource().getFeatures()[0].getGeometry().getCoordinates();
-
-                    this.setPosition(coordinates);
+                    this.setPosition(features[0].getGeometry().getCoordinates());
                 }
             }
         }

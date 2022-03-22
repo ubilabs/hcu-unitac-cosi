@@ -37,6 +37,7 @@ const actions = {
      * @param {Object} param.dispatch the dispatch
      * @param {Object} param.rootGetters the rootGetters
      * @param {Object} evt contains coordinates
+     * @see {@link https://www.cyclomedia.com/de/api-dokumentation }
      * @returns {void}
      */
     setPosition ({state, commit, dispatch, rootGetters}, evt) {
@@ -60,8 +61,8 @@ const actions = {
                             // Show green recording dots
                             recordingsVisible: true
                         }
-                    }).then(
-                    function (result) {
+                    }).
+                    then(result => {
                         if (result && result[0]) {
                             commit("setLastCoordinates", coordinates);
                         }
@@ -70,12 +71,11 @@ const actions = {
                             dispatch("MapMarker/placingPointMarker", state.lastCoordinates, {root: true});
                         }
                     }
-                ).catch(
-                    function (reason) {
+                    ).catch(reason => {
                         console.warn("Error opening panorama viewer: " + reason);
                         dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailed"), {root: true});
-                    }
-                );
+                        }
+                    );
             }
             catch (e) {
                 console.error("Create streetSmart view failed: ", e);
@@ -89,6 +89,7 @@ const actions = {
      * @param {Object} param.commit the commit
      * @param {Object} param.dispatch the dispatch
      * @param {Object} param.rootGetters the rootGetters
+     * @see {@link https://www.cyclomedia.com/de/api-dokumentation }
      * @returns {void}
      */
     initApi ({state, dispatch, getters, rootGetters}) {
