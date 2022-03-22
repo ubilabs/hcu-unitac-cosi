@@ -62,6 +62,7 @@ export default {
                     :current-timestamp="currentTimestamp"
                     :timestamp-prefix="timestampPrefix"
                     :locale="locale"
+                    :tooltip-offset="tooltipOffset"
                 />
                 <template v-if="item.expanded">
                     <ul class="timeline">

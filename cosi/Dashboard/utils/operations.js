@@ -52,7 +52,7 @@ function addOrReplaceStatsFeature (district, feature) {
  * @param {{category_A: String, category_B: String, operation: String}} calculation - the calculation options
  * @returns {String} the id
  */
-function getCalculationId (calculation) {
+export function getCalculationId (calculation) {
     return calculation.operation === "sumUpSelected" ?
         calculation.selectedCategories.join(" + ") :
         calculation.category_A + ` ${operationSymbols[calculation.operation]} ` + calculation.category_B;
@@ -91,9 +91,10 @@ export function addDivideSelectedCalculations () {
  * Adds a new calc to the calculation list
  * @param {"add" | "subtract" | "multiply" | "divide" | "sumUpSelected"} operation - the mathmatical operation to execute
  * @param {{field_A: Object, field_B: Object, selectedItems: Object[] }} [options={}] - fields and selected items list
+ * @param {String} [id] - the ID for the new calculation
  * @returns {void}
  */
-export function addCalculation (operation, options = {}) {
+export function addCalculation (operation, options = {}, id = undefined) {
     const
         calculation = {operation},
         field_A = options.field_A || this.fields.A,
@@ -108,7 +109,7 @@ export function addCalculation (operation, options = {}) {
         calculation.category_B = field_B.category;
     }
 
-    calculation.id = getCalculationId(calculation);
+    calculation.id = id || getCalculationId(calculation);
     this.setCalculation(calculation);
 }
 
