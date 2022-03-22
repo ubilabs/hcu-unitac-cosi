@@ -253,7 +253,7 @@ export default {
                             const additionalText = new Style({
                                 zIndex: 2,
                                 text: new Text({
-                                    font: "13px Calibri, sans-serif",
+                                    font: "14px Calibri, sans-serif",
                                     fill: new Fill({
                                         color: [0, 0, 0]
                                     }),
@@ -408,11 +408,11 @@ export default {
          */
         prepareGraphData (dataset) {
             const newDataset = {
-                label: dataset.getProperties()[this.keyOfAttrNameStats],
+                label: dataset?.getProperties()[this.keyOfAttrNameStats],
                 data: []
             };
 
-            this.dataCategory = dataset.getProperties().kategorie;
+            this.dataCategory = dataset?.getProperties().kategorie;
             this.availableYears.forEach(year => {
                 newDataset.data.push(dataset.getProperties()[this.yearSelector + year]);
             });

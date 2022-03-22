@@ -79,7 +79,7 @@ export default {
          */
         moveFeaturesActive (state) {
             if (state) {
-                this.$emit("moveFeaturesActive");
+                this.$emit("moveFeaturesActive", true);
                 this.listen();
                 this.dialog.timeout = 5000;
                 this.dialog.color = "primary";
@@ -87,6 +87,7 @@ export default {
                 this.dialog.open = true;
             }
             else {
+                this.$emit("moveFeaturesActive", false);
                 this.unlisten();
             }
         },

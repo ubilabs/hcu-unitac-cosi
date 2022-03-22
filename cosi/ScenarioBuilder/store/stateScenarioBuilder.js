@@ -25,7 +25,8 @@ const state = {
     readmeUrl: {
         "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/scenariobuilder.md",
         "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/einrichtungenanlegen.md"
-    }
+    },
+    featureEditorDisabled: false
 };
 
 export default state;
