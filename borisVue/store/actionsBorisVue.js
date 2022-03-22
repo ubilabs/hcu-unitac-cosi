@@ -6,7 +6,13 @@ import mapCollection from "../../../src/core/dataStorage/mapCollection";
 import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
 
 const actions = {
-    initialize ({commit, dispatch}) {
+    /**
+     * Sets a filtered layerList and the mapClickListener
+     * @param {Object} initialize.dispatch the dispatch
+     * @param {Object} initialize.commit the commit
+     * @returns {void}
+     */
+    initialize ({dispatch, commit}) {
         let layerList = getLayerModelsByAttributes({isNeverVisibleInTree: true});
 
         layerList = layerList.filter(function (layer) {
@@ -21,11 +27,14 @@ const actions = {
 
     },
     /**
-    * Requests parametic url and checks if all neccessary information is available to simulate gfi click and landuse select
-    * @returns {void}
-    * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
-    */
-    handleUrlParameters ({commit, dispatch, rootState}) {
+    * Requests parametic url and checks if all neccessary information is available to simulate feature click and landuse select
+     * @param {Object} handleUrlParameters.rootState the rootState
+     * @param {Object} handleUrlParameters.dispatch the dispatch
+     * @param {Object} handleUrlParameters.commit the commit
+     * @returns {void}
+     * url parameter. "?brwId=01510241&brwlayername=31.12.2017&center=565774,5933956"
+     */
+    handleUrlParameters ({rootState, dispatch, commit}) {
         const brwId = rootState.urlParams?.brwId,
             brwLayerName = rootState.urlParams?.brwLayerName,
             center = rootState.urlParams && rootState.urlParams["Map/center"],
@@ -44,20 +53,27 @@ const actions = {
         }
         console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
-    // simulated landuse selection when parametric Url is being used
+    /**
+    * Simulates landuse selection when parametric URL is being used
+     * @param {Object} simulateLanduseSelect.commit the commit
+     * @param {Object} simulateLanduseSelect.getters the getters
+     * @returns {void}
+     */
     simulateLanduseSelect ({commit, getters}) {
         const landuseByBrwId = getters.findLanduseByBrwId;
 
         commit("setSelectedLanduse", landuseByBrwId);
         commit("setIsProcessFromParametricUrl", false);
     },
-
     /**
-     * Aktionen zum Wechseln eines Layers.
-     * @param   {string} selectedLayerName Name des zu aktivierenden Layers
+     * Handles a layer switch by setting some attributes to their initial state and selecting the layer by the selected layer name
+     * @param {Object} switchLayer.state the state
+     * @param {Object} switchLayer.dispatch the dispatch
+     * @param {Object} switchLayer.commit the commit
+     * @param   {String} selectedLayerName name of the selected layer
      * @returns {void}
      */
-    switchLayer ({commit, dispatch, state}, selectedLayerName) {
+    switchLayer ({state, dispatch, commit}, selectedLayerName) {
         const selectedLayer = state.filteredLayerList.filter(function (layer) {
             return layer.get("isSelected") === true;
         });
@@ -81,18 +97,27 @@ const actions = {
             dispatch("toggleStripesLayer", false);
         }
     },
-    // aus dem select nach Jahren in BorisVue.vue
-    handleSelectBRWYear ({dispatch, state}, selectedLayerName) {
+    /**
+    * Handles layer selection by date
+     * @param {Object} handleSelectBRWYear.state the state
+     * @param {Object} handleSelectBRWYear.dispatch the dispatch
+     * @param {String} selectedLayerName name of the selected layer
+     * @returns {void}
+     */
+    handleSelectBRWYear ({state, dispatch}, selectedLayerName) {
         dispatch("switchLayer", selectedLayerName);
         dispatch("checkBrwFeature", {brwFeatures: state.brwFeatures, year: selectedLayerName.split(".")[2]});
     },
     /**
-    * checks if a brw Feature already is available
-    * @param {ol.Feature[]} brwFeatures - list of all available brw features
-    * @param {string} year - the selected brw year
-    * @returns {void}
-    */
-    async checkBrwFeature ({commit, dispatch, state}, {brwFeatures, year}) {
+    * Checks if a brw Feature is already available
+     * @param {Object} checkBrwFeature.state the state
+     * @param {Object} checkBrwFeature.dispatch the dispatch
+     * @param {Object} checkBrwFeature.commit the commit
+     * @param {ol.Feature[]} brwFeatures list of all available brw features
+     * @param {String} year selected brw year
+     * @returns {void}
+     */
+    async checkBrwFeature ({state, dispatch, commit}, {brwFeatures, year}) {
         if (brwFeatures !== undefined) {
             const brwFeatureByYear = await helpers.findBrwFeatureByYear({features: state.selectedBrwFeature, year});
 
@@ -112,11 +137,14 @@ const actions = {
         }
     },
     /**
-     * Shows or hides the old view of brw = stripes.
-     * @param {boolean} value true or false
+     * Shows or hides the old view of brw in stripes
+     * @param {Object} toggleStripesLayer.state the state
+     * @param {Object} toggleStripesLayer.dispatch the dispatch
+     * @param {Object} toggleStripesLayer.commit the commit
+     * @param {Boolean} value true or false
      * @returns {void}
      */
-    toggleStripesLayer ({commit, dispatch, state}, value) {
+    toggleStripesLayer ({state, dispatch, commit}, value) {
         const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
             selectedLayer = layerList.find(layer=> layer.get("isSelected") === true),
             selectedLayerName = selectedLayer.attributes.name,
@@ -137,26 +165,30 @@ const actions = {
         }
     },
     /**
-     * selects a layer by name
-     * @param {string} value - layer name
+     * Selects a layer by selectedLayerName
+     * @param {Object} selectLayerByName.state the state
+     * @param {Object} selectLayerByName.commit the commit
+     * @param {String} selectedLayerName name of the layer
      * @returns {void}
      */
-    selectLayerByName ({commit, state}, value) {
+    selectLayerByName ({state, commit}, selectedLayerName) {
         const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
-            selectedLayer = layerList.find(layer => layer.get("name") === value);
+            selectedLayer = layerList.find(layer => layer.get("name") === selectedLayerName);
 
         selectedLayer.set("isVisibleInMap", true);
         selectedLayer.set("isSelected", true);
         commit("setSelectedLayer", selectedLayer);
     },
     /**
-     * sends a get feature info request to the currently selected layer
-     * @param {MapBrowserPointerEvent} event - map browser event
-     * @param {Boolean} [processFromParametricUrl] Flag if process is started from parametric url. Then  the gfi request has to be faked, and the landuse has to be automatically selected, so that all the brw features can be displayed
-     * @param {Number[]} [center] Center coordinate of faked gfi
+     * Sends a get feature info request to the currently selected layer
+     * @param {Object} requestGFI.state the state
+     * @param {Object} requestGFI.dispatch the dispatch
+     * @param {MapBrowserPointerEvent} event map browser event
+     * @param {Boolean} [processFromParametricUrl] flag if process is started from parametric url. Then  the gfi request has to be faked, and the landuse has to be automatically selected, so that all the brw features can be displayed
+     * @param {Number[]} [center] center coordinate of faked gfi
      * @returns {void}
      */
-    requestGFI ({dispatch, state}, {event, processFromParametricUrl, center}) {
+    requestGFI ({state, dispatch}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource();
@@ -192,26 +224,26 @@ const actions = {
 
     },
     /**
-     * handles get feature info response
-     * @param {string} response - XML to be sent as String
-     * @param {number} status - request status
-     * @param {ol.coordinate} coordinate - click coordinate
+     * Handles wms get feature info response
+     * @param {Object} handleGfiResponse.state the state
+     * @param {Object} handleGfiResponse.dispatch the dispatch
+     * @param {Object} handleGfiResponse.commit the commit
+     * @param {String} response XML sent as String
+     * @param {Number} status request status
+     * @param {ol.coordinate} coordinates clicked coordinates
      * @returns {void}
      */
-    handleGfiResponse ({commit, dispatch, state}, {response, status, coordinate}) {
+    handleGfiResponse ({state, dispatch, commit}, {response, status, coordinate}) {
         if (status === 200) {
             const feature = new WMSGetFeatureInfo().readFeature(response);
 
             if (feature !== null) {
-                // polygon
                 if (parseInt(feature.get("jahrgang"), 10) > 2008) {
                     feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
-                    // getWFS for polygon by id and year and place polygon marker
                     dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
                     commit("setSelectedPolygon", feature);
                     dispatch("matchPolygonFeatureWithLanduse", {feature, selectedLanduse: state.selectedLanduse});
                 }
-                // point
                 else {
                     commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
@@ -228,13 +260,12 @@ const actions = {
             console.error("Datenabfrage fehlgeschlagen:" + status);
             dispatch("Alerting/addSingleAlert", {content: "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut."}, {root: true});
         }
-        // FEHLT NOCH:
-        // this.setBackdrop(false);
     },
     /**
-     * sends a wfs get feature request filtered by id
-     * @param {string} featureId -
-     * @param {string} year - the selected brw year
+     * Sends a wfs get feature request filtered by id
+     * @param {Object} getFeatureRequestById.dispatch the dispatch
+     * @param {String} featureId id of seelected feature
+     * @param {String} year selected year
      * @return {void}
      */
     getFeatureRequestById ({dispatch}, {featureId, featureYear}) {
@@ -276,11 +307,13 @@ const actions = {
 
     },
     /**
-     * combines the polygonFeature with the selectedLanduse
+     * Combines the polygonFeature with the selectedLanduse
      * if so, the function sendGetFeatureRequest is called,
      * to finally get the brwFeatureInformation for the selectedPolygon with the selectedLanduse
+     * @param {Object} matchPolygonFeatureWithLanduse.dispatch the dispatch
+     * @param {Object} matchPolygonFeatureWithLanduse.commit the commit
      * @param {ol.Feature} feature - selectedPolygon feature
-     * @param {string} selectedLanduse - currently selectedLanduse
+     * @param {String} selectedLanduse - currently selectedLanduse
      * @returns {void}
      */
     matchPolygonFeatureWithLanduse ({dispatch, commit}, {feature, selectedLanduse}) {
@@ -297,12 +330,13 @@ const actions = {
         }
     },
     /**
-     * sends a wfs get feature request filtered by Bodenrichtwertnummer
-     * @param {string} richtwertNummer - Bodenrichtwertenummer - brwNumber
-     * @param {string} year - the selected brw year
+     * Sends a wfs get feature request filtered by Bodenrichtwertnummer
+     * @param {Object} postFeatureRequestByBrwNumber.dispatch the dispatch
+     * @param {String} brwNumber brwNumber is the standard land value number
+     * @param {String} featureYear selected year
      * @return {void}
      */
-    postFeatureRequestByBrwNumber ({dispatch}, {richtwertNummer, featureYear}) {
+    postFeatureRequestByBrwNumber ({dispatch}, {brwNumber, featureYear}) {
         const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
             index = Config.layerConf.lastIndexOf("/"),
             url = Config.layerConf.substring(0, index),
@@ -311,7 +345,7 @@ const actions = {
                 <Filter xmlns='http://www.opengis.net/ogc'>
                     <PropertyIsEqualTo>
                         <PropertyName>richtwertnummer</PropertyName>
-                        <Literal>${richtwertNummer}</Literal>
+                        <Literal>${brwNumber}</Literal>
                     </PropertyIsEqualTo>
                 </Filter>
             </wfs:Query>
@@ -329,13 +363,15 @@ const actions = {
         });
     },
     /**
-     * handles the response from a wfs get feature request
-     * @param {string} response - XML to be sent as String
-     * @param {integer} status - request status
-     * @param {number} year - the selected brw year
+     * Handles the response from a wfs get feature request
+     * @param {Object} handleGetFeatureResponse.dispatch the dispatch
+     * @param {Object} handleGetFeatureResponse.commit the commit
+     * @param {String} response XML to be sent as String
+     * @param {Integer} status request status
+     * @param {Number} year selected year
      * @returns {void}
      */
-    async handleGetFeatureResponse ({commit, dispatch}, {response, status, year}) {
+    async handleGetFeatureResponse ({dispatch, commit}, {response, status, year}) {
 
         if (status === 200) {
             const features = new WFS().readFeatures(response),
@@ -350,8 +386,10 @@ const actions = {
         }
     },
     /**
-     * get the actually selected date and set date and feature to get extended feature attributes
-     * @param {ol.Feature[]} feature - selected feature
+     * Get the actually selected date and set date and feature to get the extended feature attributes
+     * @param {Object} combineFeatureWithSelectedDate.dispatch the dispatch
+     * @param {Object} combineFeatureWithSelectedDate.getters the getters
+     * @param {ol.Feature[]} feature selected feature
      * @returns {void}
      */
     async combineFeatureWithSelectedDate ({dispatch, getters}, feature) {
@@ -360,8 +398,8 @@ const actions = {
         dispatch("extendFeatureAttributes", {feature, date});
     },
     /**
-     * Sets the name of the active layer as date
-     * @param  {Backbone.Model[]} filteredLayerList List of all WMS Layers
+     * Gets the date of the selected layer
+     * @param {Object} getDateByActiveLayerName.state the state
      * @return {String} layername which is used as date
      */
     getDateByActiveLayerName ({state}) {
@@ -373,6 +411,14 @@ const actions = {
         }
         return date;
     },
+    /**
+     * Sets the extended feature attributes
+     * @param {Object} extendFeatureAttributes.state the state
+     * @param {Object} extendFeatureAttributes.commit the commit
+     * @param {Object} feature selected fetaure
+     * @param {String} date date
+     * @return {void}
+     */
     extendFeatureAttributes ({commit, state}, {feature, date}) {
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002,
             sw = helpers.parseSW({feature});
@@ -383,11 +429,11 @@ const actions = {
             "richtwert_euro": thousandsSeparator(feature.get("richtwert_euro")),
             "schichtwert": sw,
             "stichtag": date,
-            "convertedBrw": "", // umgerechneter Bodenrichtwert
+            "convertedBrw": "", // Converted standard land value
             "convertedBrwDM": "",
-            "zEntwicklungszustand": feature.get("entwicklungszustand"), // Pflichtattribut für WPS
-            "zBeitragszustand": feature.get("beitragszustand"), // Pflichtattribut für WPS
-            "zNutzung": feature.get("nutzung_kombiniert"), // Pflichtattribut für WPS
+            "zEntwicklungszustand": feature.get("entwicklungszustand"), // Mandatory attribute for WPS
+            "zBeitragszustand": feature.get("beitragszustand"), // Mandatory attribute for WPS
+            "zNutzung": feature.get("nutzung_kombiniert"), // Mandatory attribute for WPS
             "zBauweise": feature.get("anbauart") !== "" ? feature.get("anbauart") : null,
             "zGeschossfl_zahl": feature.get("geschossfl_zahl") !== "" ? feature.get("geschossfl_zahl") : null,
             "zGrdstk_flaeche": feature.get("grdstk_flaeche") !== "" ? feature.get("grdstk_flaeche") : null,
@@ -399,12 +445,14 @@ const actions = {
         return feature;
     },
     /**
-    * updater for selectedBrwFeature forces refresh
-    * @param {string} converted Name des Attributes am feature
-    * @param {string} brw Wert des Attributes
-    * @returns {void}
-    */
-    updateSelectedBrwFeature ({commit, state}, {converted, brw}) {
+    * Updater for selectedBrwFeature that forces a refresh
+     * @param {Object} updateSelectedBrwFeature.state the state
+     * @param {Object} updateSelectedBrwFeature.commit the commit
+     * @param {String} converted attribute name of the selected feature
+     * @param {String} brw attribute value
+     * @returns {void}
+     */
+    updateSelectedBrwFeature ({state, commit}, {converted, brw}) {
         const feature = state.selectedBrwFeature,
             isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
