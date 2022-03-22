@@ -134,7 +134,7 @@ export default {
 
 <template>
     <div class="verkehrsstaerken">
-        <div class="panel header">
+        <div class="card header">
             <strong>{{ feature.getMappedProperties().Zählstelle +": "+feature.getMappedProperties().Bezeichnung }}</strong>
             <br>
             <small>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.kind", {kind: feature.getMappedProperties().Art}) }}</small>
@@ -143,9 +143,10 @@ export default {
             <li
                 id="verkehrsstaerken-table-tab"
                 value="table"
-                :class="{ active: isActiveTab('table') }"
+                :class="{ active: isActiveTab('table'), 'nav-item': true }"
             >
                 <a
+                    class="nav-link"
                     href="#table"
                     @click="setActiveTab"
                 >
@@ -155,9 +156,10 @@ export default {
             <li
                 id="verkehrsstaerken-diagram-tab"
                 value="diagram"
-                :class="{ active: isActiveTab('diagram') }"
+                :class="{ active: isActiveTab('diagram'), 'nav-item': true }"
             >
                 <a
+                    class="nav-link"
                     href="#diagram"
                     @click="setActiveTab"
                 >
@@ -193,7 +195,10 @@ export default {
                 type="button"
                 @click="onClick"
             >
-                <span class="glyphicon glyphicon-download" />{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.download") }}
+                <span class="bootstrap-icon">
+                    <i class="download" />
+                </span>
+                {{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.download") }}
             </button>
         </div>
     </div>
@@ -240,7 +245,7 @@ export default {
             outline: none;
          }
     }
-    .glyphicon {
+    .bootstrap-icon {
         padding-right: 5px;
     }
 
