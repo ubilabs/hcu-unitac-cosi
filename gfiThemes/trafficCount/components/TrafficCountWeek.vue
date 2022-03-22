@@ -284,9 +284,11 @@ export default {
                         @click="toggleCalendar"
                     >
                         <span
-                            class="glyphicon glyphicon-th"
+                            class="bootstrap-icon"
                             aria-hidden="true"
-                        />
+                        >
+                            <i class="grid-3x3-gap-fill" />
+                        </span>
                     </button>
                 </span>
             </div>
