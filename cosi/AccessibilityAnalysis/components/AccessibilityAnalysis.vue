@@ -38,10 +38,10 @@ export default {
                     type: "cycling-regular",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
                 },
-                {
-                    type: "cycling-electric",
-                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
-                },
+                // {
+                //     type: "cycling-electric",
+                //     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
+                // },
                 {
                     type: "foot-walking",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
