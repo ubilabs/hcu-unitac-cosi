@@ -50,7 +50,7 @@ export default {
 
                 return projectActive.layer || projectActive.contributions || projectActive.heatmap;
             };
-        },
+        }
     },
     watch: {
         selectedStyling: function () {
@@ -627,6 +627,11 @@ export default {
         scrollPosition (index) {
             const target = this.$refs.pdesc[index];
 
+            if (target.scrollHeight === target.offsetHeight) {
+                this.scrollPos = "";
+                return;
+            }
+
             if (target.scrollTop === 0) {
                 this.scrollPos = "bottom";
                 return;
@@ -643,11 +648,6 @@ export default {
             }
 
             this.scrollPos = "";
-
-
-            // console.log(event);
-            // console.log(event.target.scrollTop, event.target.scrollHeight);
-
         }
     }
 };
