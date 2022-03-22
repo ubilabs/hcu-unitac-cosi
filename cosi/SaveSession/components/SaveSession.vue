@@ -185,6 +185,7 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         ...parseState,
         ...serializeState,
+        downloadJsonToFile,
 
         save () {
             this.saveDialog = false;
@@ -200,7 +201,7 @@ export default {
         },
         saveAs () {
             this.save();
-            downloadJsonToFile(this.session, this.session.meta.title + ".json");
+            this.downloadJsonToFile(this.session, this.session.meta.title + ".json");
         },
 
         clear () {
@@ -603,6 +604,7 @@ export default {
                 </template>
             </v-snackbar>
             <v-snackbar
+                id="save-dialog"
                 v-model="saveDialog"
                 :timeout="-1"
                 color="primary"
@@ -616,6 +618,7 @@ export default {
 
                 <template #action="{ attrs }">
                     <v-btn
+                        id="save-to-file-action"
                         v-bind="attrs"
                         text
                         @click="onSavePrompt"
@@ -623,6 +626,7 @@ export default {
                         <v-icon>mdi-content-save</v-icon>
                     </v-btn>
                     <v-btn
+                        id="close-save-dialog"
                         v-bind="attrs"
                         text
                         @click="saveDialog = false"

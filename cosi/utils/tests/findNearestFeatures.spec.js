@@ -7,9 +7,9 @@ import {registerProjections} from "../registerProjections";
 
 describe("findNearestFeature", () => {
     before(async function () {
+        this.timeout(10000);
         await initializeLayerList();
         registerProjections();
-
     });
     it("should find feature from same feature", async function () {
         const features = await getAllFeatures("20569"),
