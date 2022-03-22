@@ -9,6 +9,7 @@ import Vuetify from "vuetify";
 import sinon from "sinon";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
+require("fake-indexeddb/auto");
 
 config.mocks.$t = key => key;
 
@@ -125,7 +126,10 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                         AreaSelector: {
                             namespaced: true
                         },
-                        Draw: DrawStore
+                        Draw: DrawStore,
+                        QueryDistricts: {
+                            namespaced: true
+                        }
                     }
                 },
                 Language: {
@@ -166,7 +170,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
         });
 
         describe("buttons should call their respective methods", async () => {
-            it("quick-ssession button calls quickSave", async () => {
+            it("save-session button calls quickSave", async () => {
                 const stubQuickSave = sinon.stub(SaveSession.methods, "quickSave");
                 
                 wrapper = factory.getMount();
@@ -182,6 +186,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 wrapper = factory.getMount();
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
+                await wrapper.setData({latestDate: "2022-03-22"});
                 wrapper.find("#load-session").trigger("click");
                 expect(stubLoadLastSession.calledOnce).to.be.true;
             });

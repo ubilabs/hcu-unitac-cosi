@@ -15,6 +15,7 @@
     "d3-color": "^3.0.1",
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.0.0",
+    "fake-indexeddb": "^3.1.7",
     "file-saver": "^2.0.5",
     "jszip": "^3.7.1",
     "object-hash": "^2.1.1",
