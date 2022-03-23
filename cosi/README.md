@@ -1,582 +1,1073 @@
-<h1 align="center">CoSI</h1>
-<h1 align="center">Cockpit Urban Infrastructures</h1>
-<h4 align="center">GIS + data based analysis & planning tools in the Hamburg city administration</h4>
-<br></br>
+# CoSI 
+___
+## Cockpit Städtische Infrakstrukturen
+___
+#### GIS + datenbasierte Analyse- und Planungstools in der Hamburger Stadtverwaltung
 
-## User manual
 
-<h7>2nd phase (further development)</h2>
-<h7>Version 2.0</h2>
-<h7>For internal use</h2>
+### Nutzerhandbuch
+---
+#### 2. Phase (Weiterentwicklung)
+### Version 2.0
+#### Zur Internen Nutzung
 
-### Authors
-Daniel Schulz, HafenCity University Hamburg, Sebastian Duden, State Office for Geoinformation and Surveying Hamburg
-Ogeigha Koroyin, HafenCity University Hamburg
-Nicola Stradtmann, HafenCity University Hamburg
-Johanna Fleischer, Hafen City University
-Yuxiang Zhang, HafenCity University Hamburg
 
-### was standing
-06/17/2021
+### Projektteam
+Daniel Schulz, HafenCity Universität Hamburg  
+Sebastian Duden, Landesbetrieb für Geoinformation und Vermessung Hamburg
+Johanna Fischer, Hafen City Universität  
+Nicola Stradtmann, HafenCity Universität Hamburg  
+Bertram Hillmann, a3rtgm GbR
+Dennis Rupnow, HiTec  
+Ogeigha Koroyin, HafenCity Universität Hamburg  
+Yuxiang Zhang, HafenCity Universität Hamburg
+Jannes Süpke, ITD
+
+
+### Stand
+03/23/2022
 
 ### Keywords
-GIS, Dashboard, Data Driven Urban Planning, Social Infrastructure, Urban Data Platform, Data Visualization, Planning Support Tools, Demand Driven Decision Making
+GIS, Dashboard, Data Driven Urban Planning, Social Infrastructure, Urban Data Platform, Data Visualization, Planning Support Tools, Demand Driven Decision Making  
 
-### Together-version
-When planning urban and social infrastructure, decision-making processes in public administration are often characterized by lengthy procedures and a fragmented database. This means that requirements are recognized too late, or the specification of the planning is delayed due to the time-consuming process of obtaining information.
-<br></br>
-This manual describes the *Cockpit Urban Infrastructures* for Hamburg as a digital analysis and planning tool, which uses an easily accessible user interface to bundle, visualize and integrate statistical and geo-referenced data in order to identify planning needs and accelerate planning processes.
-<br></br>
-For this purpose, the *Urban Data Platform* of the City of Hamburg used the database structures built up by the City of Hamburg to establish a map-based web application, which provides the city's social space planners with a range of analysis functions in order to identify socio-demographic relationships at the administrative level of the statistical areas, to recognize trends and relationships between the existing ones To determine the infrastructure offer and the relevant target groups. In the following, the tool should help to find locations and potentials for the development of infrastructure. The results of these analyzes can be visualized directly from CoSI and used as a basis for decision-making and discussion. The workflow follows a three-stage logic from the visualization of data, through the analysis.
-<br></br>
-In order to set up the technical and content-related requirements of the initialization project, a series of stakeholder and user story workshops with the members of the Hamburg administration were held at various levels in advance. CoSI was then developed from August 2019 in an agile process, based on the SCRUM method, by an interdisciplinary team from HCU Hamburg and LGV Hamburg and was an internal pilot for the social space planners of the Hamburg Nord district from January 28, 2020 to May 2020 Management network available. After a successful evaluation, the process was transferred to productive operation in mid-2020 and has been available to several thousand employees since then available. The development project started on February 1st, 2021 with the aim of improving existing functions and integrating new functions. This includes in particular the "look ahead" through the development of a simulation function.
+## Zusammenfassung
+Bei der Planung städtischer und sozialer Infrastruktur sind Entscheidungsprozesse in der öffentlichen Verwaltung häufig durch langwierige Verfahren und eine fragmentierte Datengrundlage charakterisiert. D.h. Bedarfe werden teilweise  spät erkannt, oder die Konkretisierung der Planung verzögert sich durch das aufwendige Beschaffen von strukturierten Informationen.\
+Das vorliegende Handbuch beschreibt das *Cockpit Städtische Infrastrukturen* für Hamburg als digitales Analyse- und Planungswerkzeug, welches mithilfe eines leicht zugänglichen User-Interface statistische und georeferenzierte Daten bündelt, visualisiert und integriert, um Planungsbedarfe zu identifizieren und Planungsprozesse zu beschleunigen.  
+  
+Dazu wurden die durch die *Urban Data Platform* der Stadt Hamburg aufgebauten Datenbankstrukturen genutzt, um eine kartenbasierte Webapplikation zu etablieren, welche den Sozialraumplanern der Stadt eine Reihe von Analysefunktionen zur Verfügung stellt, um auf der Verwaltungsebene der statistischen Gebiete soziodemographische Zusammenhänge zu identifizieren, Trends zu erkennen sowie Verhältnisse zwischen dem existierenden Infrastrukturangebot und den relevanten Zielgruppen zu ermitteln. Das Werkzeug soll im Folgenden helfen, Standorte und Potentiale für die Entwicklung von Infrastruktur zu finden. Die Ergebnisse dieser Analysen können direkt aus CoSI heraus visualisiert und als Entscheidungs- und Diskussionsgrundlage verwendet werden. Der Workflow folgt dabei einer dreistufigen Logik von der *Visualisierung* von Daten, über die *Analyse*, also der kontextuellen Verknüpfung von Information, bis zur *Simulation* von Maßnahmen und Ableitung ihrer  Auswirkungen.  
+  
+Um die technischen und inhaltlichen Anforderungen des Initialisierungs-Projekts aufzustellen, wurden im Vorfeld ab Sommer 2018 eine Reihe von Stakeholder- und Userstory-Workshops mit den Mitgliedern der Hamburger Verwaltung auf verschiedenen Ebenen durchgeführt. CoSI wurde dann ab August 2019 in einem agilen Verfahren, basierend auf der SCRUM-Methode, durch ein interdisziplinäres Team der HCU Hamburg und des LGV Hamburg entwickelt und stand den Sozialraumplanern des Bezirks Hamburg Nord seit dem 28.01.2020 bis Mai 2020 als Pilot im internen Verwaltungsnetzwerk zur Verfügung. Mitte 2020 wurde das Verfahren nach erfolgreicher Evaluation in den Produktivbetrieb überführt und steht seitdem bereits mehreren tausend Mitarbeiterinnen und Mitarbeitern zur Verfügung. Das seit dem 01.02.2021 gestartete Weiterentwicklungsprojekt hat das Ziel, bestehende Funktionen zu verbessern und neue Funktionen zu integrieren. Hierzu zählt insbesondere der "Blick nach vorne" durch die Entwicklung einer Simulationsfunktion.  
+  
 
+## Inhalt
+___
+- CoSI: Cockpit Städtische Infrakstrukturen
+  - [Datenmodell & -Infrastruktur](#markdown-header-datenmodell---infrastruktur)
+  - [Module](#markdown-header-module)
+   - [Themen (Layer)](#markdown-header-themen-layer)
+   - [Analyse](#markdown-header-analyse)
+      - [Manuelle Flächenauswahl für Fachdaten](#markdown-header-manuelle-flächenauswahl-für-fachdaten)
+      - [Einwohnerabfrage](#markdown-header-einwohnerabfrage)
+      - [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse)
+         - [Erreichbarkeit ab einem Referenzpunkt](#markdown-header-erreichbarkeit-ab-einem-referenzpunkt)
+         - [Erreichbarkeit im Gebiet](#markdown-header-erreichbarkeit-im-gebiet)
+         - [Erreichbarkeit entlang einer Route](#markdown-header-erreichbarkeit-entlang-einer-route)
+      - [Vergleichbare Gebiete ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln)
+      - [Filter](#markdown-header-filter)
+      - [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+      - [DIPAS](#markdown-header-dipas)
+      - [Datenvisualisierung](#markdown-header-datenvisualisierung)
+    - [Simulation](#markdown-header-simulation)
+      - [Einrichtungen anlegen](#markdown-header-einrichtungen-anlegen)
+      - [Einrichtungen bearbeiten](#markdown-header-einrichtungen-bearbeiten)
+      - [Wohnungsbauquartiere anlegen](#markdown-header-wohnungsbauquartiere-anlegen)
+    - [Dienste](#markdown-header-dienste)
+      - [Geodaten Importieren](#markdown-header-geodaten-importieren)
+      - [Zweites Fenster](#markdown-header-zweites-fenster)
+      - [Sitzung Speichern/Laden](#markdown-header-sitzung-speichernladen)
+      - [Vorlagen](#markdown-header-vorlagen)
+    - [Dashboard](#markdown-header-dashboard)
+      - [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)
+         - [Burgermenü](#markdown-header-burgermenü)
+      - [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)
+    - [Gebietsauswahl](##markdown-header-gebietsauswahl)
+    - [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)
+    - [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis)
 
-# Contents
-- [Data model & infrastructure](#data-model--infrastructure)
-  - [Regional statistical data](#regional-statistical-data)
-    - [Technical data](#technical-data)
-    - [Analysis](#analysis)
-    - [Presentation](#presentation)
-    - [Geospatial services](#geospatial-services)
-    - [WMS](#wms)
-    - [WFS](#wfs)
-- [Modules](#modules)
-  - [Overview](#overview)
-  - [Themes (layers)](#themes-layers)
-  - [Accessibility](#accessibility)
-  - [Analysis](#analysis-1)
-    - [Resident query](#resident-query)
-    - [Accessibility analysis](#accessibility-analysis)
-    - [Filter](#filter)
-    - [Supply analysis](#supply-analysis)
-    - [Comparable areas](#comparable-areas)
-  - [Simulation](#simulation)
-  - [Services](#services)
-    - [Second window](#second-window)
-  - [Area selection](#area-selection)
-  - [Map analysis of regional statistical data](#map-analysis-of-regional-statistical-data)
-  - [Dashboard](#dashboard)
-    - [Structure (technology)](#structure-technology)
-    - [InfoScreen](#infoscreen)
-    - [Widgets](#widgets)
-    - [The Context menu](#the-context-menu)
-    - [The Overview table](#the-overview-table)
-    - [Context functions](#context-functions)
-    - [Diagrams](#diagrams)
-    - [Time beam](#time-beam)
-    - [Calculate ratios](#calculate-ratios)
-    - [Correlation diagram](#correlation-diagram)
-    - [Results](#results)
-# Data model & infrastructure
-CoSI is essentially based on the superimposition of regularly updated regional statistical characteristics of the individual area levels, which are supplied by the Statistikamt Nord (Statistical Office North) for Hamburg and Schleswig-Holstein (StaNord), and various specialist data from the various authorities, such as the digital green plan (BUKEA) or the public schools (BUE). In doing so, CoSI tries to do more than just ensure that the data records are displayed next to and on top of each other in the map and table. The aim is to achieve an integration of the data and an interaction with it. So, on the one hand CoSI makes connections and interactions between different data sets tangible for the users. On the other hand CoSI allows users to "intervene" in the data sets, filter, search, or "manipulate" them. The latter, the real-time change of data records in the running program (see simulation), is currently being developed and implemented in the ongoing project.
-## Regional statistical data
-The StaNord data is available for all administrative levels of the FHH (statistical area, city districts, boroughs, and the entire city). Depending on the level, they include over 60 indicators, which are divided into the categories
--	Population
--	Surface
--	Households
--	Social security obligations
--	Unemployed
--	SGB II benefits
--	Basic security in old age
--	Living
--	Traffic
+## Datenmodell & -Infrastruktur
+___
+  
+CoSI basiert im Kern aus der Überlagerung regelmäßig aktualisierter regionalstatistischer Kenndaten der einzelnen Gebietsebenen, welche vom Statistikamt Nord für Hamburg und Schleswig-Holstein (StaNord ) geliefert werden, und verschiedenster Fachdaten der unterschiedlichen Behörden und Ämter, wie z.B. dem digitalen Grünplan (BUKEA) oder den Öffentlichen Schulen (BSB). Dabei versucht CoSI mehr als nur die Darstellung der Datensätze in Karte und Tabelle neben- und übereinander zu gewährleisten. Der Anspruch ist es, eine Integration der Daten und eine Interaktion mit den Daten zu erreichen. Also einerseits Zusammenhänge und Wechselwirkungen zwischen verschiedenen Datensätzen für die Nutzerinnen und Nutzer erfahrbar zu machen und andererseits diesen zu erlauben in die Datensätze "einzugreifen", sie zu filtern, zu durchsuchen oder zu "manipulieren". Letzteres, die Echtzeit-Veränderung von Datensätzen im laufenden Programm (s. Simulation) wird aktuell im laufenden Weiterentwicklungsprojekt konzipiert bzw. umgesetzt.
 
-structure (for a precise list, see appendix). These data sets contain time series, which are recorded from approx. 2012 (depending on the data set) and are expanded annually.
-
-*Note: Note: For reasons of data protection law, the data provider filters those data sets which, in the case of sensitive data, could be traced back to single individuals.*
-
-**Datensatz (Bsp.)**
-| `Verwaltungseinheit`        | `Stadtteil`
------------- | -------------
-`Bezirk` | `Hamburg-Nord`
-`Stadtteil` | `Groß-Borstel`
-`Kategorie` | `soz_sozverpflichtig_beschaeftigte_maenner_15_bis_u65_ant`
-`2011` | `53,4`
-`2012` | `53,6`
-`...` | `...`
-`2017` | `56,2`
-`2018` | `55,6`
-
-**Features loader**
->All StaNord data, like all other specialist data, are provided by geospatial service. As shown in the example above, the data structure of the data not only provides each data record as a separate data object (feature) for each geographical area, at each administrative level. Each feature is also linked to its geographic geometry. In other words, it is not possible to load a single feature with all the data records, but the request must be made for each indicator individually. The Features Loader is the CoSI-specific module which, when selecting the area, requests the collected data sets from the server excluding the geometry (for performance reasons) and then links these within the application with the area shown on the map.
-### Technical data
-The technical data sets that are and can be integrated in CoSI are provided as geospatial services by a wide variety of data owners (above all authorities, but in principle also private companies, real-time sensors, etc.) and accessed in CoSI, as in the FHH Atlas, via the URL of the respective service . Many of the data sets in their edited form emerged from the negotiation and coordination processes of the Urban Data Hub, through which the authorities and data holders of the FHH agree on common standards and regular publications.
-### Analysis
-Analysis data are all those data sets integrated (as WFS, see geospatial services) that have been configured for use with the CoSI analysis (and in future simulation) tools. In other words, each object (feature, eg day care center or green space) is stored individually and can be viewed with its geographical position and extent.
-### Presentation
-Representation data are selected data sets from the FHH network in consultation with the specialist planners, which are visualized on the map by the underlying geoportal (master portal) and provided with a legend. The data record for the respective coordinate can be called up from the data record with a click. In contrast to the analysis data, the display data are currently not available as individual objects, but rather as a tiled / rasterized image (WMS, see geospatial services).
-### Geospatial services
-All data presented in CoSI and the FHH-Atlas are held by the providers as a service. The service delivers data records from the respective database in a machine-readable format via a URL. The request can be specified or limited (e.g. to a geographical section) via additional parameters.
-### WMS
-A WMS (Web Map Service) delivers geodata / maps as raster images (PNG), which are initially displayed on the map without background information. At the same time, the legend of the data record or information on a specific coordinate can be called up via further requests.
-### WFS
-In contrast to the WMS, the WFS (Web Feature Service) does not provide a finished map view, but a raw data object in which the data set of each geographical object (point, line, area, etc.) including its attributes (e.g. a school including its type of school, its number of students, email address and afternoon offer). The visualization (styling) of the data then takes place on the basis of predefined or supplied configurations within the application. This is more computationally intensive for the user and less controllable on the part of the data provider, but offers the possibility to interact directly with the objects within the portal or to change them.
-
-# Modules
-As is common in contemporary (web) development, and as described in the Structure chapter, CoSI as the instance of the master portal is made up of a number of subject and data-specific modules. 
-
-CoSI offers various modules, some of which are taken from the Master Portal, the others are CoSI-specific. Below is an overview of the tools in two categories:
-
-**1.	CoSI-specific**
-1. Analysis:
-   1. Map visualization of regional statistical data
-   2. Dashboard
-   3. Facility overview (in development)
-   4. Accessibility analysis
-   5. Select area
-   6. Identify comparable areas
-   7. Supply analysis
-1. Simulation: (in development)
-   1. Scenario Manager
-   2. Scenario Builder
-   3. Neighborhood-Builder
-1. Services: 
-   1. Switch mousehover on / off
-   2. Open the second window
- 
-**2.	Tools adopted from the Master Portal**
-1. Analysis:
-   1. Resident query
-   2. Filter
-   3. File import drawings
-   4. Measure distance / area
-   5. Drawing and writing
-1. Services:
-   1. Print map
-   2. Save session
-   3. Add WMS 
+  
     
-**Adjustments**
->In some cases, the tools from the master portal had to be slightly adapted for CoSI in order to ensure stability within CoSI and to increase the benefit. For example, with the “Print map” tool, unlike in the master portal, individually styled map elements are also output, for which there was no need in the master portal. Additional tools such as “Filter” and “Resident Survey” have been adapted or expanded to increase their usability in CoSI. With the filter, a list of results is generated and can be transferred to the dashboard (push). The resident query was integrated into the accessibility analysis and thus enables an address-specific query of the number of residents for a generated catchment area. Various other (partly also purely cosmetic) adjustments to the UI flow from CoSI back into the core architecture of the mast portal.
 
-## Overview
+### Regionalstatistische Daten
+Die Daten des StaNord liegen für alle Verwaltungsebenen der FHH (statistische Gebieten, Stadtteile, Bezirke und die Gesamtstadt) vor. Sie umfassen je nach Ebene über 60 Indikatoren, welche sich in folgende Kategorien gliedern:  
 
-![Illustration 1 The CoSI UI](https://user-images.githubusercontent.com/79461871/127781976-c7617966-f82d-4389-99ae-2c3affaecba5.JPG)
+   - Bevölkerung
+   - Fläche
+   - Haushalte
+   - Sozialversicherungspflichte
+   - Arbeitslose
+   - SGB II Leistungen
+   - Grundsicherung im Alter
+   - Wohnen
+   - Verkehr
 
-*Illustration 1: The CoSI UI*
+Diese Datensätze beinhalten je Zeitreihen, welche von (je nach Datensatz) ca. 2012 an erfasst sind und jährlich erweitert werden.
 
-1. **Topic tree / topic layer** (see topics)
-2. **Analysis functions** (see analysis)
-3. **Simulation functions** (not yet available)
-4. **Services** (see services)
-5. **Legend** (see legend)
-6. **Dashboard** (see dashboard)
-7. **Area selection** (see area selection)
-8. **Contact form** - Requests, comments, comments and error reports can be sent directly to the project team or the technical control center 
-9. **Search bar** - You can search for locations, addresses, B-plans, as well as active features (day care centers, sports facilities, etc.) in the map
-10. **Tool window** - Active tools are displayed in the movable window
-11. **Sidebar** - The dashboard and the filter are displayed in the sidebar, which remains open even when other tools are used. The width of the sidebar can be adjusted. (see dashboard)
-12. **Zoom in**
-13. **Zoom out**
-14. **Focus on the selected area**
-15. **Map visualization of regional statistical data / control element****
-16. **Tooltip (mouse hover)** - Displays the area and other items under the mouse pointer. Can be deactivated under "Services" via "Switch mouse hover on / off".
-17. **Selected areas** - Selected areas are shown with a blue border.
+*Hinweis: Aus datenschutzrechtlichen Gründen werden bereits vom Datenbereitsteller solche Datensätze herausgefiltert, welche bei sensiblen Daten auf einzelne Individuen zurück verfolgbar wären. Diese Datensätze sind im "–" oder mit "Keine Daten" ausgewiesen.*
 
-*Note: The simulation function has not yet been activated.*
+### Fachdaten
+Die Fachdatensätze, welche derzeit in CoSI eingebunden sind oder noch eingebunden werden können, werden als Geodienste von unterschiedlichsten Dateneignern (v.a. Behörden, aber prinzipiell auch Privatunternehmen, Echtzeitsensoren, etc.) bereitgestellt und in CoSI, wie im FHH-Atlas, über die URL des jeweiligen Dienstes abgerufen. Viele der Datensätze in ihrer aufbereiteten Form sind aus den Verhandlungs- und Koordinationsprozessen des Urban Data Hub hervorgegangen, über den sich die Behörden und Datenhalter der FHH auf gemeinsame Standards und regelmäßige Veröffentlichungen verständigen.
 
-*General note: Each (CoSI-specific) module offers a help button (question mark symbol) with information and explanations. Wherever possible and necessary, all elements are provided with explanatory tooltips, which appear when the mouse pointer pauses briefly over the element.*
+### Prognosedaten
+Die Prognosedaten enthalten die prognostizierte jährliche Bevölkerungsentwicklung in den Stadtteilen Hamburgs nach vier Altersgruppen und Geschlecht bis zum Jahr 2035. Stichtag ist jeweils der 31.12.
 
-## Themes (layers)
-Layers can be switched on or off at any time from the “Themes” tab. However, when connecting, it must be taken into account that the loading times can be correspondingly longer if no planning area has been specified beforehand, as the data must then be loaded for the entire Hamburg area. The topics are sorted under technical data.
+Aus Gründen der statistischen Geheimhaltung der zugrunde liegenden Ausgangsdaten werden die vier kleinsten Stadtteile Hamburgs nur in Kombination mit einem größeren angrenzenden Stadtteil ausgewiesen.
 
-The topic tree is divided into background maps, a catalog of specialist data and the current selection of map levels.
+Alle Daten unterliegen der Fünferrundung, d.h. sie sind durch die Zahl Fünf teilbar.
 
-![Illustration 2 - The topic tree](https://user-images.githubusercontent.com/79461871/127782065-9d6d1017-3096-4861-9f71-60ce9f046969.JPG)
+Die Daten werden auf unregelmäßiger Basis vom Statistikamt Nord herausgegeben.
 
-*Illustration 2: The topic tree*
+### Analyse
+Analysedaten sind all jene (als WFS, s. Geodienste) eingebundenen Datensätze, welche für die Verwendung mit den CoSI-Analyse- (und in Zukunft Simulations-) Werkzeugen konfiguriert wurden. D.h. jedes Objekt (Feature, z.B. Kita oder Grünfläche) ist dabei einzeln hinterlegt und kann mit seiner geografischen Position und Ausdehnung betrachtet werden.
 
-1. **Background maps** - Layers such as "City Map Hamburg", which are automatically active by default. If necessary, the "DOP 2 aerial maps" layer can also be activated. They can also be deactivated.
-2. **Technical data** - 
-	 - **Analysis / Simulation** - The prepared layers for CoSI-specific tools (provided as WFS, see glossary). The individual data layers are divided into categories that are regularly adapted or updated.
-	 - **Presentation** - Data for pure "display" in the map, mainly taken from the FHH Atlas (provided as WMS). 
-3. **Selected topics** - The active layers can be moved in their order and made transparent
-4. **Layer info** - The legend and metadata of the specialist data layer can be displayed via the info button. This includes a description of the topic, the date of publication and the URL of the relevant service. The function is the same for all FHH geoportals.
+### Darstellung
+Darstellungsdaten sind auf Absprache mit den Fachplanerinnen und Fachplanern ausgewählte Datensätze aus dem FHH-Netz, welche durch das zugrundeliegende Geoportal (Masterportal) in der Karte visualisiert und mit einer Legende versehen werden. Per Klick kann der Datensatz für die jeweilige Koordinate aus dem Datensatz abgerufen werden. Im Gegensatz zu den Analysedaten liegen die Darstellungsdaten gegenwärtig nicht als einzelne Objekte, sondern als gekacheltes/gerastertes Bild vor (WMS, s. Geodienste).
 
-The topics contain information that is represented symbolically or by areas on the map. In Figure 4, for example, the red dots represent the existing daycare centers in the area, while the purple lines represent areas that belong to the development plans layer.  
+### Geodienste
+Alle in CoSI und dem FHH-Atlas dargestellten Daten werden von den Bereitstellern als Dienst vorgehalten. Der Dienst liefert über eine URL Datensätze der jeweiligen Datenbank in einem maschinenlesbaren Format. Über zusätzliche Parameter kann die Anfrage (Request) spezifiziert oder (z.B. auf einen geografischen Ausschnitt) eingegrenzt werden. 
 
-A legend on the active topics can be displayed by clicking on the "Legend" tab. Independently of this, further information on the respective topic can be called up by clicking on the info button to the right of the layer. Information such as a brief description of the topic including the data status and a legend on the topic are displayed. There are also links to download sources and a WFS or WMF address behind the info button.  
+### WMS
+Ein WMS (Web Map Service) liefert Geodaten / Karten als Rasterbilder (PNG), welche zunächst einmal ohne Hintergrundinformation in der Karte angezeigt werden. Gleichzeitig können die Legende des Datensatzes oder Informationen zu einer bestimmten Koordinate über weitere Requests abgerufen werden.
 
-Clicking on an object on the map opens an information panel for the current selection (sports facility, daycare center, etc.). Information about the object is displayed on the information board. Data relevant to data protection (personal) are not displayed.  
+### WFS
+Der WFS (Web Feature Service) liefert im Gegensatz zum WMS keine fertige Kartenansicht, sondern ein rohes Datenobjekt, bei dem der Datensatz jedes geografischen Objekts (Punkt, Linie, Fläche, etc.) inkl. seiner Attribute (z.B. eine Schule mitsamt ihrem Schultyp, ihrer Schülerzahl, Mailadresse und Nachmittagsangebot) einzeln übermittelt. Die Visualisierung (das Styling) der Daten erfolgt dann anhand vorgegebener oder mitgelieferter Konfigurationen innerhalb der Applikation. Dies ist rechenintensiver für den Anwendenden und weniger kontrollierbar von Seiten des Datenbereitstellers, bietet jedoch die Möglichkeit mit den Objekten innerhalb des Portals direkt zu interagieren oder sie zu verändern.  
 
-It is possible to adjust the order and the transparency of the active layers: Under "Selected topics" there is an info button and a setting wheel for each selected topic. A click on the wheel opens the setting options for order and transparency.
+  
 
-## Accessibility
+___
 
-Various aids have been created in CoSI to make it easier to read.
 
-![Illustration 3 - Help with accessibility](https://user-images.githubusercontent.com/79461871/127782088-89e677aa-6351-45ce-abf8-fed9a79ad37a.JPG)
+## Module
+___
+### Überblick 
+CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tools" bezeichnet" an, die bestimmte Funktionen zur Erstellung, Verwaltung und Analyse von Daten bereitstellen. Nachfolgend finden Sie die Übersicht über alle im UI zur Verfügung stehenden Funktionen:
 
-*Illustration 3 - Help with accessibility*
+![Abbildung 1: Das CoSI Nutzer-Interface](https://user-images.githubusercontent.com/43250699/142911085-50a9fe73-0171-47d0-b2f9-527593ae42ed.jpg)
 
-1. **Integration of a new chart library** - I.a. retrievable via the map visualization of regional statistical data. Basically applies to all functions / services that offer charts.
-2. **Improve readability**  the chart diagrams / evaluations - Choice between bar and chart diagrams
-3. **Change view** - Two options can be selected: thick or thin area boundaries
-4. **Tool tips** - Tool tips have been integrated into all new tools. The tips can be called up via the question marks that become visible when you move the mouse over the window.
-5. **Emphasis on clustered facilities** - Several facilities that are close together are displayed as a “cluster” with a single symbol and the number of facilities at the location (see below).
+*Abbildung 1: Das CoSI Nutzer-Interface*
 
-![Illustration 4th - clustered entities](https://user-images.githubusercontent.com/79461871/127782091-a00a9f3a-a35d-4a47-9f88-c909a874ac88.JPG)
+1. **Themenbau/ Layer** (s. Themen)
+2. **Analyse**
+      1. [Manuelle Flächenauswahl für Fachdaten](#markdown-header-manuelle-flächenauswahl-für-fachdaten)
+      2. [Einwohnerabfrage](#markdown-header-einwohnerabfrage)
+      3. [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse)
+      4. [Vergleichbare Gebiete ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln)
+      5. [Filter](#markdown-header-filter)
+      6. Strecke/ Fläche messen
+      7. [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+      8. [DIPAS](#markdown-header-dipas)
+      9. [Datenvisualisierung](#markdown-header-datenvisualisierung)
 
-*Illustration 4th - clustered entities*
+3. **Simulation**
+      1. [Einrichtungen anlegen](#markdown-header-einrichtungen-anlegen)
+      2. [Einrichtungen bearbeiten](#markdown-header-einrichtungen-bearbeiten)
+      2. [Wohnungsbauquartiere anlegen](#markdown-header-wohnungsbauquartiere-anlegen)
 
-## Analysis
+4. **Dienste**
+      1. Zeichnen/ Schreiben
+      2. Karte drucken
+      3. Mousehover ein-/ ausschalten
+      4. [Geodaten Importieren](#markdown-header-geodaten-importieren)
+      5. WMS hinzufügen
+      6. [Zweites Fenster öffnen](#markdown-header-zweites-fenster)
+      7. [Sitzung speichern/laden](#markdown-header-sitzung-speichern)
+      8. [Vorlagen](#markdown-header-vorlagen)
 
-![Illustration 5 - analysis](https://user-images.githubusercontent.com/79461871/127782097-fa359c67-d915-458d-a239-9f44ca22627c.JPG)
+5. **Dashboard**
+      1. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)
+      2. [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht)
+6. **[Gebiete auswählen](#markdown-header-gebiete-auswählen)**
+7. **Kontaktformular**
+8. **Legende** (s. Legende)
+9. **Suchleiste**
+10. **Werkzeugfenster**
+   > Aktive Werkzeuge werden in verschiebbaren Fenstern angezeigt.
+11. **Hereinzoomen**
+12. **Herauszoomen**
+13. **Vollbildansicht aktivieren/ deaktivieren**
+14. **Zurück zur Startansicht**
+15. **Barrierefreie Ansicht** (fette Linien)
+16. **[Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)**
+17. **Tooltip** (sog. Mousehover)
+   > Zeigt das Gebiet und andere Elemente wie Tooltipps unter dem Mauszeiger an. Kann unter "Dienste" via "Mousehover ein-/ausschalten" deaktiviert werden.
+18. **Ausgewählte Gebiete**
+   > Ausgewählte Gebiete werden dargestellt mit einer blauen Umrandung.
+19. **Sidebar**
+   > Das Dashboard und der Filter werden in einer Sidebar angezeigt. Die Sidebar kann in ihrer Breite angepasst werden. (s. Dashboard)
 
-*Illustration 5 - analysis*
 
-1. **Facility overview** - Calls up a table overview of the selected facilities and enables individual sorting / filtering as well as an export.
-2. **Resident query** - Address-specific query of the population from the StaNord
-3. **Accessibility analysis**
-   - Accessibility from a reference point
-   - Accessibility in one area
-4. **Filter** - Filter specialist data (schools, green spaces, etc.) according to parameters
-5. **KML import** - Import created and saved drawings
-6. **Measure distance / area**
-7. **Identify comparable areas** - Select areas in Hamburg according to parameters
-8. **Supply analysis** - Determine the relationship between institutions (specialist data) and target groups (StaNord data) in the area
-9. **Drawing / writing** - Add and export your own drawings on the map
+### Themen (Layer)
+___
+Layer können aus dem Reiter "Themen" jederzeit zugeschaltet oder ausgeschaltet werden. Die Themen sind unter dem Reiter Fachdaten sortiert. Beim Zuschalten sollte mit bedacht werden, dass sich Ladezeiten entsprechend verlängern können. Verzögerungen können vorkommen, wenn zu Beginn kein Planungsgebiet festgelegt wurde. Dann müssen die Daten für das gesamte Hamburger Gebiet geladen werden. 
 
-*Note: The facility overview is not yet activated for production.*
+Der Themenbaum ist gegliedert in Hintergrundkarten, einen Katalog an Fachdaten und die aktuelle Auswahl an Kartenebenen.
 
-### Resident query
-Basically, this function offers the possibility of determining the exact number of residents by drawing a rectangle or circle or by drawing an area. This tool comes from the master portal and has been integrated into the module “accessibility analysis”.
+![Abbildung 2: Der Themenbaum](https://user-images.githubusercontent.com/43250699/159332327-0b3301d1-4ae9-4b1f-9cb1-4fe733d51a54.png)
 
-When calling up directly under the "Analysis" tab, the area over which the query is to be carried out must be specified manually (by drawing a rectangle or circle or by drawing an area).
+*Abbildung 2: Der Themenbaum*
 
-When used within the context of the accessibility analysis, the area does not have to be specified manually, but the calculated catchment area is adopted as the area.
+Öffnen Sie mit dem Plus die Übersicht der Themenkategorie oder minimieren sie die Ansicht wieder mit dem Minus.
 
-### Accessibility analysis
-An accessibility analysis can be carried out in two ways: 1) from a reference point and 2) in the planning area. The mode of analysis can be selected in the dropdown menu.
+1. **Hintergrundkarten**
+   > Layer wie "Stadtkarte Hamburg", die als Standard automatisch aktiv sind, können auch deaktiviert werden. Die Hintergrundkarten orientieren sich am FHH Portal. Achtung beim An- und Ausschalten der Karten. Kartenlayer können andere Layer überlagern. Ihre Anzeige ist daher abhängig von der Reihenfolge der Aktivierung. Die Anordnung kann in "Ausgewählten Themen" noch nachträglich verändert und angepasst werden.
+2. **Fachdaten**  
+	 - **Analyse/Simulation**
+      > Die aufbereiteten Layer für CoSI-spezifische Werkzeuge (bereitgestellt als WFS, s. Glossar). Die einzelnen Datenlayer sind in Kategorien eingeteilt, die regelmäßig angepasst bzw. aktualisiert werden.
+	 - **Darstellung**
+      > Daten zur reinen "Anzeige" in der Karte, v.a. entnommen aus dem FHH Atlas (bereitgestellt als WMS).
+3. **Ausgewählte Themen**  
+      ![Abbildung 3: Ausgewählte Themen](https://user-images.githubusercontent.com/43250699/142911886-03547719-aab0-4f80-a3e3-cfdca1267eb7.png)  
+      *Abbildung 3: Ausgewählte Themen*  
+      - **3.1 Informationen und Legenden**
+      - **3.2 Einstellungen**  
+         Über das Zahnrad öffnen sich Einstellungen für Transparenz und Ebene verschieben.
+      - **3.3 Transparenz**  
+         Die Transparenz lässt sich über Plus in Prozent erhöhen und über Minus verringern.
+      - **3.4 Ebene nach oben/unten**  
+         Über das Pfeilmenü kann die Ebene der Layer verschoben werden.
+4. **Hilfsbutton**
+   > Ruft diese Anleitung auf.
+5. **Kartenhintergrund**
+   > Hier können Sie für den Kartenhintergrund grau oder weiß auswählen.
+6. **Themenbaum fixieren/ lösen**
+   > Diese Funktion fixiert den Themenbaum, so dass er auch bei Interaktionen mit der Karte angezeigt bleibt.
 
-**Important information:**
-This tool was implemented using OpenRouteService, a service developed and provided by the Heidelberg Institute for Geoinformation Technology. Use is covered by the Creative Commons license CC BY 4.0. Further information can be found at: https: // heigit. org / de / ortsbasierte-dienste-und-navigation / https: //openrouteservice.org/services/
+Die Themen enthalten Informationen, die symbolisch oder durch Flächen auf der Karte dargestellt werden. In Abbildung 4 zum Beispiel stellen die Häuschen die vorhandenen Kindertagesstätten im Gebiet dar. Nummerierte Häuschen zeigen die Anzahl der an diesem Ort vorhandenen Einrichtungen an. Die lilafarbenen Linien stellen Flächen dar, die zum Layer Bebauungspläne gehören.
+Eine Legende zu den aktiven Themen kann durch einen Klick auf den Reiter "Legende" eingeblendet werden. Unabhängig davon können über den Infobutton rechts neben dem Layer weitere Informationen zu dem jeweiligen Thema aufgerufen werden. Es werden folgende Informationen bereitgestellt: Kurzbeschreibung des Themas, Datenstand und Legende. Auch befinden sich hinter dem Info-Button die Links zu Downloadquellen und eine WFS - bzw. WMF -Adresse.
+Ein Klick auf ein Objekt auf der Karte öffnet eine Infotafel für die aktuelle Auswahl (Sportstätte, Kita, etc.). Auf der Infotafel werden Informationen über das Objekt angezeigt. Datenschutzrelevante (personenbezogene) Daten werden nicht angezeigt.
 
-**1) Accessibility from a reference point**
-Indicates an area that can be reached from a point on the map selected by the user within a distance specified by the user. The distance can be given in time or in meters. Accessibility is calculated based on the means of transport specified by the user. The polygons are automatically adjusted when the mode of transport or other parameters are changed.
 
-The module can be used without first selecting and confirming a planning area. 
+## Analyse
+### Werkzeuge des Analysemenüs
+___
+### Manuelle Flächenauswahl für Fachdaten
+Mit Hilfe dieses Werkzeuges können Sie ein Polygon auf der Karte zeichnen, innerhalb dessen Fachdaten angezeigt werden. Einrichtungen oder andere Fachdatenmarker, die außerhalb dieses Polygons liegen, werden ausgeblendet.
 
-![Illustration 6th - Accessibility from a reference point](https://user-images.githubusercontent.com/79461871/127782103-395c5ab3-2ed9-40e0-b9de-cc2c607164ee.JPG)
+![Abbildung 4: Manuelle Flächenauswahl](https://user-images.githubusercontent.com/43250699/159277769-55018485-2d35-438f-8f5e-c215e53c367c.png)
 
-*Illustration 6th - Accessibility from a reference point*
+*Abbildung 4: Manuelle Flächenauswahl*
 
-1. **Reference point** - Any reference point is set on the map.
-2. **Define means of transport** - The means of transport is selected from a list. The following modes of transport are currently available: car, bike, bike (electric), walking, wheelchair.
-3. **Specify the unit of measurement for the distance** - Specify whether the distance is given in minutes or meters.
-4. **Distance** - Enter the distance in a previously defined unit of measurement (minutes or meters).
-5. **Info, back to selection, delete polygon** - The Info button contains further information about the module. With the arrow to the left you navigate back to the selection between accessibility from a reference point and accessibility in the area. The polygon can be deleted by clicking on the trash can.
-6. **Legend** - A legend is displayed. It is generated dynamically for the heat map and shows three evenly distributed distance values. The maximum value is the previously entered value for the distance.
-7. **Facility cover** - Provides all facilities of the active layers that are located within the catchment area (heat map) in a drop-down list. When you click on a facility in the list, the position marker moves to the facility. More information about the facility can be found by clicking the facility.
-8. **Zoom** -The heat map is focused in the center.
-9. **Inhabitants query for the area** - Carries out an address-specific resident query for the catchment area, which is represented by the polygon.
-10. **Polygon** - Shows the area that can be reached from the reference point as a heat map, depending on the previously entered parameters.
+1. **Polygon zeichnen**
+   > Klicken Sie auf diesesn Button, um ein neues Polygon auf der Karte zu zeichnen.
+2. **Eingabe löschen**
+   > Löschte die bestehende Flächenauswahl und zeigt alle Fachdaten wieder an.
+3. **Einwohnerabfrage**
+   > Für die aktuelle Flächenauswahl eine [Einwohnerabfrage](#markdown-header-einwohnerabfrage) durchführen.
 
-**2) Accessibility in the area**
-Shows the coverage and accessibility of a previously specified type of facility (e.g. kindergartens) in the specified catchment area (planning area). The catchment area is the distance from the respective facility and can be specified in time or in meters. Accessibility depends on the means of transport specified.
 
-![Illustration 7th - Accessibility in the area](https://user-images.githubusercontent.com/79461871/127782106-b66ef81e-928a-4f1f-87c6-ba404c0d8a18.JPG)
+### Einwohnerabfrage
+Grundsätzlich bietet diese Funktion die Möglichkeit an, durch Aufziehen eines Rechtecks oder Kreises bzw. durch Einzeichnen einer Fläche die adressgenaue Einwohneranzahl zu bestimmen. Dieses Werkzeug stammt ursprünglich aus dem Masterportal und wurde u.a. in dem Modul "Erreichbarkeitsanalyse" integriert.
 
-*Illustration 7th - Accessibility in the area*
+- Beim direkten Aufruf unter dem Reiter "Analyse" muss das Gebiet, über das man die Abfrage durchführen möchte, händisch festgelegt werden (via Rechteck oder Kreis ziehen bzw. via Zeichnen einer Fläche). 
+- Bei der Nutzung innerhalb des Kontexts der Erreichbarkeitsanalyse muss das Gebiet nicht händisch festgelegt werden, sondern es wird als Gebiet das errechnete Einzugsgebiet übernommen.
 
-1. **Select layer** - In order for this module to be used, at least one layer must be active.
-2. **Define means of transport** - The means of transport is selected from a list. The following modes of transport are currently available: car, bike, bike (electric), walking, wheelchair.
-3. **Specify the unit of measurement for the distance** - Specify whether the distance is given in minutes or meters.
-4. **Distance** - Enter the distance in a previously defined unit of measurement (minutes or meters).
-5. **Legend** - A legend is displayed. It is generated dynamically for the heat map and shows three evenly distributed distance values. The maximum value is the previously entered value for the distance.
-6. **Polygons** - Show the areas that can be reached from the respective facility as a heatmap, depending on the previously entered parameters. The catchment areas calculated in this way can overlap. This module can be used to make visible where gaps arise with regard to the facility coverage in the area. 	
+### Erreichbarkeitsanalyse
+Eine Erreichbarkeitsanalyse kann auf zwei Arten durchgeführt werden:  
+1. [Ab einem Referenzpunkt](#markdown-header-erreichbarkeit-ab-einem-Referenzpunkt)  
+2. [Im Planungsgebiet](#markdown-header-erreichbarkeit-im-gebiet)
+3. [Entlang einer Route](#markdown-headererreichbarkeit-entlang-einer-route)  
 
+Der Modus der Analyse kann im Dropdown Menü ausgewählt werden.
+
+**Wichtige Informationen:**
+Dieses Werkzeug wurde realisiert unter Verwendung von OpenRouteService, einem Dienst, der von der Heidelberg Institute for Geoinformation Technology entwickelt und bereitgestellt wird.
+Die Verwendung ist gedeckt durch die Creative Commons Lizenz CC BY 4.0.
+Weitere Informationen finden Sie unter:  
+https://heigit.org/de/ortsbasierte-dienste-und-navigation/  
+https://openrouteservice.org/services/
+
+#### Erreichbarkeit ab einem Referenzpunkt
+Zeigt ein Gebiet an, welches von einem ausgewählten Punkt auf der Karte innerhalb einer festgelegten Entfernung erreichbar ist. Die Entfernung kann in Zeit oder in Metern angegeben werden. Die Erreichbarkeit wird abhängig vom Verkehrsmittel berechnet.  
+  
+Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
+  
+
+
+![Abbildung 5: Erreichbarkeit ab einem Referenzpunkt](https://user-images.githubusercontent.com/43250699/157067677-5f5db4a7-498a-45b2-8c06-6f2ea5ed6cbf.png)
+
+*Abbildung 5: Erreichbarkeit ab einem Referenzpunkt*
+  
+1. **Auswahl des Modus**
+   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt, entlang einer Route oder Erreichbarkeit der gewählten Einrichtungen im Gebiet.
+2. **Referenzpunkt setzen**
+   > Durch Klicken auf der Karte wird der Punkt gesetzt, von dem aus berechnet wird.
+3. **Verkehrsmittel festlegen** 
+   > Das Verkehrsmittel wird ausgewÃ¤hlt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Rad (elektrisch), Gehen, Rollstuhl.
+4. **Maßeinheit der Entfernung festlegen**
+   > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird
+5. **Entfernung**
+   > Entfernung in zuvor festgelegter Maßeinheit (Minuten oder Metern) angeben
+6. **Berechnen**
+7. **Ergebnis ausblenden**
+   > Die Ergebnisdarstellung auf der Karte wird ausgeblenden.
+8. **Einwohnerabfrage**
+   > (s. Einwohnerabfrage)
+9. **Legende & Polygone**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt.
+   Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern als Heatmap.
+10. **Ergebnisverzeichnis**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+
+
+#### Erreichbarkeit im Gebiet
+Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungsart (z.B. Kindergärten) in dem festgelegten Einzugsbereich (Planungsgebiet). Der Einzugsbereich ist die Entfernung von der jeweiligen Einrichtung und kann angegeben werden in Zeit oder in Metern. Die Erreichbarkeit ist abhÃ¤ngig von dem festgelegten Verkehrsmittel.
+
+![Abbildung 6: Erreichbarkeit ausgewÃ¤hlter Einrichtungen im Gebiet](https://user-images.githubusercontent.com/43250699/157067851-a2c165c4-894c-4b3f-80a9-4bc626516771.png)
+
+*Abbildung 6: Erreichbarkeit ausgewählter Einrichtungen im Gebiet*
+
+1. **Auswahl des Modus**
+   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt, entlang einer Route oder Erreichbarkeit der gewählten Einrichtungen im Gebiet.
+2. **Thema auswählen**
+   > Damit dieses Modul verwendet werden kann muss mindestens ein Thema aktiv sein.
+3. **Verkehrsmittel festlegen**
+   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Rad (elektrisch), Gehen, Rollstuhl.
+4. **Maßeinheit der Entfernung festlegen**
+   > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird.
+5. **Entfernung**
+   > Entfernung in zuvor festgelegter Maßeinheit (Minuten oder Metern) angeben.
+6. **Tageszeit**
+   > Wenn Sie als Verkehrsmittel "Auto" ausgewählt haben, können Sie hier die Tageszeit auswählen, zu der Sie die Erreichbarkeit planen wollen.
+7. **Verkehrsfluss berücksichtigen**
+   > Wählen Sie aus, ob Sie den Verkehrsfluss berücksichtigen wollen oder nicht. 
+8. **Von Flächenaußengrenzen ermitteln**
+   > Wenn Sie einen Datensatz ausgewählt haben, wie bspw. "Grünflächen" oder ähnliches, dann wird die Erreichbarkeitsanalyse von der Außengrenze dieser Fläche durchgeführt.
+9. **Berechnen**
+10. **Ergebnis ausblenden** 
+11. **Legende und Probleme**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+12. **Ergebnisverzeichnis**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+
+### Erreichbarkeit entlang einer Route
+Wenn Sie im Routing-Tool eine Route erstellt haben, können Sie die Erreichbarkeit in einem bestimmten Umkreis um die Route herum berechnen lassen. 
+  
+Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
+![Abbildung 7: Erreichbarkeit entlang einer Route](https://user-images.githubusercontent.com/43250699/159470252-067117b3-b8a3-481d-b007-113e7a0477c8.png)
+
+*Abbildung 7: Erreichbarkeit entlang einer Route*
+1. **Auswahl des Modus**
+   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt, entlang einer Route oder Erreichbarkeit der gewählten Einrichtungen im Gebiet. Beachten Sie, dass die Erreichbarkeit entlang einer Route nur auswählen können, wenn Sie im Vorfeld im Routing-Tool eine Route angelegt haben.
+2. **Route auswählen**
+   > Die im Routing-Tool aktive Route wird automatisch ausgewählt.
+3. **Vorgegebene Felder**
+   > Sie können bei der Erreichbarkeitsanalyse anhand einer Route kein Verkehrsmittel auswählen und somit auch nicht, ob die Entfernung in Metern oder Minuten berechnet werden soll. Es wird immer die Entfernung in Metern (Luftlinie) zur Berechnung herangezogen.
+4. **Entfernung**
+   > Entfernung in Metern angeben.
+5. **Berechnen**
+6. **Ergebnis ausblenden** 
+7. **Legende und Probleme**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+8. **Ergebnisverzeichnis**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+
+
+### Vergleichbare Gebiete ermitteln
+Das Werkzeug erlaubt die Ermittlung aller Gebiete (Stadtteile oder statistische Gebiete), in denen die ausgewählten Parameter vorherrschen, bzw. solcher, die dem gewählten Referenzgebiet in diesen Parametern ähneln.
+Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ein Referenzgebiet (optional).  
+
+![Abbildung 8: Vergleichbare Gebiete ermitteln](https://user-images.githubusercontent.com/43250699/157012950-d631691b-0f40-4ab5-85f4-9e6b9c250d7e.png)   
+ 
+*Abbildung 8: Vergleichbare Gebiete ermitteln*  
+
+1. **Statistische Datenfilter**
+   > Gewünschten Parameter für den Vergleich auswählen. Es können beliebig viele Parameter hinzugefügt werden. Alle StaNord-Datensätze sind hierfür verfügbar. Anteilige Werte eignen sich jedoch besser für die Vergleichbarkeit. Gegenwärtig können eigene Berechnungen aus dem Dashboard nicht herangezogen werden.
+2. **Referenzgebiet**
+   > Optional kann eins der ausgewählten Gebiete als Referenzgebiet angegeben werden.
+3. **Filter hinzufügen**
+   > Die Parametereinstellungen zeigen den aktuellen Datensatz (Jahr Min.- und Max.-Wert aller Hamburger Gebiete, den Referenzwert (frei wählbar oder des Referenzgebiets) sowie die Toleranz nach oben und unten. Das Toleranzintervall ist entweder in absoluten Zahlen oder in Prozent für anteilige Werte angegeben.
+4. **Alle Filter zurücksetzen** 
+   > Setzen Sie Ihre Eingaben zurück.  
+5. **Ergebnisverzeichnis** 
+   > Der "Datensatz hinzufügen" Button aus der [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis).  
+
+![Abbildung 9: Vergleichbare Gebiete ermitteln, Ergebnisse](https://user-images.githubusercontent.com/43250699/157013004-f8b83b5e-92b3-4900-a0c0-60a1518a187f.png)  
+*Abbildung 9: Vergleichbare Gebiete ermitteln, Ergebnisse*  
+
+1. **Ergebnisverzeichnis**
+   > Die [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet die unterschiedlichen Datensätze. Sie erscheint, sobald Sie einen zweiten Datensatz erstellt haben.
+2. **Parametereinstellungen (Jahr)**
+   > Wählen Sie die Grundlage für das entsprechende Jahr aus.  
+3. **Parametereinstellungen (Attribute)**
+   > Sofern es sich um einen Themenlayer handelt, können Sie hier ggf. Attribute der Einrichtung auswählen, anhand deren Sie nach vergleichbaren Gebieten suchen.  
+4. **Parametereinstellungen (Toleranz)**
+   > Stellen Sie die Toleranz ein, innerhalb derer weitere vergleichbare Gebiete gefunden werden sollen. Das Toleranzintervall ist entweder in absoluten Zahlen oder in Prozent für anteilige Werte angegeben.  
+5. **Ergebnisse**
+   > Eine Liste aller Gebiete, auf die die gewählten Kriterien zutreffen, wird im Fenster angezeigt. Ein Klick auf ein Gebiet legt den Kartenausschnitt auf dieses fest.
+6. **Als Gebietsauswahl setzen**
+   > Über *Ergebnis als Gebietsauswahl* setzen kann die aktuelle Gebietsauswahl für weitere Analysen auf die Ergebnis-Gebiete gesetzt werden.
+  
+  
+![Abbildung 10: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/157009202-4cfeb5ff-e519-4305-ba4f-4ecde4f60bd0.png)
+
+*Abbildung 10: Versorgungsanalyse, Ergebnisse*
+
+1. **Ergebnisverzeichnis**
+   > Die [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet alle von Ihnen erstellen Datensätze und bietet bestimmte standardisierte Funktionen wie Downloads und ähnliches an. Sie finden mehr Informationen dazu [hier](#markdown-header-ergebnisverzeichnis).
+2. **Daten als Chart visualisieren**
+   > Die Daten werden zum [Datenvisualisierung](#markdown-header-datenvisualisierung) geladen und dort als Graphen visualisiert.
+3. **Auf der Karte visualisieren**  
+   > Die Daten werden mit Hilfe der [Kartenvisualisierung](#markdown-header-kartenanalyse-regionalstatistischer-daten) auf der Karte visualisiert und je nach Wert in unterschiedlichen Farben dargestellt.
+4. **Tabellenspalte für erweiterte Funktionen auswählen**
+   > Hier können Sie Tabellenspalte auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
+   
+5. **Jahr auswählen**
+   > Hier können Sie das Jahr auswählen, für das die entsprechenden Daten geladen worden sind.
+6. **Ergebnistabelle**  
+      - **Gebiet:** Die ausgewählten Gebiete, für die die Ergebnisse berechnet wurden. Hier finden sich auch die Indikatoren für die Zeilen "Gesamt" und "Durchschnitt".
+      - **Auswahlfeld (1):**  
+         Der Wert für den in Auswahlfeld (1) gewählten Datensatz.
+      - **Auswahlfeld (2):**  
+         Der Wert für den in Auswahlfeld (2) gewählten Datensatz.
+      **Verhältnis:**  
+         Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
+      - **Bedarfsdeckung:**  
+         Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
+      - **6.1 Ergebnisverzeichnis der Ergebnistabelle**
+      
+         Wenn in Ihrer Ergebnistabelle mehr als 10 Ergebnisse angezeigt werden, können Sie hier entsprechend die Daten durchschalten.
+V
 ### Filter
-The active, selected topics can be searched and filtered according to the categories of their data sets by clicking on the "Filter" tab. The map automatically zooms in on the filter results. Only results in the selected areas are included. The filter is available for all technical data sets that have meaningful filterable attributes (such as area, use, carrier, etc.).
+Die aktiven, ausgewählten Themen können durch Klick auf den Reiter "Filter" nach den Kategorien ihrer Datensätze durchsucht und gefiltert werden. Die Karte zoomt automatisch auf die Filterergebnisse. Es werden nur Ergebnisse in den ausgewählten Gebieten einbezogen. Der Filter ist für alle Fachdatensätze verfügbar, welche sinnvolle filterbare Attribute (wie Fläche, Nutzung, Träger, etc.) aufweisen.  
 
-![Illustration 8th - filters](https://user-images.githubusercontent.com/79461871/127782108-14cf240d-948c-48ec-a94d-cb921da9e510.JPG)
+![Abbildung 11: Filter](https://user-images.githubusercontent.com/43250699/142924026-a46ada10-7289-4882-9b2e-c41528289930.jpg)
 
-*Illustration 8th - filters*
+*Abbildung 11: Filter*  
 
-1. **Select a topic in the filter** - The selected topics are displayed. Topics can be added at any time. To do this, click on the topic structure and select the topic.
-2. **Filter options:**
-   - Several filter options can be selected. The selection is automatically marked with a tick.
-   - Slider (from / to): a desired area size can be entered, for example.
-3. **The result is displayed immediately when the filter option is selected:**
-   - The result is displayed on the map by a symbol or area color. This is displayed by clicking the “Legend” tab. Mousehover shows information field on facility / area.
-   - The names of the areas / facilities are displayed in the search results field. By clicking on the names, the selection is marked on the map.
-4. **Delete filter:** Individual selection by clicking the red "X" or delete the entire selection by clicking the "Delete all" button.
+1. **Ein Thema im Filter wählen**
+   > Angezeigt werden die ausgewählten Themen. Themen können jederzeit hinzugefügt werden. Dazu Themenbau anklicken und Thema auswählen.
+2. **Filteroptionen:**
+    - es können mehrere Filteroptionen gewählt werden. Kennzeichnung der Auswahl erfolgt automatisch durch Haken. 
+    - Schieberegler (von / bis): es kann z.B. eine gewünschte Flächengröße eingegeben werden.
+3. **Ergebnis wird sofort mit Wahl der Filteroption angezeigt:**
+    - Ergebnis wird in der Karte durch Symbol oder Flächenfarbe angezeigt. Durch Anklicken des Reiters "Legende” wird diese eingeblendet. Mousehover blendet Infofeld zu Einrichtung / Fläche ein.
+    - Im Ergebnisfeld der Suche werden Namen der Gebiete / Einrichtungen angezeigt. Durch Anklicken der Namen wird die Auswahl in der Karte markiert. 
+4. **Filter löschen:** 
+   > Einzelne Auswahl durch Anklicken des roten "X" oder gesamte Auswahl löschen durch Anklicken des Buttons "Alle löschen”.
 
-### Supply analysis
-The "Supply Analysis" tool calculates the relationship between two data records. The data sets can either be regional statistical data or facility data from the menu "Topics / Technical data". In order for the supply analysis to be used, at least two data records must have been loaded.
 
-![Illustration 9 - Supply analysis, settings](https://user-images.githubusercontent.com/79461871/127782111-691aff4e-ece2-4c1c-a259-a5760bae1886.JPG)
+### Versorgungsanalyse
+Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet werden. Die Datensätze können entweder regionalstatistische Daten oder Einrichtungsdaten aus dem Menü "Themen/ Fachdaten" sein. Damit die Versorgungsanalyse verwendet werden kann, müssen mindestens zwei Datensätze geladen worden sein.
 
-*Illustration 9 - Supply analysis, settings*
 
-The individual functions of the tool are explained in detail below:
-1. Use the button to open this auxiliary window.
-2. You can use the button to switch between facility and regional statistical data sets.
-3. Use the Select field to select one of the loaded data records.
-4. For facility data sets, you can specify a factor (F) that determines how many units of the selected facility are required for the reference data set. For example, if you want to calculate the number of public schools against the number of the population under 18 and give a factor of 0.001, this would mean that one school is required for every 1000 members of the reference group. If a factor (F) is given, the columns "Capacity" and "Demand" are also given in the calculation table. 
-5. Some facility records have parameters other than just their number in the selected areas. In public schools, for example, you can query the data record "number of students" or in hospitals the number of stationary places. Not every setup record has additional parameters.
+![Abbildung 12: Versorgungsanalyse, Einstellungen](https://user-images.githubusercontent.com/43250699/142926985-dfc8c2f9-c652-49f5-8f92-64a985a64f5e.jpg)
 
-![Illustration 10 - Care analysis, results](https://user-images.githubusercontent.com/79461871/127782114-ee7c35c1-ea8f-4e5a-a7e5-edab2f15c2b1.JPG)
+*Abbildung 12: Versorgungsanalyse, Einstellungen*
 
-*Illustration 10 - Care analysis, results*
+1. **Info** 
+   > Über den Button finden Sie zu dieser Anleitung.
+2. **Typ bestimmen**
+   > Mit Klick auf den Button wechseln Sie zwischen Themendatensätzen (hier auch "Einrichtungen") und statistischen Regionaldaten.
+3. **Thema/ Datensatz auswählen**
+   > Wählen Sie das Thema/ den Datensatz aus, den Sie verrechnen möchten.
+4. **Faktor F hinzufügen**
+   > Bei Einrichtungsdatensätzen können Sie einen *Faktor (F)* angeben, der bestimmt, wie viele Einheiten der ausgewählten Einrichtung für den Referenzdatensatz benötigt werden. Wollen Sie beispielsweise die Anzahl der öffentlichen Schulen gegen die Anzahl der Bevölkerung unter 18 Jahren rechnen und geben einen Faktor von 0,001 an, würde das bedeuten, dass eine Schule pro 1000 Mitglieder der Referenzgruppe benötigt wird. Ist ein *Faktor (F)* angegeben, werden die Spalten "Kapazität" und "Bedarf" in der Berechnungstabelle mit angegeben.
+5. **Parameter auswählen** 
+   > Manche Einrichtungsdatensätze haben andere Parameter, als nur ihre Anzahl in den ausgewählten Gebieten. So kann man bei öffentlichen Schulen beispielsweise den Datensatz "Schülerzahl" abfragen oder bei Krankenhäusern die Anzahl der stationären Plätze. Nicht jeder Einrichtungsdatensatz bietet zusätzliche Parameter.
+7. **Auswahl vertauschen**
+   > Mit einem Klick auf diesen Button können Sie Ihre Auswahl von Feld (1) und (2) vertauschen.
+8. **Die gesamte Auswahl zurücksetzen**
+9. **Berechnen**
 
-1. **Result** - Results are shown in a table including the total value, as well as in the map, color-coded according to the value.
-   - Area
-   - Facility: The total number of facilities or the selected parameter of facilities in the area (e.g. m² playground).
-   - Target group: The number of people in the (combined) target group in the area.
-   - Capacity: The number of people who can take care of the facilities, according to factor F.
-   - Requirement: The value of the parameter of the facilities that would be necessary for the number of people in the area, according to factor F.
-   - Relationship: The simple relationship between facilities (number or parameters) and (combined) target group in the area.
-   - Undersupply / oversupply: The coverage in percent, ie the ratio between capacity and (combined) target group in the area. If no factor F was selected, the column shows the direct relationship between institution and target group.
-2. **Total / average** - Total and average values are determined for the selected areas. The total value is calculated from the sum of all facility and target group values. The average value is the arithmetic mean of the selected areas.
-3. **Download as XLSX or GeoJson** - The above table can be downloaded as an XLSX file or as GeoJson for further processing in e.g. MS Excel or QGIS.
-4. **Show in dashboard** - The results table can be transferred directly to the dashboard for later use.
+![Abbildung 13: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/157009202-4cfeb5ff-e519-4305-ba4f-4ecde4f60bd0.png)
 
-### Comparable areas
-The tool allows the determination of all areas (city districts or stat. Areas) in which the selected parameters predominate, or those which are similar to the selected reference area in these parameters.
+*Abbildung 13: Versorgungsanalyse, Ergebnisse*
 
-![Illustration 11 - Comparable areas](https://user-images.githubusercontent.com/79461871/127782118-05befeba-3d13-4c8b-b7d5-71ffdb6186d0.JPG)
+1. **Ergebnisverzeichnis**
+   > Die [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet alle von Ihnen erstellen Datensätze und bietet bestimmte standardisierte Funktionen wie Downloads und ähnliches an. Sie finden mehr Informationen dazu [hier](#markdown-header-ergebnisverzeichnis).
+2. **Daten als Chart visualisieren**
+   > Die Daten werden zum [Datenvisualisierung](#markdown-header-datenvisualisierung) geladen und dort als Graphen visualisiert.
+3. **Auf der Karte visualisieren**  
+   > Die Daten werden mit Hilfe der [Kartenvisualisierung](#markdown-header-kartenanalyse-regionalstatistischer-daten) auf der Karte visualisiert und je nach Wert in unterschiedlichen Farben dargestellt.
+4. **Tabellenspalte für erweiterte Funktionen auswählen**
+   > Hier können Sie Tabellenspalte auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
+   
+5. **Jahr auswählen**
+   > Hier können Sie das Jahr auswählen, für das die entsprechenden Daten geladen worden sind.
+6. **Ergebnistabelle**  
+      - **Gebiet:** Die ausgewählten Gebiete, für die die Ergebnisse berechnet wurden. Hier finden sich auch die Indikatoren für die Zeilen "Gesamt" und "Durchschnitt".
+      - **Auswahlfeld (1):**  
+         Der Wert für den in Auswahlfeld (1) gewählten Datensatz.
+      - **Auswahlfeld (2):**  
+         Der Wert für den in Auswahlfeld (2) gewählten Datensatz.
+      **Verhältnis:**  
+         Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
+      - **Bedarfsdeckung:**  
+         Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
+      - **6.1 Ergebnisverzeichnis der Ergebnistabelle**
+      
+         Wenn in Ihrer Ergebnistabelle mehr als 10 Ergebnisse angezeigt werden, können Sie hier entsprechend die Daten durchschalten.
 
-*Illustration 11 - Comparable areas*
 
-1. **Statistical data filters** - Select the desired parameter for the comparison. Any number of parameters can be added. All StaNord data sets are available for this. However, proportional values are more suitable for comparability. At present, you cannot use your own calculations from the dashboard.
-2. **Reference area** - Optionally, one of the selected areas can be specified as a reference area.
-3. **Parameter settings** - The parameter settings show the current data set (year min. And max. Value of all Hamburg areas, the reference value (freely selectable or of the reference area), as well as the tolerance upwards and downwards. The tolerance interval is either in absolute numbers or in percent for proportional Values given.
-4. **Results** - The areas that apply are marked on the map.
+### DIPAS
+Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden. D.h. alle Beiträge können in der [Einrichtungsübersicht](#markdown-header-einrichtungsübersicht) angezeigt, für [Versorgungsanalyse](#markdown-header-versorgungsanalyse), [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Vergleichbare Gebiete Ermitteln](#markdown-header-vergleichbare-gebiete-ermitteln) verwendet und mit dem [Filter](#markdown-header-filter) gefiltert werden.
 
-![Illustration 12th - Comparability, results](https://user-images.githubusercontent.com/79461871/127782119-559aeaa9-db60-4b6b-ade6-e71944e5849b.JPG)
 
-*Illustration 12th - Comparability, results*
+![Abbildung 14: DIPAS](https://user-images.githubusercontent.com/43250699/159553679-c957f150-298f-476a-83ea-73ee854f5f61.png)
 
-1. **Results** - All areas to which the selected criteria apply are listed here. A click on an area defines the map section for this area.
-2. **Set as area selection** - The current area selection can be set to the result areas for further analysis via Set selection.
-3. **Show in dashboard** - The list of results can be transferred to the dashboard without changing the area selection.
+*Abbildung 14: DIPAS*
+
+1. **Beteiligungsverfahren auswählen**
+   > Für jedes Verfahren aus der DIPAS-Datenbank wird automatisch eine Registerkarte angelegt, welche durchs Anklicken aufgeklappt werden kann. Ein aufgeklapptes Verfahren zeigt dessen Beschreibungstext und die Kontrollfelder für die Visualisierung. Jedem Verfahren wid dabei eine zufällige Farbe zugewiesen.
+2. **Indikator**
+   > Das Icon in dem Indikator zeigt zum einen die Farbe an, in dem der jeweilige Datensatz visualiert wird, als auch, ob der Datensatz gerade auf der Karte angezeigt wird oder nicht.
+3. **Legende**
+   > Die Legende zeigt an, welcher Eintragstyp welche Farbe in der Visualierung hat.
+4. **Verfahren in der Karte anzeigen**
+   > Zeigt das Verfahrensgebiet als Polygon in der Karte in der jeweiligen Farbe des Verfahrens.
+   - **4.1 Auf der Karte anzeigen**
+      > Die Kartenansicht fokussiert auf das jeweilige Verfahrengebiet.
+5. **Einzelne Beiträge in der Karte anzeigen**
+   > Zeigt alle Einzelbeiträge des Verfahrens in der Karte. Das Styling der Beiträge kann unten (s. 5.) festgelegt werden.
+6. **Heatmap in der Karte anzeigen** 
+   > Zeigt eine Heatmap der Beiträge in der Karte. Das Gewicht eines Punktes richtet sich dabei nach der Gesamtzahl der Bewertungen des Beitrags, also der Stärke der Resonanz auf ihn.
+7. **Styling der Beiträge wählen**
+   > - nach Projekt: Alle Beiträge werden gleichmäßig in der Projektfarbe dargestellt.
+   > - nach Kategorien im Projektfarbraum: Jede Kategorie wird in einer Schattierung der Projektfarbe dargestellt.
+   > - nach Kategorien im Regenbogenspektrum: Jeder Kategorie wird eine zufällig Farbe zugewiesen.
+   > - nach Bewertung: Die Beiträge werden abhängig von den positiven- und negativen-Bewertungen dargestellt. Die Größe des Punktes richtet sich dabei nach der Gesamtzahl der Reaktionen, die Farbe nach dem Verhältnis von positiven (grün) und negativen (rot) Bewertungen.
+8. **Download als GeoJson**
+   > Die aktuell aktiven DIPAS Datensätze werden als GeoJson heruntergeladen.
+9. **Automatisches Update**
+   > Wenn diese Checkbox aktiviert ist, werden die DIPAS Daten ggf. live aktualisiert.
+10. **Beiträge in der Karte**
+      > Alle Beiträge werden mit ihrer ID (einer fortlaufenden Nummer) in der Karte dargestellt.
+
+
+### Datenvisualierung
+___
+Das Datenvisualisierungswerkzeug erstellt Graphen aus Datensätzen und verwaltet diese. Darüberhinaus ermöglicht es Ihnen den Export dieser Graphen als PNG.
+
+![Abbildung 15: Datenvisualisierung](https://user-images.githubusercontent.com/43250699/157070471-84b8aca7-44f9-47cb-9de2-2284a43062f4.png)  
+*Abbildung 15: Datenvisualisierung*
+
+1. **Diagrammtyp auswählen**
+   > Häufig werden gleich unterschiedliche Graphen erstellt. Hier können Sie zwischen den verfügbaren Diagrammen für den ausgewählten Datensatz umschalten.
+2. **Graph & Legende**
+   > Das augewählte Diagramm. Sie finden hier den Titel des ausgewählten Datensatzes, die Legende und den erzeugten Graphen.
+3. **Y-Achse skalieren**
+   > Hier wählen Sie aus, ob die Y-Achse des Graphen von 0 an beginnt oder relativ zum kleinsten verfügbaren Wert.  
+   *Diese Funktion ist nur beim Liniendiagramm verfügbar.*
+4. **Y-Achse stapeln**
+    > Die Werte der Datensätze werden aufsummiert und farblich abgetrennt dargestellt.
+5. **Ergebnisverzeichnis**
+   > Die [Ergebnisverzeichnis](#markdown-header-ergebnisverzeichnis) verwaltet die unterschiedlichen erstellten Graphen und bietet einige standardisierte Funktionen, zu denen Sie [hier](#markdown-header-ergebnisverzeichnis) mehr erfahren können.
 
 ## Simulation
-A first simulation function was developed. As soon as this has been transferred to production, step-by-step instructions will follow at this point.
+### Werkzeuge des Simulationsmenüs
+___
+
+### Einrichtungen anlegen
+
+Sobald sie "Einrichtungen anlegen" auswählen, öffnet sich ein Fenster, in dessen oberem Bereich Sie den Szenario Manager finden. Bei der Funktion "Wohnungsbauquartiere anlegen" befindet sich der Szenario Manager an derselben Stelle.
+
+#### Szenario Manager
+![Abbildung 16: Szenario Manager](https://user-images.githubusercontent.com/43250699/143022435-622e8032-e0da-4b5e-bd0c-9e33aa07de2c.png)  
+
+*Abbildung 16: Szenario Manager* 
+
+1. **Scenario Dropdown**
+   > Zeigt bisher erstellte Szenarien an.
+2. **Neues Szenario anlegen**
+   > Öffnet die Maske zur Erstellung eines weiteren
+Szenarios.
+3. **Szenario exportieren**
+   > Stellt einen Download des Szenarios zur Verfügung
+4. **Szenario Löschen**
+   > Löscht das ausgewählte Szenario. 
+5. **Szenario leeren**
+   > Löscht alle Veränderungen im Szenario. 
+6. **Thema auswählen**
+   > Dropdownmenü erlaubt die Auswahl aus den aktivierten Fachthemen.  
+  
+ *Sie **müssen** ein Thema aus den geladenen Fachdaten wählen. Sind keine Fachdaten ausgewählt, ist kein Szenario möglich. Wählen Sie mindestens ein Analysethema aus dem Themenbaum.*  
 
-## Services
+![Abbildung 17: Einrichtungen anlegen](https://user-images.githubusercontent.com/43250699/143023574-324b2275-eea7-4926-bf3d-07c2f21124e1.png)
 
-![Illustration 13th - Services](https://user-images.githubusercontent.com/79461871/127782123-8623f992-a44b-4e13-b1b9-8c38ee1f0be2.JPG)
+*Abbildung 17: Einrichtungen anlegen*  
 
-*Illustration 13th - Services*
-
-1. **Print map** - Print the current map section including active layers.
-2. **Switch mousehover on / off** - (De-) activate the tooltip that is displayed on the map at the mouse pointer.
-3. **Save session** - Save the current session with active data, selected areas and filters as a URL. The card status can be reproduced via the URL. *Note: Manually added map services (WMS) and calculations made are not retained. Saving all work results is part of the ongoing development project.*
-4. **Add WMS** - Any other map services can be integrated from the FHH Atlas or other sources via the web address (URL) of the service. The URLs can be found, for example, in the metadata catalog of the FHH or the geoportal under the info button in the topic tree (see topic tree).
-5. **Open the second window** - s. Second window
-
-### Second window
-You can open a second browser tab with the dashboard via the "Services" / "Open second window" tab. All functions are available to you there as in the original window. You can detach the second window from your browser by dragging the tab (tab) to move it to a second screen. If the InfoScreen (second window) is open, you can no longer open the dashboard in the main window. If you close the window, the dashboard returns to the main window.
-
-## Area selection
-When you start CoSI, a frame of reference is first established and a planning area is compiled and confirmed.
-
-![Illustration 14th - The Select Area tool](https://user-images.githubusercontent.com/79461871/127782128-ff5de021-c244-40cd-bb04-6092034df218.JPG)
-
-*Illustration 14th - The "Select Area" tool*
-
-1. **Choose frame of reference** - "Districts", "City districts" or "Statistical areas" can be selected via a drop-down menu - the administrative unit for which the statistical data is to be displayed and evaluations to be created. All functions are available on the respective area levels. However, the number of indicators available may vary. The frame of reference also determines the superordinate reference areas to be loaded: City districts for stat. Areas, districts by districts.
-2. **Set buffer** - A buffer radius can be specified for which selected specialist data are displayed around the planning area. This takes into account the fact that the catchment area of a facility does not necessarily coincide with the territorial boundaries of the administrative unit within which the facility is located. The analysis functions are not affected by this.
-3. **Confirm selection** - Loads the data for the selected planning area from the server and defines the area for the specialist data to be displayed. An empty selection can also be confirmed. Then no data will be loaded and specialist data will be displayed for the entire city area. (see below)
-4. **Reset selection** - Resets the current planning area. In direct A new planning area can then be compiled and confirmed.
-5. **Draw a selection rectangle** - A starting point is set and a rectangle is drawn over the relevant area to the end point. All administrative units that lie within the rectangle or on the lines of the rectangle are included in the planning area.
-6. **Tool info**
-7. **Show and hide additional help levels** - With the help of the checkbox, additional layers can be shown and hidden for orientation. The layer can also be switched on and off via the topic tree. The auxiliary levels currently include the “social spaces” and the “RISE support areas”.
-8. **Select and deselect areas** -
-	 - Click on the individual administrative units (statistical area or district) (clicking again deactivates the selection), the boundaries are marked in blue. 
-	 - Click on the pen to the right of “Reset selection”. A drawing tool is activated; This allows the user to draw a rectangle over the selection area in order to select it.
-	 - Both options described above can also be combined with one another, the order being irrelevant. The users can therefore first select individual administrative units and then activate the drawing tool in order to add additional administrative units or to proceed the other way round.
-
-The defined planning area can be adjusted at any time; the area can be expanded (both by clicking and using the drawing tool), reduced (by clicking marked administrative units can be deselected) or completely reset (by clicking on “Reset selection”).
-
-A planning area does not always have to be defined first in every context of use; Certain analysis tools such as the "Accessibility Analysis" and "Comparable Areas" can be used without specifying an area beforehand.
-
-The following information applies to such cases:
-1.	No data records are loaded, ie it is not possible to display the regional statistical data. Regional statistical data are also not displayed in the dashboard.
-2.	When adding topics from the specialist data, the loading process could take longer
-3.	The availability analysis may not work reliably for a very large number of facilities.
-
-## Map analysis of regional statistical data
-In addition to the technical data layers, the basis of all CoSI analysis functions are the data records of the StaNord database, which are available as time series for the various administrative units (see Sect. Regional statistical data). These can be visualized directly and dynamically on the map for the selected planning area. The color scaling and legend are generated dynamically from the selection. The most recent data set is always displayed.
-
-The tool for visualizing regional statistical data enables the selection of regional statistical data sets that are available for the selected districts. It can only be used if areas have already been selected using the area selection tool. The tool can visualize the selected data sets on the map and generates a dynamic legend. Furthermore, data sets for several years can be selected and, if desired, animated in consecutive order.
-
-![Illustration 15th - Window for map analysis of statistical data](https://user-images.githubusercontent.com/79461871/127782132-cc308d4a-a00a-4422-bcdd-0a75c6321f15.JPG)
-
-*Illustration 15th - Window for map analysis of statistical data*
-
-The individual functions of the tool are explained in detail below:
-1.	The tool window can be minimized using the button.
-2.	The map visualization can be shown and hidden again using the button.
-3.	With the forward and back buttons, the regional statistical data sets can be switched through fluently.
-4.	The year for which the regional statistical data set is visualized. The most recent available year is selected by default.
-5.	Here you can select a year for comparison. The percentage difference to the first selected year is then also shown on the map.
-6.	The selection field for the available regional statistical data sets. StaNord data sets Allows the relevant regional statistical data sets for the selected areas and the reference scale to be switched through and these to be displayed on the map with a color scale. The selection always shows the latest available data.
-7.	The legend for the color visualization of the map. If you hover the mouse over one of the markers, the value of the associated, selected area is displayed. The lowest and highest values are also shown on the right and left.
-8.	Use the button to open this auxiliary window. 
-9.	With the play button you start the animation of the data sets for all available years. In the adjacent field you can enter a value that indicates how quickly the individual animation steps are run through (in seconds).
-10.	Loads the current data into the visualization tool and creates a graph there.
-11.	You can use the button to show and hide the names of the selected areas on the map.
-
-## Dashboard
-The dashboard forms the "heart" of the analysis functions in CoSI. All evaluations of the map-based tools as well as the underlying data sets come together here. It always shows the city as a whole, the selected statistical areas and the associated reference areas (of the higher-level administrative unit) with all StaNord characteristic data in tabular form and houses a number of statistical analysis tools such as diagrams, correlations or ratio formation. In addition, the evaluation results of all other CoSI modules can be displayed in the dashboard and used here for further evaluations or displays.
-
-![Illustration 16 - Dashboard overview](https://user-images.githubusercontent.com/79461871/127782139-9508d8ac-0202-46db-8f35-f7375845ea31.JPG)
-
-*Illustration 16 - Dashboard overview*
-
-1. **Dashboard**
-2. **Widget**(see widgets)
-3. **Zoom in / out**
-4. **Shut down**
-
-### Structure (technology)
-According to its basic function, the dashboard is a freely configurable work environment that can be configured as freely as possible both for your own work and for the visualization and presentation of the results (more on this under InfoScreen and Outlook). According to its structure, the Dashboard is completely ignorant of the content that is presented on it. So it is conceivable to expand it at will in future development steps.
-
-Using a simple, preconfigured function, content from other modules can be transferred to the dashboard and displayed there as a new widget.
-
-### InfoScreen
-You can open a second browser tab with the dashboard via the "Services" / "Open second window" tab. All functions are available to you there as in the original window. You can detach the second window from your browser by dragging the tab (tab) to move it to a second screen. If the InfoScreen is open, you can no longer open the dashboard in the main window. When you close the window, the dashboard returns to the main window.
-
-### Widgets
-A widget is an isolated window / field within the dashboard that can accommodate any content and functions. Widgets can (if not configured otherwise) be scaled, moved, minimized and deleted. They are retained (persistent) even if the user closes the dashboard or changes the area selection. They can also be managed decentrally (on the code side) from anywhere in CoSI.
-
-All widgets (with the exception of the overview table) can be deleted using the "Reset dashboard" button at the bottom of the dashboard.
-
-*Note: With the exception of the overview table, currently open widgets are not automatically transferred when the InfoScreen is opened.*
-
-![Figure 15 - Widget + context menu (e g  diagram)](https://user-images.githubusercontent.com/79461871/127782154-e1046e45-7c77-4d66-b84e-5f821890d9fc.JPG)
-
-*Figure 15 - Widget + context menu (e.g. diagram)*
-
-1. **Title (move)** - By clicking and dragging, the widget can be dragged to another location on the dashboard and the order of the widgets can be changed.
-2. **Minimize** - The widget can be minimized and made available for later use.
-3. **Clear** - The widget can be deleted at any time. The data will then be lost. Only the overview table will be rebuilt the next time the dashboard is opened.
-4. **Zoom in / out** - Widgets can be enlarged and reduced; The extent to which this is possible depends on the content.
-5. **Context menu**
-
-### The Context menu
-All more in-depth interactions with the contents of the dashboard or widgets take place via a context menu, which is called up by right-clicking on an element. Which functions are available depends on the respective element. If no functions are available on an element, the context menu does not open. Context functions are currently implemented in the summary table and the diagrams.
-
-### The Overview table
-By default, the table is the first widget that is automatically displayed when the dashboard is opened. The table shows all indicators of the StaNord data for the selected areas as well as the associated reference areas of the next larger administrative unit i.e, the respective city districts at stat. Areas and the districts in districts. All data sets are grouped by topic and contain continuous time series, which are expanded annually (see p.regional statistical data). In addition, calculated average and total values for the original selection are shown.
-
-The table shows all indicators of the StaNord data for your selected areas. In addition, you will see 
-
-**Calculations**
->The reference areas are not included. Also, only total and average values are calculated for absolute and not for proportional values, since the reference values are not clear and can therefore lead to incorrect calculations. For example, the “proportion of the population with a migration background” refers to the “total population”, “Proportion of women 15 to under 65 years of age who are subject to social insurance contributions”, however, to the absolute number of women between 15 and 65 who, in this form, at the StaNord- Data is not available as a data set. Theoretically, referencing the reference data record in the database is conceivable. However, this is a data issue that must be decided in coordination between UDH and StaNord in future development steps.
-
-The associated reference areas of the next largest administrative unit as well as calculated average and total values for your selection (the reference areas are not included).
-You can zoom in on an area name on the map by clicking on it. You can move or hide table columns. Hidden columns are not taken into account when creating a diagram. 
-
-In the context menu you can 1) create diagrams from table columns or 2) offset table rows with one another (form quotients). The calculation results are added to the table as a new line for all years and areas. You can select multiple rows in the table for grouped diagrams using a check box or pressed the CTRL key.
-The table can be filtered using the selection field (top right). The original and the filtered table can be downloaded as an XLSX file.
-
-Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
-
-The table can be filtered using the selection field (top right). The original and the filtered table can be downloaded as XLSX (see Download XLSX). By clicking on an area name, the map zooms in on it.
-
-Table columns can also be moved or hidden. When creating a diagram, the order of the areas shown (in the case of bar charts) depends on the selected column order. In turn, hidden columns are not taken into account when creating the diagram.
-
-*Note: At present, columns with numerical names (stat. Areas) cannot be moved, but are always shown in the table on the left in ascending order of their numbers.*
-
-### Context functions
-In the context menu you can 1) create diagrams from table columns or 2) offset table rows with one another (form quotients). The calculation results are added to the table as a new line for all years and areas. You can select multiple rows in the table for grouped diagrams using a check box or pressed the CTRL key.
-
-Please note: In regional statistical areas with less than 100 inhabitants or a category with fewer than 10 individual persons, no value is given for data protection reasons. This can lead to unwanted outliers and misrepresentations when creating diagrams.
-
-![Illustration 17th - Context functions summary table](https://user-images.githubusercontent.com/79461871/127782168-6df58d11-5f69-4b07-b9fd-0b0671fa3ef5.JPG)
-
-*Illustration 17th - Context functions summary table*
-
-1. **Diagrams** - Create diagrams from the selected data set. Bar charts can also be created for multiple indicators as grouped bar charts. The results are displayed as a widget at the bottom of the dashboard.
-2. **Selection** - Two data sets for the formation of ratios / correlations. The selection made is displayed above the table and under "Own calculations".
-3. **Own calculations** - Create calculations from the previous selection. In the case of ratios, the numerator values are divided by the denominator values every year. In correlation diagrams, the Y values for all years are plotted against the X values.
-
-### Download XLSX
-The overview table can be downloaded as an XLS file for further processing in MS Excel. The table can be created using the buttons at the end of the table. You can choose between unfiltered and filtered XLSX.
-1. The table can be downloaded either unfiltered or filtered.
-2. Own calculations are included.
-3. The order of the columns can be changed by the user in the dashboard.
-4. Columns are excluded by hiding.
-
-
-### Diagrams
-In principle, the following diagram types can be displayed in the current version of the CoSI dashboard: 
-1. **Bar graphs** - For a selected year, also grouped for several data sets (see Fig. 17).
-2. **Line charts** - For one data set over all years.
-3. **Time beam** - Animated bar charts for all years, color coding in the map (see timeline).
-4. **Correlation Charts (Scatter Charts)** - Visualization of any data set (Y-axis, ordinate) on top of another (X-axis, abscissa) (see calculate correlation).
-
-![Illustration 18th - Select data for charts](https://user-images.githubusercontent.com/79461871/127782171-d2627104-9c30-4549-9a57-0c584dd7469a.JPG)
-
-*Illustration 18th - Select data for charts*
-
-1. **Select multiple rows (grouped bar charts)** - Several lines of the table can be selected for grouped bar graphs using the check box or by pressing the CTRL key (see below). Does not work for line charts for the sake of clarity. The order of the selection determines the order of the bars in the diagram.
-2. **Select year for bar chart** - A message is displayed if no data record is available. The last year from the current date is always preset. Confirm by clicking on "Create for".
-3. **Axis scaling for line charts** - 
-	 - Unscaled axes: The Y-axis starts at 0
-	 - Scaled axes: The Y-axis starts with the next sensible (if possible integer) value below the lowest value.
-
-*Note: The order of the columns determines the order in the (bar) diagrams. Records from hidden columns are not displayed.*
-
-![Illustration 19th - Chart types](https://user-images.githubusercontent.com/79461871/127782198-55074d19-3099-4097-a097-f0784d61e10d.JPG)
-
-*Illustration 19th - Chart types*
-
-1. **Simple bar graph** - Linear color scale from white (low value) to blue (high value), adapts to the selected columns. Selected year in the title.
-2. **Grouped bar graph** - Spectral color scale for each selected table row, grouped by area. Selected year in the title.
-3. **Line chart (unscaled Y-axis)** - Y-axis starts at 0. X-axis shows all years. Spectral color scale for each area.
-4. **Line diagram (scaled Y-axis)** - Y-axis starts at the highest possible meaningful (if possible integer) value.
-5. **Tooltip** - Mousehover above the diagram always shows the respective value and the area.
-6. **Download diagram** -Each diagram can be downloaded as a raster or vector graphic using the context menu. 
-
-### Time beam
-
-![Illustration 20th - Time beam](https://user-images.githubusercontent.com/79461871/127782204-49798778-530a-4497-89ab-a14edd132aa1.JPG)
-
-*Illustration 20th - Time beam*
-
-1. **Time beam** - The years can be switched through using the slider.
-2. **Play button** - The animation of the annual data sets runs in a loop via the play button.
-3. **Bar graph** - The bar chart shows the current values for the selected year; Reference areas and calculated values are ignored.
-4  **Color coding** - The current values are shown on the map with the same color scale.
-5. **Delete timeline** - When the timeline is deleted or a new one is created, the map is also cleaned up.
-
-*Note: At the current stage of development, the timeline only works for existing StaNord data and not for your own calculations.*
-
-### Calculate ratios
-Any two columns for calculation or correlation can be selected via the context menu.
-
-![Illustration 21 - Write your own calculations in the table](https://user-images.githubusercontent.com/79461871/127782211-804a96c0-175d-40b2-9e5d-159e9dd6a5f3.JPG)
-
-*Illustration 21 - Write your own calculations in the table*
-
-1. **Select counter / Y-axis** - The data set, which is plotted as the Y value for ratios above the fraction line, for correlation diagrams. A new selection overwrites the previous value.
-2. **Select denominator / X-axis** - The data set, which is plotted as the X value in the case of ratios below the fraction line, in correlation diagrams. A new selection overwrites the previous value.
-3. **Deselect** - Reset the current selection.
-4. **Current selection** - Your current selection is shown with a split symbol (“/”) above the table and in the context menu.
-5. **Calculate ratio** - Divides each table entry (area and year) of the numerator data set by the corresponding one of the denominator data set. The results are appended to the table.
-6. **Create a correlation diagram** - (see correlation diagram).
-7. **Own calculations** - The new data record can be found in the table under the “Calculations” group. Like all other data sets, it can also be used for new diagrams, it can be filtered according to it and it can be downloaded with the table as XLSX. The only exception is the timeline (see timeline).
-
-*Note: At present, your own calculations cannot be displayed on the map like the original StaNord data.*
-
-### Correlation diagram
-
-![Illustration 22nd - Correlation diagram](https://user-images.githubusercontent.com/79461871/127782214-2517e4dd-63de-472c-8fea-4b3372bd69f9.JPG)
-
-*Illustration 22nd - Correlation diagram*
-
-1. **Values** - For the selected data sets (X-axis, Y-axis) the values of all years and areas are plotted on top of one another. Each color represents an area / a table column and each point a value pair of a year.
-2. **Tooltip** - The tooltip shows area, X-value, Y-value and year for each point.
-3. **Regression line**
-4. **Correlation** (Pearson) / Covariance
-
-*Note: The correlation diagram does not make any statements about causality and does not take any other variables into account. Furthermore, the values are not weighted any further and outliers can distort the picture. In order to strengthen the informative value of the diagram, it is recommended to select a large number of areas or to restrict the area selection using "comparable areas" based on certain parameters.*
-
-### Results
-All results from other tools can be transferred to the dashboard. They are displayed there as widgets and are retained even after changing the area selection. If they contain names of facilities or areas, you can click on them to zoom to the object on the map.
+1. **Einrichtung kopieren**
+   > Erlaubt den Upload eines gespeicherten Szenarios. 
+2. **Verschieben der Einrichtung**
+   > Erlaubt das Bewegen von Einrichtungen durch verschieben auf der Karte
+3. **Sichern/ Öffnen** 
+   > Ermöglicht geöffnet das Verschieben vorhandener Einrichtungen.
+4. **Rückgängig** 
+   > Stellt den vorherigen Zustand wieder her.
+5. **Geometrie** 
+   > Überträgt die Geometrie eines Punktes durch Klick auf der Karte.
+6. **Löschen**
+   > Entfernt vorhandene Geometrie.
+7. **Erforderliche Spalten**
+   > Notwendige Bedingung zur Erstellung einer simulierten Einrichtung.
+8. **Kapitelbezeichnung**
+9. **Name**
+10. **Optionale Spalten**
+   > Können bei Bedarf ergänzt werden.
+11. **Anlegen**
+   > Erstellt die simulierte Einrichtung
+12. **Zurücksetzen**
+   > Setzt das Szenario zurück.
+
+#### Schrittweises Vorgehen
+Zur besseren Verständlichkeit des Werkzeugs wird im Folgenden einmal Schritt für Schritt erläutert, wie man erfolgreich selbst eine neue Einrichtung anlegt.
+
+1. #### **Schritt 1:** Neues Szenario erstellen
+2. #### **Schritt 2:** Name für Szenario festlegen
+3. #### **Schritt 3:** Einrichtung definieren
+   1. Kopieren sie eine Einrichtung mit dem Pipetten-Symbol, indem sie zuerst die Pipette anklicken und dann die zu kopierende Einrichtung in der Karte anwählen. Sie können Einrichtungen auch vollständig manuell anlegen, indem Sie die dazu erforderlichen Spalten selbst ausfüllen. 
+   2. Positionieren sie die Einrichtung auf der Karte, indem sie zunächst den "Ort wählen" Stift im Feld *Geometrie/ Ort* anklicken und dann einen Punkt auf der Karte anwählen. Alternativ können Sie die geometrischen Werte in das Feld Geometrie/Ort eintragen. 
+   3. *Erforderliche Spalten* werden durch das Kopieren einer Einrichtung per Pipette übernommen. Diese Spalten können jedoch manuell ergänzt oder verändert werden. 
+   4. *Optionale Spalten* werden automatisch durch das Kopieren einer Einrichtung übertragen können aber auch manuell ergänzt oder ausgefüllt werden .
+4. #### **Schritt 4:** Einrichtung anlegen
+   > Schließen sie die Erstellung ab, indem Sie den blauen Button "Neue Einrichtung Erstellen" klicken. Die neue Einrichtung erscheint als Icon in der Karte. Neue Einrichtungen werden durch ein farbiges Sternchen gekennzeichnet. 
+5. #### **Schritt 5:** Einrichtung bewegen
+   1. Zum Verschieben von Einrichtungen klicken sie das Bewegen-Symbol. Nun klicken sie die Einrichtung, die Sie bewegen möchten. Ist diese angeklickt, vergrößert sich das Symbol und zeigt damit an, dass die Einrichtung nun beweglich ist. Ziehen sie die Einrichtung mit gedrückter linker Maustaste an den gewünschten Platz. 
+   2. Möchten sie bestehende Einrichtungen aus dem Datensatz auf der Karte verschieben, dann lösen Sie durch einen Klick auf das Schloss die Sperre. Es erscheint eine Warnung:   
+   *"Achtung: Sie können jetzt auch echte Einrichtungen verschieben. Ihre Änderungen sind nur temporär und werden nach der Sitzung nicht gespeichert."*  
+
+Alle Analysen, die innerhalb eines Szenarios durchgeführt werden, berücksichtigen die Parameter der simulierten Einrichtungen. 
+
+### Einrichtungen bearbeiten
+
+Sie können sowohl selbst angelegte als auch bereits in den Daten vorhandene Einrichtungen bearbeiten, sobald Sie ein aktives Szenario haben. Sollten Sie kein Szenario angelegt haben und Sie klicken eine Einrichtung an, wird folgendes Popup angezeigt:
+
+![Abbildung 18: Bitte erstellen Sie ein Szenario](https://user-images.githubusercontent.com/43250699/159273029-a17ce734-e7ed-4374-9cf4-433d44f26508.JPG)
+
+*Abbildung 18: Bitte erstellen Sie ein Szenario*
+
+Ein Szenario können Sie wie im [Szenario Manager](#markdown-header-szenario-manager) beschrieben anlegen. Sobald Sie ein Szenario erfolgreich erstellt haben, wenn Sie eine Einrichtung anklicken, folgender Popup am unteren Bildschirmrand: 
+
+![Abbildung 19: Einrichtung bearbeiten](https://user-images.githubusercontent.com/43250699/159273504-35b08fa1-2206-4ef4-a850-670f0e03a381.JPG)
+
+*Abbildung 19: Einrichtung bearbeiten*
+
+Wählen Sie hier den Button **BEARBEITEN** an, daraufhin wird sich das folgende Fenster öffnen:
+
+![Abbildung 20: Einrichtung-Bearbeiten-Fenster](https://user-images.githubusercontent.com/43250699/159273975-1e1f2960-1af4-4e49-a03a-5657060b322f.png)
+
+*Abbildung 20: Einrichtung bearbeiten*
+
+1. **Eingaben sperren**
+   > Mit Hilfe dieses Buttons sperren Sie die Input-Felder des Fensters, so dass Sie nicht mehr bearbeitet werden können. Die Input-Felder sind standardmäßig gesperrt, so dass Sie diesen Button aktivieren müssen, ehe Sie eine vorhandene Einrichtung bearbeiten können. 
+2. **Inputfelder**
+   > Die verfügbaren Inputfelder für den Datensatz der ausgewählten Einrichtung. Die Inputfelder weichen je nach Einrichtung ab (Krankenhaus, Sportstätte, Schule etc.).
+3. **Änderungen speichern**
+   > Speichern Sie die Änderungen, die Sie an der Einrichtung vorgenommen haben.
+4. **Zurücksetzen**
+   > Setzen Sie alle Felder der Einrichtung auf Ihre ursprünglichen Werte zurück.
+5. **Abbrechen**
+   > Verwerfen Sie Ihre ungespeicherten Änderungen und schließen dieses Fenster.
+
+**Hinweis:** Wenn auf der Karte Cluster von Einrichtungen angezeigt werden, weil in der aktuellen Zoomstufe nicht alle Einrichtungen dargestellt werden können, öffnet sich bei einem Klick auf das Clustersymbol folgendes Fenster:
+
+![Abbildung 21: Clusterauswahl](https://user-images.githubusercontent.com/43250699/159275102-91f27ff1-4214-4a2e-8bb6-19105e1859b9.png)
+
+*Abbildung 21: Clusterauswahl*
+
+1. **Das angewählte Cluster (3)**
+   > Die Darstellung von Einrichtungen wird auf der Karte gebündelt, wenn zu viele Einrichtungen an einem Ort sind, so dass sie in der aktuellen Zoomstufe nicht dargestellt werden können. 
+2. **Auswahl**
+   > Alle im Cluster gebundenen Einrichtungen werden angezeigt, sobald Sie auf das Cluster klicken. Sie können dann in diesem Fenster eine Einrichtung auswählen, woraufhin sich das Fenster aus Abbildung 18 öffnet.
+
+
+### Wohnungsbauquartiere anlegen 
+
+Durch das Erstellen eines Wohnbauquartiers können sie Wohnungsbauszenarien durchspielen. Die erstellten Wohnungsbauquartiere stehen Ihnen für weitere Analysefunktionen zur Verfügung. Die Szenarien können exportiert und gespeichert werden.
+
+Sobald sie "Wohnungsquartiere anlegen" auswählen, öffnet sich ein Fenster, in dessen oberem Bereich Sie den Szenario Manager finden. (s. [Szenario Manager](#markdown-header-szenario-manager))
+
+![Abbildung: 22: Wohnungsbauquartiere anlegen](https://user-images.githubusercontent.com/43250699/143025884-f86a5897-3757-4b35-9d6d-1e4969d8175d.png)
+
+*Abbildung 22: Wohnungsbauquartiere anlegen*
+
+1. **Geometrie**
+   > Mithilfe des Stiftes kann ein Polygon in der Karte gezeichnet werden. 
+2. **Rückgängig**
+   > Entfernt die zuvor gezeichnete Linie.
+3. **Polygon in der Karte wählen**
+   > Ist der Button orange markiert, kann auch ein Polygon aus der Karte angewählt und übernommen werden.
+4. **Löschen**
+   > Löscht das erstellte Polygon.
+5. **Zurücksetzen**
+   > Entleert die Eingabemaske, um weitere Wohnungsbauquartiere zu erstellen.
+6. **Bearbeiten**
+   > Ermöglicht die Anpassung der regionalstatistischen Datensätze.
+7. **Anlegen**
+   > Bestätigt die Angaben und erstellt das simulierte Wohnungsbauquartier.
+
+##### **Die Parameter in den Feldern passen sich der gezeichneten Fläche an:**
+
+- **Grundfläche**
+   > Zeigt die Fläche des gezeichneten Polygons an. 
+- **Bewohnerzahl insgesamt**
+   > Zeigt die Einwohnerzahl entsprechend dem gewählten Referenzgebiet. 
+- **Wohneinheiten**
+   > Schieberegler lässt sich auf die gewünschte Anzahl an Wohneinheiten regeln. 
+- **Bruttogeschossfläche (BGF)**
+   > Regelt die verfügbare Bruttogeschossfläche. 
+- **Durchschnittliche Haushaltsgröße**
+   > Regelt die geplante Anzahl der Personen pro Wohneinheit. 
+- **Geschossflächenzahl (GFZ)**
+   > Reguliert die Anzahl an Flächen auf der gezeichneten Grundfläche. 
+- **Bevölkerungsdichte**
+   > Wird aus dem Referenzgebiet übernommen, kann jedoch durch Anpassung anderer Parameter variieren. 
+- **Wohnfläche pro Person**
+   > Reguliert die bereitgestellte Wohnfläche pro Kopf. 
+
+#### Schrittweises Vorgehen
+Zur besseren Verständlichkeit des Werkzeugs wird im Folgenden einmal Schritt für Schritt erläutert, wie man erfolgreich selbst ein neues Wohnungsquartier anlegt.
+
+1. **Schritt 1:** Geben Sie einen Namen für das erstellte Wohnbauquartier ein 
+2. **Schritt 2:** Zeichnen Sie mit dem Zeichenstiftwerkzeug den Wohnblock an der gewünschten Fläche ein oder wählen Sie ein Polygon auf dem Kartenlayer aus. 
+3. **Schritt 3:** Parameter für das erstellte Quartier können per Schieberegler angepasst werden.
+4. **Schritt 4:** Wählen Sie ein Referenzgebiet für die Simulation der Zusammensetzung des Gebiets aus. 
+5. **Schritt 5:** Klicken Sie auf "Anlegen". Das Neue Wohnbauquartier erscheint nun als hervorgehobenes Polygon mit Angaben zur Fläche und Einwohnerzahl auf der Karte.  
+
+## Dienste
+### Werkzeuge des Dienstemenüs
+___
+![Abbildung 23: Dienste](https://user-images.githubusercontent.com/43250699/142929329-caca93bf-aee3-4a5d-838e-cff33bca5502.png)
+
+*Abbildung 23 - Dienste*
+
+1. **Zeichnen/ Schreiben**
+2. **Karte drucken**
+   > Den aktuellen Kartenausschnitt inkl. aktiver Layer drucken.
+3. **Mousehover ein-/ ausschalten**
+   > Den Tooltip, der am Mauszeiger in der Karte eingeblendet wird (de-)aktivieren
+4. **[Geodaten Importieren](#markdown-header-geodaten-importieren)**
+5. **WMS hinzufügen**
+   > Beliebige andere Kartendienste können aus dem FHH-Atlas oder anderen Quellen über die Webadresse (URL) des Dienstes eingebunden werden. Die URLs entnehmen Sie z.B. dem Metadatenkatalog der FHH oder dem Geoportal unter dem Info-Button im Themenbaum (s. Themenbaum).
+6. **[Zweites Fenster öffnen](#markdown-header-zweites-fenster-öffnen)**
+7. **[Sitzung speichen / laden](#markdown-header-sitzung-speichern)**
+   > Die aktuelle Sitzung mit aktiven Daten, gewählten Gebieten und Filtern speichern. Sitzungen können im Browser gespeichert werden. Diese können beim Programmstart wieder aus dem Verlauf geladen werden.
+   Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.   
+   Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
+8. **[Vorlagen](#markdown-header-vorlagen)**
+
+   >*Hinweis: Manuell hinzugefügte Kartendienste (WMS) und erstellte Berechnungen bleiben nicht erhalten. Das Speichern aller Arbeitsergebnisse ist Teil des aktuell laufenden Weiterentwicklungsprojekts.*
+
+
+### Geodaten Importieren
+Mit diesem Werkzeug können Sie eigene Datensätze in Form von GeoJSONs hochladen und als Themenlayer einfügen, der anschließnend visualisiert werden kann und dem alle weiteren Analysefunktionen von CoSI zur Verfügung stehen.   
+
+![Abbildung 24: Dateien importieren](https://user-images.githubusercontent.com/43250699/142930620-f556b3bb-a098-4deb-8394-2b5db6963c94.jpg)  
+*Abbildung 24: Dateien importieren*   
+1. **Info**
+   > Über den Button finden Sie zu dieser Anleitung.
+2. **Upload per Drag And Drop**
+   > Ziehen Sie eine Datei per Drag and Drop in dieses Feld. Sie wird automatisch hochgeladen.
+3. **Datei auswählen**
+   > Mit einem Klick auf diesen Button öffen Sie den Dateibrowser Ihres Computers und können die hochzuladene Datei dort auswählen.
+4. **Projektionssystem auswählen**
+   > Geodaten sind in unterschiedlichen *Projektionssystemen* kodiert. Sollten Sie nach dem Upload feststellen, dass Ihre Daten an den falschen Orten visualisiert werden, überprüfen Sie bitte, in welchem Projektionssystem Ihre Datei kodiert ist und geben Sie es bei einem erneuten Upload in diesem Auswahlfeld an.  
+  
+Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welchem Sie bestimmte Funktionen haben, um den Layer aus der Datei zu generieren.  
+
+![Abbildung 25: Geodaten Importieren, Layeroptionen festlegen](https://user-images.githubusercontent.com/43250699/142931326-1effcb55-62a9-4fdb-918f-6d0fb9dccc49.jpg)  
+*Abbildung 25: Geodaten Importieren, Layeroptionen festlegen* 
+
+5. **Layername**
+   > Hier können Sie den Layer frei benennen. Standardmäßig wird der Name der hochgeladenen Datei verwendet.
+6. **[Styling](#markdown-header-styling)**
+7. **[Einrichtungsdaten](#markdown-header-einrichtungsdaten)**
+8. **[Filterdaten](#markdown-header-filterdaten)**
+9. **[Numerische Werte](#markdown-header-numerische-werte)**
+10. **Abbrechen/ Layer hinzufügen**
+   > Mit einem Klick auf den Button "Abbrechen" brechen Sie den Vorgang ab und schließen das Fenster. Mit einem Klick auf "Layer Hinzufügen" wird der Import abgeschlossen und mit Ihren Einstellungen für die Funktionen in CoSI bereitgestellt.
+
+#### Styling
+
+![Abbildung 26: Geodaten Importieren, Layerstyling](https://user-images.githubusercontent.com/43250699/142931936-7da21540-9ac3-4a4d-85f5-1f78feae6978.jpg)  
+*Abbildung 26: Geodaten Importieren, Layerstyling*  
+
+- **6.1** Ein Icon auswählen, mit dem die jeweiligen Punkte visualisiert werden sollen. *(Diese Option steht nicht zur Verfügung, wenn es sich bei denen von Ihnen hochgeladenen Geodaten um Polygone handelt).
+- **6.2** Mit dieser Checkbox legen Sie fest, ob alle Entitäten des Datensatzes mit derselben Farbe dargestellt werden sollen oder basierend auf einer ihrer Attribute farblich angepasst werden sollen. Aktivieren Sie diese Checkbox, bestimmen Sie das gewünschte Attribut bitte wie in 6.2.1 beschrieben.
+   - **6.2.1** Haben Sie die Checkbox "Farbe nach Attributen" aktiviert, erscheint dieses Auswahlfeld, in dem alle Attribute der Einträge Ihres Datensatzes aufgelistet werden. Bestimmen Sie hier bitte das Attribut, anhand dessen die Farben generiert werden sollen.
+   - **6.2.2** Sobald Sie in 6.2.1 ein Attribut ausgewählt haben, erscheint diese Checkbox, sofern es sich nicht um ein Attribut mit numerischen Werten handelt. Hier haben Sie die Option, Ihre Daten nicht auf Basis einer ausgewählten Farbe zu visualisieren, sondern gleichmäßig verteilt über ein Regenbogenfarbspektrum. Dies kann zur besseren Unterscheidung einzelner Punkte hilfreich sein. 
+- **6.3** Haben Sie weder "Farbe nach Attributen" ausgewählt bzw. bei "Farbe nach Attributen" nicht die Checkbox "Regenbogenfarbspektrum" aktiviert, können Sie hier eine Farbe bestimmen, auf deren Basis die Daten visualisiert werden. Ein Klick auf das farbige Viereck der Textbox öffnet das Farbauswahlfeld.
+
+#### Einrichtungsdaten
+![Abbildung 27: Geodaten Importieren, Einrichtungsdaten](https://user-images.githubusercontent.com/43250699/142932334-7476d084-eda1-4a05-a93e-bf159ac55b8f.jpg)  
+*Abbildung 27: Geodaten Importieren, Einrichtungsdaten*    
+
+   - **7.1** Hier wählen Sie aus allen Attributen der Einträge Ihrer hochgeladenen Datei das Attribut aus, welches einen eindeutigen, individuellen Namen des Eintrags enthält. Dies ist für bestimmte Funktionen von CoSI relevant. Sollte ein solches Attribut nicht existieren, lassen Sie es bitte einfach frei.
+   - **7.2** Hier wählen Sie aus allen Attributen der Einträge Ihrer hochgeladenen Datei ein Attribut aus, was den Typ des jeweiligen Eintrags am besten beschreibt. Handelt es sich bei Ihrem Datensatz beispielsweise um eine Reihe von unterschiedlichen Einrichtungen, könnte hier als Attribut eines gewählt werden, dass Werte wie "Kindergarten", "Krankenhaus" oder "Hotel" enthält.
+   - **7.3** Für die korrekte Darstellung in manchen Werkzeugen von CoSI ist eine vollständige Adresse hilfreich. Sofern ein Attribut mit dem Namen "Adress" oder "address" vorhanden ist, wird Ihnen dieser Teil der Funktionen nicht angezeigt. Sollte ein solches Attribut aber nicht existieren, können Sie aus bestimmten im Vorfeld automatisch erkannten Attributen wie "Straße" oder "plz" wählen. Sie können mehrere dieser Felder auswählen und so die Adresse entsprechend zusammenstellen.
+   - **7.4** Sollte keines der automatisch erkannten Attribute die korrekten Adressdaten enthalten, können Sie mit dem Button "Aus allen Objekteigenschaften wählen" alle Attribute anzeigen lassen, um daraus die Adresseigenschaften auszuwählen. Sollten in dem Datensatz keine entsprechenden Informationen hinterlegt sein, können Sie dieses Auswahlfeld ignorieren.
+
+#### Filterdaten
+![Abbildung 28: Geodaten Importieren, Filterdaten festlegen](https://user-images.githubusercontent.com/43250699/142932614-055ed92b-6967-436b-ace5-8977111ef473.jpg)  
+*Abbildung 28: Geodaten Importieren, Filterdaten festlegen*  
+
+   - Unter CoSIs Werkzeugen finden Sie auch das Filterwerkzeug, mit denen Sie alle Datensätze nach bestimmten Kriterien filtern können. Bitte bestimmen Sie hier, welche der Attribute Ihrer Daten für den Filter verfügbar gemacht werden sollen.
+   - **8.1** Mit einem Klick auf diesen Button öffnet sich ein Auswahlfeld, mit Hilfe dessen Sie ein Attribut zur weißen Liste des Filters hinzufügen können.
+
+#### Numerische Werte
+![Abbildung 29: Geodarten Importieren, Numerische Werte festlegen](https://user-images.githubusercontent.com/43250699/142932809-d77c6760-bff3-4576-b9fa-1bcca88ef816.jpg)  
+*Abbildung 29: Geodarten Importieren, Numerische Werte festlegen*  
+- Mit Hilfe des Werkzeugs [Versorgungsanalyse](#markdown-header-versorgungsanalyse) können Sie unterschiedlichste Zahlwerte gegeneinander verrechnen. In diesem Bereich bestimmen Sie Attribute, die numerische Werte enthalten, die für die Versorgungsanalyse bereitgestellt werden sollen. Dies können alle sinnvoll quantitativ messbaren Werte sein, wie beispielswiese "Budget", "Einwohnerzahl", "Fläche" oder "Besuche pro Woche" etc.  
+
+   - **9.1** Für die bessere Visualisierung in einer späteren Tabelle, können Sie hier dem numerischen Wert einen sinnvollen Namen geben, sollte das Attribut nicht sinnvoll benannt sein. So könnten Sie beispielsweise "budget_21" in "Verfügbare Mittel 2021" umbenennen.
+   - **9.2** Hier sehen Sie die ID des Attributs und dahinter in Klammern einen Beispielwert aus dem ersten Eintrag.
+   - **9.3** Mit dieser Checkbox fügen Sie das Attribut zu den numerischen Werten hinzu. 
+
+### Zweites Fenster
+Über den Reiter "Zweites Fenster öffnen" können Sie einen zweiten Browser-Tab mit dem Dashboard öffnen. Ihnen stehen dort alle Funktionen wie im ursprünglichen Fenster zur Verfügung. Sie können das zweite Fenster von Ihrem Browser durch Ziehen des Tabs (der Registerkarte) ablösen, um es auf einen zweiten Bildschirm zu bewegen. Wenn der InfoScreen (zweites Fenster) geöffnet ist, können Sie das Dashboard im Hauptfenster nicht mehr öffnen. Schließen Sie das Fenster, kehrt das Dashboard ins Hauptfenster zurück.
+
+### Sitzung Speichern/Laden 
+*(Befindet sich in Entwicklung)*
+
+![Abbildung 30: Sitzung Speichern](../cosi/utils/assets/screenshots/sitzungspeichern.png)
+*Abbildung 30: Sitzung speichern / laden*
+
+Mit dem Dienst **Sitzung speichern/laden** können aktuelle diverse Informationen der aktuellen Arbeitssitzung abgespeichert werden um diese zu einem späteren Zeitpunkt wieder öffnen und weiterbearbeiten zu können. Dies umfasst
+
+- Die ausgewählte Verwaltungsebene und ausgewählte Gebiete
+- Aktive Fachdatenthemen 
+- Mit den [Simulationswerkzeugen](#markdown-header-simulation) erstellte Szenarien
+- Ergebnisse und Konfigurationen der Werkzeuge [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Versorgungsanalyse](#markdown-header-versorgungsanalyse)
+
+1. **Schnell speichern**
+   > Aktuelle Sitzung im Browser (z.B. Edge, Firefox) speichern. Diese können beim Start von CoSI über den Button **Letzte Laden** wieder geladen werden. Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung vorgehalten werden.
+2. **Letzte laden**
+   > Letzte im Browser gespeicherte Sitzung aus dem Cache laden
+3. **Letzte löschen**
+   > Letzte Sitzung aus dem Cache löschen
+4. **Speichern unter**
+   > Eine Sitzung benennen und als Datei auf dem Rechner speichern und über den Button **Datei laden** wieder laden. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden. 
+   
+   *Expertentipp: Die Sitzungen können mit jedem Texteditor geöffnet und als JSON-Datei bearbeitet werden.*
+5. **Datei laden**
+   > Sitzung aus lokaler Datei öffnen
+6. **Automatisches Speichern (10min)**
+   > Wenn aktiv wird die aktuelle Sitzung im Modus **Schnell speichern** alle 10min im Hintergrund gespeichert und kann über **Letzte laden** wiederhergestellt werden.
+
+### Vorlagen
+![Abbildung 31: Vorlagen](../cosi/utils/assets/screenshots/vorlagen.png)
+
+*Abbildung 31: Vorlagen*
+
+Über den Dienst **Vorlagen** können Vorlagen zu verschieden Themenkomplexen und Arbeitsfeldern geladen werden. Diese können Fachdatenthemen, aktive Werkzeuge und eine Gebietsauswahl beinhalten. Die verfügbaren Vorlagen und ihr Inhalt werden von den Fachbehörden in Koordination mit dem CoSI-Betriebsteam gepflegt.
+
+1. **Liste aller Vorlagen (zum Aufklappen)**
+2. **Inhaltsübersicht einer Vorlage**
+   > - Titel
+   > - Stand (Datum)
+   > - Beschreibung
+   > - Fachdatenthemen
+   > - Aktiver Bezugsrahmen (Verwaltungsebene)
+   > - Ausgewählte Gebiete
+3. **optionale Gebietsauswahl**
+   > Wenn kein Bezugrahmen/Gebiete definiert sind, können diese händisch im Vorfeld oder nach dem Laden ausgewählt werden. Die Inhalte werden dann für die aktive Gebietsauswahl geladen.
+3. **Vorlage laden**
+   > Die ausgewählte Vorlage laden.
+
+___
+### Dashboard
+____
+
+### Statistische Datenübersicht
+![Abbildung 32: Statistische Datenübersicht](../cosi/utils/assets/screenshots/statdashboard.png)
+*Abbildung 32: Statistische Datenübersicht*
+
+1. **Gruppen ein-/ausklappen**
+   > Thematische Gruppen (vgl. [Regionalstatistische Daten](#markdown-header-regionalstatistische-daten)) über das **+** ein- und ausklappen.
+2. **Aktionen**
+   > - s. [Burger-Menü](#markdown-header-burgermenü)
+   > - Visualisierung ein- / ausschalten: Schaltet die Visualisierung des ausgewählten Indikators zum aktuell gewählten Jahr in der Karte ein/aus
+   > - Jahre ein- / ausklappen: Klappt die Tabellenzeile auf um alle Jahre der Zeitreihe darzustellen.
+3. **Jahr auswählen**
+   > Aktuelles Jahr für die Darstellung in Tabelle und Karte auswählen.
+4. **Spalte verschieben**
+   > Mit den Pfeilen links/rechts die Spalte verschieben. Die Trennstriche grenzen die Verwaltungsebenen voneinander ab
+5. **Spalte ein-/ausblenden**
+   > Mit dem Auge kann eine Spalte aus- und eingeblendet werden, um die Tabelle übersichtlicher zu gestalten. Ausgeblendete Spalten werden für Exporte und Diagramme nicht berücksichtigt.
+6. **Aggregationsspalten**
+   > Die letzten zwei Spalten zeigen standardmäßig Durchschnitts- und Gesamtwert für die **ausgewählten Gebiete** (wie in der Karte dargestellt, nur die ausgewählte Verwaltungsebene). Für relative (anteilige) Indikatoren können keine Aggregationen berechnet werden, da der Bezugsrahmen nicht klar ist.
+7. **Spalte auswählen**
+   > Spalten für Export und Diagramm-Erstellung auswählen. Ist keine Spalte ausgewählt werden alle verwendet.
+8. **Zeile auswählen**
+   > Zeilen für Export und Diagramm-Erstellung auswählen. Ist keine Spalte ausgewählt werden alle für den Export bzw. nur die aktuelle für die Diagramme verwendet.
+9. **Trendpfeil**
+   > Der Trendpfeil zeigt das extrapolierte Wachstum für den nächsten Zeitschritt (in % im Tooltip) an. Für die Abschätzung werden die Steigungen der letzten 5 Zeitschritte, gewichtet nach Aktualität, herangezogen. Die Darstellung erhebt **keinen Anspruch** auf Genauigkeit und berücksichtigt keine anderen Werte über die aktuelle Zeitreihe hinaus.
+10. **Themenfilter**
+      > Über den Filter können beliebige Indikatoren (sortiert nach Gruppen) für die Darstellung und den Export ausgewählt werden. Die Liste kann im Freitext durchsucht werden.
+11. **Tabelle exportieren**
+      > Die aktuelle Auswahl (Spalten, Zeilen, Jahre) als XLSX für Excel exportieren. Über aus Auswahlfeld *alle Jahre exportieren* kann die gesamte Zeitreihe für die ausgewählten Spalten und Zeilen exportiert werden. Ist keine Spalte oder Zeile ausgewählt werden alle verwendet.
+12. **Kartenvisualisierung**
+      > Die Darstellung in der Karte entspricht der des Kontrollfeldes [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten).
+
+#### Burgermenü
+![Abbildung 33: Statistische Datenübersicht - Burgermenü](https://user-images.githubusercontent.com/43250699/159326829-900bffff-6db2-4055-9219-7be46ffb1dea.png)
+*Abbildung 33: Statistische Datenübersicht - Burgermenü*
+
+1. **Visualisierung ein-/ausschalten**
+   > Thematische Gruppen
+2. **Zeitreihe in der Karte animieren**
+   > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
+3. **Gebietsnamen ein-/ausblenden**
+   > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
+4. **Für Feld A auswählen**
+   > Selektiert das Thema als **Feld A** für Berechnungen und Korrelation (siehe Burgermenu/ Berechnen)
+5. **Für Feld B auswählen**
+   > Selektiert das Thema als **Feld B** für Berechnungen und Korrelation (siehe Burgermenu/ Berechnen)
+6. **Auswahl aufheben**
+   > Setzt die Felder **A** und **B** zurück
+
+![Abbildung 34: Statistische Datenübersicht - Burgermenü](https://user-images.githubusercontent.com/43250699/159326748-5207418c-9e01-4e8d-8727-ea61b42bfd45.png)
+*Abbildung 34: Statistische Datenübersicht - Burgermenp*
+
+1. **Grundlegende Mathematische Funktionen**
+   > Verrechnet die Werte für **A** und **B** für jede Gebietsspalte und fügt das Ergebnis der Tabelle an. Die durchzuführende Operation wird in Klammern hinter dem Menüpunkt angezeigt, bspw. (A + B).
+2. **Ausgewählte Aufsummieren**
+   > Addiert die Werte aller ausgewählten Spalten auf. Das Ergebnis der Berechnung finden Sie ganz unten im Dashboard unter "Berechnungen".
+3. **Ausgewählte Dividieren**
+   > Alle ausgewählten Zeilen werden durch den als **B** gesetzten Wert geteilt. Die Ergebnisse finden Sie ganz unten im Dashboard unter "Berechnungen".
+
+![Abbildung 35: Statistische Datenübersicht - Burgermenü](https://user-images.githubusercontent.com/43250699/159326761-e49c2e5c-b25b-4897-9d9b-681cdaef5c96.png)
+*Abbildung 35: Statistische Datenübersicht - Burgermenü*
+
+1. **Diagramme erzeugen**
+      > Erzeugt Diagramme für den ausgewählten Indikator in der [Datenvisualisierung](#markdown-header-datenvisualisierung) (analog zu [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)).
+2. **Diagramme für ausgewählte Zeilen**
+      > Erzeugt Diagramme, die die Werte aller ausgewählten Zeilen abbilden im [Datenvisualisierung](#markdown-header-datenvisualisierung) (analog zu [Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)).
+3. **Korrelations- / Streuungsdiagramm**
+      > Visualisiert ein Streuungsdiagramm für die Felder **A** (Y-Achse) über **B** (X-Achse) im [Datenvisualisierung](#markdown-header-datenvisualisierung) und berechnet die Korrelation (Pearson) zwischen den Datensätzen und zeichet eine Regressionsgerade.
+
+---
+### Einrichtungsübersicht
+![Abbildung 36: Einrichtungsübersicht](https://user-images.githubusercontent.com/43250699/159693060-ce1ffbeb-e9f6-4525-8896-13f341138246.png)
+*Abbildung 36: Einrichtungsübersicht*
+
+1. **Detailansicht ein-/ausklappen**
+   > Über den Pfeil können *alle* Attribute einer Einrichtung aufgeklappt werden. Die einzelnen Zeilen der Detailansicht können für den weiteren Export ausgewählt werden.
+2. **Einrichtung auswählen**
+   > Einrichtungen für den Export auswählen. Ausgewählte Einrichtungen werden in der Karte visuell hervorgehoben.
+   *Wenn Sie die Einrichtung ausgewählt haben und unter **12** einen Fachdatensatz zur Auswertung ausgewählt haben, werden diese ebenfalls auf der Karte angezeigt. (s. Abbildung 37)*
+   ![Abbildung 37: Fachdaten zur Auswertung auf der Karte](https://user-images.githubusercontent.com/43250699/159693761-ebea6f7d-49a4-4cca-9f2a-3f6ef71503c8.JPG)
+*Abbildung 37: Weitere Fachdaten auf der Karte*
+3. **Einrichtung fokussieren**
+   > Durch einen Klick auf das Symbol zoomt die Karte zu der betreffenden Einrichtungen. Die Einrichtung wird in der Karte visuell hervorgehoben.
+4. **Einrichtung ein-/ausblenden**
+   > Einrichtungen können in der Karte ein- und ausgeschaltet werden. Ausgeschaltete Einrichtungen werden bei allen anderen CoSI-Funktionen nicht berücksichtigt.
+5. **Einrichtungsattribute**
+   > - Einrichtungsname, Adresse, Layer, Typ und Thema werden dem Datensatz direkt entnommen
+   > - Die Gebietszuweisung wird dynamisch für die aktuelle Verwaltungsebene generiert
+   > - Symbole zeigen an, wenn eine Einrichtung simuliert oder modifiziert wurde.
+6. **Einträge sortieren**
+   > Alle Spalten können, durch mehrmaliges Klicken auf die Kopfzeile, auf- und absteigend sortiert werden (alphabetisch oder nach Wert). Dabei kann für max. 2 Spalten erfolgen (z.B. 1. nach Typ und 2. nach numerischem Wert).
+7. **Numerische Attribute**
+   > Alle Attribute einer Einrichtung, die Zahlwerte abbilden (welche auch für die [Versorgungsanalyse](#markdown-header-versorgungsanalyse) verwendet werden können) werden in einer eigenen Spalte dargestellt. Die Farbe des Balkens richtet sich dabei nach dem Dezil des Wertes in der Liste aller Einrichtungen. Die Länge des Balkens ist proportional zum Höchstwert.
+8. **Durchschnittliche Anbindung (in m)**
+   > Die Anbindungsspalte zeigt die durchschnittliche Laufdistanz (in m) zu den jeweils nächstgelegenen Einrichtungen der ausgewählten Typen. Durch einen Klick auf den Wert kann die entsprechende Aufschlüsselung geöffnet werden (s. 12.).
+9.  **Such- und Filterfunktionen**
+      > Hier können Sie die Liste nach Themen filtern oder im Freitext die Einrichtungen durchsuchen..
+10. **Einrichtungsdiagramme erstellen**
+      > Erzeugt für alle verfügbaren Datenspalten ein Balkendiagramm, in dem die Werte der jeweiligen Einrichtungen und ihre Verteilung über die ausgewählten Gebiete.
+      - **10.1 Layer zusammenziehen**
+         > Wenn Sie diese Checkbox aktivieren, werden bei "Einrichtungsdiagramme erstellen"  Einrichtungen unterschiedlichen Typs zusammengezogen, wenn sie identische Attribute haben. *Beispiel: Wenn Sie Supermärkte und Drogerien ausgewählt haben, teilen sich beide das Attribut "Verkaufsfläche in m² und werden dementsprechend im Graphen zusammen dargestellt".
+11. **Tabelle exportieren**
+      > Die ausgewählten Einträge als XLSX für Excel exportieren. Über aus Auswahlfeld *Detailansicht exportieren* können alle bzw. in der Detailansicht ausgewählte Attribute eines Einrichtungstyps exportiert werden. Ist keine Auswahl getroffen, werden alle Einrichtungen exportiert.
+12. **Standortbewertung: Themenauswahl**
+      > Erlaubt die Auswahl beliebiger weiterer Fachdatenthemen für eine Standortbewertung. Bei Fachdaten, welche Punkte oder Flächen in der Karte repräsentieren (i.d.R. Einrichtungen) wird der Ort des Typs gefunden, welcher jeder Einrichtung in der Tabelle am nächsten ist und die Laufdistanz in Metern angegeben. Bei er Auswahl mehrerer Themen wird ein gewichteter Mittelwert gebildet (s. 8./13.). Andere Themen, z.D. Lärmkarte, Luftqualität, etc.) für die Bewertung befinden sich im Aufbau.
+13. **Standortbewertung: Gewichtung**
+      > Erlaubt die Gewichtung der Themen für die Standortbewertung. Ein Thema mit Wert 0,5 wird somit nur halb so stark in den Mittelwert einbezogen, wie eines mit dem Wert 1.
+14. **Standortvisualisierung für alle ausgewählten**
+      > Erstellt ein Balkendiagramm mit der Aufschlüsselung für alle ausgewählten Einrichtungen. Wenn Sie mehr als zwei Fachdatensätze für die Auswertung (s. 12) ausgewählt haben, dann wird ein Radardiagramm generiert. Wenn Sie keine Einrichtungen ausgewählt haben, werden *alle* verfügbaren Einrichtungen in das Diagramm mit einbezogen.
+15. **Histogramm**
+      > Erzeugt ein Histogramm, dass die Verteilung der ausgewählten Einrichtungen abbildet.
+
+### Gebietsauswahl
+___
+Beim Starten von CoSI wird zunächst ein Bezugsrahmen festgelegt sowie ein Planungsgebiet zusammengestellt und bestätigt.
+
+![Abbildung 38: Gebietsauswahl](https://user-images.githubusercontent.com/43250699/142933538-fd2e1dbc-8bef-444a-bc7f-66d0066a457e.png)
+
+*Abbildung 38: Das Werkzeug "Gebiet auswählen"*  
+
+1. **Bezugsrahmen wählen**
+   > Über ein Dropdown Menü können **"Hamburg"**, **"Bezirke"**, **"Stadtteile"** oder **"Statistische Gebiete"** ausgewählt werden – dies legt die Verwaltungseinheit fest, für die die statistischen Daten angezeigt und Auswertungen erstellt werden sollen. Alle Funktionen sind auf den jeweiligen Gebietsebenen verfügbar. Die Zahl der verfügbaren Indikatoren kann jedoch variieren. Der Bezugsrahmen bestimmt auch die zu ladenden übergeordneten Referenzgebiete: Stadtteile für stat. Gebiete, Bezirke für Stadtteile.
+2. **2.	Gebiete aus- und abwählen**
+    - Die einzelnen Verwaltungseinheiten (statistisches Gebiet oder Stadtteil) anklicken (nochmaliges Klicken deaktiviert die Auswahl wieder), die Grenzen werden blau markiert. 
+    - Auf dem Stift rechts neben "Auswahl zurücksetzen" klicken. Es wird ein Zeichentool aktiviert; damit kann der Nutzende ein Rechteck über das Auswahlgebiet ziehen um dieses auszuwählen.
+    - Beide vorher beschriebenen Möglichkeiten sind auch miteinander kombinierbar, wobei die Reihenfolge unerheblich ist. Die Nutzenden können also zuerst einzelne Verwaltungseinheiten auswählen und dann das Zeichentool aktivieren, um damit weitere Verwaltungseinheiten dazu zuschalten oder auch andersherum vorgehen.
+3. **Puffer festlegen**
+   > Es kann ein Pufferradius in Metern festgelegt werden. Für den werden ausgewählte Fachdaten um das Planungsgebiet herum angezeig. Dies berücksichtigt die Tatsache, dass das Einzugsgebiet von einer Einrichtung nicht unbedingt übereinstimmt mit den Gebietsgrenzen der Verwaltungseinheit innerhalb derer sich die Einrichtung befindet. Die Analysefunktionen werden davon nicht beeinflusst.
+4. **Auswahl bestätigen**
+   > Lädt die Daten für das ausgewählte Planungsgebiet vom Server und legt den Bereich für die anzuzeigenden Fachdaten fest. Auch eine leere Auswahl kann bestätigt werden. Dann werden keine Daten geladen und Fachdaten für den gesamten Stadtbereich angezeigt. (s. unten)
+5. **Auswahl zurücksetzen**
+   > Setzt das aktuelle Planungsgebiet zurück. Im direkten Anschluss kann ein neues Planungsgebiet zusammengestellt und bestätigt werden.
+6. **Auswahlrechteck zeichnen**
+   > Ein Startpunkt wird gesetzt und ein Rechteck bis zum Endpunkt über das relevante Gebiet gezogen. Alle Verwaltungseinheiten, die innerhalb des Rechtecks oder an den Linien des Rechtecks liegen, werden in das Planungsgebiet aufgenommen.
+7. **Zusätzliche Hilfsebenen ein/- ausblenden**
+   > Mithilfe der Checkbox können zusätzliche Layer zur Orientierung ein- und ausgeblendet werden. Der Layer kann ebenfalls über den Themenbaum ein- und ausgeschaltet werden. Zu den Hilfsebenen gehören aktuell die "Sozialräume" und die "RISE Fördergebiete".
+
+Das festgelegte Planungsgebiet kann jederzeit angepasst werden:  
+
+   - Das Gebiet kann *erweitert* werden: sowohl per Klick als auch per Zeichentool.
+   - Das Gebiet kann *verkleinert* werden: per Klick können markierte Verwaltungseinheiten wieder abgewählt werden.
+   - Das Gebiet kann komplett zurückgesetzt werden: per Klick auf "Auswahl zurücksetzen".
+
+Es muss nicht in jedem Nutzungskontext immer ein Planungsgebiet als erstes festgelegt werden; bestimmte Analysetools wie z.B. die [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) und [Vergleichbare Gebiete](#markdown-header-vergleichbare-gebiete) können verwendet werden ohne dass vorher ein Gebiet festgelegt wird.  
+
+Für solche Fälle gelten folgende Hinweise:  
+
+   - Es werden keine Datensätze geladen, d.h. eine Anzeige der regionalstatistischen Daten ist nicht möglich. Auch werden keine regionalstatistischen Daten im Dashboard angezeigt.
+   - Beim Zuschalten von Themen aus den Fachdaten könnte der Ladevorgang länger dauern.
+   - Möglicherweise funktioniert die [Erreichbarkeitsanalyse](#markdown-header-erreichbarkeitsanalyse) für eine sehr große Zahl von Einrichtungen nicht zuverlässig.
+
+### Kartenanalyse regionalstatistischer Daten
+___
+Grundlage aller CoSI-Analysefunktionen sind neben den Fachdaten-Layern die Datensätze der StaNord-Datenbank, welche für die verschiedenen Verwaltungseinheiten als Zeitreihen vorliegen (s. [Regionalstatistische Daten](#markdown-header-regionalstatistische-daten)). Diese können für das ausgewählte Planungsgebiet direkt und dynamisch in der Karte visualisiert werden. Die *Farbskalierung und Legende* werden hierbei *dynamisch* aus der Auswahl generiert. Es wird immer der *aktuellste Datensatz* dargestellt.
+Das Werkzeug zur Visualisierung regionalstatistischer Daten ermöglicht die Auswahl von regionalstatistischen Datensätzen, die für die ausgewählten Bezirke verfügbar sind. Es kann nur verwendet werden, wenn bereits Gebiete über das Gebietsauswahlwerkzeug ausgewählt wurden.
+Das Werkzeug kann die ausgewählten Datensätze auf der Karte visualisieren und generiert eine dynamische Legende. Des Weiteren können Datensätze für mehrere Jahre ausgewählt und auf Wunsch in hintereinander laufender Folge animiert werden.  
+
+
+![Abbildung 39: Fenster zur Kartenanalyse statistischer Daten](https://user-images.githubusercontent.com/43250699/159270688-1d5e1b8f-799b-4d31-8b8e-247b0fd45293.png)  
+
+*Abbildung 39: Fenster zur Kartenanalyse statistischer Daten*  
+
+1.	**Werkzeug minimieren/ maximieren**  
+   > Über den Button kann das Fenster des Werkzeugs minimiert bzw. wieder maximiert werden.
+2.	**Daten auf Karte visualisieren**  
+   > Über den Button kann die Kartenvisualisierung der regionalstatistischen Daten ein- und wieder ausgeblendet werden.
+3.	**Vor/ Zurück**  
+   > Mit den Vor- und Zurückbuttons können die regionalstatistischen Datensätze fließend durchgeschaltet werden.
+4.	**Jahresauswahl**  
+   > Hier können Sie das Jahr auswählen, für den der regionalstatistische Datensatz visualisiert wird. Standardmäßig ist das aktuellste, verfügbare Jahr ausgewählt.
+5.	**Referenzjahr auswählen**  
+   > Hier können Sie ein Vergleichsjahr auswählen. Die prozentuale Differenz zum ersten, ausgewählten Jahr wird dann ebenfalls auf der Karte eingeblendet.
+6.	**Auswahlfeld für die verfügbaren regionalstatistischen Datensätze**     
+   > Erlaubt es, die relevanten regionalstatistischen Datensätze für die ausgewählten Gebiete und den Bezugsmaßstab durchzuschalten und diese mit Farbskala auf der Karte darzustellen. Die Auswahl zeigt immer die neuesten verfügbaren Daten.
+7.	**Legende**  
+   > Die Legende für die farbliche Visualisierung der Karte. Wenn Sie mit der Maus über einen der Marker hovern, wird der Wert des zugehörigen, ausgewählten Gebiets angezeigt. Rechts und links werden der niedrigste und der höchste Wert noch einmal zusätzlich dargestellt.
+8.	**Info**  
+   > Über den Button öffnen Sie diese Anleitung.
+9.	**Playbutton**  
+   > Mit dem Play-Button starten Sie die Animation der Datensätze über alle verfügbaren Jahre. In dem danebenstehenden Feld können Sie einen Wert eintragen, der angibt, wie schnell die einzelnen Animationsschritte durchlaufen werden (in Sekunden).
+10. **Daten als Chart visualisieren**  
+   > Lädt die verfügbaren regionalstatistischen Daten der ausgewählten Gebiete in das Visualisierungs-Werkzeug und erzeugt dort einen Graphen.
+11. **Gebietsnamen ein-/ ausblenden**  
+   > Über den Button können Sie die Namen der ausgewählten Gebiete auf der Karte ein- und wieder ausblenden.
+12. **Hilfsbutton**  
+
+
+### Ergebnisverzeichnis
+Die Ergebnisverzeichnis unterstützt in einigen Werkzeugen die Verwaltung mehrerer Datensätze, die ihr zugrunde liegenden Funktionen sind aber standardisiert und werden im Folgenden näher erläutert. 
+  
+
+
+![Abbildung 40: Ergebnisverzeichnis des Werkzeugs "Vergleichbare Gebiete ermitteln"](https://user-images.githubusercontent.com/43250699/157007454-80d78c08-e141-4384-85ea-435a93ca3356.png)
+
+*Abbildung 40: Ergebnisverzeichnis des Werkzeugs "Vergleichbare Gebiete ermitteln"*
+  
+1. **Direktanwahl eines Datensatzes**
+   > Wählen Sie direkt den Datensatz mit dem jeweiligen Index an. Sie können hier auch ablesen, wieviele Datensätze sie aktuell in dem jeweiligen Werkzeug haben.
+2. **Vor/ Zurück**
+   > Durch Klicken auf einen der Pfeile wird der nächste/ vorherige Datensatz ausgewählt.
+3. **Neuen Datensatz hinzufügen** 
+   > Je nach Werkzeug wird diese Funktion nicht immer genutzt, sollte der Button aber vorhanden sein, können Sie mit seiner Hilfe einen neuen Datensatz anlegen..
+4. **Export**
+   > Mit diesem Button können Sie die Ergebnisse des jeweiligen Datensatzes exportieren und speichern. Es können mehrere dieser Buttons existieren, wenn mehrere Formate zum Export angegeben werden.
+5. **Alle exportieren**
+   > Sie führen die Exportfunktion für alle Datensätze durch. Sollten mehrere Dateitypen angeboten werden, werden alle heruntergeladen. Eventuell müssen Sie in ihrem Browser den Download für mehrere Dateien genehmigen.
+6. **Datensatz entfernen**
+   > Mit diesem Button löschen Sie einen Datensatz und alle dazugehörigen Ergebnisse.
+7. **Alle entfernen**
+   > Mit diesem Button entfernen Sie alle Datensätze und setzen das Werkzeug zurück.
