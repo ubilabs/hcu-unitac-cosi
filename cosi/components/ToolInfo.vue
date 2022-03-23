@@ -9,7 +9,7 @@ export default {
             default: "Werkzeuginformationen (Link öffnen)"
         },
         url: {
-            type: String || Object,
+            type: [String, Object],
             default: null
         },
         infoText: {
