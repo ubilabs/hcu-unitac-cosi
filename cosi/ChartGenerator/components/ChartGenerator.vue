@@ -473,6 +473,7 @@ export default {
         canvas {
             width:400px;
             height:400px;
+            min-height:300px;
         }
 
         #chart_panel {

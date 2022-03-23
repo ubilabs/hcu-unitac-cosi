@@ -1,4 +1,4 @@
-## Versorgungsanalyse
+## Dienste/ Versorgungsanalyse
 ___
 Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet werden. Die Datensätze können entweder regionalstatistische Daten oder Einrichtungsdaten aus dem Menü "Themen/ Fachdaten" sein. Damit die Versorgungsanalyse verwendet werden kann, müssen mindestens zwei Datensätze geladen worden sein.
 
@@ -22,19 +22,22 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
 8. **Die gesamte Auswahl zurücksetzen**
 9. **Berechnen**
 
-![Abbildung 2: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/142927798-bbd05b05-8a7c-46cc-8790-20a263f04f59.jpg)
+![Abbildung 2: Versorgungsanalyse, Ergebnisse](https://user-images.githubusercontent.com/43250699/157009202-4cfeb5ff-e519-4305-ba4f-4ecde4f60bd0.png)
 
 *Abbildung 2: Versorgungsanalyse, Ergebnisse*
 
-1. **Als Excel Datei downloaden**
-2. **Als GeoJSON downloaden**
-3. **Daten als Chart visualisieren**
+1. **Pagination**
+   > Die [Pagination](./pagination.md) verwaltet alle von Ihnen erstellen Datensätze und bietet bestimmte standardisierte Funktionen wie Downloads und ähnliches an. Sie finden mehr Informationen dazu [hier](./pagination.md).
+2. **Daten als Chart visualisieren**
    > Die Daten werden zum [Chartgenerator](./chartgenerator.md) geladen und dort als Graphen visualisiert.
-4. **Auf der Karte visualisieren**  
-      - Die Daten werden auf der Karte visualisiert in unterschiedlichen Farben visualisiert.
-      - **4.1** Wählen Sie die Tabellenspalte aus, die auf der Karte visualisiert werden soll.
-      - **4.2** Wählen Sie das Jahr aus, für das die regionalstatistischen Daten zur Berechnung herangezogen werden sollen. Wählen Sie hier ein anderes Jahr aus, aktualisieren sich auch die berechneten Ergebnisse in der Tabelle entsprechend.
-5. **Ergebnistabelle**  
+3. **Auf der Karte visualisieren**  
+   > Die Daten werden mit Hilfe der [Kartenvisualisierung](./kartenvisualisierung.md) auf der Karte visualisiert und je nach Wert in unterschiedlichen Farben dargestellt.
+4. **Tabellenspalte für erweiterte Funktionen auswählen**
+   > Hier können Sie Tabellenspalte auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
+   
+5. **Jahr auswählen**
+   > Hier können Sie das Jahr auswählen, für das die entsprechenden Daten geladen worden sind.
+6. **Ergebnistabelle**  
       - **Gebiet:** Die ausgewählten Gebiete, für die die Ergebnisse berechnet wurden. Hier finden sich auch die Indikatoren für die Zeilen "Gesamt" und "Durchschnitt".
       - **Auswahlfeld (1):**  
          Der Wert für den in Auswahlfeld (1) gewählten Datensatz.
@@ -44,3 +47,6 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
          Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
       - **Bedarfsdeckung:**  
          Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.
+      - **6.1 Pagination der Ergebnistabelle**
+      
+         Wenn in Ihrer Ergebnistabelle mehr als 10 Ergebnisse angezeigt werden, können Sie hier entsprechend die Daten durchschalten.
