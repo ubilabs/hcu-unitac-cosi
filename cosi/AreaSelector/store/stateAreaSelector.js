@@ -23,8 +23,8 @@ const state = {
     geometry: null,
     feature: null,
     readmeUrl: {
-        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.en.md",
-        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.de.md"
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.en.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/areaSelector.de.md"
     }
 };
 

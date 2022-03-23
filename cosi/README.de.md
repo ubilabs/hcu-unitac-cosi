@@ -904,9 +904,9 @@ ____
 3. **Gebietsnamen ein-/ausblenden**
    > *(Funktioniert nur bei aktiver Kartenvisualisierung)*
 4. **Für Feld A auswählen**
-   > Selektiert das Thema als **Feld A** für Berechnungen und Korrelation (siehe 7, 8, 9, 10, 12)
+   > Selektiert das Thema als **Feld A** für Berechnungen und Korrelation (siehe Burgermenu/ Berechnen)
 5. **Für Feld B auswählen**
-   > Selektiert das Thema als **Feld B** für Berechnungen und Korrelation (siehe 7, 8, 9, 10, 12)
+   > Selektiert das Thema als **Feld B** für Berechnungen und Korrelation (siehe Burgermenu/ Berechnen)
 6. **Auswahl aufheben**
    > Setzt die Felder **A** und **B** zurück
 
@@ -914,7 +914,7 @@ ____
 *Abbildung 34: Statistische Datenübersicht - Burgermenp*
 
 1. **Grundlegende Mathematische Funktionen**
-   > Verrechnet die Werte für **A** und **B** für jede Gebietsspalte und fügt das Ergebnis der Tabelle an. Die durchzuführende Operation wird in Klammern hinter dem Menüpunkt angezeigt, bspw. (a + B).
+   > Verrechnet die Werte für **A** und **B** für jede Gebietsspalte und fügt das Ergebnis der Tabelle an. Die durchzuführende Operation wird in Klammern hinter dem Menüpunkt angezeigt, bspw. (A + B).
 2. **Ausgewählte Aufsummieren**
    > Addiert die Werte aller ausgewählten Spalten auf. Das Ergebnis der Berechnung finden Sie ganz unten im Dashboard unter "Berechnungen".
 3. **Ausgewählte Dividieren**
