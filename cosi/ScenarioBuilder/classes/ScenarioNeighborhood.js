@@ -1,4 +1,3 @@
-// import storeOriginalDistrictStats from "../utils/storeOriginalDistrictStats";
 import getAvailableYears from "../../utils/getAvailableYears";
 import getIntersectionCoverage from "../../ResidentialSimulation/utils/getIntersectionCoverage";
 import {getAllContainingDistricts} from "../../utils/geomUtils";

@@ -8,45 +8,20 @@ import {
 } from "../components/util.js";
 import {Worker} from "../../../service/isochronesWorker";
 import service, {setWorker, setWorkerFactory} from "../../../service/index";
-import features from "./featuresPoint.json";
+// import features from "./featuresPoint.json";
 import featuresRegion from "./featuresRegion.json";
 import GeoJSON from "ol/format/GeoJSON";
-import * as turf from "@turf/turf";
+// import * as turf from "@turf/turf";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import * as Proj from "ol/proj.js";
-
-/**
-* @param {object} actualFeatures actual features
-* @param {object} expFeatures expected features
-* @returns {void}
-*/
-function expectFeaturesEqual (actualFeatures, expFeatures) {
-    expect(actualFeatures.length, expFeatures.length);
-
-    actualFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
-    expFeatures.sort((a, b) => a.getGeometry().getCoordinates()[0].length > b.getGeometry().getCoordinates()[0].length ? 1 : -1);
-    const parser = new GeoJSON();
-
-    // console.log(
-    //     actualFeatures.map(f => f.getGeometry().getCoordinates()[0])
-    // );
-
-    for (let i = 0; i < actualFeatures.length; i++) {
-        const f1 = turf.polygon(actualFeatures[i].getGeometry().getCoordinates()),
-            f2 = turf.polygon(expFeatures[i].getGeometry().getCoordinates());
-
-        expect(turf.booleanEqual(f1, f2)).to.be.true;
-        expect(parser.writeFeature(actualFeatures[i]).properties).to.deep.equal(parser.writeFeature(expFeatures[i]).properties);
-    }
-}
 
 /**
  * Mock the ORS url
  * @returns {String} the URL
  */
 function baseUrl () {
-    return "https://api.openrouteservice.org/v2/";
+    return "https://csl-lig.hcu-hamburg.de/ors/v2/";
 }
 
 const rootGetters = {
@@ -59,7 +34,6 @@ before(() => {
 });
 
 describe("createIsochrones", () => {
-
     it("createIsochrones point", async () => {
         const commitStub = sinon.stub(),
             ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
@@ -73,7 +47,6 @@ describe("createIsochrones", () => {
         sinon.assert.callCount(commitStub, 3);
         expect(ret.length).to.equal(3);
         expect(service.store.state.progress).to.equal(0);
-        expectFeaturesEqual(ret, new GeoJSON().readFeatures(features));
     });
 
     it("should cancel first call", async () => {
@@ -115,7 +88,6 @@ describe("createIsochrones", () => {
                     distance: 10
                 });
 
-        // expectFeaturesEqual(ret, new GeoJSON().readFeatures(featuresRegion)); turf does not like the resulting polygons..
         expect(new GeoJSON().writeFeatures(ret)).to.be.equal(JSON.stringify(featuresRegion));
     });
 

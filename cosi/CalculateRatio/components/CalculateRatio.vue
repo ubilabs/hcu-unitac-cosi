@@ -715,7 +715,9 @@ export default {
          */
         loadToChartGenerator () {
             const graphObj = {
-                    id: "calcratio",
+                    id: "calcratio-" + this.selectedFeatures.map(district => {
+                        return district.id_;
+                    }).join("-") + "-" + this.selectedFieldA.id + "-" + this.paramFieldA.name + "-" + this.selectedFieldB.id + "-" + this.paramFieldB.name,
                     name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name + " (" + this.$t("additional:modules.tools.cosi.calculateRatio.title") + ")",
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
@@ -729,8 +731,10 @@ export default {
 
                 dataArray = [];
 
-            this.resultsClone.forEach(result => {
-                dataArray.push(result.data);
+            this.dataSets[this.activeSet].results.forEach(result => {
+                if (result) {
+                    dataArray.push(result.data);
+                }
             });
 
             this.availableYears.forEach(year => {

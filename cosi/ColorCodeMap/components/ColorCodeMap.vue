@@ -76,8 +76,8 @@ export default {
         }
     },
     watch: {
-        selectedFeatures () {
-            if (this.visualizationState) {
+        selectedFeatures (newValue, oldValue) {
+            if (newValue.length < oldValue.length) {
                 this.$nextTick(() => {
                     this.updateSelectedDistricts();
                 });
@@ -425,7 +425,9 @@ export default {
          */
         loadToChartGenerator () {
             const graphObj = new ChartDataset({
-                    id: "ccm",
+                    id: "ccm" + this.selectedFeatures.map(district => {
+                        return district.id_;
+                    }).join("-"),
                     name: [this.label] + " - " + this.dataCategory + " (" + this.$t("additional:modules.tools.colorCodeMap.title") + ")",
                     type: ["LineChart", "BarChart", "PieChart"],
                     color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
@@ -439,16 +441,11 @@ export default {
                 }),
                 years = this.graphData[0].data.reduce((availableYears, val, i) => val ? [...availableYears, this.availableYears[i]] : availableYears, []);
 
-            years.forEach(year => {
-                graphObj.data.labels.push(year);
-            });
-
-            this.graphData.forEach(dataset => {
-                dataset.data = dataset.data.filter(x => Boolean(x)).reverse();
-                graphObj.data.datasets.push(dataset);
-            });
-
-            graphObj.data.labels.reverse();
+            graphObj.data.labels = years.reverse();
+            graphObj.data.datasets = this.graphData.map(dataset => ({
+                label: dataset.label,
+                data: [...dataset.data].filter(x => Boolean(x)).reverse()
+            }));
 
             this.channelGraphData(graphObj);
         },
@@ -624,6 +621,8 @@ export default {
                     </v-icon>
                 </button>
                 <button
+                    :disabled="!visualizationState"
+                    :class="{disabled: !visualizationState}"
                     class="map_button"
                     :title="$t('additional:modules.tools.colorCodeMap.showDistrictNames')"
                     @click="setShowMapNames(!showMapNames)"
@@ -695,6 +694,10 @@ export default {
                     span {
                         top:0px;
                         line-height:26px;
+                    }
+
+                    &.disabled {
+                        opacity:0.5;
                     }
                 }
 

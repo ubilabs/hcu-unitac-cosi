@@ -7,10 +7,9 @@ import generateGraphData from "../utils/generateGraphData";
  */
 function addDatasets ({commit, getters}, newDatasets) {
     const
-        datasets = [...getters.datasets];
-    let
-        chartConfigs = [...getters.chartConfigs],
-        chartConfig;
+        datasets = [...getters.datasets],
+        chartConfigs = [...getters.chartConfigs];
+    let chartConfig;
 
     for (const dataset of newDatasets) {
         if (!dataset.cgid) {
@@ -23,7 +22,7 @@ function addDatasets ({commit, getters}, newDatasets) {
             const index = datasets.indexOf(checkDouble);
 
             datasets.splice(index, 1);
-            chartConfigs = chartConfigs.filter(x => x.cgid !== dataset.cgid);
+            chartConfigs.splice(index, 1);
         }
 
         if (dataset.target === "" || dataset.target === undefined || dataset.target === null) {
