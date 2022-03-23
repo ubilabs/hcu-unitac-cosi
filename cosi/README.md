@@ -72,7 +72,6 @@ ___
       - [Wohnungsbauquartiere anlegen](#markdown-header-wohnungsbauquartiere-anlegen)
     - [Dienste](#markdown-header-dienste)
       - [Geodaten Importieren](#markdown-header-geodaten-importieren)
-      - [Zweites Fenster](#markdown-header-zweites-fenster)
       - [Sitzung Speichern/Laden](#markdown-header-sitzung-speichernladen)
       - [Vorlagen](#markdown-header-vorlagen)
     - [Dashboard](#markdown-header-dashboard)
@@ -172,9 +171,8 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
       3. Mousehover ein-/ ausschalten
       4. [Geodaten Importieren](#markdown-header-geodaten-importieren)
       5. WMS hinzufügen
-      6. [Zweites Fenster öffnen](#markdown-header-zweites-fenster)
-      7. [Sitzung speichern/laden](#markdown-header-sitzung-speichern)
-      8. [Vorlagen](#markdown-header-vorlagen)
+      6. [Sitzung speichern/laden](#markdown-header-sitzung-speichern)
+      7. [Vorlagen](#markdown-header-vorlagen)
 
 5. **Dashboard**
       1. [Statistische Datenübersicht](#markdown-header-statistische-datenübersicht)
@@ -189,9 +187,8 @@ CoSI bietet verschiedene Module (nachfolgend oft auch als "Werkzeuge" oder "Tool
 12. **Herauszoomen**
 13. **Vollbildansicht aktivieren/ deaktivieren**
 14. **Zurück zur Startansicht**
-15. **Barrierefreie Ansicht** (fette Linien)
-16. **[Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)**
-17. **Tooltip** (sog. Mousehover)
+15. **[Kartenanalyse regionalstatistischer Daten](#markdown-header-kartenanalyse-regionalstatistischer-daten)**
+16. **Tooltip** (sog. Mousehover)
    > Zeigt das Gebiet und andere Elemente wie Tooltipps unter dem Mauszeiger an. Kann unter "Dienste" via "Mousehover ein-/ausschalten" deaktiviert werden.
 18. **Ausgewählte Gebiete**
    > Ausgewählte Gebiete werden dargestellt mit einer blauen Umrandung.
@@ -742,12 +739,11 @@ ___
 4. **[Geodaten Importieren](#markdown-header-geodaten-importieren)**
 5. **WMS hinzufügen**
    > Beliebige andere Kartendienste können aus dem FHH-Atlas oder anderen Quellen über die Webadresse (URL) des Dienstes eingebunden werden. Die URLs entnehmen Sie z.B. dem Metadatenkatalog der FHH oder dem Geoportal unter dem Info-Button im Themenbaum (s. Themenbaum).
-6. **[Zweites Fenster öffnen](#markdown-header-zweites-fenster-öffnen)**
-7. **[Sitzung speichen / laden](#markdown-header-sitzung-speichern)**
+6. **[Sitzung speichen / laden](#markdown-header-sitzung-speichern)**
    > Die aktuelle Sitzung mit aktiven Daten, gewählten Gebieten und Filtern speichern. Sitzungen können im Browser gespeichert werden. Diese können beim Programmstart wieder aus dem Verlauf geladen werden.
    Wenn Browserverlauf oder Cache geleert werden, geht dieser Speicherstand verloren! Es kann immer nur eine Sitzung parallel vorgehalten werden.   
    Sitzungen als Datei auf dem Rechner speichern. Diese können jederzeit wieder geladen oder mit anderen CoSI Nutzer:innen geteilt werden.
-8. **[Vorlagen](#markdown-header-vorlagen)**
+7. **[Vorlagen](#markdown-header-vorlagen)**
 
    >*Hinweis: Manuell hinzugefügte Kartendienste (WMS) und erstellte Berechnungen bleiben nicht erhalten. Das Speichern aller Arbeitsergebnisse ist Teil des aktuell laufenden Weiterentwicklungsprojekts.*
 
@@ -815,9 +811,6 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
    - **9.1** Für die bessere Visualisierung in einer späteren Tabelle, können Sie hier dem numerischen Wert einen sinnvollen Namen geben, sollte das Attribut nicht sinnvoll benannt sein. So könnten Sie beispielsweise "budget_21" in "Verfügbare Mittel 2021" umbenennen.
    - **9.2** Hier sehen Sie die ID des Attributs und dahinter in Klammern einen Beispielwert aus dem ersten Eintrag.
    - **9.3** Mit dieser Checkbox fügen Sie das Attribut zu den numerischen Werten hinzu. 
-
-### Zweites Fenster
-Über den Reiter "Zweites Fenster öffnen" können Sie einen zweiten Browser-Tab mit dem Dashboard öffnen. Ihnen stehen dort alle Funktionen wie im ursprünglichen Fenster zur Verfügung. Sie können das zweite Fenster von Ihrem Browser durch Ziehen des Tabs (der Registerkarte) ablösen, um es auf einen zweiten Bildschirm zu bewegen. Wenn der InfoScreen (zweites Fenster) geöffnet ist, können Sie das Dashboard im Hauptfenster nicht mehr öffnen. Schließen Sie das Fenster, kehrt das Dashboard ins Hauptfenster zurück.
 
 ### Sitzung Speichern/Laden 
 *(Befindet sich in Entwicklung)*

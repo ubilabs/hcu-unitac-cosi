@@ -8,11 +8,11 @@ import * as Proj from "ol/proj.js";
  * @param {"NOMINATIM" | "BKG"} [type="NOMINATIM"] - which geocoder to use
  * @return {String} the address from gazetter
  */
-export function reverseGeocode (coords, portalCrs, type = "NOMINATIM") {
+export async function reverseGeocode (coords, portalCrs, type = "NOMINATIM") {
     const _coords = Proj.transform(coords, portalCrs, "EPSG:4326");
 
     try {
-        return type === "BKG" ? fetchRoutingBkgGeosearchReverse(_coords) : fetchRoutingNominatimGeosearchReverse(_coords);
+        return type === "BKG" ? await fetchRoutingBkgGeosearchReverse(_coords) : await fetchRoutingNominatimGeosearchReverse(_coords);
     }
     catch (e) {
         console.warn("Could not fetch address, please check config of routing/reverseGeocode", e);
