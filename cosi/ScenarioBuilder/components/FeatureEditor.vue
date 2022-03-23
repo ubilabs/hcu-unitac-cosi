@@ -9,6 +9,12 @@ export default {
     components: {
         Modal
     },
+    props: {
+        disabled: {
+            type: Boolean,
+            default: false
+        }
+    },
     data: () => ({
         editDialog: false,
         editModal: false,
@@ -46,6 +52,11 @@ export default {
     },
     methods: {
         openEditDialog (evt) {
+            // escape if the feature editor has been disabled from the outside
+            if (this.disabled) {
+                return;
+            }
+
             this.reset();
 
             this.map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
@@ -67,11 +78,13 @@ export default {
                 this.selectedFeature.feature = this.featureSelectionList[0].feature;
                 this.selectedFeature.properties = this.featureSelectionList[0].properties;
             }
-            if (this.activeScenario) {
-                this.editDialog = true;
-            }
-            else {
-                this.noScenarioWarning = true;
+            if (this.featureSelectionList.length > 0) {
+                if (this.activeScenario) {
+                    this.editDialog = true;
+                }
+                else {
+                    this.noScenarioWarning = true;
+                }
             }
         },
 
@@ -305,7 +318,7 @@ export default {
                             :key="key"
                             dense
                         >
-                            <template v-if="!isObject(val)">
+                            <template v-if="!isObject(val) && key !== 'isSimulation' && key !== 'isModified'">
                                 <v-col cols="3">
                                     <v-subheader :title="beautifyKey(key)">
                                         {{ beautifyKey(key) }}

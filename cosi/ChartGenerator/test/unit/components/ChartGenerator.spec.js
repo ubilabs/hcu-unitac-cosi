@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import
 {
     config,
-    shallowMount,
+    mount,
     createLocalVue
 } from "@vue/test-utils";
 import ChartGeneratorComponent from "../../../components/ChartGenerator.vue";
@@ -77,10 +77,19 @@ describe("CharGenerator.vue", () => {
                         addSingleAlert: addSingleAlertStub,
                         cleanup: cleanupStub
                     }
+                },
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => sinon.stub()
+                    }
                 }
             },
             state: {
                 configJson: mockConfigJson
+            },
+            getters: {
+                uiStyle: () => true
             }
         });
 
@@ -95,7 +104,7 @@ describe("CharGenerator.vue", () => {
     // eslint-disable-next-line require-jsdoc
     async function mountComponent () {
 
-        const wrapper = shallowMount(ChartGeneratorComponent, {
+        const wrapper = mount(ChartGeneratorComponent, {
             stubs: {Tool, BarChart},
             store,
             localVue,
@@ -135,9 +144,9 @@ describe("CharGenerator.vue", () => {
 
         expect(wrapper.vm.datasets[0].cgid).to.be.equal(chartdata01.cgid);
         expect(wrapper.vm.datasets[0].sub_graph).to.be.equal(0);
-        expect(await wrapper.findComponent(LineChart).classes()).to.be.eql(["current_graph"]);
-        expect(await wrapper.findComponent(PieChart).classes()).to.be.eql([]);
-        expect(await wrapper.findComponent(BarChart).classes()).to.be.eql([]);
+        expect(await wrapper.findComponent(LineChart).classes()).to.be.eql(["graph_sub", "current_graph"]);
+        expect(await wrapper.findComponent(PieChart).classes()).to.be.eql(["graph_sub"]);
+        expect(await wrapper.findComponent(BarChart).classes()).to.be.eql(["graph_sub"]);
     });
 
     it("should switch subgraph on multigraph", async function () {
@@ -148,15 +157,15 @@ describe("CharGenerator.vue", () => {
         await wrapper.findAll(".switch_btn").at(1).trigger("click");
 
         expect(wrapper.vm.datasets[0].sub_graph).to.be.equal(1);
-        expect(await wrapper.findComponent(LineChart).classes()).to.be.eql([]);
-        expect(await wrapper.findComponent(BarChart).classes()).to.be.eql(["current_graph"]);
-        expect(await wrapper.findComponent(PieChart).classes()).to.be.eql([]);
+        expect(await wrapper.findComponent(LineChart).classes()).to.be.eql(["graph_sub"]);
+        expect(await wrapper.findComponent(BarChart).classes()).to.be.eql(["graph_sub", "current_graph"]);
+        expect(await wrapper.findComponent(PieChart).classes()).to.be.eql(["graph_sub"]);
 
         await wrapper.findAll(".switch_btn").at(2).trigger("click");
         expect(wrapper.vm.datasets[0].sub_graph).to.be.equal(2);
-        expect(await wrapper.findComponent(LineChart).classes()).to.be.eql([]);
-        expect(await wrapper.findComponent(BarChart).classes()).to.be.eql([]);
-        expect(await wrapper.findComponent(PieChart).classes()).to.be.eql(["current_graph"]);
+        expect(await wrapper.findComponent(LineChart).classes()).to.be.eql(["graph_sub"]);
+        expect(await wrapper.findComponent(BarChart).classes()).to.be.eql(["graph_sub"]);
+        expect(await wrapper.findComponent(PieChart).classes()).to.be.eql(["graph_sub", "current_graph"]);
     });
 
     it("should create new graph data", async function () {
@@ -217,7 +226,7 @@ describe("CharGenerator.vue", () => {
 
         await wrapper.vm.channelGraphData(data1);
 
-        await wrapper.findAll(".rmv_btn").at(0).trigger("click");
+        await wrapper.findAll(".rm").at(0).trigger("click");
 
         expect(wrapper.vm.datasets.length).to.be.equal(0);
         expect(wrapper.vm.active).to.be.equal(false);

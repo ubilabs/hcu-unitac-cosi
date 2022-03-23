@@ -22,7 +22,9 @@ export default {
             ) {
                 state[key] = {};
                 for (const attr of map[key]) {
-                    const val = this.serializeFeatures(store[key][attr]);
+                    const val = this.hasDeepFeatures(key, attr) ?
+                        this.serializeToolDatasets(store[key][attr]) :
+                        this.serializeFeatures(store[key][attr]);
 
                     state[key][attr] = val;
                 }
@@ -31,8 +33,33 @@ export default {
                 state[key] = this.deepCopyState(map[key], store[key]);
             }
         }
-        
+
         return state;
+    },
+
+    deepSerialize (state) {
+        let _state;
+
+        if (state?.constructor === Object) {
+            _state = {...state};
+
+            for (const key in _state) {
+                _state[key] = this.deepSerialize(_state[key]);
+            }
+
+            return _state;
+        }
+        else if (Array.isArray(state)) {
+            _state = [...state];
+
+            for (const i in state) {
+                _state[i] = this.deepSerialize(_state[i]);
+            }
+
+            return _state;
+        }
+
+        return this.serializeFeatures(state);
     },
 
     serializeFeatures (val) {
@@ -175,6 +202,10 @@ export default {
     },
 
     serializeDrawFeatures (state) {
-        state.Tools.Draw.layer = this.serializeFeatures(state.Tools.Draw.layer.getSource().getFeatures());
+        state.Tools.Draw.layer = this.serializeFeatures(state.Tools.Draw.layer?.getSource().getFeatures() || []);
+    },
+
+    serializeToolDatasets (state) {
+        return this.deepSerialize(state);
     }
 };

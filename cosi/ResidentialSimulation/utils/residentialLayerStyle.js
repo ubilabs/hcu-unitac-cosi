@@ -29,6 +29,13 @@ export default function residentialLayerStyle (feature) {
         }),
         new Style({
             zIndex: 1,
+            fill: new Fill({
+                color: [0, 0, 0, 0]
+            }),
+            stroke: new Stroke({
+                width: 0,
+                color: [0, 0, 0, 0]
+            }),
             text: new Text({
                 font: "12px Calibri, bold, sans-serif",
                 fill: new Fill({
@@ -44,6 +51,13 @@ export default function residentialLayerStyle (feature) {
         }),
         new Style({
             zIndex: 2,
+            fill: new Fill({
+                color: [0, 0, 0, 0]
+            }),
+            stroke: new Stroke({
+                width: 0,
+                color: [0, 0, 0, 0]
+            }),
             text: new Text({
                 font: "12px Calibri, bold, sans-serif",
                 fill: new Fill({
@@ -59,6 +73,13 @@ export default function residentialLayerStyle (feature) {
         }),
         new Style({
             zIndex: 3,
+            fill: new Fill({
+                color: [0, 0, 0, 0]
+            }),
+            stroke: new Stroke({
+                width: 0,
+                color: [0, 0, 0, 0]
+            }),
             text: new Text({
                 font: "16px Calibri, sans-serif",
                 fill: new Fill({

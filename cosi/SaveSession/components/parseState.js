@@ -82,7 +82,11 @@ export default {
             }
         }
         else {
-            this.$store.commit(mutation, this.parseFeatures(state));
+            const _state = this.hasDeepFeatures(mutation, attr) ?
+                this.parseToolDatasets(state) :
+                this.parseFeatures(state);
+
+            this.$store.commit(mutation, _state);
         }
     },
 
@@ -173,7 +177,7 @@ export default {
     },
 
     parseDrawFeatures (state, mutation, key, attr) {
-        this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", "import_draw_layer"));
+        this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", this.$store.state.Tools.Draw.layerId));
         this.$store.dispatch("Tools/Draw/clearLayer");
         const source = this.$store.state.Tools.Draw.layer.getSource();
 
@@ -196,5 +200,23 @@ export default {
             });
             source.addFeature(feature);
         }
+    },
+
+    parseToolDatasets (state) {
+        return this.deepParse(state);
+    },
+
+    deepParse (state) {
+        if (
+            (state?.constructor === Object || Array.isArray(state)) &&
+            !(state.properties?.isOlFeature || state.isOlGeometry)
+        ) {
+            for (const key in state) {
+                state[key] = this.deepParse(state[key]);
+            }
+
+            return state;
+        }
+        return this.parseFeatures(state);
     }
 };

@@ -38,19 +38,8 @@ export default {
             resultNames: null,
             results: null,
             refDistrict: null,
-            dashboard: null,
             facilityNames: [],
-            propertiesMap: {},
-            resultTableHeaders: null,
-            dataSets: [{
-                inputs: {
-                    selectedDistrict: "",
-                    layerFilterModels: [],
-                    selectedLayer: ""
-                },
-                results: []
-            }],
-            activeSet: 0
+            resultTableHeaders: []
         };
     },
     computed: {
@@ -112,9 +101,14 @@ export default {
             });
         },
         activeSet (newValue) {
+            if (!this.dataSets[newValue]) {
+                return;
+            }
+
             this.layerFilterModels = this.dataSets[newValue].inputs.layerFilterModels;
             this.selectedDistrict = this.dataSets[newValue].inputs.selectedDistrict;
             this.resultTableHeaders = this.dataSets[newValue].inputs.resultTableHeaders;
+            this.selectedLayer = this.dataSets[newValue].inputs.selectedLayer;
             const newModels = [];
 
             for (const m of this.layerFilterModels) {
@@ -128,40 +122,13 @@ export default {
         },
         dataSets (newValue) {
             if (newValue.length === 0) {
-                const createSet = {
-                        inputs: {
-                            selectedDistrict: "",
-                            selectedLayer: "",
-                            layerFilterModels: [],
-                            resultTableHeaders: []
-                        },
-                        results: []
-                    },
-                    newModels = [];
-
-                this.layerFilterModels = [];
-                this.resultTableHeaders = [];
-                this.selectedDistrict = "";
-                this.selectedLayer = "";
-
-
-                for (const m of this.layerFilterModels) {
-                    const newModel = {...m};
-
-                    newModels.push(newModel);
-                    this.setLayerFilterModelValue(newModel);
-                }
-                this.layerFilterModels = newModels;
-                this.updateAvailableLayerOptions();
-                this.dataSets.push(createSet);
-                this.activeSet = 0;
+                this.addSet();
             }
         }
     },
 
     created () {
         this.$on("close", this.close);
-        // Radio.on("ModelList", "updatedSelectedLayerList", this.setFacilityNames.bind(this));
     },
 
     async mounted () {
@@ -298,11 +265,9 @@ export default {
                     if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
                         polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
-                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(lr => lr.map(p => [p[0], p[1]]));
                     }
                     else if (feature.getGeometry().getType() === "Polygon") {
                         polygon = turf.polygon(feature.getGeometry().getCoordinates());
-                        // polygon.geometry.coordinates = polygon.geometry.coordinates.map(poly => poly.map(lr => lr.map(p => [p[0], p[1]])));
                     }
 
                     if (
@@ -421,7 +386,7 @@ export default {
             return model;
         },
 
-        setLayerFilterModelValue (model) {
+        async setLayerFilterModelValue (model) {
             const features = this.propertiesMap[model.currentLayerId];
 
             if (this.selectedDistrict) {
@@ -625,7 +590,6 @@ export default {
             this.mapLayer.getSource().clear();
 
             if (this.selectedDistrict) {
-
                 this.refDistrict = this.layer.getSource().getFeatures()
                     .find(feature => feature.getProperties()[this.keyOfAttrName] === this.selectedDistrict);
 
@@ -736,7 +700,7 @@ export default {
         setPrevNext (value) {
             const l = this.dataSets.length;
 
-            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
         },
         downloadAll () {
             this.dataSets.forEach((set, index) => {
@@ -745,24 +709,13 @@ export default {
         },
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
-                this.activeSet -= 1;
+                this.setActiveSet(this.activeSet - 1);
             }
 
             this.dataSets.splice(index, 1);
         },
         removeAll () {
-            this.dataSets = [{
-                inputs: {
-                    selectedDistrict: "",
-                    selectedLayer: "",
-                    layerFilterModels: []
-                },
-                results: []
-            }];
-
-            this.layerFilterModels = [];
-            this.selectedDistrict = "";
-            this.selectedLayer = "";
+            this.setDataSets([]);
 
             const newModels = [];
 
@@ -774,21 +727,6 @@ export default {
             }
             this.layerFilterModels = newModels;
             this.updateAvailableLayerOptions();
-            this.activeSet = 0;
-        },
-        addSet () {
-            const createSet = {
-                inputs: {
-                    selectedLayer: "",
-                    selectedDistrict: "",
-                    layerFilterModels: [],
-                    resultTablesHeaders: []
-                },
-                results: []
-            };
-
-            this.dataSets.push(createSet);
-            this.activeSet = this.dataSets.length - 1;
         }
     }
 };
@@ -882,7 +820,7 @@ export default {
                             next: $t('additional:modules.tools.cosi.queryDistricts.paginationNext'),
                             prev: $t('additional:modules.tools.cosi.queryDistricts.paginationPrev'),
                         }"
-                        @setActiveSet="(n) => activeSet = n"
+                        @setActiveSet="(n) => setActiveSet(n)"
                         @setPrevNext="(n) => setPrevNext(n)"
                         @removeSingle="(n) => removeSet(n)"
                         @addSet="addSet"

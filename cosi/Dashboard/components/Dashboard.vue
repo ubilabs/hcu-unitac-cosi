@@ -20,7 +20,8 @@ import {
     getCulmulativeTotal,
     sumUpSelected,
     divideSelected,
-    deleteStats
+    deleteStats,
+    getCalculationId
 } from "../utils/operations";
 import {generateChartForDistricts, generateChartForCorrelation, generateChartsForItems} from "../utils/chart";
 import {prepareTableExport, prepareTableExportWithTimeline} from "../utils/export";
@@ -103,7 +104,18 @@ export default {
                 A: null,
                 B: null
             },
-            toolOffset: 0
+            toolOffset: 0,
+            calculationData: {
+                id: "",
+                operation: "",
+                category_A: "",
+                category_B: "",
+                selectedCategories: "",
+                field_A: null,
+                field_B: null,
+                selectedItems: []
+            },
+            calculationDialog: false
         };
     },
     computed: {
@@ -470,6 +482,30 @@ export default {
             if (evt) {
                 this.toolOffset = window.innerWidth - evt.targetElement.clientWidth;
             }
+        },
+
+        /**
+         * Opens the dialog to create a new calculation
+         * @param {"add" | "subtract" | "multiply" | "divide" | "sumUpSelected"} operation - the mathmatical operation to execute
+         * @param {{field_A: Object, field_B: Object, selectedItems: Object[] }} [options={}] - fields and selected items list
+         * @returns {void}
+         */
+        openCalcDialog (operation, options) {
+            this.calculationData.operation = operation;
+            this.calculationData.field_A = options.field_A;
+            this.calculationData.field_B = options.field_B;
+            this.calculationData.selectedItems = options.selectedItems;
+
+            if (operation === "sumUpSelected") {
+                this.calculationData.selectedCategories = this.calculationData.selectedItems.map(item => item.category);
+            }
+            else {
+                this.calculationData.category_A = this.calculationData.field_A.category;
+                this.calculationData.category_B = this.calculationData.field_B.category;
+            }
+
+            this.calculationData.id = getCalculationId(this.calculationData);
+            this.calculationDialog = true;
         }
 
     }
@@ -515,6 +551,7 @@ export default {
                                 :items-per-page="-1"
                                 :search="search"
                                 hide-default-footer
+                                fixed-header
                                 dense
                                 show-select
                                 item-key="category"
@@ -571,7 +608,7 @@ export default {
                                                 class="move-col minimize"
                                                 icon
                                                 x-small
-                                                :title="$t('additional:modules.tools.cosi.dashboard.minimize')"
+                                                :title="$t('additional:modules.tools.cosi.dashboard.minimizeCol')"
                                                 @click="minimizeCol(district)"
                                             >
                                                 <v-icon>{{ district.minimized ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
@@ -617,11 +654,11 @@ export default {
                                         :selected-items="selectedItems"
                                         @setField="setField"
                                         @resetFields="resetFields"
-                                        @add="addCalculation('add', {field_A: fields.A, field_B: fields.B})"
-                                        @subtract="addCalculation('subtract', {field_A: fields.A, field_B: fields.B})"
-                                        @multiply="addCalculation('multiply', {field_A: fields.A, field_B: fields.B})"
-                                        @divide="addCalculation('divide', {field_A: fields.A, field_B: fields.B})"
-                                        @sum="addCalculation('sumUpSelected', {selectedItems})"
+                                        @add="openCalcDialog('add', {field_A: fields.A, field_B: fields.B})"
+                                        @subtract="openCalcDialog('subtract', {field_A: fields.A, field_B: fields.B})"
+                                        @multiply="openCalcDialog('multiply', {field_A: fields.A, field_B: fields.B})"
+                                        @divide="openCalcDialog('divide', {field_A: fields.A, field_B: fields.B})"
+                                        @sum="openCalcDialog('sumUpSelected', {selectedItems})"
                                         @divideSelected="addDivideSelectedCalculations"
                                         @correlate="renderScatterplot"
                                         @visualizationChanged="onVisualizationChanged"
@@ -733,6 +770,40 @@ export default {
                         </v-row>
                     </v-container>
                 </v-main>
+                <v-snackbar
+                    v-model="calculationDialog"
+                    :timeout="-1"
+                    color="primary"
+                    class="name-input"
+                >
+                    {{ $t('additional:modules.tools.cosi.dashboard.nameCalc') }}
+                    <v-text-field
+                        id="title-field"
+                        v-model="calculationData.id"
+                        name="session-title"
+                    />
+
+                    <template #action="{ attrs }">
+                        <v-btn
+                            v-bind="attrs"
+                            text
+                            @click="addCalculation(
+                                calculationData.operation,
+                                {field_A: calculationData.field_A, field_B: calculationData.field_B, selectedItems: calculationData.selectedItems},
+                                calculationData.id
+                            ); calculationDialog = false;"
+                        >
+                            <v-icon>mdi-calculator-variant</v-icon>
+                        </v-btn>
+                        <v-btn
+                            v-bind="attrs"
+                            text
+                            @click="calculationDialog = false"
+                        >
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </template>
+                </v-snackbar>
             </v-app>
         </template>
     </Tool>
@@ -752,12 +823,17 @@ export default {
             }
         }
     }
+
+    .name-input {
+        .v-snack__wrapper {
+            min-width: 40vw;
+        }
+    }
 }
 
 .dashboard-table {
     height: 100%;
     .v-data-table__wrapper {
-        padding-top: 10px;
         overflow-x: auto;
         overflow-y: auto;
         height: 100%;
@@ -766,6 +842,7 @@ export default {
     thead {
         .district-header {
             position: relative;
+            margin-top: 10px;
             .move-col {
                 position: absolute;
                 top: -10px;

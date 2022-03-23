@@ -40,12 +40,13 @@ function setLayerAttributes (model) {
 function addLayerToTree (newLayer) {
     const layerName = newLayer.name,
         layerId = newLayer.id,
-        features = newLayer.features;
+        features = newLayer.features,
+        isBaseLayer = newLayer.isBaseLayer || false;
     let gfiAttributes = Object();
 
     gfiAttributes = newLayer.project ? projectGfiAttributes() : contributionsGfiAttributes();
 
-    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true});
+    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true, isBaseLayer});
 
     // eslint-disable-next-line one-var
     const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});

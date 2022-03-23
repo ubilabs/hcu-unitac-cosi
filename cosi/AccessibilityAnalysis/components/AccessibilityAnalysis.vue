@@ -38,10 +38,10 @@ export default {
                     type: "cycling-regular",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
                 },
-                {
-                    type: "cycling-electric",
-                    name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
-                },
+                // {
+                //     type: "cycling-electric",
+                //     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
+                // },
                 {
                     type: "foot-walking",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
@@ -91,8 +91,7 @@ export default {
             abortController: null,
             currentCoordinates: null,
             select: null,
-            dataSets: [],
-            activeSet: 0
+            hide: false
         };
     },
     computed: {
@@ -223,32 +222,26 @@ export default {
             }
         },
         activeSet (newValue) {
-            if (this.dataSets.length > 0) {
-                Object.entries(this.dataSets[newValue].inputs).forEach(entry => {
-                    const [key, value] = entry;
-
-                    this[key] = value;
-                });
-
-                if (this.dataSets[newValue].inputs._mode === "point") {
-                    const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
-
-                    this.placingPointMarker(icoord);
-                }
-                else {
-                    this.removePointMarker();
-                }
-
-                if (this.dataSets[newValue].inputs._mode === "path") {
-                    this.map.addLayer(this.directionsLayer);
-                }
-                else {
-                    this.map.removeLayer(this.directionsLayer);
-                }
-
-                this._isochroneFeatures = this.dataSets[newValue].results;
-                this.renderIsochrones(this._isochroneFeatures);
+            if (!this.dataSets[newValue]) {
+                return;
             }
+
+            for (const key in this.dataSets[newValue].inputs) {
+                this[key] = this.dataSets[newValue].inputs[key];
+            }
+
+            if (this.dataSets[newValue].inputs._mode === "point") {
+                const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
+
+                this.placingPointMarker(icoord);
+            }
+            else {
+                this.removePointMarker();
+            }
+
+            this._isochroneFeatures = this.dataSets[newValue].results;
+            this.renderIsochrones(this._isochroneFeatures);
+            this.hide = false;
         },
         async scenarioUpdated () {
             await this.$nextTick();
@@ -257,16 +250,15 @@ export default {
         mode () {
             this.setSetByFeature(false);
 
+            if (this.mode === "region") {
+                this.resetIsochroneBBox();
+            }
+
             if (this.mode === "path") {
                 this._scaleUnit = "distance";
                 this._transportType = "foot-walking";
                 this.map.addLayer(this.directionsLayer);
             }
-
-            if (this.mode === "region") {
-                this.resetIsochroneBBox();
-            }
-
             else {
                 this.map.removeLayer(this.directionsLayer);
 
@@ -299,7 +291,8 @@ export default {
             if (this.mode === "path" && this.isochroneFeatures.length > 0) {
                 this.askUpdate = true;
             }
-        }
+        },
+        hide: "hideResults"
     },
     /**
     * @returns {void}
@@ -397,11 +390,14 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: function () {
+        requestInhabitants: async function () {
             this.close();
+            await this.$nextTick();
             this.$root.$emit("populationRequest", this.rawGeoJson);
         },
         createAnalysisSet: async function () {
+            this.hide = false;
+
             const analysisSet = {
                 inputs: {},
                 results: [],
@@ -409,9 +405,6 @@ export default {
             };
 
             await this.createIsochrones();
-            if (this._mode === "path") {
-                this.map.addLayer(this.directionsLayer);
-            }
 
             analysisSet.results = this._isochroneFeatures;
             analysisSet.inputs = {
@@ -429,7 +422,7 @@ export default {
             };
 
             this.dataSets.push(analysisSet);
-            this.activeSet = this.dataSets.length - 1;
+            this.setActiveSet(this.dataSets.length - 1);
 
             if (this.dataSets.length === 1) {
                 this.renderIsochrones(this._isochroneFeatures);
@@ -441,7 +434,7 @@ export default {
         // pagination features
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
-                this.activeSet -= 1;
+                this.setActiveSet(this.activeSet - 1);
             }
 
             this.dataSets.splice(index, 1);
@@ -452,13 +445,12 @@ export default {
 
         },
         removeAll () {
-            this.dataSets = [];
+            this.setDataSets([]);
             this.clear();
             this.mapLayer.getSource().clear();
             this.resetIsochroneBBox();
             this.removePointMarker();
             this.map.removeLayer(this.directionsLayer);
-            this.activeSet = 0;
         },
         downloadSet (index) {
             downloadGeoJson(this.dataSets[index].geojson);
@@ -476,7 +468,7 @@ export default {
         setPrevNext (value) {
             const l = this.dataSets.length;
 
-            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
         }
     }
 };
@@ -510,16 +502,7 @@ export default {
                                 outlined
                                 dense
                                 @click:append="$refs.mode.blur()"
-                            >
-                                <!-- <template #append>
-                                    <v-switch
-                                        v-model="_setByFeature"
-                                        dense
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        class="inline-switch"
-                                    />
-                                </template> -->
-                            </v-select>
+                            />
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
@@ -666,8 +649,8 @@ export default {
                                         dense
                                         small
                                         tile
-                                        color="grey lighten-1"
-                                        @click.native="clear()"
+                                        :color="hide ? 'warning' : 'grey lighten-1'"
+                                        @click.native="hide = !hide"
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>
@@ -719,29 +702,6 @@ export default {
                                     </template>
                                 </div>
                             </v-col>
-                            <!--<v-col cols="6">
-                                <div
-                                    id="download"
-                                >
-                                    <v-btn
-                                        id="download-geojson"
-                                        dense
-                                        small
-                                        tile
-                                        color="green lighten-1"
-                                        :disabled="isochroneFeatures.length === 0"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')"
-                                        @click="exportAsGeoJson(mapLayer)"
-                                    >
-                                        <v-icon
-                                            left
-                                        >
-                                            mdi-floppy
-                                        </v-icon>
-                                        Download GeoJSON
-                                    </v-btn>
-                                </div>
-                            </v-col>-->
                         </v-row>
                         <v-row>
                             <v-col>
@@ -758,7 +718,7 @@ export default {
                                         next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
                                         prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
                                     }"
-                                    @setActiveSet="(n) => activeSet = n"
+                                    @setActiveSet="(n) => setActiveSet(n)"
                                     @setPrevNext="(n) => setPrevNext(n)"
                                     @removeSingle="(n) => removeSet(n)"
                                     @removeAll="removeAll"

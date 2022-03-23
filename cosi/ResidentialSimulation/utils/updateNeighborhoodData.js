@@ -11,7 +11,7 @@ export function updateArea (newArea, neighborhood, fallbacks) {
         householdSize = neighborhood.avgHouseholdSize,
         gfz = neighborhood.gfz,
         bgf = area * gfz,
-        residents = (bgf * neighborhood.livingSpaceRatio) / livingSpace,
+        residents = Math.round(100 * (bgf * neighborhood.livingSpaceRatio) / livingSpace) / 100,
         populationDensity = residents * 1000000 / area,
         units = residents / householdSize;
 
@@ -51,15 +51,16 @@ export function updateUnits (newUnits, neighborhood, fallbacks, polygonArea, low
         gfz = bgf / area,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.housingUnits = fallbacks.housingUnits;
+    if (invValues.length > 0) {
+        neighborhood.housingUnits = fallbacks.housingUnits;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
     neighborhood.residents = residents;
     neighborhood.populationDensity = populationDensity;
     neighborhood.bgf = bgf;
     neighborhood.gfz = gfz;
+    neighborhood.housingUnits = units;
 
     fallbacks.housingUnits = units;
     fallbacks.residents = residents;
@@ -95,15 +96,16 @@ export function updateResidents (newResidents, neighborhood, fallbacks, polygonA
         gfz = bgf / area,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.residents = fallbacks.residents;
+    if (invValues.length > 0) {
+        neighborhood.residents = fallbacks.residents;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
     neighborhood.housingUnits = units;
     neighborhood.populationDensity = populationDensity;
     neighborhood.bgf = bgf;
     neighborhood.gfz = gfz;
+    neighborhood.residents = residents;
 
     fallbacks.residents = residents;
     fallbacks.housingUnits = units;
@@ -139,15 +141,16 @@ export function updateDensity (newDensity, neighborhood, fallbacks, polygonArea,
         gfz = bgf / area,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.populationDensity = fallbacks.populationDensity;
+    if (invValues.length > 0) {
+        neighborhood.populationDensity = fallbacks.populationDensity;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
     neighborhood.housingUnits = units;
     neighborhood.residents = residents;
     neighborhood.bgf = bgf;
     neighborhood.gfz = gfz;
+    neighborhood.populationDensity = populationDensity;
 
     fallbacks.populationDensity = populationDensity;
     fallbacks.housingUnits = units;
@@ -183,15 +186,17 @@ export function updateLivingSpace (newLivingSpace, neighborhood, fallbacks, poly
         units = residents / householdSize,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.livingSpace = fallbacks.livingSpace;
+    if (invValues.length > 0) {
+        neighborhood.livingSpace = fallbacks.livingSpace;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
+    neighborhood.livingSpace = livingSpace;
     neighborhood.housingUnits = units;
     neighborhood.residents = residents;
     neighborhood.populationDensity = populationDensity;
     neighborhood.bgf = bgf;
+    neighborhood.livingSpace = livingSpace;
 
     fallbacks.livingSpace = livingSpace;
     fallbacks.housingUnits = units;
@@ -228,15 +233,15 @@ export function updateLivingSpaceRatio (newLivingSpaceRatio, neighborhood, fallb
         units = residents / householdSize,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.livingSpaceRatio = fallbacks.livingSpaceRatio;
+    if (invValues.length > 0) {
+        neighborhood.livingSpaceRatio = fallbacks.livingSpaceRatio;
 
-    //     return invValues;
-    // }
-
+        return invValues;
+    }
     neighborhood.housingUnits = units;
     neighborhood.residents = residents;
     neighborhood.populationDensity = populationDensity;
+    neighborhood.livingSpaceRatio = livingSpaceRatio;
 
     fallbacks.livingSpaceRatio = livingSpaceRatio;
     fallbacks.housingUnits = units;
@@ -271,15 +276,16 @@ export function updateGfz (newGfz, neighborhood, fallbacks, polygonArea, lowerBo
         units = residents / householdSize,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.gfz = fallbacks.gfz;
+    if (invValues.length > 0) {
+        neighborhood.gfz = fallbacks.gfz;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
     neighborhood.housingUnits = units;
     neighborhood.residents = residents;
     neighborhood.populationDensity = populationDensity;
     neighborhood.bgf = bgf;
+    neighborhood.gfz = gfz;
 
     fallbacks.gfz = gfz;
     fallbacks.housingUnits = units;
@@ -315,15 +321,16 @@ export function updateBgf (newBgf, neighborhood, fallbacks, polygonArea, lowerBo
         units = residents / householdSize,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.bgf = fallbacks.bgf;
+    if (invValues.length > 0) {
+        neighborhood.bgf = fallbacks.bgf;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
     neighborhood.housingUnits = units;
     neighborhood.residents = residents;
     neighborhood.populationDensity = populationDensity;
     neighborhood.gfz = gfz;
+    neighborhood.bgf = bgf;
 
     fallbacks.bgf = bgf;
     fallbacks.housingUnits = units;
@@ -359,14 +366,15 @@ export function updateHousholdSize (newHouseholdSize, neighborhood, fallbacks, p
         units = residents / householdSize,
         invValues = invalidValues(householdSize, populationDensity, gfz, bgf, livingSpace, area, livingSpaceRatio, lowerBounds, upperBounds);
 
-    // if (invValues.length > 0) {
-    //     neighborhood.avgHouseholdSize = fallbacks.avgHouseholdSize;
+    if (invValues.length > 0) {
+        neighborhood.avgHouseholdSize = fallbacks.avgHouseholdSize;
 
-    //     return invValues;
-    // }
+        return invValues;
+    }
     neighborhood.housingUnits = units;
     neighborhood.populationDensity = populationDensity;
     neighborhood.bgf = bgf;
+    neighborhood.avgHouseholdSize = householdSize;
 
     fallbacks.avgHouseholdSize = householdSize;
     fallbacks.housingUnits = units;

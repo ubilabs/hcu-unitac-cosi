@@ -76,8 +76,8 @@ export default {
         }
     },
     watch: {
-        selectedFeatures () {
-            if (this.visualizationState) {
+        selectedFeatures (newValue, oldValue) {
+            if (newValue.length < oldValue.length) {
                 this.$nextTick(() => {
                     this.updateSelectedDistricts();
                 });
@@ -253,7 +253,7 @@ export default {
                             const additionalText = new Style({
                                 zIndex: 2,
                                 text: new Text({
-                                    font: "13px Calibri, sans-serif",
+                                    font: "14px Calibri, sans-serif",
                                     fill: new Fill({
                                         color: [0, 0, 0]
                                     }),
@@ -408,11 +408,11 @@ export default {
          */
         prepareGraphData (dataset) {
             const newDataset = {
-                label: dataset.getProperties()[this.keyOfAttrNameStats],
+                label: dataset?.getProperties()[this.keyOfAttrNameStats],
                 data: []
             };
 
-            this.dataCategory = dataset.getProperties().kategorie;
+            this.dataCategory = dataset?.getProperties().kategorie;
             this.availableYears.forEach(year => {
                 newDataset.data.push(dataset.getProperties()[this.yearSelector + year]);
             });
@@ -425,8 +425,10 @@ export default {
          */
         loadToChartGenerator () {
             const graphObj = new ChartDataset({
-                    id: "ccm",
-                    name: [this.label] + " - " + this.dataCategory,
+                    id: "ccm" + this.selectedFeatures.map(district => {
+                        return district.id_;
+                    }).join("-"),
+                    name: [this.label] + " - " + this.dataCategory + " (" + this.$t("additional:modules.tools.colorCodeMap.title") + ")",
                     type: ["LineChart", "BarChart", "PieChart"],
                     color: ["#55eb34", "rgb(14, 150, 240)", "yellow"],
                     beginAtZero: true,
@@ -439,16 +441,11 @@ export default {
                 }),
                 years = this.graphData[0].data.reduce((availableYears, val, i) => val ? [...availableYears, this.availableYears[i]] : availableYears, []);
 
-            years.forEach(year => {
-                graphObj.data.labels.push(year);
-            });
-
-            this.graphData.forEach(dataset => {
-                dataset.data = dataset.data.filter(x => Boolean(x)).reverse();
-                graphObj.data.datasets.push(dataset);
-            });
-
-            graphObj.data.labels.reverse();
+            graphObj.data.labels = years.reverse();
+            graphObj.data.datasets = this.graphData.map(dataset => ({
+                label: dataset.label,
+                data: [...dataset.data].filter(x => Boolean(x)).reverse()
+            }));
 
             this.channelGraphData(graphObj);
         },
@@ -624,6 +621,8 @@ export default {
                     </v-icon>
                 </button>
                 <button
+                    :disabled="!visualizationState"
+                    :class="{disabled: !visualizationState}"
                     class="map_button"
                     :title="visualizationState ? $t('additional:modules.tools.colorCodeMap.showDistrictNames') : $t('additional:modules.tools.colorCodeMap.needViz')"
                     @click="setShowMapNames(!showMapNames)"
@@ -695,6 +694,10 @@ export default {
                     span {
                         top:0px;
                         line-height:26px;
+                    }
+
+                    &.disabled {
+                        opacity:0.5;
                     }
                 }
 

@@ -65,10 +65,11 @@ export default {
         referencePickerActive (state) {
             if (state) {
                 this.listen();
-                this.$emit("referencePickerActive");
+                this.$emit("referencePickerActive", true);
             }
             else {
                 this.unlisten();
+                this.$emit("referencePickerActive", false);
             }
         }
     },

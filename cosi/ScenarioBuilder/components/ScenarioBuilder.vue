@@ -194,6 +194,7 @@ export default {
                 }
                 return [featureTagStyle(feature)];
             });
+            newLayer.setZIndex(15);
             this.setGuideLayer(newLayer);
 
             return newLayer;
@@ -310,8 +311,11 @@ export default {
             this.formValid = this.requiredFieldsSet();
         },
 
-        geomPickerUnlisten () {
-            geomPickerUnlisten(this.$refs["geometry-picker"]);
+        disableFeatureEditor (state) {
+            if (state) {
+                geomPickerUnlisten(this.$refs["geometry-picker"]);
+            }
+            this.setFeatureEditorDisabled(state);
         },
 
         mapDataTypes (type) {
@@ -454,7 +458,7 @@ export default {
                                             :active="active"
                                             :use-icons="useIcons"
                                             @pickReference="getDataFromReferenceFeature"
-                                            @referencePickerActive="geomPickerUnlisten"
+                                            @referencePickerActive="disableFeatureEditor"
                                         />
                                     </v-col>
                                     <v-col cols="8">
@@ -464,7 +468,7 @@ export default {
                                             :active="active"
                                             :use-icons="useIcons"
                                             :guide-layer="guideLayer"
-                                            @moveFeaturesActive="geomPickerUnlisten"
+                                            @moveFeaturesActive="disableFeatureEditor"
                                         />
                                     </v-col>
                                 </v-row>
@@ -625,33 +629,9 @@ export default {
                 </v-app>
             </template>
         </Tool>
-        <!-- <v-app>
-            <v-snackbar
-                v-model="editDialog"
-                :timeout="-1"
-                color="grey"
-            >
-                {{ $t('additional:modules.tools.cosi.scenarioBuilder.editFeature') }}
-
-                <template #action="{ attrs }">
-                    <v-btn
-                        v-bind="attrs"
-                        text
-                        @click="deleteFeature"
-                    >
-                        {{ $t("common:button.delete") }}
-                    </v-btn>
-                    <v-btn
-                        text
-                        v-bind="attrs"
-                        @click="editDialog = false"
-                    >
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                </template>
-            </v-snackbar>
-        </v-app> -->
-        <FeatureEditor />
+        <FeatureEditor
+            :disabled="featureEditorDisabled"
+        />
     </div>
 </template>
 

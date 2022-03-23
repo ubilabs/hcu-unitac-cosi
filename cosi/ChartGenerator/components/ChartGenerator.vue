@@ -426,18 +426,6 @@ export default {
                                                 >
                                                     {{ $t('additional:modules.tools.cosi.chartGenerator.yStacked') }}
                                                 </button>
-                                                <!--<button
-                                                    class="dl right"
-                                                    :title="$t('additional:modules.tools.cosi.chartGenerator.downloadChart')"
-                                                    @click="downloadGraph()"
-                                                >
-                                                    PNG
-                                                    <v-icon
-                                                        dense
-                                                    >
-                                                        mdi-download
-                                                    </v-icon>
-                                                </button>-->
                                             </div>
                                         </div>
                                     </template>

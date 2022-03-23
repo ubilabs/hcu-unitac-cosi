@@ -30,8 +30,8 @@ const state = {
     selectedYear: null,
     chart: false,
     readmeUrl: {
-        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
-        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md"
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md"
     }
 };
 

@@ -341,6 +341,13 @@ export default {
          */
         transferFeatures (featureCollection) {
             if (featureCollection.get("fromExternal")) {
+                // if no districts have been selected
+                // and the tool is closed
+                // shade all not selected districts
+                // before applying the new selection
+                if (this.selectedNames.length === 0 && !this.active) {
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedDistrictLevel.layerId, 0.6, this.selectedDistrictLevel.activeStyle);
+                }
                 this.select.getFeatures().clear();
                 featureCollection.forEach(feature => {
                     this.select.getFeatures().push(feature);
@@ -365,7 +372,7 @@ export default {
                 this.setBufferValue(this.bufferVal);
                 this.setExtent(extent);
                 this.setBoundingGeometry(bboxGeom);
-                setBBoxToGeom(this.areaSelectorGeom || bboxGeom);
+                setBBoxToGeom.call(this, this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
                     this.zoomTo({geometryOrExtent: extent, options: {}});
@@ -381,7 +388,7 @@ export default {
                 this.setExtent([]);
                 this.resetView();
                 this.setBoundingGeometry(undefined);
-                setBBoxToGeom(this.areaSelectorGeom || undefined);
+                setBBoxToGeom.call(this, this.areaSelectorGeom || undefined);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
         },

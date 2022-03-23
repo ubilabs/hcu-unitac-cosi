@@ -39,29 +39,16 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
     });
 
     describe("loadStatFeatures", () => {
-        it("should call commit 'setLoadend' twice", async () => {
-            const commit = sinon.spy(),
-                dispatch = sinon.spy();
-
-            await actions.loadStatFeatures({commit, dispatch, rootGetters}, payload);
-
-            expect(commit.calledTwice).to.be.true;
-            expect(commit.args).to.deep.equal([
-                ["setLoadend", false],
-                ["setLoadend", true]
-            ]);
-        });
-
-
         it("should call dispatch 'Alerting/addSingleAlert' and 'Alerting/cleanup", async () => {
             const commit = sinon.spy(),
                 dispatch = sinon.spy();
 
             await actions.loadStatFeatures({commit, dispatch, rootGetters}, payload);
 
-            expect(dispatch.calledTwice).to.be.true;
+            expect(dispatch.calledThrice).to.be.true;
             expect(dispatch.args).to.deep.equal([
                 ["Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true}],
+                ["updateDistricts"],
                 ["Alerting/cleanup", null, {root: true}]
             ]);
         });

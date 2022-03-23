@@ -101,6 +101,10 @@
     "path":"gfiThemes/solaratlas",
     "type": "gfiTheme"
   },
+  "sturmflut": {
+    "path":"gfiThemes/sturmflut",
+    "type": "gfiTheme"
+  },
   "trafficCount": {
     "path":"gfiThemes/trafficCount",
     "type": "gfiTheme"
@@ -112,9 +116,6 @@
   "verkehrsstaerken": {
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
-  },
-  "OpenRouteService": {
-    "type": "tool"
   },
   "AccessibilityAnalysis": {
     "path": "cosi/AccessibilityAnalysis",

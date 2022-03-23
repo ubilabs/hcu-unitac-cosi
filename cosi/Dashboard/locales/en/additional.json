@@ -16,7 +16,8 @@
                     "modifiedTooltip": "Dieses Datum wurde durch Simulationsfunktionen verändert.",
                     "moveColLeft": "Spalte nach links verschieben",
                     "moveColRight": "Spalte nach rechts verschieben",
-                    "minimizeCol": "Spalte ausblenden"
+                    "minimizeCol": "Spalte ausblenden",
+                    "nameCalc": "Name Calculation"
                 }
             }
         }

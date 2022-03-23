@@ -1,290 +1,283 @@
-// import Vuex from "vuex";
-// import {
-//     config,
-//     mount,
-//     createLocalVue
-// } from "@vue/test-utils";
-// import SaveSession from "../../../components/SaveSession.vue";
-// import {expect} from "chai";
-// import sinon from "sinon";
-// import Vuetify from "vuetify";
-// import Vue from "vue";
-// import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
-// import Scenario from "../../../../ScenarioBuilder/classes/Scenario";
-// import Layer from "ol/layer/Vector.js";
-// import Source from "ol/source/Vector.js";
-// import Feature from "ol/Feature";
-// import Point from "ol/geom/Point";
-// import mockConfigJson from "./mock.config.json";
-// import Multiselect from "vue-multiselect";
-// import districtLevel from "./mock.districtLevel";
+import {config, mount, shallowMount, createLocalVue} from "@vue/test-utils";
+import {expect} from "chai";
+import Vuex from "vuex";
+import SaveSession from "../../../components/SaveSession.vue";
+import SaveSessionStore from "../../../store/indexSaveSession";
+import ScenarioBuilderStore from "../../../../ScenarioBuilder/store/indexScenarioBuilder";
+import DrawStore  from "../../../../../../src/modules/tools/draw/store/indexDraw";
+import Vuetify from "vuetify";
+import sinon from "sinon";
+import Vue from "vue";
+import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
+require("fake-indexeddb/auto");
 
-// Vue.use(Vuetify);
+config.mocks.$t = key => key;
 
-// const localVue = createLocalVue();
+const localVue = createLocalVue();
 
-// localVue.use(Vuex);
+Vue.use(Vuetify);
+localVue.use(Vuex);
 
-// config.mocks.$t = key => key;
+global.requestAnimationFrame = (fn) => fn();
 
-// global.requestAnimationFrame = (fn) => fn();
+describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
+    let vuetify, store, wrapper = null;
 
-// describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
-//     let store, sandbox, vuetify, layerListStub;
+    const factory = {
+            getMount: () => {
+                return mount(SaveSession, {
+                    store,
+                    localVue,
+                    vuetify
+                });
+            }
+        },
+        mock = (function() {
+            var storage = {};
+            return {
+              getItem: function(key) {
+                return storage[key] || null;
+              },
+              setItem: function(key, value) {
+                storage[key] = value.toString();
+              },
+              removeItem: function(key) {
+                  delete storage[key];
+              },
+              clear: function() {
+                storage = {};
+              }
+            };
+          })(),
+          layerMock = {
+                getSource: () => ({
+                    getFeatures: sinon.stub().returns([{
+                        type: "Feature",
+                        properties: {
+                            "isOuterCircle": false,
+                            "isVisible": true,
+                            "drawState": {
+                                "opacity": 1,
+                                "fontSize": null,
+                                "drawType": {
+                                    "id": "drawSymbol",
+                                    "geometry": "Point"
+                                },
+                                "symbol": {
+                                    "id": "iconPoint",
+                                    "type": "simple_point",
+                                    "value": "simple_point"
+                                },
+                                "zIndex": 0,
+                                "imgPath": "https://geodienste.hamburg.de/lgv-config/img/",
+                                "pointSize": 16,
+                                "color": [
+                                    55,
+                                    126,
+                                    184,
+                                    1
+                                ]
+                            },
+                            "fromDrawTool": true
+                        },
+                        geometry: {
+                            "type": "Point",
+                            "coordinates": [
+                                571253.6428829662,
+                                5939501.987404781
+                            ]
+                        }
+                    }])
+                })
+            };
+    
+        Object.defineProperty(window, 'localStorage', { 
+            value: mock
+        });
 
-//     const layer1 = new Layer({
-//             id: "1234",
-//             source: new Source({
-//                 features: [
-//                     new Feature({
-//                         schulname: "feature 1",
-//                         anzahl_schueler: 42,
-//                         adresse_strasse_hausnr: "Hauptstraße",
-//                         adresse_ort: "Hamburg",
-//                         kapitelbezeichnung: "Grundschule",
-//                         geometry: new Point([
-//                             10.086822509765625,
-//                             53.55825752009741
-//                         ])
-//                     })
-//                 ]
-//             })
-//         }),
-//         expMapping = [{
-//             group: "Bildung und Wissenschaft",
-//             layer: [{
-//                 addressField: [
-//                     "adresse_strasse_hausnr",
-//                     "adresse_ort"
-//                 ],
-//                 categoryField: "kapitelbezeichnung",
-//                 id: "Mein Layer",
-//                 keyOfAttrName: "schulname",
-//                 layerId: "1234",
-//                 numericalValues: [{
-//                     id: "anzahl_schueler",
-//                     name: "Schülerzahl"
-//                 }]
-//             }]
-//         }],
-//         expCols = [
-//             "style",
-//             "name",
-//             "district",
-//             "address",
-//             "layerName",
-//             "type",
-//             "group",
-//             // "actions",
-//             "enabled"
-//         ],
-//         layersMock = [];
+    beforeEach(() => {
+        vuetify = new Vuetify();
+        store = new Vuex.Store({
+            namespaced: true,
+            modules: {
+                Map: {
+                    namespaced: true
+                },
+                Tools: {
+                    namespaced: true,
+                    modules: {
+                        SaveSession: SaveSessionStore,
+                        ChartGenerator: {
+                            namespaced: true
+                        },
+                        CalculateRatio: {
+                            namespaced: true
+                        },
+                        ScenarioBuilder: ScenarioBuilderStore,
+                        DistrictSelector: {
+                            namespaced: true
+                        },
+                        AccessibilityAnalysis: {
+                            namespaced: true
+                        },
+                        Dashboard: {
+                            namespaced: true
+                        },
+                        AreaSelector: {
+                            namespaced: true
+                        },
+                        Draw: DrawStore,
+                        QueryDistricts: {
+                            namespaced: true
+                        }
+                    }
+                },
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => sinon.stub()
+                    }
+                }
+            },
+            getters: {
+                uiStyle: () => true
+            }
+        });
+    });
 
-//     beforeEach(() => {
-//         vuetify = new Vuetify();
-//         sandbox = sinon.createSandbox();
-//         layerListStub = sinon.stub();
+    afterEach(() => {
+        wrapper.destroy();
+        sinon.restore();
+    })
 
-//         store = new Vuex.Store({
-//             namespaces: true,
-//             modules: {
-//                 Tools: {
-//                     namespaced: true,
-//                     modules: {
-//                         FeaturesList: FeaturesListStore,
-//                         ScenarioBuilder: {
-//                             namespaced: true,
-//                             getters: {
-//                                 scenario: sinon.stub().returns(new Scenario("Scenario"))
-//                             }
-//                         },
-//                         DistrictSelector: {
-//                             namespaced: true,
-//                             getters: {
-//                                 selectedDistrictLevel: sinon.stub().returns(districtLevel),
-//                                 selectedFeatures: sinon.stub().returns(districtLevel.layer.getSource().getFeatures()),
-//                                 districtLayer: sinon.stub().returns(districtLevel.layer),
-//                                 bufferValue: () => 0
-//                             }
-//                         }
-//                     }
-//                 },
-//                 Map: {
-//                     namespaced: true,
-//                     getters: {
-//                         layerById: () => sinon.stub().returns({olLayer: layer1}),
-//                         layerList: layerListStub
-//                     },
-//                     actions: {
-//                         removeHighlightFeature: () => sinon.stub()
-//                     }
-//                 }
-//             },
-//             state: {
-//                 configJson: mockConfigJson
-//             }
-//         });
-//     });
+    describe("Component DOM", () => {
+        it("should exist", () => {
+            wrapper = factory.getMount();
+            expect(wrapper.exists()).to.be.true;
+        });
 
-//     afterEach(function () {
-//         sandbox.restore();
-//     });
+        it("should find Tool component", () => {
+            wrapper = factory.getMount();
+            const toolWrapper = wrapper.findComponent(Tool);
 
-//     // eslint-disable-next-line require-jsdoc, no-shadow
-//     async function mountComponent (isActive = true, layerList = layersMock) {
-//         layerListStub.returns(layerList);
+            expect(toolWrapper.exists()).to.be.true;
+        });
 
-//         const ret = mount(FeaturesList, {
-//             stubs: {Tool},
-//             store,
-//             localVue,
-//             vuetify
-//         });
+        it("should not render if active is false", async () => {
+            wrapper = factory.getMount();
+            await wrapper.vm.$nextTick();
+            expect(wrapper.find("#save-session").exists()).to.be.false;
+        });
 
-//         store.commit("Tools/FeaturesList/setActive", isActive);
-//         await ret.vm.$nextTick();
-//         return ret;
-//     }
+        describe("buttons should call their respective methods", async () => {
+            it("save-session button calls quickSave", async () => {
+                const stubQuickSave = sinon.stub(SaveSession.methods, "quickSave");
+                
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                wrapper.find("#save-session").trigger("click");
+                expect(stubQuickSave.calledOnce).to.be.true;
+            });
 
-//     describe("Component DOM", () => {
-//         it("should exist", async () => {
-//             const wrapper = await mountComponent();
+            it("load-session button calls loadLastSession", async () => {
+                const stubLoadLastSession = sinon.stub(SaveSession.methods, "loadLastSession");
 
-//             expect(wrapper.exists()).to.be.true;
-//         });
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                await wrapper.setData({latestDate: "2022-03-22"});
+                wrapper.find("#load-session").trigger("click");
+                expect(stubLoadLastSession.calledOnce).to.be.true;
+            });
 
-//         it("should find Tool component", async () => {
-//             const wrapper = await mountComponent(),
-//                 toolWrapper = wrapper.findComponent({name: "Tool"});
+            it("save-to-file opens snackbar", async () => {
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                const snackbar = wrapper.find("#save-dialog").find(".v-snack__wrapper");
+                expect(snackbar.attributes().style).to.eql("display: none;")
+                wrapper.find("#save-to-file").trigger("click");
+                await wrapper.vm.$nextTick();
+                expect(snackbar.attributes().style).to.eql("");
+            });
 
-//             expect(toolWrapper.exists()).to.be.true;
-//         });
+            it("close-save-dialog button closes the snackbar", async () => {
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                wrapper.find("#save-to-file").trigger("click");
+                await wrapper.vm.$nextTick();
+                const snackbar = wrapper.find("#save-dialog").find(".v-snack__wrapper");
+                expect(snackbar.attributes().style).to.eql("");
+                wrapper.find("#close-save-dialog").trigger("click");
+                await wrapper.vm.$nextTick();
+                expect(snackbar.attributes().style).to.eql("display: none;");
+            });
 
-//         it("should not render if active is false", async () => {
-//             const wrapper = await mountComponent(false);
+            it("save-to-file button calls downloadJsonToFile", async () => {
+                const stubDownloadJsonToFile = sinon.stub(SaveSession.methods, "downloadJsonToFile");
 
-//             expect(wrapper.find("form").exists()).to.be.false;
-//         });
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                wrapper.find("#save-to-file").trigger("click");
+                await wrapper.vm.$nextTick();
+                wrapper.find("#save-to-file-action").trigger("click");
+                expect(stubDownloadJsonToFile.calledOnce).to.be.true;
+            });
 
-//         it("mapping should be generated from layerConf, should have length of 1", async () => {
-//             const wrapper = await mountComponent();
+            it("save-session button saves state to localStorage", async () => {
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                store.state.Tools.Draw.layer = layerMock;
+                wrapper.find("#save-session").trigger("click");
+                const state = JSON.parse(window.localStorage.getItem("cosi-state")).state;
+                expect(state.Tools.Draw.layer).to.deep.equal(layerMock.getSource().getFeatures());
+            });
 
-//             expect(wrapper.vm.mapping).deep.to.equal(expMapping);
-//             expect(wrapper.vm.mapping).to.have.lengthOf(1);
-//         });
+            it("load-from-file button calls loadFromFile", async () => {
+                const stubLoadFromFile = sinon.stub(SaveSession.methods, "loadFromFile");
 
-//         it("expect layer filter to have no items if no layer active", async () => {
-//             const wrapper = await mountComponent();
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                wrapper.find("#load-from-file").trigger("click");
+                expect(stubLoadFromFile.calledOnce).to.be.true;
+            });
 
-//             expect(wrapper.vm.activeVectorLayerList).to.have.lengthOf(0);
-//             // expect(wrapper.vm.activeVectorLayerList).to.have.lengthOf(0);
-//         });
+            it("auto-save checkbox toggles", async () => {
+                wrapper = factory.getMount();
+                store.commit("Tools/SaveSession/setActive", true);
+                await wrapper.vm.$nextTick();
+                expect(wrapper.vm.autoSave).to.be.null;
+                wrapper.find("#auto-save").trigger("click");
+                await wrapper.vm.$nextTick();
+                expect(wrapper.vm.autoSave).to.be.true;
+                wrapper.find("#auto-save").trigger("click");
+                await wrapper.vm.$nextTick();
+                expect(wrapper.vm.autoSave).to.be.false;
+            });
+        });
 
-//         it("layer should be read out if active", async () => {
-//             const wrapper = await mountComponent(true, [layer1]),
-//                 layerFilterWrapper = wrapper.findComponent(Multiselect);
+        describe("Watchers", () => {
+            it("should call 'enableAutoSave' after autoSave was changed to true", async () => {
+                const spyEnableAutoSave = sinon.spy(SaveSession.methods, "enableAutoSave");
+                
+                wrapper = factory.getMount();
+                await wrapper.setData({autoSave: true});
+                expect(spyEnableAutoSave.calledOnce).to.be.true;
+            });
 
-//             await wrapper.vm.$nextTick();
+            it("should call 'load' after sessionToLoad was changed", async () => {
+                const stubLoad = sinon.stub(SaveSession.methods, "load");
+                
+                wrapper = factory.getMount();
+                await wrapper.vm.setSessionToLoad("none");
+                expect(stubLoad.calledOnce).to.be.true;
+            });
+        });
+    });
+});
 
-//             // flatActiveLayerMapping has length 1 if 1 layer is active
-//             expect(wrapper.vm.flatActiveLayerMapping).to.have.lengthOf(1);
-//             // first item in the layer filter dropdown has value "Mein Layer"
-//             expect(layerFilterWrapper.findAll(".multiselect__element").at(1).text()).to.equal("Mein Layer");
-
-//         });
-
-//         it("items array should hold one item with relevant properties", async () => {
-//             const wrapper = await mountComponent(true, [layer1]);
-
-//             expect(wrapper.vm.items).to.have.lengthOf(1);
-//             expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isSimulation");
-//         });
-
-//         it("headers should have all fields", async () => {
-//             const wrapper = await mountComponent(true, [layer1]);
-
-//             expect(wrapper.vm.columns.map(e => e.value)).deep.to.equal(expCols);
-//         });
-
-//         it("layer with one feature should be rendered to table if layer is active", async () => {
-//             const wrapper = await mountComponent(true, [layer1]),
-//                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
-
-//             // await wrapper.vm.$nextTick();
-
-//             // table has been rendered
-//             expect(tableWrapper.exists()).to.be.true;
-//             // table has 2 rows (1 header, 1 content)
-//             expect(tableWrapper.findAll("tr")).to.have.lengthOf(2);
-//         });
-
-//         it("table row should be expanded to detail view", async () => {
-//             const wrapper = await mountComponent(true, [layer1]),
-//                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
-
-//             // await wrapper.vm.$nextTick();
-//             await wrapper.find("button.mdi-chevron-down").trigger("click");
-
-//             // expand the table on expand button click
-//             expect(tableWrapper.findAll(".v-data-table__expanded")).to.have.lengthOf(2);
-//             // render detail view in the expanded row
-//             expect(wrapper.findComponent(DetailView).findAll("tr")).to.have.lengthOf(5);
-//         });
-
-//         it("selecting a field in expanded view should emit the 'filterProps' event", async () => {
-//             const spyUpdateFilterProps = sinon.spy(FeaturesList.methods, "updateFilterProps"),
-//                 wrapper = await mountComponent(true, [layer1]);
-
-//             // await wrapper.vm.$nextTick();
-//             await wrapper.find("button.mdi-chevron-down").trigger("click");
-//             await wrapper.findComponent(DetailView).find("input").trigger("click");
-
-//             // event should be emitted once
-//             expect(wrapper.findComponent(DetailView).emitted("filterProps").length).to.equal(1);
-//             // event should emit the layerId and prop selected
-//             expect(wrapper.findComponent(DetailView).emitted("filterProps")[0]).deep.to.equal([{"1234": ["schulname"]}]);
-//             // updateFilterProps called
-//             expect(spyUpdateFilterProps.calledOnce).to.be.true;
-//         });
-
-//         it("expect download prompt to open when table is exported", async () => {
-//             const spyExportTable = sinon.spy(FeaturesList.methods, "exportTable"),
-//                 wrapper = await mountComponent(true, [layer1]);
-
-//             await wrapper.vm.$nextTick();
-//             await wrapper.find("#export-table").trigger("click");
-
-//             // exportTable should have been called once with arg[0] === false
-//             expect(spyExportTable.callCount).to.equal(1);
-//             expect(spyExportTable.calledOnceWith(false)).to.be.true;
-
-//             await wrapper.find("#export-detail").trigger("click");
-
-//             // exportTable should have been called twice, the 2nd time with arg[0] === true
-//             expect(spyExportTable.callCount).to.equal(2);
-//             expect(spyExportTable.calledWith(true)).to.be.true;
-//         });
-
-//         it("expect feature to be removed from map/layer, when toggled off", async () => {
-//             const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
-//                 wrapper = await mountComponent(true, [layer1]);
-
-//             // toggle feature off
-//             await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
-//             await wrapper.vm.$nextTick();
-
-//             expect(spyToggleFeature.calledOnceWith(wrapper.vm.items[0])).to.be.true;
-//             expect(wrapper.vm.disabledFeatureItems).to.have.lengthOf(1);
-//             expect(wrapper.vm.items[0].enabled).to.be.false;
-//             expect(layer1.getSource().getFeatures()).to.have.lengthOf(0);
-
-//             // toggle feature back on again
-//             await wrapper.findComponent({name: "v-switch"}).find("input").trigger("click");
-//             await wrapper.vm.$nextTick();
-
-//             expect(wrapper.vm.items[0].enabled).to.be.true;
-//             expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
-//         });
-//     });
-
-// });

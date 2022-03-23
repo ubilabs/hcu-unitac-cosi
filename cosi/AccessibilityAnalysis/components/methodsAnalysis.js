@@ -143,7 +143,7 @@ export default {
 
         if (newFeatures.length === 0) {
             if (this.mode !== "region") {
-                setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
+                setBBoxToGeom.call(this, this.areaSelectorGeom || this.boundingGeometry);
             }
             return;
         }
@@ -320,14 +320,14 @@ export default {
         const polygonGeometry = this.isochroneFeatures[this.isochroneFeatures.length === 4 ? 1 : 0].getGeometry(),
             geometryCollection = new GeometryCollection([polygonGeometry]);
 
-        setBBoxToGeom(geometryCollection);
+        setBBoxToGeom.call(this, geometryCollection);
     },
     /**
     * resets facility layers' bbox
     * @returns {void}
     */
     resetIsochroneBBox () {
-        setBBoxToGeom(this.areaSelectorGeom || this.boundingGeometry);
+        setBBoxToGeom.call(this, this.areaSelectorGeom || this.boundingGeometry);
     },
     /**
      * clears the component
@@ -339,6 +339,29 @@ export default {
         this.setSteps([0, 0, 0]);
         this.setRawGeoJson(null);
         this.setIsochroneFeatures([]);
+    },
+
+
+    /**
+     * Hides the current result without destroying it
+     * @param {Boolean} v - the current val of "hide"
+     * @returns {void}
+     */
+    hideResults (v) {
+        if (v) {
+            this.renderIsochrones([]);
+            if (this.mode === "point") {
+                this.removePointMarker();
+            }
+        }
+        else {
+            this.renderIsochrones(this._isochroneFeatures);
+            if (this.mode === "point") {
+                this.placingPointMarker(
+                    Proj.transform(this.coordinate[0], "EPSG:4326", this.projectionCode)
+                );
+            }
+        }
     },
 
     /**

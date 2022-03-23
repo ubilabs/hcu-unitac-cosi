@@ -1,9 +1,9 @@
-// import storeOriginalDistrictStats from "../utils/storeOriginalDistrictStats";
 import getAvailableYears from "../../utils/getAvailableYears";
 import getIntersectionCoverage from "../../ResidentialSimulation/utils/getIntersectionCoverage";
 import {getAllContainingDistricts} from "../../utils/geomUtils";
 import store from "../../../../src/app-store";
 import hash from "object-hash";
+import uniqueId from "../../../../src/utils/uniqueId.js";
 
 /**
  * @description Stores the scenario specific properties of a residential district feature
@@ -36,6 +36,7 @@ export default class ScenarioNeighborhood {
         // flag the feature as a neighborhood
         this.feature.set("isNeighborhood", true);
         // create unique hash as ID
+        this.feature.set("styleId", uniqueId());
         this.feature.setId(hash({...this.feature.getProperties(), geom: this.feature.getGeometry()}));
     }
 

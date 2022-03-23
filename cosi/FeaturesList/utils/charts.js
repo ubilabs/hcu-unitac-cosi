@@ -56,7 +56,7 @@ export default {
             },
             chartDataset = new ChartDataset({
                 id: "sb-" + item.key,
-                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)}`,
+                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)} (Standortanalyse)`,
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
@@ -84,7 +84,7 @@ export default {
             },
             chartDataset = new ChartDataset({
                 id: "sb-" + this.getActiveItems().map(item => item.key).join(","),
-                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")}`,
+                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} (Standortanalyse)`,
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
@@ -277,17 +277,22 @@ export default {
             types = this.getDistrictsAndTypes(activeItems).types,
             activeLayerMapping = this.getActiveDipasLayers(),
             layerCharts = activeLayerMapping.map(layer => {
-                const chartData = {
-                    labels: types[layer.layerId],
-                    datasets: [{
-                        label: this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"),
-                        data: types[layer.layerId].map(type => {
-                            return activeItems.reduce((sum, item) => {
-                                return item.layerId === layer.layerId && item.type === type ? sum + parseInt(item.commentsNumber, 10) : sum;
-                            }, 0);
-                        })
-                    }]
-                };
+                const
+                    _types = this.sumUpLayers ? [...new Set(Object.values(types).flat())] : types[layer.layerId],
+                    chartData = {
+                        labels: _types,
+                        datasets: [{
+                            label: this.$t("additional:modules.tools.cosi.featuresList.dipas.comments"),
+                            data: _types.map(type => {
+                                return activeItems.reduce((sum, item) => {
+                                    if (this.sumUpLayers) {
+                                        return item.type === type ? sum + parseInt(item.commentsNumber, 10) : sum;
+                                    }
+                                    return item.layerId === layer.layerId && item.type === type ? sum + parseInt(item.commentsNumber, 10) : sum;
+                                }, 0);
+                            })
+                        }]
+                    };
 
                 return new ChartDataset({
                     id: this.id + "-" + layer.layerId + "-commentsNumberChart",
@@ -314,14 +319,10 @@ export default {
         const activeItems = this.getActiveDipasItems(),
             activeLayerMapping = this.getActiveDipasLayers(),
             layerCharts = activeLayerMapping.map(layer => {
-                const dates = activeItems.filter(item => {
-                        if (item.layerId === layer.layerId) {
-                            return true;
-                        }
-                        return false;
-                    }).map(item => {
-                        return item.feature.values_.dateCreated;
-                    }).sort(),
+                const dates = activeItems
+                        .filter(item => this.sumUpLayers || item.layerId === layer.layerId)
+                        .map(item => item.feature.values_.dateCreated)
+                        .sort(),
                     chartData = {
                         labels: dates,
                         datasets: [{
@@ -375,14 +376,11 @@ export default {
                 const chartData = {
                     datasets: [{
                         label: this.$t("additional:modules.tools.cosi.featuresList.dipas.commentsVoting"),
-                        data: activeItems.filter(item => {
-                            if (item.layerId === layer.layerId) {
-                                return true;
-                            }
-                            return false;
-                        }).map(item => {
-                            return {x: parseInt(item.votingPro, 10) - parseInt(item.votingContra, 10), y: parseInt(item.commentsNumber, 10), name: item.name};
-                        })
+                        data: activeItems
+                            .filter(item => this.sumUpLayers || item.layerId === layer.layerId)
+                            .map(item => {
+                                return {x: parseInt(item.votingPro, 10) - parseInt(item.votingContra, 10), y: parseInt(item.commentsNumber, 10), name: item.name};
+                            })
                     }]
                 };
 

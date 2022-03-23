@@ -78,11 +78,7 @@ export default {
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
-            columnSelector: {name: "Verhältnis", key: "relation"},
-            // Index of the active dataset to display
-            activeSet: 0,
-            // Array to store all results and input values
-            dataSets: []
+            columnSelector: {name: "Verhältnis", key: "relation"}
         };
     },
     computed: {
@@ -182,7 +178,6 @@ export default {
         dataSets (newValue) {
             if (newValue.length === 0) {
                 this.setResults([]);
-                this.activeSet = 0;
             }
         },
 
@@ -396,7 +391,7 @@ export default {
             this.aSumUpSwitchA = false;
             this.aSumUpSwitchB = false;
             this.setResults([]);
-            this.dataSets = [];
+            this.setDataSets([]);
             this.setDataToColorCodeMap(false);
         },
         /**
@@ -491,7 +486,7 @@ export default {
             };
 
             this.dataSets.push(calculationSet);
-            this.activeSet = this.dataSets.length - 1;
+            this.setActiveSet(this.dataSets.length - 1);
         },
         /**
          * @description Fires when user hits calulcate button. Prepares data sets for calculation.
@@ -647,6 +642,7 @@ export default {
             });
 
             this.setResults(utils.calculateRatio(dataArray, this.selectedYear));
+            this.dataSets[this.activeSet].results = this.results;
         },
         /**
          * @description Transforming results data for excel export
@@ -719,11 +715,13 @@ export default {
          */
         loadToChartGenerator () {
             const graphObj = {
-                    id: "calcratio",
-                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name,
+                    id: "calcratio-" + this.selectedFeatures.map(district => {
+                        return district.id_;
+                    }).join("-") + "-" + this.selectedFieldA.id + "-" + this.paramFieldA.name + "-" + this.selectedFieldB.id + "-" + this.paramFieldB.name,
+                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name + " (" + this.$t("additional:modules.tools.cosi.calculateRatio.title") + ")",
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
-                    source: "Versorgungsanalyse",
+                    source: this.$t("additional:modules.tools.cosi.calculateRatio.title"),
                     scaleLabels: [this.columnSelector.name, "Jahre"],
                     data: {
                         labels: [...this.availableYears],
@@ -733,8 +731,10 @@ export default {
 
                 dataArray = [];
 
-            this.resultsClone.forEach(result => {
-                dataArray.push(result.data);
+            this.dataSets[this.activeSet].results.forEach(result => {
+                if (result) {
+                    dataArray.push(result.data);
+                }
             });
 
             this.availableYears.forEach(year => {
@@ -773,7 +773,7 @@ export default {
         setPrevNext (value) {
             const l = this.dataSets.length;
 
-            this.activeSet = (((this.activeSet + value) % l) + l) % l; // modulo with negative handling
+            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
         },
         /**
          * @description Deletes a set from the Tool Window.
@@ -782,7 +782,7 @@ export default {
          */
         removeSet (index) {
             if (this.activeSet === this.dataSets.length - 1) {
-                this.activeSet -= 1;
+                this.setActiveSet(this.activeSet - 1);
             }
 
             this.dataSets.splice(index, 1);
@@ -1115,7 +1115,7 @@ export default {
                             next: $t('additional:modules.tools.cosi.calculateRatio.paginationNext'),
                             prev: $t('additional:modules.tools.cosi.calculateRatio.paginationPrev'),
                         }"
-                        @setActiveSet="(n) => activeSet = n"
+                        @setActiveSet="(n) => setActiveSet(n)"
                         @setPrevNext="(n) => setPrevNext(n)"
                         @removeSingle="(n) => removeSet(n)"
                         @removeAll="clearAllValues"
