@@ -1,26 +1,27 @@
 # CoSI 
 ___
 ## Cockpit Städtische Infrakstrukturen
-___
 #### GIS + datenbasierte Analyse- und Planungstools in der Hamburger Stadtverwaltung
+___
 
 
 ### Nutzerhandbuch
----
-#### 2. Phase (Weiterentwicklung)
-### Version 2.0
-#### Zur Internen Nutzung
+
+**2. Phase (Weiterentwicklung + Produktionsreife)**   
+**Version 1.2.0**  
+*Zur Internen Nutzung*
+___
 
 
 ### Projektteam
 Daniel Schulz, HafenCity Universität Hamburg  
-Sebastian Duden, Landesbetrieb für Geoinformation und Vermessung Hamburg
-Johanna Fischer, Hafen City Universität  
+Sebastian Duden, Landesbetrieb für Geoinformation und Vermessung Hamburg  
+Johanna Fischer, HafenCity Universität  
 Nicola Stradtmann, HafenCity Universität Hamburg  
-Bertram Hillmann, a3rtgm GbR
+Bertram Hillmann, a3rtgm GbR  
 Dennis Rupnow, HiTec  
 Ogeigha Koroyin, HafenCity Universität Hamburg  
-Yuxiang Zhang, HafenCity Universität Hamburg
+Yuxiang Zhang, HafenCity Universität Hamburg  
 Jannes Süpke, ITD
 
 
@@ -29,6 +30,8 @@ Jannes Süpke, ITD
 
 ### Keywords
 GIS, Dashboard, Data Driven Urban Planning, Social Infrastructure, Urban Data Platform, Data Visualization, Planning Support Tools, Demand Driven Decision Making  
+___
+
 
 ## Zusammenfassung
 Bei der Planung städtischer und sozialer Infrastruktur sind Entscheidungsprozesse in der öffentlichen Verwaltung häufig durch langwierige Verfahren und eine fragmentierte Datengrundlage charakterisiert. D.h. Bedarfe werden teilweise  spät erkannt, oder die Konkretisierung der Planung verzögert sich durch das aufwendige Beschaffen von strukturierten Informationen.\
