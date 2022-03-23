@@ -446,10 +446,7 @@ export default {
 
 <template>
     <div class="gfi-school-catchment-area">
-        <div
-            class="tab-panel"
-            :class="{ 'hidden': !isActiveTab('data') }"
-        >
+        <div :class="{ 'hidden': !isActiveTab('data') }">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -486,7 +483,7 @@ export default {
             </table>
         </div>
         <div
-            class="tab-panel gfi-info"
+            class="gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
         />
     </div>

@@ -95,7 +95,7 @@ export default {
 <template>
     <div class="gfi-bildungsatlas-fluechtlinge">
         <div
-            class="tab-panel gfi-data"
+            class="gfi-data"
             :class="{ 'hidden': !isActiveTab('data') }"
         >
             <div class="gbf-header">
@@ -118,7 +118,7 @@ export default {
             </div>
         </div>
         <div
-            class="tab-panel gfi-info"
+            class="gfi-info"
             :class="{ 'hidden': !isActiveTab('info') }"
         />
     </div>
