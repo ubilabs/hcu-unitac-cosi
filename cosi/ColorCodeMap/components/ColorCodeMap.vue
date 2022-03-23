@@ -625,7 +625,7 @@ export default {
                 </button>
                 <button
                     class="map_button"
-                    :title="$t('additional:modules.tools.colorCodeMap.showDistrictNames')"
+                    :title="visualizationState ? $t('additional:modules.tools.colorCodeMap.showDistrictNames') : $t('additional:modules.tools.colorCodeMap.needViz')"
                     @click="setShowMapNames(!showMapNames)"
                 >
                     <v-icon>

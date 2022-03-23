@@ -11,6 +11,7 @@
                 "animate": "Animate visualization over the years",
                 "generateChart": "Generate chart from dataset",
                 "showDistrictNames": "Show district names",
+                "needViz": "Visualization has to be active to display district names on the map",
                 "metadata": "Open meta data",
                 "noData": "no data available",
                 "yearsLabal": "Years"
