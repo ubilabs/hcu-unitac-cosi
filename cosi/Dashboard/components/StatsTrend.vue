@@ -23,6 +23,10 @@ export default {
         locale: {
             type: String,
             default: "de-DE"
+        },
+        tooltipOffset: {
+            type: Number,
+            default: 0
         }
     },
     computed: {
@@ -44,6 +48,7 @@ export default {
     <v-tooltip
         left
         :nudge-top="60"
+        :nudge-left="tooltipOffset"
     >
         <template #activator="{ on, attrs }">
             <v-icon

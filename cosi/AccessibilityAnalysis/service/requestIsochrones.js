@@ -26,7 +26,8 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
             axios.post(url, JSON.stringify(opts), {
                 headers: {
                     "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "5b3ce3597851110001cf6248ef277cc626c440eb819e9299870c194c"
                 },
                 cancelToken: abort && abort.token
             }).then((response) => {

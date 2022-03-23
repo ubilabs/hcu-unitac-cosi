@@ -167,7 +167,7 @@ export default {
         this.$on("close", this.close);
     },
     mounted () {
-        const namedProjections = this.$store.state.configJs.namedProjections;
+        const namedProjections = this.$store.state.configJson.namedProjections;
 
         if (namedProjections) {
             namedProjections.reverse();

@@ -117,9 +117,6 @@
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   },
-  "OpenRouteService": {
-    "type": "tool"
-  },
   "AccessibilityAnalysis": {
     "path": "cosi/AccessibilityAnalysis",
     "type": "tool"
