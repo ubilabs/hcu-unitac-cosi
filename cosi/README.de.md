@@ -246,7 +246,8 @@ Mit Hilfe dieses Werkzeuges können Sie ein Polygon auf der Karte zeichnen, inne
 2. **Eingabe löschen**
    > Löschte die bestehende Flächenauswahl und zeigt alle Fachdaten wieder an.
 3. **Einwohnerabfrage**
-   > Für die aktuelle Flächenauswahl eine [Einwohnerabfrage](#markdown-header-einwohnerabfrage) durchführen.
+   > Für die aktuelle Flächenauswahl eine [Einwohnerabfrage](#markdown-header-einwohnerabfrage) durchführen. 
+4. **Ergebnisdarstellung auf der Karte**
 
 
 ### Einwohnerabfrage

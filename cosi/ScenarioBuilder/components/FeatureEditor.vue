@@ -3,11 +3,13 @@ import {mapGetters} from "vuex";
 import Modal from "../../../../src/share-components/modals/components/ModalItem.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
 import beautifyKey from "../../../../src/utils/beautifyKey";
+import ToolInfo from "../../components/ToolInfo.vue";
 
 export default {
     name: "FeatureEditor",
     components: {
-        Modal
+        Modal,
+        ToolInfo
     },
     data: () => ({
         editDialog: false,
@@ -27,9 +29,14 @@ export default {
         confirmAction: {
             function: () => null,
             text: ""
+        },
+        subReadMeUrl: {
+            "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/einrichtungenbearbeiten.md",
+            "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/featureeditor.md"
         }
     }),
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "layerMapById"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
@@ -279,6 +286,7 @@ export default {
                     <v-subheader>
                         {{ $t("additional:modules.tools.cosi.featureEditor.editFeature") }}
                     </v-subheader>
+                    <ToolInfo :url="subReadMeUrl[currentLocale]" />
                     <v-card-title primary-title>
                         {{ selectedFeature.properties[selectedFeature.layerMap.keyOfAttrName] }}
                     </v-card-title>
