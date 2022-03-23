@@ -15,14 +15,20 @@ ___
 
 ### Projektteam
 Daniel Schulz, HafenCity Universität Hamburg  
-Sebastian Duden, Landesbetrieb für Geoinformation und Vermessung Hamburg  
-Johanna Fischer, HafenCity Universität  
+Sebastian Duden, LGV Hamburg  
+Johanna Fischer, HafenCity Universität Hamburg   
 Nicola Stradtmann, HafenCity Universität Hamburg  
 Bertram Hillmann, a3rtgm GbR  
-Dennis Rupnow, HiTec  
-Ogeigha Koroyin, HafenCity Universität Hamburg  
-Yuxiang Zhang, HafenCity Universität Hamburg  
-Jannes Süpke, ITD
+Jannes Süpke, Senatskanzlei Hamburg, ITD  
+Peter Duensing, Senatskanzlei Hamburg, ITD    
+Hendrik Landgrebe, BA Hamburg-Nord  
+Gabriela Gabbert, BA Hamburg-Nord  
+Prof. Dr. Gesa Ziemer, HafenCity Universität Hamburg  
+Ogeigha Koroyin, HiTec e.V. (ehem.)  
+Dennis Rupnow, HiTec e.V. (ehem.)   
+Christian Bähnisch, HiTec e.V. (ehem.)   
+Yuxiang Zhang, HafenCity Universität Hamburg (ehem.)   
+Antje Widmayer, BA Hamburg-Nord (ehem.)   
 
 
 ### Stand
