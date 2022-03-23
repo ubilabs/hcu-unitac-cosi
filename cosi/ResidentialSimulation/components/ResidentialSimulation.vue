@@ -419,7 +419,10 @@ export default {
                 v-if="active"
                 #toolBody
             >
-                <ToolInfo :url="readmeUrl[currentLocale]" />
+                <ToolInfo
+                    :url="readmeUrl"
+                    :locale="currentLocale"
+                />
                 <v-app absolute>
                     <v-main
                         id="scenario-builder"

@@ -424,7 +424,8 @@ export default {
             >
                 <v-app class="clamp-40vw">
                     <ToolInfo
-                        :url="readmeUrl[currentLocale]"
+                        :url="readmeUrl"
+                        :locale="currentLocale"
                     />
                     <v-container class="flex btn-grid">
                         <v-card-title secondary-title>

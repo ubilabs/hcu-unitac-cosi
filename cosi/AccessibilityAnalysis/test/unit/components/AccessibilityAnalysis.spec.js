@@ -217,7 +217,6 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     it("trigger button with wrong input", async () => {
-
         const wrapper = await mount(undefined, {error: {response: {data: {error: {code: 3002}}}}});
 
         await wrapper.setData({

@@ -287,7 +287,10 @@ export default {
                 v-if="active"
                 id="chart_generator"
             >
-                <ToolInfo :url="readmeUrl[currentLocale]" />
+                <ToolInfo
+                    :url="readmeUrl"
+                    :locale="currentLocale"
+                />
                 <div
                     id="chart_panel"
                     class="wrapper"

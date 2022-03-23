@@ -486,7 +486,10 @@ export default {
         >
             <template #toolBody>
                 <v-app>
-                    <ToolInfo :url="readmeUrl[currentLocale]" />
+                    <ToolInfo
+                        :url="readmeUrl"
+                        :locale="currentLocale"
+                    />
                     <div
                         v-if="active"
                         id="accessibilityanalysis"

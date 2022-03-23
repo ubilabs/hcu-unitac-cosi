@@ -499,7 +499,10 @@ export default {
             #toolBody
         >
             <v-app>
-                <ToolInfo :url="readmeUrl[currentLocale]" />
+                <ToolInfo
+                    :url="readmeUrl"
+                    :locale="currentLocale"
+                />
                 <form>
                     <v-select
                         v-model="selectedLevelId"
