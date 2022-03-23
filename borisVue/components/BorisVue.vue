@@ -195,7 +195,11 @@ export default {
         :resizable-window="resizableWindow"
     >
         <template #toolBody>
-            <div class="content">
+            <div
+                v-if="active"
+                id="boris"
+                class="content"
+            >
                 <div class="form-group col-xs-12 first">
                     <span>{{ $t("additional:modules.tools.boris.labelSelectYear") }}</span>
                 </div>

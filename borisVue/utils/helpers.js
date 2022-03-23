@@ -224,7 +224,7 @@ const helpers = {
                 }
                 else if (complexData.Bodenrichtwert) {
                     if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
-                        console.error("BRWConvert Fehlermeldung: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
+                        console.error("BRWConvert Error Message: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                     }
                     else {
                         store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
@@ -236,7 +236,7 @@ const helpers = {
             }
         }
         else {
-            console.error("WPS-Abfrage mit Status " + status + " abgebrochen.");
+            console.error("WPS-Query with status " + status + " aborted.");
         }
     },
     /**

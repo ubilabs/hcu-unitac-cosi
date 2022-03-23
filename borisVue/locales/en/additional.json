@@ -53,7 +53,33 @@
                     "floorValue": "Floor Value"
                 },
                 "landValue": "Standard Land Value",
-                "print": "Print"
+                "print": "Print",
+                "alertMessage":{
+                    "noData": "Data request failed. This may be a temporary problem. Please try again.",
+                    "noBrw": "There is no land value at this position"
+                },
+                "config": {
+                    "placeholder": "Search by address/Parcel/Ground reference number",
+                    "menuName": "Background maps",
+                    "parcelSearchName": "Parcel search",
+                    "toolsName": "Tools",
+                    "legendName": "Legend",
+                    "measureName": "Measure distance / area",
+                    "infoName": "Information",
+                    "contactName": "Contact",
+                    "staticLinks": {
+                        "manual":"Operating instructions for BORIS.HH",
+                        "conditions": "Terms of use",
+                        "privacy": "Privacy policy",
+                        "imprint": "Imprint",
+                        "committee": "Hamburg Expert Committee",
+                        "explanation": "Land Value Explanations",
+                        "overview": "Land Value Overview (Agriculture)",
+                        "glossary": "Glossary",
+                        "borisGer": "BORIS-GER"
+                    },
+                    "backgroundLayerName": "ALKIS colored"
+                }  
             }
         }
     }

@@ -53,7 +53,33 @@
                     "floorValue": "Schichtwert"
                 },
                 "landValue": "Bodenrichtwert",
-                "print": "Drucken"
+                "print": "Drucken",
+                "alertMessage" :{
+                    "noData": "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut.",
+                    "noBrw": "An dieser Stelle ist kein BRW vorhanden."
+                },
+                "config": {
+                    "placeholder": "Suche nach Adresse/Flurstück/Bodenrichtwertnummer",
+                    "menuName": "Hintergrundkarten",
+                    "parcelSearchName": "Flurstückssuche",
+                    "toolsName": "Werkzeuge",
+                    "legendName": "Legende",
+                    "measureName": "Strecke / Fläche messen",
+                    "infoName": "Informationen",
+                    "contactName": "Kontakt",
+                    "staticLinks": {
+                        "manual":"Bedienungsanleitung für BORIS.HH",
+                        "conditions": "Nutzungsbedingungen",
+                        "privacy": "Datenschutzerklärung",
+                        "imprint": "Impressum",
+                        "committee": "Gutachterausschuss Hamburg",
+                        "explanation": "BRW-Erläuterungen",
+                        "overview": "BRW Übersicht (Landwirtschaft)",
+                        "glossary": "Glossar",
+                        "borisGer": "BORIS-D"
+                    },
+                    "backgroundLayerName": "ALKIS farbig"
+                } 
             }
         }
     }

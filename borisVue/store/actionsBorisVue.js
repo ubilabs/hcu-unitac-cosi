@@ -15,13 +15,15 @@ const actions = {
     initialize ({dispatch, commit}) {
         let layerList = getLayerModelsByAttributes({isNeverVisibleInTree: true});
 
-        layerList = layerList.filter(function (layer) {
-            return layer.get("gfiAttributes") !== "ignore";
-        });
+        if (layerList) {
+            layerList = layerList.filter(function (layer) {
+                return layer.get("gfiAttributes") !== "ignore";
+            });
 
-        layerList = layerList.reverse();
+            layerList = layerList.reverse();
 
-        commit("setFilteredLayerList", layerList);
+            commit("setFilteredLayerList", layerList);
+        }
 
         mapClickListener((event) => dispatch("requestGFI", {event}));
 
@@ -253,12 +255,12 @@ const actions = {
                 }
             }
             else {
-                dispatch("Alerting/addSingleAlert", {content: "An dieser Stelle ist kein BRW vorhanden."}, {root: true});
+                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noBrw"), {root: true});
             }
         }
         else {
             console.error("Datenabfrage fehlgeschlagen:" + status);
-            dispatch("Alerting/addSingleAlert", {content: "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut."}, {root: true});
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
         }
     },
     /**
@@ -302,7 +304,7 @@ const actions = {
             })
             .catch((error) => {
                 console.error(error.message);
-                dispatch("Alerting/addSingleAlert", {content: "Datenabfrage fehlgeschlagen. (Technische Details: " + error.message}, {root: true});
+                dispatch("Alerting/addSingleAlert", {content: i18next.t("additional:modules.tools.boris.alertMessage:noData") + error.message}, {root: true});
             });
 
     },
@@ -322,7 +324,7 @@ const actions = {
         });
 
         if (landuseMatch) {
-            dispatch("postFeatureRequestByBrwNumber", {richtwertNummer: landuseMatch.richtwertnummer, featureYear: feature.get("jahrgang")});
+            dispatch("postFeatureRequestByBrwNumber", {brwNumber: landuseMatch.richtwertnummer, featureYear: feature.get("jahrgang")});
         }
         else {
             commit("setSelectedLanduse", "");
@@ -382,7 +384,7 @@ const actions = {
             dispatch("combineFeatureWithSelectedDate", featureByYear);
         }
         else {
-            dispatch("Alerting/addSingleAlert", {content: "text"}, {root: true});
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
         }
     },
     /**
@@ -395,7 +397,13 @@ const actions = {
     async combineFeatureWithSelectedDate ({dispatch, getters}, feature) {
         const date = await getters.getDateBySelectedLayerName;
 
-        dispatch("extendFeatureAttributes", {feature, date});
+        if (feature !== undefined) {
+            dispatch("extendFeatureAttributes", {feature, date});
+        }
+        else {
+            console.error("Datenabfrage fehlgeschlagen");
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
+        }
     },
     /**
      * Gets the date of the selected layer
