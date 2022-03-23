@@ -737,7 +737,10 @@ export default {
             v-if="active"
             #toolBody
         >
-            <ToolInfo :url="readmeUrl[currentLocale]" />
+            <ToolInfo
+                :url="readmeUrl"
+                :locale="currentLocale"
+            />
             <v-app id="features-list-wrapper">
                 <div class="mb-4">
                     <div class="selection">

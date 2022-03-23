@@ -9,7 +9,7 @@ export default {
             default: "Werkzeuginformationen (Link öffnen)"
         },
         url: {
-            type: String,
+            type: String || Object,
             default: null
         },
         infoText: {
@@ -19,6 +19,10 @@ export default {
         summary: {
             type: String,
             default: null
+        },
+        locale: {
+            type: String,
+            default: "de"
         }
     },
     methods: {
@@ -26,7 +30,7 @@ export default {
 
         showInfo () {
             if (this.url) {
-                return window.open(this.url, "_blank");
+                return window.open(this.getUrl(), "_blank");
             }
 
             if (this.infoText) {
@@ -39,6 +43,19 @@ export default {
             }
 
             return null;
+        },
+
+        getUrl () {
+            if (typeof this.url === "string") {
+                return this.url;
+            }
+
+            const locale = Object.keys(this.url)
+                .find(
+                    url => url.substring(0, url.indexOf("-")) === this.locale.substring(0, url.indexOf("-"))
+                );
+
+            return this.url[locale];
         }
     }
 };

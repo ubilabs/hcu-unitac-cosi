@@ -145,7 +145,8 @@ export default {
         >
             <v-app class="clamp-600px">
                 <ToolInfo
-                    :url="readmeUrl[currentLocale]"
+                    :url="readmeUrl"
+                    :locale="currentLocale"
                     :summary="$t('additional:modules.tools.cosi.areaSelector.info')"
                 />
                 <div id="area-selector">

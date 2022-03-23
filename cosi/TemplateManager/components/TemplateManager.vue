@@ -184,7 +184,8 @@ export default {
             <v-app class="clamp-40vw">
                 <v-container>
                     <ToolInfo
-                        :url="readmeUrl[currentLocale]"
+                        :url="readmeUrl"
+                        :locale="currentLocale"
                     />
                     <div class="mb-2">
                         {{ $t("additional:modules.tools.cosi.templateManager.infoLoadFromTemplates") }}

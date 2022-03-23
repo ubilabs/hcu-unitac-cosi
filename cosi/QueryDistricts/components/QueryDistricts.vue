@@ -742,7 +742,10 @@ export default {
         :deactivate-gfi="deactivateGFI"
     >
         <template #toolBody>
-            <ToolInfo :url="readmeUrl[currentLocale]" />
+            <ToolInfo
+                :url="readmeUrl"
+                :locale="currentLocale"
+            />
             <v-app>
                 <div
                     v-if="active"

@@ -572,10 +572,6 @@ export default {
         </div>
         <div class="hovermenu">
             <div class="btn_grp">
-                <!-- <ToolInfo
-                    :url="readmeUrl[currentLocale]"
-                    class="ccm_info_button"
-                /> -->
                 <button
                     class="help_button"
                     :title="$t('additional:modules.tools.colorCodeMap.infoTooltip')"
