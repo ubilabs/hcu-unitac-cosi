@@ -44,6 +44,6 @@ export default {
         @click="takeRoute"
         @keydown.enter="takeRoute"
     >
-        <i class="geo-alt-fill" />
+        <i class="bi-geo-alt-fill" />
     </span>
 </template>
