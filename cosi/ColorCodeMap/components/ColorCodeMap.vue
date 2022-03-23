@@ -441,16 +441,11 @@ export default {
                 }),
                 years = this.graphData[0].data.reduce((availableYears, val, i) => val ? [...availableYears, this.availableYears[i]] : availableYears, []);
 
-            years.forEach(year => {
-                graphObj.data.labels.push(year);
-            });
-
-            this.graphData.forEach(dataset => {
-                dataset.data = dataset.data.filter(x => Boolean(x)).reverse();
-                graphObj.data.datasets.push(dataset);
-            });
-
-            graphObj.data.labels.reverse();
+            graphObj.data.labels = years.reverse();
+            graphObj.data.datasets = this.graphData.map(dataset => ({
+                label: dataset.label,
+                data: [...dataset.data].filter(x => Boolean(x)).reverse()
+            }));
 
             this.channelGraphData(graphObj);
         },
