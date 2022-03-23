@@ -354,7 +354,7 @@ export default {
 <template>
     <div class="gfi-schulentlassene">
         <div
-            class="tab-panel gfi-data"
+            class="gfi-data"
             :class="{ 'hidden': !isActiveTab('data') }"
         >
             <div class="rba_header">
@@ -503,8 +503,8 @@ export default {
             </div>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            class="gfi-info"
+            :class="{ 'hidden': !isActiveTab('info') }
         >
             <div v-if="susType === 'anteil_sus_abi'">
                 <h5>
