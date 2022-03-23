@@ -3,7 +3,7 @@ import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
 
-import SchoolRoutePlanningAddressListComponent from "../../../components/SchoolRoutePlanningAddressList.vue";
+import SchoolRoutePlanningAddressComponent from "../../../components/SchoolRoutePlanningAddress.vue";
 import SchoolRoutePlanning from "../../../store/indexSchoolRoutePlanning";
 
 import VectorLayer from "ol/layer/Vector.js";
@@ -20,7 +20,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
             menu: {
                 SchoolRoutePlanning: {
                     "name": "translate#additional:modules.tools.schoolRoutePlanning.title",
-                    "glyphicon": "glyphicon-th-list"
+                    "icon": "bi-list-columns-reverse"
                 }
             }
         }
@@ -54,18 +54,18 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
         };
     });
 
-    it("do not renders the SchoolRoutePlanningAddressList", () => {
-        const wrapper = shallowMount(SchoolRoutePlanningAddressListComponent, wrapperElements);
+    it("do not renders the SchoolRoutePlanningAddress", () => {
+        const wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
 
         expect(wrapper.find(".address-list").exists()).to.be.false;
     });
 
-    it("renders the SchoolRoutePlanningAddressList", () => {
+    it("renders the SchoolRoutePlanningAddress", () => {
         let wrapper = null;
 
         store.commit("Tools/SchoolRoutePlanning/setStreetNames", ["Superman", "Batman"]);
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressListComponent, wrapperElements);
+        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
 
         expect(wrapper.find(".address-list").exists()).to.be.true;
     });
@@ -76,7 +76,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
 
         store.commit("Tools/SchoolRoutePlanning/setStreetNames", streetNames);
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressListComponent, wrapperElements);
+        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
 
         wrapper.findAll("li").wrappers.forEach((li, index) => {
             expect(li.text()).to.be.equal(streetNames[index]);
@@ -86,12 +86,12 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
 
     it("start searchHousenumbers if streetname is clicked", async () => {
         const streetNames = ["Superman", "Batman"],
-            spySearchHousenumbers = sinon.spy(SchoolRoutePlanningAddressListComponent.methods, "searchHousenumbers");
+            spySearchHousenumbers = sinon.spy(SchoolRoutePlanningAddressComponent.methods, "searchHousenumbers");
         let wrapper = null;
 
         store.commit("Tools/SchoolRoutePlanning/setStreetNames", streetNames);
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressListComponent, wrapperElements);
+        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
 
         await wrapper.findAll("li").at(0).trigger("click");
 
@@ -116,7 +116,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
         store.commit("Tools/SchoolRoutePlanning/setStreetNames", streetNames);
         store.commit("Tools/SchoolRoutePlanning/setFilteredHouseNumbers", filteredHouseNumbers);
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressListComponent, wrapperElements);
+        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
 
         wrapper.findAll("li").wrappers.forEach((li, index) => {
             expect(li.text()).to.be.equal(filteredHouseNumbers[index].name);
@@ -126,7 +126,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
 
     it("start findHouseNumber if streetname is clicked", async () => {
         const streetNames = ["Superman"],
-            spyFindHouseNumber = sinon.spy(SchoolRoutePlanningAddressListComponent.methods, "findHouseNumber"),
+            spyFindHouseNumber = sinon.spy(SchoolRoutePlanningAddressComponent.methods, "findHouseNumber"),
             filteredHouseNumbers = [
                 {
                     name: "Superman 1"
@@ -143,7 +143,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
         store.commit("Tools/SchoolRoutePlanning/setStreetNames", streetNames);
         store.commit("Tools/SchoolRoutePlanning/setFilteredHouseNumbers", filteredHouseNumbers);
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressListComponent, wrapperElements);
+        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
 
         await wrapper.findAll("li").at(0).trigger("click");
 

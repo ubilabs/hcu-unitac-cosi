@@ -5,7 +5,7 @@ import mutations from "../store/mutationsSchoolRoutePlanning";
 import actions from "../store/actionsSchoolRoutePlanning";
 
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import AddressList from "./SchoolRoutePlanningAddressList.vue";
+import Address from "./SchoolRoutePlanningAddress.vue";
 import RouteInformation from "./SchoolRoutePlanningRouteInformation.vue";
 import Schools from "./SchoolRoutePlanningSchools.vue";
 import ToggleCheckbox from "../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
@@ -18,7 +18,7 @@ export default {
     name: "SchoolRoutePlanning",
     components: {
         ToolTemplate,
-        AddressList,
+        Address,
         RouteInformation,
         Schools,
         ToggleCheckbox
@@ -32,31 +32,6 @@ export default {
         ...mapGetters("Tools/SchoolRoutePlanning", Object.keys(getters)),
 
         /**
-         * Getter and setter for the input address.
-         */
-        inputAddress: {
-            /**
-             * Gets the input address from the vuex state.
-             * @returns {String} The input address.
-             */
-            get () {
-                if (this.$refs.input) {
-                    this.$refs.input.focus();
-                }
-
-                return this.$store.state.Tools.SchoolRoutePlanning.inputAddress;
-            },
-            /**
-             * Sets the input address to the vuex state.
-             * @param {String} value The input address.
-             * @returns {void}
-             */
-            set (value) {
-                this.setInputAddress(value);
-            }
-        },
-
-        /**
          * Checks if a route is calculated.
          * @returns {Boolean} Route is calculated.
          */
@@ -65,7 +40,7 @@ export default {
         },
 
         /**
-         * Checks if a school or address has been inputed.
+         * Checks if a school or address has been input.
          * @returns {Boolean} Input exist.
          */
         inputExists () {
@@ -79,7 +54,7 @@ export default {
             return this.$store.state.Tools.Print.printFileReady;
         },
         /**
-         * Returns the files donwload url for the link
+         * Returns the files download url for the link
          * @returns {string} url
          */
         fileDownloadUrl () {
@@ -105,6 +80,13 @@ export default {
          */
         progressWidth () {
             return this.$store.state.Tools.Print.progressWidth;
+        },
+        /**
+         * Returns progress in percent
+         * @returns {string} like "30 %"
+         */
+        progress () {
+            return this.progressWidth.split(":")[1].trimStart();
         }
     },
     watch: {
@@ -137,7 +119,7 @@ export default {
         this.$on("close", this.close);
 
         this.addSchools();
-        this.inizializeLayer();
+        this.initializeLayer();
     },
     methods: {
         ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
@@ -165,6 +147,7 @@ export default {
 
             a.href = this.$store.state.Tools.Print.fileDownloadUrl;
             a.download = this.$store.state.Tools.Print.fileDownloadUrl.substr(this.$store.state.Tools.Print.fileDownloadUrl.lastIndexOf("/") + 1);
+            a.target = "_blank";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -205,7 +188,7 @@ export default {
          * Initialize a layer with features and styles.
          * @returns {void}
          */
-        inizializeLayer () {
+        initializeLayer () {
             if (this.layer === null) {
                 this.layer = Radio.request("Map", "createLayerIfNotExists", this.layerName);
             }
@@ -251,7 +234,7 @@ export default {
 <template>
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -264,32 +247,17 @@ export default {
                 v-if="active"
                 class="content-school-route-planning"
             >
-                <div class="form-group col-xs-12 test">
-                    <div class="input-group">
-                        <input
-                            ref="input"
-                            v-model="inputAddress"
-                            :aria-label="$t('additional:modules.tools.schoolRoutePlanning.inputPlaceHolder')"
-                            type="search"
-                            autocomplete="false"
-                            class="form-control address-search"
-                            :placeholder="$t('additional:modules.tools.schoolRoutePlanning.inputPlaceHolder')"
-                            @keyup="(evt) => processInput({evt, layer})"
-                            @keyup.enter="searchHousenumbers({streetName, eventType: 'click'})"
-                        >
-                    </div>
-                    <AddressList :layer="layer" />
-                </div>
+                <Address :layer="layer" />
                 <Schools :layer="layer" />
-                <div class="routing-checkbox-container col-md-12 col-xs-12">
+                <div class="d-flex justify-content-between mb-3">
                     <label
-                        class="routing-checkbox-label"
-                        for="rasterCheckBoxSchoolRoute"
+                        class="form-label"
+                        for="tool-schoolRoutePlanning-raster-checkbox"
                     >
                         {{ $t("additional:modules.tools.schoolRoutePlanning.transportNetwork") }}
                     </label>
                     <ToggleCheckbox
-                        id="rasterCheckBoxSchoolRoute"
+                        id="tool-schoolRoutePlanning-raster-checkbox"
                         ref="rasterCheckBox"
                         class="routing-checkbox-toggle-checkbox"
                         :text-on="$t('common:snippets.checkbox.on')"
@@ -297,10 +265,10 @@ export default {
                         @change="toggleLayer"
                     />
                 </div>
-                <div class="form-group col-md-12 col-xs-12">
+                <div class="mb-3">
                     <button
                         type="button"
-                        class="btn btn-default btn-sm print-route pull-left"
+                        class="btn btn-primary btn-sm mr-3"
                         :disabled="routeIsCalculated"
                         @click="startPrintRoute"
                     >
@@ -308,7 +276,7 @@ export default {
                     </button>
                     <button
                         type="button"
-                        class="btn btn-default btn-sm delete-route pull-right"
+                        class="btn btn-secondary btn-sm"
                         :disabled="inputExists"
                         @click="resetLayerUserInterface"
                     >
@@ -317,27 +285,26 @@ export default {
                 </div>
                 <div
                     v-if="printStarted"
-                    class="form-group col-md-12 col-xs-12"
+                    class="progress mb-3"
                 >
-                    <div class="progress">
-                        <div
-                            class="progress-bar"
-                            role="progressbar"
-                            :style="progressWidth"
-                        >
-                            <span class="sr-only">30% Complete</span>
-                        </div>
+                    <div
+                        class="progress-bar"
+                        role="progressbar"
+                        :style="progressWidth"
+                        :aria-valuenow="progress.replace('%', '')"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        {{ progress }}
                     </div>
                 </div>
-                <div class="form-group col-md-12 col-xs-12">
-                    <button
-                        class="btn btn-lgv-grey btn-block"
-                        :disabled="!showPrintFileReady"
-                        @click="downloadFile"
-                    >
-                        {{ $t("common:modules.tools.print.downloadFile") }}
-                    </button>
-                </div>
+                <button
+                    v-else-if="showPrintFileReady"
+                    class="btn btn-secondary mb-3"
+                    @click="downloadFile"
+                >
+                    {{ $t("common:modules.tools.print.downloadFile") }}
+                </button>
             </div>
             <RouteInformation />
         </template>
@@ -345,43 +312,4 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    .content-school-route-planning {
-        padding-top: 20px;
-        .input-group {
-            width: 100%
-        }
-        .form-group {
-            margin-bottom: 25px;
-            >label {
-                float: left;
-                width: 75%;
-            }
-        }
-        .routing-checkbox-container {
-            margin-bottom: 33px;
-            width: 100%;
-            .routing-checkbox-label {
-                padding-top: 9px;
-            }
-            .routing-checkbox-toggle-checkbox {
-                position: absolute;
-                right: 15px;
-            }
-        }
-    }
-
-    #regional-school {
-        cursor: pointer;
-    }
-</style>
-
-<style lang="scss">
-    .content-school-route-planning {
-        .bootstrap-select {
-            .dropdown-menu {
-                right: 0;
-                left: null;
-            }
-        }
-    }
 </style>

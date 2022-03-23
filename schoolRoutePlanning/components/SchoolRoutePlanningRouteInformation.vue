@@ -16,57 +16,50 @@ export default {
         v-if="routeDescription.length > 0"
         class="route-information-container"
     >
-        <div class="result col-xs-12">
+        <div class="result px-2 py-3 mb-3">
             <p>
                 {{ $t("additional:modules.tools.schoolRoutePlanning.totalLength") }}
-                <span>
+                <span class="highlight">
                     {{ routeLength }}
                 </span>
             </p>
-            <br>
             <p>
-                <small>
+                <small class="d-block mt-3">
                     {{ $t("additional:modules.tools.schoolRoutePlanning.from") }}
                 </small>
-            </p>
-            <p>
-                <span>
+                <span class="highlight">
                     {{ selectedAddress }}
                 </span>
             </p>
-            <br>
             <p>
-                <small>
+                <small class="d-block mt-3">
                     {{ $t("additional:modules.tools.schoolRoutePlanning.to") }}
                 </small>
-            </p>
-            <p>
-                <span>
+                <span class="highlight">
                     {{ `${selectedSchool.get("schulname")}, ${routeElements.SchuleingangTyp} (${routeElements.SchuleingangAdresse})` }}
                 </span>
             </p>
         </div>
-        <div class="description col-xs-12">
-            <button
-                type="button"
-                class="btn btn-default btn-sm btn-block"
-                data-toggle="collapse"
-                data-target="#route-description"
+        <button
+            type="button"
+            class="btn btn-default btn-sm btn-block mb-3"
+            data-bs-toggle="collapse"
+            data-bs-target="#tool-schoolRoutePlanning-route-description"
+        >
+            {{ $t("additional:modules.tools.schoolRoutePlanning.showRouteDescription") }}
+        </button>
+        <ol
+            id="tool-schoolRoutePlanning-route-description"
+            class="collapse pl-2"
+        >
+            <li
+                v-for="routePart in routeDescription"
+                :key="routePart[0]"
+                class="pb-1"
             >
-                {{ $t("additional:modules.tools.schoolRoutePlanning.showRouteDescription") }}
-            </button>
-            <ol
-                id="route-description"
-                class="collapse"
-            >
-                <li
-                    v-for="routePart in routeDescription"
-                    :key="routePart[0]"
-                >
-                    {{ routePart[1] }}
-                </li>
-            </ol>
-        </div>
+                {{ routePart[1] }}
+            </li>
+        </ol>
     </div>
 </template>
 
@@ -75,46 +68,18 @@ export default {
 $font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
 $background_color_1: rgb(229, 229, 229);
 
-    .route-information-container {
-        span {
-            font-family: $font_family_1;
-            font-size: 15px;
-        }
+.highlight {
+    font-family: $font_family_1;
+    font-size: 15px;
+}
 
-        .result {
-            background-color: $background_color_1;
-            p {
-                &:first-child {
-                    padding-top: 20px;
-                }
-                &:last-child {
-                    padding-bottom: 20px;
-                }
-            }
-        }
+.result {
+    background-color: $background_color_1;
+}
 
-        .description {
-            button {
-                margin: 20px 0;
-            }
-            ol {
-                padding-left: 15px;
-            }
-            li {
-                padding-bottom: 5px;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .description {
-                ol {
-                    font-size: 14px;
-                }
-                label {
-                    font-size: 14px;
-                }
-            }
-        }
+@media (max-width: 767px) {
+    #tool-schoolRoutePlanning-route-description {
+        font-size: 14px;
     }
-
+}
 </style>

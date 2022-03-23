@@ -22,7 +22,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
             menu: {
                 SchoolRoutePlanning: {
                     "name": "translate#additional:modules.tools.schoolRoutePlanning.title",
-                    "glyphicon": "glyphicon-th-list"
+                    "icon": "bi-list-columns-reverse"
                 }
             }
         }
@@ -74,22 +74,22 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
     it("Renders the SchoolRoutePlanningSchoolsComponent", () => {
         const wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
-        expect(wrapper.find(".schools-container").exists()).to.be.true;
+        expect(wrapper.find("div.mb-3").exists()).to.be.true;
     });
 
     it("renders the regionalPrimarySchool", () => {
         const wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
-        expect(wrapper.find(".regionalPrimarySchool").exists()).to.be.true;
-        expect(wrapper.find(".regionalPrimarySchool").text()).to.equals("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool");
-        expect(wrapper.find("#regional-school").text()).to.equals("Thor");
+        expect(wrapper.find("span.d-block").exists()).to.be.true;
+        expect(wrapper.find("span.d-block").text()).to.include("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool");
+        expect(wrapper.find("span a.d-block").text()).to.equals("Thor");
     });
 
     it("renders the SchoolRoutePlanningSchoolsComponent", async () => {
         const spySelectSchoolNumber = sinon.spy(SchoolRoutePlanningSchoolsComponent.methods, "selectSchoolNumber"),
             wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
-        await wrapper.find("#regional-school").trigger("click");
+        await wrapper.find("a.d-block").trigger("click");
 
         expect(spySelectSchoolNumber.calledOnce).to.be.true;
         expect(wrapper.vm.selectedSchoolNumber).to.equals("1000-0");
@@ -142,8 +142,8 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
         store.commit("Tools/SchoolRoutePlanning/setSchools", schools);
         wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
-        expect(wrapper.find("#tool-schoolRoutePlanning-schools").exists()).to.be.true;
-        expect(wrapper.find("#tool-schoolRoutePlanning-schools").classes()).to.include("selectpicker");
+        expect(wrapper.find("#tool-schoolRoutePlanning-schools-select").exists()).to.be.true;
+        expect(wrapper.find("#tool-schoolRoutePlanning-schools-select").classes()).to.include("form-select");
         expect(wrapper.findAll("option").at(0).text()).to.equals("school1, example address 1");
         expect(wrapper.findAll("option").at(1).text()).to.equals("school2, example address 2");
         expect(wrapper.findAll("option").at(2).text()).to.equals("school3, example address 3");

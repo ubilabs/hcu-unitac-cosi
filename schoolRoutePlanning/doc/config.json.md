@@ -28,7 +28,7 @@ With this Hamburg-specific tool, the route can be calculated from any Hamburg ad
 #!json
 "schoolRoutePlanning": {
     "name": "translate#additional:modules.tools.schoolRoutePlanning.title",
-    "glyphicon": "glyphicon-road",
+    "icon": "bi-signpost",
     "fmwProcess": "schulwegrouting_wps.fmw",
     "layerId": "8712",
     "wpsId: "1001",
