@@ -496,7 +496,6 @@ export default {
         coverageFunction (letter) {
             const dataArray = [];
 
-
             this.selectedFeatures.forEach(district => {
                 const name = district.getProperties()[this.keyOfAttrName],
                     geometry = district.getGeometry();
@@ -855,6 +854,7 @@ export default {
                         </div>
                         <template v-if="ASwitch">
                             <v-select
+                                id="groupActiveLayerSelect"
                                 v-if="groupActiveLayer.length > 0"
                                 v-model="selectedFieldA"
                                 class="facility_selection selection"

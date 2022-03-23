@@ -33,8 +33,9 @@ config.mocks.$t = key => key;
 
 describe("CalculateRatio.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let component, store, clearStub, sandbox, selectedFeaturesStub, addSingleAlertStub, cleanupStub, vuetify, loadedStub,
-        selectedStatFeaturesStub, facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFeaturesList, expFeaturesOptions;
+    let component, store, clearStub, sandbox, selectedFeaturesStub, addSingleAlertStub, cleanupStub, vuetify, loadendStub,
+        selectedStatFeaturesStub, facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFacilityList, expFeaturesList, expFeaturesOptions,
+        selectedDistrictLevelStub, groupActiveLayerStub;
 
     const mockConfigJson = {
         Portalconfig: {
@@ -57,13 +58,15 @@ describe("CalculateRatio.vue", () => {
         sandbox = sinon.createSandbox();
         addSingleAlertStub = sinon.stub();
         cleanupStub = sinon.stub();
-        loadedStub = sinon.stub();
+        loadendStub = sinon.stub();
         selectedStatFeaturesStub = sinon.stub();
         selectedFeaturesStub = sinon.stub();
         facilitiesMappingStub = sinon.stub();
         layerListStub = sinon.stub();
+        selectedDistrictLevelStub = sinon.stub();
+        groupActiveLayerStub = sinon.stub();
 
-        expFacilitiesOptions = [{
+        expFacilityList = [{
             "group": "Kultur, Freizeit, Sport und Tourismus",
             "layer": [{
                 "layerId": "19574",
@@ -79,6 +82,30 @@ describe("CalculateRatio.vue", () => {
             }]
         }];
 
+        expFacilitiesOptions = [{
+                    "header": "Kultur, Freizeit, Sport und Tourismus"
+                },
+                {
+                    "text": "Öffentliche Bibliotheken",
+                    "value": {
+                        "addressField": [
+                            "adresse",
+                            "ort"
+                        ],
+                        "categoryField": "bezeichnung",
+                        "id": "Öffentliche Bibliotheken",
+                        "keyOfAttrName": "bezeichnung",
+                        "layerId": "19574",
+                        "numericalValues": [
+                            {
+                            "id": "medienanzahl",
+                            "name": "Medienanzahl",
+                            "useConfigName": true
+                            }
+                        ]
+                    }
+                }]
+
         expFeaturesList =
             [{"group": "Bevölkerung", "data": ["Bevölkerung insgesamt", "Bevölkerung weiblich", "Bevölkerung männlich", "Bevölkerung unter 6 Jahren", "Bevölkerung unter 18 Jahren", "Bevölkerung 10 bis unter 15 Jahren", "Bevölkerung 15 bis unter 21 Jahren", "Bevölkerung 15 bis unter 65 Jahren", "Bevölkerung 21 bis unter 45 Jahren", "Bevölkerung 45 bis unter 65 Jahren", "Bevölkerung 6 bis unter 10 Jahren", "Bevölkerung ab 65 Jahren", "Ausländer insgesamt", "Bevölkerung mit Migrationshintergrund"]},
                 {"group": "Fläche", "data": ["Bruttofläche in ha"]},
@@ -90,37 +117,230 @@ describe("CalculateRatio.vue", () => {
                 {"group": "Wohnen", "data": ["Sozialwohnung mit Bindungsauslauf", "Sozialwohnungen", "Wohngebäude", "Wohnungen in Wohn- und Nichtwohngebäuden"]},
                 {"group": "Verkehr", "data": ["Gewerbliche PKW", "PKW Bestand", "Private PKW"]}];
 
-        expFeaturesOptions = [{
-            "group": "Bevölkerung",
-            "data": ["Bevölkerung insgesamt", "Bevölkerung weiblich", "Bevölkerung männlich", "Bevölkerung unter 6 Jahren", "Bevölkerung unter 18 Jahren", "Bevölkerung 10 bis unter 15 Jahren", "Bevölkerung 15 bis unter 21 Jahren", "Bevölkerung 15 bis unter 65 Jahren", "Bevölkerung 21 bis unter 45 Jahren", "Bevölkerung 45 bis unter 65 Jahren", "Bevölkerung 6 bis unter 10 Jahren", "Bevölkerung ab 65 Jahren", "Ausländer insgesamt", "Bevölkerung mit Migrationshintergrund"]
-        }, {
-            "group": "Fläche",
-            "data": ["Bruttofläche in ha"]
-        }, {
-            "group": "Haushalte",
-            "data": ["Alleinerziehende", "Einpersonenhaushalte", "Haushalte mit Kindern", "Privathaushalte"]
-        }, {
-            "group": "Sozialversicherungspflichtige",
-            "data": ["Sozialversicherungspflichtig beschäftigte Frauen", "Sozialversicherungspflichtig Beschäftigte insgesamt", "Sozialversicherungspflichtig beschäftigte Männer"]
-        }, {
-            "group": "Arbeitslose",
-            "data": ["SGB II (Arbeitlosengeld II) Empfänger insgesamt", "SGB III (Arbeitslosengeld) Empfänger insgesamt", "Arbeitslose insgesamt"]
-        }, {
-            "group": "SGB II Leistungen",
-            "data": ["Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Bedarfsgemeinschaften nach SGB II", "Erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren", "Leistungsempfänger/-innen nach SGB II", "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II"]
-        }, {
-            "group": "Grundsicherung im Alter",
-            "data": ["Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"]
-        }, {
-            "group": "Wohnen",
-            "data": ["Sozialwohnung mit Bindungsauslauf", "Sozialwohnungen", "Wohngebäude", "Wohnungen in Wohn- und Nichtwohngebäuden"]
-        }, {
-            "group": "Verkehr",
-            "data": ["Gewerbliche PKW", "PKW Bestand", "Private PKW"]
-        }];
+        expFeaturesOptions = [
+            {
+                "header": "Bevölkerung",
+            },
+            {
+                "text": "Bevölkerung insgesamt",
+                "value": "Bevölkerung insgesamt"
+            },
+            {
+                "text": "Bevölkerung weiblich",
+                "value": "Bevölkerung weiblich"
+            },
+            {
+                "text": "Bevölkerung männlich",
+                "value": "Bevölkerung männlich"
+            },
+            {
+                "text": "Bevölkerung unter 6 Jahren",
+                "value": "Bevölkerung unter 6 Jahren"
+            },
+            {
+                "text": "Bevölkerung unter 18 Jahren",
+                "value": "Bevölkerung unter 18 Jahren"
+            },
+            {
+                "text": "Bevölkerung 10 bis unter 15 Jahren",
+                "value": "Bevölkerung 10 bis unter 15 Jahren"
+            },
+            {
+                "text": "Bevölkerung 15 bis unter 21 Jahren",
+                "value": "Bevölkerung 15 bis unter 21 Jahren"
+            },
+            {
+                "text": "Bevölkerung 15 bis unter 65 Jahren",
+                "value": "Bevölkerung 15 bis unter 65 Jahren"
+            },
+            {
+                "text": "Bevölkerung 21 bis unter 45 Jahren",
+                "value": "Bevölkerung 21 bis unter 45 Jahren"
+            },
+            {
+                "text": "Bevölkerung 45 bis unter 65 Jahren",
+                "value": "Bevölkerung 45 bis unter 65 Jahren"
+            },
+            {
+                "text": "Bevölkerung 6 bis unter 10 Jahren",
+                "value": "Bevölkerung 6 bis unter 10 Jahren"
+            },
+            {
+                "text": "Bevölkerung ab 65 Jahren",
+                "value": "Bevölkerung ab 65 Jahren"
+            },
+            {
+                "text": "Ausländer insgesamt",
+                "value": "Ausländer insgesamt"
+            },
+            {
+                "text": "Bevölkerung mit Migrationshintergrund",
+                "value": "Bevölkerung mit Migrationshintergrund"
+            },
+            {
+                "header": "Bevölkerung Prognose"
+            },
+            {
+                "text": "Bevölkerung weiblich unter 6 Jahren",
+                "value": "Bevölkerung weiblich unter 6 Jahren"
+            },
+            {
+                "text": "Bevölkerung maennlich unter 6 Jahren",
+                "value": "Bevölkerung maennlich unter 6 Jahren"
+            },
+            {
+                "text": "Bevölkerung weiblich 6 bis 17 Jahren",
+                "value": "Bevölkerung weiblich 6 bis 17 Jahren"
+            },
+            {
+                "text": "Bevölkerung maennlich 6 bis 17 Jahren",
+                "value": "Bevölkerung maennlich 6 bis 17 Jahren"
+            },
+            {
+                "text": "Bevölkerung weiblich 18 bis 64 Jahren",
+                "value": "Bevölkerung weiblich 18 bis 64 Jahren"
+            },
+            {
+                "text": "Bevölkerung maennlich 18 bis 64 Jahren",
+                "value": "Bevölkerung maennlich 18 bis 64 Jahren"
+            },
+            {
+                "text": "Bevölkerung weiblich ab 65 Jahren",
+                "value": "Bevölkerung weiblich ab 65 Jahren"
+            },
+            {
+                "text": "Bevölkerung maennlich ab 65 Jahren",
+                "value": "Bevölkerung maennlich ab 65 Jahren"
+            },
+            {
+                "header": "Fläche"
+            },
+            {
+                "text": "Bruttofläche in ha",
+                "value": "Bruttofläche in ha"
+            },
+            {
+                "header": "Haushalte"
+            },
+            {
+                "text": "Alleinerziehende",
+                "value": "Alleinerziehende"
+            },
+            {
+                "text": "Einpersonenhaushalte",
+                "value": "Einpersonenhaushalte"
+            },
+            {
+                "text": "Haushalte mit Kindern",
+                "value": "Haushalte mit Kindern"
+            },
+            {
+                "text": "Privathaushalte",
+                "value": "Privathaushalte"
+            },
+            {
+                "header": "Sozialversicherungspflichtige"
+            },
+            {
+                "text": "Sozialversicherungspflichtig beschäftigte Frauen",
+                "value": "Sozialversicherungspflichtig beschäftigte Frauen"
+            },
+            {
+                "text": "Sozialversicherungspflichtig beschäftigte Männer",
+                "value": "Sozialversicherungspflichtig beschäftigte Männer"
+            },
+            {
+                "text": "Sozialversicherungspflichtig Beschäftigte insgesamt",
+                "value": "Sozialversicherungspflichtig Beschäftigte insgesamt"
+            },
+            {
+                "header": "Arbeitslose"
+            },
+            {
+                "text": "SGB II (Arbeitlosengeld II) Empfänger insgesamt",
+                "value": "SGB II (Arbeitlosengeld II) Empfänger insgesamt"
+            },
+            {
+                "text": "SGB III (Arbeitslosengeld) Empfänger insgesamt",
+                "value": "SGB III (Arbeitslosengeld) Empfänger insgesamt"
+            },
+            {
+                "text": "Arbeitslose insgesamt",
+                "value": "Arbeitslose insgesamt"
+            },
+            {
+                "header": "SGB II Leistungen"
+            },
+            {
+                "text": "Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II",
+                "value": "Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II"
+            },
+            {
+                "text": "Bedarfsgemeinschaften nach SGB II",
+                "value": "Bedarfsgemeinschaften nach SGB II"
+            },
+            {
+                "text": "Erwerbsfähige Leistungsempfänger/-innen nach SGB II",
+                "value": "Erwerbsfähige Leistungsempfänger/-innen nach SGB II"
+            },
+            {
+                "text": "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren",
+                "value": "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren"
+            },
+            {
+                "text": "Leistungsempfänger/-innen nach SGB II",
+                "value": "Leistungsempfänger/-innen nach SGB II"
+            },
+            {
+                "text": "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II",
+                "value": "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II"
+            },
+            {
+                "header": "Grundsicherung im Alter"
+            },
+            {
+                "text": "Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre",
+                "value": "Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"
+            }, 
+            {
+                "header": "Wohnen"
+            },
+            {
+                "text": "Sozialwohnung mit Bindungsauslauf",
+                "value": "Sozialwohnung mit Bindungsauslauf"
+            },
+            {
+                "text": "Sozialwohnungen",
+                "value": "Sozialwohnungen"
+            },
+            {
+                "text": "Wohngebäude",
+                "value": "Wohngebäude"
+            },
+            {
+                "text": "Wohnungen in Wohn- und Nichtwohngebäuden",
+                "value": "Wohnungen in Wohn- und Nichtwohngebäuden"
+            },
+            {
+                "header": "Verkehr"
+            },
+            {
+                "text": "Gewerbliche PKW",
+                "value": "Gewerbliche PKW"
+            },
+            {
+                "text": "PKW Bestand",
+                "value": "PKW Bestand"
+            },
+            {
+                "text": "Private PKW",
+                "value": "Private PKW"
+            }
+        ];
 
 
-        loadedStub.returns(true);
+        loadendStub.returns(true);
+        selectedDistrictLevelStub.returns({districts: []});
 
         store = new Vuex.Store({
             namespaces: true,
@@ -132,17 +352,25 @@ describe("CalculateRatio.vue", () => {
                         DistrictSelector: {
                             namespaced: true,
                             getters: {
-                                loaded: loadedStub,
+                                loadend: loadendStub,
                                 selectedStatFeatures: selectedStatFeaturesStub,
                                 keyOfAttrNameStats: () => "stadtteil",
                                 keyOfAttrName: () => "stadtteil_name",
-                                selectedFeatures: selectedFeaturesStub
+                                selectedFeatures: selectedFeaturesStub,
+                                selectedDistrictLevel: selectedDistrictLevelStub
                             }
                         },
                         FeaturesList: {
                             namespaced: true,
                             getters: {
-                                mapping: facilitiesMappingStub
+                                mapping: facilitiesMappingStub,
+                                groupActiveLayer: groupActiveLayerStub
+                            }
+                        },
+                        ColorCodeMap: {
+                            namespaced: true,
+                            getters: {
+                                visualizationState: () => true
                             }
                         }
                     }
@@ -159,10 +387,19 @@ describe("CalculateRatio.vue", () => {
                         addSingleAlert: addSingleAlertStub,
                         cleanup: cleanupStub
                     }
+                },
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => sinon.stub()
+                    }
                 }
             },
             state: {
                 configJson: mockConfigJson
+            },
+            getters: {
+                uiStyle: () => true
             }
         });
         store.commit("Tools/CalculateRatio/setActive", true);
@@ -197,36 +434,24 @@ describe("CalculateRatio.vue", () => {
         expect(wrapper.find("#calculateratio").html()).to.contain("additional:modules.tools.cosi.calculateRatio.warningNoData");
     });
 
-    it("should show info", async () => {
-        const wrapper = await mount();
-
-        sinon.assert.callCount(addSingleAlertStub, 0);
-
-        await wrapper.find(".info_button").trigger("click");
-
-        sinon.assert.callCount(addSingleAlertStub, 1);
-        expect(wrapper.find(".info_button").html()).to.not.be.empty;
-
-        // eslint-disable-next-line one-var
-        const args = addSingleAlertStub.firstCall.args[1];
-
-        expect(args.category).to.eql("Info");
-        expect(args.content).to.contain("Versorgungsanalyse");
-    });
-
     it("should update data on loadend", async () => {
         selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
 
         const wrapper = await mount();
+
+        expect(wrapper.vm.featuresList.length).to.be.eql(0);
+        expect(wrapper.vm.subFeaturesList.length).to.be.eql(0);
 
         wrapper.vm.$options.watch.loadend.call(wrapper.vm, true);
 
-        expect(wrapper.vm.availableYears).to.be.eql(["2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"]);
-        expect(wrapper.vm.featuresList).to.be.eql(expFeaturesList);
+        expect(wrapper.vm.featuresList.length).to.be.eql(57);
+        expect(wrapper.vm.subFeaturesList.length).to.be.eql(8);
     });
 
     it("should show message on missing facilities", async () => {
         selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
         sinon.assert.callCount(addSingleAlertStub, 0);
 
         const wrapper = await mount(true);
@@ -248,11 +473,12 @@ describe("CalculateRatio.vue", () => {
         facilitiesMappingStub.returns(facilitiesMapping);
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
         selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        groupActiveLayerStub.returns(expFacilitiesOptions);
         const wrapper = await mount(true);
 
         wrapper.vm.$options.watch.layerList.call(wrapper.vm);
 
-        expect(wrapper.vm.facilityList).to.be.eql(expFacilitiesOptions);
+        expect(wrapper.vm.facilityList).to.be.eql(expFacilityList);
     });
 
     it("should switch after facilities available", async () => {
@@ -263,15 +489,16 @@ describe("CalculateRatio.vue", () => {
         facilitiesMappingStub.returns(facilitiesMapping);
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
         selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
+        groupActiveLayerStub.returns(expFacilitiesOptions);
         const wrapper = await mount(true);
 
         await wrapper.vm.$options.watch.layerList.call(wrapper.vm);
         expect(wrapper.find("#switchA").text()).to.be.equal("additional:modules.tools.cosi.calculateRatio.dataA");
-        expect(wrapper.findAllComponents(Multiselect).at(0).vm.options).to.be.eql(expFacilitiesOptions);
+        expect(wrapper.find("#groupActiveLayerSelect").props("items")).to.be.eql(expFacilitiesOptions);
 
         await wrapper.find("#switchA").trigger("click");
         expect(wrapper.find("#switchA").text()).to.be.equal("additional:modules.tools.cosi.calculateRatio.dataB");
-        expect(wrapper.findAllComponents(Multiselect).at(0).vm.options).to.be.eql(expFeaturesOptions);
+        expect(wrapper.find("#feature_selector_A").props("items")).to.be.eql(expFeaturesOptions);
     });
 
     it("should compute result on selection", async () => {
@@ -282,7 +509,7 @@ describe("CalculateRatio.vue", () => {
 
         const wrapper = await mount(true);
 
-        let ms = wrapper.findComponent(Multiselect);
+        let ms = wrapper.find("#feature_selector_A");
 
         ms.trigger("focus");
         ms.vm.$emit("input", "Bevölkerung insgesamt");
@@ -291,7 +518,7 @@ describe("CalculateRatio.vue", () => {
 
         expect(wrapper.findAll(".feature_selection")).to.have.length(2);
 
-        ms = wrapper.findAllComponents(Multiselect).at(1);
+        ms = wrapper.find("#feature_selector_B");
         ms.trigger("focus");
         ms.vm.$emit("input", "Bevölkerung weiblich");
 
