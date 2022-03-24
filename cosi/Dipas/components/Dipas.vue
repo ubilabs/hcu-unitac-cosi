@@ -87,43 +87,7 @@ export default {
     async mounted () {
         this.isMounted = true;
         this.applyTranslationKey(this.name);
-        const fetch = await this.fetchProjects(),
-            features = new GeoJSON().readFeatures(fetch);
-
-        this.selectedStyling = "category";
-        this.projectsFeatureCollection = this.transformFeatures(features);
-        this.projectsColors = generateColorScale(undefined, "interpolateTurbo", this.projectsFeatureCollection.length).legend.colors;
-        for (const [index, feature] of this.projectsFeatureCollection.entries()) {
-            const id = feature.get("id"),
-                layer = {
-                    id: id,
-                    name: id,
-                    project: true,
-                    features: [feature],
-                    isBaseLayer: true
-                },
-                style = new Style({
-                    fill: new Fill({color: this.projectsColors[index].replace("rgb", "rgba").replace(")", ", 0.4)")}),
-                    stroke: new Stroke({color: this.projectsColors[index], width: 4})
-                }),
-                len = Object.values(feature.get("standardCategories")).length,
-                colorScale = generateColorScaleByColor(this.projectsColors[index], len),
-                rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale,
-                model = await this.addLayer(layer),
-                layerOnMap = getLayerById(this.map.getLayers().getArray(), id);
-
-            layerOnMap.setZIndex(0);
-            layerOnMap.setStyle(style);
-            layerOnMap.setVisible(false);
-            model.set("isSelected", false);
-
-            this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
-            this.$set(this.contributions, id, {index: index, colors: {}, rainbowColors: {}, features: [], loading: false});
-            for (const [catIndex, category] of Object.values(feature.get("standardCategories")).entries()) {
-                this.contributions[id].colors[category] = colorScale(catIndex);
-                this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
-            }
-        }
+        this.initialize();
     },
     methods: {
         ...mapActions("Map", ["createLayer", "zoomTo"]),
@@ -131,6 +95,7 @@ export default {
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
+        getLayerById,
 
         /**
         * Closes this tool window by setting active to false
@@ -147,6 +112,50 @@ export default {
 
             if (model) {
                 model.set("isActive", false);
+            }
+        },
+        /**
+         * initializes the component with important data
+         * @returns {void}
+         */
+        async initialize () {
+            const fetch = await this.fetchProjects(),
+                features = new GeoJSON().readFeatures(fetch);
+
+            this.selectedStyling = "category";
+            this.projectsFeatureCollection = this.transformFeatures(features);
+            this.projectsColors = generateColorScale(undefined, "interpolateTurbo", this.projectsFeatureCollection.length).legend.colors;
+            for (let i = 0; i < this.projectsFeatureCollection.length; i++) {
+                const feature = this.projectsFeatureCollection[i],
+                    id = feature.getProperties().id,
+                    layer = {
+                        id: id,
+                        name: id,
+                        project: true,
+                        features: [feature],
+                        isBaseLayer: true
+                    },
+                    style = new Style({
+                        fill: new Fill({color: this.projectsColors[i].replace("rgb", "rgba").replace(")", ", 0.4)")}),
+                        stroke: new Stroke({color: this.projectsColors[i], width: 4})
+                    }),
+                    len = Object.values(feature.get("standardCategories")).length,
+                    colorScale = generateColorScaleByColor(this.projectsColors[i], len),
+                    rainbowColorScale = generateColorScale([0, len + 1], "interpolateRainbow").scale,
+                    model = await this.addLayer(layer),
+                    layerOnMap = this.getLayerById(this.map.getLayers().getArray(), id);
+
+                layerOnMap.setZIndex(0);
+                layerOnMap.setStyle(style);
+                layerOnMap.setVisible(false);
+                model.set("isSelected", false);
+
+                this.$set(this.projectsActive, id, {layer: false, contributions: false, heatmap: false});
+                this.$set(this.contributions, id, {index: i, colors: {}, rainbowColors: {}, features: [], loading: false});
+                for (const [catIndex, category] of Object.values(feature.get("standardCategories")).entries()) {
+                    this.contributions[id].colors[category] = colorScale(catIndex);
+                    this.contributions[id].rainbowColors[category] = rainbowColorScale(catIndex);
+                }
             }
         },
         /**
@@ -296,7 +305,7 @@ export default {
             const id = feature.get("id"),
                 layer = {
                     id: id + "-contributions",
-                    name: feature.get("nameFull") + " Beiträge",
+                    name: feature.get("nameFull") + " BeitrÃ¤ge",
                     features: []
                 };
 
@@ -308,8 +317,8 @@ export default {
                 model = await this.addLayer(layer);
 
                 const
-                    layerOnMap = getLayerById(this.map.getLayers().getArray(), layer.id),
-                    heatmapLayer = getLayerById(this.map.getLayers().getArray(), id + "-heatmap");
+                    layerOnMap = this.getLayerById(this.map.getLayers().getArray(), layer.id),
+                    heatmapLayer = this.getLayerById(this.map.getLayers().getArray(), id + "-heatmap");
 
                 layerOnMap.setZIndex(2);
                 layerOnMap.setStyle(this.contributionStyles);
@@ -458,7 +467,7 @@ export default {
                 contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"}),
                 isFeatureActive = this.isFeatureActive;
             let
-                layer = getLayerById(this.map.getLayers().getArray(), layerId);
+                layer = this.getLayerById(this.map.getLayers().getArray(), layerId);
 
             if (!layer) {
                 const vector = new Vector();
@@ -600,7 +609,7 @@ export default {
                 }
             }
             for (const layerId of layers) {
-                layersOnMap.push(getLayerById(this.map.getLayers().getArray(), layerId));
+                layersOnMap.push(this.getLayerById(this.map.getLayers().getArray(), layerId));
             }
             exportAsGeoJson(layersOnMap);
         },
@@ -682,7 +691,7 @@ export default {
                         >
                             <v-list>
                                 <v-list-group
-                                    v-for="[index, feature] in projectsFeatureCollection.entries()"
+                                    v-for="(feature, index) in projectsFeatureCollection"
                                     :key="feature.get('id')"
                                     @click="scrollPosition(index)"
                                 >
