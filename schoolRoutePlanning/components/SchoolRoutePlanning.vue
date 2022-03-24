@@ -203,6 +203,7 @@ export default {
         resetLayerUserInterface () {
             this.layer.getSource().getFeatures().forEach(feature => feature.unset("geometry"));
             this.resetStateElements();
+            this.$store.commit("Tools/Print/setPrintFileReady", false);
         },
 
         /**
