@@ -461,45 +461,47 @@ const actions = {
      * @returns {void}
      */
     updateSelectedBrwFeature ({state, commit}, {converted, brw}) {
-        const feature = state.selectedBrwFeature,
-            isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+        if (Object.keys(state.selectedBrwFeature).length !== 0) {
+            const feature = state.selectedBrwFeature,
+                isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
 
-        if (converted === "convertedBrw") {
-            const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
+            if (converted === "convertedBrw") {
+                const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
 
-            feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
-            feature.setProperties({"convertedBrwDM": valueDm});
+                feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
+                feature.setProperties({"convertedBrwDM": valueDm});
+            }
+            else if (converted === "zBauweise") {
+                feature.setProperties({
+                    "zBauweise": brw,
+                    "convertedBrw": "",
+                    "convertedBrwDM": ""
+                });
+            }
+            else if (converted === "zGeschossfl_zahl") {
+                feature.setProperties({
+                    "zGeschossfl_zahl": brw,
+                    "convertedBrw": "",
+                    "convertedBrwDM": ""
+                });
+            }
+            else if (converted === "zGrdstk_flaeche") {
+                feature.setProperties({
+                    "zGrdstk_flaeche": brw,
+                    "convertedBrw": "",
+                    "convertedBrwDM": ""
+                });
+            }
+            else if (converted === "zStrassenLage") {
+                feature.setProperties({
+                    "zStrassenLage": brw,
+                    "convertedBrw": "",
+                    "convertedBrwDM": ""
+                });
+            }
+            commit("setSelectedBrwFeature", feature);
+            commit("setConvertedBrw", state.selectedBrwFeature.get("convertedBrw"));
         }
-        else if (converted === "zBauweise") {
-            feature.setProperties({
-                "zBauweise": brw,
-                "convertedBrw": "",
-                "convertedBrwDM": ""
-            });
-        }
-        else if (converted === "zGeschossfl_zahl") {
-            feature.setProperties({
-                "zGeschossfl_zahl": brw,
-                "convertedBrw": "",
-                "convertedBrwDM": ""
-            });
-        }
-        else if (converted === "zGrdstk_flaeche") {
-            feature.setProperties({
-                "zGrdstk_flaeche": brw,
-                "convertedBrw": "",
-                "convertedBrwDM": ""
-            });
-        }
-        else if (converted === "zStrassenLage") {
-            feature.setProperties({
-                "zStrassenLage": brw,
-                "convertedBrw": "",
-                "convertedBrwDM": ""
-            });
-        }
-        commit("setSelectedBrwFeature", feature);
-        commit("setConvertedBrw", state.selectedBrwFeature.get("convertedBrw"));
     }
 };
 

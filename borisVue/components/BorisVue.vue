@@ -70,12 +70,28 @@ export default {
         },
         /**
          * Listens to the selectedLanduse to matchPolygonFeatureWithLanduse
+         * Defines conditions to deal with Floor Values that aren't available to all landuse categories
          * @param {Object} newValue the newly selected landuse
+         * @param {Object} oldValue the previously selected landuse
          * @returns {void}
          */
         selectedLanduse: {
-            handler (newValue) {
+            handler (newValue, oldValue) {
                 if (newValue) {
+                    if (this.buttonValue === "liste") {
+                        if (newValue === "EFH Ein- und Zweifamilienhäuser" ||
+                            newValue === "A Acker" ||
+                            newValue === "GR Grünland" ||
+                            newValue === "EGA Erwerbsgartenanbaufläche" ||
+                            newValue === "F forstwirtschaftliche Fläche"
+                        ) {
+                            if (oldValue === "MFH Mehrfamilienhäuser" ||
+                                oldValue === "GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)" ||
+                                oldValue === "BH Bürohäuser") {
+                                this.setButtonValue("info");
+                            }
+                        }
+                    }
                     this.matchPolygonFeatureWithLanduse({feature: this.selectedPolygon, selectedLanduse: newValue});
                 }
             }

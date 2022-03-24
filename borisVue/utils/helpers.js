@@ -11,11 +11,15 @@ const helpers = {
      * @return {ol.Feature|undefined} brw feature
      */
     findBrwFeatureByYear: function ({features, year}) {
-        const brwFeatures = Object.values(features);
+        if (features) {
+            const brwFeatures = Object.values(features);
 
-        return brwFeatures.find((feature) => {
-            return feature.get("jahrgang") === year;
-        });
+            return brwFeatures.find((feature) => {
+                return feature.get("jahrgang") === year;
+            });
+        }
+
+        return null;
     },
     /**
     * Converts data for POST-request
