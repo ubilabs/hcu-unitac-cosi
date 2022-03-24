@@ -871,8 +871,8 @@ export default {
                         </div>
                         <template v-if="ASwitch">
                             <v-select
-                                id="groupActiveLayerSelect"
                                 v-if="groupActiveLayer.length > 0"
+                                id="groupActiveLayerSelect"
                                 v-model="selectedFieldA"
                                 class="facility_selection selection"
                                 :items="groupActiveLayer"
