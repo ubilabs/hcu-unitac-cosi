@@ -1,6 +1,6 @@
 import {Pointer} from "ol/interaction";
 import QRCode from "qrcode";
-import {transform} from "masterportalAPI/src/crs";
+import {transform} from "masterportalapi/src/crs";
 import Tool from "../../modules/core/modelList/tool/model";
 
 
