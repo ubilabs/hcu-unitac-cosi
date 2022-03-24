@@ -10,7 +10,7 @@ import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {exportAsGeoJson, downloadGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
-import travelTimeIndex from "../assets/inrix_traveltimeindex_2020.json";
+import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 
 export default {
     name: "AccessibilityAnalysis",
