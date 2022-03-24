@@ -439,15 +439,29 @@ export default {
          */
         prepareCoverage () {
             this.setResults([]);
-            const allData = [],
+            const
+                allData = [],
                 calculationSet = {
                     inputs: {},
                     resultHeaders: {},
                     results: {}
                 },
-
                 dataArray_A = this.coverageFunction("A"),
                 dataArray_B = this.coverageFunction("B");
+            let
+                resultHeader_A = this.selectedFieldA.id,
+                resultHeader_B = this.selectedFieldB.id;
+
+            if (Array.isArray(this.selectedFieldA.id)) {
+                resultHeader_A = this.selectedFieldA.id.length > 1 ?
+                    this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") :
+                    this.selectedFieldA.id[0];
+            }
+            if (Array.isArray(this.selectedFieldB.id)) {
+                resultHeader_B = this.selectedFieldB.id.length > 1 ?
+                    this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") :
+                    this.selectedFieldB.id[0];
+            }
 
             dataArray_A.forEach((obj_A) => {
                 const obj_B = dataArray_B.find(obj => obj.name === obj_A.name),
@@ -458,8 +472,8 @@ export default {
 
             this.setResults(utils.calculateRatio(allData, this.selectedYear));
             this.setResultHeaders({
-                typeA: Array.isArray(this.selectedFieldA.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldA.id,
-                typeB: Array.isArray(this.selectedFieldB.id) ? this.$t("additional:modules.tools.cosi.calculateRatio.addedSelection") : this.selectedFieldB.id,
+                typeA: resultHeader_A,
+                typeB: resultHeader_B,
                 fActive: this.fActive_A || this.fActive_B,
                 faktorF: `${this.faktorf_B} / ${this.faktorf_A}`
             });
