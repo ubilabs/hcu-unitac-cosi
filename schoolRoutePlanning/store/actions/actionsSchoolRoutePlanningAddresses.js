@@ -1,4 +1,4 @@
-import {search, setGazetteerUrl} from "masterportalAPI/src/searchAddress";
+import {search, setGazetteerUrl} from "masterportalapi/src/searchAddress";
 import {Point} from "ol/geom.js";
 import {sortObjectsByNestedAttributes} from "../../../../src/utils/sortObjects";
 import mapCollection from "../../../../src/core/dataStorage/mapCollection.js";
