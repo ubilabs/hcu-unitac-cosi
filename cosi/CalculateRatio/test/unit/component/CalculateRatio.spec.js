@@ -21,7 +21,6 @@ import facilitiesMapping from "./facilitiesMapping.json";
 import snapshot01 from "./snapshot01.json";
 import snapshot02 from "./snapshot02.json";
 import GeoJSON from "ol/format/GeoJSON";
-import Multiselect from "vue-multiselect";
 
 Vue.use(Vuetify);
 
@@ -33,8 +32,8 @@ config.mocks.$t = key => key;
 
 describe("CalculateRatio.vue", () => {
     // eslint-disable-next-line no-unused-vars
-    let component, store, clearStub, sandbox, selectedFeaturesStub, addSingleAlertStub, cleanupStub, vuetify, loadendStub,
-        selectedStatFeaturesStub, facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFacilityList, expFeaturesList, expFeaturesOptions,
+    let component, store, sandbox, selectedFeaturesStub, addSingleAlertStub, cleanupStub, vuetify, loadendStub,
+        facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFacilityList, expFeaturesList, expFeaturesOptions,
         selectedDistrictLevelStub, groupActiveLayerStub;
 
     const mockConfigJson = {
@@ -59,7 +58,6 @@ describe("CalculateRatio.vue", () => {
         addSingleAlertStub = sinon.stub();
         cleanupStub = sinon.stub();
         loadendStub = sinon.stub();
-        selectedStatFeaturesStub = sinon.stub();
         selectedFeaturesStub = sinon.stub();
         facilitiesMappingStub = sinon.stub();
         layerListStub = sinon.stub();
@@ -353,7 +351,6 @@ describe("CalculateRatio.vue", () => {
                             namespaced: true,
                             getters: {
                                 loadend: loadendStub,
-                                selectedStatFeatures: selectedStatFeaturesStub,
                                 keyOfAttrNameStats: () => "stadtteil",
                                 keyOfAttrName: () => "stadtteil_name",
                                 selectedFeatures: selectedFeaturesStub,
@@ -391,7 +388,7 @@ describe("CalculateRatio.vue", () => {
                 Language: {
                     namespaced: true,
                     getters: {
-                        currentLocale: () => sinon.stub()
+                        currentLocale: () => "de-DE"
                     }
                 }
             },
@@ -435,7 +432,6 @@ describe("CalculateRatio.vue", () => {
     });
 
     it("should update data on loadend", async () => {
-        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
 
         const wrapper = await mount();
@@ -450,7 +446,6 @@ describe("CalculateRatio.vue", () => {
     });
 
     it("should show message on missing facilities", async () => {
-        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
         sinon.assert.callCount(addSingleAlertStub, 0);
 
@@ -472,7 +467,6 @@ describe("CalculateRatio.vue", () => {
         }]);
         facilitiesMappingStub.returns(facilitiesMapping);
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
-        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
         groupActiveLayerStub.returns(expFacilitiesOptions);
         const wrapper = await mount(true);
 
@@ -488,7 +482,6 @@ describe("CalculateRatio.vue", () => {
         }]);
         facilitiesMappingStub.returns(facilitiesMapping);
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
-        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
         groupActiveLayerStub.returns(expFacilitiesOptions);
         const wrapper = await mount(true);
 
@@ -502,15 +495,13 @@ describe("CalculateRatio.vue", () => {
     });
 
     it("should compute result on selection", async () => {
-
-        selectedStatFeaturesStub.returns(new GeoJSON().readFeatures(features_bev));
         selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
-        // selectedFeaturesStub.returns(new GeoJSON().readFeatures({...features_bev, features: features_bev.features.slice(0, 2)}));
 
         const wrapper = await mount(true);
 
         let ms = wrapper.find("#feature_selector_A");
 
+        wrapper.setData({selectedStatFeatures: new GeoJSON().readFeatures(features_bev)});
         ms.trigger("focus");
         ms.vm.$emit("input", "Bevölkerung insgesamt");
 
@@ -529,7 +520,7 @@ describe("CalculateRatio.vue", () => {
 
         wrapper.find(".confirm").trigger("click");
         expect(JSON.parse(JSON.stringify(wrapper.vm.results))).to.be.eql(snapshot01);
-        expect(JSON.parse(JSON.stringify(wrapper.vm.resultData))).to.be.eql(snapshot02);
+        expect(JSON.parse(JSON.stringify(wrapper.vm.resultData(0)))).to.be.eql(snapshot02);
     });
 });
 
