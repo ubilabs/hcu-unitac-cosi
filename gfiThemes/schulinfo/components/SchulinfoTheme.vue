@@ -279,7 +279,7 @@ $background_color_2: rgba(0,0,0,.5);
     }
     .bootstrap-icon {
         font-size: 28px;
-        padding: 0.35em 4px 0;
+        margin: 0.35em 4px 0;
     }
     .star-fill {
         color: $color_2;
