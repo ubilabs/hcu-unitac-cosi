@@ -1,10 +1,10 @@
-import {config, mount, shallowMount, createLocalVue} from "@vue/test-utils";
+import {config, mount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import Vuex from "vuex";
 import SaveSession from "../../../components/SaveSession.vue";
 import SaveSessionStore from "../../../store/indexSaveSession";
 import ScenarioBuilderStore from "../../../../ScenarioBuilder/store/indexScenarioBuilder";
-import DrawStore  from "../../../../../../src/modules/tools/draw/store/indexDraw";
+import DrawStore from "../../../../../../src/modules/tools/draw/store/indexDraw";
 import Vuetify from "vuetify";
 import sinon from "sinon";
 import Vue from "vue";
@@ -21,7 +21,8 @@ localVue.use(Vuex);
 global.requestAnimationFrame = (fn) => fn();
 
 describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
-    let vuetify, store, wrapper = null;
+    let vuetify, store,
+        wrapper = null;
 
     const factory = {
             getMount: () => {
@@ -32,68 +33,69 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 });
             }
         },
-        mock = (function() {
-            var storage = {};
+        mock = (function () {
+            let storage = {};
+
             return {
-              getItem: function(key) {
-                return storage[key] || null;
-              },
-              setItem: function(key, value) {
-                storage[key] = value.toString();
-              },
-              removeItem: function(key) {
-                  delete storage[key];
-              },
-              clear: function() {
-                storage = {};
-              }
+                getItem: function (key) {
+                    return storage[key] || null;
+                },
+                setItem: function (key, value) {
+                    storage[key] = value.toString();
+                },
+                removeItem: function (key) {
+                    delete storage[key];
+                },
+                clear: function () {
+                    storage = {};
+                }
             };
-          })(),
-          layerMock = {
-                getSource: () => ({
-                    getFeatures: sinon.stub().returns([{
-                        type: "Feature",
-                        properties: {
-                            "isOuterCircle": false,
-                            "isVisible": true,
-                            "drawState": {
-                                "opacity": 1,
-                                "fontSize": null,
-                                "drawType": {
-                                    "id": "drawSymbol",
-                                    "geometry": "Point"
-                                },
-                                "symbol": {
-                                    "id": "iconPoint",
-                                    "type": "simple_point",
-                                    "value": "simple_point"
-                                },
-                                "zIndex": 0,
-                                "imgPath": "https://geodienste.hamburg.de/lgv-config/img/",
-                                "pointSize": 16,
-                                "color": [
-                                    55,
-                                    126,
-                                    184,
-                                    1
-                                ]
+        })(),
+        layerMock = {
+            getSource: () => ({
+                getFeatures: sinon.stub().returns([{
+                    type: "Feature",
+                    properties: {
+                        "isOuterCircle": false,
+                        "isVisible": true,
+                        "drawState": {
+                            "opacity": 1,
+                            "fontSize": null,
+                            "drawType": {
+                                "id": "drawSymbol",
+                                "geometry": "Point"
                             },
-                            "fromDrawTool": true
-                        },
-                        geometry: {
-                            "type": "Point",
-                            "coordinates": [
-                                571253.6428829662,
-                                5939501.987404781
+                            "symbol": {
+                                "id": "iconPoint",
+                                "type": "simple_point",
+                                "value": "simple_point"
+                            },
+                            "zIndex": 0,
+                            "imgPath": "https://geodienste.hamburg.de/lgv-config/img/",
+                            "pointSize": 16,
+                            "color": [
+                                55,
+                                126,
+                                184,
+                                1
                             ]
-                        }
-                    }])
-                })
-            };
-    
-        Object.defineProperty(window, 'localStorage', { 
-            value: mock
-        });
+                        },
+                        "fromDrawTool": true
+                    },
+                    geometry: {
+                        "type": "Point",
+                        "coordinates": [
+                            571253.6428829662,
+                            5939501.987404781
+                        ]
+                    }
+                }])
+            })
+        };
+
+    Object.defineProperty(window, "localStorage", {
+        value: mock
+    });
 
     beforeEach(() => {
         vuetify = new Vuetify();
@@ -135,7 +137,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 Language: {
                     namespaced: true,
                     getters: {
-                        currentLocale: () => sinon.stub()
+                        currentLocale: () => "de-DE"
                     }
                 }
             },
@@ -148,7 +150,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
     afterEach(() => {
         wrapper.destroy();
         sinon.restore();
-    })
+    });
 
     describe("Component DOM", () => {
         it("should exist", () => {
@@ -172,7 +174,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
         describe("buttons should call their respective methods", async () => {
             it("save-session button calls quickSave", async () => {
                 const stubQuickSave = sinon.stub(SaveSession.methods, "quickSave");
-                
+
                 wrapper = factory.getMount();
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
@@ -196,7 +198,8 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
                 const snackbar = wrapper.find("#save-dialog").find(".v-snack__wrapper");
-                expect(snackbar.attributes().style).to.eql("display: none;")
+
+                expect(snackbar.attributes().style).to.eql("display: none;");
                 wrapper.find("#save-to-file").trigger("click");
                 await wrapper.vm.$nextTick();
                 expect(snackbar.attributes().style).to.eql("");
@@ -209,6 +212,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 wrapper.find("#save-to-file").trigger("click");
                 await wrapper.vm.$nextTick();
                 const snackbar = wrapper.find("#save-dialog").find(".v-snack__wrapper");
+
                 expect(snackbar.attributes().style).to.eql("");
                 wrapper.find("#close-save-dialog").trigger("click");
                 await wrapper.vm.$nextTick();
@@ -231,7 +235,9 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 wrapper = factory.getMount();
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
+
                 store.state.Tools.Draw.layer = layerMock;
+
                 wrapper.find("#save-session").trigger("click");
                 const state = JSON.parse(window.localStorage.getItem("cosi-state")).state;
                 expect(state.Tools.Draw.layer).to.deep.equal(layerMock.getSource().getFeatures());
@@ -264,7 +270,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
         describe("Watchers", () => {
             it("should call 'enableAutoSave' after autoSave was changed to true", async () => {
                 const spyEnableAutoSave = sinon.spy(SaveSession.methods, "enableAutoSave");
-                
+
                 wrapper = factory.getMount();
                 await wrapper.setData({autoSave: true});
                 expect(spyEnableAutoSave.calledOnce).to.be.true;
@@ -272,7 +278,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
 
             it("should call 'load' after sessionToLoad was changed", async () => {
                 const stubLoad = sinon.stub(SaveSession.methods, "load");
-                
+
                 wrapper = factory.getMount();
                 await wrapper.vm.setSessionToLoad("none");
                 expect(stubLoad.calledOnce).to.be.true;
@@ -280,4 +286,3 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
         });
     });
 });
-
