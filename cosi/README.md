@@ -1,6 +1,6 @@
 # CoSI 
 ___
-## Cockpit Städtische Infrakstrukturen
+## Cockpit Städtische Infrastrukturen
 #### GIS + datenbasierte Analyse- und Planungstools in der Hamburger Stadtverwaltung
 ___
 
@@ -45,7 +45,7 @@ Das vorliegende Handbuch beschreibt das *Cockpit Städtische Infrastrukturen* f�
   
 Dazu wurden die durch die *Urban Data Platform* der Stadt Hamburg aufgebauten Datenbankstrukturen genutzt, um eine kartenbasierte Webapplikation zu etablieren, welche den Sozialraumplanern der Stadt eine Reihe von Analysefunktionen zur Verfügung stellt, um auf der Verwaltungsebene der statistischen Gebiete soziodemographische Zusammenhänge zu identifizieren, Trends zu erkennen sowie Verhältnisse zwischen dem existierenden Infrastrukturangebot und den relevanten Zielgruppen zu ermitteln. Das Werkzeug soll im Folgenden helfen, Standorte und Potentiale für die Entwicklung von Infrastruktur zu finden. Die Ergebnisse dieser Analysen können direkt aus CoSI heraus visualisiert und als Entscheidungs- und Diskussionsgrundlage verwendet werden. Der Workflow folgt dabei einer dreistufigen Logik von der *Visualisierung* von Daten, über die *Analyse*, also der kontextuellen Verknüpfung von Information, bis zur *Simulation* von Maßnahmen und Ableitung ihrer  Auswirkungen.  
   
-Um die technischen und inhaltlichen Anforderungen des Initialisierungs-Projekts aufzustellen, wurden im Vorfeld ab Sommer 2018 eine Reihe von Stakeholder- und Userstory-Workshops mit den Mitgliedern der Hamburger Verwaltung auf verschiedenen Ebenen durchgeführt. CoSI wurde dann ab August 2019 in einem agilen Verfahren, basierend auf der SCRUM-Methode, durch ein interdisziplinäres Team der HCU Hamburg und des LGV Hamburg entwickelt und stand den Sozialraumplanern des Bezirks Hamburg Nord seit dem 28.01.2020 bis Mai 2020 als Pilot im internen Verwaltungsnetzwerk zur Verfügung. Mitte 2020 wurde das Verfahren nach erfolgreicher Evaluation in den Produktivbetrieb überführt und steht seitdem bereits mehreren tausend Mitarbeiterinnen und Mitarbeitern zur Verfügung. Das seit dem 01.02.2021 gestartete Weiterentwicklungsprojekt hat das Ziel, bestehende Funktionen zu verbessern und neue Funktionen zu integrieren. Hierzu zählt insbesondere der "Blick nach vorne" durch die Entwicklung einer Simulationsfunktion.  
+Um die technischen und inhaltlichen Anforderungen des Initialisierungs-Projekts aufzustellen, wurden im Vorfeld ab Sommer 2018 eine Reihe von Stakeholder- und Userstory-Workshops mit den Mitgliedern der Hamburger Verwaltung auf verschiedenen Ebenen durchgeführt. CoSI wurde dann ab August 2019 in einem agilen Verfahren, basierend auf der SCRUM-Methode, durch ein interdisziplinäres Team der HCU Hamburg und des LGV Hamburg entwickelt und stand den Sozialraumplanern des Bezirks Hamburg Nord seit dem 28.01.2020 bis Mai 2020 als Pilot im internen Verwaltungsnetzwerk zur Verfügung. Mitte 2020 wurde das Verfahren nach erfolgreicher Evaluation in den Produktivbetrieb überführt und steht seitdem bereits mehreren tausend Mitarbeiterinnen und Mitarbeitern zur Verfügung. Das seit dem 01.02.2021 gestartete Weiterentwicklungsprojekt hat das Ziel, bestehende Funktionen zu verbessern und neue Funktionen zu integrieren. Im Zuge der Entwicklung werden die Datenbedarfe der Sozialraum- und Stadtplaner*innen fortlaufend erfasst und an den UDH/LGV übergeben, Datenverantwortliche lokalisiert und die Datenbestände unter Berücksichtigung potentieller Datenschutzrichtlinien öffentlich oder FHH-intern über die Urban Data Platform (UDP) zur Verfügung gestellt. Es werden auch Integrationsmöglichkeiten für das Tool in die täglichen Arbeit von Behörden und Fachämtern eruiert. Das CoSI-Projekt bündelt diese Informationen, erarbeitet in Anwender-Workshops vertiefte Funktionskonzepte und integriert diese in den Themenbereichen Visualisierung, Analyse und Simulation. So wird ein Planungs-, Kollaborations- und Kommunikationstool entwickelt, welches konzeptuell auf viele weitere Themenbereiche angewendet werden kann.  
   
 
 ## Inhalt
@@ -85,10 +85,8 @@ ___
 ## Datenmodell & -Infrastruktur
 ___
   
-CoSI basiert im Kern aus der Überlagerung regelmäßig aktualisierter regionalstatistischer Kenndaten der einzelnen Gebietsebenen, welche vom Statistikamt Nord für Hamburg und Schleswig-Holstein (StaNord ) geliefert werden, und verschiedenster Fachdaten der unterschiedlichen Behörden und Ämter, wie z.B. dem digitalen Grünplan (BUKEA) oder den Öffentlichen Schulen (BSB). Dabei versucht CoSI mehr als nur die Darstellung der Datensätze in Karte und Tabelle neben- und übereinander zu gewährleisten. Der Anspruch ist es, eine Integration der Daten und eine Interaktion mit den Daten zu erreichen. Also einerseits Zusammenhänge und Wechselwirkungen zwischen verschiedenen Datensätzen für die Nutzerinnen und Nutzer erfahrbar zu machen und andererseits diesen zu erlauben in die Datensätze "einzugreifen", sie zu filtern, zu durchsuchen oder zu "manipulieren". Letzteres, die Echtzeit-Veränderung von Datensätzen im laufenden Programm (s. Simulation) wird aktuell im laufenden Weiterentwicklungsprojekt konzipiert bzw. umgesetzt.
+CoSI basiert im Kern aus der Überlagerung regelmäßig aktualisierter regionalstatistischer Kenndaten der einzelnen Gebietsebenen, welche vom Statistikamt Nord für Hamburg und Schleswig-Holstein (StaNord ) geliefert werden. Ergänzt werden diese durch verschiedenster Fachdaten der unterschiedlichen Behörden und Ämter, wie z.B. dem digitalen Grünplan (BUKEA) oder den Öffentlichen Schulen (BSB). Dabei versucht CoSI mehr als nur die Darstellung der Datensätze in Karte und Tabelle neben- und übereinander zu gewährleisten. Der Anspruch ist es, eine Integration der Daten und eine Interaktion mit den Daten zu erreichen. Also einerseits Zusammenhänge und Wechselwirkungen zwischen verschiedenen Datensätzen für die Nutzerinnen und Nutzer erfahrbar zu machen und andererseits diesen zu erlauben in die Datensätze "einzugreifen", sie zu filtern, zu durchsuchen oder zu "manipulieren". Letztlich wird die Echtzeit-Veränderung von Datensätzen im laufenden Programm (s. Simulation) ermöglicht.
 
-  
-    
 
 ### Regionalstatistische Daten
 Die Daten des StaNord liegen für alle Verwaltungsebenen der FHH (statistische Gebieten, Stadtteile, Bezirke und die Gesamtstadt) vor. Sie umfassen je nach Ebene über 60 Indikatoren, welche sich in folgende Kategorien gliedern:  
@@ -103,9 +101,9 @@ Die Daten des StaNord liegen für alle Verwaltungsebenen der FHH (statistische G
    - Wohnen
    - Verkehr
 
-Diese Datensätze beinhalten je Zeitreihen, welche von (je nach Datensatz) ca. 2012 an erfasst sind und jährlich erweitert werden.
+Diese Datensätze beinhalten Zeitreihen, welche (je nach Datensatz) von ca. 2012 an erfasst sind und jährlich erweitert werden.
 
-*Hinweis: Aus datenschutzrechtlichen Gründen werden bereits vom Datenbereitsteller solche Datensätze herausgefiltert, welche bei sensiblen Daten auf einzelne Individuen zurück verfolgbar wären. Diese Datensätze sind im "–" oder mit "Keine Daten" ausgewiesen.*
+*Hinweis: Aus datenschutzrechtlichen Gründen werden bereits vom Datenbereitsteller solche Datensätze herausgefiltert, welche bei sensiblen Daten auf einzelne Individuen zurückverfolgbar wären. Diese Datensätze sind mit "–" oder mit "Keine Daten" ausgewiesen.*
 
 ### Fachdaten
 Die Fachdatensätze, welche derzeit in CoSI eingebunden sind oder noch eingebunden werden können, werden als Geodienste von unterschiedlichsten Dateneignern (v.a. Behörden, aber prinzipiell auch Privatunternehmen, Echtzeitsensoren, etc.) bereitgestellt und in CoSI, wie im FHH-Atlas, über die URL des jeweiligen Dienstes abgerufen. Viele der Datensätze in ihrer aufbereiteten Form sind aus den Verhandlungs- und Koordinationsprozessen des Urban Data Hub hervorgegangen, über den sich die Behörden und Datenhalter der FHH auf gemeinsame Standards und regelmäßige Veröffentlichungen verständigen.
