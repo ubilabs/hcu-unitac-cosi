@@ -4,8 +4,8 @@ Durch das Erstellen eines Wohnbauquartiers können sie Wohnungsbauszenarien dur
 
 Sobald sie "Wohnungsquartiere anlegen" auswählen, öffnet sich ein Fenster, in dessen oberem Bereich Sie den Szenario Manager finden. (s. [Szenario Manager](#markdown-header-szenario-manager))
 
-![Abbildung: 3: Wohnungsbauquartiere anlegen](https://user-images.githubusercontent.com/43250699/143025884-f86a5897-3757-4b35-9d6d-1e4969d8175d.png)  
-*Abbildung 3: Wohnungsbauquartiere anlegen*
+![Abbildung: 1: Wohnungsbauquartiere anlegen](https://user-images.githubusercontent.com/43250699/143025884-f86a5897-3757-4b35-9d6d-1e4969d8175d.png)  
+*Abbildung 1: Wohnungsbauquartiere anlegen*
 
 1. **Geometrie**
    > Mithilfe des Stiftes kann ein Polygon in der Karte gezeichnet werden. 
@@ -22,7 +22,7 @@ Sobald sie "Wohnungsquartiere anlegen" auswählen, öffnet sich ein Fenster, in 
 7. **Anlegen**
    > Bestätigt die Angaben und erstellt das simulierte Wohnungsbauquartier.
 
-##### **Die Parameter in den Feldern passen sich der gezeichneten Fläche an:**
+#### **Die Parameter in den Feldern passen sich der gezeichneten Fläche an:**
 
 - **Grundfläche**
    > Zeigt die Fläche des gezeichneten Polygons an. 

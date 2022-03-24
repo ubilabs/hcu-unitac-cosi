@@ -2,22 +2,22 @@
 Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden. D.h. alle Beiträge können in der [Einrichtungsübersicht](./einrichtungsuebersicht.md) angezeigt, für [Versorgungsanalyse](./versorgungsanalyse.md), [Erreichbarkeitsanalyse](./erreichbarkeitsanalyse.md) und [Vergleichbare Gebiete Ermitteln](./vergleichbaregebieteermitteln.md) verwendet und mit dem [Filter](./filter.pdf) gefiltert werden.
 
 
-![Abbildung 14: DIPAS](https://user-images.githubusercontent.com/43250699/159553679-c957f150-298f-476a-83ea-73ee854f5f61.png)
+![Abbildung 1: DIPAS](https://user-images.githubusercontent.com/43250699/159553679-c957f150-298f-476a-83ea-73ee854f5f61.png)
 
-*Abbildung 14: DIPAS*
+*Abbildung 1: DIPAS*
 
 1. **Beteiligungsverfahren auswählen**
    > Für jedes Verfahren aus der DIPAS-Datenbank wird automatisch eine Registerkarte angelegt, welche durchs Anklicken aufgeklappt werden kann. Ein aufgeklapptes Verfahren zeigt dessen Beschreibungstext und die Kontrollfelder für die Visualisierung. Jedem Verfahren wid dabei eine zufällige Farbe zugewiesen.
 2. **Indikator**
-   > Das Icon in dem Indikator zeigt zum einen die Farbe an, in dem der jeweilige Datensatz visualiert wird, als auch, ob der Datensatz gerade auf der Karte angezeigt wird oder nicht.
+   > Das Icon in dem Indikator zeigt zum einen die Farbe an, in dem der jeweilige Datensatz visualiert wird. Zum Anderen zeigt es, ob der Datensatz gerade auf der Karte angezeigt wird.
 3. **Legende**
-   > Die Legende zeigt an, welcher Eintragstyp welche Farbe in der Visualierung hat.
+   > Die Legende zeigt an, welche Farbe den Eintragstypen in der Visualierung zugeordnet wird.
 4. **Verfahren in der Karte anzeigen**
    > Zeigt das Verfahrensgebiet als Polygon in der Karte in der jeweiligen Farbe des Verfahrens.
    - **4.1 Auf der Karte anzeigen**
-      > Die Kartenansicht fokussiert auf das jeweilige Verfahrengebiet.
+      > Die Kartenansicht fokussiert auf das jeweilige Verfahrensgebiet.
 5. **Einzelne Beiträge in der Karte anzeigen**
-   > Zeigt alle Einzelbeiträge des Verfahrens in der Karte. Das Styling der Beiträge kann unten (s. 5.) festgelegt werden.
+   > Zeigt alle Einzelbeiträge des Verfahrens in der Karte. Das Styling der Beiträge kann unten (s. 5) festgelegt werden.
 6. **Heatmap in der Karte anzeigen** 
    > Zeigt eine Heatmap der Beiträge in der Karte. Das Gewicht eines Punktes richtet sich dabei nach der Gesamtzahl der Bewertungen des Beitrags, also der Stärke der Resonanz auf ihn.
 7. **Styling der Beiträge wählen**

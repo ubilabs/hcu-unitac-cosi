@@ -33,7 +33,7 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
 3. **Auf der Karte visualisieren**  
    > Die Daten werden mit Hilfe der [Kartenvisualisierung](./kartenvisualisierung.md) auf der Karte visualisiert und je nach Wert in unterschiedlichen Farben dargestellt.
 4. **Tabellenspalte für erweiterte Funktionen auswählen**
-   > Hier können Sie Tabellenspalte auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
+   > Hier können Sie Tabellenspalten auswählen die für die erweiterten Funktionen "Als Chart visualisieren" (3) und "Auf der Karte visualisieren" (4) herangezogen werden soll.
    
 5. **Jahr auswählen**
    > Hier können Sie das Jahr auswählen, für das die entsprechenden Daten geladen worden sind.
@@ -43,7 +43,7 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
          Der Wert für den in Auswahlfeld (1) gewählten Datensatz.
       - **Auswahlfeld (2):**  
          Der Wert für den in Auswahlfeld (2) gewählten Datensatz.
-      **Verhältnis:**  
+      - **Verhältnis:**  
          Hier wurde der Wert des Auswahlfeldes (1) durch den Wert des Auswahlfeldes (2) geteilt.
       - **Bedarfsdeckung:**  
          Die Versorgungsabdeckung in Prozent, d.h. das Verhältnis zwischen der aus Auswahlfeld (1) ermittelten Kapazität und Auswahlfeld (2) im Gebiet. Wurde kein Faktor F ausgewählt, zeigt die Spalte das direkte Verhältnis beider Felder in Prozent an.

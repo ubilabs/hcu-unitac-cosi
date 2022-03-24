@@ -1,7 +1,7 @@
 ### Vorlagen
-![Abbildung 25: Vorlagen](../utils/assets/screenshots/vorlagen.png)
+![Abbildung 1: Vorlagen](../utils/assets/screenshots/vorlagen.png)
 
-*Abbildung 25: Vorlagen*
+*Abbildung 1: Vorlagen*
 
 Über den Dienst **Vorlagen** können Vorlagen zu verschieden Themenkomplexen und Arbeitsfeldern geladen werden. Diese können Fachdatenthemen, aktive Werkzeuge und eine Gebietsauswahl beinhalten. Die verfügbaren Vorlagen und ihr Inhalt werden von den Fachbehörden in Koordination mit dem CoSI-Betriebsteam gepflegt.
 

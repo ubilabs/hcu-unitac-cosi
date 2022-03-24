@@ -8,7 +8,7 @@ Wählen sie unter Filter die gewünschten Parameter für den Vergleich, sowie ei
 *Abbildung 1: Vergleichbare Gebiete ermitteln*  
 
 1. **Statistische Datenfilter**
-   > Gewünschten Parameter für den Vergleich auswählen. Es können beliebig viele Parameter hinzugefügt werden. Alle StaNord-Datensätze sind hierfür verfügbar. Anteilige Werte eignen sich jedoch besser für die Vergleichbarkeit. Gegenwärtig können eigene Berechnungen aus dem Dashboard nicht herangezogen werden.
+   > Gewünschte Parameter für den Vergleich auswählen. Es können beliebig viele Parameter hinzugefügt werden. Alle StaNord-Datensätze sind hierfür verfügbar. Anteilige Werte eignen sich jedoch besser für die Vergleichbarkeit. Gegenwärtig können eigene Berechnungen aus dem Dashboard nicht herangezogen werden.
 2. **Referenzgebiet**
    > Optional kann eins der ausgewählten Gebiete als Referenzgebiet angegeben werden.
 3. **Filter hinzufügen**

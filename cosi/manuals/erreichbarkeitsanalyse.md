@@ -25,11 +25,11 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
 *Abbildung 1: Erreichbarkeit ab einem Referenzpunkt*
   
 1. **Auswahl des Modus**
-   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt oder Erreichbarkeit der gewählten Einrichtungen.
+   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt, entlang einer Route oder Erreichbarkeit der gewählten Einrichtungen im Gebiet.
 2. **Referenzpunkt setzen**
    > Durch Klicken auf der Karte wird der Punkt gesetzt, von dem aus berechnet wird.
 3. **Verkehrsmittel festlegen** 
-   > Das Verkehrsmittel wird ausgewÃ¤hlt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Rad (elektrisch), Gehen, Rollstuhl.
+   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Gehen, Rollstuhl.
 4. **Maßeinheit der Entfernung festlegen**
    > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird
 5. **Entfernung**
@@ -39,11 +39,12 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
    > Die Ergebnisdarstellung auf der Karte wird ausgeblenden.
 8. **Einwohnerabfrage**
    > (s. Einwohnerabfrage)
-9. **Legende & Polygone**
-   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt.
-   Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern als Heatmap.
-10. **Pagination**
-   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+9. **Legende & Isochronen**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Anfrage generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Isochronen (Polygone) in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das vom Referenzpunkt aus erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern. Ist "Verkehrsfluss berücksichtigen" ausgewählt, wird das theoretische Maximum bei freier Fahrt als gestrichelte Linie angezeigt.
+10. **Ergebnisverzeichnis**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über das sog. [Ergebnisverzeichnis](./pagination.md) verwaltet werden.
+
+*Für **Tageszeit**, **Verkehrsfluss berücksichtigen**, und **Von Flächenaußengrenzen berechnen** siehe im folgenden "Erreichbarkeit im Gebiet"*
 
 
 #### Erreichbarkeit im Gebiet
@@ -54,28 +55,28 @@ Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungs
 *Abbildung 2: Erreichbarkeit ausgewählter Einrichtungen im Gebiet*
 
 1. **Auswahl des Modus**
-   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt oder Erreichbarkeit der gewählten Einrichtungen.
+   > Art der Einrichtungsanalyse. Ab einem Referenzpunkt, entlang einer Route oder Erreichbarkeit der gewählten Einrichtungen im Gebiet.
 2. **Thema auswählen**
    > Damit dieses Modul verwendet werden kann muss mindestens ein Thema aktiv sein.
 3. **Verkehrsmittel festlegen**
-   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Rad (elektrisch), Gehen, Rollstuhl.
+   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Gehen, Rollstuhl.
 4. **Maßeinheit der Entfernung festlegen**
    > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird.
 5. **Entfernung**
    > Entfernung in zuvor festgelegter Maßeinheit (Minuten oder Metern) angeben.
 6. **Tageszeit**
-   > Wenn Sie als Verkehrsmittel "Auto" ausgewählt haben, können Sie hier die Tageszeit auswählen, zu der Sie die Erreichbarkeit planen wollen.
+   > Wenn Sie als Verkehrsmittel "Auto" ausgewählt haben, können Sie hier die Tageszeit auswählen, zu der Sie die Erreichbarkeit planen wollen. Die Funktion ist nur verfügbar, wenn "Verkehrsfluss berücksichtigen" aktiv ist. Dieser *Reisezeitindex* beschreibt die Veränderung der Reisezeiten zu verschiedenen Tageszeiten gegenüber einem normierten freien Verkehrsfluss (d.h. ein Reisezeitindex von 1,3 entspricht einer Verlängerung der Reisezeiten bzw. einer Verkürzung der zurückgelegten Strecke um 30%). Die Daten wurden von der Firma INRIX erhoben und beziehen sich, aggregiert für das gesamte Stadtgebiet für die Straßenklassen 2, 3 und 4 (Bundesstraßen, Kreisstraßen, Gemeindestraßen), auf das Jahr 2020. **Der Reisezeitindex bezieht sich ausschließlich auf den Kfz-Verkehr.**
 7. **Verkehrsfluss berücksichtigen**
    > Wählen Sie aus, ob Sie den Verkehrsfluss berücksichtigen wollen oder nicht. 
 8. **Von Flächenaußengrenzen ermitteln**
    > Wenn Sie einen Datensatz ausgewählt haben, wie bspw. "Grünflächen" oder ähnliches, dann wird die Erreichbarkeitsanalyse von der Außengrenze dieser Fläche durchgeführt.
-9. **Legende und Probleme**
-   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+9. **Berechnen**
 10. **Ergebnis ausblenden** 
-11. **Legende und Probleme**
-   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
-12. **Pagination**
-   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+11. **Legende & Isochronen**
+    > Eine Legende wird eingeblendet. Sie wird dynamisch für die Anfrage generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Isochronen (Polygone) in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen die vom den Einrichtungen aus erreichbaren Gebiete abhängig von den zuvor eingegebenen Parametern. Ist "Verkehrsfluss berücksichtigen" ausgewählt, wird das theoretische Maximum bei freier Fahrt als gestrichelte Linie angezeigt.
+12. **Ergebnisverzeichnis**
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über das sog. [Ergebnisverzeichnis](./pagination.md) verwaltet werden.
+
    ### Erreichbarkeit entlang einer Route
 Wenn Sie im Routing-Tool eine Route erstellt haben, können Sie die Erreichbarkeit in einem bestimmten Umkreis um die Route herum berechnen lassen. 
   
@@ -93,7 +94,7 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
    > Entfernung in Metern angeben.
 5. **Berechnen**
 6. **Ergebnis ausblenden** 
-7. **Legende und Probleme**
-   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Heatmap generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Polygone in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das, vom Referenzpunkt aus, erreichbare Gebiet abhÃ¤ngig von den zuvor eingegebenen Parametern als Heatmap.
+7. **Legende und Isochronen**
+   > Eine Legende wird eingeblendet. Sie wird dynamisch für die Anfrage generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Isochronen (Polygone) in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen dasum die Route herum erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern.
 8. **Ergebnisverzeichnis**
-   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über die sog. [Ergebnisverzeichnis](./pagination.md) verwaltet wird. Hier finden Sie mitunter auch Funktionen, die in älteren Versionen teilweise woanders in den Werkzeugen waren.
+   > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über das sog. [Ergebnisverzeichnis](./pagination.md) verwaltet werden.

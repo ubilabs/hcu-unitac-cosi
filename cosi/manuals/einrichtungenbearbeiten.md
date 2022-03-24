@@ -6,7 +6,7 @@ Sie können sowohl selbst angelegte als auch bereits in den Daten vorhandene Ein
 
 *Abbildung 1: Bitte erstellen Sie ein Szenario*
 
-Ein Szenario können Sie wie im Szenario Manager  beschrieben anlegen. Sobald Sie ein Szenario erfolgreich erstellt haben, wenn Sie eine Einrichtung anklicken, folgender Popup am unteren Bildschirmrand: 
+Ein Szenario können Sie wie im [Szenario Manager](./einrichtungenanlegen.md) beschrieben anlegen. Sobald Sie ein Szenario erfolgreich erstellt haben, wenn Sie eine Einrichtung anklicken, folgender Popup am unteren Bildschirmrand: 
 
 ![Abbildung 2: Einrichtung bearbeiten](https://user-images.githubusercontent.com/43250699/159273504-35b08fa1-2206-4ef4-a850-670f0e03a381.JPG)
 
