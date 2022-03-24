@@ -5,8 +5,8 @@
     "relation": 1.923035695144174,
     "capacity": 35880,
     "need": 18658,
-    "coverage": 1.923035695144174,
-    "mirrorCoverage": 1,
+    "coverage": 192.3035695144174,
+    "mirrorCoverage": 100,
     "weightedRelation": 1.923035695144174,
     "data": {
         "name": "Barmbek-Süd",
@@ -70,8 +70,8 @@
     "relation": 1.8953206938281566,
     "capacity": 56382,
     "need": 29748,
-    "coverage": 1.8953206938281566,
-    "mirrorCoverage": 1,
+    "coverage": 189.53206938281566,
+    "mirrorCoverage": 100,
     "weightedRelation": 1.8953206938281566,
     "data": {
         "name": "Winterhude",
@@ -135,8 +135,8 @@
     "relation": 1.9060033880097509,
     "capacity": 92262,
     "need": 48406,
-    "coverage": 1.9060033880097509,
-    "mirrorCoverage": 1,
+    "coverage": 190.60033880097509,
+    "mirrorCoverage": 100,
     "weightedRelation": 1.9060033880097509,
     "data": {
         "faktorf_A": 1,
@@ -155,8 +155,8 @@
     "relation": 1.9060033880097509,
     "capacity": 46131,
     "need": 24203,
-    "coverage": 1.9060033880097509,
-    "mirrorCoverage": 1,
+    "coverage": 190.60033880097509,
+    "mirrorCoverage": 100,
     "weightedRelation": 1.9060033880097509,
     "data": {
         "faktorf_A": 1,
