@@ -57,37 +57,37 @@ export default {
 </script>
 
 <template>
-    <div>
-        <div class="tab-pane fade in active verkehrsstaerken-table">
-            <table class="table table-striped">
-                <thead>
-                    <th>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.category") }}</th>
-                    <th
-                        v-for="(year, i) in years"
-                        :key="i"
-                    >
-                        {{ year }}
-                    </th>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="(name, i) in rowNames"
-                        :key="i"
-                    >
-                        <td class="kategory">
-                            {{ getRowHeader(name) }}
-                        </td>
-                        <td
-                            v-for="(year, j) in years"
-                            :key="j"
-                            class="data"
-                        >
-                            {{ getYearData(year, name) }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="tab-pane active verkehrsstaerken-table">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.category") }}</th>
+                <th
+                    v-for="(year, i) in years"
+                    :key="i"
+                >
+                    {{ year }}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+                v-for="(name, i) in rowNames"
+                :key="i"
+            >
+                <td class="kategory">
+                    {{ getRowHeader(name) }}
+                </td>
+                <td
+                    v-for="(year, j) in years"
+                    :key="j"
+                    class="data"
+                >
+                    {{ getYearData(year, name) }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
