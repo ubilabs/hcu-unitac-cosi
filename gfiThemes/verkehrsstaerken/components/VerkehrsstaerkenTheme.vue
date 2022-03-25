@@ -103,14 +103,6 @@ export default {
             }
         },
         /**
-         * returns the classnames for the tab
-         * @param {String} tab name of the tab depending on property activeTab
-         * @returns {String} classNames of the tab
-         */
-        getTabPaneClasses (tab) {
-            return {active: this.isActiveTab(tab), in: this.isActiveTab(tab), "tab-pane": true, fade: true};
-        },
-        /**
          * Setting the gfi content max width the same as graph
          * @returns {void}
          */
@@ -172,23 +164,23 @@ export default {
             class="tab-content"
         >
             <VerkehrsstaerkenThemeTable
-                :show="isActiveTab('table')"
-                :class="getTabPaneClasses('table')"
+                v-if="isActiveTab('table')"
+                :class="{ active: isActiveTab('table'), 'tab-pane': true }"
                 :row-names="rowNames"
                 :years="years"
                 :dataset="dataset"
                 :type="String('table')"
             />
             <VerkehrsstaerkenThemeLineChart
-                :show="isActiveTab('diagram')"
-                :class="getTabPaneClasses('diagram')"
+                v-if="isActiveTab('diagram')"
+                :class="{ active: isActiveTab('diagram'), 'tab-pane': true }"
                 :dataset="dataset"
                 :type="String('diagram')"
             />
         </div>
         <div
             v-if="!isActiveTab('info')"
-            class="tab-pane downloadButton fade in active"
+            class="tab-pane downloadButton active"
         >
             <button
                 class="btn btn-primary csv-download"
@@ -205,6 +197,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "~variables";
+
 .verkehrsstaerken {
     overflow-x: auto;
 
@@ -231,13 +225,22 @@ export default {
     }
     .header{
         text-align: center;
+        margin-bottom: 20px;
     }
     .nav-pills {
         padding: 6px;
+
+        & > li > a {
+            padding: 0.9375em 1em;
+        }
+        & > li.active > a {
+            color: $secondary_focus_contrast;
+            background-color: $secondary_focus;
+        }
     }
     .tab-content {
         width: 100%;
-        padding: 0px 5px 5px 5px;
+        padding: 0 5px 5px 5px;
     }
     .downloadButton{
          padding: 6px;

@@ -306,7 +306,7 @@ export default {
     <div
         v-if="dataset"
         id="verkehrsstaerken-line-chart"
-        class="tab-pane fade"
+        class="tab-pane"
     >
         <div
             id="verkehrsstaerken-btn-group"
@@ -316,7 +316,7 @@ export default {
             <button
                 id="DTV"
                 type="button"
-                class="btn btn-default kat active"
+                class="btn btn-outline-secondary active"
                 :title="$t('additional:modules.tools.gfi.themes.verkehrsstaerken.DTVTitle')"
                 @click="changeCategory"
             >
@@ -325,7 +325,7 @@ export default {
             <button
                 id="DTVw"
                 type="button"
-                class="btn btn-default kat"
+                class="btn btn-outline-secondary"
                 :title="$t('additional:modules.tools.gfi.themes.verkehrsstaerken.DTVwTitle')"
                 @click="changeCategory"
             >
@@ -334,7 +334,7 @@ export default {
             <button
                 id="Schwerverkehrsanteil am DTVw"
                 type="button"
-                class="btn btn-default kat"
+                class="btn btn-outline-secondary"
                 :title="$t('additional:modules.tools.gfi.themes.verkehrsstaerken.HGVsPerWeekTitle')"
                 @click="changeCategory"
             >
@@ -348,13 +348,16 @@ export default {
 </template>
 
 <style lang="scss">
+@import "~variables";
+
 #verkehrsstaerken-line-chart {
     margin: 6px;
 
     button {
-        outline: none;
+        color: $secondary_contrast;
+        border: 1px solid #adadad;
     }
-    .btn-group{
+    .btn-group {
         padding: 8px;
     }
     #verkehrsstaerken-chart-container {
