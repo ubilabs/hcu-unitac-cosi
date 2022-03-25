@@ -74,7 +74,7 @@ const actions = {
                     ).catch(reason => {
                         console.warn("Error opening panorama viewer: " + reason);
                         dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailed"), {root: true});
-                        }
+                    }
                     );
             }
             catch (e) {
