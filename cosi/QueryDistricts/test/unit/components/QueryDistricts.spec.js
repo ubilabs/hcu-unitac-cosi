@@ -3,12 +3,13 @@ import
 {
     config,
     shallowMount,
+    mount,
     createLocalVue
 } from "@vue/test-utils";
-import QueryDistrictsComponent from "../../../components/QueryDistricts.vue";
+import QueryDistricts from "../../../components/QueryDistricts.vue";
 import LayerFilter from "../../../components/LayerFilter.vue";
 import compareFeatures from "../../../components/compareFeatures.js";
-import QueryDistricts from "../../../store/index";
+import QueryDistrictsStore from "../../../store/index";
 import
 {
     expect
@@ -29,13 +30,15 @@ const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
+global.requestAnimationFrame = (fn) => fn();
+
 config.mocks.$t = key => key;
 
 describe("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
-        addSingleAlertStub, cleanupStub, addFeatureStub, layerByIdStub;
+        addSingleAlertStub, cleanupStub, addFeatureStub, layerByIdStub, activeVectorLayerListStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
@@ -69,7 +72,16 @@ describe("addons/cosi/QueryDistricts/", () => {
                 getName: () => "Horn",
                 getLabel: () => "Horn"
             }
-        ];
+        ],
+        factory = {
+            getMount: () => {
+                return mount(QueryDistricts, {
+                    store,
+                    localVue,
+                    vuetify
+                });
+            }
+        };
 
 
     // eslint-disable-next-line require-jsdoc
@@ -103,6 +115,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         cleanupStub = sandbox.stub();
         addFeatureStub = sandbox.stub();
         layerByIdStub = sandbox.stub();
+        activeVectorLayerListStub = sandbox.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -110,7 +123,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        QueryDistricts,
+                        QueryDistricts: QueryDistrictsStore,
                         DistrictSelector: {
                             namespaced: true,
                             getters: {
@@ -132,6 +145,9 @@ describe("addons/cosi/QueryDistricts/", () => {
                             },
                             mutations: {
                                 setSelectedDistrictsCollection: sandbox.stub()
+                            },
+                            actions: {
+                                setDistrictsByName: sandbox.stub()
                             }
                         },
                         FeaturesList: {
@@ -143,14 +159,15 @@ describe("addons/cosi/QueryDistricts/", () => {
                                         "adresse"
                                     ],
                                     categoryField: null,
-                                    id: "Öffentliche Bibliotheken",
+                                    id: "Ã–ffentliche Bibliotheken",
                                     keyOfAttrName: "bezeichnung",
                                     layerId: "bib_layer",
                                     numericalValues: [{
                                         id: "ente",
                                         name: "Entenart"
                                     }]
-                                })
+                                }),
+                                activeVectorLayerList: activeVectorLayerListStub
                             }
                         }
                     }
@@ -183,10 +200,14 @@ describe("addons/cosi/QueryDistricts/", () => {
                     }
                 },
                 Language: {
+                    namespaced: true,
                     getters: {
                         currentLocale: () => "de-DE"
                     }
                 }
+            },
+            getters: {
+                uiStyle: () => true
             }
         });
         store.commit("Tools/QueryDistricts/setActive", false);
@@ -218,9 +239,9 @@ describe("addons/cosi/QueryDistricts/", () => {
             featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
         }]);
         mappingStub.returns([{
-            value: "Bevölkerung insgesamt",
+            value: "BevÃ¶lkerung insgesamt",
             category: "bev_insgesamt",
-            group: "Bevölkerung",
+            group: "BevÃ¶lkerung",
             valueType: "relative",
             statgebiet: "15563",
             stadtteil: "19034",
@@ -269,29 +290,25 @@ describe("addons/cosi/QueryDistricts/", () => {
             }
             return null;
         });
-    }
 
-    // eslint-disable-next-line require-jsdoc, no-shadow
-    async function mount () {
-        const ret = shallowMount(QueryDistrictsComponent, {
-            stubs: {Tool},
-            store,
-            localVue,
-            vuetify,
-            methods: {
-                getLayerList: getLayerListStub,
-                getAllFeatures
+        sandbox.stub(QueryDistricts.methods, "getLayerList").returns([{
+                id: "19034",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+                featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+            },
+            {
+                id: "19042",
+                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+                featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
             }
+        ]);
 
-        });
-
-        await ret.vm.$nextTick();
-        wrapper = ret;
-        return ret;
+        sandbox.stub(QueryDistricts.methods, "getAllFeatures").callsFake(getAllFeatures);
     }
+
     it("renders inactive", async () => {
 
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         expect(wrapper.find("#queryDistricts").exists()).to.be.false;
     });
@@ -299,7 +316,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         // arrange
         setupDefaultStubs();
 
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         // act
         await setActive(true);
@@ -311,15 +328,18 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.selectedLayer).to.be.null;
         expect(wrapper.vm.districtNames).to.deep.equal(["Test"]);
         expect(wrapper.vm.layerOptions).to.deep.equal([
-            {"header": "Bevölkerung"},
-            {"id": "19034", "name": "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative"}]);
+            {"header": "BevÃ¶lkerung"},
+            {"id": "19034", "name": "BevÃ¶lkerung insgesamt", "group": "BevÃ¶lkerung", "valueType": "relative",
+            "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
+            "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            "ltf": undefined}]);
     });
     it("no selectedFeatures", async () => {
         // arrange
         setupDefaultStubs();
         selectedFeaturesStub.returns([]);
 
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         // act
         await setActive(true);
@@ -330,7 +350,7 @@ describe("addons/cosi/QueryDistricts/", () => {
     it("select district no selected features", async () => {
         // arrange
         setupDefaultStubs();
-        await mount();
+        wrapper = factory.getMount();
         selectedFeaturesStub.returns(null);
 
         // act
@@ -343,9 +363,15 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // act
         await wrapper.setData({
-            selectedDistrict: "Horn"
+            selectedDistrict: "Horn",
+            selectedLayer: {id: "19034", name: "BevÃ¶lkerung insgesamt", "valueType": "relative"}
         });
-
+        await wrapper.find("#add-filter").trigger("click");
+        await wrapper.vm.$nextTick();
+        await wrapper.setData({
+            layerFilterModels: wrapper.vm.dataSets[0].inputs.layerFilterModels
+        });
+        await wrapper.vm.$nextTick();
         // assert
         sinon.assert.callCount(addFeatureStub, 1);
         expect(await wrapper.find("#reference-district-button").text()).to.equal("Horn");
@@ -373,7 +399,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 })
             }
         ]);
-        await mount();
+        wrapper = factory.getMount();
 
         // act
         await setActive(true);
@@ -384,13 +410,13 @@ describe("addons/cosi/QueryDistricts/", () => {
     it("add selected layer", async () => {
         // arrange
         setupDefaultStubs();
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         await setActive(true);
 
         // act
         await wrapper.setData({
-            selectedLayer: {id: "19034", name: "Bevölkerung insgesamt", "valueType": "relative"}
+            selectedLayer: {id: "19034", name: "BevÃ¶lkerung insgesamt", "valueType": "relative"}
         });
         await wrapper.find("#add-filter").trigger("click");
         await wrapper.vm.$nextTick();
@@ -404,8 +430,8 @@ describe("addons/cosi/QueryDistricts/", () => {
                 {
                     "layerId": "19034",
                     "currentLayerId": "19034",
-                    "name": "Bevölkerung insgesamt",
-                    "field": "jahr_2019", "max": 92087, "min": 506, "invalidFeatures": [], "value": 0, "high": 0, "low": 0,
+                    "name": "BevÃ¶lkerung insgesamt",
+                    "field": "jahr_2019", "max": 92087, "min": 506, "invalidFeatures": ["Kleiner Grasbrook", "Steinwerder", "Waltershof", "Finkenwerder", "Neuland", "Gut Moor", "Moorburg", "Altenwerder"], "value": 0, "high": 0, "low": 0,
                     "valueType": "relative",
                     "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                     "error": undefined,
@@ -414,7 +440,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                     "properties": null
                 }
             ]);
-        expect(wrapper.vm.resultNames).to.deep.equal(null);
+        expect(wrapper.vm.resultNames).to.deep.equal([]);
 
         // act: update filter
         await wrapper.setData({
@@ -448,9 +474,11 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.layerFilterModels).to.deep.equal([]);
         expect(wrapper.find("#compare-results").exists()).to.be.false;
         expect(wrapper.vm.layerOptions).to.deep.equal([
-            {header: "Bevölkerung"},
-            {id: "19034", name: "Bevölkerung insgesamt", "group": "Bevölkerung", "valueType": "relative"}
-        ]);
+            {"header": "BevÃ¶lkerung"},
+            {"id": "19034", "name": "BevÃ¶lkerung insgesamt", "group": "BevÃ¶lkerung", "valueType": "relative",
+            "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
+            "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            "ltf": undefined}]);
     });
     it("compareFeatures one filter", async () => {
         // arrange
@@ -496,31 +524,17 @@ describe("addons/cosi/QueryDistricts/", () => {
         );
         expect(ret.table).to.deep.equal([{"0": 133.28764, "1": 804, "name": "Cranz"}]);
     });
-    it("show help", async () => {
-        // arrange
-        setupDefaultStubs();
-        wrapper = await mount();
-
-        await setActive(true);
-
-        // act
-        await wrapper.find("#help").trigger("click");
-
-        // assert
-        sinon.assert.callCount(cleanupStub, 1);
-        sinon.assert.callCount(addSingleAlertStub, 1);
-    });
     it("add fachdaten layer", async () => {
         // arrange
         setupDefaultStubs();
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         await setActive(true);
 
         // act
         await wrapper.setData({
             selectedLayer: {
-                id: "bib_layer", name: "Öffentliche Bibliotheken", valueType: "absolute", group: "Fachdaten", facilityLayerName: "Öffentliche Bibliotheken"
+                id: "bib_layer", name: "Ã–ffentliche Bibliotheken", valueType: "absolute", group: "Fachdaten", facilityLayerName: "Ã–ffentliche Bibliotheken"
             }
         });
 
@@ -532,16 +546,13 @@ describe("addons/cosi/QueryDistricts/", () => {
         const expModel = {
                 "layerId": "bib_layer",
                 "currentLayerId": "bib_layer",
-                "name": "Öffentliche Bibliotheken",
-                "field": "jahr_2020", "max": 1, "min": 0, "invalidFeatures": [], "value": 0, high: 0, low: 0,
+                "name": "Ã–ffentliche Bibliotheken",
+                "field": "jahr_2021", "max": 1, "min": 0, "invalidFeatures": [], "value": 0, high: 0, low: 0,
                 "valueType": "absolute",
-                "fieldValues": ["jahr_2020", "jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
+                "fieldValues": ["jahr_2021", "jahr_2020", "jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
                 "error": undefined,
-                "facilityLayerName": "Öffentliche Bibliotheken",
-                "quotientLayers": [{
-                    "id": "19034",
-                    "name": "Bevölkerung insgesamt"
-                }],
+                "facilityLayerName": "Ã–ffentliche Bibliotheken",
+                "quotientLayers": [],
                 "properties": [{
                     "id": "ente",
                     "name": "Entenart"
@@ -553,12 +564,11 @@ describe("addons/cosi/QueryDistricts/", () => {
             },
             expModelHorn = {
                 ...expModel,
-                "value": 0, high: 1, low: 1,
-                "error": "additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable"
+                "value": 0, high: 1, low: 1
             };
 
         expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
-        expect(wrapper.vm.resultNames).to.deep.equal(["Farmsen-Berne", "Horn"]);
+        expect(wrapper.vm.resultNames).to.deep.equal(["Horn"]);
 
         // act: update filter
         await wrapper.setData({
@@ -591,15 +601,14 @@ describe("addons/cosi/QueryDistricts/", () => {
     it("facilityNames", async () => {
         // arrange
         setupDefaultStubs();
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         // act
         await wrapper.setData({
             facilityNames: [{
-                name: "Öffentliche Bibliotheken",
+                name: "Ã–ffentliche Bibliotheken",
                 id: "bib_layer"
-            }],
-            referenceLayers: [{"id": "19042"}]
+            }]
         });
         await setActive(true);
 
@@ -610,25 +619,23 @@ describe("addons/cosi/QueryDistricts/", () => {
         // assert
         expect(wrapper.vm.allLayerOptions).to.deep.equal([
             {
-                "group": "Bevölkerung",
-                "id": "19034",
-                "name": "Bevölkerung insgesamt",
-                "valueType": "relative"
-            },
-            {
-                "facilityLayerName": "Öffentliche Bibliotheken",
+                "facilityLayerName": "Ã–ffentliche Bibliotheken",
                 "group": "additional:modules.tools.cosi.queryDistricts.funcData",
                 "id": "bib_layer",
-                "name": "Öffentliche Bibliotheken",
+                "name": "Ã–ffentliche Bibliotheken",
                 "valueType": "absolute"
-            }
+            },
+            {"id": "19034", "name": "BevÃ¶lkerung insgesamt", "group": "BevÃ¶lkerung", "valueType": "relative",
+            "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
+            "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            "ltf": undefined}
         ]);
     });
 
     it("quotient layer", async () => {
         // arrange
         setupDefaultStubs();
-        wrapper = await mount();
+        wrapper = factory.getMount();
 
         await setActive(true);
 
@@ -641,7 +648,7 @@ describe("addons/cosi/QueryDistricts/", () => {
 
         // assert
         expect(wrapper.vm.layerFilterModels[0].quotientLayers)
-            .to.deep.equal([{"id": "19034", "name": "Bevölkerung insgesamt"}]);
+            .to.deep.equal([]);
 
         // act
         await wrapper.vm.updateFilter({layerId: "19041", quotientLayer: "19034"});
@@ -654,9 +661,9 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "currentLayerId": "19041/19034",
                 "name": "Layer", "field": "jahr_2019", "value": 0, "valueType": "relative", "high": 0, "low": 0,
                 "fieldValues": ["jahr_2019", "jahr_2018", "jahr_2017", "jahr_2016", "jahr_2015", "jahr_2014", "jahr_2013", "jahr_2012"],
-                "min": 0.00535555414960923, "max": 1.3710088339920947, "invalidFeatures": [],
-                "properties": [null],
-                "quotientLayers": [{"id": "19034", "name": "Bevölkerung insgesamt"}], "quotientLayer": "19034",
+                "min": 0.00535555414960923, "max": 1.3710088339920947, "invalidFeatures": ["Kleiner Grasbrook", "Steinwerder", "Waltershof", "Finkenwerder", "Neuland", "Gut Moor", "Moorburg", "Altenwerder"],
+                "properties": null,
+                "quotientLayers": [], "quotientLayer": "19034",
                 "error": undefined,
                 "facilityLayerName": undefined
             }
@@ -677,8 +684,8 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.layerFilterModels[0].max).to.be.equal(223.32);
-        expect(wrapper.vm.layerFilterModels[0].min).to.be.equal(0.01);
+        expect(wrapper.vm.layerFilterModels[0].max).to.be.equal(3538.6724);
+        expect(wrapper.vm.layerFilterModels[0].min).to.be.equal(54.84489);
 
         // act
         await wrapper.setData({
@@ -687,16 +694,16 @@ describe("addons/cosi/QueryDistricts/", () => {
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.layerFilterModels[0].value).to.be.equal(0.03);
+        expect(wrapper.vm.layerFilterModels[0].value).to.be.equal(2656.598);
 
         // act
         await wrapper.vm.updateFilter({layerId: "19041", quotientLayer: null});
         await wrapper.vm.$nextTick();
 
         // assert
-        expect(wrapper.vm.resultNames.length).to.be.equal(0);
-        expect(wrapper.vm.layerFilterModels[0].max).to.be.equal(3538.67);
-        expect(wrapper.vm.layerFilterModels[0].min).to.be.equal(54.84);
-        expect(wrapper.vm.layerFilterModels[0].value).to.be.equal(2656.6);
+        expect(wrapper.vm.resultNames.length).to.be.equal(1);
+        expect(wrapper.vm.layerFilterModels[0].max).to.be.equal(3538.6724);
+        expect(wrapper.vm.layerFilterModels[0].min).to.be.equal(54.84489);
+        expect(wrapper.vm.layerFilterModels[0].value).to.be.equal(2656.598);
     });
 });
