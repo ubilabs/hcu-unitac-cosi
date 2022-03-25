@@ -60,6 +60,7 @@ export default {
     <div class="tab-pane active verkehrsstaerken-table">
         <table class="table table-striped">
             <thead>
+<<<<<<< HEAD
                 <tr>
                     <th>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.category") }}</th>
                     <th
@@ -86,6 +87,34 @@ export default {
                         {{ getYearData(year, name) }}
                     </td>
                 </tr>
+=======
+            <tr>
+                <th>{{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.category") }}</th>
+                <th
+                    v-for="(year, i) in years"
+                    :key="i"
+                >
+                    {{ year }}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+                v-for="(name, i) in rowNames"
+                :key="i"
+            >
+                <td class="kategory">
+                    {{ getRowHeader(name) }}
+                </td>
+                <td
+                    v-for="(year, j) in years"
+                    :key="j"
+                    class="data"
+                >
+                    {{ getYearData(year, name) }}
+                </td>
+            </tr>
+>>>>>>> 966507be (Fix UI bugged through upgrade from bootstrap)
             </tbody>
         </table>
     </div>
