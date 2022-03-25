@@ -188,7 +188,7 @@ export default {
                 @click="onClick"
             >
                 <span class="bootstrap-icon">
-                    <i class="download" />
+                    <i class="bi-download" />
                 </span>
                 {{ $t("additional:modules.tools.gfi.themes.verkehrsstaerken.download") }}
             </button>
