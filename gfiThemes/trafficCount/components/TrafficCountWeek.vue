@@ -1,4 +1,5 @@
 <script>
+import TrafficCountCalendarButtonGroup from "./TrafficCountCalendarButtonGroup.vue";
 import TrafficCountCompDiagram from "./TrafficCountCompDiagram.vue";
 import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
@@ -12,6 +13,7 @@ import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 export default {
     name: "TrafficCountWeek",
     components: {
+        TrafficCountCalendarButtonGroup,
         TrafficCountCompDiagram,
         TrafficCountCompTable,
         TrafficCountCheckbox
@@ -276,19 +278,7 @@ export default {
                     class="form-control dpinput"
                     placeholder="Datum"
                 >
-                <span class="input-group-btn">
-                    <button
-                        id="weekDateInputButton"
-                        class="btn btn-default"
-                        type="button"
-                        @click="toggleCalendar"
-                    >
-                        <span
-                            class="glyphicon glyphicon-th"
-                            aria-hidden="true"
-                        />
-                    </button>
-                </span>
+                <TrafficCountCalendarButtonGroup id-prefix="week" />
             </div>
         </div>
         <TrafficCountCheckbox
