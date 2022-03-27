@@ -162,40 +162,38 @@ export default {
 </script>
 
 <template>
-    <div class="table">
-        <table class="table-responsive table-striped table-condensed table-bordered text-nowrap">
-            <thead>
-                <tr>
-                    <th class="th-first-col">
-                        {{ tableTitle }}
-                    </th>
-                    <th
-                        v-for="(value, datetime) in getFirstDataset(apiData)"
-                        :key="datetime"
-                        class="th-rest-cols"
-                    >
-                        {{ setColTitle(datetime) }}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="(dataObjFlat, idx) in getFlatApiData(apiData)"
-                    :key="idx"
+    <table class="table table-responsive table-striped table-condensed table-bordered text-nowrap">
+        <thead>
+            <tr>
+                <th class="th-first-col">
+                    {{ tableTitle }}
+                </th>
+                <th
+                    v-for="(value, datetime) in getFirstDataset(apiData)"
+                    :key="datetime"
+                    class="th-rest-cols"
                 >
-                    <td class="td-first-col">
-                        {{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }} {{ setStarAtDay(Object.keys(dataObjFlat.dataset)) }}
-                    </td>
-                    <td
-                        v-for="(value, datetime) of dataObjFlat.dataset"
-                        :key="datetime"
-                    >
-                        {{ setFieldValue(value) }} {{ setStar(datetime) }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    {{ setColTitle(datetime) }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr
+                v-for="(dataObjFlat, idx) in getFlatApiData(apiData)"
+                :key="idx"
+            >
+                <td class="td-first-col">
+                    {{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }} {{ setStarAtDay(Object.keys(dataObjFlat.dataset)) }}
+                </td>
+                <td
+                    v-for="(value, datetime) of dataObjFlat.dataset"
+                    :key="datetime"
+                >
+                    {{ setFieldValue(value) }} {{ setStar(datetime) }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </template>
 
 <style lang="scss" scoped>

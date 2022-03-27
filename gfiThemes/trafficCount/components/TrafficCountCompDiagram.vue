@@ -436,7 +436,7 @@ export default {
         height: 35px;
         float: right;
         margin-right: 30px;
-        margin-top: -35px;
+        margin-top: -3.7em;
         font-family: "MasterPortalFont Bold", "Arial Narrow", Arial, sans-serif;
     }
 
@@ -445,7 +445,7 @@ export default {
             width: 100%;
             padding: 0 10px;
             margin-top: 10px;
-            margin-right: 0px;
+            margin-right: 0;
             margin-bottom: 20px;
         }
         #dayDateInput, #weekDateInput, #yearDateInput {
