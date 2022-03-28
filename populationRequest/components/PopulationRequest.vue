@@ -451,7 +451,7 @@ export default {
                 <div class="graphicalSelectionContainer row">
                     <label
                         for="graphicalSelection"
-                        class="col-sm-5"
+                        class="col-sm-5 col-form-label"
                     >
                         {{ translate("additional:modules.tools.populationRequest.select.action") }}
                     </label>
