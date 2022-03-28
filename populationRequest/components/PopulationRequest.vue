@@ -444,34 +444,27 @@ export default {
             v-if="active"
             #toolBody
         >
-            <div
-                class="form-horizontal"
-                role="form"
-            >
-                <div class="col-md-12 col-sm-12 col-xs-12">
+            <form class="form-horizontal">
+                <div class="mb-3">
                     {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    &nbsp;
-                </div>
-                <div class="form-group form-group-sm">
+                <div class="row">
                     <label
                         for="graphicalSelection"
-                        class="col-md-5 col-sm-5 control-label"
+                        class="col-sm-5 col-form-label"
                     >
                         {{ translate("additional:modules.tools.populationRequest.select.action") }}
                     </label>
-                    <div class="col-md-7 col-sm-7">
-                        <div class="dropdown">
-                            <GraphicalSelect
-                                ref="graphicalSelection"
-                                :select-element="'Dropdown'"
-                                :focus-on-creation="true"
-                            />
-                        </div>
+                    <div class="col-sm-7 dropdown">
+                        <GraphicalSelect
+                            id="graphicalSelection"
+                            ref="graphicalSelection"
+                            :select-element="'Dropdown'"
+                            :focus-on-creation="true"
+                        />
                     </div>
                 </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
+                <div>
                     <div
                         v-if="inhabitantsFHHNum > -1 || inhabitantsMRHNum > -1"
                         class="result"
@@ -555,7 +548,7 @@ export default {
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
             <div
                 v-if="isDefaultStyle"
             >
