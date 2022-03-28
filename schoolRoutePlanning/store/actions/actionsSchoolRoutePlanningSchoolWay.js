@@ -103,7 +103,8 @@ export default {
 
         if (routeElements === undefined) {
             dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.schoolRoutePlanning.responseError", {
-                errorMessage: payload.response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData.serviceResponse.statusInfo.message
+                errorMessage: payload?.response?.ExecuteResponse?.ProcessOutputs?.Output?.Data?.ComplexData?.serviceResponse?.statusInfo?.message
+                    || payload?.response?.ExecuteResponse?.Status?.ProcessFailed?.ExceptionReport?.Exception?.ExceptionText
             }), {root: true});
         }
         else if (payload.status === 200 && routeElements?.ErrorOccured === "no") {

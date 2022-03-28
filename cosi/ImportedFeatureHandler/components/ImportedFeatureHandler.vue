@@ -31,16 +31,16 @@ export default {
                 this.importedFeaturesFull.push(feature);
             });
 
-            this.showHideSelectedDistricts();
+            // this.showHideSelectedDistricts();
         },
         updateLayerStyles () {
             if (this.importedLayerIds.length) {
-                this.showHideSelectedDistricts();
+                // this.showHideSelectedDistricts();
             }
         },
         selectedFeatures () {
             if (this.importedLayerIds.length) {
-                this.showHideSelectedDistricts();
+                // this.showHideSelectedDistricts();
             }
         }
     },

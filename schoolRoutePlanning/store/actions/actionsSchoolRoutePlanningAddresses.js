@@ -1,9 +1,18 @@
-import {search} from "masterportalapi/src/searchAddress/search";
+import {search, setGazetteerUrl} from "masterportalapi/src/searchAddress";
 import {Point} from "ol/geom.js";
 import {sortObjectsByNestedAttributes} from "../../../../src/utils/sortObjects";
 import mapCollection from "../../../../src/core/dataStorage/mapCollection.js";
 
 export default {
+    /**
+     * Sets the gazetteer URL in the masterportalAPI.
+     * @param {Object} context The vuex context.
+     * @returns {void}
+     */
+    setGazetteerUrl ({state, rootGetters}) {
+        setGazetteerUrl(rootGetters.getRestServiceById(state.serviceId)?.url);
+    },
+
     /**
      * Starts the processing of the entered address part or address.
      * @param {Object} context The vuex context.

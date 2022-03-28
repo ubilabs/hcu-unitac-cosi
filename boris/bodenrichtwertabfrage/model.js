@@ -12,7 +12,7 @@ import LoaderOverlay from "../../../src/utils/loaderOverlay";
 function initializeBrwAbfrageModel () {
     const BRWModel = Radio.request("ModelList", "getModelByAttributes", {id: "brw"}),
         defaults = {
-            "wpsId": 1001,
+            "wpsId": "1001",
             "fmwProcess": "BRWConvert.fmw",
             // Flag, auf mobile Darstellung
             "isViewMobile": false,
@@ -32,7 +32,13 @@ function initializeBrwAbfrageModel () {
             "isActive": true,
             "stripesLayer": false,
             "areaLayerSelected": true,
-            "infoText": "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten."
+            "infoText": "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.",
+            "wpsTimeout": { // Timeout attribute for wps, is used in fme process.
+                "tm_ttl": {
+                    "dataType": "integer",
+                    "value": 50
+                }
+            }
         };
 
     Object.assign(BRWModel, {
@@ -550,7 +556,12 @@ function initializeBrwAbfrageModel () {
                     }
                 }
                 else if (executeResponse.Status) { // anderer abnormaler Abbruch durch FME-Server
-                    console.error("FME-Server ExecuteResponse: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
+                    store.dispatch("Alerting/addSingleAlert",
+                        `<b>Entschuldigung</b><br>Die Umrechnung des Bodenrichtwerts konnte nicht durchgeführt werden, mit folgender Fehlermeldung:
+                        <br><br><i>${executeResponse?.Status?.ProcessFailed?.ExceptionReport?.Exception?.ExceptionText}</i><br><br>
+                        Bitte versuchen Sie es zu einem späteren Zeitpunkt erneut.
+                        Falls das Problem weiterhin besteht, wenden Sie sich bitte mit dieser Fehlermeldung an den Administrator.`,
+                        {root: true});
                 }
             }
             else {
@@ -565,6 +576,7 @@ function initializeBrwAbfrageModel () {
          * @returns {string}                Object für POST-Request
          */
         getConvertObject: function (brw) {
+            const wpsTimeout = this.get("wpsTimeout");
             let requestObj = {},
                 richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", "."); // unpunctuate Wert für WPS
 
@@ -640,6 +652,9 @@ function initializeBrwAbfrageModel () {
             }
             if (brw.get("zStrassenLage")) {
                 requestObj = this.setObjectAttribute(requestObj, "ZStrLage", brw.get("zStrassenLage"), "string");
+            }
+            if (wpsTimeout && Object.keys(wpsTimeout).length > 0) {
+                requestObj = Object.assign(requestObj, wpsTimeout);
             }
 
             return requestObj;
@@ -776,7 +791,7 @@ function initializeBrwAbfrageModel () {
          * @param {Function} getResponse the url post function
          * @return {void}
          */
-        preparePrint: function (getResponse) {
+        preparePrint: async function (getResponse) {
             const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
                     return layer.getVisible() === true;
                 }),
@@ -840,7 +855,7 @@ function initializeBrwAbfrageModel () {
             let printJob = {};
 
             spec.setAttributes(attr);
-            spec.buildLayers(visibleLayerList);
+            await spec.buildLayers(visibleLayerList);
 
             printJob = {
                 payload: encodeURIComponent(JSON.stringify(spec.defaults)),
