@@ -33,7 +33,7 @@ before(() => {
     setWorkerFactory(() => new Worker());
 });
 
-describe("createIsochrones", () => {
+describe.only("createIsochrones", () => {
     it.only("createIsochrones point", async () => {
         const commitStub = sinon.stub(),
             ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},

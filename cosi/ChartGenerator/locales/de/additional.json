@@ -9,6 +9,8 @@
                     "LineChart": "Liniendiagramm",
                     "BarChart": "Balkendiagramm",
                     "PieChart": "Tortendiagramm",
+                    "ScatterChart": "Streuungsdiagramm",
+                    "RadarChart": "Spinnendiagramm",
                     "switchChartType": " für diesen Datensatz auswählen",
                     "removeChart": "Diesen Graphen entfernen.",
                     "deleteAll": "Alle Graphen im Werkzeug löschen",

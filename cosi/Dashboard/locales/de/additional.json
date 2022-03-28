@@ -17,7 +17,29 @@
                     "moveColLeft": "Spalte nach links verschieben",
                     "moveColRight": "Spalte nach rechts verschieben",
                     "minimizeCol": "Spalte aus-/einblenden",
-                    "nameCalc": "Berechnung benennen"
+                    "nameCalc": "Berechnung benennen",
+                    "tableRowMenu": {
+                        "expandTooltip": "Alle Jahre ein-/ausblenden",
+                        "visualize": "In der Karte visualisieren",
+                        "visualizeTooltip": "In der Karte ein-/ausblenden",
+                        "animate": "Zeitreihe animieren",
+                        "districtName": "Gebietsnamen ein- / ausblenden",
+                        "selection": "Auswahl",
+                        "selectA": "Für Feld 'A' setzen",
+                        "selectB": "Für Feld 'B' setzen",
+                        "cancelSelection": "Auswahl aufheben",
+                        "calculate": "Berechnen",
+                        "add": "Addieren (A + B)",
+                        "subtract": "Substrahieren (A - B)",
+                        "multiply": "Multiplizieren (A x B)",
+                        "divide": "Dividieren (A / B)",
+                        "sumUpSelected": "Ausgewählte Aufsummieren",
+                        "divideSelected": "Ausgewählte Dividieren (jeweils / B)",
+                        "charts": "Diagramme",
+                        "standardCharts": "Balken- / Linien- / Tortendiagramme erstellen",
+                        "chartForMultipleRows": "Diagramm für ausgewählte Zeilen",
+                        "correlationChart": "Korrelation / Streuungsdiagramm erstellen"
+                    }
                 }
             }
         }
