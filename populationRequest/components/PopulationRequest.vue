@@ -438,7 +438,7 @@ export default {
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
-        class="PopulationRequest"
+        class="population-request"
     >
         <template
             v-if="active"
@@ -610,53 +610,60 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    .PopulationRequest {
-        max-width:500px;
-    }
-    div.result {
+.population-request {
+    max-width: 500px;
+
+    .result {
         margin-top: 10px;
-    }
-    .result .table {
-        margin-bottom: 20px;
-    }
-    .result .table td {
-        padding: 8px;
-        border-top: 1px solid #ddd;
-    }
-    .checkbox-container .form-inline {
-        font-size: 15px;
-    }
-    @media (max-width: 767px) {
-        .checkbox-container .form-inline {
-            font-size: 12px;
+
+        .table {
+            margin-bottom: 20px;
+
+            td {
+                padding: 8px;
+                border-top: 1px solid #ddd;
+            }
         }
     }
-    .checkbox-container .form-inline .title-checkbox {
-        width: 100%;
+
+    .checkbox-container {
+        .form-inline {
+            font-size: 15px;
+
+            @media (max-width: 767px) {
+                font-size: 12px;
+            }
+
+            .title-checkbox {
+                width: 100%;
+
+                label {
+                    white-space: normal;
+                    padding-left:5px;
+                }
+            }
+        }
     }
-    .checkbox-container .form-inline .title-checkbox label {
-        white-space: normal;
-        padding-left:5px;
-    }
+}
 </style>
 
 <style lang="scss">
-    @import "~/css/mixins.scss";
+@import "~/css/mixins.scss";
 
-    #tooltip-overlay {
-        position: relative;
-        background: $accent_active;
-        color: #fff;
-        max-width: 200px;
-        padding: 4px 8px;
-    }
+#tooltip-overlay {
+    position: relative;
+    background: $accent_active;
+    color: #fff;
+    max-width: 200px;
+    padding: 4px 8px;
+}
 
-    #circle-overlay {
-        position: relative;
-        top: -20px;
-        background: $accent_active;
-        color: #fff;
-        max-width: 70px;
-        padding: 4px 8px;
-    }
+#circle-overlay {
+    position: relative;
+    top: -20px;
+    background: $accent_active;
+    color: #fff;
+    max-width: 70px;
+    padding: 4px 8px;
+}
 </style>
