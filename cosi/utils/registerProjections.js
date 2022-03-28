@@ -1,4 +1,4 @@
-import {registerProjections as _registerProjections} from "masterportalAPI/src/crs";
+import {registerProjections as _registerProjections} from "masterportalapi/src/crs";
 import * as Proj from "ol/proj.js";
 
 /**

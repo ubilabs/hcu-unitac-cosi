@@ -44,15 +44,6 @@ export default {
             }
         }
     },
-    created () {
-        // this.$on("close", this.close);
-    },
-    mounted () {
-        // this.map.addEventListener("click", this.onClick);
-        // this.map.on("pointermove", (evt) => {
-        //     this.checkHover(evt);
-        // });
-    },
     methods: {
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
         showHideSelectedDistricts () {

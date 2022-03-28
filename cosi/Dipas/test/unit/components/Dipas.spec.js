@@ -15,7 +15,7 @@ import Dipas from "../../../components/Dipas.vue";
 import DipasStore from "../../../store/index";
 import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import * as prepareDistrictLevels from "../../../../DistrictSelector/utils/prepareDistrictLevels.js";
-import * as crs from "masterportalAPI/src/crs";
+import * as crs from "masterportalapi/src/crs";
 import GeoJSON from "ol/format/GeoJSON";
 import { init } from "i18next";
 

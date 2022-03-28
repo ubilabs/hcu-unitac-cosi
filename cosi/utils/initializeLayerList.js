@@ -1,5 +1,5 @@
-import {initializeLayerList as initializeLayerList_} from "masterportalAPI/src/rawLayerList";
-import defaults from "masterportalAPI/src/defaults";
+import {initializeLayerList as initializeLayerList_} from "masterportalapi/src/rawLayerList";
+import defaults from "masterportalapi/src/defaults";
 
 /**
  *

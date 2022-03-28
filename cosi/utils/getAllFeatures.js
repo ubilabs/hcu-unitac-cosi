@@ -1,5 +1,5 @@
 import {WFS} from "ol/format.js";
-import {getLayerWhere} from "masterportalAPI/src/rawLayerList";
+import {getLayerWhere} from "masterportalapi/src/rawLayerList";
 import axios from "axios";
 
 /**
