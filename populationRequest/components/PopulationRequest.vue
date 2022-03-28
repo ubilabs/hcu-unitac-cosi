@@ -448,10 +448,10 @@ export default {
                 <div class="mb-3">
                     {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
-                <div class="row graphicalSelectionContainer">
+                <div class="row">
                     <label
                         for="graphicalSelection"
-                        class="col-sm-5"
+                        class="col-sm-5 col-form-label"
                     >
                         {{ translate("additional:modules.tools.populationRequest.select.action") }}
                     </label>
