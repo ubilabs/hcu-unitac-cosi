@@ -542,7 +542,7 @@ export default {
                                                     <div class="info_wrapper">
                                                         <v-checkbox
                                                             v-model="autoStyle"
-                                                            label="Farbe nach Attributen"
+                                                            :label="$t('additional:modules.tools.cosiFileImport.labels.colorByAttribute')"
                                                         />
                                                         <div
                                                             class="info_icon"
@@ -560,8 +560,8 @@ export default {
                                                     <v-select
                                                         v-model="autoStyleValue"
                                                         :items="newLayerValues"
-                                                        label="Style-Feld auswählen"
-                                                        title="Auswählen nach welchem Feld die Daten eingefärbt werden sollen"
+                                                        :label="$t('additional:modules.tools.cosiFileImport.labels.styleProp')"
+                                                        :title="$t('additional:modules.tools.cosiFileImport.stylefeldTooltip')"
                                                         item-value="key"
                                                         solo
                                                     >
@@ -585,12 +585,14 @@ export default {
                                                 class="grp_wrapper rainbow"
                                             >
                                                 <p>
-                                                    <strong>Regenbogenfarbspektrum</strong>
+                                                    <strong>
+                                                        {{ $t("additional:modules.tools.cosiFileImport.rainbow") }}
+                                                    </strong>
                                                 </p>
                                                 <div class="info_wrapper">
                                                     <v-checkbox
                                                         v-model="newLayer.rainbow"
-                                                        label="Regenbogenfarbspektrum"
+                                                        :label="$t('additional:modules.tools.cosiFileImport.rainbow')"
                                                         type="checkbox"
                                                     />
                                                     <div
@@ -607,7 +609,7 @@ export default {
                                                 class="grp_wrapper"
                                             >
                                                 <p class="featuresInfo">
-                                                    <strong>Farbauswahl</strong>
+                                                    <strong>{{ $t("additional:modules.tools.cosiFileImport.colorSelection") }}</strong>
                                                     {{ $t("additional:modules.tools.cosiFileImport.featuresInfoColor") }}
                                                 </p>
                                                 <v-text-field
@@ -662,7 +664,7 @@ export default {
                                                 <v-select
                                                     v-model="mouseHoverField"
                                                     :items="newLayerValues"
-                                                    label="Namens-Feld bestimmen"
+                                                    :label="$t('additional:modules.tools.cosiFileImport.labels.nameProp')"
                                                     item-value="key"
                                                 >
                                                     <template
@@ -692,7 +694,7 @@ export default {
                                                 <v-select
                                                     v-model="searchField"
                                                     :items="newLayerValues"
-                                                    label="Typen-Feld bestimmen"
+                                                    :label="$t('additional:modules.tools.cosiFileImport.labels.typeProp')"
                                                     item-value="key"
                                                 >
                                                     <template
@@ -822,7 +824,7 @@ export default {
                                                 :items="newLayerValues.filter(x => !filterWhiteList.includes(x.key))"
                                                 item-value="key"
                                                 item-text="key"
-                                                label="Objekteigenschaft auswählen"
+                                                :label="$t('additional:modules.tools.cosiFileImport.labels.selectProp')"
                                                 solo
                                                 @input="addFilterToWhiteList"
                                             />
@@ -845,7 +847,7 @@ export default {
                                                 <v-text-field
                                                     v-model="data.name"
                                                     class="preNumName"
-                                                    label="Name der Eigenschaft"
+                                                    :label="$t('additional:modules.tools.cosiFileImport.labels.propName')"
                                                 />
                                                 <label for="checkboxInput"><strong>{{ data.id }}</strong> ({{ data.value }})</label>
                                                 <input

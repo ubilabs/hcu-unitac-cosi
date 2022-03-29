@@ -93,7 +93,7 @@ export default {
                                 </v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                                In der Karte visualisieren
+                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.visualize') }}
                             </v-list-item-content>
                         </v-list-item>
                         <div
@@ -109,7 +109,7 @@ export default {
                                     <v-icon>{{ playState ? 'mdi-pause' : 'mdi-play' }}</v-icon>
                                 </v-list-item-icon>
                                 <v-list-item-content>
-                                    Zeitreihe Animieren
+                                    {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.visualize') }}
                                 </v-list-item-content>
                             </v-list-item>
                             <v-list-item
@@ -122,7 +122,7 @@ export default {
                                     <v-icon>mdi-map-marker</v-icon>
                                 </v-list-item-icon>
                                 <v-list-item-content>
-                                    Gebietsnamen ein- / ausblenden
+                                    {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.districtName') }}
                                 </v-list-item-content>
                             </v-list-item>
                         </div>
@@ -138,7 +138,9 @@ export default {
                                     >
                                         <template #activator>
                                             <v-list-item-content>
-                                                <v-list-item-title>Auswahl</v-list-item-title>
+                                                <v-list-item-title>
+                                                    {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.selection') }}
+                                                </v-list-item-title>
                                             </v-list-item-content>
                                         </template>
 
@@ -150,7 +152,7 @@ export default {
                                                 <v-icon>mdi-alpha-a-box</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Für Feld "A" setzen
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.selectA') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -161,7 +163,7 @@ export default {
                                                 <v-icon>mdi-alpha-b-box</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Für Feld "B" setzen
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.selectB') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -172,7 +174,7 @@ export default {
                                                 <v-icon>mdi-cancel</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Auswahl aufheben
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.cancelSelection') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
@@ -192,7 +194,9 @@ export default {
                                     >
                                         <template #activator>
                                             <v-list-item-content>
-                                                <v-list-item-title>Berechnen</v-list-item-title>
+                                                <v-list-item-title>
+                                                    {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.calculate') }}
+                                                </v-list-item-title>
                                             </v-list-item-content>
                                         </template>
 
@@ -205,7 +209,7 @@ export default {
                                                 <v-icon>mdi-plus</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Addieren (A + B)
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.add') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -217,7 +221,7 @@ export default {
                                                 <v-icon>mdi-minus</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Subtrahieren (A - B)
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.subtract') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -229,7 +233,7 @@ export default {
                                                 <v-icon>mdi-close</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Multiplizieren (A x B)
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.multiply') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -241,7 +245,7 @@ export default {
                                                 <v-icon>mdi-slash-forward</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Dividieren (A / B)
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.divide') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -253,7 +257,7 @@ export default {
                                                 <v-icon>mdi-plus-box-multiple</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Ausgewählte Aufsummieren
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.sumUpSelected') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -265,7 +269,7 @@ export default {
                                                 <v-icon>mdi-calculator</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Ausgewählte Dividieren (jeweils / B)
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.divideSelected') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
@@ -275,7 +279,9 @@ export default {
                                     >
                                         <template #activator>
                                             <v-list-item-content>
-                                                <v-list-item-title>Diagramme</v-list-item-title>
+                                                <v-list-item-title>
+                                                    {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.charts') }}
+                                                </v-list-item-title>
                                             </v-list-item-content>
                                         </template>
 
@@ -287,7 +293,7 @@ export default {
                                                 <v-icon>mdi-chart-bar</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Balken- / Linien- / Tortendiagramme erstellen
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.standardCharts') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -299,7 +305,7 @@ export default {
                                                 <v-icon>mdi-chart-areaspline</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Diagramme für ausgewählte Zeilen
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.chartForMultipleRows') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
@@ -310,7 +316,7 @@ export default {
                                                 <v-icon>mdi-chart-scatter-plot</v-icon>
                                             </v-list-item-icon>
                                             <v-list-item-content>
-                                                Korrelation / Streuungsdiagramm erstellen
+                                                {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.correlationChart') }}
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list-group>
@@ -336,13 +342,13 @@ export default {
             </v-card>
         </v-menu>
         <v-icon
-            title="In der Karte ein-/ausblenden"
+            :title="$t('additional:modules.tools.cosi.dashboard.tableRowMenu.visualizeTooltip')"
             @click="renderVisualization"
         >
             {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
         </v-icon>
         <v-icon
-            title="Alle Jahre ein-/ausblenden"
+            :title="$t('additional:modules.tools.cosi.dashboard.tableRowMenu.expandTooltip')"
             @click="_item.expanded = !_item.expanded"
         >
             {{ _item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}

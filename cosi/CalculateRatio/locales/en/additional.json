@@ -13,7 +13,7 @@
                     "placeholderA": "Select (counter) parameter",
                     "placeholderB": "Select (denominator) reference value",
                     "noData": "No data was found for the selected facility parameter in the search radius. Please change the parameter or expand your area selection",
-                    "addedSelection": "Added selection",
+                    "addedSelection": "Sum of selection",
                     "visualizeMap": "Visualize selected dataset in map",
                     "visualizeChart": "generate chart from dataset",
                     "downloadGeoJson": "Download GeoJSON",
