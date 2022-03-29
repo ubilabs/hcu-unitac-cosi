@@ -34,7 +34,7 @@ before(() => {
 });
 
 describe("createIsochrones", () => {
-    it.only("createIsochrones point", async () => {
+    it("createIsochrones point", async () => {
         const commitStub = sinon.stub(),
             ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
                 {
