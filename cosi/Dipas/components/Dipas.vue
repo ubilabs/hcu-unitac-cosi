@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable vue/multi-word-component-names */
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersDipas";
@@ -635,8 +636,13 @@ export default {
             }, this.pollingInterval);
         },
 
-        scrollPosition (index) {
-            const target = this.$refs.pdesc[index];
+        async scrollPosition (id) {
+            await this.$nextTick();
+            const target = this.$refs.pdesc.find(el => el.id === id);
+
+            if (!target) {
+                return;
+            }
 
             if (target.scrollHeight === target.offsetHeight) {
                 this.scrollPos = "";
@@ -693,7 +699,7 @@ export default {
                                 <v-list-group
                                     v-for="(feature, index) in projectsFeatureCollection"
                                     :key="feature.get('id')"
-                                    @click="scrollPosition(index)"
+                                    @click="scrollPosition(feature.get('id'))"
                                 >
                                     <template #activator>
                                         <v-list-item-content>
@@ -728,10 +734,11 @@ export default {
                                         </v-list-item-icon>
                                     </template>
                                     <div
+                                        :id="feature.get('id')"
                                         ref="pdesc"
                                         class="p_description"
                                         :class="scrollPos"
-                                        @scroll="scrollPosition(index)"
+                                        @scroll="scrollPosition(feature.get('id'))"
                                     >
                                         <p
                                             v-html="feature.get('description')"

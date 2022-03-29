@@ -9,7 +9,7 @@ import FeaturesListStore from "../../../store/indexFeaturesList";
 import DetailView from "../../../components/DetailView.vue";
 import chai from "chai";
 import sinon from "sinon";
-import sinonChai from 'sinon-chai'
+import sinonChai from "sinon-chai";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
@@ -397,7 +397,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
             const feature = createFeature(),
                 wrapper = await mountComponent(true, [createLayer(feature)]),
-                spyChannelGraphData = sinon.spy(wrapper.vm, "channelGraphData")
+                spyChannelGraphData = sinon.spy(wrapper.vm, "channelGraphData");
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
             await wrapper.vm.$nextTick();
@@ -446,7 +446,6 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             sourceStub.addFeature.reset();
 
             // act
-            
             await wrapper.setData({selectedDistanceScoreLayers: []});
 
             // assert
@@ -486,8 +485,6 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         it("layer with one feature should be rendered to table if layer is active", async () => {
             const wrapper = await mountComponent(true, [createLayer()]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
-
-            // await wrapper.vm.$nextTick();
 
             // table has been rendered
             expect(tableWrapper.exists()).to.be.true;
