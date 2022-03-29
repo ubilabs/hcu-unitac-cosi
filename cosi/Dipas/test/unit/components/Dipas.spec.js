@@ -1,7 +1,6 @@
 import Vuex from "vuex";
 import {
     config,
-    shallowMount,
     mount,
     createLocalVue
 } from "@vue/test-utils";
@@ -13,11 +12,8 @@ import Vue from "vue";
 import sinon from "sinon";
 import Dipas from "../../../components/Dipas.vue";
 import DipasStore from "../../../store/index";
-import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
-import * as prepareDistrictLevels from "../../../../DistrictSelector/utils/prepareDistrictLevels.js";
 import * as crs from "masterportalAPI/src/crs";
 import GeoJSON from "ol/format/GeoJSON";
-import { init } from "i18next";
 
 config.mocks.$t = key => key;
 
@@ -41,9 +37,11 @@ before(() => {
         lng: "cimode",
         debug: false
     });
-})
+});
+
 describe("Dipas.vue", () => {
-    let stub, store, clearStub, sourceStub, vuetify, wrapper = null, features;
+    let store, clearStub, sourceStub, vuetify, features,
+        wrapper = null;
 
     const factory = {
         getMount: () => {
@@ -55,6 +53,10 @@ describe("Dipas.vue", () => {
         }
     };
 
+    /**
+     * initializes some required data for the component to render and work
+     * @returns {void}
+     */
     async function initialize () {
         const featureCollection = {
             "type": "FeatureCollection",
@@ -159,6 +161,7 @@ describe("Dipas.vue", () => {
                 }
             ]
         };
+
         features = new GeoJSON().readFeatures(featureCollection);
         await wrapper.setData({
             projectsFeatureCollection: wrapper.vm.transformFeatures(features),
@@ -188,7 +191,7 @@ describe("Dipas.vue", () => {
             },
             projectsColors: ["rgb(35, 23, 27)"]
         });
-    };
+    }
 
     beforeEach(async () => {
         vuetify = new Vuetify();
@@ -262,7 +265,7 @@ describe("Dipas.vue", () => {
     afterEach(() => {
         wrapper.destroy();
         sinon.restore();
-    })
+    });
 
     it("renders Component", () => {
         expect(wrapper.find("#dipas").exists()).to.be.true;
@@ -277,7 +280,7 @@ describe("Dipas.vue", () => {
         expect(projects.length).to.eql(1);
         expect(project.find(".v-list-item__title").text()).to.eql("CLEVER Cities Korridorleitsystem");
         expect(project.find(".v-list-item__subtitle").text()).to.eql("1.5.2021 - 27.6.2021");
-        expect(project.find(".v-btn").attributes().style).to.eql("background-color: rgb(35, 23, 27); border-color: rgb(35, 23, 27);")
+        expect(project.find(".v-btn").attributes().style).to.eql("background-color: rgb(35, 23, 27); border-color: rgb(35, 23, 27);");
         expect(project.find(".v-list-group__items").exists()).to.be.false;
     });
 
@@ -292,54 +295,54 @@ describe("Dipas.vue", () => {
 
     it("toggling project layer updates the projects icon to reflect changes on the map", async () => {
         const project = wrapper.find(".v-list-group"),
-            header = wrapper.find(".v-list-group__header");;
-            
+            header = wrapper.find(".v-list-group__header");
+
         expect(project.find("i").attributes().class).not.contains("mdi-checkbox-marked-circle");
         expect(project.find("i").attributes().class).contains("mdi-cancel");
 
         header.trigger("click");
         await wrapper.vm.$nextTick();
 
-        project.findAllComponents({ name: "v-switch" }).wrappers[0].vm.$emit('change', true);
+        project.findAllComponents({name: "v-switch"}).wrappers[0].vm.$emit("change", true);
         await wrapper.vm.$nextTick();
 
         expect(project.find("i").attributes().class).contains("mdi-checkbox-marked-circle");
         expect(project.find("i").attributes().class).not.contains("mdi-cancel");
-    })
+    });
 
     it("toggling contribution layer updates the projects icon to reflect changes on the map", async () => {
         const project = wrapper.find(".v-list-group"),
-            header = wrapper.find(".v-list-group__header");;
-            
+            header = wrapper.find(".v-list-group__header");
+
         expect(project.find("i").attributes().class).not.contains("mdi-checkbox-marked-circle");
         expect(project.find("i").attributes().class).contains("mdi-cancel");
 
         header.trigger("click");
         await wrapper.vm.$nextTick();
 
-        project.findAllComponents({ name: "v-switch" }).wrappers[1].vm.$emit('change', true);
+        project.findAllComponents({name: "v-switch"}).wrappers[1].vm.$emit("change", true);
         await wrapper.vm.$nextTick();
 
         expect(project.find("i").attributes().class).contains("mdi-checkbox-marked-circle");
         expect(project.find("i").attributes().class).not.contains("mdi-cancel");
-    })
+    });
 
     it("toggling heatmap layer updates the projects icon to reflect changes on the map", async () => {
         const project = wrapper.find(".v-list-group"),
-            header = wrapper.find(".v-list-group__header");;
-            
+            header = wrapper.find(".v-list-group__header");
+
         expect(project.find("i").attributes().class).not.contains("mdi-checkbox-marked-circle");
         expect(project.find("i").attributes().class).contains("mdi-cancel");
 
         header.trigger("click");
         await wrapper.vm.$nextTick();
 
-        project.findAllComponents({ name: "v-switch" }).wrappers[2].vm.$emit('change', true);
+        project.findAllComponents({name: "v-switch"}).wrappers[2].vm.$emit("change", true);
         await wrapper.vm.$nextTick();
 
         expect(project.find("i").attributes().class).contains("mdi-checkbox-marked-circle");
         expect(project.find("i").attributes().class).not.contains("mdi-cancel");
-    })
+    });
 
     it("toggling styling changes selectedStyling", () => {
         const inputs = wrapper.find("#radio").findAll("input");
@@ -353,11 +356,11 @@ describe("Dipas.vue", () => {
         expect(wrapper.vm.selectedStyling).to.eql("categoryRainbow");
         inputs.wrappers[3].trigger("click");
         expect(wrapper.vm.selectedStyling).to.eql("voting");
-    })
+    });
 
     it("download geoJSON button is disabled if there are no DIPAS layers on the map", async () => {
         const button = wrapper.find("#download-geojson");
 
         expect(button.attributes().disabled).to.eql("disabled");
-    })
+    });
 });

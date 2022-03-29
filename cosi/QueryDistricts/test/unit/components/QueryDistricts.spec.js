@@ -2,7 +2,6 @@ import Vuex from "vuex";
 import
 {
     config,
-    shallowMount,
     mount,
     createLocalVue
 } from "@vue/test-utils";
@@ -17,7 +16,6 @@ import
 import sinon from "sinon";
 import Vuetify from "vuetify";
 import Vue from "vue";
-import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
 import features_bibs from "./features_bibs.json";
 import features_bev from "./features_bev.json";
 import features_ha from "./features_ha.json";
@@ -292,15 +290,15 @@ describe("addons/cosi/QueryDistricts/", () => {
         });
 
         sandbox.stub(QueryDistricts.methods, "getLayerList").returns([{
-                id: "19034",
-                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
-                featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
-            },
-            {
-                id: "19042",
-                url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
-                featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
-            }
+            id: "19034",
+            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+        },
+        {
+            id: "19042",
+            url: "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+            featureType: "de.hh.up:v_hh_statistik_bev_insgesamt"
+        }
         ]);
 
         sandbox.stub(QueryDistricts.methods, "getAllFeatures").callsFake(getAllFeatures);
@@ -330,9 +328,11 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.layerOptions).to.deep.equal([
             {"header": "BevÃ¶lkerung"},
             {"id": "19034", "name": "BevÃ¶lkerung insgesamt", "group": "BevÃ¶lkerung", "valueType": "relative",
-            "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
-            "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
-            "ltf": undefined}]);
+                "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
+                "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+                "ltf": undefined
+            }]
+        );
     });
     it("no selectedFeatures", async () => {
         // arrange
@@ -476,9 +476,11 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.layerOptions).to.deep.equal([
             {"header": "BevÃ¶lkerung"},
             {"id": "19034", "name": "BevÃ¶lkerung insgesamt", "group": "BevÃ¶lkerung", "valueType": "relative",
-            "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
-            "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
-            "ltf": undefined}]);
+                "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
+                "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+                "ltf": undefined
+            }]
+        );
     });
     it("compareFeatures one filter", async () => {
         // arrange
@@ -626,9 +628,10 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "valueType": "absolute"
             },
             {"id": "19034", "name": "BevÃ¶lkerung insgesamt", "group": "BevÃ¶lkerung", "valueType": "relative",
-            "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
-            "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
-            "ltf": undefined}
+                "category": "bev_insgesamt", "featureType": "de.hh.up:v_hh_statistik_bev_insgesamt",
+                "url": "https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile",
+                "ltf": undefined
+            }
         ]);
     });
 
