@@ -240,6 +240,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
 
                 wrapper.find("#save-session").trigger("click");
                 const state = JSON.parse(window.localStorage.getItem("cosi-state")).state;
+
                 expect(state.Tools.Draw.layer).to.deep.equal(layerMock.getSource().getFeatures());
             });
 

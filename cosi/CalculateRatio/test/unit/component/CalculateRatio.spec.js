@@ -33,7 +33,7 @@ config.mocks.$t = key => key;
 describe("CalculateRatio.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let component, store, sandbox, selectedFeaturesStub, addSingleAlertStub, cleanupStub, vuetify, loadendStub,
-        facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFacilityList, expFeaturesList, expFeaturesOptions,
+        facilitiesMappingStub, layerListStub, expFacilitiesOptions, expFacilityList, expFeaturesOptions,
         selectedDistrictLevelStub, groupActiveLayerStub;
 
     const mockConfigJson = {
@@ -81,43 +81,32 @@ describe("CalculateRatio.vue", () => {
         }];
 
         expFacilitiesOptions = [{
-                    "header": "Kultur, Freizeit, Sport und Tourismus"
-                },
-                {
-                    "text": "Öffentliche Bibliotheken",
-                    "value": {
-                        "addressField": [
-                            "adresse",
-                            "ort"
-                        ],
-                        "categoryField": "bezeichnung",
-                        "id": "Öffentliche Bibliotheken",
-                        "keyOfAttrName": "bezeichnung",
-                        "layerId": "19574",
-                        "numericalValues": [
-                            {
-                            "id": "medienanzahl",
-                            "name": "Medienanzahl",
-                            "useConfigName": true
-                            }
-                        ]
+            "header": "Kultur, Freizeit, Sport und Tourismus"
+        },
+        {
+            "text": "Öffentliche Bibliotheken",
+            "value": {
+                "addressField": [
+                    "adresse",
+                    "ort"
+                ],
+                "categoryField": "bezeichnung",
+                "id": "Öffentliche Bibliotheken",
+                "keyOfAttrName": "bezeichnung",
+                "layerId": "19574",
+                "numericalValues": [
+                    {
+                        "id": "medienanzahl",
+                        "name": "Medienanzahl",
+                        "useConfigName": true
                     }
-                }]
-
-        expFeaturesList =
-            [{"group": "Bevölkerung", "data": ["Bevölkerung insgesamt", "Bevölkerung weiblich", "Bevölkerung männlich", "Bevölkerung unter 6 Jahren", "Bevölkerung unter 18 Jahren", "Bevölkerung 10 bis unter 15 Jahren", "Bevölkerung 15 bis unter 21 Jahren", "Bevölkerung 15 bis unter 65 Jahren", "Bevölkerung 21 bis unter 45 Jahren", "Bevölkerung 45 bis unter 65 Jahren", "Bevölkerung 6 bis unter 10 Jahren", "Bevölkerung ab 65 Jahren", "Ausländer insgesamt", "Bevölkerung mit Migrationshintergrund"]},
-                {"group": "Fläche", "data": ["Bruttofläche in ha"]},
-                {"group": "Haushalte", "data": ["Alleinerziehende", "Einpersonenhaushalte", "Haushalte mit Kindern", "Privathaushalte"]},
-                {"group": "Sozialversicherungspflichtige", "data": ["Sozialversicherungspflichtig beschäftigte Frauen", "Sozialversicherungspflichtig Beschäftigte insgesamt", "Sozialversicherungspflichtig beschäftigte Männer"]},
-                {"group": "Arbeitslose", "data": ["SGB II (Arbeitlosengeld II) Empfänger insgesamt", "SGB III (Arbeitslosengeld) Empfänger insgesamt", "Arbeitslose insgesamt"]},
-                {"group": "SGB II Leistungen", "data": ["Ausländische erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Bedarfsgemeinschaften nach SGB II", "Erwerbsfähige Leistungsempfänger/-innen nach SGB II", "Leistungsempfänger/-innen nach SGB II 15 bis unter 25 Jahren", "Leistungsempfänger/-innen nach SGB II", "Nicht erwerbsfähige Leistungs-empfänger/-innen nach SGB II"]},
-                {"group": "Grundsicherung im Alter", "data": ["Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"]},
-                {"group": "Wohnen", "data": ["Sozialwohnung mit Bindungsauslauf", "Sozialwohnungen", "Wohngebäude", "Wohnungen in Wohn- und Nichtwohngebäuden"]},
-                {"group": "Verkehr", "data": ["Gewerbliche PKW", "PKW Bestand", "Private PKW"]}];
+                ]
+            }
+        }];
 
         expFeaturesOptions = [
             {
-                "header": "Bevölkerung",
+                "header": "Bevölkerung"
             },
             {
                 "text": "Bevölkerung insgesamt",
@@ -299,7 +288,7 @@ describe("CalculateRatio.vue", () => {
             {
                 "text": "Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre",
                 "value": "Empfänger von Grundsicherung und weiteren Hilfeleistungen ab 65 Jahre"
-            }, 
+            },
             {
                 "header": "Wohnen"
             },
