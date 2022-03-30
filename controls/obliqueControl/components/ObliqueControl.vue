@@ -1,6 +1,7 @@
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ControlIcon from "../../../../src/modules/controls/ControlIcon.vue";
+import TableStyleControl from "../../../../src/modules/controls/TableStyleControl.vue";
 
 
 export default {
@@ -14,6 +15,12 @@ export default {
             type: String,
             required: false,
             default: "additional:modules.controls.oblique.title"
+        }
+    },
+    computed: {
+        ...mapGetters(["uiStyle"]),
+        component () {
+            return this.uiStyle === "TABLE" ? TableStyleControl : ControlIcon;
         }
     },
     methods: {
@@ -40,8 +47,10 @@ export default {
 
 <template>
     <div id="oblique-control">
-        <ControlIcon
+        <component
+            :is="component"
             icon-name="picture"
+            :class="[component ? 'control' : 'Table']"
             :title="$t(title)"
             :disabled="false"
             :on-click="onClick"
