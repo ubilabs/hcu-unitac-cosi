@@ -24,8 +24,8 @@ export default {
 
             this.addSingleAlert({
                 category: "Info",
-                content: "Wir arbeiten momentan daran, die aktuellen Schrägluftbilder wieder in diesem Portal darstellen zu können. </br>Für die Zwischenzeit werden sie nun auf eine andere Anwendung weitergeleitet in der sie die Schrägluftbilder mit dem Stand 2020 nutzen können.</br></br> Die Schrägluftbilder öffnen sich in einem neuen Browser-Tab!</br></br></br>",
-                confirmText: "als gelesen markieren",
+                content: this.$t("additional:modules.controls.oblique.messageRedirect"),
+                confirmText: this.$t("additional:modules.controls.oblique.markAsRead"),
                 mustBeConfirmed: true,
                 once: true
             }).then((alertDisplayed) => {

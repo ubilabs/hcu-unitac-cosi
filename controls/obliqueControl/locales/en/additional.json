@@ -2,7 +2,9 @@
     "modules": {
         "controls": {
             "oblique": {
-                "title": "Oblique aerial photos"
+                "title": "Oblique aerial photos",
+                "messageRedirect":"We are currently working on being able to display the current oblique aerial images in this portal again.</br>For the meantime, they will now be redirected to another application in which they can use the oblique aerial images with the 2020 status.</br></br>The oblique images open in a new browser tab!</br></br></br>",
+                "markAsRead":"mark as read"
             }
         }
     }
