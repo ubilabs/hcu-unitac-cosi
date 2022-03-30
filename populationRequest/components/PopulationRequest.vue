@@ -448,10 +448,10 @@ export default {
                 <div class="mb-3">
                     {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
-                <div class="row">
+                <div class="graphicalSelectionContainer">
                     <label
                         for="graphicalSelection"
-                        class="col-sm-5 col-form-label"
+                        class="col-sm-5"
                     >
                         {{ translate("additional:modules.tools.populationRequest.select.action") }}
                     </label>
@@ -606,15 +606,33 @@ export default {
 .population-request {
     max-width: 500px;
 
-    .result {
-        margin-top: 10px;
+    .form-horizontal {
+        & > * {
+            padding-right: 15px;
+            padding-left: 15px;
+        }
 
-        .table {
-            margin-bottom: 20px;
+        .graphicalSelectionContainer {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-            td {
-                padding: 8px;
-                border-top: 1px solid #ddd;
+        .result {
+            margin-top: 10px;
+
+            .table {
+                margin-bottom: 20px;
+
+                td {
+                    padding: 8px;
+                    border-top: 1px solid #ddd;
+                }
+
+                & > :not(:first-child) {
+                    // NOTE: Overwrites default style of .table
+                    border-top: 0 solid currentColor;
+                }
             }
         }
     }
