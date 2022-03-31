@@ -1,4 +1,3 @@
-import {getAllFeatures} from "../../utils/getAllFeatures";
 import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
 import {findNearestFeatures} from "../../utils/findNearestFeatures";
@@ -21,7 +20,6 @@ function transformedCoordinates (features, sourceCrs) {
  *
  * @param {module:ol/Feature} feature feature
  * @param {String} layerId layerId
- * @param {Number[]} extent extent
  * @param {Number} initialBuffer initial buffer
  * @param {Number} bufferIncrement buffer increment
  * @param {String} portalCrs current CRS
@@ -29,10 +27,9 @@ function transformedCoordinates (features, sourceCrs) {
  * @param {String} fallbackId alternative routing service
  * @return {Number} score
  */
-async function layerScore (feature, layerId, extent, initialBuffer, bufferIncrement, portalCrs, serviceId, fallbackId) {
+async function layerScore (feature, layerId, initialBuffer, bufferIncrement, portalCrs, serviceId, fallbackId) {
     const featureCoords = transformedCoordinates([feature], portalCrs),
-        features = Array.isArray(extent) && extent.length > 0 ? await getAllFeatures(layerId, extent, portalCrs)
-            : await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement),
+        features = await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement, 10, "EPSG:25832"),
         coords = transformedCoordinates(features, portalCrs),
         dists = (await fetchDistances(featureCoords, coords, undefined, serviceId, fallbackId))[0];
 
@@ -77,7 +74,7 @@ async function distanceScore ({getters, commit, rootGetters}, {feature, weights,
         let mindist = getters.mindists[id];
 
         if (!mindist) {
-            mindist = await layerScore(feature, layerIds[j], extent, getters.initialBuffer, getters.bufferIncrement, rootGetters["Map/projectionCode"], getters.serviceId, getters.fallbackServiceId);
+            mindist = await layerScore(feature, layerIds[j], getters.initialBuffer, getters.bufferIncrement, rootGetters["Map/projectionCode"], getters.serviceId, getters.fallbackServiceId);
             commit("setMindists", {...getters.mindists, [id]: mindist});
         }
 

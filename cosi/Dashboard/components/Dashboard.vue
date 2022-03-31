@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable vue/multi-word-component-names */
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
@@ -121,15 +122,13 @@ export default {
     computed: {
         ...mapGetters("Tools/Dashboard", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", [
-            "selectedFeatures",
             "selectedDistrictLevel",
             "selectedDistrictNames",
             "keyOfAttrNameStats",
-            "districtLevels",
             "mapping",
             "loadend"
         ]),
-        ...mapGetters("Map", ["layerById"]),
+        // ...mapGetters("Map", ["layerById"]),
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", ["selectedYear"]),
         columns () {

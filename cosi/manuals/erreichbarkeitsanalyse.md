@@ -7,11 +7,16 @@ Eine Erreichbarkeitsanalyse kann auf zwei Arten durchgeführt werden:
 Der Modus der Analyse kann im Dropdown Menü ausgewÃ¤hlt werden.
 
 **Wichtige Informationen:**
-Dieses Werkzeug wurde realisiert unter Verwendung von OpenRouteService, einem Dienst, der von der Heidelberg Institute for Geoinformation Technology entwickelt und bereitgestellt wird.
+Dieses Werkzeug wurde realisiert unter Verwendung von OpenRouteService, einem Dienst, der von der *Heidelberg Institute for Geoinformation Technology* entwickelt wird. Der verwendete Dienst wird vom *Bundesamt für Kartografie und Geodäsie (BKG)* bereitgestellt und betrieben.
 Die Verwendung ist gedeckt durch die Creative Commons Lizenz CC BY 4.0.
 Weitere Informationen finden Sie unter:  
 https://heigit.org/de/ortsbasierte-dienste-und-navigation/  
 https://openrouteservice.org/services/
+
+Die Vollständige Dokumentation des OpenRouteService inkl. aller Annahmen über Modalitätsprofile und Routenparameter finden Sie unter:
+https://giscience.github.io/openrouteservice/documentation/Documentation.html
+
+Die Annahmen über einzelne Straßen und Wege können i.d.R. über die [OpenStreetMap](https://www.openstreetmap.org/#map=14/53.5492/9.9901) direkt ausgelesen oder in dringlichen Fällen beim BKG angefragt werden.
 
 #### Erreichbarkeit ab einem Referenzpunkt
 Zeigt ein Gebiet an, welches von einem ausgewählten Punkt auf der Karte innerhalb einer festgelegten Entfernung erreichbar ist. Die Entfernung kann in Zeit oder in Metern angegeben werden. Die Erreichbarkeit wird abhängig vom Verkehrsmittel berechnet. Die Polygone werden automatisch angepasst, wenn das Verkehrsmittel oder andere Parameter geändert werden.  
@@ -35,13 +40,14 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
 5. **Entfernung**
    > Entfernung in zuvor festgelegter Maßeinheit (Minuten oder Metern) angeben
 6. **Berechnen**
+   > Berechnet die Erreichbarkeit vom Punkt. Es werden nur noch Fachdaten angezeigt, die innerhalb der Erreichbarkeit liegen. Gilt auch für die Einrichtungsübersicht und alle anderen Werkzeuge.
 7. **Ergebnis ausblenden**
-   > Die Ergebnisdarstellung auf der Karte wird ausgeblenden.
+   > Die Ergebnisdarstellung auf der Karte wird ausgeblenden. Alle Fachdaten außerhalb der Isochronen werden wieder eingeblendet.
 8. **Einwohnerabfrage**
    > (s. Einwohnerabfrage)
-9. **Legende & Isochronen**
+9.  **Legende & Isochronen**
    > Eine Legende wird eingeblendet. Sie wird dynamisch für die Anfrage generiert und zeigt drei gleichmäßig verteilte Entfernungswerte. Höchstwert ist der zuvor eingegebene Wert für die Entfernung. Die Isochronen (Polygone) in der Karte sind entsprechend der Legende eingefärbt. Sie zeigen das vom Referenzpunkt aus erreichbare Gebiet abhängig von den zuvor eingegebenen Parametern. Ist "Verkehrsfluss berücksichtigen" ausgewählt, wird das theoretische Maximum bei freier Fahrt als gestrichelte Linie angezeigt.
-10. **Ergebnisverzeichnis**
+11. **Ergebnisverzeichnis**
    > Sie können mehrere Erreichbarkeitsanalysen erstellen, die über das sog. [Ergebnisverzeichnis](./pagination.md) verwaltet werden.
 
 *Für **Tageszeit**, **Verkehrsfluss berücksichtigen**, und **Von Flächenaußengrenzen berechnen** siehe im folgenden "Erreichbarkeit im Gebiet"*
