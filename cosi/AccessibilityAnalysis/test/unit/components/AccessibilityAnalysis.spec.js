@@ -347,8 +347,6 @@ describe("AccessibilityAnalysis.vue", () => {
 
         await wrapper.vm.createIsochrones();
 
-        expect(sourceStub.addFeatures.callCount).to.equal(1);
-
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
