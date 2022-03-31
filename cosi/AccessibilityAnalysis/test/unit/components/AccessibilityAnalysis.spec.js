@@ -109,7 +109,8 @@ describe("AccessibilityAnalysis.vue", () => {
                             namespaced: true,
                             getters: {
                                 isFeatureDisabled: () => sinon.stub(),
-                                isFeatureActive: () => sinon.stub()
+                                isFeatureActive: () => sinon.stub().returns(true),
+                                activeVectorLayerList: () => sinon.stub()
                             }
                         },
                         AccessibilityAnalysisService: {
@@ -120,6 +121,39 @@ describe("AccessibilityAnalysis.vue", () => {
                                     // return createIsochrones(params, progressStub);
                                     return createIsochronesStub();
                                 }
+                            },
+                            getters: {
+                                progress: () => sinon.stub()
+                            }
+                        },
+                        ScenarioBuilder: {
+                            namespaced: true,
+                            getters: {
+                                scenarioUpdated: () => sinon.stub()
+                            }
+                        },
+                        Routing: {
+                            namespaced: true,
+                            modules: {
+                                Directions: {
+                                    namespaced: true,
+                                    getters: {
+                                        routingDirections: () => sinon.stub(),
+                                        directionsRouteSource: () => sinon.stub()
+                                    }
+                                }
+                            }
+                        },
+                        AreaSelector: {
+                            namespaced: true,
+                            getters: {
+                                geometry: sinon.stub()
+                            }
+                        },
+                        DistrictSelector: {
+                            namespaced: true,
+                            getters: {
+                                boundingGeometry: sinon.stub()
                             }
                         }
                     }
@@ -130,12 +164,16 @@ describe("AccessibilityAnalysis.vue", () => {
                         map: () => ({
                             addEventListener: () => sinon.stub(),
                             removeEventListener: () => sinon.stub()
-                        })
+                        }),
+                        projectionCode: () => "EPSG:25832"
                     },
                     actions: {
                         createLayer: () => {
                             return Promise.resolve({
-                                setVisible: sinon.stub(),
+                                setVisible: () => sinon.stub(),
+                                setZIndex: () => sinon.stub(),
+                                setStyle: () => sinon.stub(),
+                                setSource: () => sinon.stub(),
                                 addEventListener: sinon.stub(),
                                 getSource: () => sourceStub
                             });
@@ -148,7 +186,29 @@ describe("AccessibilityAnalysis.vue", () => {
                         addSingleAlert: addSingleAlertStub,
                         cleanup: cleanupStub
                     }
+                },
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => "de-DE"
+                    }
+                },
+                GraphicalSelect: {
+                    namespaced: true,
+                    actions: {
+                        featureToGeoJson: () => sinon.stub()
+                    }
+                },
+                MapMarker: {
+                    namespaced: true,
+                    actions: {
+                        placingPointMarker: () => sinon.stub(), 
+                        removePointMarker: () => sinon.stub()
+                    }
                 }
+            },
+            getters: {
+                uiStyle: () => true
             },
             state: {
                 configJson: mockConfigJson
@@ -164,7 +224,7 @@ describe("AccessibilityAnalysis.vue", () => {
 
     // eslint-disable-next-line require-jsdoc, no-shadow
     async function mount (layersMock, error = undefined) {
-        sandbox.stub(Radio, "request").callsFake((a1, a2) => {
+        sandbox.stub(Radio, "request").callsFake((a1, a2, a3) => {
             if (a1 === "Parser" && a2 === "getItemsByAttributes") {
                 return [];
             }
@@ -174,8 +234,21 @@ describe("AccessibilityAnalysis.vue", () => {
             if (a1 === "ModelList" && a2 === "getModelByAttributes") {
                 return layersMock[0];
             }
+            if (a1 === "RestReader" && a2 === "getServiceById" && a3 === "bkg_ors") {
+                return {get: () => ""}
+            }
             return null;
         });
+        sandbox.stub(AccessibilityAnalysisComponent.methods, "exportAsGeoJson");
+        sandbox.stub(AccessibilityAnalysisComponent.computed, "directionsRouteLayer").returns(
+            {getStyleFunction: () => sinon.stub()}
+        );
+        sandbox.stub(AccessibilityAnalysisComponent.computed, "map").returns(
+            {
+                removeLayer: () => sinon.stub(),
+                removeInteraction: () => sinon.stub()
+            }
+        );
         component = shallowMount(AccessibilityAnalysisComponent, {
             stubs: {Tool},
             store,
@@ -231,9 +304,9 @@ describe("AccessibilityAnalysis.vue", () => {
         sinon.assert.callCount(addSingleAlertStub, 1);
         expect(addSingleAlertStub.firstCall.args[1]).to.eql(
             {
-                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>",
-                category: "Error",
-                displayClass: "error"
+                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
+                category: "Info",
+                displayClass: "info"
             });
     });
 
@@ -241,23 +314,20 @@ describe("AccessibilityAnalysis.vue", () => {
         const wrapper = await mount([]);
 
         await wrapper.setData({
-            coordinate: [10.155828082155567, 53.60323024735499],
-            transportType: "driving-car",
-            scaleUnit: "time",
-            distance: "10"
+            _coordinate: [10.155828082155567, 53.60323024735499],
+            _transportType: "driving-car",
+            _scaleUnit: "time",
+            _distance: "10"
         });
-
         sourceStub.addFeatures.reset();
         await wrapper.vm.createIsochrones();
 
-        expect(sourceStub.addFeatures.callCount).to.equal(1);
-
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
+        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710max");
 
         clearStub.reset();
+        expect(wrapper.vm.hide).to.be.false;
         await wrapper.find("#clear").trigger("click");
-        sinon.assert.callCount(clearStub, 1);
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("000");
+        expect(wrapper.vm.hide).to.be.true;
 
         expect(wrapper.vm.askUpdate).to.be.false;
         wrapper.vm.$root.$emit("updateFeature");
@@ -268,10 +338,10 @@ describe("AccessibilityAnalysis.vue", () => {
         const wrapper = await mount(layersMock);
 
         await wrapper.setData({
-            mode: "region",
-            transportType: "Auto",
-            scaleUnit: "time",
-            distance: "10",
+            _mode: "region",
+            _transportType: "Auto",
+            _scaleUnit: "time",
+            _distance: "10",
             selectedFacilityName: "familyName"
         });
 
@@ -294,23 +364,6 @@ describe("AccessibilityAnalysis.vue", () => {
         await wrapper.find("#create-isochrones").trigger("click");
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.askUpdate).to.be.false;
-    });
-
-    it("show help for selectedmode", async () => {
-        const wrapper = await mount([]);
-
-        await wrapper.find("#help").trigger("click");
-
-        sinon.assert.callCount(cleanupStub, 1);
-        sinon.assert.callCount(addSingleAlertStub, 1);
-        expect(addSingleAlertStub.firstCall.args[1].content).to.contain("Erreichbarkeit ab einem Referenzpunkt");
-
-        await wrapper.setData({
-            mode: "region"
-        });
-
-        await wrapper.find("#help").trigger("click");
-        expect(addSingleAlertStub.secondCall.args[1].content).to.contain("Erreichbarkeit der ausgewählten Einrichtungen");
     });
 });
 
