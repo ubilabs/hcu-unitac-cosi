@@ -292,33 +292,29 @@ describe("AccessibilityAnalysis.vue", () => {
     it("trigger button with wrong input", async () => {
         const wrapper = await mount(undefined, {error: {response: {data: {error: {code: 3002}}}}});
 
-        await wrapper.setData({
-            coordinate: "10.155828082155567, b",
-            transportType: "Auto",
-            scaleUnit: "time",
-            distance: 10
-        });
+        wrapper.vm.setCoordinate("10.155828082155567, b");
+        wrapper.vm.setTransportType("Auto");
+        wrapper.vm.setScaleUnit("time");
+        wrapper.vm.setDistance(10);
 
         await wrapper.vm.createIsochrones();
 
         sinon.assert.callCount(addSingleAlertStub, 1);
         expect(addSingleAlertStub.firstCall.args[1]).to.eql(
             {
-                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.inputReminder</strong>",
-                category: "Info",
-                displayClass: "info"
+                content: "<strong>additional:modules.tools.cosi.accessibilityAnalysis.showErrorInvalidInput</strong>",
+                category: "Fehler",
+                displayClass: "error"
             });
     });
 
     it("trigger button with user input and point selected", async () => {
         const wrapper = await mount([]);
 
-        await wrapper.setData({
-            _coordinate: [10.155828082155567, 53.60323024735499],
-            _transportType: "driving-car",
-            _scaleUnit: "time",
-            _distance: "10"
-        });
+        wrapper.vm.setCoordinate([10.155828082155567, 53.60323024735499]);
+        wrapper.vm.setTransportType("driving-car");
+        wrapper.vm.setScaleUnit("time");
+        wrapper.vm.setDistance("10");
         sourceStub.addFeatures.reset();
         await wrapper.vm.createIsochrones();
 
@@ -337,14 +333,11 @@ describe("AccessibilityAnalysis.vue", () => {
     it("trigger button with user input and region selected", async () => {
         const wrapper = await mount(layersMock);
 
-        await wrapper.setData({
-            _mode: "region",
-            _transportType: "Auto",
-            _scaleUnit: "time",
-            _distance: "10",
-            selectedFacilityName: "familyName"
-        });
-
+        wrapper.vm.setMode("region");
+        wrapper.vm.setTransportType("Auto");
+        wrapper.vm.setScaleUnit("time");
+        wrapper.vm.setDistance("10");
+        wrapper.vm.setSelectedFacilityName("familyName");
         await wrapper.vm.createIsochrones();
 
         expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
