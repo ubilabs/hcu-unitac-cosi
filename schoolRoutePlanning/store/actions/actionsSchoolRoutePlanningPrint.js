@@ -32,7 +32,7 @@ export default {
      * @param {Function} getResponse a function to receive the response with
      * @returns {void}
      */
-    printRoute ({state, rootGetters, dispatch}, getResponse) {
+    async printRoute ({state, rootGetters, dispatch}, getResponse) {
         const routeElements = state.routeElements,
             visibleLayerList = sortVisibleLayerList(state.layerName, rootGetters["Map/visibleLayerList"]),
             attributes = {
@@ -64,7 +64,7 @@ export default {
         dispatch("Tools/Print/activatePrintStarted", true, {root: true});
         spec.setAttributes(attributes);
 
-        spec.buildLayers(visibleLayerList);
+        await spec.buildLayers(visibleLayerList);
         printJob = {
             payload: encodeURIComponent(JSON.stringify(spec.defaults)),
             printAppId: "schulwegrouting",

@@ -1,8 +1,8 @@
 {
   "name": "cosi",
-  "version": "1.0.0",
-  "description": "Standarddatenpaket Download",
-  "title": "Cosi",
+  "version": "1.2.0",
+  "description": "Planning Support Tool for Urban Infrastructures in Hamburg, based on Hamburg's UDP's database",
+  "title": "Cockpit Staedtische Infrastrukturen",
   "license": "MIT",
   "repository": {
     "type": "git",

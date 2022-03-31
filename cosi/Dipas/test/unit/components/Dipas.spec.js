@@ -12,7 +12,7 @@ import Vue from "vue";
 import sinon from "sinon";
 import Dipas from "../../../components/Dipas.vue";
 import DipasStore from "../../../store/index";
-import * as crs from "masterportalAPI/src/crs";
+import * as crs from "masterportalapi/src/crs";
 import GeoJSON from "ol/format/GeoJSON";
 
 config.mocks.$t = key => key;

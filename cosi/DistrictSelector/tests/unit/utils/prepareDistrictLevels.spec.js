@@ -1,6 +1,6 @@
 import {getAllDistrictsWithoutLayer, getDistricts, getFeatureTypes, getLayerById, getNameList, getPropertyNameList, prepareDistrictLevels, setProperties} from "../../../utils/prepareDistrictLevels.js";
 import {expect} from "chai";
-import {initializeLayerList} from "masterportalAPI/src/rawLayerList";
+import {initializeLayerList} from "masterportalapi/src/rawLayerList";
 import Source from "ol/source/Vector.js";
 import Layer from "ol/layer/Vector.js";
 import Feature from "ol/Feature.js";

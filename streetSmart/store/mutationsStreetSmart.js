@@ -1,5 +1,5 @@
-import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
-import stateImportedFeatureHandler from "./stateImportedFeatureHandler";
+import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
+import state from "./stateStreetSmart";
 
 const mutations = {
     /**
@@ -8,7 +8,8 @@ const mutations = {
      * {setKey:   (state, payload) => *   state[key] = payload * }
      * will be returned.
      */
-    ...generateSimpleMutations(stateImportedFeatureHandler)
+    ...generateSimpleMutations(state)
+
 };
 
 export default mutations;
