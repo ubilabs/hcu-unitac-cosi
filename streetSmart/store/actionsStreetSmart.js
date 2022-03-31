@@ -103,7 +103,7 @@ const actions = {
                 username: service.params.username,
                 password: service.params.password,
                 apiKey: service.params.apiKey,
-                srs: projection,
+                srs: service.params.srs ? service.params.srs : projection,
                 locale: locale ? locale : service.params.locale
             };
 
