@@ -571,7 +571,7 @@ $mb: 0.5em;
     }
     .nav-pills {
         & > li > a {
-            padding: 0.85em 1.25em;
+            padding: 0.625rem 1.25em;
             margin-bottom: $mb;
         }
         & > li.active > a {
