@@ -469,6 +469,15 @@ export default {
             const l = this.dataSets.length;
 
             this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
+        },
+
+        async updateAnalysisSet () {
+            await this.createIsochrones();
+
+            this.dataSets[this.activeSet].results = this._isochroneFeatures;
+            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
+
+            this.renderIsochrones(this._isochroneFeatures);
         }
     }
 };
@@ -753,7 +762,7 @@ export default {
                         color="black"
                         text
                         v-bind="attrs"
-                        @click.native="createIsochrones"
+                        @click.native="updateAnalysisSet"
                     >
                         Ok
                     </v-btn>

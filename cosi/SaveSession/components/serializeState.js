@@ -1,6 +1,6 @@
 import {GeoJSON} from "ol/format";
 import Feature from "ol/Feature";
-import {Point, Polygon, MultiPoint, MultiPolygon} from "ol/geom";
+import {Point, Polygon, MultiPoint, MultiPolygon, Geometry} from "ol/geom";
 
 export default {
     serializeState () {
@@ -160,9 +160,11 @@ export default {
             delete feature.properties.originalData;
         }
 
-        // delete geometry from properties
-        if (Object.hasOwnProperty.call(feature.properties, "geometry")) {
-            delete feature.properties.geometry;
+        // remove redundant geometries
+        for (const key in feature.properties) {
+            if (feature.properties[key] instanceof Geometry) {
+                delete feature.properties[key];
+            }
         }
 
         return {

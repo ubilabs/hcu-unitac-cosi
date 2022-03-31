@@ -16,6 +16,8 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
+global.requestAnimationFrame = (fn) => fn();
+
 before(() => {
     const namedProjections = [
         ["EPSG:31467", "+title=Bessel/Gauß-Krüger 3 +proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"],
@@ -31,7 +33,7 @@ before(() => {
     });
 });
 
-describe("addons/cosiFileImport/components/CosiFileImport.vue", () => {
+describe("addons/cosi/cosiFileImport/components/CosiFileImport.vue", () => {
     const
         mockConfigJson = {
             Portalconfig: {

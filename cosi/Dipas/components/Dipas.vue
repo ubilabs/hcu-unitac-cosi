@@ -20,7 +20,6 @@ import {exportAsGeoJson} from "../utils/exportResults";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 import {getCenterOfMass} from "../../utils/geomUtils";
 
-
 export default {
     name: "Dipas",
     components: {
