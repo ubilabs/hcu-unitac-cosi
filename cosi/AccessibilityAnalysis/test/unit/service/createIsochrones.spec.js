@@ -49,7 +49,7 @@ describe("createIsochrones", () => {
         expect(service.store.state.progress).to.equal(0);
     });
 
-    it("should cancel first call", async () => {
+    it.skip("should cancel first call", async () => {
         // eslint-disable-next-line require-jsdoc
         async function act () {
             return service.store.actions.getIsochrones({getters: {baseUrl}, commit: sinon.stub(), rootGetters},
@@ -155,26 +155,22 @@ describe("createIsochrones", () => {
     });
 
     it("createIsochrones point error", async () => {
-        const commitStub = sinon.stub();
+        const commitStub = sinon.stub(),
+            originalError = console.error;
 
-        let fail = false;
+        console.error = sinon.stub();
 
-        try {
-            await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
-                {
-                    coordinates: [[9.744273174491198, "b"]],
-                    transportType: "driving-car",
-                    scaleUnit: "time",
-                    distance: 10
-                });
-        }
-        catch (err) {
-            fail = true;
-            expect(err.response.data.error.code).to.be.equal(3002);
-        }
+        const ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
+            {
+                coordinates: [[9.744273174491198, "b"]],
+                transportType: "driving-car",
+                scaleUnit: "time",
+                distance: 10
+            });
 
-        expect(fail).to.equal(true);
-        expect(service.store.state.progress).to.equal(0);
+        expect(ret.length).to.equal(0);
+
+        console.error = originalError;
     });
     it("should not fail if one point is outside hamburg", async () => {
         const commitStub = sinon.stub(),

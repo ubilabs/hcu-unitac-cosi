@@ -3,6 +3,7 @@ import {
 } from "chai";
 import requestIsochrones from "../../../service/requestIsochrones";
 import axios from "axios";
+import sinon from "sinon";
 
 describe("requestIsochrones", () => {
     it("point request within hamburg", async () => {
@@ -12,9 +13,7 @@ describe("requestIsochrones", () => {
             ],
             "time", [600 * 0.33, 600 * 0.67, 600]);
 
-
-        expect(res.type).to.equal("FeatureCollection");
-        expect(res.features).to.have.length(3);
+        expect(res).to.have.length(3);
     });
     it("point request within hamburg with abort", async () => {
 
@@ -45,6 +44,9 @@ describe("requestIsochrones", () => {
         }
     });
     it("point request invalid data", async () => {
+        const originalError = console.error;
+
+        console.error = sinon.stub();
         try {
             await requestIsochrones(
                 "driving-car", [
@@ -55,5 +57,6 @@ describe("requestIsochrones", () => {
         catch (e) {
             expect(e.response.data.error.code).to.equal(3002);
         }
+        console.error = originalError;
     });
 });

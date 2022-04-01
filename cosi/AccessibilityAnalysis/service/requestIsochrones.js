@@ -15,19 +15,24 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
     const promises = [],
         format = new GeoJSON(),
         // locations are limited to 5 in the bkg service
-        chunks = splitIntoChunks(coordinates, 5);
+        chunks = splitIntoChunks(coordinates, 5),
+        baseUrl_ = baseUrl ? baseUrl : "https://api.openrouteservice.org/v2/";
 
     for (let i = 0; i < chunks.length; i++) {
-        const _baseUrl = baseUrl + "isochrones/",
+        const _baseUrl = baseUrl_ + "isochrones/",
             opts = {"locations": chunks[i], "range_type": rangeType, "range": rangeArray},
-            url = _baseUrl + pathType.trim();
+            url = _baseUrl + pathType.trim(),
+            headers = {
+                "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+                "Content-Type": "application/json"
+            };
 
+        if (baseUrl_ == "https://api.openrouteservice.org/v2/") {
+            headers["Authorization"] = "5b3ce3597851110001cf6248ef277cc626c440eb819e9299870c194c"
+        }
         promises.push(
             axios.post(url, JSON.stringify(opts), {
-                headers: {
-                    "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-                    "Content-Type": "application/json"
-                },
+                headers: headers,
                 cancelToken: abort && abort.token
             }).then((response) => {
                 return response.data;
@@ -41,7 +46,9 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
         const features = [];
 
         featureCollections.forEach(collection => {
-            features.push(...format.readFeatures(collection));
+            if (collection) {
+                features.push(...format.readFeatures(collection));
+            }
         });
 
         return features;
