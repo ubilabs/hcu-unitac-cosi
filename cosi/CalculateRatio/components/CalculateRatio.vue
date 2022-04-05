@@ -752,7 +752,8 @@ export default {
             });
 
             this.availableYears.forEach(year => {
-                const dataPerYear = utils.calculateRatio(dataArray, year);
+                const dataPerYear = utils.calculateRatio(dataArray, year)
+                    .filter(dataset => dataset.scope);
 
                 dataPerYear.forEach(dataset => {
                     const checkExisting = graphObj.data.datasets.find(set => set.label === dataset.scope);
