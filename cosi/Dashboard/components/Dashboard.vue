@@ -128,7 +128,6 @@ export default {
             "mapping",
             "loadend"
         ]),
-        // ...mapGetters("Map", ["layerById"]),
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", ["selectedYear"]),
         columns () {

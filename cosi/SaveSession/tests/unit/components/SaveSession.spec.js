@@ -236,6 +236,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
 
+                // eslint-disable-next-line require-atomic-updates
                 store.state.Tools.Draw.layer = layerMock;
 
                 wrapper.find("#save-session").trigger("click");

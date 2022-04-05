@@ -73,17 +73,19 @@ export default {
             if (results.length > 1 && !this.dashboardOpen) {
                 this.matchResults = results.filter(x => x.getProperties()[this.yearSelector + this.selectedYear] !== undefined);
 
-                colorScale.legend.values.forEach((value, index) => {
-                    if (value === this.$t("additional:modules.tools.colorCodeMap.noData")) {
-                        colorScale.legend.colors.splice(index, 1);
-                        colorScale.legend.values.splice(index, 1);
-                    }
-                });
+                if (this.matchResults.length) {
+                    colorScale.legend.values.forEach((value, index) => {
+                        if (value === this.$t("additional:modules.tools.colorCodeMap.noData")) {
+                            colorScale.legend.colors.splice(index, 1);
+                            colorScale.legend.values.splice(index, 1);
+                        }
+                    });
 
-                this.legendColors = [colorScale.scale(colorScale.legend.values[0]), colorScale.scale((colorScale.legend.values[colorScale.legend.values.length - 1] + colorScale.legend.values[0]) / 2), colorScale.scale(colorScale.legend.values[colorScale.legend.values.length - 1])];
+                    this.legendColors = [colorScale.scale(colorScale.legend.values[0]), colorScale.scale((colorScale.legend.values[colorScale.legend.values.length - 1] + colorScale.legend.values[0]) / 2), colorScale.scale(colorScale.legend.values[colorScale.legend.values.length - 1])];
 
-                this.loVal = colorScale.legend.values[0].toLocaleString(this.currentLocale);
-                this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString(this.currentLocale);
+                    this.loVal = colorScale.legend.values[0].toLocaleString(this.currentLocale);
+                    this.hiVal = colorScale.legend.values[colorScale.legend.values.length - 1].toLocaleString(this.currentLocale);
+                }
             }
         },
         markerPosition (index) {
