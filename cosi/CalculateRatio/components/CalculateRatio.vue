@@ -535,8 +535,9 @@ export default {
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
                                     ) {
-                                        const value = feature.getProperties()[this["paramField" + letter].id],
-                                            valueTransformed = typeof value === "string" ? parseFloat(value.replace(/\D/g, "")) : value;
+                                        const
+                                            value = feature.getProperties()[this["paramField" + letter].id],
+                                            valueTransformed = typeof value === "string" ? parseFloat(value.replace(/[^0-9.]/g, "")) : value;
 
                                         this.featureVals.push(valueTransformed);
                                     }

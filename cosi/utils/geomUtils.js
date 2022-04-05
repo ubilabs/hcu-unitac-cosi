@@ -6,6 +6,7 @@ import {
     centerOfMass as turfCenterOfMass
 } from "@turf/turf";
 import {GeoJSON} from "ol/format";
+import {getCenter} from "ol/extent";
 
 /**
  * Gets the centroid of any OL feature
@@ -90,14 +91,17 @@ export function getContainingDistrictForFeature (districtLevel, feature, returns
 
     for (const district of districtLevel.districts) {
         const geom = district.adminFeature.getGeometry(),
-            featureExtent = feature.getGeometry().getExtent();
+            featureExtent = feature.getGeometry().getExtent(),
+            featureCenter = getCenter(featureExtent);
 
-        if (geom.intersectsExtent(featureExtent)) {
-            containingDistricts.push(returnsFeature ? district : district.getName());
-
-            if (!multiple) {
-                break;
+        if (multiple) {
+            if (geom.intersectsExtent(featureExtent)) {
+                containingDistricts.push(returnsFeature ? district : district.getName());
             }
+        }
+        else if (geom.intersectsCoordinate(featureCenter)) {
+            containingDistricts.push(returnsFeature ? district : district.getName());
+            break;
         }
     }
 

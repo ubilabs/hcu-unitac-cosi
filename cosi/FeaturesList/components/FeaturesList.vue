@@ -1048,6 +1048,11 @@ export default {
                     overflow-y: auto;
                     height: 100%;
                    }
+                   td.detail-view {
+                       .v-data-table__wrapper {
+                           overflow-y: hidden;
+                       }
+                   }
                }
            }
         }
