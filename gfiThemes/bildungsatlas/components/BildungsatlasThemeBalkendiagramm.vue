@@ -419,8 +419,8 @@ export default {
 <template>
     <div class="gfi-balkendiagramm">
         <div
+            v-if="isActiveTab('data')"
             class="gfi-data"
-            :class="{ 'hidden': !isActiveTab('data') }"
         >
             <div class="rba_header">
                 <div class="rba_header_title">
@@ -516,8 +516,8 @@ export default {
             </div>
         </div>
         <div
+            v-if="isActiveTab('info')"
             class="gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
         >
             <div v-if="infoMatrix.hasOwnProperty(propertyName) && Array.isArray(infoMatrix[propertyName])">
                 <div
