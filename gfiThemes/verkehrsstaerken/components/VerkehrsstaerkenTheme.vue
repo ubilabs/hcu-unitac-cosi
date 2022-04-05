@@ -197,7 +197,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import "~variables";
+@import "~/css/mixins.scss";
 
 .verkehrsstaerken {
     overflow-x: auto;
@@ -230,13 +230,7 @@ export default {
     .nav-pills {
         padding: 6px;
 
-        & > li > a {
-            padding: 0.9375em 1em;
-        }
-        & > li.active > a {
-            color: $secondary_focus_contrast;
-            background-color: $secondary_focus;
-        }
+        @include active-pill(0.9375em, 1em);
     }
     .tab-content {
         width: 100%;
