@@ -73,8 +73,8 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/GeoAnalyze", Object.keys(mutations)),
-        ...mapMutations("Map", ["addLayerToMap", "removeLayerFromMap"]),
-        ...mapActions("Map", ["addInteraction", "removeInteraction"]),
+        ...mapMutations("Maps", ["addLayerToMap", "removeLayerFromMap"]),
+        ...mapActions("Maps", ["addInteraction", "removeInteraction"]),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
