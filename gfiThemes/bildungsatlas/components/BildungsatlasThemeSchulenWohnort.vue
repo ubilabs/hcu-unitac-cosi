@@ -402,8 +402,8 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-school-living-location">
-        <div :class="{ 'hidden': !isActiveTab('data') }">
+    <div class="gfi-bildungsatlas-current-content">
+        <div v-if="isActiveTab('data')">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -431,38 +431,35 @@ export default {
             </table>
         </div>
         <div
+            v-if="isActiveTab('info')"
             class="gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
         />
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .gfi-school-living-location {
-        max-width: 420px;
-        table {
-            margin-bottom: 0;
-        }
-        .gfi-info {
-            padding: 0 10px 10px;
-        }
+.gfi-bildungsatlas-current-content {
+    table {
+        margin-bottom: 0;
     }
+}
 </style>
 
 <style lang="scss">
-     .schulWohnort {
-        &.table {
-            max-width: 420px;
-            tbody {
-                tr{
-                    td {
-                        font-weight: bold;
-                        &:last-child {
-                            text-align: right;
-                        }
+.schulWohnort {
+    table {
+        max-width: 420px;
+
+        tbody {
+            tr {
+                td {
+                    font-weight: bold;
+                    &:last-child {
+                        text-align: right;
                     }
                 }
             }
         }
     }
+}
 </style>

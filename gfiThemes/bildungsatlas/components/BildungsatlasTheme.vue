@@ -137,9 +137,7 @@ export default {
 
 <template>
     <div class="gfi-bildungsatlas">
-        <ul
-            class="nav nav-pills"
-        >
+        <ul class="nav nav-pills">
             <li :class="{ active: isActiveTab('data'), 'nav-item': true }">
                 <a
                     class="nav-link"
@@ -171,9 +169,7 @@ export default {
                 :parse-translation-in-html="parseTranslationInHtml"
             />
             <div class="gfi-bildungsatlas-footer">
-                <span>
-                    {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
-                </span>
+                {{ $t("additional:addons.gfiThemes.bildungsatlas.general.hint") }}
             </div>
         </div>
     </div>
@@ -183,67 +179,83 @@ export default {
 .portal-title a img[alt*="Bildungsatlas"] {
     width: 80px;
 }
-</style>
 
-<style lang="scss" scoped>
-.gfi-bildungsatlas {
+.gfi-bildungsatlas-current-content {
+    max-width: 420px;
+    font-size: 13px;
+
+    .gfi-data {
+        & > * {
+            margin-top: 15px;
+        }
+
+        .rba_header {
+            margin-top: 0;
+
+            .rba_header_title {
+                font-weight: bold;
+            }
+        }
+
+        .rba_table {
+            padding-top: 7px;
+            border-top: 1px solid #ddd;
+
+            table {
+                width: 100%;
+            }
+
+            td {
+                vertical-align: top;
+            }
+
+            td.rba_table_rightcol {
+                text-align: right;
+            }
+        }
+
+        .rba_chart {
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+
+            .rba_chart_title {
+                font-weight: bold;
+            }
+        }
+
+        .rba_footer {
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+    }
+
     .gfi-info {
-        padding: 0 10px 10px;
-        h5 {
+        h6 {
             font-weight: bold;
         }
+
         p {
             margin-bottom: 10px;
         }
     }
-    .card {
-        &.graphHeader {
-            padding: 0 8px 8px;
-            border-bottom: 2px solid #ddd;
-        }
-    }
-    .gfi-data {
-        padding: 10px;
-    }
-    .rba_header {
-        margin-top: 15px;
-        .rba_header_title {
-            font-weight: bold;
-        }
-    }
-    .rba_table {
-        margin-top: 15px;
-        padding-top: 7px;
-        border-top: 1px solid #ddd;
-        table {
-            width: 100%;
-        }
-        td {
-            vertical-align: top;
-        }
-        td.rba_table_rightcol {
-            text-align: right;
-        }
-    }
-    .rba_chart {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        .rba_chart_title {
-            font-weight: bold;
-        }
-    }
-    .rba_footer {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
+}
+</style>
+
+<style lang="scss" scoped>
+@import "~/css/mixins.scss";
+
+.gfi-bildungsatlas {
+    @include active-pill(0.625rem, 1.25em);
+
+    .nav-pills {
+        margin: 10px 10px 0;
     }
 
-    .footer {
-        margin: 0 0 10px 10px;
-    }
-    .gfi-bildungsatlas-footer {
+    .tab-content > * {
         padding: 10px;
+    }
+
+    .gfi-bildungsatlas-footer {
         border-top: 1px solid #ddd;
     }
 }
