@@ -504,7 +504,7 @@ export default {
         </div>
         <div
             class="gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }
+            :class="{ 'hidden': !isActiveTab('info') }"
         >
             <div v-if="susType === 'anteil_sus_abi'">
                 <h5>
