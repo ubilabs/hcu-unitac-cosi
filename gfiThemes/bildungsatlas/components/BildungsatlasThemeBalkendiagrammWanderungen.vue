@@ -163,10 +163,10 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-balkendiagramm-wanderungen">
+    <div class="gfi-bildungsatlas-current-content">
         <div
+            v-if="isActiveTab('data')"
             class="gfi-data"
-            :class="{ 'hidden': !isActiveTab('data') }"
         >
             <div class="rba_header">
                 <div
@@ -317,15 +317,8 @@ export default {
             </div>
         </div>
         <div
+            v-if="isActiveTab('info')"
             class="gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
         />
     </div>
 </template>
-
-<style lang="scss" scoped>
-.gfi-balkendiagramm-wanderungen {
-    max-width: 420px;
-    font-size: 13px;
-}
-</style>

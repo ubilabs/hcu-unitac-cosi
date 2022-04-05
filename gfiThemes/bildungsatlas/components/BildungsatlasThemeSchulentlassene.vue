@@ -352,10 +352,10 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-schulentlassene">
+    <div class="gfi-bildungsatlas-current-content">
         <div
+            v-if="isActiveTab('data')"
             class="gfi-data"
-            :class="{ 'hidden': !isActiveTab('data') }"
         >
             <div class="rba_header">
                 <div
@@ -503,35 +503,35 @@ export default {
             </div>
         </div>
         <div
+            v-if="isActiveTab('info')"
             class="gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
         >
             <div v-if="susType === 'anteil_sus_abi'">
-                <h5>
-                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleAbi") }}</b>
-                </h5>
+                <h6>
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleAbi") }}
+                </h6>
                 <p>
                     {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textAbi") }}
                 </p>
             </div>
             <div v-else>
-                <h5>
-                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleOsa") }}</b>
-                </h5>
+                <h6>
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleOsa") }}
+                </h6>
                 <p>
                     {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textOsa") }}
                 </p>
             </div>
             <div>
-                <h5>
-                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleA") }}</b>
-                </h5>
+                <h6>
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleA") }}
+                </h6>
                 <p>
                     {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textA") }}
                 </p>
-                <h5>
-                    <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleB") }}</b>
-                </h5>
+                <h6>
+                    {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.titleB") }}
+                </h6>
                 <p>
                     {{ translate("additional:addons.gfiThemes.bildungsatlas.schulentlassene.info.textB") }}
                 </p>
@@ -543,10 +543,3 @@ export default {
         </div>
     </div>
 </template>
-
-<style lang="scss" scoped>
-.gfi-schulentlassene {
-    max-width: 420px;
-    font-size: 13px;
-}
-</style>
