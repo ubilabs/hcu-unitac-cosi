@@ -1,4 +1,5 @@
 <script>
+import TrafficCountCalendarButtonGroup from "./TrafficCountCalendarButtonGroup.vue";
 import TrafficCountCompDiagram from "./TrafficCountCompDiagram.vue";
 import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
@@ -13,6 +14,7 @@ import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
 export default {
     name: "TrafficCountDay",
     components: {
+        TrafficCountCalendarButtonGroup,
         TrafficCountCompDiagram,
         TrafficCountCompTable,
         TrafficCountCheckbox
@@ -261,19 +263,7 @@ export default {
                     class="form-control dpinput"
                     placeholder="Datum"
                 >
-                <span class="input-group-btn">
-                    <button
-                        id="dayDateInputButton"
-                        class="btn btn-default"
-                        type="button"
-                        @click="toggleCalendar"
-                    >
-                        <span
-                            class="glyphicon glyphicon-th"
-                            aria-hidden="true"
-                        />
-                    </button>
-                </span>
+                <TrafficCountCalendarButtonGroup id-prefix="day" />
             </div>
         </div>
         <TrafficCountCheckbox

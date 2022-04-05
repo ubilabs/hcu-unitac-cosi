@@ -357,7 +357,7 @@ export default {
 <template>
     <div
         id="infos"
-        class="infos tab-pane fade in active"
+        class="infos"
     >
         <div
             id="trafficcount-info-table"
