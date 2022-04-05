@@ -180,68 +180,71 @@ export default {
 </template>
 
 <style lang="scss">
-    .portal-title a img[alt*="Bildungsatlas"] {
-        width: 80px;
-    }
-    .gfi-bildungsatlas {
-        .gfi-info {
-            padding: 0 10px 10px;
-            h5 {
-                font-weight: bold;
-            }
-            p {
-                margin-bottom: 10px;
-            }
-        }
-        .card {
-            &.graphHeader {
-                padding: 0 8px 8px;
-                border-bottom: 2px solid #ddd;
-            }
-        }
-        .gfi-data {
-            padding: 10px;
-        }
-        .rba_header {
-            margin-top: 15px;
-            .rba_header_title {
-                font-weight: bold;
-            }
-        }
-        .rba_table {
-            margin-top: 15px;
-            padding-top: 7px;
-            border-top: 1px solid #ddd;
-            table {
-                width: 100%;
-            }
-            td {
-                vertical-align: top;
-            }
-            td.rba_table_rightcol {
-                text-align: right;
-            }
-        }
-        .rba_chart {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-            .rba_chart_title {
-                font-weight: bold;
-            }
-        }
-        .rba_footer {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-        }
+.portal-title a img[alt*="Bildungsatlas"] {
+    width: 80px;
+}
+</style>
 
-        .footer {
-            margin: 0 0 10px 10px;
+<style lang="scss" scoped>
+.gfi-bildungsatlas {
+    .gfi-info {
+        padding: 0 10px 10px;
+        h5 {
+            font-weight: bold;
         }
-        .gfi-bildungsatlas-footer {
-            padding: 10px;
-            border-top: 1px solid #ddd;
+        p {
+            margin-bottom: 10px;
         }
     }
+    .card {
+        &.graphHeader {
+            padding: 0 8px 8px;
+            border-bottom: 2px solid #ddd;
+        }
+    }
+    .gfi-data {
+        padding: 10px;
+    }
+    .rba_header {
+        margin-top: 15px;
+        .rba_header_title {
+            font-weight: bold;
+        }
+    }
+    .rba_table {
+        margin-top: 15px;
+        padding-top: 7px;
+        border-top: 1px solid #ddd;
+        table {
+            width: 100%;
+        }
+        td {
+            vertical-align: top;
+        }
+        td.rba_table_rightcol {
+            text-align: right;
+        }
+    }
+    .rba_chart {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        .rba_chart_title {
+            font-weight: bold;
+        }
+    }
+    .rba_footer {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+    }
+
+    .footer {
+        margin: 0 0 10px 10px;
+    }
+    .gfi-bildungsatlas-footer {
+        padding: 10px;
+        border-top: 1px solid #ddd;
+    }
+}
 </style>
