@@ -551,9 +551,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import "~variables";
-
-$mb: 0.5em;
+@import "~/css/mixins.scss";
 
 .trafficCount-gfi {
     padding: 10px 5px 0;
@@ -570,13 +568,10 @@ $mb: 0.5em;
         }
     }
     .nav-pills {
+        @include active-pill(0.625rem, 1.25em);
+
         & > li > a {
-            padding: 0.625rem 1.25em;
-            margin-bottom: $mb;
-        }
-        & > li.active > a {
-            color: $secondary_focus_contrast;
-            background-color: $secondary_focus;
+            margin-bottom: 0.5em;
         }
     }
 
