@@ -6,9 +6,9 @@ Radio.channel("GFI").on({
         store.commit("Maps/setGfiFeatures", null);
 
         const coordinate = attributes.coordinate,
-            layerList = store.getters["Map/layerList"],
-            resolution = store.getters["Map/resolution"],
-            projection = store.getters["Map/projection"],
+            layerList = store.getters["Maps/get2DMap"].getLayers().getArray(),
+            resolution = store.getters["Maps/resolution"],
+            projection = store.getters["Maps/projection"],
             foundLayer = layerList.find(function (layer) {
                 return layer.get("id") === layerId;
             }),
@@ -26,7 +26,7 @@ Radio.channel("GFI").on({
             });
 
         store.commit("Tools/Gfi/setActive", true);
-        store.commit("Maps/setClickCoord", [coordinate[0], coordinate[1]]);
+        store.commit("Maps/setClickCoordinate", [coordinate[0], coordinate[1]]);
         store.commit("Maps/setGfiFeatures", [targetFeature]);
     }
 });

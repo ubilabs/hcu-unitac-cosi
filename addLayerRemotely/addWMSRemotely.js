@@ -34,7 +34,7 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
                     version = capability?.version,
                     checkVersion = isVersionEnabled(version),
                     currentExtent = Radio.request("Parser", "getPortalConfig")?.mapView?.extent,
-                    projection = store.getters["Map/projection"].code_;
+                    projection = store.getters["Maps/projection"].code_;
 
                 let checkExtent = getIfInExtent(capability, currentExtent, projection),
                     uniqueId = "external_",

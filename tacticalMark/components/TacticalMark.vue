@@ -174,7 +174,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/TacticalMark", Object.keys(mutations)),
-        ...mapActions("Map", {
+        ...mapActions("Maps", {
             addInteractionToMap: "addInteraction",
             removeInteractionFromMap: "removeInteraction"
         }),

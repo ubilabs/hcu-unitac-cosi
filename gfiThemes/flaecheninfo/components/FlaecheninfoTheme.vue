@@ -18,7 +18,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Map", ["gfiFeatures"]),
+        ...mapGetters("Maps", ["gfiFeatures"]),
         ...mapGetters("MapMarker", ["markerPolygon"])
     },
     watch: {
