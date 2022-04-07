@@ -1,5 +1,7 @@
 import addGeoJSON from "../../src/utils/addGeoJSON.js";
 import importLayers from "./addWMSRemotely.js";
+import store from "../../src/app-store";
+import mapCollection from "../../src/core/dataStorage/mapCollection.js";
 
 Radio.channel("addLayerRemotely").on({
     /**
@@ -11,15 +13,27 @@ Radio.channel("addLayerRemotely").on({
      * @param {String} styleId StyleId of the layer which needs to be the same as the one in the style array inside the geojson
      * @param {String} folderName Name of the folder in the layer tree
      * @param {Object} gfiAttributes Attributes to be shown in the GFI
+     * @param {Boolean} zoomTo Flag if the map should zoom to the extent of the layer
      * @returns {void}
      */
-    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes}) {
+    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true}) {
 
-        const treeType = Radio.request("Parser", "getTreeType");
+        const treeType = Radio.request("Parser", "getTreeType"),
+            map = mapCollection.getMap(store.state.Map.mapId, store.state.Map.mapMode),
+            layer = map.getLayers().getArray().find(l => {return l.get("id") === id});
         let parentID = "";
 
-        if (geoJSON?.styles) {
-            Radio.trigger("StyleList", "addToStyleList", geoJSON.styles);
+        if (!layer) {
+            if (geoJSON?.styles) {
+                Radio.trigger("StyleList", "addToStyleList", geoJSON.styles);
+            }
+        }
+        else {
+            map?.removeLayer(layer);
+
+            Radio.request("ModelList", "removeModelsById", id)
+            Radio.trigger("ModelList", "removeLayerById", id);
+            Radio.trigger("Parser", "removeItem", id);
         }
 
         if (treeType === "custom" || treeType === "default") {
@@ -43,7 +57,9 @@ Radio.channel("addLayerRemotely").on({
             Radio.trigger("ModelList", "refreshLightTree");
         }
 
-        Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
+        if (zoomTo) {
+            mapCollection.getMapView("ol", "2D").zoomToFilteredFeatures(getFeatureIds(id), id);
+        }
     },
     /**
      * Adds a WMS through the remote interface
@@ -78,6 +94,8 @@ function getFeatureIds (layerId) {
     layer.getSource().getFeatures().forEach(feature => {
         featureArray.push(feature.getId());
     });
+
+    console.log(featureArray)
 
     return featureArray;
 }
