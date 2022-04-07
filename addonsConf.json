@@ -35,10 +35,6 @@
   "streetSmart": {
     "type": "tool"
   },
-  "activeCityMaps": {
-    "path":"gfiThemes/activeCityMaps",
-    "type": "gfiTheme"
-  },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
