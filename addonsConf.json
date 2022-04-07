@@ -32,9 +32,12 @@
   "schoolRoutePlanning": {
     "type": "tool"
   },
+<<<<<<< HEAD
   "streetSmart": {
     "type": "tool"
   },
+=======
+>>>>>>> 247458e6 (Remove redundant gfiTheme activeCityMaps)
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
