@@ -143,7 +143,7 @@ export default class ScenarioFeature {
 
         if (this.guideLayer) {
             removeSimulationTag(this.feature, this.guideLayer);
-            if (this.feature.get("isSimulation") || this.feature.get("isModified")) {
+            if ((this.feature.get("isSimulation") || this.feature.get("isModified")) && this.scenario.isActive) {
                 addSimulationTag(this.feature, this.guideLayer, this.layer);
             }
         }

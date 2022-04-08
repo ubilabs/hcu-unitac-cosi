@@ -60,6 +60,7 @@ export default {
             <template #activator="{ on, attrs }">
                 <v-icon
                     title="Menü öffnen"
+                    class="open-burger-menu"
                     v-bind="attrs"
                     v-on="on"
                 >
@@ -67,7 +68,7 @@ export default {
                 </v-icon>
             </template>
             <v-card
-                class="mx-auto"
+                class="mx-auto burger-menu"
                 max-width="500"
             >
                 <v-toolbar
@@ -137,7 +138,7 @@ export default {
                                         no-action
                                     >
                                         <template #activator>
-                                            <v-list-item-content>
+                                            <v-list-item-content class="activator">
                                                 <v-list-item-title>
                                                     {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.selection') }}
                                                 </v-list-item-title>
@@ -145,6 +146,7 @@ export default {
                                         </template>
 
                                         <v-list-item
+                                            id="set-field-A"
                                             dense
                                             @click="$emit('setField', 'A', _item)"
                                         >
@@ -156,6 +158,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="set-field-B"
                                             dense
                                             @click="$emit('setField', 'B', _item)"
                                         >
@@ -193,7 +196,7 @@ export default {
                                         no-action
                                     >
                                         <template #activator>
-                                            <v-list-item-content>
+                                            <v-list-item-content class="activator">
                                                 <v-list-item-title>
                                                     {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.calculate') }}
                                                 </v-list-item-title>
@@ -278,7 +281,7 @@ export default {
                                         no-action
                                     >
                                         <template #activator>
-                                            <v-list-item-content>
+                                            <v-list-item-content class="activator">
                                                 <v-list-item-title>
                                                     {{ $t('additional:modules.tools.cosi.dashboard.tableRowMenu.charts') }}
                                                 </v-list-item-title>
@@ -286,6 +289,7 @@ export default {
                                         </template>
 
                                         <v-list-item
+                                            id="standard-charts"
                                             dense
                                             @click="$emit('renderCharts', _item)"
                                         >
@@ -297,6 +301,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="chart-for-multiple-rows"
                                             dense
                                             :disabled="selectedItems.length <= 1"
                                             @click="$emit('renderGroupedChart')"
@@ -309,6 +314,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="scatter-chart"
                                             dense
                                             @click="$emit('correlate')"
                                         >
@@ -343,12 +349,14 @@ export default {
         </v-menu>
         <v-icon
             :title="$t('additional:modules.tools.cosi.dashboard.tableRowMenu.visualizeTooltip')"
+            class="visualize"
             @click="renderVisualization"
         >
             {{ _item.visualized ? 'mdi-eye' : 'mdi-eye-off' }}
         </v-icon>
         <v-icon
             :title="$t('additional:modules.tools.cosi.dashboard.tableRowMenu.expandTooltip')"
+            class="expand"
             @click="_item.expanded = !_item.expanded"
         >
             {{ _item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}

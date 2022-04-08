@@ -386,6 +386,7 @@ export default {
                     this.timestampPrefix
                 );
 
+            // console.log(JSON.stringify(chart));
             this.channelGraphData(chart);
         },
 

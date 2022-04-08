@@ -58,9 +58,9 @@ export async function getAllFeatures (layerId, bbox, srsName) {
 
     const layer = getLayerWhere({id: layerId}),
         wfsReader = new WFS({
-            featureNS: layer.featureNS
+            featureNS: layer?.featureNS
         }),
-        features = await getFeature(layer?.url, layer?.featureType, undefined, formatBbox(bbox, srsName), srsName, "1.1.0");
+        features = layer?.url ? await getFeature(layer?.url, layer?.featureType, undefined, formatBbox(bbox, srsName), srsName, "1.1.0") : [];
 
     return wfsReader.readFeatures(features);
 }

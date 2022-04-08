@@ -95,6 +95,7 @@ export default {
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
+        ...mapActions("Draw", ["createCenterPoint"]),
         getLayerById,
 
         /**
@@ -276,8 +277,7 @@ export default {
                     const geometryType = feature.getGeometry().getType();
 
                     if (geometryType !== "Point") {
-                        const extent = feature.getGeometry().getExtent(),
-                            center = getCenter(extent);
+                        const center = this.createCenterPoint({feature});
 
                         feature.setGeometry(new Point(center));
                     }
