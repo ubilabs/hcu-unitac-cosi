@@ -95,7 +95,7 @@ export default {
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
         ...mapMutations("Map", ["addLayerToMap"]),
-        ...mapActions("Draw", ["createCenterPoint"]),
+        ...mapActions("Tools/Draw", ["createCenterPoint"]),
         getLayerById,
 
         /**
