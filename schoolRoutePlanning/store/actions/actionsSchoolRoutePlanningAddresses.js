@@ -10,10 +10,7 @@ export default {
      * @param {String} inputs The input part of an address.
      * @returns {void}
      */
-    processInput ({dispatch}, inputs) {
-        const input = inputs.evt.target.value,
-            layer = inputs.layer;
-
+    processInput ({dispatch}, {input, layer}) {
         if (input.slice(-1) !== " " && input.length > 2) {
             dispatch("searchStreets", {input, layer});
         }
@@ -25,7 +22,8 @@ export default {
      * @param {String} input The input part of a streetname.
      * @returns {void}
      */
-    searchStreets ({rootGetters, dispatch}, {input, layer}) {
+    searchStreets ({rootGetters, dispatch, commit}, {input, layer}) {
+        commit("setIsLoading", true);
         search(input, {
             map: mapCollection.getMap(rootGetters["Map/mapId"], rootGetters["Map/mapMode"]),
             searchStreets: true
@@ -33,6 +31,8 @@ export default {
             const sortedStreetNames = streets.map(street => street.name).sort();
 
             dispatch("processStreetNames", {input, layer, sortedStreetNames});
+        }).finally(() => {
+            commit("setIsLoading", false);
         });
     },
 

@@ -20,6 +20,7 @@
  * @property {String} printOutputFormat Format for the printing.
  * @property {String} printTitle Title for the printing.
  * @property {String[]} toggleLayers Layers that can be switched on and off via the toggle button.
+ * @property {Boolean} isLoading internal flag to control loading indicator
  * @property {String} inputAddress The input address.
  * @property {Object[]} schools The available schools.
  * @property {String[]} streetNames The searched street names
@@ -67,6 +68,8 @@ const state = {
         "1935geofox_Faehre",
         "1933geofox_stations"
     ],
+
+    isLoading: false,
 
     inputAddress: "",
     schools: [],
