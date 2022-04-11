@@ -1,7 +1,6 @@
 import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
-import sinon from "sinon";
 
 import SchoolRoutePlanningAddressComponent from "../../../components/SchoolRoutePlanningAddress.vue";
 import SchoolRoutePlanning from "../../../store/indexSchoolRoutePlanning";
@@ -54,22 +53,6 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
         };
     });
 
-    it("do not renders the SchoolRoutePlanningAddress", () => {
-        const wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
-
-        expect(wrapper.find(".address-list").exists()).to.be.false;
-    });
-
-    it("renders the SchoolRoutePlanningAddress", () => {
-        let wrapper = null;
-
-        store.commit("Tools/SchoolRoutePlanning/setStreetNames", ["Superman", "Batman"]);
-        store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
-
-        expect(wrapper.find(".address-list").exists()).to.be.true;
-    });
-
     it("renders streetnames if the streetnameList > 1", () => {
         const streetNames = ["Superman", "Batman"];
         let wrapper = null;
@@ -82,20 +65,6 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
             expect(li.text()).to.be.equal(streetNames[index]);
             expect(li.classes()).to.include("list-group-item", "street");
         });
-    });
-
-    it("start searchHousenumbers if streetname is clicked", async () => {
-        const streetNames = ["Superman", "Batman"],
-            spySearchHousenumbers = sinon.spy(SchoolRoutePlanningAddressComponent.methods, "searchHousenumbers");
-        let wrapper = null;
-
-        store.commit("Tools/SchoolRoutePlanning/setStreetNames", streetNames);
-        store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
-
-        await wrapper.findAll("li").at(0).trigger("click");
-
-        expect(spySearchHousenumbers.calledOnce).to.be.true;
     });
 
     it("renders filteredHouseNumbers if the streetnameList === 1", () => {
@@ -122,31 +91,5 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
             expect(li.text()).to.be.equal(filteredHouseNumbers[index].name);
             expect(li.classes()).to.include("list-group-item", "address");
         });
-    });
-
-    it("start findHouseNumber if streetname is clicked", async () => {
-        const streetNames = ["Superman"],
-            spyFindHouseNumber = sinon.spy(SchoolRoutePlanningAddressComponent.methods, "findHouseNumber"),
-            filteredHouseNumbers = [
-                {
-                    name: "Superman 1"
-                },
-                {
-                    name: "Superman 2"
-                },
-                {
-                    name: "Superman 3"
-                }
-            ];
-        let wrapper = null;
-
-        store.commit("Tools/SchoolRoutePlanning/setStreetNames", streetNames);
-        store.commit("Tools/SchoolRoutePlanning/setFilteredHouseNumbers", filteredHouseNumbers);
-        store.commit("Tools/SchoolRoutePlanning/setInputAddress", "Wonderwoman");
-        wrapper = shallowMount(SchoolRoutePlanningAddressComponent, wrapperElements);
-
-        await wrapper.findAll("li").at(0).trigger("click");
-
-        expect(spyFindHouseNumber.calledOnce).to.be.true;
     });
 });
