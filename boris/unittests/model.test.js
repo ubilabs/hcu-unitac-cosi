@@ -6,7 +6,7 @@ import initializeBrwAbfrageModel from "@addons/boris/bodenrichtwertabfrage/model
 import Feature from "ol/Feature";
 import mapCollection from "../../../src/core/maps/mapCollection";
 
-describe("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
+describe.skip("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
     let tool,
         model,
         map;
