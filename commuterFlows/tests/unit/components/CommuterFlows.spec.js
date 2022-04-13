@@ -28,8 +28,8 @@ describe("addons/commuterFlows/components/CommuterFlows.vue", () => {
                         children: {
                             CommuterFlows:
                                 {
-                                    "name": "Pendlerströme",
-                                    "glyphicon": "glyphicon glyphicon-transfer"
+                                    "name": "translate#additional:modules.tools.commuterFlows.title",
+                                    "icon": "bi-arrow-left-right"
                                 }
                         }
                     }
