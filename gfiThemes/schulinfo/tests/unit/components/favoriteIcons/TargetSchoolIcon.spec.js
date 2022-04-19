@@ -70,7 +70,12 @@ describe("addons/gfiThemes/schulinfo/components/favoriteIcons/TargetSchoolIcon.v
     });
 
     it("renders the TargetSchoolIcon", () => {
-        expect(wrapper.find("span").exists()).to.be.true;
-        expect(wrapper.find("span").classes()).to.include("glyphicon", "glyphicon-map-marker");
+        const span = wrapper.find("span"),
+            i = wrapper.find("i");
+
+        expect(span.exists()).to.be.true;
+        expect(span.classes()).to.include("bootstrap-icon");
+        expect(i.exists()).to.be.true;
+        expect(i.classes()).to.include("bi-geo-alt-fill");
     });
 });
