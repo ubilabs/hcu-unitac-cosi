@@ -38,7 +38,7 @@ export default {
         search(input, {
             map: mapCollection.getMap(rootGetters["Map/mapId"], rootGetters["Map/mapMode"]),
             searchStreets: true
-        }).then(streets => {
+        }, true).then(streets => {
             const sortedStreetNames = streets.map(street => street.name).sort();
 
             dispatch("processStreetNames", {input, layer, sortedStreetNames});
