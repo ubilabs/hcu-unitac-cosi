@@ -83,6 +83,7 @@
       "attributes": [
           "name_schulleiter",
           "name_stellv_schulleiter",
+          "name_verwaltungsleitung",
           "ansprechp_buero",
           "ansprechp_klasse_1",
           "ansprechp_klasse_5",
