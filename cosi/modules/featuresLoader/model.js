@@ -1,7 +1,7 @@
 import MappingJson from "./mapping.json";
 import {WFS} from "ol/format.js";
 import "whatwg-fetch";
-import {getLayerList, getLayerWhere} from "masterportalapi/src/rawLayerList";
+import {getLayerList, getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 
 const featuresLoader = Backbone.Model.extend(/** @lends featuresLoader.prototype */{
     defaults: {
