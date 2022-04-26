@@ -21,7 +21,7 @@ describe("SdpDownload.vue", () => {
                         SdpDownload:
                             {
                                 "name": "SDP Download",
-                                "glyphicon": "glyphicon-download"
+                                "icon": "bi-download"
                             }
                     }
                 }
