@@ -48,7 +48,7 @@ describe("ADDONS: addons/streetSmart/components/StreetSmart.vue", () => {
                 },
                 Map: {
                     namespaced: true,
-                    getters: {clickCoord: () => [100, 200]}
+                    getters: {clickCoordinate: () => [100, 200]}
                 }
             },
             state: {
@@ -111,12 +111,12 @@ describe("ADDONS: addons/streetSmart/components/StreetSmart.vue", () => {
         expect(StreetSmart.actions.initApi.notCalled).to.be.true;
     });
 
-    it("test watch on clickCoord should call action setPosition", async () => {
+    it("test watch on clickCoordinate should call action setPosition", async () => {
         store.state.Tools.StreetSmart.active = true;
         wrapper = shallowMount(StreetSmartComponent, {store, localVue});
 
         expect(wrapper.find("#streetsmart").exists()).to.be.true;
-        wrapper.vm.$options.watch.clickCoord.call(wrapper.vm, [10, 20]);
+        wrapper.vm.$options.watch.clickCoordinate.call(wrapper.vm, [10, 20]);
         expect(StreetSmart.actions.setPosition.calledOnce).to.be.true;
     });
 });
