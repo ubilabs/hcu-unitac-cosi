@@ -45,7 +45,7 @@ const state = {
     id: "SdpAddon",
     // defaults for config.json parameters
     name: "SDP Download",
-    glyphicon: "glyphicon-download",
+    icon: "bi-download",
     isVisibleInMenu: true,
     deactivateGFI: true,
     renderToSidebar: true,
