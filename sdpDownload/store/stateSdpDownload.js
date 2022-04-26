@@ -4,7 +4,7 @@
  * @property {Boolean} active= false state of the tool
  * @property {Boolean} id= SdpAddon internal used id
  * @property {String} name= SDP Download module name, // must be here although it is in the config.json, else it is lost
- * @property {String} glyphicon= glyphicon name string that represents the tool icon // must be here although it is in the config.json, else it is lost
+ * @property {String} icon= icon name string that represents the tool icon // must be here although it is in the config.json, else it is lost
  * @property {Boolean} isVisibleInMenu= true show the tool entry in the tool menu list
  * @property {Boolean} deactivateGFI= true avoid show DK5-Info if user clicks into Map
  * @property {Boolean} renderToSidebar= true show this tool in sidebar
