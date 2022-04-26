@@ -1,5 +1,5 @@
 import DropdownModel from "../../../../../modules/snippets/dropdown/model";
-import {getLayerList, getLayerWhere} from "masterportalapi/src/rawLayerList";
+import {getLayerList, getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 
 const LayerFilterSelectorModel = Backbone.Model.extend(/** @lends LayerFilterSelectorModel.prototype */{
     defaults: {

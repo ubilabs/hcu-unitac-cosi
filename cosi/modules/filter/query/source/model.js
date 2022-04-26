@@ -1,6 +1,6 @@
 import QueryModel from "../model";
 import {intersects} from "ol/extent.js";
-import {getLayerWhere} from "masterportalapi/src/rawLayerList";
+import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 import store from "../../../../../../src/app-store";
 
 const SourceModel = QueryModel.extend(/** @lends SourceModel.prototype*/{

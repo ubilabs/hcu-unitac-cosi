@@ -1,6 +1,6 @@
 import Tool from "../../../../modules/core/modelList/tool/model";
 import DropdownModel from "../../../../modules/snippets/dropdown/model";
-import {getLayerWhere} from "masterportalapi/src/rawLayerList";
+import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 
 const ReachabilityFromPointModel = Tool.extend(/** @lends ReachabilityFromPointModel.prototype */{
     defaults: Object.assign({}, Tool.prototype.defaults, {
