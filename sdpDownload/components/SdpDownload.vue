@@ -176,7 +176,7 @@ export default {
                     <button
                         id="button-selectedDownload"
                         type="button"
-                        class="btn btn-primary btn-sm btn-block center-block"
+                        class="btn btn-primary btn-sm btn-block center-block w-100"
                         @click="requestCompressedData"
                     >
                         {{ translate(downloadDataPackage) }}
@@ -189,7 +189,7 @@ export default {
                     <button
                         id="button-neuwerk"
                         type="button"
-                        class="btn btn-sm border btn-block center-block"
+                        class="btn btn-outline-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Neuwerk')"
                     >
                         {{ translate(neuwerkDataPackage) }}
@@ -199,7 +199,7 @@ export default {
                     <button
                         id="button-scharhoern"
                         type="button"
-                        class="btn btn-sm border btn-block center-block"
+                        class="btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressIslandData('Scharhoern')"
                     >
                         {{ $t(scharhoernDataPackage) }}
@@ -209,7 +209,7 @@ export default {
                     <button
                         id="button-310"
                         type="button"
-                        class="w-100 btn btn-sm border btn-block center-block"
+                        class="w-100 btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS310')"
                     >
                         {{ translate(tileOverview310) }}
@@ -219,7 +219,7 @@ export default {
                     <button
                         id="button-320"
                         type="button"
-                        class="w-100 btn btn-sm border btn-block center-block"
+                        class="w-100 btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS320')"
                     >
                         {{ translate(tileOverview320) }}
