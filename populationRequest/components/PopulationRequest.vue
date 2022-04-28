@@ -338,7 +338,7 @@ export default {
                 rasterCheckBox.setActive(value);
             }
             if (value) {
-                const scale = this.$store.state.Map.scale;
+                const scale = this.$store.state.Maps.scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 100000) {
@@ -374,7 +374,7 @@ export default {
                 alkisAdressesCheckBox.setActive(value);
             }
             if (value) {
-                const scale = this.$store.state.Map.scale;
+                const scale = this.$store.state.Maps.scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 10000) {

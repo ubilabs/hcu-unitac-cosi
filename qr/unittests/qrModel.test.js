@@ -10,13 +10,12 @@ describe("ADDON: QR-Code-Tool QRModel", function () {
     before(function () {
         mapCollection.clear();
         mapCollection.addMap({
-            id: "ol",
             mode: "2D",
             addInteraction: sinon.spy(),
             addOverlay: sinon.spy(),
             removeInteraction: sinon.spy(),
             removeOverlay: sinon.spy()
-        }, "ol", "2D");
+        }, "2D");
 
         model = new QRModel({
             urlSchema: "http://geoinfo.de?lat={{LAT}}&lon={{LON}}",

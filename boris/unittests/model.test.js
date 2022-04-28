@@ -18,7 +18,7 @@ describe("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
             mode: "2D"
         });
 
-        mapCollection.addMap(map, "ol", "2D");
+        mapCollection.addMap(map, "2D");
         tool = new Tool({id: "brw", type: "tool"});
         new ModelList([tool]);
         model = initializeBrwAbfrageModel();
