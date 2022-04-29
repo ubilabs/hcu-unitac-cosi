@@ -14,7 +14,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 config.mocks.$t = key => key;
 
-describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => {
+describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningAddressList.vue", () => {
     const mockConfigJson = {
         Portalconfig: {
             menu: {

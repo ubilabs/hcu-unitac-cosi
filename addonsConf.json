@@ -32,9 +32,8 @@
   "schoolRoutePlanning": {
     "type": "tool"
   },
-  "activeCityMaps": {
-    "path":"gfiThemes/activeCityMaps",
-    "type": "gfiTheme"
+  "streetSmart": {
+    "type": "tool"
   },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
@@ -77,5 +76,9 @@
     "type": "gfiTheme"
   },
   "qr": "view.js",
-  "addLayerRemotely": "addLayerRemotely.js"
+  "addLayerRemotely": "addLayerRemotely.js",
+  "obliqueControl": {
+    "path":"controls/obliqueControl",
+    "type": "control"
+  }
 }

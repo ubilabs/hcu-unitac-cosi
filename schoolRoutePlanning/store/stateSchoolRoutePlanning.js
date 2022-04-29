@@ -6,6 +6,7 @@
  * @property {String} name Displayed as the title.
  * @property {String} glyphicon Icon next to the title.
  * @property {String} layerId The if of the wfs service that contains the schools.
+ * @property {String} serviceId The id of the gazetteer service.
  * @property {String} wpsId The id of the used web processing service.
  * @property {Object} wpsTimeout Timeout parameters for the wps.
  * @property {String} fmwProcess FME process triggered via the WPS.
@@ -42,6 +43,7 @@ const state = {
     name: "additional:modules.tools.schoolRoutePlanning.title",
     glyphicon: "glyphicon-filter",
     layerId: "8712",
+    serviceId: "8",
     wpsId: "1001",
     wpsTimeout: {
         "tm_ttl": {

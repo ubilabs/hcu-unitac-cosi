@@ -237,7 +237,6 @@ export default {
                 Radio.trigger("ModelList", "addModelsByAttributes", {id: conf.id});
                 layer = Radio.request("ModelList", "getModelByAttributes", {id: conf.id});
                 layer.setIsSelected(true);
-                layer.setVisible(false);
             }
 
             return layer;
@@ -256,7 +255,6 @@ export default {
 
             if (featureIds.length && layer && layer.get("isSelected")) {
                 layer.showFeaturesByIds(featureIds);
-                layer.setVisible(true);
 
                 schools = layer.get("layer").getSource().getFeatures();
 

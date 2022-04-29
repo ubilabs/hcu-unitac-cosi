@@ -14,8 +14,8 @@ describe("addons/SdpDownload/store/gettersSdpDownload", function () {
         it("returns the name default value from state", function () {
             expect(stateSdpDownload.name).to.be.equal("SDP Download");
         });
-        it("returns the glyphicon default value from state", function () {
-            expect(stateSdpDownload.glyphicon).to.be.equal("glyphicon-download");
+        it("returns the icon default value from state", function () {
+            expect(stateSdpDownload.icon).to.be.equal("bi-download");
         });
         it("returns the renderToWindow default value from state", function () {
             expect(stateSdpDownload.renderToWindow).to.be.false;
