@@ -125,7 +125,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -137,11 +137,11 @@ export default {
                 id="sdp-addon"
                 class="header"
             />
-            <div class="content">
-                <div class="form-group col-xs-12 first">
+            <div class="content row">
+                <div class="form-group col-12 first">
                     <span>{{ translate(selectFormat) }}</span>
                 </div>
-                <div class="form-group col-xs-12">
+                <div class="form-group col-12">
                     <select
                         id="formatSelection"
                         ref="formatSelection"
@@ -153,17 +153,17 @@ export default {
                             v-for="(format,index) in formats"
                             :key="index"
                             :value="format.id"
-                            data-toggle="tooltip"
+                            data-bs-toggle="tooltip"
                             :title="format.label"
                         >
                             {{ translate(`additional:modules.tools.sdpdownload.${format.fileId}Label`) }}
                         </option>
                     </select>
                 </div>
-                <div class="form-group col-xs-12 first">
+                <div class="form-group col-12 first">
                     <span>{{ translate(howToChooseTiles) }}</span>
                 </div>
-                <div class="form-group col-xs-12">
+                <div class="form-group col-12">
                     <div
                         class="form-group form-group-sm"
                     >
@@ -172,54 +172,54 @@ export default {
                         />
                     </div>
                 </div>
-                <div class="form-group col-md-12 col-xs-12 limiter">
+                <div class="form-group col-12 limiter">
                     <button
                         id="button-selectedDownload"
                         type="button"
-                        class="btn btn-primary btn-sm btn-block center-block"
+                        class="btn btn-primary btn-sm btn-block center-block w-100"
                         @click="requestCompressedData"
                     >
                         {{ translate(downloadDataPackage) }}
                     </button>
                 </div>
-                <div class="form-group col-xs-12">
+                <div class="form-group col-12">
                     <span>{{ translate(specialDownloads) }}</span>
                 </div>
-                <div class="form-group col-md-12 col-xs-12">
+                <div class="form-group col-12">
                     <button
                         id="button-neuwerk"
                         type="button"
-                        class="btn btn-default btn-sm btn-block center-block"
+                        class="btn btn-outline-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Neuwerk')"
                     >
                         {{ translate(neuwerkDataPackage) }}
                     </button>
                 </div>
-                <div class="form-group col-md-12 col-xs-12">
+                <div class="form-group col-12">
                     <button
                         id="button-scharhoern"
                         type="button"
-                        class="btn btn-default btn-sm btn-block center-block"
+                        class="btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressIslandData('Scharhoern')"
                     >
                         {{ $t(scharhoernDataPackage) }}
                     </button>
                 </div>
-                <div class="form-group col-md-12 col-xs-12">
+                <div class="form-group col-12">
                     <button
                         id="button-310"
                         type="button"
-                        class="btn btn-default btn-sm btn-block center-block"
+                        class="w-100 btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS310')"
                     >
                         {{ translate(tileOverview310) }}
                     </button>
                 </div>
-                <div class="form-group col-md-12 col-xs-12">
+                <div class="form-group col-12">
                     <button
                         id="button-320"
                         type="button"
-                        class="btn btn-default btn-sm btn-block center-block"
+                        class="w-100 btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressRasterOverviewData('LS320')"
                     >
                         {{ translate(tileOverview320) }}

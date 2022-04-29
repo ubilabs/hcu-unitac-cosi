@@ -3,7 +3,7 @@ import testAction from "../../../../../test/unittests/VueTestUtils";
 import actions from "../../../store/actionsFileImportAddon";
 import importedState from "../../../store/stateFileImportAddon";
 import rawSources from "../../resources/rawSources.js";
-import * as crs from "masterportalAPI/src/crs";
+import * as crs from "@masterportal/masterportalapi/src/crs";
 
 const
     {importKML} = actions,
