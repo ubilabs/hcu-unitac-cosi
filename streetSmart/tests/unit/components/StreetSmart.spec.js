@@ -46,9 +46,17 @@ describe("ADDONS: addons/streetSmart/components/StreetSmart.vue", () => {
                         StreetSmart
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
-                    getters: {clickCoordinate: () => [100, 200]}
+                    getters: {
+                        clickCoordinate: () => [100, 200]
+                    }
+                },
+                MapMarker: {
+                    namespaced: true,
+                    getters: {
+                        markerPoint: () => sinon.spy()
+                    }
                 }
             },
             state: {
