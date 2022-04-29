@@ -4,7 +4,7 @@ import Tool from "@modules/core/modelList/tool/model.js";
 import ModelList from "@modules/core/modelList/list.js";
 import initializeBrwAbfrageModel from "@addons/boris/bodenrichtwertabfrage/model.js";
 import Feature from "ol/Feature";
-import mapCollection from "../../../src/core/dataStorage/mapCollection";
+import mapCollection from "../../../src/core/maps/mapCollection";
 
 describe("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
     let tool,
