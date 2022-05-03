@@ -237,7 +237,6 @@ export default {
                 Radio.trigger("ModelList", "addModelsByAttributes", {id: conf.id});
                 layer = Radio.request("ModelList", "getModelByAttributes", {id: conf.id});
                 layer.setIsSelected(true);
-                layer.setVisible(false);
             }
 
             return layer;
@@ -256,7 +255,6 @@ export default {
 
             if (featureIds.length && layer && layer.get("isSelected")) {
                 layer.showFeaturesByIds(featureIds);
-                layer.setVisible(true);
 
                 schools = layer.get("layer").getSource().getFeatures();
 
@@ -404,11 +402,8 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-school-living-location">
-        <div
-            class="tab-panel"
-            :class="{ 'hidden': !isActiveTab('data') }"
-        >
+    <div class="gfi-bildungsatlas-current-content">
+        <div v-if="isActiveTab('data')">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -436,42 +431,35 @@ export default {
             </table>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            v-if="isActiveTab('info')"
+            class="gfi-info"
         />
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .gfi-school-living-location {
-        max-width: 420px;
-        table {
-            margin-bottom: 0;
-        }
-        .gfi-info {
-            padding: 0 10px 10px;
-        }
-
-        .hidden {
-            display: none;
-        }
+.gfi-bildungsatlas-current-content {
+    table {
+        margin-bottom: 0;
     }
+}
 </style>
 
 <style lang="scss">
-     .schulWohnort {
-        &.table {
-            max-width: 420px;
-            tbody {
-                tr{
-                    td {
-                        font-weight: bold;
-                        &:last-child {
-                            text-align: right;
-                        }
+.schulWohnort {
+    table {
+        max-width: 420px;
+
+        tbody {
+            tr {
+                td {
+                    font-weight: bold;
+                    &:last-child {
+                        text-align: right;
                     }
                 }
             }
         }
     }
+}
 </style>

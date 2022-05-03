@@ -93,10 +93,10 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-bildungsatlas-fluechtlinge">
+    <div class="gfi-bildungsatlas-current-content">
         <div
-            class="tab-panel gfi-data"
-            :class="{ 'hidden': !isActiveTab('data') }"
+            v-if="isActiveTab('data')"
+            class="gfi-data"
         >
             <div class="gbf-header">
                 {{ bezeichnung }}
@@ -118,36 +118,36 @@ export default {
             </div>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            v-if="isActiveTab('info')"
+            class="gfi-info"
         />
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .gfi-bildungsatlas-fluechtlinge {
-        max-width: 445px;
-        font-size: 13px;
-        .gbf-content {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-            table {
-                width: 100%;
-                margin-bottom: 5px;
-                tr {
-                    td {
-                        &:first-child {
-                            text-align: left;
-                        }
+.gfi-bildungsatlas-current-content {
+    .gbf-content {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
 
-                        &:last-child {
-                            text-align: right;
-                            font-weight: bold;
-                        }
+        table {
+            width: 100%;
+            margin-bottom: 5px;
+
+            tr {
+                td {
+                    &:first-child {
+                        text-align: left;
+                    }
+
+                    &:last-child {
+                        text-align: right;
+                        font-weight: bold;
                     }
                 }
             }
         }
     }
+}
 </style>

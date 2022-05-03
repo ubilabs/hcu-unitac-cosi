@@ -121,6 +121,9 @@ export default {
         this.addSchools();
         this.initializeLayer();
     },
+    mounted () {
+        this.setGazetteerUrl();
+    },
     methods: {
         ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
         ...mapActions("Tools/SchoolRoutePlanning", Object.keys(actions)),

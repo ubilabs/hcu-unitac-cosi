@@ -1,6 +1,6 @@
 import {WMSCapabilities} from "ol/format.js";
 import {intersects} from "ol/extent";
-import {transform as transformCoord, getProjection} from "masterportalAPI/src/crs";
+import {transform as transformCoord, getProjection} from "@masterportal/masterportalapi/src/crs";
 import axios from "axios";
 import store from "../../src/app-store";
 

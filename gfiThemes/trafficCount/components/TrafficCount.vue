@@ -288,7 +288,9 @@ export default {
         setActiveDefaultTab: function () {
             this.$el.querySelector("li[value='infos'] a").click();
         },
-
+        isActiveTab (tabId) {
+            return this.currentTabId === tabId;
+        },
         /**
          * set the current tab id after clicking.
          * @param {Object[]} evt the target of current click event
@@ -450,27 +452,41 @@ export default {
             >
                 <li
                     value="infos"
-                    class="active"
+                    class="nav-item"
+                    :class="{ active: isActiveTab('infos'), 'nav-item': true }"
                 >
                     <a
+                        class="nav-link"
                         data-toggle="tab"
                         href="#infos"
                     >{{ infoLabel }}</a>
                 </li>
-                <li value="day">
+                <li
+                    value="day"
+                    :class="{ active: isActiveTab('day'), 'nav-item': true }"
+                >
                     <a
+                        class="nav-link"
                         data-toggle="tab"
                         href="#day"
                     >{{ dayLabel }}</a>
                 </li>
-                <li value="week">
+                <li
+                    value="week"
+                    :class="{ active: isActiveTab('week'), 'nav-item': true }"
+                >
                     <a
+                        class="nav-link"
                         data-toggle="tab"
                         href="#week"
                     >{{ weekLabel }}</a>
                 </li>
-                <li value="year">
+                <li
+                    value="year"
+                    :class="{ active: isActiveTab('year'), 'nav-item': true }"
+                >
                     <a
+                        class="nav-link"
                         data-toggle="tab"
                         href="#year"
                     >{{ yearLabel }}</a>
@@ -480,7 +496,7 @@ export default {
                 <TrafficCountInfo
                     id="infos"
                     :key="keyInfo"
-                    class="tab-pane fade in active"
+                    :class="{ 'tab-pane': true, 'active': currentTabId === 'infos' }"
                     :api="api"
                     :thing-id="propThingId"
                     :holidays="holidays"
@@ -489,7 +505,7 @@ export default {
                 <TrafficCountDay
                     id="day"
                     :key="keyDay"
-                    class="tab-pane fade"
+                    :class="{ 'tab-pane': true, 'active': currentTabId === 'day' }"
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
@@ -500,7 +516,7 @@ export default {
                 <TrafficCountWeek
                     id="week"
                     :key="keyWeek"
-                    class="tab-pane fade"
+                    :class="{ 'tab-pane': true, 'active': currentTabId === 'week' }"
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
@@ -510,7 +526,7 @@ export default {
                 <TrafficCountYear
                     id="year"
                     :key="keyYear"
-                    class="tab-pane fade"
+                    :class="{ 'tab-pane': true, 'active': currentTabId === 'year' }"
                     :api="api"
                     :thing-id="propThingId"
                     :means-of-transport="propMeansOfTransport"
@@ -535,18 +551,30 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.trafficCount-gfi{
-        padding: 10px 5px 0;
-        @media (max-width: 600px) {
-          width: inherit;
-            height: inherit;
-            padding-left: 10px;
-            padding-right: 10px;
+@import "~/css/mixins.scss";
+
+.trafficCount-gfi {
+    padding: 10px 5px 0;
+
+    @media (max-width: 600px) {
+        width: inherit;
+        height: inherit;
+        padding-left: 10px;
+        padding-right: 10px;
+
         div.graph {
             width: inherit;
             height: inherit;
         }
     }
+    .nav-pills {
+        @include active-pill(0.625rem, 1.25em);
+
+        & > li > a {
+            margin-bottom: 0.5em;
+        }
+    }
+
     .header {
         min-width: 280px;
         max-width: 320px;
