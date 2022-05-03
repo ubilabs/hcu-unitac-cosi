@@ -75,7 +75,7 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
                     });
                 }
                 if (zoomTo) {
-                    Radio.trigger("Map", "zoomToExtent", checkExtent);
+                    Radio.trigger("Map", "zoomToExtent", {extent: checkExtent});
                 }
 
                 Radio.trigger("ModelList", "closeAllExpandedFolder");
