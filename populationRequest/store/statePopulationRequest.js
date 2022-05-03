@@ -19,7 +19,7 @@ const state = {
     id: "populationRequest",
     // defaults for config.json parameters
     name: "translate#additional:modules.tools.populationRequest.title",
-    icon: "bi-wrench",
+    icon: "bi-person-bounding-box",
     renderToWindow: true,
     resizableWindow: true,
     isVisibleInMenu: true,
