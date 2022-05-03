@@ -16,7 +16,11 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningAdd
     describe("processInput", () => {
         it("processInput start search streets", done => {
             const payload = {
-                input: "Mickey-Mouse-Street",
+                evt: {
+                    target: {
+                        value: "Mickey-Mouse-Street"
+                    }
+                },
                 layer: "The layer"
             };
 
@@ -30,7 +34,11 @@ describe("addons/schoolRoutePlanning/store/actions/actionsSchoolRoutePlanningAdd
 
         it("processInput start searchStreets for streetname with housenumber", done => {
             const payload = {
-                input: "Mickey-Mouse-Street 1",
+                evt: {
+                    target: {
+                        value: "Mickey-Mouse-Street 1"
+                    }
+                },
                 layer: "The layer"
             };
 

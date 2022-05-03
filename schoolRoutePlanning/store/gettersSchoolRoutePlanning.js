@@ -20,19 +20,6 @@ const getters = {
 
             return schulnameA < schulnameB ? -1 : 1;
         });
-    },
-    displaySelectOptions ({streetNames}) {
-        return streetNames.length > 0;
-    },
-    selectOptions ({streetNames, filteredHouseNumbers}, {displaySelectOptions}) {
-        if (!displaySelectOptions) {
-            return [];
-        }
-        if (streetNames.length > 1) {
-            return streetNames.slice(0, 5);
-        }
-
-        return filteredHouseNumbers.slice(0, 5).map(({name}) => name);
     }
 };
 

@@ -37,6 +37,19 @@ export default {
             set (value) {
                 this.setInputAddress(value);
             }
+        },
+        displaySelectOptions () {
+            return this.streetNames.length > 0;
+        },
+        selectOptions () {
+            if (!this.displaySelectOptions) {
+                return [];
+            }
+            if (this.streetNames.length > 1) {
+                return this.streetNames.slice(0, 5);
+            }
+
+            return this.filteredHouseNumbers.slice(0, 5).map(({name}) => name);
         }
     },
     methods: {

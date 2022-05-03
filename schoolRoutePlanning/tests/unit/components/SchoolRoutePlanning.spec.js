@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {config, shallowMount, mount, createLocalVue} from "@vue/test-utils";
+import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
 
@@ -79,9 +79,20 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
     });
 
     it("Render the input with no value", () => {
-        const wrapper = mount(Address, wrapperElements);
+        const wrapper = shallowMount(Address, wrapperElements);
 
         expect(wrapper.find("#tool-schoolRoutePlanning-search-address").element.value).to.equals("");
+    });
+
+    it("Set the input field to the value of inputaddress via data binding", async () => {
+        let wrapper = null;
+
+        store.commit("Tools/SchoolRoutePlanning/setInputAddress", "abc");
+        wrapper = shallowMount(Address, wrapperElements);
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find("#tool-schoolRoutePlanning-search-address").element.value).to.equals("abc");
+        store.commit("Tools/SchoolRoutePlanning/setInputAddress", "");
     });
 
     it("render the addressList", () => {
