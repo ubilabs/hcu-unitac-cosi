@@ -258,7 +258,7 @@ export default {
                     />
                     <div v-if="Object.values(textIds).includes('1')">
                         <div class="col-xs-12 info-text">
-                            <span> {{ $t("additional:modules.tools.boris.toggleStripesLayerInfo") }} </span>
+                            <span>{{ $t("additional:modules.tools.boris.toggleStripesLayerInfo") }}</span>
                             <br>
                             <br>
                         </div>
@@ -268,7 +268,11 @@ export default {
                     v-if="selectedPolygon === null"
                     class="form-group col-xs-12"
                 >
-                    <span>{{ $t("additional:modules.tools.boris.SelectAreaInMap") }}</span>
+                    <span
+                        id="selectPolygonText"
+                    >
+                        {{ $t("additional:modules.tools.boris.SelectAreaInMap") }}
+                    </span>
                 </div>
                 <div
                     v-else

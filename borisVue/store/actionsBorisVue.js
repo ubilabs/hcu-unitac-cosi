@@ -53,7 +53,7 @@ const actions = {
             dispatch("Map/setCenter", center, {root: true});
             dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
-        console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
+        // console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
     },
     /**
     * Simulates landuse selection when parametric URL is being used
