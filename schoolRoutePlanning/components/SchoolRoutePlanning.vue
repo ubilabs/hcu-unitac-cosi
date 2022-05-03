@@ -130,10 +130,11 @@ export default {
          * @returns {void}
          */
         setFocusToFirstControl () {
-            this.$nextTick(() => document
-                .getElementById("tool-schoolRoutePlanning-search-address")
-                ?.focus()
-            );
+            this.$nextTick(() => {
+                if (this.$refs.input) {
+                    this.$refs.input.focus();
+                }
+            });
         },
         /**
          * Downloads the pdf for print
