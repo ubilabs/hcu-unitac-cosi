@@ -1,0 +1,13 @@
+{
+    "addons": {
+        "gfiThemes": {
+            "dipasCockpit": {
+                "themes": "Themes",
+                "initiators": "Initiator/s",
+                "contributions": "Contributions",
+                "comments": "Comments",
+                "documentation": "Documentations"
+            }
+        }
+    }
+}

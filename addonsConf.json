@@ -47,6 +47,10 @@
     "path":"gfiThemes/dipas",
     "type": "gfiTheme"
   },
+  "dipasCockpit": {
+    "path":"gfiThemes/dipasCockpit",
+    "type": "gfiTheme"
+  },
   "flaecheninfo": {
     "path":"gfiThemes/flaecheninfo",
     "type": "gfiTheme"

@@ -448,7 +448,7 @@ export default {
                 <div class="mb-3">
                     {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
-                <div class="graphicalSelectionContainer">
+                <div class="graphicalSelectionContainer row">
                     <label
                         for="graphicalSelection"
                         class="col-sm-5"
