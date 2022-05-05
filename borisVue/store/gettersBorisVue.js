@@ -19,9 +19,7 @@ const getters = {
     findLanduseByBrwId () {
         const landuseList = state.selectedPolygon.get("nutzungsart"),
             brwId = state.paramUrlParams.brwId,
-            foundLanduse = landuseList.find(function (landuse) {
-                return landuse.richtwertnummer === brwId;
-            });
+            foundLanduse = landuseList.find(landuse => landuse.richtwertnummer === brwId);
 
         return foundLanduse.nutzungsart;
     },

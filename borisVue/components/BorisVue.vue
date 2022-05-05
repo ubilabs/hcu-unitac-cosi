@@ -56,16 +56,11 @@ export default {
     watch: {
         /**
          * Listens to the selectedPolygon for simulating landuse if parametric URL is being used
-         * @param {Object} newValue the newly selected polygon feature
          * @returns {void}
          */
-        selectedPolygon: {
-            handler (newValue) {
-                if (newValue) {
-                    if (this.isProcessFromParametricUrl) {
-                        this.simulateLanduseSelect(this.paramUrlParams);
-                    }
-                }
+        selectedPolygon () {
+            if (this.isProcessFromParametricUrl) {
+                this.simulateLanduseSelect(this.paramUrlParams);
             }
         },
         /**
@@ -75,32 +70,30 @@ export default {
          * @param {Object} oldValue the previously selected landuse
          * @returns {void}
          */
-        selectedLanduse: {
-            handler (newValue, oldValue) {
-                if (newValue) {
-                    if (this.buttonValue === "liste") {
-                        if (newValue === "EFH Ein- und Zweifamilienhäuser" ||
-                            newValue === "A Acker" ||
-                            newValue === "GR Grünland" ||
-                            newValue === "EGA Erwerbsgartenanbaufläche" ||
-                            newValue === "F forstwirtschaftliche Fläche"
-                        ) {
-                            if (oldValue === "MFH Mehrfamilienhäuser" ||
-                                oldValue === "GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)" ||
-                                oldValue === "BH Bürohäuser") {
-                                this.setButtonValue("info");
-                            }
+        selectedLanduse (newValue, oldValue) {
+            if (newValue) {
+                if (this.buttonValue === "liste") {
+                    if (newValue === "EFH Ein- und Zweifamilienhäuser" ||
+                        newValue === "A Acker" ||
+                        newValue === "GR Grünland" ||
+                        newValue === "EGA Erwerbsgartenanbaufläche" ||
+                        newValue === "F forstwirtschaftliche Fläche"
+                    ) {
+                        if (oldValue === "MFH Mehrfamilienhäuser" ||
+                            oldValue === "GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)" ||
+                            oldValue === "BH Bürohäuser") {
+                            this.setButtonValue("info");
                         }
                     }
-                    this.matchPolygonFeatureWithLanduse({feature: this.selectedPolygon, selectedLanduse: newValue});
                 }
+                this.matchPolygonFeatureWithLanduse({feature: this.selectedPolygon, selectedLanduse: newValue});
             }
         },
         /**
          * Checks if file to print is ready to be printed
          * @returns {void}
          */
-        printFileReady: function () {
+        printFileReady () {
             if (this.active && this.printFileReady && this.fileDownloadUrl) {
                 const link = document.createElement("a");
 

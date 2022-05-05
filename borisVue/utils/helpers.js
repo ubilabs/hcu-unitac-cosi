@@ -1,6 +1,4 @@
-import store from "../../../src/app-store";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
-import WPS from "../../../src/api/wps";
 
 const helpers = {
     /**
@@ -22,13 +20,12 @@ const helpers = {
         return null;
     },
     /**
-    * Converts data for POST-request
-    * Considers mandatory and optional parameters
-    * @param {Object} brw selectedBrwFeature from the state
-    * @returns {String} Object for POST-request
-    */
+     * Converts data for POST-request
+     * Considers mandatory and optional parameters
+     * @param {Object} brw selectedBrwFeature from the state
+     * @returns {String} Object for POST-request
+     */
     convert: function ({brw}) {
-
         const requestObj = {};
         let richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", ".");
 
@@ -204,44 +201,8 @@ const helpers = {
                 value: brw.get("zStrassenLage")
             };
         }
-
         return requestObj;
 
-    },
-    /**
-     * Extracts and stores the converted BRW
-     * @param  {string} response - the response xml of the wps
-     * @param  {number} status - the HTTPStatusCode
-     * @returns {void}
-     */
-    handleConvertResponse: function (response, status) {
-        let complexData,
-            executeResponse;
-
-        if (status === 200) {
-            executeResponse = response.ExecuteResponse;
-
-            if (executeResponse.ProcessOutputs) {
-                complexData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData;
-                if (complexData.serviceResponse) {
-                    console.error("FME-Server statusInfo: " + complexData.serviceResponse.statusInfo.message);
-                }
-                else if (complexData.Bodenrichtwert) {
-                    if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
-                        console.error("BRWConvert Error Message: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
-                    }
-                    else {
-                        store.dispatch("Tools/BorisVue/updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
-                    }
-                }
-            }
-            else if (executeResponse.Status) {
-                console.error("FME-Server ExecuteResponse: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
-            }
-        }
-        else {
-            console.error("WPS-Query with status " + status + " aborted.");
-        }
     },
     /**
      * Gets the attribute 'schichtwert' (floorValue) from the selectedBrwFeature
@@ -249,7 +210,6 @@ const helpers = {
      * @returns {Object} 'schichtwert' which means floorValue
      */
     getSW: function (feature) {
-
         const sw = feature.get("schichtwert") ? feature.get("schichtwert") : null;
 
         return sw;
@@ -290,17 +250,6 @@ const helpers = {
             }
         }
         return sw;
-    },
-    /**
-     * Sends a request to convert the BRW
-     * @returns {void}
-     */
-    sendWpsConvertRequest: function ({state}) {
-
-        const data = helpers.convert({brw: state.selectedBrwFeature});
-
-        WPS.wpsRequest(state.wpsId, state.fmwProcess, data, helpers.handleConvertResponse);
-
     }
 };
 

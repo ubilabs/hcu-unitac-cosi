@@ -47,7 +47,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions("Tools/BorisVue", ["updateSelectedBrwFeature", "sendWpsConvertRequest"]),
+        ...mapActions("Tools/BorisVue", ["updateSelectedBrwFeature"]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
         /**
          * Check if 'Einzelhäuser' or 'Doppelhäuser' are selected to change the option name to singular
