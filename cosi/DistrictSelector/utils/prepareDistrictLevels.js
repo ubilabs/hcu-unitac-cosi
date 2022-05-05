@@ -1,6 +1,6 @@
 import {unByKey} from "ol/Observable";
 import {describeFeatureType, getFeatureDescription} from "../../../../src/api/wfs/describeFeatureType.js";
-import {getLayerList} from "masterportalapi/src/rawLayerList";
+import {getLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils.js";
 
 const eventKeys = {};

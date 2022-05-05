@@ -2,7 +2,7 @@
 import {getFeatureInfos} from "../../../service/getFeatureInfo";
 import {expect} from "chai";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
-import {registerProjections} from "masterportalapi/src/crs";
+import {registerProjections} from "@masterportal/masterportalapi/src/crs";
 
 
 describe("getFeatureInfos", () => {

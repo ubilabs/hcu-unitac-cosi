@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import {expect} from "chai";
 import actions from "../../../store/actionsDistrictSelector.js";
-import {registerProjections} from "masterportalapi/src/crs";
+import {registerProjections} from "@masterportal/masterportalapi/src/crs";
 
 describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
     const fs = require("fs"),

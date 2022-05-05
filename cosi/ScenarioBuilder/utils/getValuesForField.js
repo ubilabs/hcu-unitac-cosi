@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 import {getFeatureGET as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
-import {getLayerWhere} from "masterportalapi/src/rawLayerList";
+import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 import store from "../../../../src/app-store";
 import {WFS} from "ol/format.js";
 import getClusterSource from "../../utils/getClusterSource";
