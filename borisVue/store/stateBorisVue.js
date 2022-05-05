@@ -35,7 +35,7 @@ const state = {
     active: false,
     id: "borisVue",
     name: "common:menu.tools.borisVue",
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi-vinyl",
     renderToWindow: false,
     resizableWindow: false,
     isVisibleInMenu: true,

@@ -77,7 +77,7 @@ export default {
             <dt>
                 <span>{{ title }}</span>
                 <span
-                    class="glyphicon glyphicon-question-sign"
+                    class="bootstrap-icon bi-question-circle-fill"
                     @click="toggleInfoText(textId)"
                     @keydown.enter="toggleInfoText(textId)"
                 />
@@ -110,7 +110,7 @@ export default {
             <dt>
                 <span>{{ title }}</span>
                 <span
-                    class="glyphicon glyphicon-question-sign"
+                    class="bootstrap-icon bi-question-circle-fill"
                     @click="toggleInfoText(textId)"
                     @keydown.enter="toggleInfoText(textId)"
                 />
