@@ -240,10 +240,10 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-bildungsatlas-okja">
+    <div class="gfi-bildungsatlas-current-content">
         <div
-            class="tab-panel gfi-data"
-            :class="{ 'hidden': !isActiveTab('data') }"
+            v-if="isActiveTab('data')"
+            class="gfi-data"
         >
             <div class="rba_header">
                 <div class="rba_header_title">
@@ -393,12 +393,12 @@ export default {
             </div>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            v-if="isActiveTab('info')"
+            class="gfi-info"
         >
-            <h5>
-                <b>{{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.title") }}</b>
-            </h5>
+            <h6>
+                {{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.title") }}
+            </h6>
             <p>
                 {{ translate("additional:addons.gfiThemes.bildungsatlas.okja.info.textA") }}
             </p>
@@ -411,10 +411,3 @@ export default {
         </div>
     </div>
 </template>
-
-<style lang="scss" scoped>
-.gfi-bildungsatlas-okja {
-    max-width: 420px;
-    font-size: 13px;
-}
-</style>

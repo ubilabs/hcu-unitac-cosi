@@ -417,10 +417,10 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-balkendiagramm">
+    <div class="gfi-bildungsatlas-current-content">
         <div
-            class="tab-panel gfi-data"
-            :class="{ 'hidden': !isActiveTab('data') }"
+            v-if="isActiveTab('data')"
+            class="gfi-data"
         >
             <div class="rba_header">
                 <div class="rba_header_title">
@@ -516,8 +516,8 @@ export default {
             </div>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            v-if="isActiveTab('info')"
+            class="gfi-info"
         >
             <div v-if="infoMatrix.hasOwnProperty(propertyName) && Array.isArray(infoMatrix[propertyName])">
                 <div
@@ -525,9 +525,9 @@ export default {
                     :key="idx"
                     :value="lngkey"
                 >
-                    <h5 v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.title')">
-                        <b>{{ $t('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.title') }}</b>
-                    </h5>
+                    <h6 v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.title')">
+                        {{ $t('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.title') }}
+                    </h6>
                     <p v-if="translationExists('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.text')">
                         {{ $t('additional:addons.gfiThemes.bildungsatlas.balkendiagramm.info.' + lngkey + '.text') }}
                     </p>
@@ -539,10 +539,3 @@ export default {
         </div>
     </div>
 </template>
-
-<style lang="scss" scoped>
-.gfi-balkendiagramm {
-    max-width: 420px;
-    font-size: 13px;
-}
-</style>

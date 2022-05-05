@@ -49,7 +49,8 @@ const geojson = {
         datasets: [],
         urlIsVisible: true,
         styleId: "customStyle",
-        parentId: "tree"
+        parentId: "tree",
+        gfiTheme: "default"
     };
 
 describe("ADDON: addLayerRemotely", () => {
