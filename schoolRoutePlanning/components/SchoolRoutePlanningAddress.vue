@@ -63,7 +63,6 @@ export default {
             autocomplete="false"
             class="form-control"
             @keyup="(evt) => processInput({evt, layer})"
-            @keyup.enter="searchHousenumbers({streetNames, eventType: 'click'})"
         >
         <template
             v-if="streetNames.length > 0 && inputAddress !== ''"
