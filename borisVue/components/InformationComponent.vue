@@ -80,7 +80,7 @@ export default {
                     <dt>{{ $t("additional:modules.tools.boris.landValue") }}:</dt>
                     <dd>
                         <span>{{ selectedBrwFeature.get('richtwert_euro') }} €/m²</span>
-                        <span class="pull-right">{{ selectedBrwFeature.get('richtwert_dm') }} DM/m²</span>
+                        <span class="d-flex justify-content-end">{{ selectedBrwFeature.get('richtwert_dm') }} DM/m²</span>
                     </dd>
                 </div>
             </dl>

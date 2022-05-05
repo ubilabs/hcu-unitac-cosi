@@ -1,33 +1,33 @@
 /**
  * User type definition
  * @typedef {Object} MapState
- * @property {Boolean} active - false state of the tool
- * @property {String} id - addon id
- * @property {} name -
- * @property {} glyphicon -
- * @property {} renderToWindow -
- * @property {} resizableWindow -
- * @property {} isVisibleInMenu -
- * @property {} deactivateGFI -
- * @property {} filteredLayerList - List of wms layers (used to be modelList) - without the stripes layers
- * @property {Boolean} isAreaLayer - to check for the polygon layer if its an areaLayer so that stripesLayer can be set to true
- * @property {Boolean} isStripesLayer - true or false if it stripesLayer is turned on or off
- * @property {} selectedLayer - one wms layer from filteredLayerList
- * @property {} selectedLayerName - the name of the selectedLayer: e.g. 31.12.2020
- * @property {} textIds - list of ids for the infotext-toggle
- * @property {} selectedPolygon - selected polygon after click on map
- * @property {} selectedLanduse
- * @property {} selectedBrwFeature
- * @property {} brwFeatures
- * @property {} convertedBrw - brw in €: convertedBrw from selectedBrw.get("convertedBrw") --> otherwise it did not show immediately
- * @property {} isProcessFromParametricUrl
- * @property {} paramUrlParams
- * @property {} buttonValue
- * @property {} buildingDesigns
- * @property {} roadPositions
- * @property {} selectedOption
- * @property {} wpsId
- * @property {} fmwProcess
+ * @property {Boolean} active - if true, Boris will be rendered
+ * @property {String} id - id of Boris component
+ * @property {String} name - displayed as the title
+ * @property {String} glyphicon - icon next to the title
+ * @property {Boolean} renderToWindow - if true, tool is rendered in a window, else in sidebar (config-param)
+ * @property {Boolean} resizableWindow - if true, window is resizable (config-param)
+ * @property {Boolean} isVisibleInMenu - if true, tool is selectable in menu (config-param)
+ * @property {Boolean} deactivateGFI - flag if tool should deactivate gfi (config-param)
+ * @property {Object} filteredLayerList - list of wms layers without the stripes layers
+ * @property {Boolean} isAreaLayer - true if it is a polygon layer, then stripes layer can be toggled (true/false)
+ * @property {Boolean} isStripesLayer - true or false if stripes layer is turned on or off
+ * @property {String} selectedLayer - one selected wms layer from filteredLayerList
+ * @property {String} selectedLayerName - the name of the selectedLayer: e.g. 31.12.2020
+ * @property {Object} textIds - list of ids for the infotext-toggle
+ * @property {Object} selectedPolygon - selected polygon after click on map
+ * @property {String} selectedLanduse - selected option from landuse select
+ * @property {Object} selectedBrwFeature - selected brwFeature from the list by year/date
+ * @property {Object} brwFeatures - list of brwFeatures over multiple years on a clicked element
+ * @property {String} convertedBrw - converted brw value with a comma instead of point (e.g. 6,7€)
+ * @property {Boolean} isProcessFromParametricUrl - true if paremetric URL is being used
+ * @property {Object} paramUrlParams - parameters that are used to center map and select relevant options to display data
+ * @property {String} buttonValue - html value of button that indicates which further information are displayed
+ * @property {Object} buildingDesigns - list of building designs that are options for the Conversion to Individual Property
+ * @property {Object} positionsToStreet - list of positions to streets that are options for the Conversion to Individual Property
+ * @property {String} selectedOption - is the selected option of building designs oder positions to street
+ * @property {String} wpsId - the id of the used web processing service
+ * @property {String} fmwProcess - the FME process triggered via the WPS
  */
 
 
@@ -35,7 +35,7 @@ const state = {
     active: false,
     id: "borisVue",
     name: "common:menu.tools.borisVue",
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi-vinyl",
     renderToWindow: false,
     resizableWindow: false,
     isVisibleInMenu: true,

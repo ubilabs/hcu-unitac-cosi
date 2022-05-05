@@ -47,7 +47,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions("Tools/BorisVue", ["updateSelectedBrwFeature", "sendWpsConvertRequest"]),
+        ...mapActions("Tools/BorisVue", ["updateSelectedBrwFeature"]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
         /**
          * Check if 'Einzelhäuser' or 'Doppelhäuser' are selected to change the option name to singular
@@ -77,7 +77,7 @@ export default {
             <dt>
                 <span>{{ title }}</span>
                 <span
-                    class="glyphicon glyphicon-question-sign"
+                    class="bootstrap-icon bi-question-circle-fill"
                     @click="toggleInfoText(textId)"
                     @keydown.enter="toggleInfoText(textId)"
                 />
@@ -110,7 +110,7 @@ export default {
             <dt>
                 <span>{{ title }}</span>
                 <span
-                    class="glyphicon glyphicon-question-sign"
+                    class="bootstrap-icon bi-question-circle-fill"
                     @click="toggleInfoText(textId)"
                     @keydown.enter="toggleInfoText(textId)"
                 />

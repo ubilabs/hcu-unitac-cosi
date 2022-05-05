@@ -15,16 +15,6 @@ export default {
             required: true
         }
     },
-    watch: {
-        feature: {
-            handler (newVal, oldVal) {
-                if (oldVal) {
-                    // console.log("new feature selected:", newVal);
-                }
-            },
-            immediate: true
-        }
-    },
     methods: {
         getValue () {
             let value = "";

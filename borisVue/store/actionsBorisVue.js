@@ -4,6 +4,7 @@ import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import mapCollection from "../../../src/core/dataStorage/mapCollection";
 import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
+import WPS from "../../../src/api/wps";
 
 const actions = {
     /**
@@ -29,7 +30,7 @@ const actions = {
 
     },
     /**
-    * Requests parametic url and checks if all neccessary information is available to simulate feature click and landuse select
+     * Requests parametic url and checks if all neccessary information is available to simulate feature click and landuse select
      * @param {Object} handleUrlParameters.rootState the rootState
      * @param {Object} handleUrlParameters.dispatch the dispatch
      * @param {Object} handleUrlParameters.commit the commit
@@ -53,10 +54,10 @@ const actions = {
             dispatch("Map/setCenter", center, {root: true});
             dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
-        // console.warn("Um direkt eine BORIS Abfrage durchführen zu können, müssen in der URL die parameter\"brwId\", \"brwLayerName\" und \"center\" gesetzt sein.");
+        console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
     },
     /**
-    * Simulates landuse selection when parametric URL is being used
+     * Simulates landuse selection when parametric URL is being used
      * @param {Object} simulateLanduseSelect.commit the commit
      * @param {Object} simulateLanduseSelect.getters the getters
      * @returns {void}
@@ -72,7 +73,7 @@ const actions = {
      * @param {Object} switchLayer.state the state
      * @param {Object} switchLayer.dispatch the dispatch
      * @param {Object} switchLayer.commit the commit
-     * @param   {String} selectedLayerName name of the selected layer
+     * @param {String} selectedLayerName name of the selected layer
      * @returns {void}
      */
     switchLayer ({state, dispatch, commit}, selectedLayerName) {
@@ -100,7 +101,7 @@ const actions = {
         }
     },
     /**
-    * Handles layer selection by date
+     * Handles layer selection by date
      * @param {Object} handleSelectBRWYear.state the state
      * @param {Object} handleSelectBRWYear.dispatch the dispatch
      * @param {String} selectedLayerName name of the selected layer
@@ -111,7 +112,7 @@ const actions = {
         dispatch("checkBrwFeature", {brwFeatures: state.brwFeatures, year: selectedLayerName.split(".")[2]});
     },
     /**
-    * Checks if a brw Feature is already available
+     * Checks if a brw Feature is already available
      * @param {Object} checkBrwFeature.state the state
      * @param {Object} checkBrwFeature.dispatch the dispatch
      * @param {Object} checkBrwFeature.commit the commit
@@ -193,37 +194,20 @@ const actions = {
     requestGFI ({state, dispatch}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
-                layerSource = selectedLayer.get("layer").getSource();
-            let map,
-                mapView,
-                url;
-
-            if (processFromParametricUrl) {
-                map = mapCollection.getMap("ol", "2D");
-                mapView = map.getView();
-                url = layerSource.getFeatureInfoUrl(center, mapView.getResolution(), mapView.getProjection());
-            }
-            else {
-                map = event.map;
-                mapView = map.getView();
-                url = layerSource.getFeatureInfoUrl(event.coordinate, mapView.getResolution(), mapView.getProjection());
-            }
+                layerSource = selectedLayer.get("layer").getSource(),
+                coordinates = processFromParametricUrl ? center : event.coordinate,
+                map = processFromParametricUrl ? mapCollection.getMap("ol", "2D") : event.map,
+                mapView = map.getView(),
+                url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
 
             axios.get(url)
                 .then((response) => {
-                    if (processFromParametricUrl) {
-                        dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: center});
-                    }
-                    else {
-                        dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: event.coordinate});
-                    }
+                    dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: coordinates});
                 })
                 .catch((error) => {
                     console.error(error.response);
                 });
         }
-
-
     },
     /**
      * Handles wms get feature info response
@@ -259,7 +243,7 @@ const actions = {
             }
         }
         else {
-            console.error("Datenabfrage fehlgeschlagen:" + status);
+            console.error("Data query failed:" + status);
             dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
         }
     },
@@ -401,7 +385,7 @@ const actions = {
             dispatch("extendFeatureAttributes", {feature, date});
         }
         else {
-            console.error("Datenabfrage fehlgeschlagen");
+            console.error("Data query failed");
             dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
         }
     },
@@ -427,10 +411,9 @@ const actions = {
      * @param {String} date date
      * @return {void}
      */
-    extendFeatureAttributes ({commit, state}, {feature, date}) {
+    extendFeatureAttributes ({dispatch, commit, state}, {feature, date}) {
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002,
             sw = helpers.parseSW({feature});
-
 
         feature.setProperties({
             "richtwert_dm": isDMTime ? thousandsSeparator(parseFloat(feature.get("richtwert_dm"), 10).toFixed(1)) : "",
@@ -449,11 +432,57 @@ const actions = {
         });
 
         commit("setSelectedBrwFeature", feature);
-        helpers.sendWpsConvertRequest({state});
+        dispatch("sendWpsConvertRequest", state);
+        // helpers.sendWpsConvertRequest({state});
+
         return feature;
     },
     /**
-    * Updater for selectedBrwFeature that forces a refresh
+     * Sends a request to convert the BRW
+     * @returns {void}
+     */
+    sendWpsConvertRequest ({dispatch, state}) {
+        const data = helpers.convert({brw: state.selectedBrwFeature});
+
+        WPS.wpsRequest(state.wpsId, state.fmwProcess, data, (response, status) => dispatch("handleConvertResponse", {response, status}));
+    },
+    /**
+     * Extracts and stores the converted BRW
+     * @param  {string} response - the response xml of the wps
+     * @param  {number} status - the HTTPStatusCode
+     * @returns {void}
+     */
+    handleConvertResponse ({dispatch}, {response, status}) {
+        let complexData,
+            executeResponse;
+
+        if (status === 200) {
+            executeResponse = response.ExecuteResponse;
+
+            if (executeResponse.ProcessOutputs) {
+                complexData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData;
+                if (complexData.serviceResponse) {
+                    console.error("FME-Server status info: " + complexData.serviceResponse.statusInfo.message);
+                }
+                else if (complexData.Bodenrichtwert) {
+                    if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
+                        console.error("BRWConvert error message: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
+                    }
+                    else {
+                        dispatch("updateSelectedBrwFeature", {converted: "convertedBrw", brw: complexData.Bodenrichtwert.Ergebnis.BRW});
+                    }
+                }
+            }
+            else if (executeResponse.Status) {
+                console.error("FME-Server execute response: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
+            }
+        }
+        else {
+            console.error("WPS-Query with status " + status + " aborted.");
+        }
+    },
+    /**
+     * Updater for selectedBrwFeature that forces a refresh
      * @param {Object} updateSelectedBrwFeature.state the state
      * @param {Object} updateSelectedBrwFeature.commit the commit
      * @param {String} converted attribute name of the selected feature

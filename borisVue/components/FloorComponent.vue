@@ -45,7 +45,7 @@ export default {
                     <dd
                         v-else
                     >
-                        <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="pull-right"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
+                        <span>{{ schichtwert.schichtwert }} €/m² WGF</span><span class="d-flex justify-content-end"> {{ schichtwert.schichtwertDM }} DM/m² WGF</span>
                     </dd>
                 </dl>
             </div>
@@ -58,7 +58,7 @@ export default {
                 </dd>
                 <dd v-else>
                     <span> {{ Object.values(feature)[1] }} €/m²</span>
-                    <span class="pull-right">{{ Object.values(feature)[2] }} DM/m²</span>
+                    <span class="d-flex justify-content-end">{{ Object.values(feature)[2] }} DM/m²</span>
                 </dd>
             </dl>
         </div>

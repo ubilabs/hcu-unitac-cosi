@@ -9,7 +9,6 @@ import FloorComponent from "./FloorComponent.vue";
 import {preparePrint} from "../utils/preparePrint.js";
 import axios from "axios";
 import {getLayerModelsByAttributes} from "../utils/RadioBridge";
-import helpers from "../utils/helpers";
 
 
 export default {
@@ -56,16 +55,11 @@ export default {
     watch: {
         /**
          * Listens to the selectedPolygon for simulating landuse if parametric URL is being used
-         * @param {Object} newValue the newly selected polygon feature
          * @returns {void}
          */
-        selectedPolygon: {
-            handler (newValue) {
-                if (newValue) {
-                    if (this.isProcessFromParametricUrl) {
-                        this.simulateLanduseSelect(this.paramUrlParams);
-                    }
-                }
+        selectedPolygon () {
+            if (this.isProcessFromParametricUrl) {
+                this.simulateLanduseSelect(this.paramUrlParams);
             }
         },
         /**
@@ -75,32 +69,30 @@ export default {
          * @param {Object} oldValue the previously selected landuse
          * @returns {void}
          */
-        selectedLanduse: {
-            handler (newValue, oldValue) {
-                if (newValue) {
-                    if (this.buttonValue === "liste") {
-                        if (newValue === "EFH Ein- und Zweifamilienhäuser" ||
-                            newValue === "A Acker" ||
-                            newValue === "GR Grünland" ||
-                            newValue === "EGA Erwerbsgartenanbaufläche" ||
-                            newValue === "F forstwirtschaftliche Fläche"
-                        ) {
-                            if (oldValue === "MFH Mehrfamilienhäuser" ||
-                                oldValue === "GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)" ||
-                                oldValue === "BH Bürohäuser") {
-                                this.setButtonValue("info");
-                            }
+        selectedLanduse (newValue, oldValue) {
+            if (newValue) {
+                if (this.buttonValue === "liste") {
+                    if (newValue === "EFH Ein- und Zweifamilienhäuser" ||
+                        newValue === "A Acker" ||
+                        newValue === "GR Grünland" ||
+                        newValue === "EGA Erwerbsgartenanbaufläche" ||
+                        newValue === "F forstwirtschaftliche Fläche"
+                    ) {
+                        if (oldValue === "MFH Mehrfamilienhäuser" ||
+                            oldValue === "GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)" ||
+                            oldValue === "BH Bürohäuser") {
+                            this.setButtonValue("info");
                         }
                     }
-                    this.matchPolygonFeatureWithLanduse({feature: this.selectedPolygon, selectedLanduse: newValue});
                 }
+                this.matchPolygonFeatureWithLanduse({feature: this.selectedPolygon, selectedLanduse: newValue});
             }
         },
         /**
          * Checks if file to print is ready to be printed
          * @returns {void}
          */
-        printFileReady: function () {
+        printFileReady () {
             if (this.active && this.printFileReady && this.fileDownloadUrl) {
                 const link = document.createElement("a");
 
@@ -127,7 +119,8 @@ export default {
             "matchPolygonFeatureWithLanduse",
             "getSelectedBuildingDesign",
             "updateSelectedBrwFeature",
-            "simulateLanduseSelect"
+            "simulateLanduseSelect",
+            "sendWpsConvertRequest"
         ]),
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
         preparePrint,
@@ -159,7 +152,7 @@ export default {
 
             this.setSelectedOption(eventValue);
             this.updateSelectedBrwFeature({converted: subject, brw: eventValue});
-            helpers.sendWpsConvertRequest({state: this});
+            this.sendWpsConvertRequest({state: this});
         },
         /**
          * Handles input-change for Individual Property Conversion
@@ -170,7 +163,7 @@ export default {
         handleInputChange (event, subject) {
             if (event.type === "change" || (event.key === "Enter")) {
                 this.updateSelectedBrwFeature({converted: subject, brw: parseFloat(event.currentTarget.value.replace(",", "."))});
-                helpers.sendWpsConvertRequest({state: this});
+                this.sendWpsConvertRequest({state: this});
             }
         },
         /**
@@ -205,7 +198,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.boris.name')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -216,10 +209,10 @@ export default {
                 id="boris"
                 class="content"
             >
-                <div class="form-group col-xs-12 first">
+                <div class="form-group col-12 first">
                     <span>{{ $t("additional:modules.tools.boris.labelSelectYear") }}</span>
                 </div>
-                <div class="form-group col-xs-12">
+                <div class="form-group col-12">
                     <select
                         id="brwLayerSelect"
                         class="form-control"
@@ -252,12 +245,12 @@ export default {
                         {{ $t("additional:modules.tools.boris.toggleStripesLayer") }}
                     </label>
                     <span
-                        class="glyphicon glyphicon-question-sign"
+                        class="bootstrap-icon bi-question-circle-fill"
                         @click="toggleInfoText('1')"
                         @keydown.enter="toggleInfoText('1')"
                     />
                     <div v-if="Object.values(textIds).includes('1')">
-                        <div class="col-xs-12 info-text">
+                        <div class="col-12 info-text">
                             <span>{{ $t("additional:modules.tools.boris.toggleStripesLayerInfo") }}</span>
                             <br>
                             <br>
@@ -266,7 +259,7 @@ export default {
                 </div>
                 <div
                     v-if="selectedPolygon === null"
-                    class="form-group col-xs-12"
+                    class="form-group col-12"
                 >
                     <span
                         id="selectPolygonText"
@@ -276,7 +269,7 @@ export default {
                 </div>
                 <div
                     v-else
-                    class="form-group col-xs-12 first"
+                    class="form-group col-12 first"
                 >
                     <span>{{ $t("additional:modules.tools.boris.labelSelectUse") }}</span>
                     <select
@@ -301,51 +294,55 @@ export default {
                 </div>
                 <div
                     v-if="Object.keys(selectedBrwFeature).length !== 0"
-                    class="form-group col-xs-12 first info-container"
+                    class="form-group col-12 first info-container"
                 >
                     {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
                     <hr>
                     <div
-                        class="btn-group btn-group-justified"
+                        class="d-flex "
                         role="group"
                     >
                         <div
-                            class="btn-group"
+                            class="flex-fill"
                             role="group"
                         >
                             <button
-                                :class="(buttonValue === 'info') ? 'btn btn-active glyphicon glyphicon-info-sign' : 'btn btn-default glyphicon glyphicon-info-sign'"
+                                class="btn bi-info-circle-fill w-100"
+                                :class="(buttonValue === 'info') ? 'btn-default' : 'btn-active'"
                                 value="info"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
                         <div
-                            class="btn-group"
+                            class="flex-fill"
                             role="group"
                         >
                             <button
-                                :class="(buttonValue === 'lage') ? 'btn btn-active glyphicon glyphicon-map-marker' : 'btn btn-default glyphicon glyphicon-map-marker'"
+                                class="btn bi-geo-alt-fill w-100"
+                                :class="(buttonValue === 'lage') ? 'btn-default' : 'btn-active'"
                                 value="lage"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
                         <div
-                            class="btn-group"
+                            class="flex-fill bd-highlight"
                             role="group"
                         >
                             <button
-                                :class="(buttonValue === 'euro') ? 'btn btn-active glyphicon glyphicon-euro' : 'btn btn-default glyphicon glyphicon-euro'"
+                                class="btn bi-currency-euro w-100"
+                                :class="(buttonValue === 'euro') ? 'btn-default' : 'btn-active'"
                                 value="euro"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
                         <div
                             v-if="selectedBrwFeature.get('schichtwert')"
-                            class="btn-group"
+                            class="flex-fill bd-highlight"
                             role="group"
                         >
                             <button
-                                :class="(buttonValue === 'liste') ? 'btn btn-active glyphicon glyphicon-list' : 'btn btn-default glyphicon glyphicon-list'"
+                                class="btn bi-list-ul w-100"
+                                :class="(buttonValue === 'liste') ? 'btn-default' : 'btn-active'"
                                 value="liste"
                                 @click="setButtonValue($event.target.value)"
                             />
@@ -435,7 +432,7 @@ export default {
                             <dt>
                                 <span>{{ $t('additional:modules.tools.boris.landCalculation.calculatedLandValue') }}</span>
                                 <span
-                                    class="glyphicon glyphicon-question-sign"
+                                    class="bootstrap-icon bi-question-circle-fill"
                                     @click="toggleInfoText('6')"
                                     @keydown.enter="toggleInfoText('6')"
                                 />
@@ -453,11 +450,15 @@ export default {
                             </dd>
                             <dd
                                 v-else
-                            >
-                                <span>{{ convertedBrw }} €/m²</span>
-                                <span class="pull-right">{{ selectedBrwFeature.get("convertedBrwDM") }} DM/m²</span>
+                            >   
                                 <div
-                                    v-if="Object.values(textIds).includes(6)"
+                                    class="d-flex justify-content-between"
+                                >
+                                    <span>{{ convertedBrw }} €/m²</span>
+                                    <span>{{ selectedBrwFeature.get("convertedBrwDM") }} DM/m²</span>
+                                </div>
+                                <div
+                                    v-if="Object.values(textIds).includes('6')"
                                     class="help"
                                 >
                                     <span v-html="$t('additional:modules.tools.boris.landCalculation.calculatedLandValueInfo')" />
@@ -474,14 +475,14 @@ export default {
                     </div>
                     <button
                         class="btn btn-primary btn-infos"
-                        :title="'exportAsPdf'"
+                        :title="'export as PDF'"
                         @click="startPrint"
                     >
                         {{ $t("additional:modules.tools.boris.print") }}
                     </button>
                     <div
                         v-if="printStarted"
-                        class="form-group col-md-12 col-xs-12 pt-20"
+                        class="form-group pt-20"
                     >
                         <div class="progress">
                             <div
@@ -489,7 +490,7 @@ export default {
                                 role="progressbar"
                                 :style="progressWidth"
                             >
-                                <span class="sr-only">30% Complete</span>
+                                <span class="visually-hidden">30% Complete</span>
                             </div>
                         </div>
                     </div>
@@ -517,6 +518,14 @@ export default {
             padding-bottom: 15px;
         }
     };
+.btn-default {
+    background-color: rgb(231, 223, 223);
+}
+.btn-active {
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: lightgrey;
+}
 ::v-deep dt {
     background-color: rgba(227, 227, 227, 0.5);
     font-family: "UniversNextW04-620CondB", "Arial Narrow", Arial, sans-serif;
@@ -525,5 +534,8 @@ export default {
 ::v-deep dd{
     padding: 8px;
     word-wrap: break-word;
+}
+::v-deep h4 {
+    font-size: 1rem;
 }
 </style>
