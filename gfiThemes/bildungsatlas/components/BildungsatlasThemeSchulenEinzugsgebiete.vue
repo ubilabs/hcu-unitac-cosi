@@ -73,7 +73,8 @@ export default {
             countStudentsSecondary: "",
             layernameAreas: "Einzugsgebiete",
             layerStatistischeGebiete: {},
-            areaInfo: []
+            areaInfo: [],
+            infoText: ""
         };
     },
     computed: {
@@ -178,7 +179,7 @@ export default {
                 console.warn("Missing data for area filter");
             }
 
-            this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.info"));
+            this.infoText = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.SchulenEinzugsGebiete.info"));
         },
 
         /**
@@ -485,6 +486,7 @@ export default {
         <div
             v-if="isActiveTab('info')"
             class="gfi-info"
+            v-html="infoText"
         />
     </div>
 </template>
