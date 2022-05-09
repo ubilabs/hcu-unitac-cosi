@@ -41,6 +41,7 @@ export default {
             </p>
         </div>
         <button
+            id="tool-schoolRoutePlanning-show-route-description"
             type="button"
             class="btn btn-default btn-sm btn-block mb-3"
             data-bs-toggle="collapse"
@@ -75,6 +76,10 @@ $background_color_1: rgb(229, 229, 229);
 
 .result {
     background-color: $background_color_1;
+}
+
+#tool-schoolRoutePlanning-show-route-description {
+    width: 100%;
 }
 
 @media (max-width: 767px) {
