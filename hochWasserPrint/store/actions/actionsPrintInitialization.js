@@ -3,7 +3,7 @@ import {DEVICE_PIXEL_RATIO} from "ol/has.js";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import Canvas from "./../../utils/buildCanvas";
 import getVisibleLayer from "./../../utils/getVisibleLayer";
-import mapCollection from "../../../../src/core/dataStorage/mapCollection.js";
+import mapCollection from "../../../../src/core/maps/mapCollection.js";
 import {createEmpty, extendCoordinate} from "ol/extent.js";
 import {apply as applyTransform} from "ol/transform.js";
 

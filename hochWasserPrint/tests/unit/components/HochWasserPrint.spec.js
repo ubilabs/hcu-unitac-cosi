@@ -4,7 +4,7 @@ import {expect} from "chai";
 import HochWasserPrintComponent from "../../../components/HochWasserPrint.vue";
 import HochWasserPrint from "../../../store/indexHochWasserPrint";
 import sinon from "sinon";
-import mapCollection from "../../../../../src/core/dataStorage/mapCollection.js";
+import mapCollection from "../../../../../src/core/maps/mapCollection.js";
 
 const localVue = createLocalVue();
 

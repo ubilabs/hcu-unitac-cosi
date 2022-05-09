@@ -4,7 +4,7 @@ import getComponent from "../../../src/utils/getComponent";
 import {mapActions, mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersHochWasserPrint";
 import mutations from "../store/mutationsHochWasserPrint";
-import mapCollection from "../../../src/core/dataStorage/mapCollection";
+import mapCollection from "../../../src/core/maps/mapCollection";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import getVisibleLayer from "../utils/getVisibleLayer";
 import {Vector} from "ol/layer.js";
