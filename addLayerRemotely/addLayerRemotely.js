@@ -64,7 +64,7 @@ Radio.channel("addLayerRemotely").on({
         }
 
         if (zoomTo) {
-            mapCollection.getMapView("2D").zoomToFilteredFeatures(getFeatureIds(id), id);
+            Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
         }
     },
     /**
