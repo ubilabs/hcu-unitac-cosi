@@ -45,7 +45,7 @@ export default {
                 dispatch("processStreetNames", {input, layer, sortedStreetNames});
             })
             .catch(error => {
-                if (error.message.trim() !== "The operation was aborted.") {
+                if (error.message.trim() !== "The operation was aborted." && error.message.trim() !== "The user aborted a request.") {
                     console.error("schoolRoutePlanning: An error occurred while searching.", error);
                 }
             });
@@ -109,7 +109,7 @@ export default {
                 commit("setFilteredHouseNumbers", sortedHouseNumbers);
             })
             .catch(error => {
-                if (error.message.trim() !== "The operation was aborted.") {
+                if (error.message.trim() !== "The operation was aborted." && error.message.trim() !== "The user aborted a request.") {
                     console.error("schoolRoutePlanning: An error occurred while searching.", error);
                 }
             });
@@ -170,7 +170,7 @@ export default {
     },
 
     /**
-     * Search for the reginal primary school to the given address.
+     * Search for the regional primary school to the given address.
      * @param {Object} context The vuex context.
      * @param {String} address The address to search the regional primary school
      * @returns {void}
