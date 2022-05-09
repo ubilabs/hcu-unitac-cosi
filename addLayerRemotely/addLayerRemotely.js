@@ -1,6 +1,5 @@
 import importLayers from "./addWMSRemotely.js";
-import store from "../../src/app-store";
-import mapCollection from "../../src/core/dataStorage/mapCollection.js";
+import mapCollection from "../../src/core/maps/mapCollection.js";
 
 Radio.channel("addLayerRemotely").on({
     /**
@@ -20,7 +19,7 @@ Radio.channel("addLayerRemotely").on({
     "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true, clusterDistance = undefined, gfiTheme = "default"}) {
 
         const treeType = Radio.request("Parser", "getTreeType"),
-            map = mapCollection.getMap(store.state.Map.mapId, store.state.Map.mapMode),
+            map = mapCollection.getMap("2D"),
             layer = map ? map.getLayers().getArray().find(l => {
                 return l.get("id") === id;
             }) : undefined;
@@ -65,7 +64,7 @@ Radio.channel("addLayerRemotely").on({
         }
 
         if (zoomTo) {
-            mapCollection.getMapView("ol", "2D").zoomToFilteredFeatures(getFeatureIds(id), id);
+            mapCollection.getMapView("2D").zoomToFilteredFeatures(getFeatureIds(id), id);
         }
     },
     /**

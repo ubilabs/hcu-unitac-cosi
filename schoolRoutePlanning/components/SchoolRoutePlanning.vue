@@ -191,10 +191,11 @@ export default {
          * Initialize a layer with features and styles.
          * @returns {void}
          */
-        initializeLayer () {
+        async initializeLayer () {
             if (this.layer === null) {
-                this.layer = Radio.request("Map", "createLayerIfNotExists", this.layerName);
+                this.layer = await Radio.request("Map", "createLayerIfNotExists", this.layerName);
             }
+
             addRouteFeatures(this.layer.getSource());
             this.layer.setStyle(routeStyle);
         },

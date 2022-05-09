@@ -36,7 +36,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/GeoAnalyze", Object.keys(getters)),
-        ...mapGetters("Map", ["clickCoord"]),
+        ...mapGetters("Maps", ["clickCoordinate"]),
 
         /**
          * Gets the name of the current result child component. Depending on the "selectedOption" data.
@@ -62,7 +62,7 @@ export default {
             }
 
         },
-        clickCoord: "createAnalyzeGeometry",
+        clickCoordinate: "createAnalyzeGeometry",
         selectedOption: "toggleInteraction"
     },
     created () {
@@ -73,8 +73,8 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/GeoAnalyze", Object.keys(mutations)),
-        ...mapMutations("Map", ["addLayerToMap", "removeLayerFromMap"]),
-        ...mapActions("Map", ["addInteraction", "removeInteraction"]),
+        ...mapMutations("Maps", ["addLayerToMap", "removeLayerFromMap"]),
+        ...mapActions("Maps", ["addInteraction", "removeInteraction"]),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
@@ -97,12 +97,12 @@ export default {
 
         /**
          * Creates a point geometry for building analyze if selectOption is set to "click".
-         * Is called by the clickCoord watcher.
+         * Is called by the clickCoordinate watcher.
          * @returns {void}
          */
         createAnalyzeGeometry () {
             if (this.selectedOption === "click") {
-                this.geometry = new Point(this.clickCoord);
+                this.geometry = new Point(this.clickCoordinate);
                 this.getAnalyzeData(this.geometry);
             }
         },

@@ -42,7 +42,7 @@ const actions = {
      */
     setPosition ({state, commit, dispatch, rootGetters}, evt) {
         if (state.active && evt) {
-            const projection = rootGetters["Map/ol2DMap"].getView().getProjection().getCode(),
+            const projection = rootGetters["Maps/getView"].getProjection().getCode(),
                 coordinates = [evt[0], evt[1]];
 
             try {
@@ -94,7 +94,7 @@ const actions = {
      */
     initApi ({state, dispatch, getters, rootGetters}) {
         const service = rootGetters.getRestServiceById(state.serviceId),
-            projection = rootGetters["Map/ol2DMap"].getView().getProjection().getCode(),
+            projection = rootGetters["Maps/getView"].getProjection().getCode(),
             locale = getters.currentLocale;
 
         if (service) {
@@ -214,7 +214,7 @@ const actions = {
         dispatch("addListener");
         commit("setMapMarkerStyleId", rootState.MapMarker.pointStyleId);
         commit("MapMarker/setPointStyleId", state.styleId, {root: true});
-        dispatch("setPosition", rootGetters["Map/ol2DMap"].getView().getCenter());
+        dispatch("setPosition", rootGetters["Maps/getView"].getCenter());
     }
 };
 
