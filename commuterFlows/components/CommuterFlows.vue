@@ -513,7 +513,7 @@ export default {
                             <select
                                 ref="select-district"
                                 v-model="currentDistrict"
-                                class="form-control"
+                                class="form-select"
                             >
                                 <option
                                     selected
@@ -540,7 +540,7 @@ export default {
                             <div class="form-group">
                                 <select
                                     v-model="currentCity"
-                                    class="form-control"
+                                    class="form-select"
                                 >
                                     <option
                                         selected
