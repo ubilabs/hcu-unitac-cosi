@@ -1,6 +1,5 @@
 import importLayers from "./addWMSRemotely.js";
-import store from "../../src/app-store";
-import mapCollection from "../../src/core/dataStorage/mapCollection.js";
+import mapCollection from "../../src/core/maps/mapCollection.js";
 
 Radio.channel("addLayerRemotely").on({
     /**
@@ -13,12 +12,14 @@ Radio.channel("addLayerRemotely").on({
      * @param {String} folderName Name of the folder in the layer tree
      * @param {Object} gfiAttributes Attributes to be shown in the GFI
      * @param {Boolean} zoomTo Flag if the map should zoom to the extent of the layer
+     * @param {Number} clusterDistance distance in which features will be clustured if set
+     * @param {String} gfiTheme name of the gfiTheme
      * @returns {void}
      */
-    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true, clusterDistance = undefined}) {
+    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true, clusterDistance = undefined, gfiTheme = "default"}) {
 
         const treeType = Radio.request("Parser", "getTreeType"),
-            map = mapCollection.getMap(store.state.Map.mapId, store.state.Map.mapMode),
+            map = mapCollection.getMap("2D"),
             layer = map ? map.getLayers().getArray().find(l => {
                 return l.get("id") === id;
             }) : undefined;
@@ -52,7 +53,7 @@ Radio.channel("addLayerRemotely").on({
             parentID = "tree";
         }
 
-        geojsonLayer = returnGeoJSONLayerObject(name, id, geoJSON, styleId, parentID, gfiAttributes, clusterDistance);
+        geojsonLayer = returnGeoJSONLayerObject(name, id, geoJSON, styleId, parentID, gfiAttributes, clusterDistance, gfiTheme);
 
         Radio.trigger("Parser", "addItem", geojsonLayer);
         Radio.trigger("ModelList", "addModelsByAttributes", {id: id});
@@ -63,7 +64,7 @@ Radio.channel("addLayerRemotely").on({
         }
 
         if (zoomTo) {
-            mapCollection.getMapView("ol", "2D").zoomToFilteredFeatures(getFeatureIds(id), id);
+            Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
         }
     },
     /**
@@ -119,9 +120,10 @@ function getFeatureIds (layerId) {
  * @param {String} parentId Id for the correct position of the layer in the layertree.
  * @param {String} [gfiAttributes] Attributes to be shown when clicking on the feature using the GFI tool.
  * @param {Number} clusterDistance Distance in which point features are clustered. Undefined if no clusters are to be used.
+ * @param {String} gfiTheme name of the gfiTheme
  * @returns {Object} Object of geojson layer
 */
-function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttributes = "showAll", clusterDistance = undefined) {
+function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttributes = "showAll", clusterDistance = undefined, gfiTheme = "default") {
     const layer = {
         type: "layer",
         name: name,
@@ -139,7 +141,8 @@ function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttr
         isVisibleInTree: true,
         cache: false,
         datasets: [],
-        urlIsVisible: true
+        urlIsVisible: true,
+        gfiTheme: gfiTheme
     };
 
     if (styleId !== undefined) {

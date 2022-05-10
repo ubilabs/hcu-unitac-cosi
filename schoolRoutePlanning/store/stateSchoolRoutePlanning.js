@@ -4,7 +4,7 @@
  * @property {String} id id of the SchoolRoutePlanning component.
  * @property {Boolean} active if true, SchoolRoutePlanning will be rendered.
  * @property {String} name Displayed as the title.
- * @property {String} glyphicon Icon next to the title.
+ * @property {String} icon Icon next to the title.
  * @property {String} layerId The if of the wfs service that contains the schools.
  * @property {String} serviceId The id of the gazetteer service.
  * @property {String} wpsId The id of the used web processing service.
@@ -41,7 +41,7 @@ const state = {
     id: "schoolRoutePlanning",
     active: false,
     name: "additional:modules.tools.schoolRoutePlanning.title",
-    glyphicon: "glyphicon-filter",
+    icon: "bi-signpost",
     layerId: "8712",
     serviceId: "8",
     wpsId: "1001",

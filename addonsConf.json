@@ -35,9 +35,8 @@
   "streetSmart": {
     "type": "tool"
   },
-  "activeCityMaps": {
-    "path":"gfiThemes/activeCityMaps",
-    "type": "gfiTheme"
+  "hochWasserPrint": {
+    "type": "tool"
   },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
@@ -49,6 +48,10 @@
   },
   "dipas": {
     "path":"gfiThemes/dipas",
+    "type": "gfiTheme"
+  },
+  "dipasCockpit": {
+    "path":"gfiThemes/dipasCockpit",
     "type": "gfiTheme"
   },
   "flaecheninfo": {

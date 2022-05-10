@@ -445,11 +445,8 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-school-catchment-area">
-        <div
-            class="tab-panel"
-            :class="{ 'hidden': !isActiveTab('data') }"
-        >
+    <div class="gfi-bildungsatlas-current-content">
+        <div v-if="isActiveTab('data')">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -486,31 +483,33 @@ export default {
             </table>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            v-if="isActiveTab('info')"
+            class="gfi-info"
         />
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .gfi-school-catchment-area {
-        max-width: 420px;
+.gfi-bildungsatlas-current-content {
+    padding-bottom: 0 !important;
 
-        table {
-            &.table {
-                table-layout: fixed;
-                margin-bottom: 0;
+    table {
+        table-layout: fixed;
+        margin-bottom: 0;
 
-                tbody {
-                    tr {
-                        td {
-                            &:last-child {
-                                text-align: right;
-                            }
-                        }
+        tbody {
+            tr {
+                td {
+                    &:last-child {
+                        text-align: right;
                     }
                 }
             }
         }
+
+        tfoot > tr > td {
+            border-style: none;
+        }
     }
+}
 </style>

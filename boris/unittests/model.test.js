@@ -1,14 +1,24 @@
 import {expect} from "chai";
+import Map from "ol/Map";
 import Tool from "@modules/core/modelList/tool/model.js";
 import ModelList from "@modules/core/modelList/list.js";
 import initializeBrwAbfrageModel from "@addons/boris/bodenrichtwertabfrage/model.js";
 import Feature from "ol/Feature";
+import mapCollection from "../../../src/core/maps/mapCollection";
 
-describe("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
+describe.skip("ADDON: Bodenrichtwert-Abfrage (BORIS)", function () {
     let tool,
-        model;
+        model,
+        map;
 
     before(function () {
+        mapCollection.clear();
+        map = new Map({
+            id: "ol",
+            mode: "2D"
+        });
+
+        mapCollection.addMap(map, "2D");
         tool = new Tool({id: "brw", type: "tool"});
         new ModelList([tool]);
         model = initializeBrwAbfrageModel();

@@ -3,7 +3,7 @@
  * @typedef {Object} populationRequestState
  * @property {Boolean} active if true, PopulationRequest will be rendered
  * @property {String} id id of the PopulationRequest component
- * @property {String} glyphicon icon next to title (config-param)
+ * @property {String} icon icon next to title (config-param)
  * @property {Boolean} renderToWindow if true, tool is rendered in a window, else in sidebar (config-param)
  * @property {Boolean} resizableWindow if true, window is resizable (config-param)
  * @property {Boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
@@ -19,7 +19,7 @@ const state = {
     id: "populationRequest",
     // defaults for config.json parameters
     name: "translate#additional:modules.tools.populationRequest.title",
-    glyphicon: "glyphicon-wrench",
+    icon: "bi-person-bounding-box",
     renderToWindow: true,
     resizableWindow: true,
     isVisibleInMenu: true,

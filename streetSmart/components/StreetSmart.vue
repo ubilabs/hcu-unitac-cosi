@@ -17,7 +17,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/StreetSmart", Object.keys(getters)),
-        ...mapGetters("Map", ["clickCoord"]),
+        ...mapGetters("Maps", ["clickCoordinate"]),
         ...mapGetters("MapMarker", ["markerPoint"])
     },
     watch: {
@@ -33,7 +33,7 @@ export default {
                 this.close();
             }
         },
-        clickCoord (newCoord, lastCoord) {
+        clickCoordinate (newCoord, lastCoord) {
             if (newCoord !== lastCoord) {
                 this.setPosition(newCoord);
             }

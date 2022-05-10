@@ -7,3 +7,4 @@ cosi/node_modules/*
 qr/node_modules/*
 .history
 .vscode
+.idea
