@@ -3,7 +3,7 @@
         "tools": {
             "schoolRoutePlanning": {
                 "title": "Schulweg",
-                "inputPlaceHolder": "Startadresse",
+                "inputLabel": "Startadresse",
                 "regionalPrimarySchool": "Regional zuständige Grundschule: ",
                 "selectSchool": "Schule auswählen",
                 "printRouteName": "PDF erstellen",

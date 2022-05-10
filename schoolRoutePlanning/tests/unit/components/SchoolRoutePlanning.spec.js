@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import SchoolRoutePlanningComponent from "../../../components/SchoolRoutePlanning.vue";
 import SchoolRoutePlanning from "../../../store/indexSchoolRoutePlanning";
-import AddressList from "../../../components/SchoolRoutePlanningAddressList.vue";
+import Address from "../../../components/SchoolRoutePlanningAddress.vue";
 import RouteInformation from "../../../components/SchoolRoutePlanningRouteInformation.vue";
 import Schools from "../../../components/SchoolRoutePlanningSchools.vue";
 import ToggleCheckbox from "../../../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
@@ -25,7 +25,7 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
             menu: {
                 SchoolRoutePlanning: {
                     "name": "translate#additional:modules.tools.schoolRoutePlanning.title",
-                    "glyphicon": "glyphicon-th-list"
+                    "icon": "bi-list-columns-reverse"
                 }
             }
         }
@@ -82,26 +82,26 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
     });
 
     it("Render the input with no value", () => {
-        const wrapper = shallowMount(SchoolRoutePlanningComponent, wrapperElements);
+        const wrapper = shallowMount(Address, wrapperElements);
 
-        expect(wrapper.find(".address-search").element.value).to.equals("");
+        expect(wrapper.find("#tool-schoolRoutePlanning-search-address").element.value).to.equals("");
     });
 
     it("Set the input field to the value of inputaddress via data binding", async () => {
         let wrapper = null;
 
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "abc");
-        wrapper = shallowMount(SchoolRoutePlanningComponent, wrapperElements);
+        wrapper = shallowMount(Address, wrapperElements);
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.find(".address-search").element.value).to.equals("abc");
+        expect(wrapper.find("#tool-schoolRoutePlanning-search-address").element.value).to.equals("abc");
         store.commit("Tools/SchoolRoutePlanning/setInputAddress", "");
     });
 
     it("render the addressList", () => {
         const wrapper = shallowMount(SchoolRoutePlanningComponent, wrapperElements);
 
-        expect(wrapper.findComponent(AddressList).exists()).to.be.true;
+        expect(wrapper.findComponent(Address).exists()).to.be.true;
     });
 
     it("render the Schools", () => {
@@ -119,9 +119,8 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
     it("render routing checkbox container", () => {
         const wrapper = shallowMount(SchoolRoutePlanningComponent, wrapperElements);
 
-        expect(wrapper.find(".routing-checkbox-container").exists()).to.be.true;
-        expect(wrapper.find(".routing-checkbox-label").exists()).to.be.true;
-        expect(wrapper.find(".routing-checkbox-label").text()).to.equals("additional:modules.tools.schoolRoutePlanning.transportNetwork");
+        expect(wrapper.find(".form-label").exists()).to.be.true;
+        expect(wrapper.find(".form-label").text()).to.equals("additional:modules.tools.schoolRoutePlanning.transportNetwork");
     });
 
     it("render the ToggleCheckbox", () => {
@@ -135,11 +134,11 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanning.vue", () => 
         const wrapper = shallowMount(SchoolRoutePlanningComponent, wrapperElements);
 
         expect(wrapper.findAll("button").at(0).text()).to.equals("additional:modules.tools.schoolRoutePlanning.printRouteName");
-        expect(wrapper.findAll("button").at(0).classes()).to.include("btn", "btn-default", "btn-sm", "print-route", "pull-left");
+        expect(wrapper.findAll("button").at(0).classes()).to.include("btn", "btn-primary", "btn-sm", "mr-3");
         expect(wrapper.findAll("button").at(0).attributes("disabled")).to.equals("disabled");
 
         expect(wrapper.findAll("button").at(1).text()).to.equals("additional:modules.tools.schoolRoutePlanning.deleteRoute");
-        expect(wrapper.findAll("button").at(1).classes()).to.include("btn", "btn-default", "btn-sm", "delete-route", "pull-right");
+        expect(wrapper.findAll("button").at(1).classes()).to.include("btn", "btn-secondary", "btn-sm");
         expect(wrapper.findAll("button").at(1).attributes("disabled")).to.equals("disabled");
     });
 
