@@ -502,7 +502,7 @@ export default {
         <template #toolBody>
             <div
                 id="CommuterFlows"
-                class="container"
+                class="commuter-flows-container"
             >
                 <div class="d-grid section">
                     <div class="col">
@@ -844,8 +844,11 @@ export default {
         }
     }
 
-    .container {
+    .commuter-flows-container {
         max-width: 400px;
+    }
+    .form-select {
+        font-size: 14px;
     }
     .section {
         .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-12 {
