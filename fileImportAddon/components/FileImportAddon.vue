@@ -18,7 +18,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/FileImportAddon", Object.keys(getters)),
-        ...mapGetters("Map", ["layerIds", "layers"]),
+        ...mapGetters("Maps", ["layerIds", "layers"]),
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;

@@ -1,7 +1,7 @@
 import {search, setGazetteerUrl} from "@masterportal/masterportalapi/src/searchAddress";
 import {Point} from "ol/geom.js";
 import {sortObjectsByNestedAttributes} from "../../../../src/utils/sortObjects";
-import mapCollection from "../../../../src/core/dataStorage/mapCollection.js";
+import mapCollection from "../../../../src/core/maps/mapCollection.js";
 
 export default {
     /**
@@ -36,7 +36,7 @@ export default {
      */
     searchStreets ({rootGetters, dispatch}, {input, layer}) {
         search(input, {
-            map: mapCollection.getMap(rootGetters["Map/mapId"], rootGetters["Map/mapMode"]),
+            map: mapCollection.getMap(rootGetters["Maps/mode"]),
             searchStreets: true
         }, true).then(streets => {
             const sortedStreetNames = streets.map(street => street.name).sort();
@@ -91,7 +91,7 @@ export default {
         }
 
         search(streetName, {
-            map: mapCollection.getMap(rootGetters["Map/mapId"], rootGetters["Map/mapMode"]),
+            map: mapCollection.getMap(rootGetters.mode),
             searchStreets: true,
             searchHouseNumbers: true
         }).then(response => {
@@ -165,7 +165,7 @@ export default {
      */
     searchRegionalPrimarySchool ({commit, rootGetters}, address) {
         search(address, {
-            map: mapCollection.getMap(rootGetters["Map/mapId"], rootGetters["Map/mapMode"]),
+            map: mapCollection.getMap(rootGetters["Maps/mode"]),
             searchAddress: true
         }).then(response => {
             commit("setRegionalPrimarySchool", response[0].properties.grundschulnr + "-0");

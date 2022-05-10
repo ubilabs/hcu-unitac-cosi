@@ -83,11 +83,6 @@ describe("addons/geoAnalyze/components/GeoAnalyzeResultBuilding.vue", () => {
         expect(spy.calledTwice).to.be.true;
     });
 
-    it("should call the function 'removePolygonMarker before component destroyed", async () => {
-        wrapper.destroy();
-        expect(spyDestroy.calledOnce).to.be.true;
-    });
-
     it("should render the correct values of the population", () => {
         const spanElements = wrapper.findAll("span");
 
@@ -138,4 +133,8 @@ describe("addons/geoAnalyze/components/GeoAnalyzeResultBuilding.vue", () => {
         expect(tdElements.at(15).text()).to.equal(results[0].dachform);
     });
 
+    it("should call the function 'removePolygonMarker before component destroyed", async () => {
+        wrapper.destroy();
+        expect(spyDestroy.calledOnce).to.be.true;
+    });
 });

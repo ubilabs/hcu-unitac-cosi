@@ -38,13 +38,11 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
             }
         };
         rootGetters = {
-            "Map/ol2DMap": {
-                getView: () => ({
-                    getProjection: () => ({
-                        getCode: () => "EPSG:25832"
-                    }),
-                    getCenter: sinon.stub
-                })
+            "Maps/getView": {
+                getProjection: () => ({
+                    getCode: () => "EPSG:25832"
+                }),
+                getCenter: sinon.stub
             },
             "MapMarker/markerPoint": {
                 id: "marker_point_layer",
