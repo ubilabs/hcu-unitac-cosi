@@ -180,7 +180,7 @@ $background_color_1: rgba(0, 0, 0,.5);
             }
             &:hover {
                 background-color: darken($accent_hover, 5%);
-                color: $primary_red_contrast;
+                color: $primary_grey_contrast;
                 cursor: pointer;
                 button.open span {
                     border-right: 1px solid white;

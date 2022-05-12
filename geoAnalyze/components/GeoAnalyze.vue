@@ -334,7 +334,7 @@ export default {
                 <hr>
                 <form class="pull-right">
                     <button
-                        class="btn btn-lgv-grey"
+                        class="btn btn-secondary"
                         type="button"
                         @click="getAnalyzeData(geometry, true)"
                     >

@@ -2703,7 +2703,7 @@ export default {
                                 :download="file"
                             >
                                 <button
-                                    class="btn btn-sm btn-block btn-lgv-grey"
+                                    class="btn btn-sm btn-block btn-secondary"
                                     type="button"
                                     :disabled="disableFileDownload"
                                     @click="setDownloadFeatures"
@@ -2732,7 +2732,7 @@ export default {
     .download-container {
         margin-top: 14px;
     }
-    .btn-lgv-grey {
+    .btn-secondary {
         float: right;
         width: 206px;
     }

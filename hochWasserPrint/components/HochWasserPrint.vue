@@ -560,7 +560,7 @@ export default {
                         <div class="col-sm-6">
                             <button
                                 type="button"
-                                class="btn btn-lgv-grey btn-block preview"
+                                class="btn btn-secondary btn-block preview"
                                 @click="togglePrintButton"
                                 @keydown.enter="togglePrintButton"
                             >
@@ -570,7 +570,7 @@ export default {
                         <div class="col-sm-6">
                             <button
                                 type="button"
-                                class="btn btn-lgv-grey btn-block print"
+                                class="btn btn-secondary btn-block print"
                                 :disabled="printDisabled"
                                 @click="print"
                             >
