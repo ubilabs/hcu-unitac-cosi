@@ -2722,6 +2722,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "~variables";
+
     input[type="checkbox"] {
         margin-top: 0;
     }
@@ -2753,7 +2755,7 @@ export default {
         border: 1px solid #cdcdcd;
     }
     .button:hover {
-        background-color: #FFFFFF;
+        background-color: $white;
         color: black;
         border: 1px solid #e7e7e7;
     }
@@ -2769,7 +2771,7 @@ export default {
         width: 206px;
     }
     .tm-btn:hover {
-        background-color: #FFFFFF;
+        background-color: $white;
         color: black;
         border: 1px solid #e7e7e7;
     }

@@ -209,7 +209,7 @@ export default {
     }
 
     .upload-button-wrapper {
-        color: #FFFFFF;
+        color: $white;
         background-color: $secondary_focus;
         display: block;
         text-align:center;
@@ -232,7 +232,7 @@ export default {
     }
 
     .drop-area-fake {
-        background-color: #FFFFFF;
+        background-color: $white;
         border-radius: 12px;
         border: 2px dashed $accent;
         padding:24px;
@@ -243,7 +243,7 @@ export default {
             border-color:transparent;
 
             p.caption {
-                color:#FFFFFF;
+                color:$white;
             }
         }
 

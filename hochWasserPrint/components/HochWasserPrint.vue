@@ -585,6 +585,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "~variables";
+
 .tool-window .col-sm-4{
     text-align: center;
 }
@@ -638,7 +640,7 @@ export default {
         width: 375px;
         top: 10px;
         z-index: 10;
-        background: #fff;
+        background: $white;
         border: 1px solid #555;
         padding: 5px;
     }

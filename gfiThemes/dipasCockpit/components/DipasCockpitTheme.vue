@@ -110,6 +110,7 @@ export default {
 
 
 <style lang="scss">
+@import "~variables";
 
 .vue-tool-content-body {
     border-radius: 15px;
@@ -132,7 +133,7 @@ export default {
         width: fit-content;
         padding: 6px 8px;
         margin: 10px 0px;
-        color:#FFFFFF;
+        color: $white;
 
         .dipas-cockpit-location-icon {
             img {
@@ -210,7 +211,7 @@ export default {
             font-weight: normal;
             background-color: #003063;
             border-radius: 15px;
-            color: #FFFFFF;
+            color: $white;
             padding: 6px 15px;
             text-overflow: ellipsis;
             height: 28px;

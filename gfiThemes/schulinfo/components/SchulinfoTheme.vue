@@ -226,8 +226,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "~/css/mixins.scss";
+@import "~variables";
 
-$color_1: #fff;
 $color_2: #fec44f;
 $background_color_1: rgba(227, 227, 227, 0.5);
 $background_color_2: rgba(0,0,0,.5);
@@ -271,7 +271,7 @@ $background_color_2: rgba(0,0,0,.5);
     }
     // NOTE: This class gets added to the button once it is selected
     .btn-select {
-        color: $color_1;
+        color: $white;
         background-color: $background_color_2;
     }
     table {

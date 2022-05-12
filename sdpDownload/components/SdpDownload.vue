@@ -278,17 +278,18 @@ export default {
 </style>
 
 <style lang="scss">
-$color_1: #fff;
+@import "~variables";
+
     #circle-overlay {
     position: absolute;
     background: rgba(51, 153, 204, 0.8);
-    color: $color_1;
+    color: $white;
     padding: 4px 8px;
     }
     #tooltip-overlay {
         position: absolute;
         background: rgba(51, 153, 204, 0.8);
-        color: $color_1;
+        color: $white;
         padding: 4px 8px;
     }
 </style>
