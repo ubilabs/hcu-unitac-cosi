@@ -145,23 +145,23 @@ export default {
         .dipas-gfi-thema {
             font-family: $font_family_default;
             font-size: 14px;
-            color: #808080;
+            color: $dark_grey;
             text-transform: uppercase;
         }
         .dipas-gfi-name {
             font-family: $font_family_accent;
             font-size: 18px;
-            color: #003063;
+            color: $primary;
             padding-bottom: 16px;
 
             a {
-                color: #003063;
+                color: $dark_blue;
             }
         }
         .dipas-gfi-description {
             font-family: $font_family_default;
             font-size: 14px;
-            color: #808080;
+            color: $dark_grey;
         }
 
         .dipas-gfi-icon img{
@@ -175,7 +175,7 @@ export default {
             border-radius: 2px;
             margin-top: 20px;
             padding: 7px 8px 4px;
-            background-color: #E40613;
+            // background-color: $light_grey;
             border-color: #800040;
             color: $accent_contrast;
             font-family: $font_family_accent;

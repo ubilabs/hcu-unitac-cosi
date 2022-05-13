@@ -832,6 +832,7 @@ export default {
 
 <style lang="scss" scoped>
     @import "~/css/mixins.scss";
+    @import "~variables";
 
     #CommuterFlows {
         button {
@@ -885,10 +886,10 @@ export default {
             padding: 0;
             margin: 0;
             tbody tr:nth-child(odd) {
-                background-color: #fdfdfd;
+                background-color: darken($white, 10%);
             }
             tbody tr:nth-child(odd) {
-                background-color: #f8f8f8;
+                background-color: darken($white, 20%);
             }
             tr {
                 width: 100%;
