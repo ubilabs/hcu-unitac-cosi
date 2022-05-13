@@ -175,7 +175,7 @@ export default {
             border-radius: 2px;
             margin-top: 20px;
             padding: 7px 8px 4px;
-            // background-color: $light_grey;
+            background-color: $light_grey;
             border-color: #800040;
             color: $accent_contrast;
             font-family: $font_family_accent;

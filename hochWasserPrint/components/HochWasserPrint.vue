@@ -630,7 +630,7 @@ export default {
         &.grey-icon {
             cursor: inherit;
             span {
-                color: #a5a5a5;
+                color: $light_grey;
             }
         }
     }

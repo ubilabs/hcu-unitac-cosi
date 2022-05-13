@@ -2751,7 +2751,7 @@ export default {
     }
     button {
         border-radius: 3px;
-        background-color: #f2f2f2;
+        background-color: $secondary_table_style;
         border: 1px solid #cdcdcd;
     }
     .button:hover {
@@ -2761,7 +2761,7 @@ export default {
     }
     .tm-btn {
         border-radius: 3px;
-        background-color: #f2f2f2;
+        background-color: $secondary_table_style;
         color: black;
         padding: 2px;
         font-size: 12px;
@@ -2773,10 +2773,10 @@ export default {
     .tm-btn:hover {
         background-color: $white;
         color: black;
-        border: 1px solid #e7e7e7;
+        border: 1px solid $secondary_table_style;
     }
     .tm-btn:active {
-        background-color: #e6e6e6;
+        background-color: lighten($secondary_table_style, 15%);
     }
     .tool-window-vue {
         max-width: 680px !important;
