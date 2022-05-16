@@ -56,7 +56,7 @@ export default {
                         alt="Icon for proceeding status"
                     >
                 </span>
-                <span>{{ attributes.status }}</span>
+                <span class="dipas-cockpit-status-label">{{ attributes.status }}</span>
             </div>
             <span class="dipas-cockpit-dateRange">
                 {{ dateStart }} - {{ dateEnd }}
@@ -139,11 +139,18 @@ export default {
                 height: 18px;
             }
         }
+
+        .dipas-cockpit-status-label {
+            position: relative;
+            top: 1px;
+        }
     }
 
     .dipas-cockpit-dateRange {
         margin: 18px 10px;
         font-size: 10px;
+        position: relative;
+        top: 1px;
     }
 
     .dipas-cockpit-title {
