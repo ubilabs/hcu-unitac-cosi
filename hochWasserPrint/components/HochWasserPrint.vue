@@ -641,7 +641,7 @@ export default {
         top: 10px;
         z-index: 10;
         background: $white;
-        border: 1px solid #555;
+        border: 1px solid $dark_grey;
         padding: 5px;
     }
     .col-sm-4 {

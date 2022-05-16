@@ -195,6 +195,7 @@ export default {
 
 <style lang="scss" scoped>
     @import "~/css/mixins.scss";
+    @import "~variables";
 
     .h-seperator {
         margin:12px 0 12px 0;

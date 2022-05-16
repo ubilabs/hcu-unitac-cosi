@@ -129,7 +129,7 @@ export default {
     }
 
     .dipas-cockpit-proceeding-status {
-        background-color: #003063;
+        background-color: $dark_blue;
         width: fit-content;
         padding: 6px 8px;
         margin: 10px 0px;
@@ -157,7 +157,7 @@ export default {
     .dipas-cockpit-title {
         font-size: 16px;
         font-weight: bold;
-        color: #003063;
+        color: $dark_blue;
     }
 
     .dipas-cockpit-themes {
@@ -187,7 +187,7 @@ export default {
 
     a.dipas-cockpit-proceedingLink {
         font-size: 10px;
-        color: #003063;
+        color: $dark_blue;
         text-decoration: underline;
         cursor: pointer;
         display: block;
@@ -209,7 +209,7 @@ export default {
         .dipas-cockpit-document {
             font-size: 10px;
             font-weight: normal;
-            background-color: #003063;
+            background-color: $dark_blue;
             border-radius: 15px;
             color: $white;
             padding: 6px 15px;
