@@ -503,7 +503,6 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-        width: 450px;
         .first{
             padding-top: 5px;
         }

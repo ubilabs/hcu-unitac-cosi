@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import BorisVueComponent from "../../../components/BorisVue.vue";
 import BorisVue from "../../../store/indexBorisVue";
-import {expect, assert} from "chai";
+import {expect} from "chai";
 import sinon from "sinon";
 import Print from "../../../../../src/modules/tools/print/components/PrintMap.vue";
 
@@ -19,8 +19,8 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
                 tools: {
                     children: {
                         borisVue: {
-                            "name": "Bodenrichtwert-Informationen",
-                            "glyphicon": "glyphicon-screenshot",
+                            "name": "common:menu.tools.borisVue",
+                            "icon": "bi-vinyl",
                             "active": true,
                             "renderToWindow": false
                         }
@@ -29,33 +29,38 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             }
         }
     };
-    let store, wrapper, destroyApiOrig, initApiOrig, setPositionOrig;
+    let store, wrapper, originalMatchPolygonFeatureWithLanduse;
 
     beforeEach(() => {
+        originalMatchPolygonFeatureWithLanduse = BorisVue.actions.matchPolygonFeatureWithLanduse;
+        BorisVue.actions.matchPolygonFeatureWithLanduse = sinon.spy();
+
         store = new Vuex.Store({
             namespaces: true,
             modules: {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        BorisVue
-                    }
-                    // Print: {
-                    //     namespaced: true,
-                    //     getters: ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]
-                    // }
+                        BorisVue,
+                        Print: {
+                            namespaced: true,
+                            getters: {printFileReady: () => sinon.stub(), 
+                                    fileDownloadUrl: () => sinon.stub(), 
+                                    filename: () => sinon.stub(), 
+                                    printStarted: () => sinon.stub(), 
+                                    progressWidth: () => sinon.stub()}
+                        }
+                    },
+                    getters: {mobile: () => false}
                 }
-                // Map: {
-                //     namespaced: true,
-                //     getters: {clickCoord: () => [100, 200]}
-                // }
             },
             state: {
                 configJson: mockConfigJson
             }
         });
-    });
+    }),
     afterEach(function () {
+        BorisVue.actions.matchPolygonFeatureWithLanduse = originalMatchPolygonFeatureWithLanduse;
         sinon.restore();
         if (wrapper) {
             wrapper.destroy();
@@ -66,7 +71,7 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         it("renders BorisVue", () => {
             store.state.Tools.BorisVue.active = true;
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
-            // console.log(wrapper.html());
+            console.log(wrapper.html());
             expect(wrapper.find("#boris").exists()).to.be.true;
         });
         it("do not render BorisVue if not active", () => {
@@ -86,10 +91,8 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             expect(wrapper.find(".form-check-label").exists()).to.be.true;
             // check if translation works
             expect(wrapper.find(".form-check-label").text()).to.equals("additional:modules.tools.boris.toggleStripesLayer");
-            // FRAGE soll hier der input-change getestet werden: toggleStripesLayer
-            //
-            // Fragezeichen-Glyphicon vorhanden?
-            expect(wrapper.find(".glyphicon", ".glyphicon-question-sign").exists()).to.be.true;
+            // Fragezeichen-Icon vorhanden?
+            expect(wrapper.find(".bootstrap-icon", "bi-question-circle-fill").exists()).to.be.true;
             // die div mit dem Info-Text ist zunächst false --> warum funktioniert es nicht? das ist doch erst vorhanden, wenn in textIds die 1 vorhanden ist?
             expect(wrapper.find(".info-text").exists()).to.be.false;
         });
@@ -105,7 +108,7 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             store.commit("Tools/BorisVue/selectedPolygon", {polygonKey: "polygonValue"});
             // store.state.Tools.BorisVue.selectedPolygon.polygon3s = "polygonData";
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
-            expect(wrapper.find(".form-group", ".col-xs-12", "first").exists()).to.be.true;
+            expect(wrapper.find(".form-group", ".col-12", "first").exists()).to.be.true;
         });
     });
 
@@ -140,24 +143,34 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         });
 
     });
+    describe("selectedLanduse watcher", () => {
+
+        it("selectedLanduse shall change buttonValue and call matchPolygonFeatureWithLanduse", () => {
+            const oldValue = "BH Bürohäuser",
+                newValue = "A Acker";
+            
+                store.state.Tools.BorisVue.active = true;
+                store.state.Tools.BorisVue.buttonValue = "liste";
+                wrapper = shallowMount(BorisVueComponent, {store, localVue});
+                wrapper.vm.$options.watch.selectedLanduse.call(wrapper.vm, newValue, oldValue);
+
+                expect(store.state.Tools.BorisVue.buttonValue).to.equals("info");
+                expect(BorisVue.actions.matchPolygonFeatureWithLanduse.calledOnce).to.equal(true);
+        });
+    });
+    describe("toggleInfoText method", () => {
+        it("toggleInfoText", () => {
+            store.state.Tools.BorisVue.active = true;
+            store.state.Tools.BorisVue.textIds = ["id1", "id2"];
+            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            wrapper.vm.toggleInfoText("id3");
+
+            expect(store.state.Tools.BorisVue.textIds).to.have.lengthOf(3);
+            expect(store.state.Tools.BorisVue.textIds).that.includes("id3");
+        });
+    });
+
 
 });
 
-// describe("ADDONS: app", function () {
-//     const result = "hello world";
 
-//     it("helloWorldAssert", function () {
-//         // assert
-//         assert.equal(result, "hello world");
-//     });
-
-//     it("helloWorldExpect", function () {
-//         // expect
-//         expect(result).to.equal("hello world");
-//     });
-
-//     it("helloWorldTypeString", function () {
-//         // typeof string
-//         expect(result).to.be.a("string");
-//     });
-// });

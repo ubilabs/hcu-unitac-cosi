@@ -24,8 +24,8 @@ export default {
 </script>
 
 <template>
-    <div>
-        <div v-if="buttonValue === 'info'">
+    <div id="information-component">
+        <div class="information-info" v-if="buttonValue === 'info'">
             <h4>{{ title }}</h4>
             <dl>
                 <DetailComponent
@@ -85,7 +85,7 @@ export default {
                 </div>
             </dl>
         </div>
-        <div v-if="buttonValue === 'lage'">
+        <div  class="information-position" v-if="buttonValue === 'lage'">
             <h4>{{ title }}</h4>
             <dl>
                 <DetailComponent
