@@ -49,7 +49,7 @@ export default {
     <div id="oblique-control">
         <component
             :is="component"
-            icon-name="picture"
+            icon-name="image"
             :class="[component ? 'control' : 'Table']"
             :title="$t(title)"
             :disabled="false"
