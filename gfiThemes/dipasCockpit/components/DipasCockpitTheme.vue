@@ -118,7 +118,7 @@ export default {
 
 .dipas-cockpit-theme {
      max-width: 615px;
-     color: #212529;
+     color: $dark_grey;
      font-family: Roboto, sans-serif;
      padding-left: 24px;
      padding-right: 15px;
@@ -162,7 +162,7 @@ export default {
 
     .dipas-cockpit-themes {
         font-size: 14px;
-        color: #212529;
+        color: $dark_grey;
         margin: 3px 0px;
 
         span.dipas-cockpit-themes-key {

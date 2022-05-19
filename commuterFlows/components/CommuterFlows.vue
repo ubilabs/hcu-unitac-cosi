@@ -865,7 +865,7 @@ export default {
     hr {
         margin-top: 10px;
         margin-bottom: 10px;
-        border-top: solid #ddd 1px;
+        border-top: solid $light_grey 1px;
     }
     .col-form-label {
         padding-left: 4px;
@@ -938,8 +938,8 @@ export default {
             z-index: 1;
             opacity: 1;
             border-radius: 4px;
-            border: solid 1px #000;
-            background-color: white;
+            border: solid 1px $black;
+            background-color: $white;
             padding: 5px;
         }
         .tooltipRight {

@@ -567,7 +567,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -2752,17 +2752,17 @@ export default {
     button {
         border-radius: 3px;
         background-color: $secondary_table_style;
-        border: 1px solid #cdcdcd;
+        border: 1px solid $light_grey;
     }
     .button:hover {
         background-color: $white;
-        color: black;
-        border: 1px solid #e7e7e7;
+        color: $black;
+        border: 1px solid $secondary_table_style;
     }
     .tm-btn {
         border-radius: 3px;
         background-color: $secondary_table_style;
-        color: black;
+        color: $black;
         padding: 2px;
         font-size: 12px;
         cursor: pointer;
@@ -2772,7 +2772,7 @@ export default {
     }
     .tm-btn:hover {
         background-color: $white;
-        color: black;
+        color: $black;
         border: 1px solid $secondary_table_style;
     }
     .tm-btn:active {
