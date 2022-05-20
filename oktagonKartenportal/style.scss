@@ -1,6 +1,5 @@
 @import "~/css/mixins.scss";
-
-$font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
+@import "~variables";
 
 .oktagon {
     .close, #oktagonCloseButton, #oktagonSubmitButton:not([disabled])  {
@@ -14,12 +13,12 @@ $font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
     }
     .header {
         width: 100%;
-        border-bottom: 1px solid rgb(229,229,229);
+        border-bottom: 1px solid $white;
         padding: 10px;
     }
     .tool-name {
         padding-left: 15px;
-        font-family: $font_family_1;
+        font-family: $font_family_accent;
         font-size: 16px;
     }
 }

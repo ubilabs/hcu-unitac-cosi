@@ -66,11 +66,11 @@ export default {
 
 <style lang="scss" scoped>
 @import "~variables";
-$font_family_1: "MasterPortalFont Bold","Arial Narrow",Arial,sans-serif;
+
 $background_color_1: rgb(229, 229, 229);
 
 .highlight {
-    font-family: $font_family_1;
+    font-family: $font_family_accent;
     font-size: 15px;
 }
 
