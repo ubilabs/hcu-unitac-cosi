@@ -4,7 +4,6 @@ import getComponent from "../../../src/utils/getComponent";
 import {mapActions, mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersHochWasserPrint";
 import mutations from "../store/mutationsHochWasserPrint";
-import mapCollection from "../../../src/core/maps/mapCollection";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import getVisibleLayer from "../utils/getVisibleLayer";
 import {Vector} from "ol/layer.js";
@@ -24,7 +23,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/HochWasserPrint", Object.keys(getters)),
-        ...mapGetters("Map", ["scales, size", "scale"]),
+        ...mapGetters("Maps", ["scales, size", "scale", "get2DMap"]),
         currentScale: {
             get () {
                 return this.$store.state.Tools.HochWasserPrint.currentScale;
@@ -145,7 +144,7 @@ export default {
          * @param {event} event the click event
          * @returns {void}
          */
-        scaleChanged (event) {
+        async scaleChanged (event) {
             const scale = parseInt(event?.target?.value, 10),
                 resolution = {
                     "scale": scale,
@@ -157,7 +156,7 @@ export default {
             this.setIsScaleSelectedManually(true);
             this.getOptimalResolution(resolution);
             this.updateCanvasLayer();
-            mapCollection.getMap("ol", "2D").render();
+            await this.get2DMap.render();
         },
         /**
          * Returns the "beautified" scale to be shown in the dropdown box

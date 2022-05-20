@@ -4,7 +4,6 @@ import {expect} from "chai";
 import HochWasserPrintComponent from "../../../components/HochWasserPrint.vue";
 import HochWasserPrint from "../../../store/indexHochWasserPrint";
 import sinon from "sinon";
-import mapCollection from "../../../../../src/core/maps/mapCollection.js";
 
 const localVue = createLocalVue();
 
@@ -27,19 +26,7 @@ describe("src/modules/tools/HochWasserPrint/components/HochWasserPrint.vue", () 
             }
         };
     let store,
-        wrapper,
-        map = null;
-
-    before(() => {
-        map = {
-            id: "ol",
-            mode: "2D",
-            render: sinon.spy()
-        };
-
-        mapCollection.clear();
-        mapCollection.addMap(map, "ol", "2D");
-    });
+        wrapper;
 
     beforeEach(() => {
         store = new Vuex.Store({
