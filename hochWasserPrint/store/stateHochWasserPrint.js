@@ -92,6 +92,7 @@ const state = {
     visibleLayer: [],
     invisibleLayer: [],
     visibleLayerList: [],
+    printLayerList: [],
     maskStarted: false,
     zoomLevel: null,
     hintInfo: "",

@@ -235,7 +235,8 @@ export default {
             const hwsMap = this.hwsLayer.find(element => {
                     return element.printId === val;
                 }),
-                visiblelayer = Radio.request("ModelList", "getModelsByAttributes", {isVisibleInMap: true});
+                visiblelayer = Radio.request("ModelList", "getModelsByAttributes", {isVisibleInMap: true}),
+                printLayerList = [];
 
             // because of a bug in mp we must deactivate all layers first. Otherwhile the layer order will be corrupted.
             visiblelayer.forEach(layer => {
@@ -249,7 +250,11 @@ export default {
                     if (layer) {
                         layer.setIsSelected(true);
                     }
+
+                    printLayerList.push(layer?.layer);
                 });
+
+                this.setPrintLayerList(printLayerList);
             }
         },
         /**

@@ -7,7 +7,7 @@
   "modules": {
     "tools": {
       "hochWasserPrint": {
-        "title": "Menü Hochwassergefahrenkarten und Hochwasserrisikokarten",
+        "title": "Menü Hochwassergefahrenkarten und Hochwasserrisikokarten (nur für Daten aus 2. Zyklus)",
         "printScale": "Print scale",
         "print": "Print",
         "layoutLabel": "Layout",
