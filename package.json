@@ -7,10 +7,11 @@
     "type": "git",
     "url": "https://bitbucket.org/geowerkstatt-hamburg/addons.git"
   },
-  "scripts": {
-    "versionHotfix": "npm version patch && git push --tags",
-    "versionMinor": "npm version minor && git push --tags",
-    "versionMajor": "npm version major && git push --tags",
+  "scripts": {,
+    "versionHotfix": "npm version patch && npm run versionLatest && git push --tags",
+    "versionMinor": "npm version minor && npm run versionLatest && git push --tags",
+    "versionMajor": "npm version major && npm run versionLatest && git push --tags",
+    "versionLatest": "git push origin --delete latest --no-verify && git tag latest",
     "postinstall": "cd cosi && npm install && cd .. && cd qr && npm install && cd .. && cd sdpDownload && npm install",
     "prePushHook": "cd .. && npm run prePushHook",
     "prepare": "husky install"
