@@ -23,7 +23,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/HochWasserPrint", Object.keys(getters)),
-        ...mapGetters("Maps", ["scales, size", "scale", "get2DMap"]),
+        ...mapGetters("Maps", ["scales, size", "scale"]),
         currentScale: {
             get () {
                 return this.$store.state.Tools.HochWasserPrint.currentScale;
@@ -156,7 +156,7 @@ export default {
             this.setIsScaleSelectedManually(true);
             this.getOptimalResolution(resolution);
             this.updateCanvasLayer();
-            await this.get2DMap.render();
+            await mapCollection.getMap("2D").render();
         },
         /**
          * Returns the "beautified" scale to be shown in the dropdown box

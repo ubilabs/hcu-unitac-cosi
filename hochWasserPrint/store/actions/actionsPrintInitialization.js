@@ -141,7 +141,7 @@ export default {
      * @param {Object} param.dispatch the dispatch
      * @returns {void}
      */
-    togglePostrenderListener: function ({state, dispatch, commit, rootGetters}) {
+    togglePostrenderListener: function ({state, dispatch, commit}) {
         const foundVectorTileLayers = [];
 
         getVisibleLayer(state.printMapMarker);
@@ -171,7 +171,7 @@ export default {
             }
         }
         dispatch("getPrintMapScales");
-        rootGetters["Maps/get2DMap"].render();
+        mapCollection.getMap("2D").render();
     },
 
     /**

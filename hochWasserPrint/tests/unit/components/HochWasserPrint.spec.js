@@ -26,9 +26,15 @@ describe("src/modules/tools/HochWasserPrint/components/HochWasserPrint.vue", () 
             }
         };
     let store,
-        wrapper;
+        wrapper,
+        map;
 
     beforeEach(() => {
+        map = {
+            id: "ol",
+            mode: "2D",
+            render: sinon.stub()
+        };
         store = new Vuex.Store({
             namespaced: true,
             modules: {
@@ -38,7 +44,7 @@ describe("src/modules/tools/HochWasserPrint/components/HochWasserPrint.vue", () 
                         HochWasserPrint
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     getters: mockMapGetters,
                     actions: mockMapActions
@@ -51,6 +57,8 @@ describe("src/modules/tools/HochWasserPrint/components/HochWasserPrint.vue", () 
                 uiStyle: sinon.stub()
             }
         });
+        mapCollection.clear();
+        mapCollection.addMap(map, "2D");
 
         store.commit("Tools/HochWasserPrint/setActive", true);
 

@@ -1,5 +1,4 @@
 import importLayers from "./addWMSRemotely.js";
-import mapCollection from "../../src/core/maps/mapCollection.js";
 
 Radio.channel("addLayerRemotely").on({
     /**
