@@ -2,7 +2,6 @@ import axios from "axios";
 import helpers from "../utils/helpers";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
-import mapCollection from "../../../src/core/dataStorage/mapCollection";
 import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
 import WPS from "../../../src/api/wps";
 
@@ -40,8 +39,9 @@ const actions = {
     handleUrlParameters ({rootState, dispatch, commit}) {
         const brwId = rootState.urlParams?.brwId,
             brwLayerName = rootState.urlParams?.brwLayerName,
-            center = rootState.urlParams && rootState.urlParams["Map/center"],
+            center = rootState.urlParams && rootState.urlParams["Maps/center"],
             processFromParametricUrl = true;
+
 
         if (brwId && brwLayerName && center) {
             commit("setIsProcessFromParametricUrl", processFromParametricUrl);
@@ -51,10 +51,10 @@ const actions = {
                 center: center});
 
             dispatch("switchLayer", brwLayerName);
-            dispatch("Map/setCenter", center, {root: true});
+            dispatch("Maps/setCenter", center, {root: true});
             dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
-        console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
+        // console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
     },
     /**
      * Simulates landuse selection when parametric URL is being used
@@ -191,12 +191,12 @@ const actions = {
      * @param {Number[]} [center] center coordinate of faked gfi
      * @returns {void}
      */
-    requestGFI ({state, dispatch}, {event, processFromParametricUrl, center}) {
+    requestGFI ({state, dispatch, rootGetters}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource(),
                 coordinates = processFromParametricUrl ? center : event.coordinate,
-                map = processFromParametricUrl ? mapCollection.getMap("ol", "2D") : event.map,
+                map = processFromParametricUrl ? rootGetters["Maps/get2DMap"] : event.map,
                 mapView = map.getView(),
                 url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
 
