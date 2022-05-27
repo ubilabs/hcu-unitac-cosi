@@ -34,7 +34,7 @@ export default {
      */
     async printRoute ({state, rootGetters, dispatch}, getResponse) {
         const routeElements = state.routeElements,
-            visibleLayerList = sortVisibleLayerList(state.layerName, rootGetters["Maps/visibleLayerList"]),
+            visibleLayerList = sortVisibleLayerList(state.layerName, rootGetters["Maps/getVisibleLayerList"]),
             attributes = {
                 "layout": state.printLayout,
                 "outputFormat": state.printOutputFormat,
