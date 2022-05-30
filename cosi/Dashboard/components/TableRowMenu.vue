@@ -204,6 +204,7 @@ export default {
                                         </template>
 
                                         <v-list-item
+                                            id="add"
                                             dense
                                             :disabled="!fields.A || !fields.B"
                                             @click="$emit('add')"
@@ -216,6 +217,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="subtract"
                                             dense
                                             :disabled="!fields.A || !fields.B"
                                             @click="$emit('subtract')"
@@ -228,6 +230,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="multiply"
                                             dense
                                             :disabled="!fields.A || !fields.B"
                                             @click="$emit('multiply')"
@@ -240,6 +243,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="divide"
                                             dense
                                             :disabled="!fields.A || !fields.B"
                                             @click="$emit('divide')"
@@ -252,6 +256,7 @@ export default {
                                             </v-list-item-content>
                                         </v-list-item>
                                         <v-list-item
+                                            id="sum"
                                             dense
                                             :disabled="selectedItems.length === 0"
                                             @click="$emit('sum')"
@@ -316,6 +321,7 @@ export default {
                                         <v-list-item
                                             id="scatter-chart"
                                             dense
+                                            :disabled="!fields.A || !fields.B"
                                             @click="$emit('correlate')"
                                         >
                                             <v-list-item-icon>

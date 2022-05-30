@@ -8,7 +8,9 @@ import Vuetify from "vuetify";
 import Vue from "vue";
 import mapping from "./mock.mapping.json";
 import selectedDistrictLevel from "./mock.districtLevel";
-import testStandardChartDataset from "./test.chartDataset.0.json";
+import testStandardChartDataset from "./test.chartDataset.0";
+import testScatterChartDataset from "./test.chartDataset.1";
+import testMultiChartDataset from "./test.chartDataset.2";
 
 config.mocks.$t = key => key;
 Vue.use(Vuetify);
@@ -35,7 +37,7 @@ before(() => {
 });
 
 describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
-    let store, vuetify, wrapper, selectedDistrictNamesStub;
+    let store, vuetify, wrapper, selectedDistrictLabelsStub, selectedDistrictNamesStub;
 
     const factory = {
         getMount: (mountFn = mount) => {
@@ -57,6 +59,7 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
     beforeEach(async () => {
         vuetify = new Vuetify();
         selectedDistrictNamesStub = sinon.stub().returns(["Wolkenkuckucksheim"]);
+        selectedDistrictLabelsStub = sinon.stub().returns(["Wolkenkuckucksheim (Statgebiet)"]);
         store = new Vuex.Store({
             namespaced: true,
             modules: {
@@ -107,14 +110,19 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
                             getters: {
                                 selectedDistrictLevel: () => selectedDistrictLevel,
                                 selectedDistrictNames: selectedDistrictNamesStub,
+                                selectedDistrictLabels: selectedDistrictLabelsStub,
                                 keyOfAttrNameStats: () => "statgebiet",
                                 mapping: () => mapping,
                                 loadend: s => s.loadend
                             },
                             mutations: {
+                                addCategoryToMapping: sinon.stub(),
                                 setLoadend (s, p) {
                                     s.loadend = p;
                                 }
+                            },
+                            actions: {
+                                updateDistricts: sinon.stub()
                             }
                         },
                         ChartGenerator: {
@@ -299,7 +307,7 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
         });
     });
 
-    describe.only("Chart functions", () => {
+    describe("Chart functions", () => {
         it("should render standard charts", async () => {
             const spyChannelGraphData = sinon.spy(Dashboard.methods, "channelGraphData");
 
@@ -313,7 +321,7 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             expect(spyChannelGraphData.calledOnce).to.be.true;
             expect(spyChannelGraphData.getCall(0).args[0]).to.deep.equal(testStandardChartDataset);
         });
-        it.only("should render scatterplot", async () => {
+        it("should render scatterplot", async () => {
             const spyChannelGraphData = sinon.spy(Dashboard.methods, "channelGraphData");
 
             await factory.initialize();
@@ -331,7 +339,7 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             await wrapper.find("#scatter-chart").trigger("click");
 
             expect(spyChannelGraphData.calledOnce).to.be.true;
-            // expect(spyChannelGraphData.getCall(0).args[0]).to.deep.equal(testStandardChartDataset);
+            expect(spyChannelGraphData.getCall(0).args[0]).to.deep.equal(testScatterChartDataset);
         });
         it("should not render scatterplot when A and B not set", async () => {
             const spyChannelGraphData = sinon.spy(Dashboard.methods, "channelGraphData");
@@ -349,7 +357,7 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             });
             expect(spyChannelGraphData.callCount).to.equal(0);
         });
-        it("should not render chart for multiple rows", async () => {
+        it("should render chart for multiple rows", async () => {
             const spyChannelGraphData = sinon.spy(Dashboard.methods, "channelGraphData");
 
             await factory.initialize();
@@ -361,7 +369,7 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             await wrapper.find("#chart-for-multiple-rows").trigger("click");
 
             expect(spyChannelGraphData.calledOnce).to.be.true;
-            expect(spyChannelGraphData.getCall(0).args[0]).to.deep.equal(testStandardChartDataset);
+            expect(spyChannelGraphData.getCall(0).args[0]).to.deep.equal(testMultiChartDataset);
         });
         it("should not render chart for multiple rows when no rows selected", async () => {
             const spyChannelGraphData = sinon.spy(Dashboard.methods, "channelGraphData");
@@ -379,6 +387,29 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
     });
 
     describe("Calculation functions", () => {
+        it("create new table item by division", async () => {
+            const spyCalculateAll = sinon.spy(Dashboard.methods, "calculateAll"),
+                spyUpdateDistricts = sinon.spy(Dashboard.methods, "updateDistricts");
 
+            await factory.initialize();
+
+            // act
+            await wrapper.findAll(".open-burger-menu").at(0).trigger("click");
+            await wrapper.findAll(".activator").at(0).trigger("click");
+            await wrapper.find("#set-field-B").trigger("click");
+
+            await wrapper.findAll(".open-burger-menu").at(1).trigger("click");
+            await wrapper.findAll(".activator").at(3).trigger("click");
+            await wrapper.findAll("#set-field-A").at(1).trigger("click");
+
+            await wrapper.findAll(".activator").at(1).trigger("click");
+            await wrapper.find("#divide").trigger("click");
+            await wrapper.find("#confirm-calc").trigger("click");
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.calculations).to.have.lengthOf(1);
+            expect(spyCalculateAll.callCount).to.equal(1);
+            expect(spyUpdateDistricts.callCount).to.equal(1);
+        });
     });
 });

@@ -124,6 +124,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", [
             "selectedDistrictLevel",
             "selectedDistrictNames",
+            "selectedDistrictLabels",
             "keyOfAttrNameStats",
             "mapping",
             "loadend"
@@ -331,7 +332,7 @@ export default {
         },
 
         getAverageAsString (item, timestamp) {
-            const average = this.getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
+            const average = this.getAverage(item, this.selectedDistrictLabels, timestamp, this.timestampPrefix);
 
             return average.toLocaleString(this.currentLocale);
         },
@@ -340,13 +341,13 @@ export default {
             return Object.fromEntries(
                 item.years.map(timestamp => [
                     this.timestampPrefix + timestamp,
-                    this.getAverage(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
+                    this.getAverage(item, this.selectedDistrictLabels, timestamp, this.timestampPrefix)
                 ])
             );
         },
 
         getTotalAsString (item, timestamp) {
-            const total = this.getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix);
+            const total = this.getTotal(item, this.selectedDistrictLabels, timestamp, this.timestampPrefix);
 
             return total.toLocaleString(this.currentLocale);
         },
@@ -355,7 +356,7 @@ export default {
             return Object.fromEntries(
                 item.years.map(timestamp => [
                     this.timestampPrefix + timestamp,
-                    this.getTotal(item, this.selectedDistrictNames, timestamp, this.timestampPrefix)
+                    this.getTotal(item, this.selectedDistrictLabels, timestamp, this.timestampPrefix)
                 ])
             );
         },
@@ -386,11 +387,14 @@ export default {
                     this.timestampPrefix
                 );
 
-            // console.log(JSON.stringify(chart));
             this.channelGraphData(chart);
         },
 
         renderGroupedCharts () {
+            if (this.selectedItems.length === 0) {
+                return;
+            }
+
             const
                 datasets = this.selectedItems.map(item => ({
                     ...item,
@@ -408,6 +412,10 @@ export default {
         },
 
         renderScatterplot () {
+            if (!(this.fields.B && this.fields.A)) {
+                return;
+            }
+
             const correlation = this.calculateCorrelation(),
                 chart = generateChartForCorrelation(correlation, this.fields.B.category, this.fields.A.category);
 
@@ -787,8 +795,10 @@ export default {
 
                     <template #action="{ attrs }">
                         <v-btn
+                            id="confirm-calc"
                             v-bind="attrs"
                             text
+                            :title="$t('additional:modules.tools.cosi.dashboard.tableRowMenu.calculate')"
                             @click="addCalculation(
                                 calculationData.operation,
                                 {field_A: calculationData.field_A, field_B: calculationData.field_B, selectedItems: calculationData.selectedItems},
@@ -798,6 +808,7 @@ export default {
                             <v-icon>mdi-calculator-variant</v-icon>
                         </v-btn>
                         <v-btn
+                            id="cancel-calc"
                             v-bind="attrs"
                             text
                             @click="calculationDialog = false"

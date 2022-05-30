@@ -29,7 +29,7 @@ export function prepareTableExport (data, districtNames, timestamp, timestampPre
         return null;
     }
     const exportData = data.map(item => {
-        const _item = renameKeys(item, keyMap);
+        const _item = replaceValues(renameKeys(item, keyMap), valuesMap);
 
         for (const col in _item) {
             if (typeof _item[col] === "object") {

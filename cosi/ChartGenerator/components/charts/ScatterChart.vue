@@ -81,7 +81,15 @@ export default {
                 return null;
             }
 
-            return {...fixColor(this.datasets)};
+            const datasets = {...fixColor(this.datasets)};
+
+            for (const dataset of datasets.data.datasets) {
+                if (dataset.type === "line") {
+                    dataset.backgroundColor = rgb(0, 0, 0, 0);
+                }
+            }
+
+            return datasets;
         },
         _options () {
             return deepAssign(this.defaultOptions, this.options);
@@ -99,12 +107,6 @@ export default {
         prepareRendering () {
             if (!this.chartData) {
                 return;
-            }
-
-            for (const dataset of this.chartData.data.datasets) {
-                if (dataset.type === "line") {
-                    dataset.backgroundColor = rgb(0, 0, 0, 0);
-                }
             }
 
             this._options.scales.yAxes[0].scaleLabel.labelString = this.chartData.scaleLabels?.[0];
