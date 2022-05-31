@@ -125,7 +125,4 @@ export default {
 #sidebarloader.loader-is-loading {
     display:block;
 }
-.navbar-nav {
-    flex-direction: row !important;
-}
 </style>
