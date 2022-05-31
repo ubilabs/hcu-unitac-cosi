@@ -126,3 +126,18 @@ export default {
     display:block;
 }
 </style>
+
+<style lang="scss">
+.expandable-navbar {
+    display: flex;
+    align-items: start;
+    .navbar-nav {
+        flex-direction: row;
+        width: auto !important;
+    }
+    .navbar-right {
+        display: flex;
+        justify-content: end;
+    }
+}
+</style>
