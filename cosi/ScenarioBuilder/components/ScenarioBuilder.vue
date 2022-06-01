@@ -88,7 +88,7 @@ export default {
             LoaderOverlay.show();
             this.resetFeature();
 
-            describeFeatureTypeByLayerId(layerMap.layerId)
+            this.describeFeatureTypeByLayerId(layerMap.layerId)
                 .then(desc => {
                     const _desc = desc || this.getDescriptionBySource(layerMap.layerId),
                         required = [],
@@ -167,9 +167,6 @@ export default {
         });
         await this.createGuideLayer();
     },
-    // mounted () {
-    //     this.map.addEventListener("click", this.openEditDialog.bind(this));
-    // },
     methods: {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
@@ -179,6 +176,7 @@ export default {
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules
+        describeFeatureTypeByLayerId, // WFS describeFeatureType request based on the rawLayerList
 
         /**
          * @description create a guide layer used for additional info to display on the map
@@ -411,7 +409,7 @@ export default {
                     :url="readmeUrl"
                     :locale="currentLocale"
                 />
-                <v-app>
+                <v-app id="scenario-builder-wrapper">
                     <ScenarioManager @pruneScenario="resetFeature" />
                     <v-divider />
                     <div>

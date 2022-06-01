@@ -150,7 +150,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div id="scenario-manager">
         <div>
             <span class="text-subtitle-2">
                 {{ $t('additional:modules.tools.cosi.scenarioManager.title') }}

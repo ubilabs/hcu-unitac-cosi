@@ -1,0 +1,210 @@
+import Vuex from "vuex";
+import {config, mount, shallowMount, createLocalVue} from "@vue/test-utils";
+import ScenarioBuilderStore from "../../../store/indexScenarioBuilder";
+import ScenarioBuilder from "../../../components/ScenarioBuilder.vue";
+import {expect} from "chai";
+import sinon from "sinon";
+import Vuetify from "vuetify";
+import Vue from "vue";
+import Layer from "ol/layer/Vector.js";
+import Source from "ol/source/Vector.js";
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import ScenarioManager from "../../../components/ScenarioManager.vue";
+import FeatureEditor from "../../../components/FeatureEditor.vue";
+
+config.mocks.$t = key => key;
+Vue.use(Vuetify);
+
+const localVue = createLocalVue();
+
+localVue.use(Vuex);
+
+global.requestAnimationFrame = (fn) => fn();
+
+/**
+ * mocks vuetify data-app attr
+ * @returns {void}
+ */
+function addElemWithDataAppToBody () {
+    const app = document.createElement("div");
+
+    app.setAttribute("data-app", true);
+    document.body.append(app);
+}
+
+before(() => {
+    addElemWithDataAppToBody();
+});
+
+describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
+    let store, vuetify, wrapper;
+
+    const
+        factory = {
+            getMount: (mountFn = mount) => {
+                return mountFn(ScenarioBuilder, {
+                    store,
+                    localVue,
+                    vuetify,
+                    sync: false
+                });
+            },
+            initialize: async (mountFn = mount) => {
+                wrapper = factory.getMount(mountFn);
+                await wrapper.vm.$nextTick();
+            }
+        },
+        feature = new Feature({
+            id: "id",
+            schulname: "feature 1",
+            anzahl_schueler: 42,
+            adresse_strasse_hausnr: "Hauptstraße",
+            adresse_ort: "Hamburg",
+            kapitelbezeichnung: "Grundschule",
+            geometry: new Point([
+                10.086822509765625,
+                53.55825752009741
+            ])
+        }),
+        layer = new Layer({
+            id: "1234",
+            name: "Staatliche Schulen",
+            source: new Source({
+                features: [feature]
+            })
+        }),
+        layerMap = {
+            layerId: "1234",
+            id: "Staatliche Schulen",
+            addressField: []
+        };
+
+    /**
+     * @returns {void}
+     */
+    async function fakeDescribeFeatureType () {
+        return [];
+    }
+
+    /**
+     * @param {Object} desc - the description for the featureType
+     * @returns {void}
+     */
+    async function fakeGetValuesForFields (desc) {
+        this.valuesForFields = {};
+
+        for (const field of desc) {
+            this.valuesForFields = {
+                [field.name]: ["placeholder"]
+            };
+        }
+
+        console.log("running this");
+        console.log(this.valueForFields);
+    }
+
+    /**
+     * @returns {void}
+     */
+    function setStubs () {
+        sinon.stub(ScenarioBuilder.methods, "describeFeatureTypeByLayerId").callsFake(fakeDescribeFeatureType);
+        sinon.stub(ScenarioBuilder.methods, "asyncGetValuesForField").callsFake(fakeGetValuesForFields);
+    }
+
+    beforeEach(async () => {
+        vuetify = new Vuetify();
+        store = new Vuex.Store({
+            namespaced: true,
+            modules: {
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => "de-DE"
+                    }
+                },
+                Tools: {
+                    namespaced: true,
+                    modules: {
+                        ScenarioBuilder: ScenarioBuilderStore,
+                        FeaturesList: {
+                            namespaced: true,
+                            getters: {
+                                groupActiveLayer: sinon.stub().returns([{value: layerMap, text: layerMap.id}]),
+                                activeVectorLayerList: sinon.stub().returns([layer])
+                            }
+                        },
+                        Routing: {
+                            namespaced: true,
+                            getters: {
+                                geosearchReverse: sinon.stub().returns({type: "NOMINATIM"})
+                            }
+                        }
+                    }
+                },
+                Map: {
+                    namespaced: true,
+                    getters: {
+                        layerById: () => sinon.stub().returns({olLayer: layer}),
+                        ol2DMap: () => ({
+                            getLayers: () => ({getArray: sinon.stub()}),
+                            addEventListener: sinon.stub()
+                        }),
+                        projectionCode: sinon.stub().returns("EPSG:25832")
+                    },
+                    mutations: {
+                        setCenter: sinon.stub()
+                    },
+                    actions: {
+                        removeHighlightFeature: () => sinon.stub(),
+                        createLayer: () => {
+                            return Promise.resolve(new Layer());
+                        }
+                    }
+                },
+                MapMarker: {
+                    namespaced: true,
+                    actions: {
+                        placingPointMarker: sinon.stub(),
+                        removePointMarker: sinon.stub()
+                    }
+                }
+            },
+            getters: {
+                isDefaultStyle: () => true,
+                uiStyle: () => true
+            }
+        });
+        store.commit("Tools/ScenarioBuilder/setActive", true);
+        window.requestAnimationFrame = sinon.stub();
+    });
+
+    afterEach(() => {
+        sinon.restore();
+
+        if (wrapper) {
+            wrapper.destroy();
+        }
+    });
+
+    it("should render Component", async () => {
+        await factory.initialize();
+        // await wrapper.vm.$nextTick();
+
+        expect(wrapper.find("#scenario-builder-wrapper").exists()).to.be.true;
+        expect(wrapper.find("#scenario-builder-wrapper").html()).to.not.be.empty;
+        expect(wrapper.find("#scenario-manager").exists()).to.be.true;
+        expect(wrapper.find("form").exists()).to.be.true;
+    });
+
+    it("should add property fields when layer is selected", async () => {
+        setStubs();
+        // await wrapper.setData({workingLayer: layerMap});
+        wrapper.vm.workingLayer = layerMap;
+        await wrapper.vm.$nextTick();
+
+        console.log(wrapper.vm.valuesForFields);
+        console.log(wrapper.vm.featureTypeDescSorted);
+        console.log(wrapper.vm.workingLayer);
+    });
+});
