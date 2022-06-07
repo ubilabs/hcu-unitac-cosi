@@ -76,6 +76,24 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
             });
             expect(wrapper.find("#detail-component").exists()).to.be.true;
         });
+        it("not renders Detail Component if feature is empty", () => {
+            const wrapper = shallowMount(DetailComponent, {
+                store,
+                propsData: {...propsData, feature: {}},
+                localVue
+            });
+            expect(wrapper.find("#detail-component").exists()).to.be.false;
+        });
+        it("test method getValue", () => {
+            const wrapper = shallowMount(DetailComponent, {
+                store,
+                propsData: {...propsData, feature: {}},
+                localVue
+            });
+             // inka@vilma: method getValue testen ,mit mehreren keys
+             //const result = wrapper.vm.getValue();
+             //expect(result ...
+        });
     })
 
 })

@@ -54,10 +54,10 @@ export default {
             <dl>
                 <dt> {{ Object.values(feature)[0] }}: </dt>
                 <dd v-if="Object.values(feature)[2] === ''">
-                    <span> {{ Object.values(feature)[1] }} €/m²</span>
+                    <span> {{ Object.values(feature)[1] }} 1€/m²</span>
                 </dd>
                 <dd v-else>
-                    <span> {{ Object.values(feature)[1] }} €/m²</span>
+                    <span> {{ Object.values(feature)[1] }} 2€/m²</span>
                     <span class="d-flex justify-content-end">{{ Object.values(feature)[2] }} DM/m²</span>
                 </dd>
             </dl>

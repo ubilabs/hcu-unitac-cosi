@@ -79,8 +79,10 @@ describe("ADDONS: addons/borisVue/components/FloorComponent.vue", () => {
                     schichtwert: "blaa"
                 }}}
             })
-
+            
             expect(wrapper.find(".floorvalue-part").exists()).to.be.true;
         })
+        // inka@vilma: hier fehlt noch das Testen des v-else Zweiges ohne Schichtwerte
+        // wichtig dabei: z.B. Object.values(feature)[2]: ist es sicher, dass index 2 in den values immer gefüllt ist oder kann es da zu einem Fehler kommen
     })
 })
