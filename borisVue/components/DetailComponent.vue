@@ -32,10 +32,10 @@ export default {
 </script>
 
 <template>
-    <div
+    <div id="detail-component"
         v-if="Object.keys(feature).length > 0 && feature.get(keys[0])"
     >
-        <dt>{{ label }}:</dt>
-        <dd>{{ getValue() }}</dd>
+        <dt class="label">{{ label }}:</dt>
+        <dd class="value">{{ getValue() }}</dd>
     </div>
 </template>

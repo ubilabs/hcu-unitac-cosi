@@ -20,12 +20,12 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div id="floor-component">
         <h4>{{ title }} </h4>
         <span> {{ label }} </span>
         <br>
         <br>
-        <div v-if="feature.schichtwerte">
+        <div class="floorvalue-part" v-if="feature.schichtwerte">
             <div
                 v-for="(schichtwert, index) in feature.schichtwerte"
                 :key="index"
