@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import BorisVueComponent from "../../../components/BorisVue.vue";
 import BorisVue from "../../../store/indexBorisVue";
-import {preparePrint} from "../../../utils/preparePrint.js";
+import Print from "../../../utils/preparePrint.js";
 import {expect} from "chai";
 import sinon from "sinon";
 // import Print from "../../../../../src/modules/tools/print/components/PrintMap.vue";
@@ -35,7 +35,7 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         originalMatchPolygonFeatureWithLanduse,
         originalSimulateLanduseSelect,
         originalSendWpsConvertRequest,
-        originalUpdateSelectedBrwFeature;
+        originalUpdateSelectedBrwFeature
 
     beforeEach(() => {
         originalMatchPolygonFeatureWithLanduse = BorisVue.actions.matchPolygonFeatureWithLanduse;
@@ -128,7 +128,12 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             store.state.Tools.BorisVue.active = true;
             store.commit("Tools/BorisVue/setSelectedPolygon", feature);
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
-            expect(wrapper.find(".form-group", ".col-12", "first").exists()).to.be.true;
+
+            // console.log(wrapper.findAll(".form-group", ".col-12", "first").length);            
+            //inka@vilma : da werden 3 html-elemente mit der class gefunden, der Test ist nicht eindeutig
+            // expect(wrapper.find(".form-group", ".col-12", "first").exists()).to.be.true;
+            //inka@vilma: besser mit id
+            expect(wrapper.find("#landuseSelect").exists()).to.be.true;
         });
     });
 
@@ -151,14 +156,13 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
 
             expect(wrapper.vm.getFilterListWithoutStripes).that.includes(layer2.attributes.name);
-
         });
         it("getFilterListWithoutStripes does not include layer with stripes", () => {
             store.state.Tools.BorisVue.active = true;
             store.state.Tools.BorisVue.filteredLayerList.push(layer1);
             store.state.Tools.BorisVue.filteredLayerList.push(layer2);
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
-
+//inka@vilma: das könnte man auch in dem test davor abfragen
             expect(wrapper.vm.getFilterListWithoutStripes).that.does.not.include(layer1.attributes.name);
         });
 
@@ -216,10 +220,13 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
 
             expect(store.state.Tools.BorisVue.textIds).to.have.lengthOf(3);
             expect(store.state.Tools.BorisVue.textIds).that.includes("id3");
+            // inka@vilma: da kann man noch den else-Zweig in toggleInfoText testen
         });
     });
     describe("handle input and option change methods", () => {
         it("handleOptionChange", () => {
+            // inka@vilma: anstatt "dh Doppelhaushälfte" state.buildingDesigns[1] nutzen,
+            // dann ist das unabhängig von dem textlixhen Inhalt
             const event = {target: {value: "dh Doppelhaushälfte"}, get: () => "value"},
                 subject = "zBauweise";
 
@@ -227,6 +234,7 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
             wrapper.vm.handleOptionChange(event, subject);
 
+            // inka@vilma: anstatt "dh Doppelhaushälfte" state.buildingDesigns[1] nutzen
             expect(store.state.Tools.BorisVue.selectedOption).to.equal("dh Doppelhaushälfte");
             expect(BorisVue.actions.updateSelectedBrwFeature.calledOnce).to.equal(true);
             expect(BorisVue.actions.sendWpsConvertRequest.calledOnce).to.equal(true);
@@ -254,21 +262,23 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         });
     });
     describe("startPrint method", () => {
-        it.only("startPrint", async () => {
+        it("startPrint", async () => {
+            const  preparePrintSpy = sinon.spy(Print, "preparePrint");
             
             store.state.Tools.BorisVue.active = true;
             store.state.Tools.BorisVue.selectedBrwFeature = {id: 1, name: "feature1",  get: () => "value" };
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
             const printButton = wrapper.find(".btn-infos");
-            wrapper.vm.startPrint = sinon.spy();
+            // wrapper.vm.startPrint = sinon.spy();
+            // inka@vilma: habe ich auch noch nicht hinbekommen
             printButton.trigger("click");
             
-            wrapper.vm.$nextTick()
+            // wrapper.vm.$nextTick()
 
             // console.log(preparePrint.callCount)
-            // console.log(preparePrint().callCount)
+            console.log(preparePrint.callCount)
 
-            // expect(preparePrint().calledOnce).to.equal(true);
+            expect(preparePrintSpy.calledOnce).to.equal(true);
 
             // Wie kann ich startPrint und/oder preparePrint testen? 
 

@@ -28,6 +28,8 @@ export default {
          * @return {Array} filteredListWithoutStripes which is used to select by date
          */
         getFilterListWithoutStripes () {
+            // inka@vilma: kann amn das nciht einfacher schreiben?
+            // return this.filteredLayerList.filter...
             const filteredListWithoutStripes = [];
 
             for (const layer in this.filteredLayerList) {
@@ -275,6 +277,7 @@ export default {
                     <select
                         v-model="selectedLanduseComputed"
                         class="form-control"
+                        id="landuseSelect"
                     >
                         <option
                             value=""

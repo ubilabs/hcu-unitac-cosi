@@ -91,7 +91,7 @@ describe("ADDONS: addons/borisVue/components/CalculationComponent.vue", () => {
         });
 
         it("renders input type", () => {
-            const wrapper = shallowMount(CalculationComponent, {
+            wrapper = shallowMount(CalculationComponent, {
                 store,
                 propsData: {...propsData, type: "input"},
                 localVue
