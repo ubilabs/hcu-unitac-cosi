@@ -27,7 +27,7 @@ describe("ADDONS: addons/borisVue/components/CalculationComponent.vue", () => {
                 }
             }
         }
-    }
+    };
     let store, propsData, wrapper;
 
     beforeEach(() => {
@@ -51,14 +51,14 @@ describe("ADDONS: addons/borisVue/components/CalculationComponent.vue", () => {
             options: [],
             selectedBrwFeature: {
                 get: (subject) => {
-                   return subject;
+                    return subject;
                 }
             },
             textIds: ["1"],
             textId: 1,
             text: "Infotext",
-            toggleInfoText: () =>  sinon.stub(),
-            handleChange: () =>  sinon.stub(),
+            toggleInfoText: () => sinon.stub(),
+            handleChange: () => sinon.stub(),
             subject: "Subject",
             type: "type"
         };
@@ -99,16 +99,17 @@ describe("ADDONS: addons/borisVue/components/CalculationComponent.vue", () => {
             expect(wrapper.find(".input-part").exists()).to.be.true;
         });
 
-        it("triggers click", async () => {
+        it.only("triggers click", async () => {
             const questionElement = wrapper.find(".bi-question-circle-fill");
+
             questionElement.trigger("click");
 
             await wrapper.vm.$nextTick();
 
             // textIds should get a further or one less element after clicking
-            // expect(propsData.textIds).to.be.an('array').that.is.not.empty;
-            
-        })
+            expect(propsData.textIds).to.be.an("array").that.is.not.empty;
+
+        });
     });
 
 });

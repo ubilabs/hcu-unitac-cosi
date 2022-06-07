@@ -28,18 +28,10 @@ export default {
          * @return {Array} filteredListWithoutStripes which is used to select by date
          */
         getFilterListWithoutStripes () {
-            // inka@vilma: kann amn das nciht einfacher schreiben?
-            // return this.filteredLayerList.filter...
-            const filteredListWithoutStripes = [];
 
-            for (const layer in this.filteredLayerList) {
-                const layerName = this.filteredLayerList[layer].attributes.name;
-
-                if (layerName.indexOf("-stripes") === -1) {
-                    filteredListWithoutStripes.push(layerName);
-                }
-            }
-            return filteredListWithoutStripes;
+            return this.filteredLayerList.filter(function (filteredLayer) {
+                return filteredLayer.attributes.name.indexOf("-stripes") === -1;
+            });
         },
         /**
          * Gets the selected option from "chosen landuse" which is set as selectedLanduse
@@ -225,7 +217,7 @@ export default {
                             :key="index"
                             :value="model"
                         >
-                            {{ model }}
+                            {{ model.attributes.name }}
                         </option>
                     </select>
                 </div>
@@ -275,9 +267,9 @@ export default {
                 >
                     <span>{{ $t("additional:modules.tools.boris.labelSelectUse") }}</span>
                     <select
+                        id="landuseSelect"
                         v-model="selectedLanduseComputed"
                         class="form-control"
-                        id="landuseSelect"
                     >
                         <option
                             value=""
@@ -453,7 +445,7 @@ export default {
                             </dd>
                             <dd
                                 v-else
-                            >   
+                            >
                                 <div
                                     class="d-flex justify-content-between"
                                 >
