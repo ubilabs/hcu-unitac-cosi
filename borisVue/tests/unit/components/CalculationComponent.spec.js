@@ -103,12 +103,10 @@ describe("ADDONS: addons/borisVue/components/CalculationComponent.vue", () => {
             const questionElement = wrapper.find(".bi-question-circle-fill");
 
             questionElement.trigger("click");
-
             await wrapper.vm.$nextTick();
 
             // textIds should get a further or one less element after clicking
             expect(propsData.textIds).to.be.an("array").that.is.not.empty;
-
         });
     });
 

@@ -2,10 +2,8 @@ import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import BorisVueComponent from "../../../components/BorisVue.vue";
 import BorisVue from "../../../store/indexBorisVue";
-import Print from "../../../utils/preparePrint.js";
 import {expect} from "chai";
 import sinon from "sinon";
-// import Print from "../../../../../src/modules/tools/print/components/PrintMap.vue";
 
 const localVue = createLocalVue();
 
@@ -234,25 +232,20 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         });
     });
     describe("startPrint method", () => {
-        it("startPrint", async () => {
-            const preparePrintSpy = sinon.spy(Print, "preparePrint");
-
+        it("startPrint", () => {
             store.state.Tools.BorisVue.active = true;
             store.state.Tools.BorisVue.selectedBrwFeature = {id: 1, name: "feature1", get: () => "value"};
+
+            let printButton = null;
+            const startPrintSpy = sinon.spy(BorisVueComponent.methods, "startPrint");
+
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
-            const printButton = wrapper.find(".btn-infos"),
-                startPrint = sinon.spy(wrapper.vm.startPrint);
+            printButton = wrapper.find(".btn-infos");
 
             printButton.trigger("click");
+            wrapper.vm.$nextTick();
 
-            await wrapper.vm.$nextTick()
-            console.log("STARTPRINT", startPrint.callCount);
-            console.log("PREPAREPRINTSPY", preparePrintSpy.callCount);
-
-            expect(preparePrintSpy.calledOnce).to.equal(true);
-
-            // Wie kann ich startPrint und/oder preparePrint testen?
-
+            expect(startPrintSpy.calledOnce).to.equal(true);
         });
     });
 
