@@ -1,0 +1,39 @@
+import {expect} from "chai";
+import getters from "../../../store/gettersBorisVue";
+import stateBoris from "../../../store/stateBorisVue";
+
+
+describe("src/modules/tools/boris/store/gettersBorisVue.js", () => {
+
+    afterEach(() => {
+        // set state back, because of directly use of original state
+        stateBoris.selectedPolygon = null;
+        stateBoris.paramUrlParams = {};
+    });
+
+    describe("Boris getters", () => {
+        it("findLanduseByBrwId", () => {
+            stateBoris.selectedPolygon = {
+                get: () => {
+                    return [{
+                        richtwertnummer: "rw1",
+                        nutzungsart: "art1"
+                    },
+                    {
+                        richtwertnummer: "rw2",
+                        nutzungsart: "art2"
+                    }];
+                }
+            };
+            stateBoris.paramUrlParams.brwId = "rw1";
+            expect(getters.findLanduseByBrwId()).to.be.equals("art1");
+
+            // inka@vilma: hier wird ein möglicher Fehler aufgedeckt:
+            // TypeError: Cannot read properties of undefined (reading 'nutzungsart') sieht man in der console
+            // 1.) Vielleicht hast du selbst ein Idee wie man das lösen kann, sonst frage mich
+            // 2.) was soll denn dieser getter zurückgeben, wenn foundLanduse nicht gefunden wird, einen Leerstring oder undefined (ist das in der Oberfläche sichtbar?)?
+            stateBoris.paramUrlParams.brwId = "nix";
+            expect(getters.findLanduseByBrwId()).to.be.equals(undefined);
+        });
+    });
+});

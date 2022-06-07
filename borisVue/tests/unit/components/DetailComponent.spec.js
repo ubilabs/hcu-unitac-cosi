@@ -30,7 +30,7 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
                 }
             }
         }
-    }
+    };
     let store, propsData, wrapper;
 
     beforeEach(() => {
@@ -69,11 +69,12 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
                 store,
                 propsData: {...propsData, feature: {
                     get: (key) => {
-                       return key;
+                        return key;
                     }
                 }},
                 localVue
             });
+
             expect(wrapper.find("#detail-component").exists()).to.be.true;
         });
         it("not renders Detail Component if feature is empty", () => {
@@ -82,6 +83,7 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
                 propsData: {...propsData, feature: {}},
                 localVue
             });
+
             expect(wrapper.find("#detail-component").exists()).to.be.false;
         });
         it("test method getValue", () => {
@@ -90,10 +92,10 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
                 propsData: {...propsData, feature: {}},
                 localVue
             });
-             // inka@vilma: method getValue testen ,mit mehreren keys
-             //const result = wrapper.vm.getValue();
-             //expect(result ...
+            // inka@vilma: method getValue testen ,mit mehreren keys
+            // const result = wrapper.vm.getValue();
+            // expect(result ...
         });
-    })
+    });
 
-})
+});

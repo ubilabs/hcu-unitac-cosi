@@ -52,12 +52,12 @@ describe("ADDONS: addons/borisVue/components/InformationComponent.vue", () => {
             title: "title",
             selectedBrwFeature: new VectorLayer({
                 source: new VectorSource(),
-                // inka@vilma: das habe ich eingefügt, damit die DetailComponent mit keys="['bezirk'] gerendert wird. 
+                // inka@vilma: das habe ich eingefügt, damit die DetailComponent mit keys="['bezirk'] gerendert wird.
                 // Dafür muss in dem Test aber mount und nicht shallowMount benutzt werden, da dann die Kind-Komponenten auch gerendert werden
                 bezirk: "bezirk",
                 get: (key) => {
                     return key;
-                 }
+                }
             }),
             buttonValue: "info"
         };

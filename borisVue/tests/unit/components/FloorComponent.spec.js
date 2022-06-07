@@ -28,7 +28,7 @@ describe("ADDONS: addons/borisVue/components/FloorComponent.vue", () => {
                 }
             }
         }
-    }
+    };
     let store, propsData, wrapper;
 
     beforeEach(() => {
@@ -52,12 +52,12 @@ describe("ADDONS: addons/borisVue/components/FloorComponent.vue", () => {
             feature: {
             },
             label: "subtitle"
-        }
+        };
         wrapper = shallowMount(FloorComponent, {
             store,
             propsData: propsData,
             localVue
-        })
+        });
     });
     afterEach(function () {
         sinon.restore();
@@ -65,24 +65,24 @@ describe("ADDONS: addons/borisVue/components/FloorComponent.vue", () => {
             wrapper.destroy();
         }
     });
-   
+
     describe("Boris floor component template", () => {
-       
+
         it("renders floor compponent", () => {
             expect(wrapper.find("#floor-component").exists()).to.be.true;
         });
 
         it("renders 'schichtwerte'", () => {
-            wrapper= shallowMount(FloorComponent, {
+            wrapper = shallowMount(FloorComponent, {
                 store,
-                propsData: {...propsData,  feature: { schichtwerte: {
+                propsData: {...propsData, feature: {schichtwerte: {
                     schichtwert: "blaa"
                 }}}
-            })
-            
+            });
+
             expect(wrapper.find(".floorvalue-part").exists()).to.be.true;
-        })
-        // inka@vilma: hier fehlt noch das Testen des v-else Zweiges ohne Schichtwerte
+        });
+        // inka@vilma: hier fehlt noch das Testen des v-else Zweiges ohne Schichtwerte
         // wichtig dabei: z.B. Object.values(feature)[2]: ist es sicher, dass index 2 in den values immer gefüllt ist oder kann es da zu einem Fehler kommen
-    })
-})
+    });
+});
